@@ -12,10 +12,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataBuildInfo;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,6 +36,9 @@ public abstract class AbstractMetadata implements Metadata {
 
     @Inject
     protected ExtendedEntities extendedEntities;
+
+    @Inject
+    protected MetadataTools tools;
 
     @Inject
     private PersistentEntitiesMetadataLoader persistentEntitiesMetadataLoader;
@@ -75,6 +75,11 @@ public abstract class AbstractMetadata implements Metadata {
     @Override
     public ExtendedEntities getExtendedEntities() {
         return extendedEntities;
+    }
+
+    @Override
+    public MetadataTools getTools() {
+        return tools;
     }
 
     protected void loadMetadata(MetadataLoader loader, Collection<String> packages) {
@@ -126,7 +131,7 @@ public abstract class AbstractMetadata implements Metadata {
             addMetaAnnotationsFromXml(metadataBuildInfo.getEntityAnnotations(), metaClass);
         }
 
-        this.session = session;
+        this.session = new CachingMetadataSession(session);
         log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
     }
 

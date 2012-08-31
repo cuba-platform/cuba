@@ -72,7 +72,15 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
 		return propertyByName.get(name);
 	}
 
-	public MetaPropertyPath getPropertyEx(String propertyPath) {
+    @Override
+    public MetaProperty getPropertyNN(String name) {
+        MetaProperty property = getProperty(name);
+        if (property == null)
+            throw new IllegalArgumentException("Property '" + name + "' not found in " + getName());
+        return property;
+    }
+
+    public MetaPropertyPath getPropertyEx(String propertyPath) {
         String[] properties = propertyPath.split("[.]");
         List<MetaProperty> metaProperties = new ArrayList<MetaProperty>();
 

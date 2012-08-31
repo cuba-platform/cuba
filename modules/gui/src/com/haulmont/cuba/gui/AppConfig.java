@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 16.03.2009 22:16:39
- * $Id$
  */
 
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -20,41 +18,40 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 /**
  * GenericUI class holding common information about client application configuration,
  * as well as some static helper methods to obtain infrastructure objects.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public abstract class AppConfig
 {
-    public static final String CLIENT_TYPE_PROP = "cuba.appConfig.clientType";
+    public static final String CLIENT_TYPE_PROP = "cuba.clientType";
 
-    public static final String MESSAGES_PACK_PROP = "cuba.appConfig.messagesPack";
-
-    public static final String THEME_NAME_PROP = "cuba.AppConfig.themeName";
-
-    private static ClientType clientType;
-
-    private static String messagesPackage;
+    /**
+     * DEPRECATED. To obtain a message from the main message pack use {@link com.haulmont.cuba.core.global.Messages#getMainMessage(String)}.
+     */
+    @Deprecated
+    public static final String MESSAGES_PACK_PROP = "cuba.messagePack";
 
     /**
      * Current client type.
-     * Set up through app property {@link #CLIENT_TYPE_PROP} by specific client implementation.
+     * <p/> Set up through the app property {@link #CLIENT_TYPE_PROP} on a client tier.
      * @return  current client type
      */
     public static ClientType getClientType() {
-        if (clientType == null) {
-            clientType = ClientType.valueOf(AppContext.getProperty(CLIENT_TYPE_PROP));
-        }
-        return clientType;
+        return ClientType.valueOf(AppContext.getProperty(CLIENT_TYPE_PROP));
     }
 
     /**
-     * Central messages pack used by GenericUI components and application code.
-     * Set up through app property {@link #MESSAGES_PACK_PROP} depending on the client type and set of base projects.
-     * @return  message pack name
+     * Main messages pack used by GenericUI components and application code.
+     * <p/> Set up through app property <code>cuba.messagePack</code> depending on the client type and set of base projects.
+     *
+     * <p/> This method is outdated but not deprecated because it is used in lots of places. Preferred method to
+     * obtain the main message pack is {@link com.haulmont.cuba.core.global.Messages#getMainMessagePack()}.
+     *
+     * <p/> To obtain a message from the main message pack use {@link com.haulmont.cuba.core.global.Messages#getMainMessage(String)}.
      */
     public static String getMessagesPack() {
-        if (messagesPackage == null) {
-            messagesPackage = AppContext.getProperty(MESSAGES_PACK_PROP);
-        }
-        return messagesPackage;
+        return AppBeans.get(Messages.class).getMainMessagePack();
     }
 
     /**

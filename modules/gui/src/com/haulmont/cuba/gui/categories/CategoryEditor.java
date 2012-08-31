@@ -7,16 +7,23 @@
 package com.haulmont.cuba.gui.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.*;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.entity.Category;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.ValueListener;
-
 import org.apache.commons.lang.BooleanUtils;
 
-
-import java.util.*;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -28,6 +35,12 @@ public class CategoryEditor extends AbstractEditor<Category> {
     private Category category;
     private CheckBox cb;
     private DataService dataService;
+
+    @Inject
+    protected MetadataTools metadataTools;
+
+    @Inject
+    protected MessageTools messageTools;
 
     public void init(Map<String, Object> params) {
         dataService = getDsContext().getDataService();
@@ -49,9 +62,9 @@ public class CategoryEditor extends AbstractEditor<Category> {
         LookupField categoryEntityTypeField = getComponent("entityType");
         Map<String,Object> options = new HashMap<String,Object>();
         MetaClass entityType = null;
-        for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+        for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-                options.put(MessageUtils.getEntityCaption(metaClass), metaClass);
+                options.put(messageTools.getEntityCaption(metaClass), metaClass);
                 if (hasValue && metaClass.getName().equals(category.getEntityType())) {
                     entityType = metaClass;
                 }

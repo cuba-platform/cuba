@@ -23,11 +23,19 @@ import javax.inject.Inject;
 @ManagedBean("cuba_ExtendedEntities")
 public class ExtendedEntities {
 
+    @Inject
     private Metadata metadata;
 
-    // Setter injection is used to support tests
-    @Inject
-    public void setMetadata(Metadata metadata) {
+    /**
+     * Default constructor used by container at runtime and in server-side integration tests.
+     */
+    public ExtendedEntities() {
+    }
+
+    /**
+     * Constructor used in client-side tests.
+     */
+    public ExtendedEntities(Metadata metadata) {
         this.metadata = metadata;
     }
 

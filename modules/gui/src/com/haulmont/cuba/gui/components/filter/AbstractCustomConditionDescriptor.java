@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
@@ -26,7 +27,7 @@ public abstract class AbstractCustomConditionDescriptor<T extends AbstractParam>
 
         this.caption = element.attributeValue("caption");
         if (this.caption != null)
-            this.locCaption = MessageUtils.loadString(messagesPack, this.caption);
+            this.locCaption = AppBeans.get(MessageTools.class).loadString(messagesPack, this.caption);
 
         inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
     }

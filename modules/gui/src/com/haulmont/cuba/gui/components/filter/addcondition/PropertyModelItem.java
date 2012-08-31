@@ -7,7 +7,8 @@
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -41,11 +42,11 @@ public class PropertyModelItem implements ModelItem {
             this.descriptor = descriptor;
         } else {
             StringBuilder name = new StringBuilder(metaProperty.getName());
-            StringBuilder caption = new StringBuilder(MessageUtils.getPropertyCaption(metaProperty));
+            StringBuilder caption = new StringBuilder(AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty));
             ModelItem item = parent;
             while (item != null && item instanceof PropertyModelItem) {
                 name.insert(0, ((PropertyModelItem) item).metaProperty.getName() + ".");
-                caption.insert(0, MessageUtils.getPropertyCaption(((PropertyModelItem) item).metaProperty) + ".");
+                caption.insert(0, AppBeans.get(MessageTools.class).getPropertyCaption(((PropertyModelItem) item).metaProperty) + ".");
                 item = item.getParent();
             }
             this.descriptor = descriptorBuilder.buildPropertyConditionDescriptor(name.toString(), caption.toString());
@@ -69,7 +70,7 @@ public class PropertyModelItem implements ModelItem {
                 // check permissions
                 if (userSession.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)) {
                     // exclude not localized properties (they are usually not for end user) and ToMany
-                    if (MessageUtils.hasPropertyCaption(property) && !property.getRange().getCardinality().isMany()) {
+                    if (AppBeans.get(MessageTools.class).hasPropertyCaption(property) && !property.getRange().getCardinality().isMany()) {
                         list.add(new PropertyModelItem(this, property, null, descriptorBuilder));
                     }
                 }
@@ -82,7 +83,7 @@ public class PropertyModelItem implements ModelItem {
 
     @Override
     public String getCaption() {
-        return MessageUtils.getPropertyCaption(metaProperty);
+        return AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty);
     }
 
     @Override

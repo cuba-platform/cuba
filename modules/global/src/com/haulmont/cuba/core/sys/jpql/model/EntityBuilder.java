@@ -1,7 +1,9 @@
 package com.haulmont.cuba.core.sys.jpql.model;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageTools;
 
 /**
  * User: Alex Chevelev
@@ -17,7 +19,7 @@ public class EntityBuilder {
 
     public void startNewEntity(MetaClass metaClass) {
         result = new EntityImpl(metaClass.getName());
-        result.setUserFriendlyName(MessageUtils.getEntityCaption(metaClass));
+        result.setUserFriendlyName(AppBeans.get(MessageTools.class).getEntityCaption(metaClass));
     }
 
     public Entity produceImmediately(String entityName, String... stringAttributeNames) {

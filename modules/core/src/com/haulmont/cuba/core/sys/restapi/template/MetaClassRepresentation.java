@@ -64,7 +64,7 @@ public class MetaClassRepresentation {
     }
 
     public String getDescription() {
-        String result = MessageUtils.getEntityCaption(meta);
+        String result = AppBeans.get(MessageTools.class).getEntityCaption(meta);
         return result == null ? "" : result;
     }
 
@@ -111,7 +111,7 @@ public class MetaClassRepresentation {
         }
 
         public String getDescription() {
-            String result = MessageUtils.getPropertyCaption(property);
+            String result = AppBeans.get(MessageTools.class).getPropertyCaption(property);
             return result == null ? "" : result;
         }
 
@@ -170,7 +170,7 @@ public class MetaClassRepresentation {
         }
 
         public boolean isPersistent() {
-            return MetadataHelper.isPersistent(property);
+            return AppBeans.get(MetadataTools.class).isPersistent(property);
         }
     }
 
@@ -194,7 +194,7 @@ public class MetaClassRepresentation {
     }
 
     private static MetaClass getMetaClass(Class clazz) {
-        return MetadataProvider.getSession().getClass(clazz);
+        return AppBeans.get(Metadata.class).getSession().getClass(clazz);
     }
 
     private static boolean viewPropertyReadPermitted(MetaClass meta, ViewProperty viewProperty) {
@@ -262,7 +262,7 @@ public class MetaClassRepresentation {
     }
 
     private static boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        UserSession session = UserSessionProvider.getUserSession();
+        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
@@ -271,7 +271,7 @@ public class MetaClassRepresentation {
     }
 
     private static boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = UserSessionProvider.getUserSession();
+        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
     }
 

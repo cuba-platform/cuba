@@ -248,7 +248,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         if (valueId != null)
             properties.setProperty(attr + EntityLogAttr.VALUE_ID_SUFFIX, valueId.toString());
 
-        String mp = MessageUtils.inferMessagePack(attr, entity);
+        String mp = AppBeans.get(MessageTools.class).inferMessagePack(attr, entity);
         if (mp != null)
             properties.setProperty(attr + EntityLogAttr.MP_SUFFIX, mp);
     }

@@ -5,16 +5,16 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.vaadin.terminal.Terminal;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.vaadin.terminal.Terminal;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Handles database unique constraint violations. Determines the exception type by searching a special marker string
@@ -30,16 +30,19 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
 
     private Pattern pattern;
 
+    private Messages messages = AppBeans.get(Messages.class);
+    private DataService dataService = AppBeans.get(DataService.class);
+
     private String getMarker() {
         if (marker == null) {
-            marker = ServiceLocator.getDataService().getDbDialect().getUniqueConstraintViolationMarker();
+            marker = dataService.getDbDialect().getUniqueConstraintViolationMarker();
         }
         return marker;
     }
 
     private Pattern getPattern() {
         if (pattern == null) {
-            String s = ServiceLocator.getDataService().getDbDialect().getUniqueConstraintViolationPattern();
+            String s = dataService.getDbDialect().getUniqueConstraintViolationPattern();
             pattern = Pattern.compile(s);
         }
         return pattern;
@@ -74,11 +77,11 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
 
         String msg = "";
         if (StringUtils.isNotBlank(constraintName)) {
-            msg = MessageProvider.getMessage(MessageUtils.getMessagePack(), constraintName.toUpperCase());
+            msg = messages.getMainMessage(constraintName.toUpperCase());
         }
 
         if (msg.equalsIgnoreCase(constraintName)) {
-            msg = MessageProvider.getMessage(getClass(), "uniqueConstraintViolation.message");
+            msg = messages.getMainMessage("uniqueConstraintViolation.message");
             if (StringUtils.isNotBlank(constraintName))
                 msg = msg + " (" + constraintName + ")";
         }

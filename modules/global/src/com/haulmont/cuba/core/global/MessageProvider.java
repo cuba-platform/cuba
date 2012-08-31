@@ -5,18 +5,17 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.sys.AppContext;
-
 import java.util.Locale;
 
 /**
- * Utility class to work with localized messages in static context.<br>
- * <p>Injected {@link Messages} interface should be used instead of this class wherever possible.</p>
+ * DEPRECATED - use {@link Messages} via DI or <code>AppBeans.get(Messages.class)</code>
  *
  * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
+@Deprecated
 public abstract class MessageProvider
 {
     private static Messages getMessages() {

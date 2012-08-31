@@ -11,11 +11,11 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 
-import javax.persistence.Entity;
 import javax.persistence.*;
+import javax.persistence.Entity;
 
 @Entity(name = "sys$AppFolder")
 @Table(name = "SYS_APP_FOLDER")
@@ -66,7 +66,7 @@ public class AppFolder extends AbstractSearchFolder {
     }
 
     public String getLocName() {
-        return MessageProvider.getMessage(MessageUtils.getMessagePack(), name);
+        return AppBeans.get(Messages.class).getMainMessage(name);
     }
 
     @Override

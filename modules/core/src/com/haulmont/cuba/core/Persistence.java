@@ -26,6 +26,13 @@ public interface Persistence {
 
     String NAME = "cuba_Persistence";
 
+
+    /**
+     * Convenient access to {@link PersistenceTools} bean.
+     * @return  PersistenceTools instance
+     */
+    <T extends PersistenceTools> T getTools();
+
     /**
      * The DB dialect instance.
      *
@@ -76,34 +83,6 @@ public interface Persistence {
     EntityManager getEntityManager();
 
     /**
-     * Returns the set of dirty fields (fields changed since last load from DB).
-     *
-     * @param entity entity instance
-     * @return dirty field names
-     */
-    Set<String> getDirtyFields(Entity entity);
-
-    /**
-     * Returns an ID of directly referenced entity without loading it from DB.
-     *
-     * @param entity   master entity
-     * @param property name of reference property
-     * @return UUID of the referenced entity
-     * @throws IllegalStateException if the entity is not in Managed state
-     */
-    UUID getReferenceId(Object entity, String property);
-
-    /**
-     * Checks if the property is loaded from DB.
-     *
-     * @param entity   entity
-     * @param property name of the property
-     * @return true if loaded
-     * @throws IllegalStateException if the entity is not in Managed state
-     */
-    boolean isLoaded(Object entity, String property);
-
-    /**
      * Global soft deletion indication. Each new {@link com.haulmont.cuba.core.EntityManager}
      * will be created with the same SoftDeletion value.
      *
@@ -130,6 +109,5 @@ public interface Persistence {
      *
      * @return context
      */
-    @Nonnull
     EntityManagerContext getEntityManagerContext();
 }

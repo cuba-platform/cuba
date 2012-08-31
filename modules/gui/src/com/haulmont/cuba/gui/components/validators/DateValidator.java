@@ -13,10 +13,9 @@ package com.haulmont.cuba.gui.components.validators;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
@@ -28,6 +27,8 @@ public class DateValidator implements Field.Validator {
 
     protected String message;
     protected String messagesPack;
+    protected Messages messages = AppBeans.get(Messages.class);
+
     private static final long serialVersionUID = 1746793537465138578L;
 
     public DateValidator(Element element, String messagesPack) {
@@ -40,7 +41,7 @@ public class DateValidator implements Field.Validator {
     }
 
     public DateValidator() {
-        this.message = MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidDate");
+        this.message = messages.getMainMessage("validation.invalidDate");
     }
 
     public void validate(Object value) throws ValidationException {
@@ -60,7 +61,7 @@ public class DateValidator implements Field.Validator {
             result = value instanceof Date;
         }
         if (!result) {
-            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
+            String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }

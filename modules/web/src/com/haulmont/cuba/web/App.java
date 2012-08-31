@@ -10,14 +10,10 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
@@ -109,6 +105,7 @@ public abstract class App extends Application
 
     protected String clientAddress;
 
+    protected GlobalConfig globalConfig;
     protected WebConfig webConfig;
 
     protected WebTimer workerTimer;
@@ -118,7 +115,10 @@ public abstract class App extends Application
     }
 
     protected App() {
-        webConfig = ConfigProvider.getConfig(WebConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.class);
+        webConfig = configuration.getConfig(WebConfig.class);
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+
         appLog = new AppLog();
         connection = createConnection();
         windowManager = createWindowManager();
@@ -146,12 +146,10 @@ public abstract class App extends Application
         cookies.updateCookies(request);
 
         if (!themeInitialized) {
-            GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
             String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
             if (userAppTheme != null) {
                 if (!StringUtils.equals(userAppTheme, getTheme())) {
                     // check theme support
-                    WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
                     List<String> supportedThemes = webConfig.getAvailableAppThemes();
                     if (supportedThemes.contains(userAppTheme)) {
                         setTheme(userAppTheme);
@@ -161,7 +159,7 @@ public abstract class App extends Application
             themeInitialized = true;
         }
 
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+        if (globalConfig.getTestMode()) {
             String paramName = webConfig.getTestModeParamName();
             testModeRequest = (paramName == null || request.getParameter(paramName) != null);
         }
@@ -177,7 +175,7 @@ public abstract class App extends Application
         if (!AppContext.isStarted())
             defaultLocale = Locale.getDefault();
         else {
-            GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+            GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
             Set<Map.Entry<String, Locale>> localeSet = globalConfig.getAvailableLocales().entrySet();
             Map.Entry<String, Locale> localeEntry = localeSet.iterator().next();
             defaultLocale = localeEntry.getValue();
@@ -191,25 +189,19 @@ public abstract class App extends Application
         String webContext = AppContext.getProperty("cuba.webContextName");
 
         if (AppContext.isStarted()) {
-            String messagePack = AppConfig.getMessagesPack();
+            Messages messages = AppBeans.get(Messages.class);
+            String messagePack = messages.getMainMessagePack();
 
-            msgs.setSessionExpiredCaption(MessageProvider.getMessage(
-                    messagePack, "sessionExpiredCaption", locale));
-            msgs.setSessionExpiredMessage(MessageProvider.getMessage(
-                    messagePack, "sessionExpiredMessage", locale));
+            msgs.setSessionExpiredCaption(messages.getMessage(messagePack, "sessionExpiredCaption", locale));
+            msgs.setSessionExpiredMessage(messages.getMessage(messagePack, "sessionExpiredMessage", locale));
 
-            msgs.setCommunicationErrorCaption(MessageProvider.getMessage(
-                    messagePack, "communicationErrorCaption", locale));
-            msgs.setCommunicationErrorMessage(MessageProvider.getMessage(
-                    messagePack, "communicationErrorMessage", locale));
+            msgs.setCommunicationErrorCaption(messages.getMessage(messagePack, "communicationErrorCaption", locale));
+            msgs.setCommunicationErrorMessage(messages.getMessage(messagePack, "communicationErrorMessage", locale));
 
-            msgs.setInternalErrorCaption(MessageProvider.getMessage(
-                    messagePack, "internalErrorCaption", locale));
-            msgs.setInternalErrorMessage(MessageProvider.getMessage(
-                    messagePack, "internalErrorMessage", locale));
+            msgs.setInternalErrorCaption(messages.getMessage(messagePack, "internalErrorCaption", locale));
+            msgs.setInternalErrorMessage(messages.getMessage(messagePack, "internalErrorMessage", locale));
 
-            msgs.setUiBlockingMessage(MessageProvider.getMessage(
-                    messagePack, "uiBlockingMessage", locale));
+            msgs.setUiBlockingMessage(messages.getMessage(messagePack, "uiBlockingMessage", locale));
         }
 
         msgs.setInternalErrorURL("/" + webContext + "?restartApp");
@@ -342,8 +334,7 @@ public abstract class App extends Application
 
     @Override
     public void terminalError(Terminal.ErrorEvent event) {
-        GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
-        if (config.getTestMode()) {
+        if (globalConfig.getTestMode()) {
             String fileName = AppContext.getProperty("cuba.testModeExceptionLog");
             if (!StringUtils.isBlank(fileName)) {
                 try {
@@ -567,8 +558,7 @@ public abstract class App extends Application
         if (workerTimer != null)
             return workerTimer;
 
-        int uiCheckInterval = ConfigProvider.getConfig(WebConfig.class).getUiCheckInterval();
-        workerTimer = new WebTimer(uiCheckInterval, true);
+        workerTimer = new WebTimer(webConfig.getUiCheckInterval(), true);
         workerTimer.stopTimer();
         return workerTimer;
     }
@@ -578,7 +568,6 @@ public abstract class App extends Application
     }
 
     public void setUserAppTheme(String themeName) {
-        GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
         addCookie(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName(), themeName);
         super.setTheme(themeName);
     }
@@ -591,7 +580,7 @@ public abstract class App extends Application
             timer.addListener(new Timer.Listener() {
                 public void onTimer(Timer timer) {
                     if (connected) {
-                        UserSessionService service = ServiceLocator.lookup(UserSessionService.NAME);
+                        UserSessionService service = AppBeans.get(UserSessionService.NAME);
                         service.pingSession();
                     }
                     log.debug("Ping session");

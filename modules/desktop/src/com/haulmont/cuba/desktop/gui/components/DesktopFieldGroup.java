@@ -8,11 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
@@ -236,10 +232,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         this.datasource = datasource;
         if (this.fields.isEmpty() && datasource != null) {
             //collect fields by entity view
-            Collection<MetaPropertyPath> fieldsMetaProps = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+            Collection<MetaPropertyPath> fieldsMetaProps = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
             for (MetaPropertyPath mpp : fieldsMetaProps) {
                 MetaProperty mp = mpp.getMetaProperty();
-                if (!mp.getRange().getCardinality().isMany() && !MetadataHelper.isSystem(mp)) {
+                if (!mp.getRange().getCardinality().isMany() && !metadataTools.isSystem(mp)) {
                     Field field = new Field(mpp.toString());
                     addField(field);
                 }
@@ -524,7 +521,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             if (caption == null) {
                 MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(field.getId());
                 if (propertyPath != null)
-                    caption = MessageUtils.getPropertyCaption(propertyPath.getMetaClass(), field.getId());
+                    caption = AppBeans.get(MessageTools.class).getPropertyCaption(propertyPath.getMetaClass(), field.getId());
             }
 
             if (StringUtils.isNotEmpty(((HasCaption) component).getCaption())) {

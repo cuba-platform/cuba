@@ -213,7 +213,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     }
 
     protected void setCaption(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
-        field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
+        field.setCaption(AppBeans.get(MessageTools.class).getPropertyCaption(
+                propertyPath.getMetaClass(),
                 propertyPath.toString()));
     }
 

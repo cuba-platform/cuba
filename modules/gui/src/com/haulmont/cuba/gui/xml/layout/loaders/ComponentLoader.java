@@ -17,7 +17,6 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
@@ -185,7 +184,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             if (caption.startsWith("icon://")) {
                 caption = caption.substring("icon://".length());
             } else {
-                caption = MessageUtils.loadString(messagesPack, caption);
+                caption = AppBeans.get(MessageTools.class).loadString(messagesPack, caption);
             }
         }
         return caption;

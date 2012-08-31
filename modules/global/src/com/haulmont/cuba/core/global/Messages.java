@@ -9,15 +9,25 @@ package com.haulmont.cuba.core.global;
 import java.util.Locale;
 
 /**
- * Central interface to work with localized messages
- *
- * <p>$Id$</p>
+ * Central infrastructure interface to work with localized messages.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Messages {
 
     String NAME = "cuba_Messages";
+
+    /**
+     * Convenient access to {@link MessageTools} bean.
+     * @return  MessageTools instance
+     */
+    <T extends MessageTools> T getTools();
+
+    /**
+     * @return main message pack for this application tier
+     */
+    String getMainMessagePack();
 
     /**
      * Returns localized message.<br/>
@@ -90,6 +100,14 @@ public interface Messages {
      * @return          localized message or the key if the message not found
      */
     String getMessage(String pack, String key);
+
+    /**
+     * Returns localized message using main message pack.<br/>
+     * Locale is determined by the current user session.
+     * @param key       message key
+     * @return          localized message or the key if the message not found
+     */
+    String getMainMessage(String key);
 
     /**
      * Get localized message and use it as a format string for parameters provided.<br/>

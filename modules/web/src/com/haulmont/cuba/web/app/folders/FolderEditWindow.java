@@ -9,11 +9,11 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
@@ -45,12 +45,14 @@ public class FolderEditWindow extends Window {
     protected Runnable commitHandler;
     protected VerticalLayout layout;
     protected Button okBtn;
+    protected Messages messages;
 
     public FolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         super();
         this.folder = folder;
         this.commitHandler = commitHandler;
 
+        messages = AppBeans.get(Messages.class);
         messagesPack = AppConfig.getMessagesPack();
         setCaption(adding ? getMessage("folders.folderEditWindow.adding") : getMessage("folders.folderEditWindow"));
 
@@ -153,7 +155,7 @@ public class FolderEditWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
                 if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
-                    String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
+                    String msg = messages.getMainMessage("folders.folderEditWindow.emptyName");
                     showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
                     return;
                 }
@@ -171,7 +173,7 @@ public class FolderEditWindow extends Window {
                         try {
                             sortOrder = Integer.parseInt((String) value);
                         } catch (NumberFormatException e) {
-                            String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
+                            String msg = messages.getMainMessage("folders.folderEditWindow.invalidSortOrder");
                             showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
                             return;
                         }
@@ -213,7 +215,7 @@ public class FolderEditWindow extends Window {
         parentSelect.addItem(root);
         parentSelect.setNullSelectionItemId(root);
 
-        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
+        FoldersService service = AppBeans.get(FoldersService.NAME);
         List<SearchFolder> list = service.loadSearchFolders();
         for (SearchFolder folder : list) {
             if (!folder.equals(this.folder)) {
@@ -235,6 +237,6 @@ public class FolderEditWindow extends Window {
     }
 
     protected String getMessage(String key) {
-        return MessageProvider.getMessage(messagesPack, key);
+        return messages.getMainMessage(key);
     }
 }

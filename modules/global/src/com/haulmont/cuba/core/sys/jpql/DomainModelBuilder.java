@@ -4,7 +4,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.impl.MetaModelImpl;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 
@@ -40,7 +41,7 @@ public class DomainModelBuilder {
 
     private void addProperty(EntityBuilder builder, MetaProperty prop) {
         String name = prop.getName();
-        String userFriendlyName = MessageUtils.getPropertyCaption(prop);
+        String userFriendlyName = AppBeans.get(MessageTools.class).getPropertyCaption(prop);
         MetaProperty.Type type = prop.getType();
         Class<?> javaType = prop.getJavaType();
         Range range = prop.getRange();

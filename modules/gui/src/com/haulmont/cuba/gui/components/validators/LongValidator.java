@@ -12,7 +12,8 @@ package com.haulmont.cuba.gui.components.validators;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.LongDatatype;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -26,6 +27,7 @@ public class LongValidator implements Field.Validator {
     protected String message;
     protected String messagesPack;
     protected String onlyPositive;
+    protected Messages messages = AppBeans.get(Messages.class);
 
     private static final long serialVersionUID = -1312187225804302418L;
 
@@ -59,7 +61,7 @@ public class LongValidator implements Field.Validator {
             result = value instanceof Long && checkPositive((Long) value);
         }
         if (!result) {
-            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
+            String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }

@@ -9,7 +9,10 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.entity.ui.AttributeTarget;
@@ -62,7 +65,7 @@ public class PermissionConfig {
         }
 
         private String getMessage(String key) {
-            return MessageProvider.getMessage(messagePack, key, locale);
+            return messages.getMessage(messages.getMainMessagePack(), key, locale);
         }
 
         private void compileScreens() {
@@ -131,7 +134,7 @@ public class PermissionConfig {
             entities = new ArrayList<OperationPermissionTarget>();
             entityAttributes = new ArrayList<MultiplePermissionTarget>();
 
-            Session session = MetadataProvider.getSession();
+            Session session = metadata.getSession();
             List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
             Collections.sort(modelList, new MetadataObjectAlphabetComparator());
 
@@ -196,7 +199,7 @@ public class PermissionConfig {
             for (Element element : Dom4j.elements(rootElem, "include")) {
                 String fileName = element.attributeValue("file");
                 if (!StringUtils.isBlank(fileName)) {
-                    String incXml = ScriptingProvider.getResourceAsString(fileName);
+                    String incXml = resources.getResourceAsString(fileName);
                     if (incXml == null)
                         throw new RuntimeException("Config file not found: " + fileName);
 
@@ -239,8 +242,13 @@ public class PermissionConfig {
     @Inject
     private Resources resources;
 
+    @Inject
+    private Messages messages;
+
+    @Inject
+    private Metadata metadata;
+
     private ClientType clientType;
-    private String messagePack;
 
     private List<Item> items = new ArrayList<Item>();
 
@@ -248,7 +256,6 @@ public class PermissionConfig {
 
     public PermissionConfig() {
         this.clientType = AppConfig.getClientType();
-        this.messagePack = AppConfig.getMessagesPack();
     }
 
     private Item getItem(Locale locale) {

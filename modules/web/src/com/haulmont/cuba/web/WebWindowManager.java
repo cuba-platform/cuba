@@ -10,8 +10,9 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
@@ -69,8 +70,15 @@ public class WebWindowManager extends WindowManager {
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
+    private WebConfig webConfig;
+
+    private Messages messages;
+
     public WebWindowManager(final App app) {
         this.app = app;
+        webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+        messages = AppBeans.get(Messages.class);
+
         app.getConnection().addListener(new UserSubstitutionListener() {
             @Override
             public void userSubstituted(Connection connection) {
@@ -497,7 +505,7 @@ public class WebWindowManager extends WindowManager {
 
     protected String formatTabCaption(final String caption, final String description) {
         String s = formatTabDescription(caption, description);
-        int maxLength = ConfigProvider.getConfig(WebConfig.class).getMainTabCaptionLength();
+        int maxLength = webConfig.getMainTabCaptionLength();
         if (s.length() > maxLength) {
             return s.substring(0, maxLength) + "...";
         } else {
@@ -684,11 +692,11 @@ public class WebWindowManager extends WindowManager {
         disableSavingScreenHistory = true;
         if (modified) {
             showOptionDialog(
-                    MessageProvider.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                    MessageProvider.getMessage(WebWindow.class, "closeUnsaved"),
+                    messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
+                    messages.getMessage(WebWindow.class, "closeUnsaved"),
                     IFrame.MessageType.WARNING,
                     new Action[]{
-                            new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.Yes")) {
+                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.Yes")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfOk != null)
@@ -699,7 +707,7 @@ public class WebWindowManager extends WindowManager {
                                     return "icons/ok.png";
                                 }
                             },
-                            new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.No")) {
+                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.No")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null)
@@ -1073,7 +1081,7 @@ public class WebWindowManager extends WindowManager {
                 @Override
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
                     final String id = window.getId() + "." + name;
-                    if (ConfigProvider.getConfig(WebConfig.class).getAllowIdSuffix()) {
+                    if (webConfig.getAllowIdSuffix()) {
                         component.setDebugId(generateDebugId(id));
                     } else {
                         if (component.getId() != null) {
@@ -1121,10 +1129,10 @@ public class WebWindowManager extends WindowManager {
             if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
                 //window already opened
             } else {
-                int maxCount = ConfigProvider.getConfig(WebConfig.class).getMaxTabCount();
+                int maxCount = webConfig.getMaxTabCount();
                 if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
                     app.getAppWindow().showNotification(
-                            MessageProvider.formatMessage(AppConfig.getMessagesPack(), "tooManyOpenTabs.message", maxCount),
+                            messages.formatMessage(AppConfig.getMessagesPack(), "tooManyOpenTabs.message", maxCount),
                             com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
                     throw new SilentException();
                 }
@@ -1134,7 +1142,7 @@ public class WebWindowManager extends WindowManager {
 
     public void setDebugId(Component component, String id) {
         if (app.isTestModeRequest()) {
-            if (ConfigProvider.getConfig(WebConfig.class).getAllowIdSuffix()) {
+            if (webConfig.getAllowIdSuffix()) {
                 component.setDebugId(generateDebugId(id));
             } else {
                 component.setDebugId(id);

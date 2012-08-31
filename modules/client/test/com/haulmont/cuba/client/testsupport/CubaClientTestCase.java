@@ -7,10 +7,7 @@
 package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.app.PersistenceManagerService;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
@@ -79,6 +76,10 @@ public class CubaClientTestCase {
                 AppBeans.get(Metadata.NAME); result = metadata;
                 AppBeans.get(Metadata.class); result = metadata;
                 AppBeans.get(Metadata.NAME, Metadata.class); result = metadata;
+
+                AppBeans.get(MetadataTools.NAME); result = metadata.getTools();
+                AppBeans.get(MetadataTools.class); result = metadata.getTools();
+                AppBeans.get(MetadataTools.NAME, MetadataTools.class); result = metadata.getTools();
 
                 AppBeans.get(Configuration.NAME); result = configuration;
                 AppBeans.get(Configuration.class); result = configuration;

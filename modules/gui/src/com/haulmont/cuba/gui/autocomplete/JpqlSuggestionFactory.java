@@ -1,8 +1,10 @@
 package com.haulmont.cuba.gui.autocomplete;
 
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
+import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.gui.autocomplete.impl.HintProvider;
 import com.haulmont.cuba.gui.autocomplete.impl.HintRequest;
 import com.haulmont.cuba.gui.autocomplete.impl.HintResponse;
@@ -42,7 +44,7 @@ public class JpqlSuggestionFactory {
 
     public static List<Suggestion> requestHint(String query, int queryPosition, AutoCompleteSupport sender, int senderCursorPosition) {
         DomainModelBuilder builder = new DomainModelBuilder();
-        DomainModel domainModel = builder.produce(MetadataHelper.getAllPersistentMetaClasses());
+        DomainModel domainModel = builder.produce(AppBeans.get(MetadataTools.class).getAllPersistentMetaClasses());
 
         HintProvider provider = new HintProvider(domainModel);
         try {

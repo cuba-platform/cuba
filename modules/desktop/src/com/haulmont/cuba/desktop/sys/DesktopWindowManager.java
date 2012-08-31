@@ -7,7 +7,7 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
@@ -359,7 +359,7 @@ public class DesktopWindowManager extends WindowManager {
 
     private String formatTabCaption(String caption, String description) {
         String s = formatTabDescription(caption, description);
-        int maxLength = ConfigProvider.getConfig(DesktopConfig.class).getMainTabCaptionLength();
+        int maxLength = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class).getMainTabCaptionLength();
         if (s.length() > maxLength) {
             return s.substring(0, maxLength) + "...";
         } else {

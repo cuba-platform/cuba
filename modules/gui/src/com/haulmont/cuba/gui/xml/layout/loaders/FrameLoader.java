@@ -10,12 +10,11 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ControllerDependencyInjector;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.PermissionsApplyHelper;
+import com.haulmont.cuba.gui.WindowCreationHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -54,7 +53,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         IFrame component = factory.createComponent("iframe");
 
-        MetadataHelper.deployViews(element);
+        WindowCreationHelper.deployViews(element);
 
         final Element dsContextElement = element.element("dsContext");
         final DsContext dsContext;
@@ -252,7 +251,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 }
 
                 // apply ui permissions
-                PermissionsApplyHelper.applyUiPermissions(window);
+                WindowCreationHelper.applyUiPermissions(window);
 
                 FrameLoader.this.context.executePostInitTasks();
             }

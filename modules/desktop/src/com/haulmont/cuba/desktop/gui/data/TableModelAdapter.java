@@ -9,7 +9,9 @@ package com.haulmont.cuba.desktop.gui.data;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -37,6 +39,8 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     protected List<Table.Column> generatedColumns = new ArrayList<Table.Column>();
     protected boolean autoRefresh;
     protected List<DataChangeListener> changeListeners = new ArrayList<DataChangeListener>();
+
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
     public TableModelAdapter(
             CollectionDatasource datasource,
@@ -132,7 +136,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                 else
                     return getDefaultValue(metaProperty.getRangeJavaClass());
             } else {
-                return MessageUtils.format(value, ((MetaPropertyPath) column.getId()).getMetaProperty());
+                return metadataTools.format(value, ((MetaPropertyPath) column.getId()).getMetaProperty());
             }
         } else {
             return null;

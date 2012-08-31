@@ -22,25 +22,29 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Diff algorithm for Entities
- * <p>$Id$</p>
+ * Diff algorithm for Entities.
  *
  * @author artamonov
+ * @version $Id$
  */
+@ManagedBean("cuba_EntityDiffManager")
 public class EntityDiffManager {
 
+    @Inject
     private EntitySnapshotAPI snapshotAPI;
-    private Log log = LogFactory.getLog(EntityDiffManager.class);
 
-    public EntityDiffManager(EntitySnapshotAPI snapshotAPI) {
-        this.snapshotAPI = snapshotAPI;
-    }
+    @Inject
+    private MetadataTools metadataTools;
+
+    private Log log = LogFactory.getLog(EntityDiffManager.class);
 
     public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
 
@@ -111,13 +115,12 @@ public class EntityDiffManager {
         List<EntityPropertyDiff> propertyDiffs = new LinkedList<EntityPropertyDiff>();
 
         MetaClass metaClass = MetadataProvider.getSession().getClass(diffView.getEntityClass());
-        Collection<MetaPropertyPath> metaProperties = MetadataHelper.getViewPropertyPaths(diffView, metaClass);
+        Collection<MetaPropertyPath> metaProperties = metadataTools.getViewPropertyPaths(diffView, metaClass);
 
         for (MetaPropertyPath metaPropertyPath : metaProperties) {
             MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
 
-            if (!MetadataHelper.isTransient(metaProperty) &&
-                    !MetadataHelper.isSystem(metaProperty)) {
+            if (!metadataTools.isTransient(metaProperty) && !metadataTools.isSystem(metaProperty)) {
                 ViewProperty viewProperty = diffView.getProperty(metaProperty.getName());
 
                 Object firstValue = firstEntity != null ? getPropertyValue(firstEntity, metaPropertyPath) : null;

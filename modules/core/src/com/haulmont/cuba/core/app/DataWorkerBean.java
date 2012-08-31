@@ -282,7 +282,7 @@ public class DataWorkerBean implements DataWorker {
 
             // Fetch if StoreCache is enabled or there are lazy properties in the view
             if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled()
-                    || ViewHelper.hasLazyProperties(context.getView())))
+                    || context.getView().hasLazyProperties()))
             {
                 for (Entity entity : resultList) {
                     em.fetch(entity, context.getView());

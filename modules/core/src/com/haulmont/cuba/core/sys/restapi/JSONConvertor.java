@@ -24,10 +24,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityLoadInfo;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -294,9 +291,10 @@ public class JSONConvertor implements Convertor {
             return root;
         }
 
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
         List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
         for (MetaProperty property : properties) {
-            if (MetadataHelper.isTransient(entity, property.getName()))
+            if (metadataTools.isTransient(entity, property.getName()))
                 continue;
 
             if (!attrViewPermitted(metaClass, property.getName()))

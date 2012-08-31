@@ -12,7 +12,6 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DbDialect;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 
 import javax.annotation.Nonnull;
@@ -21,13 +20,12 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Utility class to provide persistence functionality in static context.
- * <p>Consider use of injected {@link Persistence} interface.
- * <p/>
- * <p>$Id$</p>
+ * DEPRECATED - use {@link Persistence} via DI or <code>AppBeans.get(Persistence.class)</code>
  *
  * @author krivopustov
+ * @version $Id$
  */
+@Deprecated
 public abstract class PersistenceProvider {
 
     private static Persistence getPersistence() {
@@ -101,7 +99,7 @@ public abstract class PersistenceProvider {
      * @return dirty field names
      */
     public static Set<String> getDirtyFields(Entity entity) {
-        return getPersistence().getDirtyFields(entity);
+        return getPersistence().getTools().getDirtyFields(entity);
     }
 
     /**
@@ -113,7 +111,7 @@ public abstract class PersistenceProvider {
      * @throws IllegalStateException if the entity is not in Managed state
      */
     public static UUID getReferenceId(Object entity, String property) {
-        return getPersistence().getReferenceId(entity, property);
+        return getPersistence().getTools().getReferenceId(entity, property);
     }
 
     /**
@@ -125,7 +123,7 @@ public abstract class PersistenceProvider {
      * @throws IllegalStateException if the entity is not in Managed state
      */
     public static boolean isLoaded(Object entity, String property) {
-        return getPersistence().isLoaded(entity, property);
+        return getPersistence().getTools().isLoaded(entity, property);
     }
 
     /**

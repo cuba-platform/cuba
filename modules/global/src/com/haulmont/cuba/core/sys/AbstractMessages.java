@@ -6,8 +6,11 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -15,6 +18,8 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Messages loader implementation
+ * <code>Messages</code> implementation common for all tiers.
  *
  * @author krivopustov
  * @version $Id$
@@ -33,19 +38,62 @@ public abstract class AbstractMessages implements Messages {
     public static final String EXT = ".properties";
     public static final String ENCODING = "UTF-8";
 
-    private Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
+    @Inject
+    protected MessageTools messageTools;
+
+    @Inject
+    protected Configuration configuration;
+
+    protected Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
 
     protected Log log = LogFactory.getLog(getClass());
 
-    private String confDir;
+    protected String confDir;
 
-    private Map<String, String> strCache = new ConcurrentHashMap<String, String>();
+    private String mainMessagePack;
 
-    private Map<String, String> notFoundCache = new ConcurrentHashMap<String, String>();
+    protected Map<String, String> strCache = new ConcurrentHashMap<String, String>();
+
+    protected Map<String, String> notFoundCache = new ConcurrentHashMap<String, String>();
 
     protected abstract Locale getUserLocale();
 
     protected abstract String searchRemotely(String pack, String key, Locale locale);
+
+    @PostConstruct
+    protected void init() {
+        mainMessagePack = AppContext.getProperty("cuba.mainMessagePack");
+        if (mainMessagePack == null)
+            throw new IllegalStateException("Property cuba.messagePack is not set");
+        log.debug("Main message pack: " + mainMessagePack);
+
+        for (Locale locale : configuration.getConfig(GlobalConfig.class).getAvailableLocales().values()) {
+            Datatypes.setFormatStrings(
+                    locale,
+                    new FormatStrings(
+                            getMessage(mainMessagePack, "numberDecimalSeparator", locale).charAt(0),
+                            getMessage(mainMessagePack, "numberGroupingSeparator", locale).charAt(0),
+                            getMessage(mainMessagePack, "integerFormat", locale),
+                            getMessage(mainMessagePack, "doubleFormat", locale),
+                            getMessage(mainMessagePack, "dateFormat", locale),
+                            getMessage(mainMessagePack, "dateTimeFormat", locale),
+                            getMessage(mainMessagePack, "timeFormat", locale),
+                            getMessage(mainMessagePack, "trueString", locale),
+                            getMessage(mainMessagePack, "falseString", locale)
+                    )
+            );
+        }
+    }
+
+    @Override
+    public MessageTools getTools() {
+        return messageTools;
+    }
+
+    @Override
+    public String getMainMessagePack() {
+        return mainMessagePack;
+    }
 
     @Override
     public String getMessage(Class caller, String key) {
@@ -105,6 +153,11 @@ public abstract class AbstractMessages implements Messages {
     public String getMessage(String pack, String key) {
         Locale loc = getUserLocale();
         return getMessage(pack, key, loc);
+    }
+
+    @Override
+    public String getMainMessage(String key) {
+        return getMessage(mainMessagePack, key);
     }
 
     @Override
@@ -214,7 +267,7 @@ public abstract class AbstractMessages implements Messages {
 
         File file;
         if (confDir == null)
-            confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
+            confDir = configuration.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
 
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
         while (packPath != null && !packPath.equals(confDir)) {
@@ -275,7 +328,7 @@ public abstract class AbstractMessages implements Messages {
     private void getAllIncludes(List<Properties> list, String pack, Locale locale, boolean defaultLocale) {
         File file;
         if (confDir == null)
-            confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
+            confDir = configuration.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
 
         log.trace("include: " + pack);
 

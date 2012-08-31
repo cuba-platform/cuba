@@ -7,10 +7,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.TransactionParams;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
@@ -60,6 +57,9 @@ public class PersistenceImpl implements Persistence {
     private ThreadLocal<EntityManagerContext> contextHolder = new ThreadLocal<EntityManagerContext>();
 
     @Inject
+    private PersistenceTools tools;
+
+    @Inject
     private Metadata metadata;
 
     @Inject
@@ -85,6 +85,11 @@ public class PersistenceImpl implements Persistence {
         this.jpaEmf = jpaEmf;
         ((OpenJPAEntityManagerFactorySPI) jpaEmf).addLifecycleListener(entityLifecycleListener, null);
         ((OpenJPAEntityManagerFactorySPI) jpaEmf).addTransactionListener(entityTransactionListener);
+    }
+
+    @Override
+    public PersistenceTools getTools() {
+        return tools;
     }
 
     @Override
@@ -150,77 +155,6 @@ public class PersistenceImpl implements Persistence {
                 new EntityManagerInvocationHandler(impl)
         );
         return em;
-    }
-
-    @Override
-    public Set<String> getDirtyFields(Entity entity) {
-        if (!(entity instanceof PersistenceCapable))
-            return Collections.emptySet();
-
-        OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
-        if (stateManager == null)
-            return Collections.emptySet();
-
-        Set<String> set = new HashSet<String>();
-        BitSet dirtySet = stateManager.getDirty();
-        for (int i = 0; i < dirtySet.size() - 1; i++) {
-            if (dirtySet.get(i)) {
-                FieldMetaData field = stateManager.getMetaData().getField(i);
-                set.add(field.getName());
-            }
-        }
-        return set;
-    }
-
-    @Override
-    public UUID getReferenceId(Object entity, String property) {
-        OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
-        if (!(stateManager instanceof StateManagerImpl))
-            throw new IllegalStateException("Entity must be in managed state");
-
-        ClassMetaData metaData = stateManager.getMetaData();
-        int index = metaData.getField(property).getIndex();
-
-        UUID id;
-        BitSet loaded = stateManager.getLoaded();
-        if (loaded.get(index)) {
-            Object reference = ((Instance) entity).getValue(property);
-            if (!(reference instanceof Instance))
-                throw new IllegalArgumentException("Property " + property + " is not a reference");
-            id = ((Instance) reference).getUuid();
-        } else {
-            Object implData = stateManager.getIntermediate(index);
-            if (implData == null)
-                return null;
-            if (!(implData instanceof ObjectId))
-                throw new IllegalArgumentException("Property " + property + " is not a reference");
-            ObjectId objectId = (ObjectId) implData;
-            id = (UUID) objectId.getId();
-        }
-        return id;
-    }
-
-    @Override
-    public boolean isLoaded(Object entity, String property) {
-        if (entity instanceof PersistenceCapable) {
-            final PersistenceCapable persistenceCapable = (PersistenceCapable) entity;
-            final OpenJPAStateManager stateManager = (OpenJPAStateManager) persistenceCapable.pcGetStateManager();
-
-            if (!(stateManager instanceof StateManagerImpl))
-                throw new IllegalStateException("Entity must be in managed state");
-
-            final BitSet loaded = stateManager.getLoaded();
-            final ClassMetaData metaData = stateManager.getMetaData();
-
-            final FieldMetaData fieldMetaData = metaData.getField(property);
-            if (fieldMetaData == null) throw new IllegalStateException();
-
-            final int index = fieldMetaData.getIndex();
-
-            return loaded.get(index);
-        } else {
-            return true;
-        }
     }
 
     @Override

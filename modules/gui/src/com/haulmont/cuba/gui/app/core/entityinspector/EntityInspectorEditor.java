@@ -319,7 +319,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                 case DATATYPE:
                 case ENUM:
                     //skip system properties
-                    if (MetadataHelper.isSystem(metaProperty) && !showSystemFields) {
+                    if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
                     custom = false;
@@ -368,7 +368,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                 case DATATYPE:
                 case ENUM:
                     //skip system properties
-                    if (MetadataHelper.isSystem(metaProperty) && !showSystemFields) {
+                    if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
                     custom = false;
@@ -564,7 +564,7 @@ public class EntityInspectorEditor extends AbstractEditor {
      * @param entity instance
      */
     private void initNamePatternFields(Entity entity) {
-        Collection<MetaProperty> properties = MetadataHelper.getNamePatternProperties(entity.getMetaClass());
+        Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(entity.getMetaClass());
         for (MetaProperty property : properties) {
             if (entity.getValue(property.getName()) == null) {
                 if (property.getType() == MetaProperty.Type.DATATYPE)
@@ -618,7 +618,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         LinkedList<Table.Column> systemPropertyColumns = new LinkedList<Table.Column>();
         for (MetaProperty metaProperty : meta.getProperties()) {
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
-            if (!MetadataHelper.isSystem(metaProperty)) {
+            if (!metadata.getTools().isSystem(metaProperty)) {
                 column.setCaption(getPropertyCaption(meta, metaProperty));
                 nonSystemPropertyColumns.add(column);
             } else {

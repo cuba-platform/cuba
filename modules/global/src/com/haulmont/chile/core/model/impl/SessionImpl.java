@@ -6,13 +6,12 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class SessionImpl implements Session {
 
 	private final Map<String, MetaModel> models = new HashMap<String, MetaModel>();
-	
+
 	public MetaModel getModel(String name) {
 		return models.get(name);
 	}
@@ -32,7 +31,6 @@ public class SessionImpl implements Session {
         return null;
 	}
 
-    @Nonnull
     @Override
     public MetaClass getClassNN(String name) {
         MetaClass metaClass = getClass(name);
@@ -52,7 +50,6 @@ public class SessionImpl implements Session {
         return null;
 	}
 
-    @Nonnull
     @Override
     public MetaClass getClassNN(Class<?> clazz) {
         MetaClass metaClass = getClass(clazz);

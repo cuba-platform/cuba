@@ -11,12 +11,12 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Provides access to a current user session in static context.
- * <p>Injected {@link UserSessionSource} interface should be used instead of this class wherever possible.</p>
+ * DEPRECATED - use {@link UserSessionSource} via DI or <code>AppBeans.get(UserSessionSource.class)</code>
  *
  * @author krivopustov
  * @version $Id$
  */
+@Deprecated
 public abstract class UserSessionProvider {
 
     private static UserSessionSource getSource() {

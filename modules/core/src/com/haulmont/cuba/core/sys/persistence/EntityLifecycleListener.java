@@ -137,7 +137,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
             return false;
         }
         else {
-            return persistence.getDirtyFields((BaseEntity) dd).contains("deleteTs");
+            return persistence.getTools().getDirtyFields((BaseEntity) dd).contains("deleteTs");
         }
     }
 

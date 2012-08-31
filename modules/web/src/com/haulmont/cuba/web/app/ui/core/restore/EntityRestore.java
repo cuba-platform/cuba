@@ -12,8 +12,8 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
@@ -44,6 +44,12 @@ public class EntityRestore extends AbstractWindow {
     @Inject
     protected BoxLayout tablePanel;
 
+    @Inject
+    protected MetadataTools metadataTools;
+
+    @Inject
+    protected MessageTools messageTools;
+
     protected GroupDatasourceImpl entitiesDs;
 
     protected Table entitiesTable;
@@ -52,14 +58,8 @@ public class EntityRestore extends AbstractWindow {
 
     protected Button restoreButton;
 
-    public EntityRestore(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
-        super.init(params);
-
         refreshButton.setAction(new AbstractAction("refresh") {
             @Override
             public void actionPerform(Component component) {
@@ -117,7 +117,7 @@ public class EntityRestore extends AbstractWindow {
                         continue;
 
                     Table.Column column = new Table.Column(metaClass.getPropertyPath(metaProperty.getName()));
-                    if (!MetadataHelper.isSystem(metaProperty)) {
+                    if (!metadataTools.isSystem(metaProperty)) {
                         column.setCaption(getPropertyCaption(metaClass, metaProperty));
                         nonSystemPropertyColumns.add(column);
                     } else {
@@ -226,10 +226,10 @@ public class EntityRestore extends AbstractWindow {
 
         Map<String, Object> options = new TreeMap<String, Object>();
 
-        for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+        for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             Boolean enableRestore = (Boolean) metaClass.getAnnotations().get(EnableRestore.class.getName());
             if (BooleanUtils.isTrue(enableRestore) || restoreEntities.contains(metaClass.getName())) {
-                options.put(MessageUtils.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
             }
         }
         return options;

@@ -10,7 +10,8 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -21,13 +22,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ScriptValidator implements Field.Validator {
+
     private String script;
     protected String message;
     protected String messagesPack;
     private String scriptPath;
     private boolean innerScript;
-
     private Map<String, Object> params;
+    protected Messages messages = AppBeans.get(Messages.class);
 
     public ScriptValidator(Element element, String messagesPack) {
         this.script = element.getText();
@@ -66,7 +68,7 @@ public class ScriptValidator implements Field.Validator {
             isValid = ScriptingProvider.runGroovyScript(scriptPath, params);
         }
         if (!isValid) {
-            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
+            String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }

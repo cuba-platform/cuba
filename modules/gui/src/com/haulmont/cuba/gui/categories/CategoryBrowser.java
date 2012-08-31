@@ -8,15 +8,15 @@ package com.haulmont.cuba.gui.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-
+import javax.inject.Inject;
 import java.util.Map;
 
 /**
@@ -24,27 +24,37 @@ import java.util.Map;
  *
  * @author devyatkin
  */
-public class CategoryBrowser extends AbstractLookup{
-    private Table table;
-    private CollectionDatasource categoriesDs;
+public class CategoryBrowser extends AbstractLookup {
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected MessageTools messageTools;
+
+    @Inject
+    protected Table categoryTable;
+
+    @Inject
+    protected CollectionDatasource categoriesDs;
 
     @Override
     public void init(Map<String, Object> params) {
         categoriesDs=getDsContext().get("categoriesDs");
-        table = getComponent("categoryTable");
-        table.addAction(new CreateAction());
-        table.addAction(new EditAction());
-        table.addAction(new RemoveAction(table));
+        categoryTable = getComponent("categoryTable");
+        categoryTable.addAction(new CreateAction());
+        categoryTable.addAction(new EditAction());
+        categoryTable.addAction(new RemoveAction(categoryTable));
 
-        table.removeGeneratedColumn("entityType");
+        categoryTable.removeGeneratedColumn("entityType");
 
-        table.addGeneratedColumn("entityType",new Table.ColumnGenerator(){
+        categoryTable.addGeneratedColumn("entityType",new Table.ColumnGenerator(){
             @Override
             public Component generateCell(Table table, Object itemId) {
                 Label dataTypeLabel = AppConfig.getFactory().createComponent(Label.NAME);
                 Category category = (Category) table.getDatasource().getItem(itemId);
-                MetaClass meta = MetadataProvider.getSession().getClass(category.getEntityType());
-                dataTypeLabel.setValue(MessageUtils.getEntityCaption(meta));
+                MetaClass meta = metadata.getSession().getClassNN(category.getEntityType());
+                dataTypeLabel.setValue(messageTools.getEntityCaption(meta));
                 return dataTypeLabel;
             }
         });
@@ -63,7 +73,7 @@ public class CategoryBrowser extends AbstractLookup{
 
         @Override
         public void actionPerform(Component component) {
-            Category category = MetadataProvider.create(Category.class);
+            Category category = metadata.create(Category.class);
             CategoryEditor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
             editor.addListener(new CloseListener() {
                 @Override
@@ -86,8 +96,8 @@ public class CategoryBrowser extends AbstractLookup{
 
         @Override
         public void actionPerform(Component component) {
-            if (!table.getSelected().isEmpty()) {
-                Category category = (Category) table.getSelected().iterator().next();
+            if (!categoryTable.getSelected().isEmpty()) {
+                Category category = (Category) categoryTable.getSelected().iterator().next();
                 CategoryEditor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
                 editor.addListener(new CloseListener() {
                     @Override

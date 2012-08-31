@@ -6,13 +6,337 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.model.*;
+import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.Versioned;
+import org.apache.commons.lang.StringUtils;
+
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.persistence.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
+ * Utility class to provide common metadata-related functionality.
+ * <p/> Implemented as Spring bean to allow extension in application projects.
+ * <p/> A reference to this class can be obtained either via DI or by {@link com.haulmont.cuba.core.global.Metadata#getTools()}.
+ *
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_MetadataTools")
+@ManagedBean(MetadataTools.NAME)
 public class MetadataTools {
 
+    public static final String NAME = "cuba_MetadataTools";
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected Messages messages;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
+
+    protected volatile Collection<Class> enums;
+
+    /**
+     * Default constructor used by container at runtime and in server-side integration tests.
+     */
+    public MetadataTools() {
+    }
+
+    /**
+     * Constructor used in client-side tests.
+     */
+    public MetadataTools(Metadata metadata, Messages messages, UserSessionSource userSessionSource) {
+        this.metadata = metadata;
+        this.messages = messages;
+        this.userSessionSource = userSessionSource;
+    }
+
+    /**
+     * Formats a value according to the property type.
+     * @param value     object to format
+     * @param property  metadata
+     * @return          formatted value as string, or null if value is null
+     */
+    @Nullable
+    public String format(@Nullable Object value, MetaProperty property) {
+        if (value == null)
+            return null;
+        Objects.requireNonNull(property, "property is null");
+
+        Range range = property.getRange();
+        if (range.isDatatype()) {
+            Datatype datatype = range.asDatatype();
+            return datatype.format(value, userSessionSource.getLocale());
+        } else if (range.isEnum()) {
+            return messages.getMessage((Enum) value);
+        } else {
+            if (value instanceof Instance)
+                return ((Instance) value).getInstanceName();
+            else
+                return value.toString();
+        }
+    }
+
+    /**
+     * Determine whether an object denoted by the given property is merged into persistence context together with the
+     * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CasacdeType defined.
+     */
+    public boolean isCascade(MetaProperty metaProperty) {
+        OneToMany oneToMany = metaProperty.getAnnotatedElement().getAnnotation(OneToMany.class);
+        if (oneToMany != null) {
+            final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
+            if (cascadeTypes.contains(CascadeType.ALL) ||
+                    cascadeTypes.contains(CascadeType.MERGE)) {
+                return true;
+            }
+        }
+        ManyToMany manyToMany = metaProperty.getAnnotatedElement().getAnnotation(ManyToMany.class);
+        if (manyToMany != null && StringUtils.isBlank(manyToMany.mappedBy())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determine whether the given property is system-level. A property is considered system if it is defined not
+     * in an entity class but in one of its base interfaces:
+     * {@link BaseEntity}, {@link Updatable}, {@link SoftDelete}, {@link Versioned}
+     */
+    public boolean isSystem(MetaProperty metaProperty) {
+        String name = metaProperty.getName();
+        for (String property : BaseEntity.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
+        for (String property : Updatable.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
+        for (String property : SoftDelete.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
+        for (String property : Versioned.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determine whether all the properties defined by the given property path are persistent.
+     * @see #isPersistent(com.haulmont.chile.core.model.MetaProperty)
+     */
+    public boolean isPersistent(MetaPropertyPath metaPropertyPath) {
+        for (MetaProperty metaProperty : metaPropertyPath.getMetaProperties()) {
+            if (!isPersistent(metaProperty))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Determine whether the given property is persistent, that is stored in the database.
+     */
+    public boolean isPersistent(MetaProperty metaProperty) {
+        return !metaProperty.getAnnotatedElement().isAnnotationPresent(
+                com.haulmont.chile.core.annotations.MetaProperty.class);
+    }
+
+    /**
+     * Determine whether the given property is transient, that is not stored in the database.
+     * @param object    entity instance
+     * @param property  property name
+     */
+    public boolean isTransient(Object object, String property) {
+        return isAnnotationPresent(object, property, Transient.class);
+    }
+
+    /**
+     * Determine whether the given property is transient, that is not stored in the database.
+     */
+    public boolean isTransient(MetaProperty metaProperty) {
+        boolean isMetaProperty = metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class);
+        return isMetaProperty || metaProperty.getAnnotatedElement().isAnnotationPresent(Transient.class);
+    }
+
+    /**
+     * Determine whether the given property denotes an embedded object.
+     * @see Embedded
+     */
+    public boolean isEmbedded(MetaProperty metaProperty) {
+        return metaProperty.getAnnotatedElement().getAnnotation(Embedded.class) != null;
+    }
+
+    /**
+     * Determine whether the given annotation is present in the object's class or in any of its superclasses.
+     * @param object            entity instance
+     * @param property          property name
+     * @param annotationClass   annotation class
+     */
+    public boolean isAnnotationPresent(Object object, String property, Class<? extends Annotation> annotationClass) {
+        Objects.requireNonNull(object, "object is null");
+        return isAnnotationPresent(object.getClass(), property, annotationClass);
+    }
+
+    /**
+     * Determine whether the given annotation is present in the object's class or in any of its superclasses.
+     * @param javaClass         entity class
+     * @param property          property name
+     * @param annotationClass   annotation class
+     * @return
+     */
+    public boolean isAnnotationPresent(Class javaClass, String property, Class<? extends Annotation> annotationClass) {
+        Field field;
+        try {
+            field = javaClass.getDeclaredField(property);
+            return field.isAnnotationPresent(annotationClass);
+        } catch (NoSuchFieldException e) {
+            Class superclass = javaClass.getSuperclass();
+            while (superclass != null) {
+                try {
+                    field = superclass.getDeclaredField(property);
+                    return field.isAnnotationPresent(annotationClass);
+                } catch (NoSuchFieldException e1) {
+                    superclass = superclass.getSuperclass();
+                }
+            }
+            throw new RuntimeException("Property not found: " + property);
+        }
+    }
+
+    /**
+     * @return collection of the properties included into entity's name pattern (see {@link NamePattern}) for the given
+     * metaclass
+     */
+    public Collection<MetaProperty> getNamePatternProperties(MetaClass metaClass) {
+        Collection<MetaProperty> properties = new ArrayList<>();
+        Class javaClass = metaClass.getJavaClass();
+        Annotation annotation = javaClass.getAnnotation(NamePattern.class);
+        if (annotation != null) {
+            String value = StringUtils.substringAfter(((NamePattern) annotation).value(), "|");
+            String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
+            for (String field : fields) {
+                properties.add(metaClass.getProperty(field));
+            }
+        }
+        return properties;
+    }
+
+    /**
+     * @return collection of properties owned by this metaclass and all its ancestors in the form of
+     * {@link MetaPropertyPath}s containing one property each
+     */
+    public Collection<MetaPropertyPath> getPropertyPaths(MetaClass metaClass) {
+        List<MetaPropertyPath> res = new ArrayList<>();
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            res.add(new MetaPropertyPath(metaClass, metaProperty));
+        }
+        return res;
+    }
+
+    /**
+     * Converts a collection of properties to collection of {@link MetaPropertyPath}s containing one property each
+     */
+    public Collection<MetaPropertyPath> toPropertyPaths(Collection<MetaProperty> properties) {
+        List<MetaPropertyPath> res = new ArrayList<>();
+        for (MetaProperty metaProperty : properties) {
+            res.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+        }
+        return res;
+    }
+
+    /**
+     * Collects {@link MetaPropertyPath}s defined by the given view, traversing the whole view graph.
+     * @param view      starting view
+     * @param metaClass metaclass for which the view was defined
+     * @return          collection of paths
+     */
+    public Collection<MetaPropertyPath> getViewPropertyPaths(View view, MetaClass metaClass) {
+        List<MetaPropertyPath> propertyPaths = new ArrayList<>(metaClass.getProperties().size());
+        for (final MetaProperty metaProperty : metaClass.getProperties()) {
+            final MetaPropertyPath metaPropertyPath = new MetaPropertyPath(metaClass, metaProperty);
+            if (viewContainsProperty(view, metaPropertyPath)) {
+                propertyPaths.add(metaPropertyPath);
+            }
+        }
+        return propertyPaths;
+    }
+
+    /**
+     * Determine whether the view contains a property, traversing the view graph according to the given property path.
+     * @param view          view instance. If null, return false immediately.
+     * @param propertyPath  property path defining the property
+     */
+    public boolean viewContainsProperty(@Nullable View view, MetaPropertyPath propertyPath) {
+        View currentView = view;
+        for (MetaProperty metaProperty : propertyPath.get()) {
+            if (currentView == null)
+                return false;
+
+            ViewProperty property = currentView.getProperty(metaProperty.getName());
+            if (property == null)
+                return false;
+
+            currentView = property.getView();
+        }
+        return true;
+    }
+
+    /**
+     * @return collection of all persistent entities
+     */
+    public Collection<MetaClass> getAllPersistentMetaClasses() {
+        List<MetaClass> result = new ArrayList<>();
+        for (MetaClass metaClass : metadata.getSession().getClasses()) {
+            if (metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class)) {
+                result.add(metaClass);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return collection of all embeddable entities
+     */
+    public Collection<MetaClass> getAllEmbeddableMetaClasses() {
+        List<MetaClass> result = new ArrayList<>();
+        for (MetaClass metaClass : metadata.getSession().getClasses()) {
+            if (metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Embeddable.class)) {
+                result.add(metaClass);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return collection of all Java enums used as a type of an entity attribute
+     */
+    public Collection<Class> getAllEnums() {
+        if (enums == null) {
+            synchronized (this) {
+                enums = new HashSet<>();
+                for (MetaClass metaClass : metadata.getSession().getClasses()) {
+                    for (MetaProperty metaProperty : metaClass.getProperties()) {
+                        if (metaProperty.getRange() != null && metaProperty.getRange().isEnum()) {
+                            Class c = metaProperty.getRange().asEnumeration().getJavaClass();
+                            enums.add(c);
+                        }
+                    }
+                }
+            }
+        }
+        return enums;
+    }
 }

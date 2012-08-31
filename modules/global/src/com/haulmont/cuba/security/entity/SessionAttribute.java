@@ -13,8 +13,8 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 
 import javax.persistence.*;
 
@@ -72,6 +72,6 @@ public class SessionAttribute extends StandardEntity {
 
     @MetaProperty
     public String getDatatypeCaption() {
-        return MessageProvider.getMessage(MessageUtils.getMessagePack(), "Datatype." + datatype);
+        return AppBeans.get(Messages.class).getMainMessage("Datatype." + datatype);
     }
 }

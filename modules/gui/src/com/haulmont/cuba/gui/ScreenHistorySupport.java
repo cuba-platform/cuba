@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.*;
@@ -33,14 +34,23 @@ public class ScreenHistorySupport {
 
     private Set<String> screenIds = new HashSet<String>();
 
+    private Metadata metadata;
+    private Messages messages;
+    private UserSessionSource uss;
+    private Configuration configuration;
+
     public ScreenHistorySupport() {
-        ClientConfig config = ConfigProvider.getConfig(ClientConfig.class);
-        String property = config.getScreenIdsToSaveHistory();
+        metadata = AppBeans.get(Metadata.class);
+        messages = AppBeans.get(Messages.class);
+        uss = AppBeans.get(UserSessionSource.class);
+        configuration = AppBeans.get(Configuration.class);
+
+        String property = configuration.getConfig(ClientConfig.class).getScreenIdsToSaveHistory();
         if (StringUtils.isNotBlank(property)) {
             screenIds.addAll(Arrays.asList(StringUtils.split(property, ',')));
         }
 
-        for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+        for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             Boolean value = (Boolean) metaClass.getAnnotations().get(TrackEditScreenHistory.class.getName());
             if (BooleanUtils.isTrue(value)) {
                 screenIds.add(metaClass.getName() + ".edit");
@@ -64,30 +74,29 @@ public class ScreenHistorySupport {
                         return;
                     }
                     if (StringUtils.isBlank(caption))
-                        caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
+                        caption = messages.getTools().getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
                     entityId = (UUID) entity.getId();
                 }
             }
-            ScreenHistoryEntity screenHistoryEntity = MetadataProvider.create(ScreenHistoryEntity.class);
+            ScreenHistoryEntity screenHistoryEntity = metadata.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
-            screenHistoryEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+            screenHistoryEntity.setUser(uss.getUserSession().getCurrentOrSubstitutedUser());
             screenHistoryEntity.setUrl(makeLink(window));
             screenHistoryEntity.setEntityId(entityId);
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
-            ServiceLocator.getDataService().commit(cc);
+            AppBeans.get(DataService.class).commit(cc);
         }
     }
 
     protected String makeLink(Window window) {
-        GlobalConfig c = ConfigProvider.getConfig(GlobalConfig.class);
         Entity entity = null;
         if (window.getFrame() instanceof Window.Editor)
             entity = ((Window.Editor) window.getFrame()).getItem();
-        String url = c.getWebAppUrl() + "/open?" +
+        String url = configuration.getConfig(GlobalConfig.class).getWebAppUrl() + "/open?" +
                 "screen=" + window.getFrame().getId();
         if (entity != null) {
-            String item = MetadataProvider.getSession().getClass(entity.getClass()).getName() + "-" + entity.getId();
+            String item = metadata.getSession().getClassNN(entity.getClass()).getName() + "-" + entity.getId();
             url += "&" + "item=" + item + "&" + "params=item:" + item;
         }
         Map<String, Object> params = window.getContext().getParams();
@@ -101,6 +110,7 @@ public class ScreenHistorySupport {
                     try {
                         sb.append(",").append(param.getKey()).append(":").append(URLEncoder.encode(value.toString(), "UTF-8"));
                     } catch (UnsupportedEncodingException e) {
+                        // impossible
                     }
                 }
             }

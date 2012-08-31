@@ -29,7 +29,7 @@ public class QueryTransformerFactory {
             try {
                 if (domainModel == null) {
                     DomainModelBuilder builder = new DomainModelBuilder();
-                    domainModel = builder.produce(MetadataHelper.getAllPersistentMetaClasses());
+                    domainModel = builder.produce(AppBeans.get(MetadataTools.class).getAllPersistentMetaClasses());
                 }
                 return new QueryTransformerAstBased(domainModel, query, targetEntity);
             } catch (RecognitionException e) {

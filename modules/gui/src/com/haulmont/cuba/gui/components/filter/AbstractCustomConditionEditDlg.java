@@ -23,7 +23,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.List;
 import java.util.regex.Matcher;
 
 /**
@@ -312,12 +311,15 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         if (!entitySelect.isEnabled())
             return;
 
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        MessageTools messageTools = AppBeans.get(MessageTools.class);
+
         Map<String, Object> items = new TreeMap<String, Object>();
         Object selectedItem = null;
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
-            for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+            for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
                 if (!BooleanUtils.isTrue((Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName()))) {
-                    items.put(MessageUtils.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                    items.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
                 }
             }
 
@@ -334,7 +336,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
             }
 
             boolean selectedItemFound = false;
-            for (Class enumClass : MetadataHelper.getAllEnums()) {
+            for (Class enumClass : metadataTools.getAllEnums()) {
                 items.put(getEnumClassName(enumClass), enumClass);
 
                 if (selectedItem == null || selectedItem.equals(enumClass))

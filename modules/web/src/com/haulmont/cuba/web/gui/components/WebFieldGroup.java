@@ -17,13 +17,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -37,7 +33,6 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.BooleanUtils;
@@ -77,7 +72,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private Item itemWrapper;
 
-    private Security security = AppBeans.get(Security.NAME);
+    protected Security security = AppBeans.get(Security.class);
+
+    protected MessageTools messageTools = AppBeans.get(MessageTools.class);
 
     public WebFieldGroup() {
         component = new FieldGroup(fieldFactory) {
@@ -240,8 +237,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     if (field.getCaption() != null) {
                         f.setCaption(field.getCaption());
                     } else if (propertyPath != null) {
-                        f.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
-                                id));
+                        f.setCaption(messageTools.getPropertyCaption(propertyPath.getMetaClass(), id));
                     }
                 }
 
@@ -299,14 +295,15 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         component.setCols(cols);
 
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
         Collection<MetaPropertyPath> fieldsMetaProps = null;
         if (this.fields.isEmpty() && datasource != null) {//collects fields by entity view
-            fieldsMetaProps = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            fieldsMetaProps = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
 
             final ArrayList<MetaPropertyPath> propertyPaths = new ArrayList<MetaPropertyPath>(fieldsMetaProps);
             for (final MetaPropertyPath propertyPath : propertyPaths) {
                 MetaProperty property = propertyPath.getMetaProperty();
-                if (property.getRange().getCardinality().isMany() || MetadataHelper.isSystem(property)) {
+                if (property.getRange().getCardinality().isMany() || metadataTools.isSystem(property)) {
                     fieldsMetaProps.remove(propertyPath);
                 }
             }
@@ -472,7 +469,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     return datatype.parse((String) value, UserSessionProvider.getLocale());
                 } catch (ParseException ignored) {
                     String message = MessageProvider.getMessage(WebWindow.class, "invalidValue");
-                    String fieldCaption = MessageUtils.getPropertyCaption(propertyPath.getMetaProperty());
+                    String fieldCaption = messageTools.getPropertyCaption(propertyPath.getMetaProperty());
                     message = String.format(message, fieldCaption);
                     throw new ValidationException(message);
                 }
@@ -1050,7 +1047,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         );
 
         final LinkField field = new LinkField(datasource, fieldConf);
-        field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaProperty()));
+        field.setCaption(messageTools.getPropertyCaption(propertyPath.getMetaProperty()));
         field.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
 
         return field;

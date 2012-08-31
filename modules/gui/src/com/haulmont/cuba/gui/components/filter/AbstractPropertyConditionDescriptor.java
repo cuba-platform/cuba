@@ -7,8 +7,8 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
@@ -33,13 +33,15 @@ public abstract class AbstractPropertyConditionDescriptor<T extends AbstractPara
         super(name, filterComponentName, datasource);
         this.caption = caption;
 
+        Messages messages = AppBeans.get(Messages.class);
+
         if (!isBlank(caption)) {
-            this.locCaption = MessageUtils.loadString(messagesPack, caption);
+            this.locCaption = messages.getTools().loadString(messagesPack, caption);
         } else {
-            this.caption = MessageUtils.getMessageRef(this.metaClass, name);
-            this.locCaption = MessageProvider.getMessage(this.metaClass.getJavaClass(), this.metaClass.getJavaClass().getSimpleName() + "." + name);
+            this.caption = messages.getTools().getMessageRef(this.metaClass, name);
+            this.locCaption = messages.getMessage(this.metaClass.getJavaClass(), this.metaClass.getJavaClass().getSimpleName() + "." + name);
             if (this.locCaption == null || this.locCaption.equals(this.metaClass.getJavaClass().getSimpleName() + "." + name))
-                this.locCaption = MessageUtils.getPropertyCaption(this.metaClass, name);
+                this.locCaption = messages.getTools().getPropertyCaption(this.metaClass, name);
         }
     }
 

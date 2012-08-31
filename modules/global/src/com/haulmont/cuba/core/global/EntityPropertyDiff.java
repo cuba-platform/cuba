@@ -39,7 +39,7 @@ public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity imp
 
     protected EntityPropertyDiff(ViewProperty viewProperty, com.haulmont.chile.core.model.MetaProperty metaProperty) {
         this.viewProperty = viewProperty;
-        this.propertyCaption = MessageUtils.getPropertyCaption(metaProperty);
+        this.propertyCaption = AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty);
         this.metaClassName = metaProperty.getDomain().getFullName();
     }
 

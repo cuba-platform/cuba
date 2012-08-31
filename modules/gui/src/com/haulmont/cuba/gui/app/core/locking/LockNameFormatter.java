@@ -6,7 +6,8 @@
 package com.haulmont.cuba.gui.app.core.locking;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.components.Formatter;
 
@@ -15,7 +16,7 @@ public class LockNameFormatter implements Formatter<String> {
     public String format(String value) {
         MetaClass mc = MetadataProvider.getSession().getClass(value);
         if (mc != null) {
-            return MessageUtils.getEntityCaption(mc);
+            return AppBeans.get(MessageTools.class).getEntityCaption(mc);
         } else
             return value;
     }

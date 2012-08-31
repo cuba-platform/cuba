@@ -13,14 +13,16 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
-import com.haulmont.cuba.web.gui.data.*;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.vaadin.data.Item;
@@ -117,7 +119,7 @@ public class WebTreeTable
                 for (Map.Entry<Object, Column> entry : columns.entrySet()) {
                     if (entry.getKey() instanceof MetaPropertyPath) {
                         final MetaPropertyPath propertyPath = (MetaPropertyPath) entry.getKey();
-                        if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
+                        if (view == null || metadataTools.viewContainsProperty(view, propertyPath)) {
                             properties.add(propertyPath);
                         }
                     }

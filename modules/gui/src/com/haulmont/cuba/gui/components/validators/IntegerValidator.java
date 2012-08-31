@@ -13,10 +13,9 @@ package com.haulmont.cuba.gui.components.validators;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.apache.commons.lang.ObjectUtils;
@@ -29,6 +28,7 @@ public class IntegerValidator implements Field.Validator {
     protected String message;
     protected String messagesPack;
     protected String onlyPositive;
+    protected Messages messages = AppBeans.get(Messages.class);
 
     public IntegerValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
@@ -41,7 +41,7 @@ public class IntegerValidator implements Field.Validator {
     }
 
     public IntegerValidator() {
-        this.message = MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidNumber");
+        this.message = messages.getMainMessage("validation.invalidNumber");
     }
 
     private boolean checkIntegerOnPositive(Integer value) {
@@ -62,7 +62,7 @@ public class IntegerValidator implements Field.Validator {
             result = value instanceof Integer && checkIntegerOnPositive((Integer) value);
         }
         if (!result) {
-            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
+            String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }

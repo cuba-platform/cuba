@@ -160,7 +160,7 @@ public class View implements Serializable {
     }
 
     /**
-     * Get view property by name.
+     * Get directly owned view property by name.
      * @param name  property name
      * @return      view property instance or null if it is not found
      */
@@ -170,11 +170,25 @@ public class View implements Serializable {
     }
 
     /**
-     * Check if a property with the given name exists in the view.
+     * Check if a directly owned property with the given name exists in the view.
      * @param name  property name
      * @return      true if such property found
      */
     public boolean containsProperty(String name) {
         return properties.containsKey(name);
+    }
+
+    /**
+     * Determine if the whole view graph contains a lazy property.
+     * @see com.haulmont.cuba.core.global.ViewProperty#isLazy()
+     */
+    public boolean hasLazyProperties() {
+        for (ViewProperty property : getProperties()) {
+            if (property.isLazy())
+                return true;
+            if (property.getView() != null && property.getView().hasLazyProperties())
+                return true;
+        }
+        return false;
     }
 }

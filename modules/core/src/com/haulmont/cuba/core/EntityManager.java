@@ -64,6 +64,7 @@ public interface EntityManager {
      * @throws IllegalArgumentException if the first argument does
      *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
      */
+    @Nullable
     <T extends Entity> T find(Class<T> entityClass, Object primaryKey);
 
     /**

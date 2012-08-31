@@ -6,10 +6,10 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,9 +53,8 @@ public class MenuConfig implements Serializable
      * @param id screen ID as defined in <code>screens.xml</code>
      */
     public static String getMenuItemCaption(String id) {
-        String messagePack = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
         try {
-            return MessageProvider.getMessage(messagePack, "menu-config." + id);
+            return AppBeans.get(Messages.class).getMainMessage("menu-config." + id);
         } catch (MissingResourceException e) {
             return id;
         }

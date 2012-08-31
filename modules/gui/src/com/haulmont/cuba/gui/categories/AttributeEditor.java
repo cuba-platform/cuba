@@ -12,15 +12,10 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
@@ -36,7 +31,6 @@ import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.*;
-import java.util.List;
 
 /**
  * Class that encapsulates editing of {@link com.haulmont.cuba.core.entity.CategoryAttribute} entities.
@@ -64,6 +58,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Inject
     private WindowConfig windowConfig;
+
+    @Inject
+    private MetadataTools metadataTools;
+
+    @Inject
+    private MessageTools messageTools;
 
     private static final String FIELD_WIDTH = "200px";
 
@@ -327,9 +327,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         entityTypeField.setWidth(FIELD_WIDTH);
         Map<String, Object> options = new TreeMap<String, Object>();
         MetaClass entityType = null;
-        for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+        for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             if (!BooleanUtils.isTrue((Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName()))) {
-                options.put(MessageUtils.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
                 if (hasValue && metaClass.getJavaClass().getName().equals(attribute.getDataType())) {
                     entityType = metaClass;
                 }

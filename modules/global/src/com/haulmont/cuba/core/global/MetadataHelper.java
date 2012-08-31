@@ -10,291 +10,162 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.entity.Versioned;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 
-import javax.persistence.*;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
 
+/**
+ * DEPRECATED - use {@link MetadataTools}
+ */
+@Deprecated
 public abstract class MetadataHelper {
 
-    private static volatile Collection<MetaClass> metaClasses;
-    private static volatile Collection<Class> enums;
-
+    /**
+     * DEPRECATED - use {@link MetadataTools#isCascade(com.haulmont.chile.core.model.MetaProperty)}
+     */
+    @Deprecated
     public static boolean isCascade(MetaProperty metaProperty) {
-        OneToMany oneToMany = metaProperty.getAnnotatedElement().getAnnotation(OneToMany.class);
-        if (oneToMany != null) {
-            final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
-            if (cascadeTypes.contains(CascadeType.ALL) ||
-                    cascadeTypes.contains(CascadeType.MERGE)) {
-                return true;
-            }
-        }
-        ManyToMany manyToMany = metaProperty.getAnnotatedElement().getAnnotation(ManyToMany.class);
-        if (manyToMany != null && StringUtils.isBlank(manyToMany.mappedBy())) {
-            return true;
-        }
-        return false;
+        return AppBeans.get(MetadataTools.class).isCascade(metaProperty);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#isSystem(com.haulmont.chile.core.model.MetaProperty)}
+     */
+    @Deprecated
     public static boolean isSystem(MetaProperty metaProperty) {
-        String name = metaProperty.getName();
-        for (String property : BaseEntity.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        for (String property : Updatable.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        for (String property : SoftDelete.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        for (String property : Versioned.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        return false;
+        return AppBeans.get(MetadataTools.class).isSystem(metaProperty);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#isPersistent(com.haulmont.chile.core.model.MetaPropertyPath)}
+     */
+    @Deprecated
     public static boolean isPersistent(MetaPropertyPath metaPropertyPath) {
-        for (MetaProperty metaProperty : metaPropertyPath.getMetaProperties()) {
-            if (!isPersistent(metaProperty))
-                return false;
-        }
-        return true;
+        return AppBeans.get(MetadataTools.class).isPersistent(metaPropertyPath);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataHelper#isPersistent(com.haulmont.chile.core.model.MetaPropertyPath)}
+     */
+    @Deprecated
     public static boolean isPersistent(MetaProperty metaProperty) {
-        return !metaProperty.getAnnotatedElement().isAnnotationPresent(
-                com.haulmont.chile.core.annotations.MetaProperty.class);
-
+        return AppBeans.get(MetadataTools.class).isPersistent(metaProperty);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataHelper#isEmbedded(com.haulmont.chile.core.model.MetaProperty)}
+     */
+    @Deprecated
     public static boolean isEmbedded(MetaProperty metaProperty) {
-        return metaProperty.getAnnotatedElement().getAnnotation(Embedded.class) != null;
+        return AppBeans.get(MetadataTools.class).isEmbedded(metaProperty);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#getPropertyPaths(com.haulmont.chile.core.model.MetaClass)}
+     */
+    @Deprecated
     public static Collection<MetaPropertyPath> getPropertyPaths(MetaClass metaClass) {
-        List<MetaPropertyPath> res = new ArrayList<MetaPropertyPath>();
-        for (MetaProperty metaProperty : metaClass.getProperties()) {
-            res.add(new MetaPropertyPath(metaClass, metaProperty));
-        }
-
-        return res;
+        return AppBeans.get(MetadataTools.class).getPropertyPaths(metaClass);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#getViewPropertyPaths(com.haulmont.cuba.core.global.View, com.haulmont.chile.core.model.MetaClass)}
+     */
+    @Deprecated
     public static Collection<MetaPropertyPath> getViewPropertyPaths(View view, MetaClass metaClass) {
-        List<MetaPropertyPath> propertyPaths = new ArrayList<MetaPropertyPath>(metaClass.getProperties().size());
-        for (final MetaProperty metaProperty : metaClass.getProperties()) {
-            final MetaPropertyPath metaPropertyPath = new MetaPropertyPath(metaClass, metaProperty);
-            if (viewContainsProperty(view, metaPropertyPath)) {
-                propertyPaths.add(metaPropertyPath);
-            }
-        }
-        return propertyPaths;
+        return AppBeans.get(MetadataTools.class).getViewPropertyPaths(view, metaClass);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#toPropertyPaths(java.util.Collection<com.haulmont.chile.core.model.MetaProperty>)}
+     */
+    @Deprecated
     public static Collection<MetaPropertyPath> toPropertyPaths(Collection<MetaProperty> properties) {
-        List<MetaPropertyPath> res = new ArrayList<MetaPropertyPath>();
-        for (MetaProperty metaProperty : properties) {
-            res.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
-        }
-
-        return res;
+        return AppBeans.get(MetadataTools.class).toPropertyPaths(properties);
     }
 
     /**
-     * Visit all properties of an object graph starting from the specified instance
+     * DEPRECATED - use {@link MetadataTools#getNamePatternProperties(com.haulmont.chile.core.model.MetaClass)}
      */
-    public static void walkProperties(Instance instance, PropertyVisitor visitor) {
-        Session metadata = MetadataProvider.getSession();
-        __walkProperties(instance, visitor, metadata, new HashSet<Instance>());
-    }
-
-    /**
-     * Returns collection of the properties included into entity's name pattern
-     * @param metaClass meta class
-     * @return collection of the properties
-     */
+    @Deprecated
     public static Collection<MetaProperty> getNamePatternProperties(MetaClass metaClass) {
-        Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
-        Class javaClass = metaClass.getJavaClass();
-        Annotation annotation = javaClass.getAnnotation(NamePattern.class);
-        if (annotation != null) {
-            String value = StringUtils.substringAfter(((NamePattern) annotation).value(), "|");
-            String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
-            for (String field : fields) {
-                properties.add(metaClass.getProperty(field));
-            }
-        }
-        return properties;
+        return AppBeans.get(MetadataTools.class).getNamePatternProperties(metaClass);
     }
 
-    private static void __walkProperties(Instance instance, PropertyVisitor visitor,
-                                         Session metadata, Set<Instance> visited) {
-        if (visited.contains(instance))
-            return;
-        visited.add(instance);
-
-        MetaClass metaClass = metadata.getClass(instance.getClass());
-        if (metaClass == null)
-            return;
-
-        Collection<MetaProperty> properties = metaClass.getProperties();
-        for (MetaProperty property : properties) {
-
-            visitor.visit(instance, property);
-
-            Object value = instance.getValue(property.getName());
-            if (value != null && property.getRange().isClass()) {
-                if (property.getRange().getCardinality().isMany()) {
-                    Collection collection = (Collection) value;
-                    for (Object o : collection) {
-                        if (o instanceof Instance)
-                            __walkProperties((Instance) o, visitor, metadata, visited);
-                    }
-                } else if (value instanceof Instance) {
-                    __walkProperties((Instance) value, visitor, metadata, visited);
-                }
-            }
-        }
-    }
-
+    /**
+     * DEPRECATED - use {@link MetadataTools#viewContainsProperty(com.haulmont.cuba.core.global.View, com.haulmont.chile.core.model.MetaPropertyPath)}
+     */
+    @Deprecated
     public static boolean viewContainsProperty(View view, MetaPropertyPath propertyPath) {
-        View currentView = view;
-        for (MetaProperty metaProperty : propertyPath.get()) {
-            if (currentView == null) return false;
-
-            final ViewProperty property = currentView.getProperty(metaProperty.getName());
-            if (property == null) return false;
-
-            currentView = property.getView();
-        }
-        return true;
+        return AppBeans.get(MetadataTools.class).viewContainsProperty(view, propertyPath);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#isAnnotationPresent(java.lang.Object, java.lang.String, java.lang.Class<? extends java.lang.annotation.Annotation>)}
+     */
+    @Deprecated
     public static boolean isAnnotationPresent(Object object, String property,
                                               Class<? extends Annotation> annotationClass) {
-        return isAnnotationPresent(object.getClass(), property, annotationClass);
+        return AppBeans.get(MetadataTools.class).isAnnotationPresent(object, property, annotationClass);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#isAnnotationPresent(java.lang.Object, java.lang.String, java.lang.Class<? extends java.lang.annotation.Annotation>)}
+     */
+    @Deprecated
     public static boolean isAnnotationPresent(Class javaClass, String property,
                                               Class<? extends Annotation> annotationClass) {
-        Field field;
-        try {
-            field = javaClass.getDeclaredField(property);
-            return field.isAnnotationPresent(annotationClass);
-        } catch (NoSuchFieldException e) {
-            Class superclass = javaClass.getSuperclass();
-            while (superclass != null) {
-                try {
-                    field = superclass.getDeclaredField(property);
-                    return field.isAnnotationPresent(annotationClass);
-                } catch (NoSuchFieldException e1) {
-                    superclass = superclass.getSuperclass();
-                }
-            }
-            throw new RuntimeException("Property not found: " + property);
-        }
+        return AppBeans.get(MetadataTools.class).isAnnotationPresent(javaClass, property, annotationClass);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#isTransient(java.lang.Object, java.lang.String)}
+     */
+    @Deprecated
     public static boolean isTransient(Object object, String property) {
-        return isAnnotationPresent(object, property, Transient.class);
+        return AppBeans.get(MetadataTools.class).isTransient(object, property);
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#isTransient(java.lang.Object, java.lang.String)}
+     */
+    @Deprecated
     public static boolean isTransient(MetaProperty metaProperty) {
-        boolean isMetaProperty = isAnnotationPresent(metaProperty.getAnnotatedElement(),
-                com.haulmont.chile.core.annotations.MetaProperty.class);
-        return isMetaProperty || isAnnotationPresent(metaProperty.getAnnotatedElement(), Transient.class);
+        return AppBeans.get(MetadataTools.class).isTransient(metaProperty);
     }
 
-    private static boolean isAnnotationPresent(AnnotatedElement annotatedElement,
-                                               Class<? extends Annotation> annotationClass) {
-        return annotatedElement.isAnnotationPresent(annotationClass);
-    }
-
-    public static void deployViews(Element rootFrameElement) {
-        final Element metadataContextElement = rootFrameElement.element("metadataContext");
-        if (metadataContextElement != null) {
-            @SuppressWarnings({"unchecked"})
-            List<Element> fileElements = metadataContextElement.elements("deployViews");
-            for (Element fileElement : fileElements) {
-                final String resource = fileElement.attributeValue("name");
-                InputStream resourceInputStream = ScriptingProvider.getResourceAsStream(resource);
-                if (resourceInputStream == null) {
-                    throw new RuntimeException("View resource not found: " + ((resource == null) ? "[null]" : resource));
-                }
-                try {
-                    MetadataProvider.getViewRepository().deployViews(resourceInputStream);
-                } finally {
-                    IOUtils.closeQuietly(resourceInputStream);
-                }
-            }
-
-            @SuppressWarnings({"unchecked"})
-            List<Element> viewElements = metadataContextElement.elements("view");
-            for (Element viewElement : viewElements) {
-                MetadataProvider.getViewRepository().deployView(metadataContextElement, viewElement);
-            }
-        }
-    }
-
+    /**
+     * DEPRECATED - use {@link com.haulmont.chile.core.model.Session#getClasses()}
+     */
+    @Deprecated
     public static Collection<MetaClass> getAllMetaClasses() {
-        if (metaClasses == null) {
-            synchronized (MetadataHelper.class) {
-                metaClasses = MetadataProvider.getSession().getClasses();
-            }
-        }
-        return metaClasses;
+        return AppBeans.get(Metadata.class).getSession().getClasses();
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#getAllPersistentMetaClasses()}
+     */
+    @Deprecated
     public static Collection<MetaClass> getAllPersistentMetaClasses() {
-        List<MetaClass> result = new ArrayList<MetaClass>();
-        for (MetaClass metaClass : getAllMetaClasses()) {
-            if (metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class)) {
-                result.add(metaClass);
-            }
-        }
-        return result;
+        return AppBeans.get(MetadataTools.class).getAllPersistentMetaClasses();
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#getAllEmbeddableMetaClasses()}
+     */
+    @Deprecated
     public static Collection<MetaClass> getAllEmbeddableMetaClasses() {
-        List<MetaClass> result = new ArrayList<MetaClass>();
-        for (MetaClass metaClass : getAllMetaClasses()) {
-            if (metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Embeddable.class)) {
-                result.add(metaClass);
-            }
-        }
-        return result;
+        return AppBeans.get(MetadataTools.class).getAllEmbeddableMetaClasses();
     }
 
+    /**
+     * DEPRECATED - use {@link MetadataTools#getAllEnums()}
+     */
+    @Deprecated
     public static Collection<Class> getAllEnums() {
-        if (enums == null) {
-            synchronized (MetadataHelper.class) {
-                enums = new HashSet<Class>();
-                for (MetaClass metaClass : getAllMetaClasses()) {
-                    for (MetaProperty metaProperty : metaClass.getProperties()) {
-                        if (metaProperty.getRange() != null && metaProperty.getRange().isEnum()) {
-                            Class c = metaProperty.getRange().asEnumeration().getJavaClass();
-                            enums.add(c);
-                        }
-                    }
-                }
-            }
-        }
-        return enums;
+        return AppBeans.get(MetadataTools.class).getAllEnums();
     }
 }

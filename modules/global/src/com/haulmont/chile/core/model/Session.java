@@ -55,7 +55,7 @@ public interface Session {
     MetaClass getClassNN(Class<?> clazz);
 
     /**
-     * @return all MetaClasses in the whole metamodel.
+     * @return collection of all MetaClasses in the whole metamodel
      */
     Collection<MetaClass> getClasses();
 }

@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 12.01.2009 17:10:33
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -14,9 +9,12 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.sys.AppContext;
 
 /**
- * Utility class to provide configuration interfaces in static context.
- * <p>Injected {@link Configuration} interface should be used instead of this class wherever possible.</p>
+ * DEPRECATED - use {@link Configuration} via DI or <code>AppBeans.get(Configuration.class)</code>
+ *
+ * @author krivopustov
+ * @version $Id$
  */
+@Deprecated
 public abstract class ConfigProvider
 {
     private static Configuration getConfiguration() {

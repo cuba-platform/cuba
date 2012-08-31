@@ -12,10 +12,11 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -66,11 +68,17 @@ public abstract class WindowManager implements Serializable {
         void onWindowClose(Window window, boolean anyOpenWindowExist);
     }
 
+    private static final long serialVersionUID = 6291745424560229324L;
+
     private transient DataService defaultDataService;
+
+    protected Messages messages = AppBeans.get(Messages.class);
 
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
 
     protected Resources resources = AppBeans.get(Resources.NAME);
+
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     private DialogParams dialogParams;
 
@@ -119,7 +127,7 @@ public abstract class WindowManager implements Serializable {
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, params);
         Element element = processor.getResultRoot();
 
-        MetadataHelper.deployViews(element);
+        WindowCreationHelper.deployViews(element);
 
         final DsContext dsContext = loadDsContext(element);
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
@@ -138,12 +146,12 @@ public abstract class WindowManager implements Serializable {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
 
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+        if (AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTestMode()) {
             initDebugIds(window);
         }
 
         // apply ui permissions
-        PermissionsApplyHelper.applyUiPermissions(window);
+        WindowCreationHelper.applyUiPermissions(window);
 
         return windowWrapper;
     }
@@ -157,10 +165,7 @@ public abstract class WindowManager implements Serializable {
     }
 
     private void checkPermission(WindowInfo windowInfo) {
-        boolean permitted = UserSessionProvider.getUserSession().isScreenPermitted(
-                AppConfig.getClientType(),
-                windowInfo.getId()
-        );
+        boolean permitted = userSessionSource.getUserSession().isScreenPermitted(AppConfig.getClientType(), windowInfo.getId());
         if (!permitted)
             throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
     }
@@ -246,7 +251,7 @@ public abstract class WindowManager implements Serializable {
         }
 
         // apply ui permissions
-        PermissionsApplyHelper.applyUiPermissions(window);
+        WindowCreationHelper.applyUiPermissions(window);
 
         return window;
     }
@@ -339,7 +344,7 @@ public abstract class WindowManager implements Serializable {
             if (StringUtils.isEmpty(caption)) {
                 String msgPack = window.getMessagesPack();
                 if (msgPack != null) {
-                    caption = MessageProvider.getMessage(msgPack, "caption");
+                    caption = messages.getMessage(msgPack, "caption");
                     if (!"caption".equals(caption)) {
                         caption = TemplateHelper.processTemplate(caption, params);
                     }
@@ -602,7 +607,7 @@ public abstract class WindowManager implements Serializable {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Locale getLocale() {
-        return UserSessionProvider.getUserSession().getLocale();
+        return userSessionSource.getUserSession().getLocale();
     }
 
     protected Window wrapByCustomClass(Window window, Element element, Map<String, Object> params) {
@@ -631,7 +636,7 @@ public abstract class WindowManager implements Serializable {
             }
 
             // apply ui permissions
-            PermissionsApplyHelper.applyUiPermissions(wrappingWindow);
+            WindowCreationHelper.applyUiPermissions(wrappingWindow);
 
             return wrappingWindow;
         } else {
@@ -645,10 +650,13 @@ public abstract class WindowManager implements Serializable {
             String className = element.attributeValue("class");
             if (!StringUtils.isBlank(className)) {
                 Class aClass = scripting.loadClass(className);
+                if (aClass == null)
+                    throw new IllegalStateException("Class " + className + " is not found");
                 Object companion;
                 try {
                     if (AbstractCompanion.class.isAssignableFrom(aClass)) {
                         Constructor constructor = aClass.getConstructor(new Class[]{AbstractFrame.class});
+                        //noinspection UnusedAssignment
                         companion = constructor.newInstance(window);
                     } else {
                         companion = aClass.newInstance();

@@ -22,11 +22,11 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.MimeType;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -51,7 +51,10 @@ public class DataServiceController {
     private ConversionFactory conversionFactory = new ConversionFactory();
     private Collection availableBasicTypes;
 
-    @Autowired
+    @Inject
+    private MetadataTools metadataTools;
+
+    @Inject
     public DataServiceController(DataService svc) {
         this.svc = svc;
     }
@@ -277,8 +280,8 @@ public class DataServiceController {
 
             List<MetaClassRepresentation> classes = new ArrayList<MetaClassRepresentation>();
 
-            Set<MetaClass> metas = new HashSet<MetaClass>(MetadataHelper.getAllPersistentMetaClasses());
-            metas.addAll(MetadataHelper.getAllEmbeddableMetaClasses());
+            Set<MetaClass> metas = new HashSet<MetaClass>(metadataTools.getAllPersistentMetaClasses());
+            metas.addAll(metadataTools.getAllEmbeddableMetaClasses());
             for (MetaClass meta : metas) {
                 if (!readPermitted(meta))
                     continue;
@@ -387,7 +390,7 @@ public class DataServiceController {
     }
 
     private MetaClass getMetaClass(String entityName) {
-        Collection<MetaClass> classes = MetadataHelper.getAllPersistentMetaClasses();
+        Collection<MetaClass> classes = metadataTools.getAllPersistentMetaClasses();
         for (MetaClass metaClass : classes) {
             if (entityName.equals(metaClass.getName()))
                 return metaClass;

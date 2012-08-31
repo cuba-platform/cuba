@@ -181,7 +181,7 @@ public interface WebConfig extends Config
      * @return Theme
      */
     @Default("havana")
-    @Property("cuba.AppConfig.themeName")
+    @Property("cuba.web.theme")
     String getAppWindowTheme();
 
     /**

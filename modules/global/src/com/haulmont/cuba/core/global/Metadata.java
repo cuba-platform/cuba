@@ -38,6 +38,12 @@ public interface Metadata {
     ExtendedEntities getExtendedEntities();
 
     /**
+     * Convenient access to {@link MetadataTools} bean.
+     * @return  MetadataTools instance
+     */
+    <T extends MetadataTools> T getTools();
+
+    /**
      * Instantiate an entity, taking into account extended entities.
      * @param entityClass   entity class
      * @return              entity instance

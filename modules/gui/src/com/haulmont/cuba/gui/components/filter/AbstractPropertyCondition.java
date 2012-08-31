@@ -7,8 +7,9 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
@@ -35,7 +36,7 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
         String propertyPath = datasource.getMetaClass().getJavaClass().getSimpleName() + "." + name;
         this.locCaption = MessageProvider.getMessage(datasource.getMetaClass().getJavaClass(), propertyPath);
         if (locCaption == null || locCaption.equals(propertyPath))
-            this.locCaption = MessageUtils.loadString(messagesPack, caption);
+            this.locCaption = AppBeans.get(MessageTools.class).loadString(messagesPack, caption);
 
         String text = element.getText();
         Matcher matcher = PATTERN_NULL.matcher(text);

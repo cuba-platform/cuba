@@ -14,7 +14,6 @@ import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.Timer;
@@ -84,7 +83,7 @@ public class DefaultApp extends App implements ConnectionListener {
         setMainWindow(window);
 
         if (getTheme() == null) {
-            String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
+            String themeName = AppContext.getProperty("cuba.web.theme");
             if (themeName == null) themeName = THEME_NAME;
             setTheme(themeName);
         }

@@ -9,14 +9,16 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
@@ -32,7 +34,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     private static final long serialVersionUID = -7298696379571470141L;
 
     public ItemWrapper(Object item, MetaClass metaClass) {
-        this(item, MetadataHelper.getPropertyPaths(metaClass));
+        this(item, AppBeans.get(MetadataTools.class).getPropertyPaths(metaClass));
     }
 
     public ItemWrapper(Object item, Collection<MetaPropertyPath> properties) {

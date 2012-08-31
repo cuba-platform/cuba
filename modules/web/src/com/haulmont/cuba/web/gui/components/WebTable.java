@@ -12,7 +12,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -100,7 +99,7 @@ public class WebTable
                 for (Map.Entry<Object, Column> entry : columns.entrySet()) {
                     if (entry.getKey() instanceof MetaPropertyPath) {
                         final MetaPropertyPath propertyPath = (MetaPropertyPath) entry.getKey();
-                        if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
+                        if (view == null || metadataTools.viewContainsProperty(view, propertyPath)) {
                             properties.add(propertyPath);
                         }
                     }
@@ -178,7 +177,7 @@ public class WebTable
                 for (Map.Entry<Object, Column> entry : columns.entrySet()) {
                     if (entry.getKey() instanceof MetaPropertyPath) {
                         final MetaPropertyPath propertyPath = (MetaPropertyPath) entry.getKey();
-                        if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
+                        if (view == null || metadataTools.viewContainsProperty(view, propertyPath)) {
                             properties.add(propertyPath);
                         }
                     }

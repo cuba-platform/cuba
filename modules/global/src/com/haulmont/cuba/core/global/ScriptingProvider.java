@@ -5,7 +5,6 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.sys.AppContext;
 import groovy.lang.Binding;
 
 import javax.annotation.Nullable;
@@ -13,13 +12,12 @@ import java.io.InputStream;
 import java.util.Map;
 
 /**
- * Utility class to provide scripting functionality in static context.<br>
- * <p>Injected {@link Scripting} interface should be used instead of this class wherever possible.</p>
- *
- * <p>$Id$</p>
+ * DEPRECATED - use {@link Scripting} via DI or <code>AppBeans.get(Scripting.class)</code>
  *
  * @author krivopustov
+ * @version $Id$
  */
+@Deprecated
 public abstract class ScriptingProvider {
 
     private static Scripting getScripting() {

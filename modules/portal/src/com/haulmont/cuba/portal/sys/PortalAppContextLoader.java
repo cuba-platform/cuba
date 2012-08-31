@@ -6,9 +6,7 @@
 
 package com.haulmont.cuba.portal.sys;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +26,6 @@ import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -60,7 +57,6 @@ public class PortalAppContextLoader implements ServletContextListener {
                 file.mkdirs();
 
             initAppContext();
-            initLocalization();
 
             AppContext.startContext();
 
@@ -72,30 +68,8 @@ public class PortalAppContextLoader implements ServletContextListener {
         }
     }
 
-    protected void initLocalization() {
-        String mp = AppContext.getProperty("cuba.appConfig.messagesPack");
-        MessageUtils.setMessagePack(mp);
-
-        for (Locale locale : ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales().values()) {
-            Datatypes.setFormatStrings(
-                    locale,
-                    new FormatStrings(
-                            MessageProvider.getMessage(mp, "numberDecimalSeparator", locale).charAt(0),
-                            MessageProvider.getMessage(mp, "numberGroupingSeparator", locale).charAt(0),
-                            MessageProvider.getMessage(mp, "integerFormat", locale),
-                            MessageProvider.getMessage(mp, "doubleFormat", locale),
-                            MessageProvider.getMessage(mp, "dateFormat", locale),
-                            MessageProvider.getMessage(mp, "dateTimeFormat", locale),
-                            MessageProvider.getMessage(mp, "timeFormat", locale),
-                            MessageProvider.getMessage(mp, "trueString", locale),
-                            MessageProvider.getMessage(mp, "falseString", locale)
-                    )
-            );
-        }
-    }
-
     protected void initAppProperties(ServletContext sc) {
-        AppContext.setProperty("cuba.appConfig.messagesPack", ClientType.WEB.toString());
+        AppContext.setProperty("cuba.clientType", ClientType.WEB.toString());
 
         // get properties from web.xml
         String appProperties = sc.getInitParameter(APP_PROPS_PARAM);

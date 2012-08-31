@@ -6,9 +6,10 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
@@ -25,7 +26,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * <p>$Id$</p>
@@ -55,7 +59,6 @@ public class DesktopAppContextLoader {
 
         initAppProperties();
         initAppContext();
-        initLocalization();
         initEnvironment();
 
         AppContext.startContext();
@@ -73,28 +76,6 @@ public class DesktopAppContextLoader {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-        }
-    }
-
-    protected void initLocalization() {
-        String mp = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
-        MessageUtils.setMessagePack(mp);
-
-        for (Locale locale : ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales().values()) {
-            Datatypes.setFormatStrings(
-                    locale,
-                    new FormatStrings(
-                            MessageProvider.getMessage(mp, "numberDecimalSeparator", locale).charAt(0),
-                            MessageProvider.getMessage(mp, "numberGroupingSeparator", locale).charAt(0),
-                            MessageProvider.getMessage(mp, "integerFormat", locale),
-                            MessageProvider.getMessage(mp, "doubleFormat", locale),
-                            MessageProvider.getMessage(mp, "dateFormat", locale),
-                            MessageProvider.getMessage(mp, "dateTimeFormat", locale),
-                            MessageProvider.getMessage(mp, "timeFormat", locale),
-                            MessageProvider.getMessage(mp, "trueString", locale),
-                            MessageProvider.getMessage(mp, "falseString", locale)
-                    )
-            );
         }
     }
 

@@ -17,12 +17,14 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.web.gui.data.*;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.vaadin.data.Item;
@@ -215,7 +217,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 for (Map.Entry<Object, Column> entry : columns.entrySet()) {
                     if (entry.getKey() instanceof MetaPropertyPath) {
                         final MetaPropertyPath propertyPath = (MetaPropertyPath) entry.getKey();
-                        if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
+                        if (view == null || metadataTools.viewContainsProperty(view, propertyPath)) {
                             properties.add(propertyPath);
                         }
                     }

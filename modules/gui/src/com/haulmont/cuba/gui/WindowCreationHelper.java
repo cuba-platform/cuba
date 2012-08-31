@@ -6,37 +6,42 @@
 
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 
+import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Helper for apply permissions to UI components
- * <p>$Id$</p>
+ * Utility class used by the framework when it creates frames and windows. Not for use in application code.
  *
  * @author artamonov
+ * @version $Id$
  */
-public class PermissionsApplyHelper {
+public class WindowCreationHelper {
 
-    private static Log log = LogFactory.getLog(PermissionsApplyHelper.class);
+    private static Log log = LogFactory.getLog(WindowCreationHelper.class);
 
-    private PermissionsApplyHelper() {
+    private WindowCreationHelper() {
     }
 
     /**
-     * Apply UI permissions for frame
+     * Apply UI permissions to a frame.
      *
-     * @param container Frame
+     * @param container frame
      */
     public static void applyUiPermissions(IFrame container) {
         Window window = ComponentsHelper.getWindow(container);
@@ -116,6 +121,33 @@ public class PermissionsApplyHelper {
                 }
             } else {
                 log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
+            }
+        }
+    }
+
+    /**
+     * Deploy views defined in <code>metadataContext</code> of a frame.
+     * @param rootElement  root element of a frame XML
+     */
+    public static void deployViews(Element rootElement) {
+        Element metadataContextEl = rootElement.element("metadataContext");
+        if (metadataContextEl != null) {
+            ViewRepository viewRepository = MetadataProvider.getViewRepository();
+            for (Element fileEl : Dom4j.elements(metadataContextEl, "deployViews")) {
+                String resource = fileEl.attributeValue("name");
+                InputStream resourceInputStream = AppBeans.get(Resources.class).getResourceAsStream(resource);
+                if (resourceInputStream == null)
+                    throw new RuntimeException("View resource not found: " + resource);
+
+                try {
+                    viewRepository.deployViews(resourceInputStream);
+                } finally {
+                    IOUtils.closeQuietly(resourceInputStream);
+                }
+            }
+
+            for (Element viewEl : Dom4j.elements(metadataContextEl, "view")) {
+                viewRepository.deployView(metadataContextEl, viewEl);
             }
         }
     }

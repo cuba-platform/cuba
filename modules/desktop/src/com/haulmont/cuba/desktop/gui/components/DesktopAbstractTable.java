@@ -368,16 +368,17 @@ public abstract class DesktopAbstractTable<C extends JTable>
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
         UserSession userSession = UserSessionProvider.getUserSession();
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
         final Collection<Object> properties;
         if (this.columns.isEmpty()) {
-            Collection<MetaPropertyPath> paths = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            Collection<MetaPropertyPath> paths = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
             for (MetaPropertyPath metaPropertyPath : paths) {
                 MetaProperty property = metaPropertyPath.getMetaProperty();
-                if (!property.getRange().getCardinality().isMany() && !MetadataHelper.isSystem(property)) {
+                if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
                     Table.Column column = new Table.Column(metaPropertyPath);
 
-                    column.setCaption(MessageUtils.getPropertyCaption(property));
+                    column.setCaption(AppBeans.get(MessageTools.class).getPropertyCaption(property));
                     column.setType(metaPropertyPath.getRangeJavaClass());
 
                     Element element = DocumentHelper.createElement("column");

@@ -12,16 +12,14 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.cuba.core.sys.AppContext;
 
 /**
- * Utility class to provide metadata functionality in static context.<br>
- * <p>Injected {@link Metadata} interface should be used instead of this class wherever possible.</p>
- *
- * <p>$Id$</p>
+ * DEPRECATED - use {@link Metadata} via DI or <code>AppBeans.get(Metadata.class)</code>
  *
  * @author krivopustov
+ * @version $Id$
  */
+@Deprecated
 public abstract class MetadataProvider
 {
     private static Metadata getMetadata() {

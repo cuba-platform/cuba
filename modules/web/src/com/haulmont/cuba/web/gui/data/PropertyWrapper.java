@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 29.12.2008 17:16:49
- * $Id$
  */
 package com.haulmont.cuba.web.gui.data;
 
@@ -16,7 +12,9 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
@@ -24,10 +22,17 @@ import com.vaadin.data.Property;
 
 import java.text.ParseException;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class PropertyWrapper extends AbstractPropertyWrapper {
-    protected MetaPropertyPath propertyPath;
 
     private static final long serialVersionUID = 5863216328152195113L;
+
+    protected MetaPropertyPath propertyPath;
+
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
     public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
@@ -127,7 +132,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
 
     @Override
     public String toString() {
-        final Object value = getValue();
-        return MessageUtils.format(value, propertyPath.getMetaProperty());
+        Object value = getValue();
+        return metadataTools.format(value, propertyPath.getMetaProperty());
     }
 }

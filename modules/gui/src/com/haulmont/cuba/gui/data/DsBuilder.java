@@ -13,11 +13,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.impl.*;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -45,6 +41,7 @@ import java.lang.reflect.Constructor;
 public class DsBuilder {
 
     private DataService dataService;
+    private Metadata metadata;
     private ViewRepository viewRepository;
     private PersistenceManagerService persistenceManager;
 
@@ -85,8 +82,9 @@ public class DsBuilder {
         else
             this.dataService = new GenericDataService();
 
-        this.viewRepository = MetadataProvider.getViewRepository();
-        this.persistenceManager = ServiceLocator.lookup(PersistenceManagerClient.NAME);
+        this.metadata = AppBeans.get(Metadata.class);
+        this.viewRepository = metadata.getViewRepository();
+        this.persistenceManager = AppBeans.get(PersistenceManagerClient.class);
     }
 
     public DsContext getDsContext() {
@@ -212,7 +210,7 @@ public class DsBuilder {
 
     private void init() {
         if (metaClass == null && javaClass != null) {
-            metaClass = MetadataProvider.getSession().getClass(javaClass);
+            metaClass = metadata.getSession().getClass(javaClass);
         }
         if (view == null && viewName != null) {
             view = viewRepository.getView(metaClass, viewName);
@@ -241,7 +239,7 @@ public class DsBuilder {
                 if (master != null) {
                     MetaClass metaClass = master.getMetaClass();
                     MetaProperty metaProperty = metaClass.getProperty(property);
-                    isEmbedded = MetadataHelper.isEmbedded(metaProperty);
+                    isEmbedded = AppBeans.get(MetadataTools.class).isEmbedded(metaProperty);
                 }
                 if (isEmbedded)
                     datasource = new EmbeddedDatasourceImpl(id, master, property);

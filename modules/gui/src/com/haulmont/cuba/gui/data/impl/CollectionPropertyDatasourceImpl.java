@@ -13,7 +13,10 @@ import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -60,7 +63,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         final MetaClass metaClass = ds.getMetaClass();
         final MetaProperty metaProperty = metaClass.getProperty(property);
-        cascadeProperty = MetadataHelper.isCascade(metaProperty);
+        cascadeProperty = metadata.getTools().isCascade(metaProperty);
     }
 
     @Override
@@ -74,7 +77,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 Collection coll = item == null ? null : (Collection) item.getValue(metaProperty.getName());
                 reattachListeners(prevColl, coll);
 
-                if (coll != null && MetadataHelper.isPersistent(metaProperty)) {
+                if (coll != null && metadata.getTools().isPersistent(metaProperty)) {
                     for (Object collItem : coll) {
                         if (PersistenceHelper.isNew(collItem)) {
                             itemToCreate.remove(collItem);

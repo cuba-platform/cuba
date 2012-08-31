@@ -11,9 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
@@ -292,7 +290,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         if (column.getCaption() == null) {
             String columnCaption;
             if (column.getId() instanceof MetaPropertyPath) {
-                columnCaption = MessageUtils.getPropertyCaption(((MetaPropertyPath) column.getId()).getMetaProperty());
+                columnCaption = AppBeans.get(MessageTools.class).getPropertyCaption(((MetaPropertyPath) column.getId()).getMetaProperty());
             } else {
                 Class<?> declaringClass = ds.getMetaClass().getJavaClass();
                 String className = declaringClass.getName();

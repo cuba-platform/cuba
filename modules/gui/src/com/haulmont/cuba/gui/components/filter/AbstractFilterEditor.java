@@ -147,7 +147,7 @@ public abstract class AbstractFilterEditor {
                 continue;
             if (defaultExcludedProps.contains(property.getName()))
                 continue;
-            if (!MessageUtils.hasPropertyCaption(property))
+            if (!AppBeans.get(MessageTools.class).hasPropertyCaption(property))
                 continue;
 
             if (inclPattern.matcher(property.getName()).matches()) {

@@ -420,7 +420,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             q = context.setQueryString(queryString);
             q.setParameters(parameters);
         } else {
-            Collection<MetaProperty> properties = MetadataHelper.getNamePatternProperties(metaClass);
+            Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
             if (!properties.isEmpty()) {
                 StringBuilder orderBy = new StringBuilder();
                 for (MetaProperty metaProperty : properties) {
@@ -488,7 +488,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         // Sort on DB only if the property is not transient and it is not an entity. Sorting by entity in JPQL
         // translates to order by entity's id in SQL, that makes no sense.
-        if (MetadataHelper.isPersistent(propertyPath) && !propertyPath.getMetaProperty().getRange().isClass()) {
+        if (metadata.getTools().isPersistent(propertyPath) && !propertyPath.getMetaProperty().getRange().isClass()) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
             transformer.replaceOrderBy(propertyPath.toString(), !asc);
             String jpqlQuery = transformer.getResult();

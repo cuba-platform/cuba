@@ -10,6 +10,7 @@ import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractMetadata;
 import com.haulmont.cuba.core.sys.PersistentEntitiesMetadataLoader;
@@ -34,8 +35,8 @@ public class TestMetadataClient extends AbstractMetadata {
         this.packages = packages;
         this.viewsConfig = viewsConfig;
 
-        extendedEntities = new ExtendedEntities();
-        extendedEntities.setMetadata(this);
+        extendedEntities = new ExtendedEntities(this);
+        tools = new MetadataTools(this, null, null);
     }
 
     @Override

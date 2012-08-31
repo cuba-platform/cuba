@@ -42,6 +42,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     private Metadata metadata;
 
     @Inject
+    private Messages messages;
+
+    @Inject
     protected BoxLayout lookupBox;
 
     @Inject
@@ -103,9 +106,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
         Map<String, Object> options = new TreeMap<String, Object>();
 
-        for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+        for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (readPermitted(metaClass))
-                options.put(MessageUtils.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                options.put(messages.getTools().getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
         }
 
         return options;
@@ -146,7 +149,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 continue;
 
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
-            if (!MetadataHelper.isSystem(metaProperty)) {
+            if (!metadata.getTools().isSystem(metaProperty)) {
                 column.setCaption(getPropertyCaption(meta, metaProperty));
                 nonSystemPropertyColumns.add(column);
             } else {

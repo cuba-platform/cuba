@@ -12,12 +12,12 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -118,7 +118,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected VerticalLayout mainLayout;
 
-    protected String messagePack;
+    protected Messages messages;
 
     private AbstractSelect substUserSelect;
 
@@ -127,13 +127,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     public AppWindow(Connection connection) {
         super();
 
-        globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
-        webConfig = ConfigProvider.getConfig(WebConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.class);
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+        webConfig = configuration.getConfig(WebConfig.class);
+
+        messages = AppBeans.get(Messages.class);
 
         this.connection = connection;
         setCaption(getAppCaption());
-
-        messagePack = AppConfig.getMessagesPack();
 
         mode = UserSettingHelper.loadAppWindowMode();
 
@@ -261,7 +262,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * @return Application caption
      */
     protected String getAppCaption() {
-        return MessageProvider.getMessage(getMessagesPack(), "application.caption");
+        return messages.getMessage(getMessagesPack(), "application.caption");
     }
 
     /**
@@ -380,7 +381,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * Can be overridden in descendant to init an app-specific layout
      */
     protected void postInitLayout() {
-        String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
+        String themeName = AppContext.getProperty("cuba.web.theme");
         if (themeName == null) themeName = App.THEME_NAME;
         themeName = UserSettingHelper.loadAppWindowTheme() == null ? themeName : UserSettingHelper.loadAppWindowTheme();
         if (!StringUtils.equals(themeName, getTheme())) {
@@ -419,7 +420,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         layout.addComponent(menuBar);
         placeMenuBar(layout);
 
-        if (ConfigProvider.getConfig(FtsConfig.class).getEnabled()) {
+        if (AppBeans.get(Configuration.class).getConfig(FtsConfig.class).getEnabled()) {
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(false, true, false, true);
 
@@ -546,7 +547,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
 
     protected String getLogoLabelCaption() {
-        return MessageProvider.getMessage(getMessagesPack(), "logoLabel");
+        return messages.getMessage(getMessagesPack(), "logoLabel");
     }
 
     /**
@@ -589,7 +590,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     protected void addUserLabel(HorizontalLayout layout) {
-        Label userLabel = new Label(MessageProvider.getMessage(getMessagesPack(), "loggedInLabel"));
+        Label userLabel = new Label(messages.getMessage(getMessagesPack(), "loggedInLabel"));
         userLabel.setStyleName("select-label");
         userLabel.setSizeUndefined();
 
@@ -682,13 +683,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     private Button createLogoutButton() {
         String buttonTitle = "";
         if (!webConfig.getUseLightHeader())
-            buttonTitle = MessageProvider.getMessage(getMessagesPack(), "logoutBtn");
+            buttonTitle = messages.getMessage(getMessagesPack(), "logoutBtn");
 
         Button logoutBtn = new Button(
                 buttonTitle,
                 new LogoutBtnClickListener()
         );
-        logoutBtn.setDescription(MessageProvider.getMessage(getMessagesPack(), "logoutBtnDescription"));
+        logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new ThemeResource("images/exit.png"));
         App.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
@@ -698,7 +699,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     private Button createNewWindowButton() {
         String buttonTitle = "";
         if (!webConfig.getUseLightHeader())
-            buttonTitle = MessageProvider.getMessage(getMessagesPack(), "newWindowBtn");
+            buttonTitle = messages.getMessage(getMessagesPack(), "newWindowBtn");
 
         Button newWindowBtn = new Button(buttonTitle,
                 new Button.ClickListener() {
@@ -711,7 +712,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     }
                 }
         );
-        newWindowBtn.setDescription(MessageProvider.getMessage(getMessagesPack(), "newWindowBtnDescription"));
+        newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("white-border");
         newWindowBtn.setIcon(new ThemeResource("images/new-window.png"));
         return newWindowBtn;
@@ -780,9 +781,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 "and (us.startDate is null or us.startDate <= :currentDate) " +
                 "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
         query.addParameter("userId", userSession.getUser().getId());
-        query.addParameter("currentDate", TimeProvider.currentTimestamp());
+        query.addParameter("currentDate", AppBeans.get(TimeSource.class).currentTimestamp());
         ctx.setView("app");
-        List<UserSubstitution> usList = ServiceLocator.getDataService().loadList(ctx);
+        List<UserSubstitution> usList = AppBeans.get(DataService.class).loadList(ctx);
         for (UserSubstitution substitution : usList) {
             User substitutedUser = substitution.getSubstitutedUser();
             select.addItem(substitutedUser);
@@ -901,8 +902,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             if (!oldUser.equals(newUser)) {
                 String name = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
                 App.getInstance().getWindowManager().showOptionDialog(
-                        MessageProvider.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
-                        MessageProvider.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", name),
+                        messages.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
+                        messages.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", name),
                         IFrame.MessageType.WARNING,
                         new Action[]{new ChangeSubstUserAction((User) substUserSelect.getValue()) {
                             @Override
@@ -923,26 +924,19 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
     }
 
-    @SuppressWarnings("serial")
     public static class AppTabSheet extends ActionsTabSheet implements com.vaadin.event.Action.Handler {
+
+        private static final long serialVersionUID = 623307791240239175L;
 
         private Map<Component, TabCloseHandler> closeHandlers = null;
 
-        private com.vaadin.event.Action closeAllTabs = new com.vaadin.event.Action(
-                MessageProvider.getMessage(getMessagesPack(), "actions.closeAllTabs")
-        );
+        private com.vaadin.event.Action closeAllTabs;
 
-        private com.vaadin.event.Action closeOtherTabs = new com.vaadin.event.Action(
-                MessageProvider.getMessage(getMessagesPack(), "actions.closeOtherTabs")
-        );
+        private com.vaadin.event.Action closeOtherTabs;
 
-        private com.vaadin.event.Action closeCurrentTab = new com.vaadin.event.Action(
-                MessageProvider.getMessage(getMessagesPack(), "actions.closeCurrentTab")
-        );
+        private com.vaadin.event.Action closeCurrentTab;
 
-        private com.vaadin.event.Action showInfo = new com.vaadin.event.Action(
-                MessageProvider.getMessage(getMessagesPack(), "actions.showInfo")
-        );
+        private com.vaadin.event.Action showInfo;
 
         public AppTabSheet() {
             setCloseHandler(new CloseHandler() {
@@ -957,6 +951,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 }
             });
             addActionHandler(this);
+
+            Messages messages = AppBeans.get(Messages.class);
+            closeAllTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeAllTabs"));
+            closeOtherTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeOtherTabs"));
+            closeCurrentTab = new com.vaadin.event.Action(messages.getMainMessage("actions.closeCurrentTab"));
+            showInfo = new com.vaadin.event.Action(messages.getMainMessage("actions.showInfo"));
         }
 
         @Override
@@ -993,7 +993,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             if (target != null) {
-                if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION) &&
+                UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+                if (userSession.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION) &&
                         findEditor((Layout) target) != null ) {
                     return new com.vaadin.event.Action[]{
                             closeCurrentTab, closeOtherTabs, closeAllTabs, showInfo
@@ -1022,10 +1023,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             }
         }
 
-        protected String getMessagesPack() {
-            return AppConfig.getMessagesPack();
-        }
-
         public void closeAllTabs() {
             Set<Component> tabs = new HashSet<Component>(this.tabs.keySet());
             for (final Component tab : tabs) {
@@ -1044,7 +1041,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         public void showInfo(Object target) {
             com.haulmont.cuba.gui.components.Window.Editor editor = findEditor((Layout) target);
             Entity entity = editor.getItem();
-            MetaClass metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+            MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(entity.getClass());
             new ShowInfoAction().showInfo(entity, metaClass, editor);
         }
 

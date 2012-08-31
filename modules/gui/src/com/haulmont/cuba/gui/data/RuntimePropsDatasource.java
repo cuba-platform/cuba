@@ -7,7 +7,6 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageUtils;
 
 /**
  * <p>$Id$</p>

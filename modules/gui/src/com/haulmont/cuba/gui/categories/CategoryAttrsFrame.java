@@ -27,7 +27,10 @@ import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -38,6 +41,9 @@ public class CategoryAttrsFrame extends AbstractFrame {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected MessageTools messageTools;
 
     @Inject
     protected ComponentsFactory factory;
@@ -144,8 +150,8 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 if (BooleanUtils.isTrue(attribute.getIsEntity())) {
                     try {
                         Class clazz = Class.forName(attribute.getDataType());
-                        MetaClass metaClass = MetadataProvider.getSession().getClass(clazz);
-                        labelContent = MessageUtils.getEntityCaption(metaClass);
+                        MetaClass metaClass = metadata.getSession().getClass(clazz);
+                        labelContent = messageTools.getEntityCaption(metaClass);
                     } catch (ClassNotFoundException ex) {
                         labelContent = "classNotFound";
                     }

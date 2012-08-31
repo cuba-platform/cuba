@@ -92,7 +92,7 @@ public class ViewRepository
         View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
             for (MetaProperty property : metaClass.getProperties()) {
-                if (!property.getRange().isClass() && !MetadataHelper.isSystem(property)) {
+                if (!property.getRange().isClass() && !metadata.getTools().isSystem(property)) {
                     view.addProperty(property.getName());
                 }
             }

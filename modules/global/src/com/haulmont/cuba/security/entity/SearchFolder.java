@@ -12,9 +12,9 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 
 import javax.persistence.*;
 
@@ -43,7 +43,7 @@ public class SearchFolder extends AbstractSearchFolder {
     public void copyFrom(AbstractSearchFolder srcFolder) {
         super.copyFrom(srcFolder);
 
-        setUser(UserSessionProvider.getUserSession().getUser());
+        setUser(AppBeans.get(UserSessionSource.class).getUserSession().getUser());
     }
 
     public User getUser() {
@@ -69,7 +69,7 @@ public class SearchFolder extends AbstractSearchFolder {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(MessageUtils.getMessagePack(), name);
+        return AppBeans.get(Messages.class).getMainMessage(name);
     }
 
     public Boolean getIsSet(){

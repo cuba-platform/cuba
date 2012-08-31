@@ -13,10 +13,9 @@ package com.haulmont.cuba.gui.components.validators;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DoubleDatatype;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.apache.commons.lang.ObjectUtils;
@@ -30,6 +29,7 @@ public class DoubleValidator implements Field.Validator {
     protected String message;
     protected String messagesPack;
     protected String onlyPositive;
+    protected Messages messages = AppBeans.get(Messages.class);
 
     private static final long serialVersionUID = 7129516061104979525L;
 
@@ -44,7 +44,7 @@ public class DoubleValidator implements Field.Validator {
     }
 
     public DoubleValidator() {
-        this.message = MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidNumber");
+        this.message = messages.getMainMessage("validation.invalidNumber");
     }
 
     private boolean checkDoubleOnPositive(Double value) {
@@ -70,7 +70,7 @@ public class DoubleValidator implements Field.Validator {
         }
 
         if (!result) {
-            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
+            String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }

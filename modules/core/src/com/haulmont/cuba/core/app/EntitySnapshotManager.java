@@ -44,11 +44,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Inject
     private Metadata metadata;
 
+    @Inject
     private EntityDiffManager diffManager;
-
-    public EntitySnapshotManager() {
-        diffManager = new EntityDiffManager(this);
-    }
 
     @Override
     public List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id) {

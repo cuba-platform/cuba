@@ -11,8 +11,9 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 
@@ -44,16 +45,12 @@ public class ViewHelper {
         return resultView;
     }
 
+    /**
+     * DEPRECATED. Use {@link com.haulmont.cuba.core.global.View#hasLazyProperties()}.
+     */
+    @Deprecated
     public static boolean hasLazyProperties(View view) {
-        for (ViewProperty property : view.getProperties()) {
-            if (property.isLazy())
-                return true;
-            if (property.getView() != null) {
-                if (hasLazyProperties(property.getView()))
-                    return true;
-            }
-        }
-        return false;
+        return view.hasLazyProperties();
     }
 
     /**
@@ -62,6 +59,6 @@ public class ViewHelper {
      */
     @Deprecated
     public static void fetchInstance(Instance instance, View view) {
-        PersistenceProvider.getEntityManager().fetch((Entity) instance, view);
+        AppBeans.get(Persistence.class).getEntityManager().fetch((Entity) instance, view);
     }
 }

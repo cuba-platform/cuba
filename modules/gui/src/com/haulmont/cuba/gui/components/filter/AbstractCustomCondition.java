@@ -6,8 +6,9 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Element;
@@ -31,7 +32,7 @@ public abstract class AbstractCustomCondition<T extends AbstractParam> extends A
         if (isBlank(caption))
             locCaption = element.attributeValue("locCaption");
         else
-            locCaption = MessageUtils.loadString(messagesPack, caption);
+            locCaption = AppBeans.get(MessageTools.class).loadString(messagesPack, caption);
 
         entityAlias = element.attributeValue("entityAlias");
         text = element.getText();

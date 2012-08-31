@@ -42,6 +42,14 @@ public class RuntimePropertiesMetaClass implements MetaClass {
         return properties.get(name);
     }
 
+    @Override
+    public MetaProperty getPropertyNN(String name) {
+        MetaProperty property = getProperty(name);
+        if (property == null)
+            throw new IllegalArgumentException("Property '" + name + "' not found in " + getName());
+        return property;
+    }
+
     public MetaPropertyPath getPropertyEx(String propertyPath) {
         return new MetaPropertyPath(this, properties.get(propertyPath));
     }

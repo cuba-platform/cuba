@@ -11,10 +11,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityLoadInfo;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -252,6 +249,7 @@ public class XMLConvertor implements Convertor {
 
     private void parseEntity(CommitRequest commitRequest, Object bean, MetaClass metaClass, Node node)
             throws InstantiationException, IllegalAccessException, InvocationTargetException, IntrospectionException, ParseException {
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
         NodeList fields = node.getChildNodes();
         for (int i = 0; i < fields.getLength(); i++) {
             Node fieldNode = fields.item(i);
@@ -261,7 +259,7 @@ public class XMLConvertor implements Convertor {
             if (!attrModifyPermitted(metaClass, property.getName()))
                 continue;
 
-            if (MetadataHelper.isTransient(bean, fieldName))
+            if (metadataTools.isTransient(bean, fieldName))
                 continue;
 
             String xmlValue = fieldNode.getTextContent();
@@ -451,10 +449,12 @@ public class XMLConvertor implements Convertor {
         Element root = doc.createElement(ELEMENT_INSTANCE);
         parent.appendChild(root);
         root.setAttribute(ATTR_ID, ior(entity));
+
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
         List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
         for (MetaProperty property : properties) {
             Element child;
-            if (MetadataHelper.isTransient(entity, property.getName()))
+            if (metadataTools.isTransient(entity, property.getName()))
                 continue;
 
             if (!attrViewPermitted(metaClass, property.getName()))
