@@ -18,6 +18,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -26,9 +27,8 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author shatokhin
+ * @version $Id$
  */
 public class ServerLogWindow extends AbstractWindow {
 
@@ -52,14 +52,8 @@ public class ServerLogWindow extends AbstractWindow {
 
     private Map<String, Object> map;
 
-
     private final Label vLabel = new Label();
     private final Panel panel = new Panel();
-
-
-    public ServerLogWindow(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -81,14 +75,14 @@ public class ServerLogWindow extends AbstractWindow {
 
         initTimers();
 
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         map.put("winLog", this);
 
         logNameField.addListener(new ValueListener<Object>() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if (value != null) {
-                    if (value.equals(getMessage("newLogger")) && value.equals(getLogs().get(0))) {
+                    if (value.equals(getLogs().get(0))) {
                         openWindow("additionLogger", WindowManager.OpenType.DIALOG, map);
                         logNameField.setValue(null);
                         levelField.setValue(null);
@@ -96,7 +90,6 @@ public class ServerLogWindow extends AbstractWindow {
                 }
             }
         });
-
     }
 
     public void showTail() {
@@ -130,7 +123,7 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     public void download() {
-        String fileName = logFileNamesField.<String>getValue();
+        String fileName = logFileNamesField.getValue();
         String zipName = logManagerService.packLog(fileName);
         if (zipName != null) {
             AppConfig.createExportDisplay().show(new SimpleFileDataProvider(zipName), fileName + ".zip");
@@ -153,7 +146,6 @@ public class ServerLogWindow extends AbstractWindow {
 
             @Override
             public void onStopTimer(Timer timer) {
-
             }
         });
     }
@@ -164,6 +156,7 @@ public class ServerLogWindow extends AbstractWindow {
         if (logFileNamesField.getValue() != null) {
             String selectValue = logFileNamesField.getValue();
             String value = logManagerService.getTail(selectValue);
+            value = StringUtils.replace(value, " ", "&nbsp;");
             vLabel.setValue(value);
         } else
             showNotification(getMessage("noSelectedLog"), NotificationType.HUMANIZED);
@@ -174,7 +167,7 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     public static List<Level> getAllLevels() {
-        List<Level> levelList = new ArrayList<Level>();
+        List<Level> levelList = new ArrayList<>();
         levelList.add(Level.TRACE);
         levelList.add(Level.DEBUG);
         levelList.add(Level.INFO);
@@ -186,7 +179,7 @@ public class ServerLogWindow extends AbstractWindow {
 
     private List<String> getLogs() {
         List<Logger> listLogs = Collections.list(LogManager.getCurrentLoggers());
-        List<String> listNameLogs = new ArrayList<String>();
+        List<String> listNameLogs = new ArrayList<>();
         for (Logger logger : listLogs) {
             if (logger.getLevel() != null) {
                 listNameLogs.add(logger.getName());
@@ -203,9 +196,8 @@ public class ServerLogWindow extends AbstractWindow {
 
     public void callControlLogger() {
         App.getInstance().getWindowManager().getDialogParams().setWidth(420);
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("controlWin", this);
         openWindow("controlLogger", WindowManager.OpenType.DIALOG, map);
     }
-
 }

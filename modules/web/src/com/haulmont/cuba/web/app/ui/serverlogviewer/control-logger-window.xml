@@ -17,7 +17,7 @@
                 <lookupField id="lookupFieldLogger" width="275px"/>
             </hbox>
 
-            <scrollbox id="loggersGroupBox" colspan="1" height="310">
+            <scrollbox id="loggersGroupBox" height="310">
                 <grid id="loggersGrid" stylename="edit-area">
                     <columns>
                         <column/>

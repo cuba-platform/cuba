@@ -28,9 +28,9 @@ public class ControlLoggerWindow extends AbstractWindow {
     int amountLog;
     private WebGridLayout loggersGrid;
     private String PREFIX_ID = "logger";
-    private Map<String, Component> loggerMap = new HashMap<String, Component>();
+    private Map<String, Component> loggerMap = new HashMap<>();
     private ServerLogWindow serverLogWindow;
-    private List<String> listNewLoggers = new ArrayList<String>();
+    private List<String> listNewLoggers = new ArrayList<>();
 
     @Inject
     private LogManagerService logManagerService;
@@ -62,10 +62,8 @@ public class ControlLoggerWindow extends AbstractWindow {
             }
         });
 
-
         createFieldsLoggers();
         loggersBox.add(loggersGrid);
-
     }
 
     public void setButton() {
@@ -130,7 +128,7 @@ public class ControlLoggerWindow extends AbstractWindow {
 
     private List<String> getLogs() {
         List<Logger> listLogs = Collections.list(LogManager.getCurrentLoggers());
-        List<String> listNameLogs = new ArrayList<String>();
+        List<String> listNameLogs = new ArrayList<>();
         for (Logger logger : listLogs) {
             if (logger.getLevel() != null) {
                 listNameLogs.add(logger.getName());
@@ -154,13 +152,13 @@ public class ControlLoggerWindow extends AbstractWindow {
 
     private List<String> getOptionsLoggers() {
         List<String> list = getLogs();
-        List<String> newList = new ArrayList<String>();
+        List<String> newList = new ArrayList<>();
         StringTokenizer tokenizer;
         for (String str : list) {
             String nextVariant = "";
             tokenizer = new StringTokenizer(str, ".");
             while (tokenizer.hasMoreTokens()) {
-                nextVariant += nextVariant == "" ? tokenizer.nextToken() : "." + tokenizer.nextToken();
+                nextVariant += nextVariant.equals("") ? tokenizer.nextToken() : "." + tokenizer.nextToken();
                 if (!list.contains(nextVariant) && !newList.contains(nextVariant)) {
                     newList.add(nextVariant);
                 }

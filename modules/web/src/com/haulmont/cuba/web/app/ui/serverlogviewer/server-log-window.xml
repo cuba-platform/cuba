@@ -16,19 +16,18 @@
     </timers>
 
     <layout expand="logsBox" spacing="true">
-        <hbox spacing="true" width="100%">
-            <groupBox id="logOptionsBox" caption="msg://logOptions">
-                <hbox spacing="true" expandable="false">
+        <tabsheet width="100%">
+            <tab id="viewTab" caption="msg://viewTab" margin="true">
+                <hbox id="logSelectBox" spacing="true" expandable="false">
                     <label id="labelLogFile" value="msg://logFile"/>
                     <lookupField id="logFileNamesField" width="210px"/>
                     <button id="downloadButton" caption="msg://downloadButton" invoke="download"/>
                     <button id="showTailButton" caption="msg://showTailButton" invoke="showTail"/>
                     <checkBox id="autoRefreshCheck" caption="msg://autoRefreshCheck"/>
                 </hbox>
-            </groupBox>
-
-            <groupBox id="logLevelBox" caption="msg://logLevel">
-                <hbox spacing="true" expandable="false">
+            </tab>
+            <tab id="optionsTab" caption="msg://optionsTab" margin="true">
+                <hbox id="logLevelBox" spacing="true" expandable="false">
                     <label id="labelLogName" value="msg://loggerName"/>
                     <lookupField id="logNameField" width="300px"/>
                     <label id="labelLevel" value="msg://level"/>
@@ -37,8 +36,8 @@
                     <button id="setButton" invoke="setLevel" caption="msg://setButton"/>
                     <button id="controlLoggerButton" invoke="callControlLogger" caption="msg://control"/>
                 </hbox>
-            </groupBox>
-        </hbox>
+            </tab>
+        </tabsheet>
 
         <groupBox id="logsBox" width="100%" caption="msg://logs">
             <hbox id="logFieldBox" height="100%" width="100%">

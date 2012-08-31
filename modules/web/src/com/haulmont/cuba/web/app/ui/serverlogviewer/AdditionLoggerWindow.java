@@ -51,7 +51,8 @@ public class AdditionLoggerWindow extends AbstractWindow {
                 Level level = logLevelField.getValue();
                 logManagerService.setLogLevel(logName, level);
                 serverLogWindow.refreshLogs();
-                serverLogWindow.showNotification(String.format(getMessage("logSetMessage"), logName, level.toString()), NotificationType.HUMANIZED);
+                serverLogWindow.showNotification(String.format(getMessage("logSetMessage"), logName, level.toString()),
+                        NotificationType.HUMANIZED);
                 close(this.getId());
             } else
                 showNotification(getMessage("noSelectedLevel"), NotificationType.HUMANIZED);
