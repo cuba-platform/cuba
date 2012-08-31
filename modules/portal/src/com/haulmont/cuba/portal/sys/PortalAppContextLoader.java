@@ -69,7 +69,7 @@ public class PortalAppContextLoader implements ServletContextListener {
     }
 
     protected void initAppProperties(ServletContext sc) {
-        AppContext.setProperty("cuba.clientType", ClientType.WEB.toString());
+        AppContext.setProperty("cuba.clientType", ClientType.PORTAL.toString());
 
         // get properties from web.xml
         String appProperties = sc.getInitParameter(APP_PROPS_PARAM);
