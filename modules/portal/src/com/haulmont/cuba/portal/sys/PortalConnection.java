@@ -9,9 +9,11 @@ package com.haulmont.cuba.portal.sys;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.ConnectionListener;
 import com.haulmont.cuba.portal.security.PortalSession;
+import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
@@ -54,7 +56,13 @@ public class PortalConnection implements Connection {
                                    @Nullable String ipAddress, @Nullable String clientInfo) throws LoginException {
         UserSession userSession = loginService.login(login, password, locale);
         session = portalSessionFactory.createPortalSession(userSession, locale);
-        AppContext.setSecurityContext(new SecurityContext(session));
+
+        // replace security context
+        PortalSecurityContext portalSecurityContext = new PortalSecurityContext(session);
+        portalSecurityContext.setPortalApp(App.getInstance());
+
+        // middleware service is called just below
+        AppContext.setSecurityContext(portalSecurityContext);
         session.setAddress(ipAddress);
         session.setClientInfo(clientInfo);
         session.setAuthenticated(true);
@@ -68,8 +76,12 @@ public class PortalConnection implements Connection {
         // get anonymous session
         session = portalSessionFactory.createPortalSession(null, locale);
 
+        // replace security context
+        PortalSecurityContext portalSecurityContext = new PortalSecurityContext(session);
+        portalSecurityContext.setPortalApp(App.getInstance());
+
         // middleware service is called just below
-        AppContext.setSecurityContext(new SecurityContext(session));
+        AppContext.setSecurityContext(portalSecurityContext);
         if (StringUtils.isNotBlank(ipAddress)) {
             session.setAddress(ipAddress);
         }

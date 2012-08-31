@@ -13,8 +13,11 @@ import com.haulmont.cuba.portal.config.PortalConfig;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -27,6 +30,8 @@ import java.util.Locale;
 @ManagedBean("cuba_PortalAnonymousSessionHolder")
 public class AnonymousSessionHolder {
 
+    private Log log = LogFactory.getLog(getClass());
+
     @Inject
     protected Configuration configuration;
 
@@ -34,16 +39,22 @@ public class AnonymousSessionHolder {
     protected LoginService loginService;
 
     @Inject
-    protected UserSessionService userSessionSource;
+    protected UserSessionService userSessionService;
 
     private volatile UserSession anonymousSession;
 
     public UserSession getSession() {
+        boolean justLoggedIn = false;
         if (anonymousSession == null) {
             synchronized (this) {
-                if (anonymousSession == null)
+                if (anonymousSession == null) {
                     anonymousSession = loginAsAnonymous();
+                    justLoggedIn = true;
+                }
             }
+        }
+        if (!justLoggedIn) {
+            pingSession(anonymousSession);
         }
         return anonymousSession;
     }
@@ -63,6 +74,10 @@ public class AnonymousSessionHolder {
         UserSession userSession;
         try {
             userSession = loginService.login(login, password, defaulLocale);
+            // Set client info on middleware
+            AppContext.setSecurityContext(new SecurityContext(userSession));
+            userSessionService.setSessionClientInfo(userSession.getId(), "Portal Anonymous Session");
+            AppContext.setSecurityContext(null);
         } catch (LoginException e) {
             throw new Error("Unable to login as anonymous portal user", e);
         }
@@ -78,9 +93,20 @@ public class AnonymousSessionHolder {
         if (anonymousSession != null) {
             UserSession userSession = getSession();
 
-            AppContext.setSecurityContext(new SecurityContext(userSession));
-            userSessionSource.pingSession();
-            AppContext.setSecurityContext(null);
+            pingSession(userSession);
         }
+    }
+
+    private void pingSession(UserSession userSession) {
+        AppContext.setSecurityContext(new SecurityContext(userSession));
+        try {
+            userSessionService.pingSession();
+        } catch (NoUserSessionException e) {
+            log.warn("Anonymous session has been lost, try restore");
+            // auto restore anonymous session
+            anonymousSession = null;
+            getSession();
+        }
+        AppContext.setSecurityContext(null);
     }
 }

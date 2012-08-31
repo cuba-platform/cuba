@@ -61,7 +61,7 @@ public class RemoteException extends RuntimeException {
         }
     }
 
-    private List<Cause> causes = new ArrayList<Cause>();
+    private List<Cause> causes = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     public RemoteException(Throwable throwable) {
@@ -77,8 +77,9 @@ public class RemoteException extends RuntimeException {
 
     /**
      * Search for {@link Cause} by its exception class name. Subclasses are not taken into account.
-     * @param throwableClassName    exception class name
-     * @return                      Cause instance or null if it is not found
+     *
+     * @param throwableClassName exception class name
+     * @return Cause instance or null if it is not found
      */
     @Nullable
     public Cause getCause(String throwableClassName) {
@@ -93,7 +94,8 @@ public class RemoteException extends RuntimeException {
     /**
      * Search for {@link Cause} by its exception class. Subclasses are not taken into account. The given class is
      * converted into its string name, so it doesn't matter what Cause contains - class or its name only.
-     * @param throwableClass    exception class
+     *
+     * @param throwableClass exception class
      * @return true if such cause is found
      */
     public boolean contains(Class<?> throwableClass) {
@@ -103,7 +105,8 @@ public class RemoteException extends RuntimeException {
 
     /**
      * Search for {@link Cause} by its exception class. Subclasses are not taken into account.
-     * @param throwableClassName    exception class name
+     *
+     * @param throwableClassName exception class name
      * @return true if such cause is found
      */
     public boolean contains(String throwableClassName) {
@@ -111,14 +114,19 @@ public class RemoteException extends RuntimeException {
     }
 
     /**
-     * @return  First exception in the causes list if it is checked, null otherwise
+     * @return First exception in the causes list if it is checked or it is supported by client, null otherwise
      */
     @Nullable
-    public Exception getFirstCheckedException() {
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+    public Exception getFirstCauseException() {
         if (!causes.isEmpty()) {
             Throwable t = causes.get(0).getThrowable();
-            if (t != null && !(t instanceof RuntimeException) && !(t instanceof Error)) {
-                return (Exception) t;
+            if (t != null) {
+                if (!(t instanceof RuntimeException) && !(t instanceof Error)) {
+                    return (Exception) t;
+                }
+                if (!(t instanceof Error) && t.getClass().getAnnotation(SupportedByClient.class) != null)
+                    return (Exception) t;
             }
         }
         return null;

@@ -119,7 +119,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             if (result.getException() != null) {
                 Throwable t = (Throwable) Deserializer.deserialize(result.getException());
                 if (t instanceof RemoteException) {
-                    Exception exception = ((RemoteException) t).getFirstCheckedException();
+                    Exception exception = ((RemoteException) t).getFirstCauseException();
                     if (exception != null) // This is a checked exception declared in a service method
                         throw exception;
                 }

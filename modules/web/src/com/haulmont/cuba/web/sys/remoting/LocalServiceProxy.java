@@ -25,15 +25,15 @@ import java.lang.reflect.Proxy;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Object>, InitializingBean {
 
     private Object serviceProxy;
     private String serviceName;
 
+    @Override
     public void afterPropertiesSet() {
         if (serviceName == null)
             throw new IllegalStateException("Property 'serviceName' is required");
@@ -47,14 +47,17 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
         );
     }
 
+    @Override
     public Object getObject() throws Exception {
         return serviceProxy;
     }
 
+    @Override
     public Class<?> getObjectType() {
         return getServiceInterface();
     }
 
+    @Override
     public boolean isSingleton() {
         return true;
     }
@@ -78,6 +81,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             this.serviceName = serviceName;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String connectionUrl = AppContext.getProperty("cuba.connectionUrl");
             if (connectionUrl == null)
@@ -115,7 +119,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             if (result.getException() != null) {
                 Throwable t = (Throwable) Deserializer.deserialize(result.getException());
                 if (t instanceof RemoteException) {
-                    Exception exception = ((RemoteException) t).getFirstCheckedException();
+                    Exception exception = ((RemoteException) t).getFirstCauseException();
                     if (exception != null) // This is a checked exception declared in a service method
                         throw exception;
                 }

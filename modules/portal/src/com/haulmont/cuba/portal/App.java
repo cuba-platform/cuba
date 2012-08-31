@@ -6,6 +6,9 @@
 
 package com.haulmont.cuba.portal;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
@@ -16,32 +19,26 @@ import java.util.Locale;
  */
 public class App {
 
-    protected static ThreadLocal<App> currentApp = new ThreadLocal<>();
-
     protected Connection connection;
 
     protected HttpServletRequest request;
 
     protected HttpServletResponse response;
 
-    protected App(Connection connection) {
+    public App(Connection connection, HttpServletRequest request, HttpServletResponse response) {
         this.connection = connection;
-    }
-
-    public static void registerConnection(Connection connection,
-                                          HttpServletRequest request, HttpServletResponse response) {
-        App app = new App(connection);
-        app.request = request;
-        app.response = response;
-        currentApp.set(app);
+        this.request = request;
+        this.response = response;
     }
 
     public static boolean isBound() {
-        return currentApp.get() != null;
+        PortalSecurityContext securityContext = (PortalSecurityContext) AppContext.getSecurityContext();
+        return securityContext != null && securityContext.getPortalApp() != null;
     }
 
     public static App getInstance() {
-        return currentApp.get();
+        PortalSecurityContext securityContext = (PortalSecurityContext) AppContext.getSecurityContext();
+        return securityContext != null ? securityContext.getPortalApp() : null;
     }
 
     public Connection getConnection() {

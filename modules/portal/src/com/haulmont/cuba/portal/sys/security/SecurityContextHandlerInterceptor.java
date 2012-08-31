@@ -7,11 +7,11 @@
 package com.haulmont.cuba.portal.sys.security;
 
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.security.PortalSession;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
@@ -38,6 +38,8 @@ public class SecurityContextHandlerInterceptor extends HandlerInterceptorAdapter
             return true;
         }
 
+        PortalSecurityContext portalSecurityContext;
+
         HttpSession httpSession = request.getSession();
         Connection connection = (Connection) httpSession.getAttribute(Connection.NAME);
         if (connection == null || connection.getSession() == null || !connection.isConnected()) {
@@ -45,18 +47,27 @@ public class SecurityContextHandlerInterceptor extends HandlerInterceptorAdapter
             connection.login(request.getLocale(), request.getRemoteAddr(), request.getHeader("User-Agent"));
             httpSession.setAttribute(Connection.NAME, connection);
 
-            AppContext.setSecurityContext(new SecurityContext(connection.getSession()));
+            portalSecurityContext = new PortalSecurityContext(connection.getSession());
+            AppContext.setSecurityContext(portalSecurityContext);
         } else {
             PortalSession session = connection.getSession();
-            AppContext.setSecurityContext(new SecurityContext(session));
+            portalSecurityContext = new PortalSecurityContext(session);
+            AppContext.setSecurityContext(portalSecurityContext);
             // ping only authenticated sessions
             if (session != null && session.isAuthenticated()) {
                 UserSessionService userSessionSource = AppContext.getBean(UserSessionService.NAME);
-                userSessionSource.pingSession();
+                try {
+                    userSessionSource.pingSession();
+                } catch (NoUserSessionException e) {
+                    httpSession.invalidate();
+                    response.sendRedirect(request.getRequestURI());
+                    return false;
+                }
             }
         }
 
-        App.registerConnection(connection, request, response);
+        App app = new App(connection, request, response);
+        portalSecurityContext.setPortalApp(app);
 
         return true;
     }

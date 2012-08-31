@@ -35,8 +35,10 @@ public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
             if (throwable instanceof InvocationTargetException)
                 throwable = ((InvocationTargetException) throwable).getTargetException();
             if (throwable instanceof RemoteException) {
-                Exception exception = ((RemoteException) throwable).getFirstCheckedException();
-                if (exception != null) // This is a checked exception declared in a service method
+                Exception exception = ((RemoteException) throwable).getFirstCauseException();
+                // This is a checked exception declared in a service method
+                // or rumtime exception supported by client
+                if (exception != null)
                     throw exception;
             }
         }
