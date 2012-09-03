@@ -6,21 +6,21 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.security.entity.EntityOp;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 
 /**
@@ -34,6 +34,10 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected boolean justLocked;
     protected boolean commitActionPerformed;
     protected boolean commitAndCloseButtonExists;
+
+    protected Messages messages = AppBeans.get(Messages.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected LockService lockService = AppBeans.get(LockService.class);
 
     public EditorWindowDelegate(Window window, WindowManager windowManager) {
         super(window, windowManager);
@@ -50,8 +54,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                     new AbstractAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE) {
                         @Override
                         public String getCaption() {
-                            final String messagesPackage = AppConfig.getMessagesPack();
-                            return MessageProvider.getMessage(messagesPackage, "actions.OkClose");
+                            return messages.getMainMessage("actions.OkClose");
                         }
 
                         public void actionPerform(Component component) {
@@ -65,8 +68,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                 new AbstractAction(Window.Editor.WINDOW_COMMIT) {
                     @Override
                     public String getCaption() {
-                        final String messagesPackage = AppConfig.getMessagesPack();
-                        return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                        return messages.getMainMessage("actions.Ok");
                     }
 
                     public void actionPerform(Component component) {
@@ -85,8 +87,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                 new AbstractAction(Window.Editor.WINDOW_CLOSE) {
                     @Override
                     public String getCaption() {
-                        final String messagesPackage = AppConfig.getMessagesPack();
-                        return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                        return messages.getMainMessage("actions.Cancel");
                     }
 
                     public void actionPerform(Component component) {
@@ -152,26 +153,26 @@ public class EditorWindowDelegate extends WindowDelegate {
         ds.setItem(item);
         ((DatasourceImplementation) ds).setModified(false);
 
-        LockService lockService = ServiceLocator.lookup(LockService.NAME);
-        LockInfo lockInfo = lockService.lock(ds.getMetaClass().getName(), item.getId().toString());
-        if (lockInfo == null) {
-            justLocked = true;
-        } else if (!(lockInfo instanceof LockNotSupported)) {
-            String mp = AppConfig.getMessagesPack();
-            windowManager.showNotification(
-                    MessageProvider.getMessage(mp, "entityLocked.msg"),
-                    MessageProvider.formatMessage(mp, "entityLocked.desc",
-                            lockInfo.getUser().getLogin(),
-                            new SimpleDateFormat(MessageProvider.getMessage(mp, "dateTimeFormat")).format(lockInfo.getSince())
-                    ),
-                    IFrame.NotificationType.HUMANIZED
-            );
-            Action action = window.getAction(Window.Editor.WINDOW_COMMIT);
-            if (action != null)
-                action.setEnabled(false);
-            action = window.getAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE);
-            if (action != null)
-                action.setEnabled(false);
+        if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+            LockInfo lockInfo = lockService.lock(ds.getMetaClass().getName(), item.getId().toString());
+            if (lockInfo == null) {
+                justLocked = true;
+            } else if (!(lockInfo instanceof LockNotSupported)) {
+                windowManager.showNotification(
+                        messages.getMainMessage("entityLocked.msg"),
+                        String.format(messages.getMainMessage("entityLocked.desc"),
+                                lockInfo.getUser().getLogin(),
+                                Datatypes.get(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
+                        ),
+                        IFrame.NotificationType.HUMANIZED
+                );
+                Action action = window.getAction(Window.Editor.WINDOW_COMMIT);
+                if (action != null)
+                    action.setEnabled(false);
+                action = window.getAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE);
+                if (action != null)
+                    action.setEnabled(false);
+            }
         }
     }
 
@@ -220,10 +221,8 @@ public class EditorWindowDelegate extends WindowDelegate {
         if (justLocked) {
             Entity entity = getDatasource().getItem();
             if (entity != null) {
-                LockService lockService = ServiceLocator.lookup(LockService.NAME);
                 lockService.unlock(getDatasource().getMetaClass().getName(), entity.getId().toString());
             }
         }
     }
-
 }
