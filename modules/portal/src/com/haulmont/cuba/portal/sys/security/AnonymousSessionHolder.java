@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
+import com.haulmont.cuba.portal.sys.exceptions.NoMiddlewareConnectionException;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
@@ -79,7 +80,9 @@ public class AnonymousSessionHolder {
             userSessionService.setSessionClientInfo(userSession.getId(), "Portal Anonymous Session");
             AppContext.setSecurityContext(null);
         } catch (LoginException e) {
-            throw new Error("Unable to login as anonymous portal user", e);
+            throw new NoMiddlewareConnectionException("Unable to login as anonymous portal user", e);
+        } catch (Exception e) {
+            throw new NoMiddlewareConnectionException("Unable to connect to middleware services", e);
         }
         return userSession;
     }
@@ -90,10 +93,9 @@ public class AnonymousSessionHolder {
     @SuppressWarnings("unused")
     public void pingSession() {
         // only if anonymous session initialized
-        if (anonymousSession != null) {
-            UserSession userSession = getSession();
-
-            pingSession(userSession);
+        UserSession session = anonymousSession;
+        if (session != null) {
+            pingSession(session);
         }
     }
 

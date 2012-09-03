@@ -27,6 +27,8 @@ public class PortalExceptionResolver implements HandlerExceptionResolver {
 
     private String noUserSessionUrl;
 
+    private String noMiddlewareConnectionUrl;
+
     public String getNoUserSessionUrl() {
         return noUserSessionUrl;
     }
@@ -35,8 +37,17 @@ public class PortalExceptionResolver implements HandlerExceptionResolver {
         this.noUserSessionUrl = noUserSessionUrl;
     }
 
+    public String getNoMiddlewareConnectionUrl() {
+        return noMiddlewareConnectionUrl;
+    }
+
+    public void setNoMiddlewareConnectionUrl(String noMiddlewareConnectionUrl) {
+        this.noMiddlewareConnectionUrl = noMiddlewareConnectionUrl;
+    }
+
     @Override
-    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
+                                         Object handler, Exception ex) {
         if (ex instanceof NoUserSessionException) {
             log.warn(ex.getMessage());
 
@@ -47,6 +58,15 @@ public class PortalExceptionResolver implements HandlerExceptionResolver {
                 return new ModelAndView("redirect:" + noUserSessionUrl);
             else
                 return new ModelAndView("redirect:/");
+        } else if (ex instanceof NoMiddlewareConnectionException) {
+            log.error(ex.getMessage());
+            HttpSession httpSession = request.getSession();
+            httpSession.invalidate();
+
+            if (StringUtils.isNotEmpty(noMiddlewareConnectionUrl))
+                return new ModelAndView(noMiddlewareConnectionUrl);
+            else
+                return new ModelAndView("/");
         }
 
         return null;

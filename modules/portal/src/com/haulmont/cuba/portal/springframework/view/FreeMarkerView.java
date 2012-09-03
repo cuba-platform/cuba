@@ -43,7 +43,8 @@ public class FreeMarkerView extends org.springframework.web.servlet.view.freemar
         PortalConfig config = ConfigProvider.getConfig(PortalConfig.class);
 
         SimpleHash context = super.buildTemplateModel(model, request, response);
-        context.put("userSession", AppContext.getSecurityContext().getSession());
+        if (AppContext.getSecurityContext() != null)
+            context.put("userSession", AppContext.getSecurityContext().getSession());
         context.put("messages", messages);
         context.put("message", new MessageMethod());
         context.put("theme", config.getTheme());
