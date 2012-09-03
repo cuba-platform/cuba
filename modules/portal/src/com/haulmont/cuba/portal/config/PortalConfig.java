@@ -32,12 +32,4 @@ public interface PortalConfig extends Config {
 
     @DefaultString("default")
     String getTheme();
-
-    @DefaultString("dd/MM/yyyy")
-    String getDateFormatShort();
-    void setDateFormatShort(String dateFormatShort);
-
-    @DefaultString("dd/MM/yyyy HH:mm")
-    String getDateFormatLong();
-    void setDateFormatLong(String dateFormatLong);
 }
