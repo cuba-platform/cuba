@@ -1,9 +1,16 @@
-<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/4.0/view.xsd">
 
     <view entity="sec$User" name="test">
         <property name="name"/>
         <property name="login"/>
         <property name="userRoles" view="test"/>
+    </view>
+
+    <view entity="sec$User" name="anonymousTest">
+        <!-- extended anonymous view -->
+        <property name="group" view="_local">
+            <property name="constraints" view="_local"/>
+        </property>
     </view>
 
     <view entity="sec$UserRole" name="test">

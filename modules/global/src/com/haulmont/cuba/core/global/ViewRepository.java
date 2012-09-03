@@ -258,7 +258,10 @@ public class ViewRepository {
                 throw new RuntimeException("cannot find range for meta property: " + metaProperty);
             }
 
-            if (refViewName != null) {
+            final List<Element> propertyElements = propElem.elements("property");
+            boolean extenedView = !propertyElements.isEmpty();
+
+            if (refViewName != null && !extenedView) {
 
                 if (!range.isClass())
                     throw new IllegalStateException(
@@ -286,30 +289,17 @@ public class ViewRepository {
                         );
                 }
             }
-            if (range.isClass() && refView == null) {
-                final List<Element> refViewElements = propElem.elements("view");
-                if (refViewElements.size() == 0) {
-                    // try to import anonymous views
-                    final List<Element> propertyElements = propElem.elements("property");
-                    if (!propertyElements.isEmpty()) {
-                        refView = new View(range.asClass().getJavaClass());
-                        loadView(rootElem, propElem, refView);
-                    }
-                } else if (refViewElements.size() == 1) {
+            if (range.isClass() && refView == null && extenedView) {
+                // try to import anonymous views
+                String ancestorViewName = propElem.attributeValue("view");
+                if (ancestorViewName == null) {
+                    refView = new View(range.asClass().getJavaClass());
+                } else {
                     refMetaClass = getMetaClass(propElem, range);
-                    Element viewElement = refViewElements.get(0);
-                    String ancestorViewName = viewElement.attributeValue("extends");
-                    refViewName = viewElement.attributeValue("name");
-                    if (refViewName == null)
-                        refViewName = "";
                     View ancestorView = getAncestorView(refMetaClass, ancestorViewName);
                     refView = new View(ancestorView, range.asClass().getJavaClass(), refViewName, true);
-                    loadView(rootElem, viewElement, refView);
-                } else {
-                    throw new IllegalStateException(
-                            String.format("View %s/%s definition error: property %s has more than one views specified", metaClass.getName(), viewName, propertyName)
-                    );
                 }
+                loadView(rootElem, propElem, refView);
             }
             boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
             view.addProperty(propertyName, refView, lazy);

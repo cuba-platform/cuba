@@ -68,4 +68,19 @@ public class ViewRepositoryTest extends CubaTestCase
         assertNull(view.getProperty("substitutions"));
         assertNull(view.getProperty("defaultSubstitutedUser"));
     }
+
+    public void testAnonymous() {
+        View view = repository.getView(User.class, "anonymousTest");
+        assertNotNull(view);
+        assertNotNull(view.getProperty("group"));
+        assertNotNull(view.getProperty("group").getView());
+        assertNull(view.getProperty("name"));
+
+        View groupView = view.getProperty("group").getView();
+        assertNotNull(groupView.getProperty("constraints"));
+        assertNotNull(groupView.getProperty("name"));
+        assertNull(groupView.getProperty("hierarchyList"));
+
+        assertNotNull(groupView.getProperty("constraints").getView());
+    }
 }

@@ -29,9 +29,8 @@
     </xs:complexType>
 
     <xs:complexType name="propertyType">
-        <xs:sequence>
-            <xs:element name="property" type="propertyType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="view" type="viewType" minOccurs="0" maxOccurs="1"/>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="property" type="propertyType"/>
         </xs:sequence>
         <xs:attribute name="name"/>
         <xs:attribute name="view"/>
