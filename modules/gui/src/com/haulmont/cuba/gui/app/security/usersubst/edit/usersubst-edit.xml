@@ -40,7 +40,7 @@
 
     <layout expand="windowActions">
         <vbox stylename="edit-area" margin="true">
-            <grid spacing="true" expandable="false">
+            <grid spacing="true">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>
@@ -58,13 +58,11 @@
                     </row>
                     <row id="startDateRow">
                         <label value="msg://startDate"/>
-                        <dateField id="startDate" datasource="subst" property="startDate" dateFormat="dd/MM/yyyy"
-                                   resolution="DAY"/>
+                        <dateField id="startDate" datasource="subst" property="startDate" resolution="DAY"/>
                     </row>
                     <row id="endDateRow">
                         <label value="msg://endDate"/>
-                        <dateField id="endDate" datasource="subst" property="endDate" dateFormat="dd/MM/yyyy" 
-                                   resolution="DAY"/>
+                        <dateField id="endDate" datasource="subst" property="endDate" resolution="DAY"/>
                     </row>
                 </rows>
             </grid>
