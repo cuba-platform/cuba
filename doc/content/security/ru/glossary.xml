@@ -210,6 +210,31 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <para>Здесь префикс <classname>classpath:</classname> означает, что данный файл нужно искать в Java classpath, префикс <classname>file:</classname> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <classname>catalina.home</classname> − путь к корню <application>Tomcat</application>.</para>
         <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
         <para id="glossary_local_properties">Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Подробнее об этом файле можно узнать в определении <link linkend="glossary_local_app_properties_id">Local Application Properies</link>.</para>
+        <para id="glossary_local_properties_1"><emphasis role="bold">Синтаксис</emphasis></para>
+        <para><warning>
+            <para>Обратите внимание на синтаксис ключей и значений в *.properties файлах.</para>
+            <itemizedlist>
+              <listitem>
+                <para>Ключ состоит из латинских букв и цифр, разделенных точкой</para>
+              </listitem>
+              <listitem>
+                <para>Значение пишется после знака равно (=)</para>
+              </listitem>
+              <listitem>
+                <para>Значение <emphasis role="bold">никогда</emphasis> не берется к кавычки &quot;&quot; или &apos;&apos;</para>
+              </listitem>
+              <listitem>
+                <para>Файловые пути записываются либо в UNIX виде (/opt/haulmont/), либо в Windows виде (c:\\haulmont\\)</para>
+              </listitem>
+              <listitem>
+                <para>Для различных спецсимволов используются коды (\n \t \r). \  является зарезервированным символом, для вставки в значение экранируется сам собой (\\). 
+Подробнее: <ulink url="http://docs.oracle.com/javase/tutorial/java/data/characters.html">http://docs.oracle.com/javase/tutorial/java/data/characters.html</ulink></para>
+              </listitem>
+              <listitem>
+                <para>В значениях могут присутствовать спецсимволы (пробелы, табуляции).     Внимательно проверяйте значения, скопированные в файл из других программ</para>
+              </listitem>
+            </itemizedlist>
+          </warning></para>
         <formalpara>
           <title>Таблица базы данных</title>
           <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
