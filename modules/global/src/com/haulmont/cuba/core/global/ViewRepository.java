@@ -196,8 +196,7 @@ public class ViewRepository {
                 throw new IllegalStateException("Invalid view definition: no 'entity' or 'class' attribute");
             Class entityClass = ReflectionHelper.getClass(className);
             metaClass = metadata.getSession().getClassNN(entityClass);
-        }
-        else {
+        } else {
             metaClass = metadata.getSession().getClassNN(entity);
         }
 
@@ -211,14 +210,7 @@ public class ViewRepository {
         View view;
         String ancestor = viewElem.attributeValue("extends");
         if (ancestor != null) {
-            View ancestorView = retrieveView(metaClass, ancestor);
-            if (ancestorView == null) {
-                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-                if (originalMetaClass != null)
-                    ancestorView = retrieveView(originalMetaClass, ancestor);
-                if (ancestorView == null)
-                    throw new IllegalStateException("No ancestor view found: " + ancestor);
-            }
+            View ancestorView = getAncestorView(metaClass, ancestor);
 
             boolean includeSystemProperties = systemProperties == null ?
                     ancestorView.isIncludeSystemProperties() : Boolean.valueOf(systemProperties);
@@ -230,6 +222,18 @@ public class ViewRepository {
         storeView(metaClass, view);
 
         return view;
+    }
+
+    private View getAncestorView(MetaClass metaClass, String ancestor) {
+        View ancestorView = retrieveView(metaClass, ancestor);
+        if (ancestorView == null) {
+            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+            if (originalMetaClass != null)
+                ancestorView = retrieveView(originalMetaClass, ancestor);
+            if (ancestorView == null)
+                throw new IllegalStateException("No ancestor view found: " + ancestor);
+        }
+        return ancestorView;
     }
 
     protected void loadView(Element rootElem, Element viewElem, View view) {
@@ -248,28 +252,27 @@ public class ViewRepository {
             View refView = null;
             String refViewName = propElem.attributeValue("view");
 
+            MetaClass refMetaClass;
+            Range range = metaProperty.getRange();
+            if (range == null) {
+                throw new RuntimeException("cannot find range for meta property: " + metaProperty);
+            }
+
             if (refViewName != null) {
-                Range range = metaProperty.getRange();
-                if (range == null || !range.isClass())
+
+                if (!range.isClass())
                     throw new IllegalStateException(
                             String.format("View %s/%s definition error: property %s is not an entity", metaClass.getName(), viewName, propertyName)
                     );
 
-                String refEntityName = propElem.attributeValue("entity");
-                MetaClass refMetaClass;
-                if (refEntityName == null) {
-                    refMetaClass = range.asClass();
-                } else {
-                    refMetaClass = metadata.getSession().getClass(refEntityName);
-                }
+                refMetaClass = getMetaClass(propElem, range);
 
                 refView = retrieveView(refMetaClass, refViewName);
                 if (refView == null) {
                     for (Element e : (List<Element>) rootElem.elements("view")) {
                         if ((refMetaClass.getName().equals(e.attributeValue("entity"))
                                 || refMetaClass.getJavaClass().getName().equals(e.attributeValue("class")))
-                                && refViewName.equals(e.attributeValue("name")))
-                        {
+                                && refViewName.equals(e.attributeValue("name"))) {
                             refView = deployView(rootElem, e);
                             break;
                         }
@@ -283,25 +286,45 @@ public class ViewRepository {
                         );
                 }
             }
-
-            Range range = metaProperty.getRange();
-
-            if (range == null) {
-                throw new RuntimeException("cannot find range for meta property: " + metaProperty);
-            }
-            // try to import anonimous views
             if (range.isClass() && refView == null) {
-                final List<Element> propertyElements = propElem.elements("property");
-                if (!propertyElements.isEmpty()) {
-                    refView = new View(range.asClass().getJavaClass());
-                    loadView(rootElem, propElem, refView);
+                final List<Element> refViewElements = propElem.elements("view");
+                if (refViewElements.size() == 0) {
+                    // try to import anonymous views
+                    final List<Element> propertyElements = propElem.elements("property");
+                    if (!propertyElements.isEmpty()) {
+                        refView = new View(range.asClass().getJavaClass());
+                        loadView(rootElem, propElem, refView);
+                    }
+                } else if (refViewElements.size() == 1) {
+                    refMetaClass = getMetaClass(propElem, range);
+                    Element viewElement = refViewElements.get(0);
+                    String ancestorViewName = viewElement.attributeValue("extends");
+                    refViewName = viewElement.attributeValue("name");
+                    if (refViewName == null)
+                        refViewName = "";
+                    View ancestorView = getAncestorView(refMetaClass, ancestorViewName);
+                    refView = new View(ancestorView, range.asClass().getJavaClass(), refViewName, true);
+                    loadView(rootElem, viewElement, refView);
+                } else {
+                    throw new IllegalStateException(
+                            String.format("View %s/%s definition error: property %s has more than one views specified", metaClass.getName(), viewName, propertyName)
+                    );
                 }
             }
-
             boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
-
             view.addProperty(propertyName, refView, lazy);
         }
+    }
+
+    private MetaClass getMetaClass(Element propElem, Range range) {
+        MetaClass refMetaClass;
+        String refEntityName = propElem.attributeValue("entity");
+        if (refEntityName == null) {
+            refMetaClass = range.asClass();
+        } else {
+            refMetaClass = metadata.getSession().getClass(refEntityName);
+        }
+        return refMetaClass;
     }
 
     public void storeView(MetaClass metaClass, View view) {
