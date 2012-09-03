@@ -97,6 +97,7 @@ public class WebAppContextLoader implements ServletContextListener {
         for (String str : tokenizer.getTokenArray()) {
             Resource resource = resourceLoader.getResource(str);
             if (resource.exists()) {
+                log.trace("Loading app properties from " + str);
                 InputStream stream = null;
                 try {
                     stream = resource.getInputStream();
@@ -107,7 +108,7 @@ public class WebAppContextLoader implements ServletContextListener {
                     IOUtils.closeQuietly(stream);
                 }
             } else {
-                log.warn("Resource " + str + " not found, ignore it");
+                log.trace("Resource " + str + " not found, ignore it");
             }
         }
 
