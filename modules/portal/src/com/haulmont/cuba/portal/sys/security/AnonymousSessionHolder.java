@@ -17,11 +17,14 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 /**
@@ -77,7 +80,13 @@ public class AnonymousSessionHolder {
             userSession = loginService.login(login, password, defaulLocale);
             // Set client info on middleware
             AppContext.setSecurityContext(new SecurityContext(userSession));
-            userSessionService.setSessionClientInfo(userSession.getId(), "Portal Anonymous Session");
+
+            String portalLocationString = getPortalNetworkLocation();
+            String portalClientInfo = "Portal Anonymous Session";
+            if (StringUtils.isNotBlank(portalLocationString))
+                portalClientInfo += " from : " + portalLocationString;
+
+            userSessionService.setSessionClientInfo(userSession.getId(), portalClientInfo);
             AppContext.setSecurityContext(null);
         } catch (LoginException e) {
             throw new NoMiddlewareConnectionException("Unable to login as anonymous portal user", e);
@@ -85,6 +94,20 @@ public class AnonymousSessionHolder {
             throw new NoMiddlewareConnectionException("Unable to connect to middleware services", e);
         }
         return userSession;
+    }
+
+    private String getPortalNetworkLocation() {
+        String portalLocationString = "";
+        try {
+            InetAddress addr = InetAddress.getLocalHost();
+            // Get IP Address
+            String ipAddr = addr.getHostAddress();
+            // Get hostname
+            String hostname = addr.getHostName();
+            portalLocationString = hostname + " " + ipAddr;
+        } catch (UnknownHostException ignored) {
+        }
+        return portalLocationString;
     }
 
     /**
