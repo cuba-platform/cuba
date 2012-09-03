@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model.impl;
 
 import java.util.*;
@@ -8,11 +14,20 @@ import com.haulmont.chile.core.model.Session;
 
 import javax.annotation.Nullable;
 
+/**
+ *
+ */
 public class SessionImpl implements Session {
 
 	private final Map<String, MetaModel> models = new HashMap<String, MetaModel>();
 
-	public MetaModel getModel(String name) {
+    static Session serializationSupportSession;
+
+    public static void setSerializationSupportSession(Session serializationSupportSession) {
+        SessionImpl.serializationSupportSession = serializationSupportSession;
+    }
+
+    public MetaModel getModel(String name) {
 		return models.get(name);
 	}
 

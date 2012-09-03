@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.Resources;
@@ -17,9 +18,8 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(Metadata.NAME)
 public class MetadataImpl extends AbstractMetadata {
@@ -36,6 +36,12 @@ public class MetadataImpl extends AbstractMetadata {
                 metadataBuildSupport.getTransientEntitiesPackages(),
                 metadataBuildSupport.getEntityAnnotations()
         );
+    }
+
+    @Override
+    protected void initMetadata() {
+        super.initMetadata();
+        SessionImpl.setSerializationSupportSession(this.session);
     }
 
     @Override

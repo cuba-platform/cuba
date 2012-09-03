@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.chile.core.model.utils.MetadataUtils;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -59,7 +57,6 @@ public class AppContextLoader implements ServletContextListener {
 
             initPersistenceConfig();
             initAppContext();
-            initMetadata();
             initDatabase();
 
             AppContext.startContext();
@@ -68,10 +65,6 @@ public class AppContextLoader implements ServletContextListener {
             log.error("Error initializing application", e);
             throw new RuntimeException(e);
         }
-    }
-
-    protected void initMetadata() {
-        MetadataUtils.setSerializationSupportSession(MetadataProvider.getSession());
     }
 
     protected void initDatabase() {

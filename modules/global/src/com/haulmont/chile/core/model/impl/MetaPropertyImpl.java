@@ -1,11 +1,24 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model.impl;
 
 import com.haulmont.chile.core.model.*;
-import com.haulmont.chile.core.model.utils.MetadataUtils;
 
 import java.io.InvalidObjectException;
-import java.lang.reflect.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
+@SuppressWarnings({"TransientFieldNotInitialized"})
 public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implements MetaProperty {
 
 	private final MetaClass domain;
@@ -34,7 +47,7 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
     }
 
     protected Object readResolve() throws InvalidObjectException {
-        Session session = MetadataUtils.getSerializationSupportSession();
+        Session session = SessionImpl.serializationSupportSession;
         if (session == null) {
             return Proxy.newProxyInstance(
                     this.getClass().getClassLoader(),

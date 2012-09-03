@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model.impl;
 
 import java.util.Collection;
@@ -8,12 +14,16 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class MetaModelImpl extends MetadataObjectImpl<MetaModel> implements MetaModel {
 
-	private Map<String, MetaClass> classByName =
-		new HashMap<String, MetaClass>();
-	private Map<Class, MetaClass> classByClass =
-		new HashMap<Class, MetaClass>();
+    private static final long serialVersionUID = -2951212408198161458L;
+
+    private Map<String, MetaClass> classByName = new HashMap<String, MetaClass>();
+	private Map<Class, MetaClass> classByClass = new HashMap<Class, MetaClass>();
 
     public MetaModelImpl(Session session, String name) {
         this.name = name;

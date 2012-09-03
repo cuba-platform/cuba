@@ -14,11 +14,14 @@ import java.util.*;
 import org.apache.commons.collections.CollectionUtils;
 
 /**
- *
  * @author abramov
  * @version $Id$
  */
+@SuppressWarnings({"TransientFieldNotInitialized"})
 public abstract class MetadataObjectImpl<T extends MetadataObject> implements MetadataObject<T>, Serializable {
+
+    private static final long serialVersionUID = 5179324236413815312L;
+
     private transient T ancestor;
 
     protected transient Collection<T> ancestors = new HashSet<T>(1);
@@ -80,8 +83,6 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
     public Map<String, Object> getAnnotations() {
         return annotations;  
     }
-
-///////////////////////////////////////////////////////////////////////////////
 
     public void setName(String name) {
         this.name = name;

@@ -1,4 +1,12 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model.impl;
+
+import com.haulmont.chile.core.model.*;
 
 import java.io.InvalidObjectException;
 import java.lang.reflect.InvocationHandler;
@@ -6,16 +14,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.*;
-import com.haulmont.chile.core.model.utils.MetadataUtils;
-
+/**
+ * @author abramov
+ * @version $Id$
+ */
+@SuppressWarnings({"TransientFieldNotInitialized"})
 public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements MetaClass {
 
-	private transient Map<String, MetaProperty> propertyByName =
-		new HashMap<String, MetaProperty>();
-    private transient Map<String, MetaProperty> ownPropertyByName =
-        new HashMap<String, MetaProperty>();
+	private transient Map<String, MetaProperty> propertyByName = new HashMap<String, MetaProperty>();
+    private transient Map<String, MetaProperty> ownPropertyByName = new HashMap<String, MetaProperty>();
 
 	private transient final MetaModel model;
     private transient Class javaClass;
@@ -32,7 +39,7 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
     }
 
     protected Object readResolve() throws InvalidObjectException {
-        Session session = MetadataUtils.getSerializationSupportSession();
+        Session session = SessionImpl.serializationSupportSession;
         if (session == null) {
             return Proxy.newProxyInstance(
                     this.getClass().getClassLoader(),
@@ -176,7 +183,7 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
             if (metaClass == null) {
                 synchronized (this) {
                     if (metaClass == null) {
-                        Session session = MetadataUtils.getSerializationSupportSession();
+                        Session session = SessionImpl.serializationSupportSession;
                         if (session == null)
                             throw new IllegalStateException("SerializationSupportSession is not initialized");
                         metaClass = session.getClass(name);

@@ -10,14 +10,10 @@
 
 package com.haulmont.chile.core.model;
 
-import com.haulmont.chile.core.model.utils.MetadataUtils;
+import org.apache.commons.lang.text.StrBuilder;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-
-import org.apache.commons.lang.text.StrBuilder;
 
 /**
  * Object representing a relative path to a property from certain MetaClass
@@ -28,6 +24,7 @@ public class MetaPropertyPath implements Serializable {
 
     private MetaClass metaClass;
     private MetaProperty[] metaProperties;
+    private String[] path;
 
     public MetaPropertyPath(MetaClass metaClass, MetaProperty... metaProperties) {
         this.metaClass = metaClass;
@@ -89,10 +86,8 @@ public class MetaPropertyPath implements Serializable {
         if (metaProperties.length < 1) {
             throw new RuntimeException("Empty property path at metaclass " + metaClass.getName() + " - possibly wrong property name");
         }
-        return MetadataUtils.getTypeClass(metaProperties[metaProperties.length - 1]);
+        return getTypeClass(metaProperties[metaProperties.length - 1]);
     }
-
-    protected String[] path;
 
     /**
      * Path as String array
@@ -118,5 +113,18 @@ public class MetaPropertyPath implements Serializable {
     public String toString() {
         StrBuilder sb = new StrBuilder();
         return sb.appendWithSeparators(path, ".").toString();
+    }
+
+    private Class getTypeClass(MetaProperty metaProperty) {
+        Range range = metaProperty.getRange();
+        if (range.isDatatype()) {
+            return range.asDatatype().getJavaClass();
+        } else if (range.isClass()) {
+            return range.asClass().getJavaClass();
+        } else if (range.isEnum()) {
+            return range.asEnumeration().getJavaClass();
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }
