@@ -6,14 +6,12 @@
 
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang.StringUtils;
@@ -57,7 +55,7 @@ public class DataWorkerBean implements DataWorker {
     private QueryResultsManagerAPI queryResultsManager;
 
     @Override
-    public Set<Entity> commit(CommitContext<Entity> context) {
+    public Set<Entity> commit(CommitContext context) {
         if (log.isDebugEnabled())
             log.debug("commit: commitInstances=" + context.getCommitInstances()
                     + ", removeInstances=" + context.getRemoveInstances());
@@ -109,7 +107,7 @@ public class DataWorkerBean implements DataWorker {
     }
 
     @Override
-    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context) {
+    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
         if (log.isDebugEnabled())
             log.debug("commitNotDetached: commitInstances=" + context.getCommitInstances()
                     + ", removeInstances=" + context.getRemoveInstances());
@@ -381,7 +379,7 @@ public class DataWorkerBean implements DataWorker {
         return query;
     }
 
-    protected void checkPermissions(CommitContext<Entity> context) {
+    protected void checkPermissions(CommitContext context) {
         Set<MetaClass> checkedCreateRights = new HashSet<MetaClass>();
         Set<MetaClass> checkedUpdateRights = new HashSet<MetaClass>();
         Set<MetaClass> checkedDeleteRights = new HashSet<MetaClass>();
@@ -405,7 +403,7 @@ public class DataWorkerBean implements DataWorker {
         }
     }
 
-    protected void checkPermissionsNotDetached(NotDetachedCommitContext<Entity> context) {
+    protected void checkPermissionsNotDetached(NotDetachedCommitContext context) {
         Set<MetaClass> checkedCreateRights = new HashSet<MetaClass>();
         Set<MetaClass> checkedUpdateRights = new HashSet<MetaClass>();
         Set<MetaClass> checkedDeleteRights = new HashSet<MetaClass>();

@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 22.09.2009 11:20:17
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -15,6 +10,13 @@ import com.haulmont.chile.core.model.MetaClass;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Class that defines parameters for loading entities from the database.
+ * <p/> Used by {@link com.haulmont.cuba.core.app.DataService}
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class LoadContext implements Serializable {
 
     private static final long serialVersionUID = -8808320502197308698L;
@@ -29,88 +31,140 @@ public class LoadContext implements Serializable {
     protected List<Query> prevQueries = new ArrayList<Query>();
     protected int queryKey;
 
+    /**
+     * @param metaClass metaclass of the loaded entities
+     */
     public LoadContext(MetaClass metaClass) {
+        Objects.requireNonNull(metaClass, "metaClass is null");
         this.metaClass = metaClass.getName();
     }
 
+    /**
+     * @param javaClass class of the loaded entities
+     */
     public LoadContext(Class javaClass) {
-        this.metaClass = MetadataProvider.getSession().getClass(javaClass).getName();
+        this.metaClass = AppBeans.get(Metadata.class).getSession().getClassNN(javaClass).getName();
     }
 
+    /**
+     * @return name of metaclass of the loaded entities
+     */
     public String getMetaClass() {
         return metaClass;
     }
 
+    /**
+     * @return query definition
+     */
     public Query getQuery() {
         return query;
     }
 
+    /**
+     * @param query query definition
+     */
     public void setQuery(Query query) {
         this.query = query;
     }
 
-    public View getView() {
-        return view;
-    }
-
-    public LoadContext setView(View view) {
-        this.view = view;
-        return this;
-    }
-
-    public LoadContext setView(String viewName) {
-        this.view = MetadataProvider.getViewRepository().getView(
-                MetadataProvider.getSession().getClass(metaClass), viewName);
-        return this;
-    }
-
-    public Object getId() {
-        return id;
-    }
-
-    public LoadContext setId(Object id) {
-        this.id = id;
-        return this;
-    }
-
-    public Collection<Object> getIds() {
-        return ids;
-    }
-
-    public void setIds(Collection<Object> ids) {
-        this.ids = ids;
-    }
-
+    /**
+     * @param queryString JPQL query string. Only named parameters are supported.
+     * @return  query definition object
+     */
     public Query setQueryString(String queryString) {
         final Query query = new Query(queryString);
         setQuery(query);
         return query;
     }
 
+    /**
+     * @return view that is used for loading entities
+     */
+    public View getView() {
+        return view;
+    }
+
+    /**
+     * @param view view that is used for loading entities
+     * @return this instance for chaining
+     */
+    public LoadContext setView(View view) {
+        this.view = view;
+        return this;
+    }
+
+    /**
+     * @param viewName view that is used for loading entities
+     * @return this instance for chaining
+     */
+    public LoadContext setView(String viewName) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        this.view = metadata.getViewRepository().getView(metadata.getSession().getClass(metaClass), viewName);
+        return this;
+    }
+
+    /**
+     * @return id of an entity to be loaded
+     */
+    public Object getId() {
+        return id;
+    }
+
+    /**
+     * @param id id of an entity to be loaded
+     * @return this instance for chaining
+     */
+    public LoadContext setId(Object id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * @return whether to use soft deletion when loading entities
+     */
     public boolean isSoftDeletion() {
         return softDeletion;
     }
 
+    /**
+     * @param softDeletion whether to use soft deletion when loading entities
+     */
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
     }
 
+    /**
+     * @return whether to use security constraints (row-level security) when loading entities
+     */
     public boolean isUseSecurityConstraints() {
         return useSecurityConstraints;
     }
 
+    /**
+     * @param useSecurityConstraints whether to use security constraints (row-level security) when loading entities
+     */
     public void setUseSecurityConstraints(boolean useSecurityConstraints) {
         this.useSecurityConstraints = useSecurityConstraints;
     }
 
+    /**
+     * Allows to execute query on a previous query result.
+     * @return editable list of previous queries
+     */
     public List<Query> getPrevQueries() {
         return prevQueries;
     }
 
+    /**
+     * @return key of the current stack of sequential queries, which is unique for the current user session
+     */
     public int getQueryKey() {
         return queryKey;
     }
 
+    /**
+     * @param queryKey key of the current stack of sequential queries, which is unique for the current user session
+     */
     public void setQueryKey(int queryKey) {
         this.queryKey = queryKey;
     }
@@ -128,6 +182,9 @@ public class LoadContext implements Serializable {
                 '}';
     }
 
+    /**
+     * Class that defines a query to be executed for data loading.
+     */
     public static class Query implements Serializable {
 
         private static final long serialVersionUID = 3819951144050635838L;
@@ -137,45 +194,80 @@ public class LoadContext implements Serializable {
         private int firstResult;
         private int maxResults;
 
+        /**
+         * @param queryString JPQL query string. Only named parameters are supported.
+         */
         public Query(String queryString) {
             this.queryString = queryString;
         }
 
+        /**
+         * @return JPQL query string
+         */
+        public String getQueryString() {
+            return queryString;
+        }
+
+        /**
+         * @param queryString JPQL query string. Only named parameters are supported.
+         */
+        public void setQueryString(String queryString) {
+            this.queryString = queryString;
+        }
+
+        /**
+         * Set value for a query parameter.
+         * @param name  parameter name
+         * @param value parameter value
+         * @return  this query instance for chaining
+         */
         public Query addParameter(String name, Object value) {
             parameters.put(name, value);
             return this;
         }
 
-        public String getQueryString() {
-            return queryString;
-        }
-
-        public void setQueryString(String queryString) {
-            this.queryString = queryString;
-        }
-
+        /**
+         * @return editable map of the query parameters
+         */
         public Map<String, Object> getParameters() {
             return parameters;
         }
 
+        /**
+         * @param parameters map of the query parameters
+         */
         public void setParameters(Map<String, Object> parameters) {
             this.parameters.putAll(parameters);
         }
 
+        /**
+         * @param firstResult results offset
+         * @return this query instance for chaining
+         */
         public Query setFirstResult(int firstResult) {
             this.firstResult = firstResult;
             return this;
         }
 
+        /**
+         * @param maxResults results limit
+         * @return this query instance for chaining
+         */
         public Query setMaxResults(int maxResults) {
             this.maxResults = maxResults;
             return this;
         }
 
+        /**
+         * @return results offset
+         */
         public int getFirstResult() {
             return firstResult;
         }
 
+        /**
+         * @return results limit
+         */
         public int getMaxResults() {
             return maxResults;
         }

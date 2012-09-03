@@ -142,7 +142,7 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         if (services.size() == 1 &&
                 ObjectUtils.equals(services.iterator().next(), dataservice))
         {
-            final CommitContext<Entity> context = createCommitContext(dataservice, commitData);
+            final CommitContext context = createCommitContext(dataservice, commitData);
 
             fireBeforeCommit(context);
 
@@ -197,22 +197,22 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         }
     }
 
-    private void fireBeforeCommit(CommitContext<Entity> context) {
+    private void fireBeforeCommit(CommitContext context) {
         for (CommitListener commitListener : commitListeners) {
             commitListener.beforeCommit(context);
         }
     }
 
-    private void fireAfterCommit(CommitContext<Entity> context, Set<Entity> committedEntities) {
+    private void fireAfterCommit(CommitContext context, Set<Entity> committedEntities) {
         for (CommitListener commitListener : commitListeners) {
             commitListener.afterCommit(context, committedEntities);
         }
     }
 
-    protected CommitContext<Entity> createCommitContext(DataService dataservice,
+    protected CommitContext createCommitContext(DataService dataservice,
                                                         Map<DataService, Collection<Datasource<Entity>>> commitData)
     {
-        CommitContext<Entity> context = new CommitContext<Entity>();
+        CommitContext context = new CommitContext();
 
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
             final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
@@ -236,7 +236,7 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
     }
 
     private void addToContext(Entity entity, Datasource<Entity> datasource,
-                              Collection<Entity> entities, Map<Entity, View> views) {
+                              Collection<Entity> entities, Map<Object, View> views) {
         if (datasource instanceof NestedDatasource)
             replaceMasterCopies(entity, ((NestedDatasource) datasource));
 

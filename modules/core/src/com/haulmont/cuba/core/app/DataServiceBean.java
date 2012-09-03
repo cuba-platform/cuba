@@ -40,12 +40,12 @@ public class DataServiceBean implements DataService {
     }
 
     @Override
-    public Set<Entity> commit(CommitContext<Entity> context) {
+    public Set<Entity> commit(CommitContext context) {
         return dataWorker.commit(context);
     }
 
     @Override
-    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context) {
+    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
         return dataWorker.commitNotDetached(context);
     }
 

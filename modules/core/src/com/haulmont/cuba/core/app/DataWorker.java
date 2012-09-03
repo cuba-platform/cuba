@@ -33,7 +33,7 @@ public interface DataWorker {
      * @param context   {@link com.haulmont.cuba.core.global.CommitContext} object, containing committing entities and other information
      * @return          set of committed instances
      */
-    Set<Entity> commit(CommitContext<Entity> context);
+    Set<Entity> commit(CommitContext context);
 
     /**
      * Commit a collection of entity instances to the database. This method is used for clients, not supporting
@@ -43,7 +43,7 @@ public interface DataWorker {
      * @param context   {@link com.haulmont.cuba.core.global.NotDetachedCommitContext} object, containing committing entities and other information
      * @return          map of passed instances to committed instances
      */
-    Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context);
+    Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context);
 
     /**
      * Load a single entity instance.

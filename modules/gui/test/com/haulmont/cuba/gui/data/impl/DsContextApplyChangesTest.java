@@ -136,7 +136,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
 
         dataService.commitValidator = new TestDataService.CommitValidator() {
             @Override
-            public void validate(CommitContext<Entity> context) {
+            public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
                     if (entity.getId().equals(detail1.getId()))
@@ -152,7 +152,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
 
         dataService.commitValidator = new TestDataService.CommitValidator() {
             @Override
-            public void validate(CommitContext<Entity> context) {
+            public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
                     if (entity.getId().equals(detail1.getId())) {

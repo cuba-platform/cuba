@@ -7,17 +7,20 @@ package com.haulmont.cuba.core.global;
 
 import java.util.*;
 
-public class NotDetachedCommitContext<Entity> extends CommitContext<Entity> {
+public class NotDetachedCommitContext extends CommitContext {
+
+    private static final long serialVersionUID = -1449219610134606045L;
+
     protected Collection newInstanceIds = new ArrayList();
 
     public NotDetachedCommitContext() {
     }
 
-    public NotDetachedCommitContext(Collection<Entity> commitInstances) {
+    public NotDetachedCommitContext(Collection commitInstances) {
         this.commitInstances.addAll(commitInstances);
     }
 
-    public NotDetachedCommitContext(Collection<Entity> commitInstances, Collection<Entity> removeInstances) {
+    public NotDetachedCommitContext(Collection commitInstances, Collection removeInstances) {
         this.commitInstances.addAll(commitInstances);
         this.removeInstances.addAll(removeInstances);
     }

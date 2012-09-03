@@ -18,10 +18,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GenericDataService implements DataService, Serializable {
 
@@ -37,6 +34,8 @@ public class GenericDataService implements DataService, Serializable {
     }
 
     public <A extends Entity> A reload(A entity, String viewName) {
+        Objects.requireNonNull(viewName, "viewName is null");
+
         return reload(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
     }
 
@@ -44,11 +43,11 @@ public class GenericDataService implements DataService, Serializable {
         return reload(entity, view, null);
     }
 
-    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass) {
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass) {
         return reload(entity, view, metaClass, true);
     }
 
-    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityConstraints) {
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
@@ -60,9 +59,8 @@ public class GenericDataService implements DataService, Serializable {
         return (A) load(context);
     }
 
-    public <A extends Entity> A commit(A instance, View view) {
-        final CommitContext<Entity> context =
-                new CommitContext<Entity>(
+    public <A extends Entity> A commit(A instance, @Nullable View view) {
+        final CommitContext context = new CommitContext(
                         Collections.singleton((Entity) instance),
                         Collections.<Entity>emptyList());
         if (view != null)
@@ -78,8 +76,7 @@ public class GenericDataService implements DataService, Serializable {
     }
 
     public void remove(Entity entity) {
-        final CommitContext<Entity> context =
-                new CommitContext<Entity>(
+        final CommitContext context = new CommitContext(
                         Collections.<Entity>emptyList(),
                         Collections.singleton(entity));
         commit(context);
@@ -89,11 +86,11 @@ public class GenericDataService implements DataService, Serializable {
         return dataService.getDbDialect();
     }
 
-    public Set<Entity> commit(CommitContext<Entity> context) {
+    public Set<Entity> commit(CommitContext context) {
         return dataService.commit(context);
     }
 
-    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context) {
+    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
         return dataService.commitNotDetached(context);
     }
 
@@ -102,7 +99,6 @@ public class GenericDataService implements DataService, Serializable {
         return dataService.<A>load(context);
     }
 
-    @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
         return dataService.<A>loadList(context);
     }

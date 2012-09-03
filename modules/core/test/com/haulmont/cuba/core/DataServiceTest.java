@@ -32,7 +32,7 @@ public class DataServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         final LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);
@@ -41,7 +41,7 @@ public class DataServiceTest extends CubaTestCase
         assertEquals("localhost", server.getName());
 
         server.setName("krivopustov");
-        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext(Collections.<Entity>singleton(server)));
     }
 
     public void testLoad() {
@@ -53,7 +53,7 @@ public class DataServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         final LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);
@@ -70,7 +70,7 @@ public class DataServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         final LoadContext loadContext =
                 new LoadContext(Server.class);
@@ -89,7 +89,7 @@ public class DataServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);

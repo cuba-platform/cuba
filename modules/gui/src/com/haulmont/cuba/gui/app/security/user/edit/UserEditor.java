@@ -102,11 +102,11 @@ public class UserEditor extends AbstractEditor<User> {
         dsContext.addListener(
                 new DsContext.CommitListener() {
                     @Override
-                    public void beforeCommit(CommitContext<Entity> context) {
+                    public void beforeCommit(CommitContext context) {
                     }
 
                     @Override
-                    public void afterCommit(CommitContext<Entity> context, Set<Entity> result) {
+                    public void afterCommit(CommitContext context, Set<Entity> result) {
                         for (Entity entity : result) {
                             if (entity.equals(userSession.getUser())) {
                                 userSession.setUser((User) entity);

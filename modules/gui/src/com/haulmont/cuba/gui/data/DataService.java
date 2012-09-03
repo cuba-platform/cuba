@@ -13,6 +13,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.Nullable;
+
 /**
  * GUI interface to provide CRUD functionality. Extends similar middleware interface.
  *
@@ -53,7 +55,7 @@ public interface DataService extends com.haulmont.cuba.core.app.DataService {
      * @param metaClass     desired MetaClass, if null - original entity's metaclass is used
      * @return              reloaded instance
      */
-    <A extends Entity> A reload(A entity, View view, MetaClass metaClass);
+    <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass);
 
     /**
      * Reload the entity instance from database with the view specified. Loading instance class may differ from original
@@ -64,7 +66,7 @@ public interface DataService extends com.haulmont.cuba.core.app.DataService {
      * @param useSecurityConstraints    whether to apply security constraints when loading the instnace
      * @return                          reloaded instance
      */
-    <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityConstraints);
+    <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints);
 
     /**
      * Commit the entity to the database.
@@ -72,7 +74,7 @@ public interface DataService extends com.haulmont.cuba.core.app.DataService {
      * @param view      view object, affects returning committed instance
      * @return          committed instance
      */
-    <A extends Entity> A commit(A entity, View view);
+    <A extends Entity> A commit(A entity, @Nullable View view);
 
     /**
      * Remove the entity instance from the database.

@@ -66,7 +66,6 @@ public interface DsContext {
     @Nullable
     DsContext getParent();
     
-    @Nonnull
     List<DsContext> getChildren();
 
     /**
@@ -79,14 +78,14 @@ public interface DsContext {
          * Invoked before sending data to the middleware
          * @param context   commit context
          */
-        void beforeCommit(CommitContext<Entity> context);
+        void beforeCommit(CommitContext context);
 
         /**
          * Invoked after succesfull commit to middleware
          * @param context   commit context
          * @param result    set of committed entities returning from the middleware service
          */
-        void afterCommit(CommitContext<Entity> context, Set<Entity> result);
+        void afterCommit(CommitContext context, Set<Entity> result);
     }
 }
 

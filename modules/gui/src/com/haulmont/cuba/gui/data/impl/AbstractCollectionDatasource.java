@@ -370,8 +370,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             commitInstances.addAll(itemToUpdate);
             deleteInstances.addAll(itemToDelete);
 
-            CommitContext<Entity> context =
-                    new CommitContext<Entity>(commitInstances, deleteInstances);
+            CommitContext context =
+                    new CommitContext(commitInstances, deleteInstances);
             for (Entity entity : commitInstances) {
                 context.getViews().put(entity, getView());
             }

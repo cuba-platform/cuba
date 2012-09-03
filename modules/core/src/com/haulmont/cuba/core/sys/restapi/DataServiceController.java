@@ -208,7 +208,7 @@ public class DataServiceController {
                 return;
             }
 
-            NotDetachedCommitContext<Entity> commitContext = new NotDetachedCommitContext<Entity>();
+            NotDetachedCommitContext commitContext = new NotDetachedCommitContext();
             commitContext.setCommitInstances(commitInstances);
             commitContext.setRemoveInstances(removeInstances);
             commitContext.setSoftDeletion(commitRequest.isSoftDeletion());

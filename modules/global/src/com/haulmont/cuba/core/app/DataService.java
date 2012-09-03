@@ -29,8 +29,8 @@ import java.util.Set;
  *
  * @author krivopustov
  */
-public interface DataService
-{
+public interface DataService {
+
     String NAME = "cuba_DataService";
 
     /**
@@ -44,7 +44,7 @@ public interface DataService
      * @param context   {@link CommitContext} object, containing committing entities and other information
      * @return          set of committed instances
      */
-    Set<Entity> commit(CommitContext<Entity> context);
+    Set<Entity> commit(CommitContext context);
 
     /**
      * Commit a collection of entity instances to the database. This method is used for clients, not supporting
@@ -54,7 +54,7 @@ public interface DataService
      * @param context   {@link NotDetachedCommitContext} object, containing committing entities and other information
      * @return          map of passed instances to committed instances
      */
-    Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context);
+    Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context);
 
     /**
      * Load a single entity instance.
@@ -73,6 +73,5 @@ public interface DataService
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          a list of detached instances, or empty list if nothing found
      */
-    @Nonnull
     <A extends Entity> List<A> loadList(LoadContext context);
 }

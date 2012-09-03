@@ -22,7 +22,7 @@ import java.util.*;
 public class TestDataService implements DataService {
 
     public interface CommitValidator {
-        void validate(CommitContext<Entity> context);
+        void validate(CommitContext context);
     }
 
     int commitCount;
@@ -35,7 +35,7 @@ public class TestDataService implements DataService {
     }
 
     @Override
-    public Set<Entity> commit(CommitContext<Entity> context) {
+    public Set<Entity> commit(CommitContext context) {
         commitCount++;
 
         if (commitValidator != null)
@@ -49,7 +49,7 @@ public class TestDataService implements DataService {
     }
 
     @Override
-    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context) {
+    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
         return null;
     }
 

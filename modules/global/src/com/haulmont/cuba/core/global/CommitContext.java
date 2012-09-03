@@ -1,68 +1,102 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 22.09.2009 11:20:38
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.entity.Entity;
+
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
 
-public class CommitContext<Entity> implements Serializable {
+/**
+ * DTO that contains information about currently committed entities.
+ * <p/> Used by {@link com.haulmont.cuba.core.app.DataService}
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
+public class CommitContext implements Serializable {
 
     private static final long serialVersionUID = 2510011302544968537L;
 
-    protected Collection<Entity> commitInstances = new HashSet<Entity>();
-    protected Collection<Entity> removeInstances = new HashSet<Entity>();
+    protected Collection commitInstances = new HashSet();
+    protected Collection removeInstances = new HashSet();
 
-    protected Map<Entity, View> views = new HashMap<Entity, View>();
+    protected Map<Object, View> views = new HashMap<Object, View>();
 
     protected boolean softDeletion = true;
 
     public CommitContext() {
     }
 
-    public CommitContext(Collection<Entity> commitInstances) {
+    /**
+     * @param commitInstances collection of changed entities to be committed to the database
+     */
+    public CommitContext(Collection commitInstances) {
         this.commitInstances.addAll(commitInstances);
     }
 
-    public CommitContext(Collection<Entity> commitInstances, Collection<Entity> removeInstances) {
+    /**
+     * @param commitInstances collection of changed entities to be committed to the database
+     * @param removeInstances collection of entities to be removed from the database
+     */
+    public CommitContext(Collection commitInstances, Collection removeInstances) {
         this.commitInstances.addAll(commitInstances);
         this.removeInstances.addAll(removeInstances);
     }
 
-    public Collection<Entity> getCommitInstances() {
+    /**
+     * @return collection of changed entities to be committed to the database
+     */
+    public <E extends Entity> Collection<E> getCommitInstances() {
         return commitInstances;
     }
 
-    public void setCommitInstances(Collection<Entity> commitInstances) {
+    /**
+     * @param commitInstances collection of changed entities to be committed to the database
+     */
+    public void setCommitInstances(Collection commitInstances) {
         this.commitInstances = commitInstances;
     }
 
-    public Collection<Entity> getRemoveInstances() {
+    /**
+     * @return collection of entities to be removed from the database
+     */
+    public <E extends Entity> Collection<E> getRemoveInstances() {
         return removeInstances;
     }
 
-    public void setRemoveInstances(Collection<Entity> removeInstances) {
+    /**
+     * @param removeInstances collection of entities to be removed from the database
+     */
+    public void setRemoveInstances(Collection removeInstances) {
         this.removeInstances = removeInstances;
     }
 
-    public Map<Entity, View> getViews() {
+    /**
+     * Allows to define a view for each committed entity. These views are used after merging changes to fetch merged
+     * entities before returning them to the caller.
+     * @return editable map of entities to their views
+     */
+    public Map<Object, View> getViews() {
         return views;
     }
 
+    /**
+     * @return whether to use soft deletion for this commit
+     */
     public boolean isSoftDeletion() {
         return softDeletion;
     }
 
+    /**
+     * @param softDeletion  whether to use soft deletion for this commit
+     */
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
     }
