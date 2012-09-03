@@ -17,7 +17,6 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
@@ -33,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
@@ -41,6 +41,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected Context context;
 
     protected Security security;
+
+    protected Messages messages = AppBeans.get(Messages.class);
+    protected Scripting scripting = AppBeans.get(Scripting.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     private static Log log = LogFactory.getLog(ComponentLoader.class);
 
@@ -143,7 +147,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
             MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
 
-            UserSession userSession = UserSessionProvider.getUserSession();
+            UserSession userSession = userSessionSource.getUserSession();
             if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ)
                     || ( (metaProperty != null) &&
                          !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))) {
@@ -205,7 +209,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         loadHeight(component, element, null);
     }
 
-    protected void loadHeight(Component component, Element element, String defaultValue) {
+    protected void loadHeight(Component component, Element element, @Nullable String defaultValue) {
         final String height = element.attributeValue("height");
         if (!StringUtils.isBlank(height)) {
             component.setHeight(height);
@@ -218,7 +222,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         loadWidth(component, element, null);
     }
 
-    protected void loadWidth(Component component, Element element, String defaultValue) {
+    protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
         final String width = element.attributeValue("width");
         if (!StringUtils.isBlank(width)) {
             component.setWidth(width);
@@ -263,7 +267,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (isBoolean(expression)) {
             value = Boolean.valueOf(expression);
         } else {
-            value = ScriptingProvider.evaluateGroovy(expression, context.getBinding());
+            value = scripting.evaluateGroovy(expression, context.getBinding());
         }
         return value;
     }
@@ -304,7 +308,9 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (StringUtils.isNotBlank(scriptPath) || StringUtils.isNotBlank(script)) {
             validator = new ScriptValidator(validatorElement, getMessagesPack());
         } else {
-            final Class<Field.Validator> aClass = ScriptingProvider.loadClass(className);
+            final Class<Field.Validator> aClass = scripting.loadClass(className);
+            if (aClass == null)
+                throw new IllegalStateException("Class " + className + " is not found");
             if (!StringUtils.isBlank(getMessagesPack()))
                 try {
                     validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
@@ -334,16 +340,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (property.getRange().isDatatype()) {
             Datatype<Object> dt = property.getRange().asDatatype();
             if (dt.equals(Datatypes.get(IntegerDatatype.NAME)) || dt.equals(Datatypes.get(LongDatatype.NAME))) {
-                validator = new IntegerValidator(
-                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                                "validation.invalidNumber"));
+                validator = new IntegerValidator(messages.getMainMessage("validation.invalidNumber"));
+
             } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
-                validator = new DoubleValidator(
-                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                                "validation.invalidNumber"));
+                validator = new DoubleValidator(messages.getMainMessage("validation.invalidNumber"));
+
             } else if (dt.equals(Datatypes.get(DateDatatype.NAME))) {
-                validator = new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                        "validation.invalidDate"));
+                validator = new DateValidator(messages.getMainMessage("validation.invalidDate"));
             }
         }
         return validator;

@@ -11,7 +11,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
+
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
 
@@ -297,7 +299,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                 int i = className.lastIndexOf('.');
                 if (i > -1)
                     className = className.substring(i + 1);
-                columnCaption = MessageProvider.getMessage(declaringClass, className + "." + id);
+                columnCaption = messages.getMessage(declaringClass, className + "." + id);
             }
             column.setCaption(columnCaption);
         }
@@ -355,7 +357,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                 className = formatterElement.attributeValue("class");
             }
 
-            final Class<Formatter> aClass = ScriptingProvider.loadClass(className);
+            Class<Formatter> aClass = scripting.loadClass(className);
+            if (aClass == null)
+                throw new IllegalStateException("Class " + className + " is not found");
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {
