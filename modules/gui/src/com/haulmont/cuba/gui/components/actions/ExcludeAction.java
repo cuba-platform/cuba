@@ -34,8 +34,6 @@ import java.util.Set;
  */
 public class ExcludeAction extends RemoveAction {
 
-    private static final long serialVersionUID = 62824552031621792L;
-
     public static final String ACTION_ID = ListActionType.EXCLUDE.getId();
 
     protected boolean confirm;

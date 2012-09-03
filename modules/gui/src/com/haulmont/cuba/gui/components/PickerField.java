@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -50,7 +49,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
     void addFieldListener(FieldListener listener);
     void setFieldEditable(boolean editable);
 
-    public interface FieldListener extends Serializable {
+    public interface FieldListener {
         public void actionPerformed(String text, Object prevValue);
     }
 

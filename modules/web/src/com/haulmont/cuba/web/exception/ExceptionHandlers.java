@@ -17,7 +17,6 @@ import com.vaadin.terminal.Terminal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -35,9 +34,7 @@ import java.util.Map;
  *
  * @author krivopustov
  */
-public class ExceptionHandlers implements Serializable
-{
-    private static final long serialVersionUID = 1458946417299293127L;
+public class ExceptionHandlers {
 
     protected App app;
 

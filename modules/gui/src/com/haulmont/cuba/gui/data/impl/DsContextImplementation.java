@@ -9,11 +9,9 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
-
-import java.io.Serializable;
 
 public interface DsContextImplementation extends DsContext {
 
@@ -22,7 +20,7 @@ public interface DsContextImplementation extends DsContext {
     void register(Datasource datasource);
     void registerListener(ParameterInfo item, Datasource datasource);
 
-    public interface LazyTask extends Serializable {
+    public interface LazyTask {
         void execute(DsContext context);
     }
 

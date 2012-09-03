@@ -11,24 +11,20 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.security.entity.PermissionType;
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
-
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.gui.AppConfig;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main menu item descriptor
  */
-public class MenuItem implements Serializable
-{
-    private static final long serialVersionUID = -8504408057097836101L;
+public class MenuItem {
 
     private MenuItem parent;
     private List<MenuItem> children = new ArrayList<MenuItem>();

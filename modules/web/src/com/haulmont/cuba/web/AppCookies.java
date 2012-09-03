@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AppCookies implements Serializable {
+
+    private static final long serialVersionUID = 5958656635050664762L;
+
     public static final int COOKIE_MAX_AGE = 31536000; //1 year (in seconds)
 
     private transient Map<String, Cookie> requestedCookies;

@@ -31,8 +31,6 @@ import com.haulmont.cuba.gui.components.ListComponent;
  */
 public class FilterClearAction extends AbstractAction {
 
-    private static final long serialVersionUID = 391662021995150227L;
-
     public static final String ACTION_ID = "clear";
 
     protected final ListComponent owner;

@@ -31,8 +31,6 @@ import java.util.Map;
  */
 public class RefreshAction extends AbstractAction {
 
-    private static final long serialVersionUID = -5377483521909360667L;
-
     public static final String ACTION_ID = ListActionType.REFRESH.getId();
 
     protected ListComponent owner;

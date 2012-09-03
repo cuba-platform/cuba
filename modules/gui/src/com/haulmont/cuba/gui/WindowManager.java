@@ -28,14 +28,12 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import java.io.InputStream;
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -44,7 +42,7 @@ import java.util.concurrent.Callable;
 /**
  * GenericUI class intended for creating and opening application screens.
  */
-public abstract class WindowManager implements Serializable {
+public abstract class WindowManager {
 
     /**
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}
@@ -64,11 +62,9 @@ public abstract class WindowManager implements Serializable {
         DIALOG
     }
 
-    public interface WindowCloseListener extends Serializable {
+    public interface WindowCloseListener {
         void onWindowClose(Window window, boolean anyOpenWindowExist);
     }
-
-    private static final long serialVersionUID = 6291745424560229324L;
 
     private transient DataService defaultDataService;
 

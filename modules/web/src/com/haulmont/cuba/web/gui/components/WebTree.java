@@ -35,8 +35,6 @@ public class WebTree
     private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
     
-    private static final long serialVersionUID = -5838850934944507736L;
-
     public WebTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.Tree();
         component.setMultiSelect(false);

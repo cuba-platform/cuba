@@ -13,7 +13,6 @@ import java.util.Locale;
  * This class is used as a {@link Connection} implementation in case of CAS integration.
  */
 public class CASProtectedConnection extends AbstractConnection {
-    private static final long serialVersionUID = -5483550137345750662L;
 
     @Override
     public void login(String login, String password, Locale locale) throws LoginException {

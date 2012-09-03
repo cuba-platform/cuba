@@ -20,8 +20,6 @@ public class WebAutoCompleteTextField
     implements
         AutoCompleteTextField, Component.Wrapper {
 
-    private static final long serialVersionUID = 6765744686076014886L;
-
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.AutoCompleteTextField createTextFieldImpl() {
         return new com.haulmont.cuba.web.toolkit.ui.AutoCompleteTextField();

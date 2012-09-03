@@ -33,8 +33,6 @@ public class WebPopupButton
 
     private List<Action> actionOrder = new LinkedList<Action>();
 
-    private static final long serialVersionUID = -3825116471579307544L;
-
     public WebPopupButton() {
         component = new PopupButton("");
         component.setImmediate(true);

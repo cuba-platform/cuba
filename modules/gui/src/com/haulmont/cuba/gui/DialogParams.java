@@ -1,19 +1,15 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 package com.haulmont.cuba.gui;
 
-import java.io.Serializable;
-
 /**
  * @author degtyarjov
  * @version $Id$
  */
-public class DialogParams implements Serializable {
-
-    private static final long serialVersionUID = -5408074764288510987L;
+public class DialogParams {
 
     private Integer width;
     private Integer height;

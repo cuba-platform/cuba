@@ -11,8 +11,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.ValueListener;
 
-import java.io.Serializable;
-
 public interface Field
     extends
         DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
@@ -33,7 +31,7 @@ public interface Field
     void addValidator(Validator validator);
     void removeValidator(Validator validator);
 
-    interface Validator extends Serializable {
+    interface Validator {
         void validate(Object value) throws ValidationException;
     }
 }

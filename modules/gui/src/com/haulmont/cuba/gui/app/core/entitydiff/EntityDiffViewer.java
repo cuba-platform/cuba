@@ -24,7 +24,6 @@ import java.util.Set;
  * @author artamonov
  */
 public class EntityDiffViewer extends AbstractFrame {
-    private static final long serialVersionUID = -6858393916181794311L;
 
     @Inject
     private EntitySnapshotsDatasource snapshotsDs;

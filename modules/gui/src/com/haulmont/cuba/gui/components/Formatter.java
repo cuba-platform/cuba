@@ -10,9 +10,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import java.io.Serializable;
-
-public interface Formatter<T> extends Serializable {
+public interface Formatter<T> {
 
     String format(T value);
 

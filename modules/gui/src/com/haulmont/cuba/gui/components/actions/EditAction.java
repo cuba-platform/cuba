@@ -41,8 +41,6 @@ import java.util.Set;
  */
 public class EditAction extends ItemTrackingAction {
 
-    private static final long serialVersionUID = -4849373795449480016L;
-
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
     protected final ListComponent owner;

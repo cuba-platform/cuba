@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.Serializable;
 import java.util.*;
 
 public abstract class AbstractDatasource<T extends Entity>
@@ -178,9 +177,7 @@ public abstract class AbstractDatasource<T extends Entity>
         }
     }
 
-    protected class ItemListener implements ValueListener, Serializable {
-
-        private static final long serialVersionUID = 358102907204482975L;
+    protected class ItemListener implements ValueListener {
 
         public void propertyChanged(Object item, String property, Object prevValue, Object value) {
             if (!listenersEnabled)

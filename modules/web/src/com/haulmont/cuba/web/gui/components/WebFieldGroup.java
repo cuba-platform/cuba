@@ -46,7 +46,6 @@ import java.util.*;
 
 public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements com.haulmont.cuba.gui.components.FieldGroup {
 
-    private static final long serialVersionUID = 768889467060419241L;
     private static final String BORDER_STYLE_NAME = "edit-area";
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();

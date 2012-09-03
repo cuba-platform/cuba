@@ -18,9 +18,8 @@ import com.vaadin.ui.ClientWidget;
  * @author artamonov
  */
 @ClientWidget(VScriptHost.class)
-@SuppressWarnings({"serial","unused"})
+@SuppressWarnings({"unused"})
 public class WebScriptHost extends WebAbstractComponent<JavaScriptHost> implements ClientScriptHost {
-    private static final long serialVersionUID = -7581131038846825063L;
 
     public WebScriptHost() {
         this.component = new JavaScriptHost();

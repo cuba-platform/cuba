@@ -12,7 +12,6 @@ import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -30,7 +29,7 @@ import java.util.*;
   *     </ul>
  */
 @Deprecated
-public abstract class ListActionsHelper<T extends ListComponent> implements Serializable {
+public abstract class ListActionsHelper<T extends ListComponent> {
 
     protected IFrame frame;
     protected T component;
@@ -311,7 +310,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
     }
 
-    public static interface Listener extends Serializable {
+    public static interface Listener {
         void entityCreated(Entity entity);
 
         void entityEdited(Entity entity);
@@ -320,7 +319,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
 
     }
 
-    public static interface WindowListener extends Serializable {
+    public static interface WindowListener {
         void childWindowClosed(Window window);
     }
 

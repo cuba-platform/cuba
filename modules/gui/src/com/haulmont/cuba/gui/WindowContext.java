@@ -12,13 +12,12 @@ package com.haulmont.cuba.gui;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.ValueListener;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Provides access to window parameters and component values
  */
-public interface WindowContext extends Serializable {
+public interface WindowContext {
 
     IFrame getFrame();
 

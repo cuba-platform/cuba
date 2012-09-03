@@ -10,10 +10,8 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.vaadin.terminal.Terminal;
 import com.haulmont.cuba.web.App;
-
-import java.io.Serializable;
+import com.vaadin.terminal.Terminal;
 
 /**
  * Interface to be implemented by exception handlers in Web-client.
@@ -22,7 +20,7 @@ import java.io.Serializable;
  *
  * @author krivopustov
  */
-public interface ExceptionHandler extends Serializable
+public interface ExceptionHandler
 {
     /**
      * Handle an exception. Implementation class should either handle the exception and return true, or return false

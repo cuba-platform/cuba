@@ -18,19 +18,14 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.List;
 
-public class SettingsImpl implements Settings, Serializable {
+public class SettingsImpl implements Settings {
 
     private final String name;
     private transient UserSettingService service;
     private Element root;
     private boolean modified;
-
-    private static final long serialVersionUID = 3938766157133492378L;
 
     public SettingsImpl(String name) {
         this.name = name;

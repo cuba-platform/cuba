@@ -10,13 +10,12 @@
 package com.haulmont.cuba.gui.components;
 
 import java.beans.PropertyChangeListener;
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * A named listener to UI events
  */
-public interface Action extends Serializable {
+public interface Action {
 
     public static final String PROP_CAPTION = "caption";
     public static final String PROP_ICON = "icon";

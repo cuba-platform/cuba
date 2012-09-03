@@ -11,19 +11,18 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-
-import java.io.Serializable;
-import java.util.*;
-
 import org.apache.commons.lang.ObjectUtils;
 
-public class DsContextImpl implements DsContextImplementation, Serializable {
+import java.util.*;
+
+public class DsContextImpl implements DsContextImplementation {
+
     private WindowContext windowContext;
     private DataService dataservice;
 
@@ -41,8 +40,6 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
     protected List<LazyTask> lazyTasks = new ArrayList<LazyTask>();
 
     private Set<CommitListener> commitListeners = new LinkedHashSet<CommitListener>();
-
-    private static final long serialVersionUID = -6359742663576364580L;
 
     public DsContextImpl(DataService dataservice) {
         this.dataservice = dataservice;

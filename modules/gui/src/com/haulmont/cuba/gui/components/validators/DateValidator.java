@@ -29,8 +29,6 @@ public class DateValidator implements Field.Validator {
     protected String messagesPack;
     protected Messages messages = AppBeans.get(Messages.class);
 
-    private static final long serialVersionUID = 1746793537465138578L;
-
     public DateValidator(Element element, String messagesPack) {
         this.message = element.attributeValue("message");
         this.messagesPack = messagesPack;

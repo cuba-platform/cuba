@@ -6,12 +6,11 @@
 
 package com.haulmont.cuba.gui.data;
 
-import java.io.Serializable;
-
 /**
  * @author subbotin
  * @version $Id$
  */
-public interface ResizeListener<T> extends Serializable {
+public interface ResizeListener<T> {
+
     public void onResize(T source, String oldWidth, String oldHeight, String width, String height);
 }

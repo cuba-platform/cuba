@@ -40,8 +40,6 @@ import java.util.Map;
  */
 public class CreateAction extends AbstractAction {
 
-    private static final long serialVersionUID = 442122838693493665L;
-
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
     protected final ListComponent owner;

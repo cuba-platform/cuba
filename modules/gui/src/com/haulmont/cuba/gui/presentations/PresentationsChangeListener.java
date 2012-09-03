@@ -10,9 +10,7 @@
  */
 package com.haulmont.cuba.gui.presentations;
 
-import java.io.Serializable;
-
-public interface PresentationsChangeListener extends Serializable {
+public interface PresentationsChangeListener {
     
     void currentPresentationChanged(Presentations presentations, Object oldPresentationId);
 

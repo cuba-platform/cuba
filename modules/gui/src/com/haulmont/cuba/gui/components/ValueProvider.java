@@ -1,10 +1,9 @@
 package com.haulmont.cuba.gui.components;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.Map;
 
-public interface ValueProvider extends Serializable {
+public interface ValueProvider {
 
     @Nullable
     Map<String, Object> getValues();

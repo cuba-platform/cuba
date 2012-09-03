@@ -24,8 +24,6 @@ public class PatternValidator implements Field.Validator {
     protected String messagesPack;
     protected Messages messages = AppBeans.get(Messages.class);
 
-    private static final long serialVersionUID = -3580324801456392253L;
-
     public PatternValidator(Element element, String messagesPack) {
         this(element.attributeValue("pattern"));
         message = element.attributeValue("message");

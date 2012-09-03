@@ -12,17 +12,12 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.data.DataService;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.*;
 
-public class GenericDataService implements DataService, Serializable {
-
-    private static final long serialVersionUID = -2688273748125419411L;
+public class GenericDataService implements DataService {
 
     private Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);
 

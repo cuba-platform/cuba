@@ -28,11 +28,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.io.Serializable;
 import java.util.*;
 
-public class PresentationsImpl implements Presentations, Serializable {
-    private static final long serialVersionUID = -4430808716144215714L;
+public class PresentationsImpl implements Presentations {
 
     private String name;
     private Map<Object, Presentation> presentations;

@@ -23,7 +23,6 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,8 +35,8 @@ import java.util.MissingResourceException;
  * @version $Id$
  */
 @ManagedBean(MenuConfig.NAME)
-public class MenuConfig implements Serializable
-{
+public class MenuConfig {
+
     public static final String NAME = "cuba_MenuConfig";
 
     public static final String MENU_CONFIG_XML_PROP = "cuba.menuConfig";
@@ -45,8 +44,6 @@ public class MenuConfig implements Serializable
     private static Log log = LogFactory.getLog(MenuConfig.class);
     
     private List<MenuItem> rootItems = new ArrayList<MenuItem>();
-
-    private static final long serialVersionUID = 6791874036524436320L;
 
     /**
      * Localized menu item caption.

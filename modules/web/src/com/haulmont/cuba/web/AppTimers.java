@@ -10,7 +10,6 @@ import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.ui.Window;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -153,9 +152,7 @@ public class AppTimers {
         }
     }
 
-    protected static class WindowTimers implements Serializable {
-        private static final long serialVersionUID = 2038659815683284376L;
-
+    protected static class WindowTimers {
         protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
         protected Set<Timer> timers = new HashSet<Timer>();
     }

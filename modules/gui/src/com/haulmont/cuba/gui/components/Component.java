@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import org.dom4j.Element;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -223,11 +222,11 @@ public interface Component {
         void addListener(CollapseListener listener);
         void removeListener(CollapseListener listener);
 
-        interface ExpandListener extends Serializable {
+        interface ExpandListener {
             void onExpand(Collapsable component);
         }
 
-        interface CollapseListener extends Serializable {
+        interface CollapseListener {
             void onCollapse(Collapsable component);
         }
     }

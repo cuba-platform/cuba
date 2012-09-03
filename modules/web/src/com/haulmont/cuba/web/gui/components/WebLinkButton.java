@@ -15,7 +15,6 @@ import com.vaadin.ui.themes.BaseTheme;
  * @author Alexander Budarov
  */
 public class WebLinkButton extends WebButton implements LinkButton {
-    private static final long serialVersionUID = 6181774197745365737L;
 
     public WebLinkButton() {
         setStyleName(BaseTheme.BUTTON_LINK);

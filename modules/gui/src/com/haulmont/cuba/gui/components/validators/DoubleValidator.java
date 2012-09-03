@@ -31,8 +31,6 @@ public class DoubleValidator implements Field.Validator {
     protected String onlyPositive;
     protected Messages messages = AppBeans.get(Messages.class);
 
-    private static final long serialVersionUID = 7129516061104979525L;
-
     public DoubleValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
         onlyPositive = element.attributeValue("onlyPositive");

@@ -15,7 +15,6 @@ import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
-import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -23,8 +22,7 @@ import java.util.UUID;
  */
 @ManagedBean(ExportDisplay.NAME)
 @Scope("prototype")
-public class WebExportDisplay implements ExportDisplay, Serializable {
-    private static final long serialVersionUID = -5284064787054836702L;
+public class WebExportDisplay implements ExportDisplay {
 
     private boolean newWindow;
     private boolean attachment;

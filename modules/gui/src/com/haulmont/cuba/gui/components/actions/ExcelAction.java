@@ -34,8 +34,6 @@ import java.util.Map;
  */
 public class ExcelAction extends AbstractAction {
 
-    private static final long serialVersionUID = -1811807609363983998L;
-
     public static final String ACTION_ID = ListActionType.EXCEL.getId();
 
     protected final Table table;

@@ -14,11 +14,9 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
-import java.io.Serializable;
-
 public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     implements
-        Serializable, Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame
+        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame
 {
     private String id;
     protected T component;

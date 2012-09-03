@@ -9,12 +9,10 @@
  */
 package com.haulmont.cuba.gui.data;
 
-import java.io.Serializable;
-
 /**
  * Listener to value change events
  * @param <T> type of event source 
  */
-public interface ValueListener<T> extends Serializable {
+public interface ValueListener<T> {
     void valueChanged(T source, String property, Object prevValue, Object value);
 }

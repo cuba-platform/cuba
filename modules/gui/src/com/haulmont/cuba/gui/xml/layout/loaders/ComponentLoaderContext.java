@@ -5,7 +5,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import groovy.lang.Binding;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +20,6 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
 
     protected ComponentLoader.Context parent;
     
-    private static final long serialVersionUID = 5925275133830025528L;
-
     public ComponentLoaderContext(DsContext dsContext, Map<String, Object> parameters) {
         this.dsContext = dsContext;
         this.parameters = parameters;
@@ -83,10 +80,9 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         }
     }
 
-    private class TaskExecutor implements Runnable, Serializable {
-        private final ComponentLoader.PostInitTask task;
+    private class TaskExecutor implements Runnable {
 
-        private static final long serialVersionUID = 4776677725415883750L;
+        private final ComponentLoader.PostInitTask task;
 
         private TaskExecutor(ComponentLoader.PostInitTask task) {
             this.task = task;

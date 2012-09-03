@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.formatters.DateFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
-import java.io.Serializable;
 import java.util.List;
 
 public interface Table
@@ -66,16 +65,14 @@ public interface Table
     boolean isAllowMultiStringCells();
     void setAllowMultiStringCells(boolean value);
 
-    interface ColumnCollapseListener extends Serializable {
+    interface ColumnCollapseListener {
         void columnCollapsed(Column collapsedColumn, boolean collapsed);
     }
 
     void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener);
     void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener);
 
-    public static class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
-
-        private static final long serialVersionUID = -8462478820056909896L;
+    public static class Column implements HasXmlDescriptor, HasCaption, HasFomatter {
 
         protected Object id;
         protected String caption;

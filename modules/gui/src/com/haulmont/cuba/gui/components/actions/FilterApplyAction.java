@@ -28,8 +28,6 @@ import com.haulmont.cuba.gui.components.ListComponent;
  */
 public class FilterApplyAction extends AbstractAction {
 
-    private static final long serialVersionUID = 634685916452545835L;
-
     public static final String ACTION_ID = "apply";
 
     protected final ListComponent owner;

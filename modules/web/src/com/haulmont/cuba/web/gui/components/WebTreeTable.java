@@ -40,8 +40,6 @@ public class WebTreeTable
 {
     protected String hierarchyProperty;
     
-    private static final long serialVersionUID = 4587793124533649610L;
-
     public WebTreeTable() {
         component = createTreeTableComponent();
         initComponent(component);

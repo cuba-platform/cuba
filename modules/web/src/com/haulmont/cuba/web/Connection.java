@@ -10,7 +10,6 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.Locale;
 
 /**
@@ -20,7 +19,7 @@ import java.util.Locale;
  *
  * @author krivopustov
  */
-public interface Connection extends Serializable {
+public interface Connection {
 
     /**
      * Log in to the system.

@@ -25,8 +25,6 @@ public class WebWidgetsTree
 
     private String hierarchyProperty;
 
-    private static final long serialVersionUID = 8256179252367394044L;
-
     public WebWidgetsTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.WidgetsTree();
         component.setSelectable(false);

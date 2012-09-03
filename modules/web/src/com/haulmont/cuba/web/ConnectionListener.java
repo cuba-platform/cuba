@@ -12,12 +12,10 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.security.global.LoginException;
 
-import java.io.Serializable;
-
 /**
  * Listener of connection events. See {@link com.haulmont.cuba.web.Connection}.
  */
-public interface ConnectionListener extends Serializable
+public interface ConnectionListener
 {
     void connectionStateChanged(Connection connection) throws LoginException;
 }

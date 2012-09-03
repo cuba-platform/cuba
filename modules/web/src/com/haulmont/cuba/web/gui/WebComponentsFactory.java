@@ -11,16 +11,13 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
 
 import javax.annotation.ManagedBean;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 @ManagedBean(ComponentsFactory.NAME)
-public class WebComponentsFactory implements ComponentsFactory, Serializable {
+public class WebComponentsFactory implements ComponentsFactory {
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<? extends Component>>();
-
-    private static final long serialVersionUID = -409350376523747015L;
 
     static {
         classes.put(Window.NAME, WebWindow.class);

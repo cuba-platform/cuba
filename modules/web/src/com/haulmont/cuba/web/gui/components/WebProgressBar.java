@@ -19,7 +19,6 @@ import com.vaadin.ui.ProgressIndicator;
  * @author Alexander Budarov
  */
 public class WebProgressBar extends WebAbstractField<ProgressIndicator> implements ProgressBar {
-    private static final long serialVersionUID = 6339983078728788950L;
 
     protected boolean indeterminate;
 

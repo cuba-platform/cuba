@@ -13,7 +13,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasBorder,
@@ -79,7 +78,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         TOP
     }
 
-    public class Field implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
+    public class Field implements HasXmlDescriptor, HasCaption, HasFomatter {
         private String id;
         private String caption;
         private String description;
@@ -94,8 +93,6 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         
         private Class type;
         
-        private static final long serialVersionUID = -148321034678616282L;
-
         public Field(String id) {
             this.id = id;
         }
@@ -212,7 +209,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         }
     }
 
-    interface CustomFieldGenerator extends Serializable {
+    interface CustomFieldGenerator {
         Component generateField(Datasource datasource, Object propertyId);
     }
 }

@@ -38,16 +38,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.*;
 
 public class WebWindowManager extends WindowManager {
 
-    private static final long serialVersionUID = -1212999019760516097L;
-
-    protected static class WindowData implements Serializable {
-        private static final long serialVersionUID = -3919777239558187362L;
-
+    protected static class WindowData {
         protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<>();
         protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
@@ -116,9 +111,7 @@ public class WebWindowManager extends WindowManager {
         return new ArrayList<>(getWindowOpenMode().keySet());
     }
 
-    protected static class WindowOpenMode implements Serializable {
-
-        private static final long serialVersionUID = 2475930997468013484L;
+    protected static class WindowOpenMode {
 
         protected Window window;
         protected OpenType openType;
@@ -1163,11 +1156,11 @@ public class WebWindowManager extends WindowManager {
         appWindowMap.clear();
     }
 
-    public interface ShowStartupLayoutListener extends Serializable {
+    public interface ShowStartupLayoutListener {
         void onShowStartupLayout();
     }
 
-    public interface CloseStartupLayoutListener extends Serializable {
+    public interface CloseStartupLayoutListener {
         void onCloseStartupLayout();
     }
 }

@@ -25,8 +25,6 @@ import java.util.Locale;
  */
 public class DefaultConnection extends AbstractConnection implements ActiveDirectoryConnection {
 
-    private static final long serialVersionUID = 5996384066163004543L;
-
     @Override
     public void login(String login, String password, Locale locale) throws LoginException {
         if (locale == null)

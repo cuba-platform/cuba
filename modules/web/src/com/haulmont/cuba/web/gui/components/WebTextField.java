@@ -18,8 +18,6 @@ public class WebTextField
     implements
         TextField, Component.Wrapper {
 
-    private static final long serialVersionUID = 4913457699672805927L;
-
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.TextField createTextFieldImpl() {
         return new com.haulmont.cuba.web.toolkit.ui.TextField();

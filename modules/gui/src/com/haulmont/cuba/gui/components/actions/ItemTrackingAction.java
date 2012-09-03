@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.Datasource;
  * @author artamonov
  */
 public class ItemTrackingAction extends AbstractAction implements CollectionDatasourceListener {
+
     protected ItemTrackingAction(String id) {
         super(id);
     }

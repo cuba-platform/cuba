@@ -32,8 +32,6 @@ public class WebTable
     implements
         Component.Wrapper
 {
-    private static final long serialVersionUID = -471562532396731699L;
-
     public WebTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.Table() {
             @Override

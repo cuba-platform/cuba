@@ -28,7 +28,7 @@ public class JavaScriptHost extends AbstractComponent {
     private static final long serialVersionUID = -136425458030091656L;
 
     private static class ScriptValueProvider implements ValueProvider {
-        private static final long serialVersionUID = 2379677116434150730L;
+
         Map<String, Object> params = new HashMap<String, Object>();
 
         public Map<String, Object> getValues() {

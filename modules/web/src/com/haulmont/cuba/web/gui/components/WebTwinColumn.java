@@ -35,8 +35,6 @@ public class WebTwinColumn
 
     private StyleProvider styleProvider;
     
-    private static final long serialVersionUID = 9028516889145414298L;
-
     public WebTwinColumn() {
         component = new TwinColumnSelect() {
             @Override

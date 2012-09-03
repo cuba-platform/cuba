@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.01.2009 10:21:02
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -18,12 +14,18 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
+/**
+ * Base class for screen controllers.
+ *
+ * @author abramov
+ * @version $Id$
+ */
+public class AbstractFrame implements IFrame, Component.Wrapper {
+
     protected IFrame frame;
     private String styleName;
     private Object _companion;

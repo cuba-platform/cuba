@@ -41,7 +41,6 @@ public class WebPickerField
         WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
         implements
         PickerField, Component.Wrapper {
-    private static final long serialVersionUID = -938974178359790495L;
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;

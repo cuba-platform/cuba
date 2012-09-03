@@ -36,8 +36,6 @@ import java.util.*;
 
 public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList {
 
-    private static final long serialVersionUID = -6490244006772570832L;
-
     private CollectionDatasource datasource;
 
     private String captionProperty;

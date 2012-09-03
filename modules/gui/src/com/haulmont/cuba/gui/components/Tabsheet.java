@@ -12,7 +12,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 public interface Tabsheet 
@@ -63,14 +62,14 @@ public interface Tabsheet
         void setCaptionStyleName(String styleName);
     }
 
-    interface TabChangeListener extends Serializable {
+    interface TabChangeListener {
         void tabChanged(Tab newTab);
     }
 
     /*
      * Implement this to override default behavior when user clicks button to close tab
      */
-    interface TabCloseHandler extends Serializable {
+    interface TabCloseHandler {
         void onTabClose(Tab tab);
     }
 }

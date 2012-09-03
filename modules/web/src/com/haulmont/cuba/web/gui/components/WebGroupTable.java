@@ -45,8 +45,6 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
     protected boolean rerender = true;
 
-    private static final long serialVersionUID = 4274142811721901398L;
-
     public WebGroupTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
             @Override

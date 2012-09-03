@@ -29,8 +29,6 @@ public class LongValidator implements Field.Validator {
     protected String onlyPositive;
     protected Messages messages = AppBeans.get(Messages.class);
 
-    private static final long serialVersionUID = -1312187225804302418L;
-
     public LongValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
         onlyPositive = element.attributeValue("onlyPositive");

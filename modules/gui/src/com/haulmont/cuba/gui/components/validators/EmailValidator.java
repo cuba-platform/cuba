@@ -18,8 +18,6 @@ public class EmailValidator extends PatternValidator {
     public static String EMAIL_PATTERN = sDomen + "@" + sDomen + "\u002E" + sDomen2;
     public static String MULTI_EMAIL_PATTERN = EMAIL_PATTERN + "([;,]+[\\s]*" + EMAIL_PATTERN + ")*";
 
-    private static final long serialVersionUID = -4082731133028995753L;
-
     public EmailValidator(Element element, String messagesPack) {
         super(MULTI_EMAIL_PATTERN);
         message = element.attributeValue("message");

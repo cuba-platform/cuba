@@ -24,8 +24,6 @@ import java.text.DecimalFormat;
 public class NumberFormatter implements Formatter<Number> {
     private Element element;
 
-    private static final long serialVersionUID = -7507422168280540490L;
-
     public NumberFormatter() {
     }
 

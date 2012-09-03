@@ -37,8 +37,6 @@ import java.util.Set;
  */
 public class RemoveAction extends ItemTrackingAction {
 
-    private static final long serialVersionUID = -8700360141431140203L;
-
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
     protected final ListComponent owner;

@@ -8,17 +8,16 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.gui.components.AggregationInfo;
-import com.haulmont.cuba.gui.aggregation.Aggregation;
-import com.haulmont.cuba.gui.aggregation.Aggregations;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.gui.aggregation.Aggregation;
+import com.haulmont.cuba.gui.aggregation.Aggregations;
+import com.haulmont.cuba.gui.components.AggregationInfo;
 
-import java.io.Serializable;
 import java.util.*;
 
-public abstract class AggregatableDelegate<K> implements Serializable {
+public abstract class AggregatableDelegate<K> {
 
     public Map<Object, String> aggregate(AggregationInfo<MetaPropertyPath>[] aggregationInfos, Collection<K> itemIds) {
         if (aggregationInfos == null || aggregationInfos.length == 0) {

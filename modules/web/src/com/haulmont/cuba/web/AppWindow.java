@@ -45,7 +45,6 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -1048,7 +1047,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             new ShowInfoAction().showInfo(entity, metaClass, editor);
         }
 
-        public interface TabCloseHandler extends Serializable {
+        public interface TabCloseHandler {
             void onClose(TabSheet tabSheet, Component tabContent);
         }
     }
