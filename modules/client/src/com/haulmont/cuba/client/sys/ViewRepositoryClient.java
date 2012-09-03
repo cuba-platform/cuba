@@ -34,8 +34,8 @@ public class ViewRepositoryClient extends ViewRepository {
     }
 
     @Override
-    protected View findView(MetaClass metaClass, String name) {
-        View view = super.findView(metaClass, name);
+    protected View retrieveView(MetaClass metaClass, String name) {
+        View view = super.retrieveView(metaClass, name);
         if (view == null && lazyLoadServerViews) {
             log.trace("Search for view " + metaClass + "/" + name + " on server");
             view = serverInfoService.getView(metaClass.getJavaClass(), name);

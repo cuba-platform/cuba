@@ -22,6 +22,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -35,8 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  * @version $Id$
  */
-public class ViewRepository
-{
+public class ViewRepository {
     private List<String> readFileNames = new LinkedList<String>();
 
     private Map<MetaClass, Map<String, View>> storage =
@@ -71,19 +71,34 @@ public class ViewRepository
     public View getView(MetaClass metaClass, String name) {
         Objects.requireNonNull(metaClass, "MetaClass is null");
 
-        // Replace with extended entity if such one exists
-        metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
-
         View view = findView(metaClass, name);
-        if (view == null) {
-            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-            if (originalMetaClass != null) {
-                view = findView(originalMetaClass, name);
-            }
-        }
 
         if (view == null)
             throw new ViewNotFoundException(String.format("View %s/%s not found", metaClass.getName(), name));
+        return view;
+    }
+
+    /**
+     * Searches for a View for an entity
+     * @param metaClass     entity class
+     * @param name          view name
+     * @return              view instance or null if no view found
+     */
+    @Nullable
+    public View findView(MetaClass metaClass, String name) {
+        if (metaClass == null || name == null)
+            return null;
+
+        // Replace with extended entity if such one exists
+        metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
+
+        View view = retrieveView(metaClass, name);
+        if (view == null) {
+            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+            if (originalMetaClass != null) {
+                view = retrieveView(originalMetaClass, name);
+            }
+        }
         return view;
     }
 
@@ -158,7 +173,7 @@ public class ViewRepository
         }
     }
 
-    protected View findView(MetaClass metaClass, String name) {
+    protected View retrieveView(MetaClass metaClass, String name) {
         Map<String, View> views = storage.get(metaClass);
         View view = (views == null ? null : views.get(name));
         if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL))) {
@@ -186,7 +201,7 @@ public class ViewRepository
             metaClass = metadata.getSession().getClassNN(entity);
         }
 
-        View v = findView(metaClass, viewName);
+        View v = retrieveView(metaClass, viewName);
         boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
         if (v != null && !overwrite)
             return v;
@@ -196,11 +211,11 @@ public class ViewRepository
         View view;
         String ancestor = viewElem.attributeValue("extends");
         if (ancestor != null) {
-            View ancestorView = findView(metaClass, ancestor);
+            View ancestorView = retrieveView(metaClass, ancestor);
             if (ancestorView == null) {
                 MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                 if (originalMetaClass != null)
-                    ancestorView = findView(originalMetaClass, ancestor);
+                    ancestorView = retrieveView(originalMetaClass, ancestor);
                 if (ancestorView == null)
                     throw new IllegalStateException("No ancestor view found: " + ancestor);
             }
@@ -248,7 +263,7 @@ public class ViewRepository
                     refMetaClass = metadata.getSession().getClass(refEntityName);
                 }
 
-                refView = findView(refMetaClass, refViewName);
+                refView = retrieveView(refMetaClass, refViewName);
                 if (refView == null) {
                     for (Element e : (List<Element>) rootElem.elements("view")) {
                         if ((refMetaClass.getName().equals(e.attributeValue("entity"))

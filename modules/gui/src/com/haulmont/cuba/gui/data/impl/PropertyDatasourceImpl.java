@@ -98,8 +98,12 @@ public class PropertyDatasourceImpl<T extends Entity>
     public View getView() {
         if (view == null) {
             ViewProperty property = masterDs.getView().getProperty(metaProperty.getName());
-            view = property == null ?
-                    null : metadata.getViewRepository().getView(getMetaClass(), property.getView().getName());
+            if (property == null)
+                return null;
+            view = metadata.getViewRepository().findView(getMetaClass(), property.getView().getName());
+            //anonymous (nameless) view
+            if (view == null)
+                view = property.getView();
         }
         return view;
     }
