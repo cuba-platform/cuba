@@ -1,20 +1,15 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 23.06.2009 16:04:07
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components.formatters;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import org.apache.commons.lang.StringUtils;
@@ -24,9 +19,22 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * {@link Date} formatter to be used in screen descriptors.
+ * <p/> Either <code>format</code> or <code>type</code> attributes must be defined, e.g.:
+ * <pre>
+ * &lt;formatter class=&quot;com.haulmont.cuba.gui.components.formatters.DateFormatter&quot; type=&quot;DATE&quot;/&gt;
+ * </pre>
+ *
+ * @author tulupov
+ * @version $Id$
+ */
 public class DateFormatter implements Formatter<Date> {
 
     private Element element;
+
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected Messages messages = AppBeans.get(Messages.class);
 
     public DateFormatter(Element element) {
         this.element = element;
@@ -41,7 +49,7 @@ public class DateFormatter implements Formatter<Date> {
             String type = element.attributeValue("type");
             if (type != null) {
                 Table.Column.FormatterType ftype = Table.Column.FormatterType.valueOf(type);
-                FormatStrings formatStrings = Datatypes.getFormatStrings(UserSessionProvider.getUserSession().getLocale());
+                FormatStrings formatStrings = Datatypes.getFormatStrings(userSessionSource.getLocale());
                 switch (ftype) {
                     case DATE:
                         format = formatStrings.getDateFormat();
@@ -59,8 +67,7 @@ public class DateFormatter implements Formatter<Date> {
             return value.toString();
         } else {
             if (format.startsWith("msg://")) {
-                format = MessageProvider.getMessage(
-                        AppConfig.getMessagesPack(), format.substring(6, format.length()));
+                format = messages.getMainMessage(format.substring(6, format.length()));
             }
             DateFormat df = new SimpleDateFormat(format);
             return df.format(value);

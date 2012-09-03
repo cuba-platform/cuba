@@ -1,19 +1,22 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 21.10.2009 14:18:03
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components.formatters;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.core.global.MessageProvider;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class ClassNameFormatter implements Formatter{
+
+    protected Messages messages = AppBeans.get(Messages.class);
+
     public String format(Object value) {
         if (value == null) {
             return null;
@@ -24,7 +27,7 @@ public class ClassNameFormatter implements Formatter{
             if (i < 0) {
                 return str;
             } else {
-                return MessageProvider.getMessage(str.substring(0, i), str.substring(i + 1, str.length()));
+                return messages.getMessage(str.substring(0, i), str.substring(i + 1, str.length()));
             }
         }
         return null;
