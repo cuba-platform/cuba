@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
@@ -81,6 +82,9 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     @Override
     public String getDbPropertyJmx(String name) {
+        if (StringUtils.isBlank(name))
+            return "Enter a property name";
+
         try {
             login();
             String value = getDbProperty(name);
@@ -94,6 +98,11 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     @Override
     public String setDbPropertyJmx(String name, String value) {
+        if (StringUtils.isBlank(name))
+            return "Enter a property name";
+        if (StringUtils.isBlank(value))
+            return "Enter a property value";
+
         try {
             login();
             setDbProperty(name, value);
@@ -155,11 +164,19 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     @Override
     public String getAppProperty(String name) {
+        if (StringUtils.isBlank(name))
+            return "Enter a property name";
+
         return name + "=" + AppContext.getProperty(name);
     }
 
     @Override
     public String setAppProperty(String name, String value) {
+        if (StringUtils.isBlank(name))
+            return "Enter a property name";
+        if (StringUtils.isBlank(value))
+            return "Enter a property value";
+
         AppContext.setProperty(name, value);
         return "Property " + name + " set to " + value;
     }

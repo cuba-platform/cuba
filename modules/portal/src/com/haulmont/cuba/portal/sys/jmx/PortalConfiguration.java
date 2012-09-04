@@ -7,6 +7,7 @@
 package com.haulmont.cuba.portal.sys.jmx;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
 import javax.annotation.ManagedBean;
@@ -41,11 +42,19 @@ public class PortalConfiguration implements PortalConfigurationMBean {
 
     @Override
     public String getAppProperty(String name) {
+        if (StringUtils.isBlank(name))
+            return "Enter a property name";
+
         return name + "=" + AppContext.getProperty(name);
     }
 
     @Override
     public String setAppProperty(String name, String value) {
+        if (StringUtils.isBlank(name))
+            return "Enter a property name";
+        if (StringUtils.isBlank(value))
+            return "Enter a property value";
+
         AppContext.setProperty(name, value);
         return "Property " + name + " set to " + value;
     }
