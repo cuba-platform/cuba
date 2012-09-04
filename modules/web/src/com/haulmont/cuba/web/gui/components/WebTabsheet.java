@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Tabsheet;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
@@ -29,11 +30,10 @@ public class WebTabsheet
     implements
         Tabsheet, Component.Wrapper, Component.Container
 {
+    private boolean postInitTaskAdded;
     private boolean componentTabChangeListenerInitialized;
 
     private ComponentLoader.Context context;
-    
-    private static final long serialVersionUID = -2920295325234843920L;
 
     public WebTabsheet() {
         component = new TabSheetEx(this);
@@ -205,6 +205,16 @@ public class WebTabsheet
         this.component.addListener(new LazyTabChangeListener(tabContent, descriptor, loader));
         context = loader.getContext();
 
+        if (!postInitTaskAdded) {
+            context.addPostInitTask(new ComponentLoader.PostInitTask() {
+                @Override
+                public void execute(ComponentLoader.Context context, IFrame window) {
+                    initComponentTabChangeListener();
+                }
+            });
+            postInitTaskAdded = true;
+        }
+
         return tab;
     }
 
@@ -249,6 +259,11 @@ public class WebTabsheet
 
     @Override
     public void addListener(TabChangeListener listener) {
+        initComponentTabChangeListener();
+        listeners.add(listener);
+    }
+
+    private void initComponentTabChangeListener() {
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
@@ -265,8 +280,6 @@ public class WebTabsheet
             });
             componentTabChangeListenerInitialized = true;
         }
-
-        listeners.add(listener);
     }
 
     @Override
