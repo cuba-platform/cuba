@@ -1,22 +1,25 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 13.11.2008 14:13:23
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 
+/**
+ * Intercepts invocations of the middleware services.
+ * <p/> Checks {@link UserSession} validity and wraps exceptions into {@link RemoteException}.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ServiceInterceptor {
 
     private UserSessionsAPI userSessions;
@@ -38,7 +41,9 @@ public class ServiceInterceptor {
         }
 
         try {
-            checkUserSession(ctx);
+            UserSession userSession = getUserSession(ctx);
+            if (log.isTraceEnabled())
+                log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
 
             Object res = ctx.proceed();
             return res;
@@ -49,14 +54,16 @@ public class ServiceInterceptor {
         }
     }
 
-    private void checkUserSession(ProceedingJoinPoint ctx) {
-        // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
+    private UserSession getUserSession(ProceedingJoinPoint ctx) {
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext == null)
             throw new SecurityException("No security context bound to the current thread");
 
+        // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
         UserSession userSession = userSessions.get(securityContext.getSessionId(), true);
-        if (log.isTraceEnabled())
-            log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
+        if (userSession == null)
+            throw new NoUserSessionException(securityContext.getSessionId());
+
+        return userSession;
     }
 }
