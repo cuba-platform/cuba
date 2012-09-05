@@ -138,6 +138,9 @@ public class DesktopToolTipManager extends MouseAdapter {
     }
 
     private boolean isContainerVisible(JComponent component) {
+        if (component == null)
+            return false;
+
         Container c = component.getParent();
         while (c != null)
             if (!c.isVisible())
