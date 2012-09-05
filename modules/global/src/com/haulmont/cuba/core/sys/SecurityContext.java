@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -57,15 +56,12 @@ public class SecurityContext {
      * @return Current {@link UserSession} ID. This is the only required value for the {@link SecurityContext}.
      */
     public UUID getSessionId() {
-        if (BooleanUtils.toBoolean(System.getProperty("cuba.unitTestMode")))
-            return UUID.fromString("60885987-1b61-4247-94c7-dff348347f93");
-
         return sessionId;
     }
 
     /**
      * @return current user session. Can be null, so don't rely on this method in application code - use
-     * {@link com.haulmont.cuba.core.global.UserSessionSource} or {@link com.haulmont.cuba.core.global.UserSessionProvider}
+     * {@link com.haulmont.cuba.core.global.UserSessionSource}
      */
     @Nullable
     public UserSession getSession() {
@@ -74,10 +70,17 @@ public class SecurityContext {
 
     /**
      * @return current user login. Can be null, so don't rely on this method in application code - use
-     * {@link com.haulmont.cuba.core.global.UserSessionSource} or {@link com.haulmont.cuba.core.global.UserSessionProvider}
+     * {@link com.haulmont.cuba.core.global.UserSessionSource}
      */
     @Nullable
     public String getUser() {
         return user;
+    }
+
+    @Override
+    public String toString() {
+        return "SecurityContext{" +
+                "sessionId=" + sessionId +
+                '}';
     }
 }

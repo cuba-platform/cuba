@@ -11,6 +11,8 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.text.StrBuilder;
@@ -60,7 +62,17 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
 
     private ClusterManagerAPI clusterManager;
 
+    private UserSession NO_USER_SESSION;
+
     public UserSessions() {
+        User noUser = new User();
+        noUser.setLogin("server");
+        NO_USER_SESSION = new UserSession(noUser, Collections.<Role>emptyList(), Locale.getDefault(), true) {
+            @Override
+            public UUID getId() {
+                return AppContext.NO_USER_CONTEXT.getSessionId();
+            }
+        };
     }
 
     @Inject
@@ -145,14 +157,15 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
 
     @Override
     public UserSession get(UUID id, boolean propagate) {
+        if (!AppContext.isStarted())
+            return NO_USER_SESSION;
+
         UserSessionInfo usi = cache.get(id);
         if (usi != null) {
             usi.lastUsedTs = TimeProvider.currentTimestamp().getTime();
-
             if (propagate && !usi.session.isSystem()) {
                 clusterManager.send(usi);
             }
-
             return usi.session;
         }
         return null;

@@ -7,23 +7,26 @@ package com.haulmont.cuba.security.sys;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
-import com.haulmont.cuba.core.*;
-
-import java.io.Serializable;
-import java.text.ParseException;
-import java.util.*;
-
+import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.Serializable;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * System-level class managing {@link UserSession}s.
@@ -46,20 +49,7 @@ public class UserSessionManager
     @Inject
     private Persistence persistence;
 
-    private UserSession NO_USER_SESSION;
-
     private static Log log = LogFactory.getLog(UserSessionManager.class);
-
-    protected UserSessionManager() {
-        User noUser = new User();
-        noUser.setLogin("server");
-        NO_USER_SESSION = new UserSession(noUser, Collections.<Role>emptyList(), Locale.getDefault(), true) {
-            @Override
-            public UUID getId() {
-                return AppContext.NO_USER_CONTEXT.getSessionId();
-            }
-        };
-    }
 
     /**
      * Create a new session and fill it with security data. Must be called inside a transaction.
@@ -194,10 +184,7 @@ public class UserSessionManager
      * @return          session instance or null if not found
      */
     public UserSession findSession(UUID sessionId) {
-        if (AppContext.isStarted())
-            return sessions.get(sessionId, false);
-        else
-            return NO_USER_SESSION;
+        return sessions.get(sessionId, false);
     }
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {
