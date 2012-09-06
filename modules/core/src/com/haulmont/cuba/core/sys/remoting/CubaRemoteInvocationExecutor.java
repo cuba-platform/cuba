@@ -72,7 +72,9 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
                 AppContext.setSecurityContext(new SecurityContext(sessionId));
             }
         }
-        return invocation.invoke(targetObject);
+        Object result = invocation.invoke(targetObject);
+        AppContext.setSecurityContext(null);
+        return result;
     }
 
     private ClusterInvocationSupport getClusterInvocationSupport(String sessionProviderUrl) {

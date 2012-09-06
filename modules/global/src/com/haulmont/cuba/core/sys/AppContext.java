@@ -5,6 +5,8 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -30,6 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id$
  */
 public class AppContext {
+
+    private static Log log = LogFactory.getLog(AppContext.class);
 
     /**
      * Application startup/shutdown listener.
@@ -168,6 +172,8 @@ public class AppContext {
      * @param securityContext security context to be set for the current thread
      */
     public static void setSecurityContext(@Nullable SecurityContext securityContext) {
+        if (log.isTraceEnabled())
+            log.trace("setSecurityContext " + securityContext + " for thread " + Thread.currentThread());
         securityContextHolder.set(securityContext);
     }
 

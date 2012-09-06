@@ -65,6 +65,8 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
 
             if (invocation.getSessionId() != null)
                 AppContext.setSecurityContext(new SecurityContext(invocation.getSessionId()));
+            else
+                AppContext.setSecurityContext(null);
 
             Method method = target.getClass().getMethod(invocation.getMethodName(), parameterTypes);
             Serializable data = (Serializable) method.invoke(target, arguments);
@@ -78,6 +80,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             return result;
         } finally {
             Thread.currentThread().setContextClassLoader(clientClassLoader);
+            AppContext.setSecurityContext(null);
         }
     }
 }
