@@ -307,7 +307,8 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         super.setWidth(width);
         if (isAttached()) {
             int w = getOffsetWidth();
-            super.setWidth((w - 2 * borderPaddings.hSpacing) + "px");
+            w -= 2 * borderPaddings.hSpacing;
+            super.setWidth((w < 0 ? 0 : w)+ "px");
         }
     }
 
@@ -319,7 +320,8 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         super.setHeight(height);
         if (isAttached()) {
             int h = getOffsetHeight();
-            super.setHeight((h - 2 * borderPaddings.vSpacing) + "px");
+            h -= 2 * borderPaddings.vSpacing;
+            super.setHeight((h < 0 ? 0 : h) + "px");
         }
     }
 
