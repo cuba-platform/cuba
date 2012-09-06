@@ -7,13 +7,14 @@
 package com.haulmont.cuba.gui.backgroundwork;
 
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -151,20 +152,16 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
     }
 
     public void cancel() {
-        if (taskHandler.isAlive())
-            taskHandler.cancel();
-        else
+        if (!taskHandler.cancel())
             close("close");
     }
 
-    private class WrapperTask<V> extends BackgroundTask<Integer, V> {
+    private class WrapperTask<V> extends LocalizedTaskWrapper<Integer, V> {
 
-        private BackgroundTask<Integer, V> wrappedTask;
         private Integer total;
 
         private WrapperTask(BackgroundTask<Integer, V> wrappedTask, Integer total) {
-            super(wrappedTask.getTimeoutSeconds(), BackgroundWorkProgressWindow.this);
-            this.wrappedTask = wrappedTask;
+            super(wrappedTask, BackgroundWorkProgressWindow.this);
             this.total = total;
         }
 
@@ -175,62 +172,6 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
                 taskProgress.setValue(last / (float) total);
                 progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", last, total));
             }
-        }
-
-        @Override
-        public void canceled() {
-            closeBackgroundWindow();
-            wrappedTask.canceled();
-        }
-
-        @Override
-        public void done(V result) {
-            closeBackgroundWindow();
-            wrappedTask.done(result);
-        }
-
-        @Override
-        public V run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
-            return wrappedTask.run(taskLifeCycle);
-        }
-
-        @Override
-        public void handleException(final Exception ex) {
-            wrappedTask.handleException(ex);
-            final Window ownerWindow = wrappedTask.getOwnerWindow();
-            if (ownerWindow != null)
-                closeAndRun("close", new Runnable() {
-                    @Override
-                    public void run() {
-                        String localizedMessage = ex.getLocalizedMessage();
-                        if (StringUtils.isNotBlank(localizedMessage))
-                            ownerWindow.showNotification(getMessage("backgroundWorkProgress.executionError"),
-                                    localizedMessage, NotificationType.WARNING);
-                        else
-                            ownerWindow.showNotification(getMessage("backgroundWorkProgress.executionError"),
-                                    NotificationType.WARNING);
-                    }
-                });
-            else
-                closeBackgroundWindow();
-        }
-
-        @Override
-        public void timeoutExceeded() {
-            wrappedTask.timeoutExceeded();
-            final Window ownerWindow = wrappedTask.getOwnerWindow();
-            if (ownerWindow != null)
-                closeAndRun("close", new Runnable() {
-                    @Override
-                    public void run() {
-                        ownerWindow.showNotification(
-                                getMessage("backgroundWorkProgress.timeout"),
-                                getMessage("backgroundWorkProgress.timeoutMessage"),
-                                NotificationType.WARNING);
-                    }
-                });
-            else
-                closeBackgroundWindow();
         }
     }
 }

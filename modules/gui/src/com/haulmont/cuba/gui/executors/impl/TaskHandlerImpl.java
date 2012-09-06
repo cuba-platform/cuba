@@ -167,7 +167,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
             boolean canceled = taskExecutor.cancelExecution();
             if (canceled) {
                 BackgroundTask<T, V> task = taskExecutor.getTask();
-                task.timeoutExceeded();
+                task.handleTimeoutException();
 
                 disposeResources();
             }

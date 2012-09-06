@@ -105,16 +105,21 @@ public abstract class BackgroundTask<T, V> {
 
     /**
      * Task canceled by watchdog handler
+     *
+     * @return True if handled
      */
-    public void timeoutExceeded() {
+    public boolean handleTimeoutException() {
+        return false;
     }
 
     /**
      * Handle exception
      *
      * @param ex Exception
+     * @return True if exception handled
      */
-    public void handleException(Exception ex) {
+    public boolean handleException(Exception ex) {
+        return false;
     }
 
     /**

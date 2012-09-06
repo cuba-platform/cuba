@@ -10,13 +10,10 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -132,86 +129,14 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
         cancelButton.setVisible(cancelAllowed);
         getDialogParams().setCloseable(cancelAllowed);
 
-        BackgroundTask<T, V> wrapperTask = new WrapperTask(task);
+        BackgroundTask<T, V> wrapperTask = new LocalizedTaskWrapper<>(task, this);
 
         taskHandler = backgroundWorker.handle(wrapperTask);
         taskHandler.execute();
     }
 
     public void cancel() {
-        if (taskHandler.isAlive())
-            taskHandler.cancel();
-        else
+        if (!taskHandler.cancel())
             close("close");
-    }
-
-    private void closeBackgroundWindow() {
-        close("", true);
-    }
-
-    private class WrapperTask extends BackgroundTask<T, V> {
-
-        private BackgroundTask<T, V> wrappedTask;
-
-        protected WrapperTask(BackgroundTask<T, V> task) {
-            super(task.getTimeoutSeconds(), BackgroundWorkWindow.this);
-            this.wrappedTask = task;
-        }
-
-        @Override
-        public V run(TaskLifeCycle<T> lifeCycle) throws Exception {
-            return wrappedTask.run(lifeCycle);
-        }
-
-        @Override
-        public void handleException(final Exception ex) {
-            wrappedTask.handleException(ex);
-            final Window ownerWindow = wrappedTask.getOwnerWindow();
-            if (ownerWindow != null)
-                closeAndRun("close", new Runnable() {
-                    @Override
-                    public void run() {
-                        String localizedMessage = ex.getLocalizedMessage();
-                        if (StringUtils.isNotBlank(localizedMessage))
-                            ownerWindow.showNotification(getMessage("backgroundWorkProgress.executionError"),
-                                    localizedMessage, NotificationType.WARNING);
-                        else
-                            ownerWindow.showNotification(getMessage("backgroundWorkProgress.executionError"),
-                                    NotificationType.WARNING);
-                    }
-                });
-            else
-                closeBackgroundWindow();
-        }
-
-        @Override
-        public void timeoutExceeded() {
-            wrappedTask.timeoutExceeded();
-            final Window ownerWindow = wrappedTask.getOwnerWindow();
-            if (ownerWindow != null)
-                closeAndRun("close", new Runnable() {
-                    @Override
-                    public void run() {
-                        ownerWindow.showNotification(
-                                getMessage("backgroundWorkProgress.timeout"),
-                                getMessage("backgroundWorkProgress.timeoutMessage"),
-                                NotificationType.WARNING);
-                    }
-                });
-            else
-                closeBackgroundWindow();
-        }
-
-        @Override
-        public void done(V result) {
-            closeBackgroundWindow();
-            wrappedTask.done(result);
-        }
-
-        @Override
-        public void canceled() {
-            closeBackgroundWindow();
-            wrappedTask.canceled();
-        }
     }
 }
