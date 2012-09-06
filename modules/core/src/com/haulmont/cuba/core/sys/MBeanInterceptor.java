@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 06.01.2010 14:16:53
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys;
 
@@ -14,6 +9,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 
+/**
+ * Intercepts invocations of methods defined in <code>*MBean</code> interfaces.
+ * <p/> Sets the thread context classloader to the webapp classloader and logs exceptions.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class MBeanInterceptor {
 
     private Log log = LogFactory.getLog(getClass());

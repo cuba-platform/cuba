@@ -39,7 +39,10 @@
 
     <!-- Annotation-based beans -->
 
-    <context:component-scan base-package="com.haulmont.cuba"/>
+    <context:component-scan base-package="com.haulmont.cuba">
+        <!-- Exclude controllers that are used in cuba-remoting-spring.xml context -->
+        <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.core\.controllers\..*"/>
+    </context:component-scan>
 
     <!-- Various beans with non-standard configuration -->
 
@@ -61,7 +64,7 @@
         </aop:aspect>
 
         <aop:aspect id="mbeanAspect" ref="mbeanInterceptor">
-            <aop:around method="aroundInvoke" pointcut="execution(* com.haulmont..*MBean.*(..))"/>
+            <aop:around method="aroundInvoke" pointcut="execution(* *..*MBean.*(..))"/>
         </aop:aspect>
     </aop:config>
 
@@ -94,7 +97,7 @@
 
     <!-- Scheduling setup -->
 
-    <bean id="scheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+    <bean id="scheduler" class="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
         <property name="poolSize" value="10"/>
     </bean>
