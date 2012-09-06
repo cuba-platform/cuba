@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
@@ -145,7 +146,7 @@ public abstract class CubaTestCase extends TestCase
     }
 
     protected void initAppContext() {
-        String configProperty = AppContext.getProperty(AppContextLoader.SPRING_CONTEXT_CONFIG);
+        String configProperty = AppContext.getProperty(AbstractAppContextLoader.SPRING_CONTEXT_CONFIG);
 
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
         List<String> locations = tokenizer.getTokenList();

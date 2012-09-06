@@ -17,7 +17,7 @@
     <!-- Persistence setup -->
 
     <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <property name="jndiName" value="java:comp/env/jdbc/CubaDS"/>
+        <property name="jndiName" value="${cuba.dataSourceJndiName}"/>
         <property name="resourceRef" value="true"/>
     </bean>
 

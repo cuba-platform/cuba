@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
@@ -20,8 +21,6 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,17 +31,16 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * <p>$Id$</p>
+ * {@link AppContext} loader of the desktop client application.
  *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopAppContextLoader {
+public class DesktopAppContextLoader extends AbstractAppContextLoader {
 
     public static final String HOME_DIR_SYS_PROP = "cuba.desktop.home";
 
     public static final String APP_PROPERTIES_CONFIG_SYS_PROP = "cuba.appPropertiesConfig";
-
-    public static final String SPRING_CONTEXT_CONFIG = "cuba.springContextConfig";
 
     private String defaultAppPropertiesConfig;
     private String[] args;
@@ -135,18 +133,5 @@ public class DesktopAppContextLoader {
         }
         Collections.sort(list);
         log.info(new StrBuilder("AppProperties:\n").appendWithSeparators(list, "\n"));
-    }
-
-    protected void initAppContext() {
-        String configProperty = AppContext.getProperty(SPRING_CONTEXT_CONFIG);
-        if (StringUtils.isBlank(configProperty)) {
-            throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
-        }
-
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
-        String[] locations = tokenizer.getTokenArray();
-
-        ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
-        AppContext.setApplicationContext(appContext);
     }
 }

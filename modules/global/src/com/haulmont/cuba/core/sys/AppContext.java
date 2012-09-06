@@ -76,7 +76,7 @@ public class AppContext {
      * Called by the framework to set Spring's context.
      * @param applicationContext initialized Spring's context
      */
-    public static void setApplicationContext(ApplicationContext applicationContext) {
+    public static void setApplicationContext(@Nullable ApplicationContext applicationContext) {
         context = applicationContext;
     }
 
