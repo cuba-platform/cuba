@@ -1,0 +1,3 @@
+﻿@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "BUYER_ID")
+private Buyer buyer;

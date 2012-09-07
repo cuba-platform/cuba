@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+           version="2.5">
+
+    <context-param>
+        <description>Vaadin production mode</description>
+        <param-name>productionMode</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
+    <!-- Application properties config files -->
+    <context-param>
+        <param-name>appPropertiesConfig</param-name>
+        <param-value>
+            classpath:cuba-web-app.properties
+            classpath:shop-web-app.properties
+            file:${catalina.home}/conf/app/local.app.properties
+        </param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>com.haulmont.cuba.web.sys.WebAppContextLoader</listener-class>
+    </listener>
+
+    <!--<listener>
+        <listener-class>com.haulmont.cuba.web.gui.utils.BackgroundWorkerListener</listener-class>
+    </listener>-->
+
+    <servlet>
+        <servlet-name>app_servlet</servlet-name>
+        <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet</servlet-class>
+        <init-param>
+            <param-name>application</param-name>
+            <param-value>com.haulmont.shop.App</param-value>
+        </init-param>
+        <init-param>
+            <param-name>widgetset</param-name>
+            <param-value>com.haulmont.cuba.toolkit.gwt.WidgetSet</param-value>
+        </init-param>
+        <!-- Uncomment for JMeter testing only
+        <init-param>
+            <param-name>disable-xsrf-protection</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        -->
+    </servlet>
+
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>com.haulmont.cuba.web.sys.CubaDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/dispatch/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>app_servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>cuba_filter</filter-name>
+        <filter-class>com.haulmont.cuba.web.sys.CubaHttpFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>cuba_filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>

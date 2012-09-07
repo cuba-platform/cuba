@@ -1,0 +1,5 @@
+<view class="com.haulmont.shop.core.entity.Buyer"
+      name="buyerEdit"
+      extends="_local">
+   <property name="discounts" view="_local"/>
+</view>

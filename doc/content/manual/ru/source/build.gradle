@@ -1,0 +1,139 @@
+allprojects {
+    ext.artifactGroup = 'com.haulmont.shop'
+    ext.artifactVersion = '4.0.0'
+    ext.isSnapshot = true
+}
+buildscript {
+    repositories {
+        mavenLocal()
+        maven {
+            credentials {
+                username System.getenv('HAULMONT_REPOSITORY_USER')
+                password System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+            }
+            url "http://repository.haulmont.com:8587/nexus/content/groups/work"
+        }
+    }
+    dependencies {
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.1'
+    }
+}
+def cubaVersion = '4.0.0-SNAPSHOT'
+def globalModule = project(':shop-global')
+def coreModule = project(':shop-core')
+def guiModule = project(':shop-gui')
+def webModule = project(':shop-web')
+def postgres = 'postgresql:postgresql:8.3-603.jdbc4'
+def servletApi = 'org.apache.tomcat:servlet-api:6.0.20'
+def cubaWeb = "com.haulmont.cuba:cuba-web:$cubaVersion"
+def coreJarNames = ['cuba-global', 'cuba-core', 'shop-global', 'shop-core']
+apply(plugin: 'idea')
+apply(plugin: 'cuba')
+configure([globalModule, coreModule, guiModule, webModule]) {
+    apply(plugin: 'java')
+    apply(plugin: 'idea')
+    apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+    configurations.each {
+        it.resolutionStrategy.cacheChangingModulesFor 2, "minutes"
+    }
+    dependencies {
+        compile("com.haulmont.cuba:cuba-global:$cubaVersion")
+        testCompile('junit:junit:4.5')
+    }
+    task sourceJar(type: Jar) {
+        from file('src')
+        classifier = 'sources'
+    }
+    artifacts {
+        archives sourceJar
+    }
+}
+configure(globalModule) {
+    dependencies {
+        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.1')
+    }
+    task enhance(type: CubaEnhancing) {
+        persistenceXml = "$globalModule.projectDir/src/shop-persistence.xml"
+        metadataXml = "$globalModule.projectDir/src/shop-metadata.xml"
+    }
+    compileJava << {
+        enhance.execute()
+    }
+}
+configure(coreModule) {
+    configurations {
+        jdbc
+        dbscripts
+    }
+    dependencies {
+        compile(globalModule)
+        compile("com.haulmont.cuba:cuba-core:$cubaVersion")
+        compile("com.haulmont.cuba:cuba-test-ui:$cubaVersion")
+        testCompile("com.haulmont.cuba:cuba-core:$cubaVersion:tests")
+        testCompile('junit:junit:4.5')
+        testCompile("com.haulmont.cuba:cuba-shared-lib:$cubaVersion")
+        provided(servletApi)
+        jdbc(postgres)
+        testRuntime(postgres)
+        dbscripts("com.haulmont.cuba:cuba-core:$cubaVersion:db@zip")
+    }
+    test {
+        scanForTestClasses = false
+        includes = ['**/*Test.class']
+		jvmArgs '-XX:-UseSplitVerifier'
+    }
+    task deploy(dependsOn: assemble, type: CubaDeployment) {
+        appName = 'app-core'
+        jarNames = coreJarNames
+    }
+    task createDb(dependsOn: assemble, description: 'Creates local Postgres database', type: CubaDbCreation) {
+        dbms = 'postgres'
+        dbName = 'shop'
+        dbUser = 'root'
+        dbPassword = 'root'
+    }
+    task createTestDb(dependsOn: assemble, description: 'Creates local Postgres database for tests', type: CubaDbCreation) {
+        dbms = 'postgres'
+        dbName = 'shop_test'
+        dbUser = 'root'
+        dbPassword = 'root'
+    }
+}
+configure(guiModule) {
+    dependencies {
+        compile(globalModule)
+        compile(group: 'com.haulmont.cuba', name: 'cuba-gui', version: cubaVersion)
+    }
+}
+configure(webModule) {
+    configurations {
+        webcontent
+    }
+    dependencies {
+        compile(globalModule)
+        compile(guiModule)
+        compile(cubaWeb)
+        webcontent(group: 'com.haulmont.cuba', name: 'cuba-web', version: cubaVersion, classifier: 'web', ext: 'zip')
+    }
+    task webArchive(type: Zip) {
+        from file('web')
+        classifier = 'web'
+    }
+    artifacts {
+        archives webArchive
+    }
+    task deploy(dependsOn: assemble, type: CubaDeployment) {
+        appName = 'app'
+        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web',
+                'shop-global', 'shop-gui', 'shop-web')
+    }
+}
+task restart(dependsOn: ['stop', ':shop-core:deploy', ':shop-web:deploy'], description: 'Redeploys applications and restarts local Tomcat') << {
+    ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
+        not {
+            socket(server: 'localhost', port: '8787')
+        }
+    }
+    start.execute()
+}

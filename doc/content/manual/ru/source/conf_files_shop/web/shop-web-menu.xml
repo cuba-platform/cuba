@@ -1,0 +1,8 @@
+<menu-config xmlns="http://www.haulmont.com/schema/cuba/gui/menu-config.xsd">
+
+    <menu id="application" insertBefore="settings">
+    </menu>
+
+    <item id="about" openType="DIALOG" insertBefore="settings"/>
+
+</menu-config>

@@ -8,7 +8,7 @@
       <para><application>Java SE 7 SDK.</application></para>
     </listitem>
     <listitem>
-      <para><application>PostgreSQL 8.3.9</application>. <ulink url="http://postgresql.ru.net/docs/about_pgsql.html">PostgreSQL</ulink>− реляционная система управления базами данных. PostgreSQL поставляется под лицензией BSD, что обеспечивает максимальную открытость и доступность.</para>
+      <para><application>PostgreSQL 9.1</application>. <ulink url="http://postgresql.ru.net/docs/about_pgsql.html">PostgreSQL</ulink>− реляционная система управления базами данных. PostgreSQL поставляется под лицензией BSD, что обеспечивает максимальную открытость и доступность.</para>
     </listitem>
     <listitem>
       <para><application>Gradle 1.0</application>. <ulink url="http://www.gradle.org/">Gradle</ulink> − инструмент автоматизации сборки с открытым исходным кодом.</para>
@@ -23,174 +23,140 @@
     <para>Инструкции по установке приведены для операционной системы <application>Windows 7</application>.</para>
   </warning>
   <section>
-    <title>Установка Postgres 8.3.9</title>
+    <title>Установка Postgres 9.1.5</title>
     <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/elephant.png"/>
       </imageobject>
     </mediaobject>
     <para>Сайт компании-разработчика: <ulink url="http://www.postgresql.org/">http://www.postgresql.org/</ulink></para>
-    <para>Дистрибутив: <ulink url="ftp://ftp-archives.postgresql.org/pub/binary/v8.3.9/">ftp://ftp-archives.postgresql.org/pub/binary/v8.3.9/</ulink></para>
+    <para>Дистрибутив: <ulink url="http://www.enterprisedb.com/products-services-training/pgdownload#windows">http://www.enterprisedb.com/products-services-training/pgdownload #windows</ulink></para>
     <orderedlist>
       <listitem>
-        <para>Скачайте архив <filename>postgresql-8.3.9-1.zip</filename> и распакуйте его.</para>
+        <para>Скачайте мастер установки <application>One click installer</application>, например, для <application>Windows 7</application> это будет файл  <filename>postgresql-9.1.5-1-windows-x64.exe</filename>.</para>
       </listitem>
       <listitem>
-        <para>Запустите в этом каталоге файл <filename>postgresql-8.3.msi</filename>.</para>
+        <para>Запустите мастер установки.</para>
       </listitem>
       <listitem>
-        <para>В первом окне установите переключатель в положение <guilabel>Russian</guilabel> (русский язык установки) и нажмите на кнопку <guibutton>Start</guibutton>.</para>
+        <para>В первом окне  нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
+      </listitem>
+      <listitem>
+        <para>В следующем окне предоставляется возможность сменить каталог установки программы, нажав на кнопку <inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="img/postgres9_2_0.png"/>
+            </imageobject>
+          </inlinemediaobject>  и выбрав новый путь. Нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
         <figure>
-          <title>Установка PostgreSQL. Шаг 1</title>
+          <title>Установка PostgreSQL</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/ch1_posgres_1.png" width="100%" scalefit="1" contentdepth="100%"/>
+              <imagedata align="center" fileref="img/postgres9_2.png"/>
             </imageobject>
           </mediaobject>
         </figure>
       </listitem>
       <listitem>
-        <para>В следующем окне нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <para>В следующем окне предоставляется возможность сменить каталог для хранения данных, нажав на кнопку <inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="img/postgres9_2_0.png"/>
+            </imageobject>
+          </inlinemediaobject>  и выбрав новый путь. Нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
         <figure>
-          <title>Установка PostgreSQL. Шаг 2</title>
+          <title>Установка PostgreSQL</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_2.png" width="100%" scalefit="1" contentdepth="100%"/>
+              <imagedata align="center" fileref="img/postgres9_3.png"/>
             </imageobject>
           </mediaobject>
         </figure>
       </listitem>
       <listitem>
-        <para>В следующем окне предоставляется возможность ознакомиться с инструкцией по установке. После ознакомления нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <para>В следующем окне в поля <guilabel>Password</guilabel> и <guilabel>Retype password</guilabel> введите пароль, который будет использоваться при входе в учетную запись. Нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
         <figure>
-          <title>Установка PostgreSQL. Шаг 3</title>
+          <title>Установка PostgreSQL</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_3.png" width="100%" scalefit="1" contentdepth="100%"/>
+              <imagedata align="center" fileref="img/postgres9_4.png"/>
             </imageobject>
           </mediaobject>
         </figure>
       </listitem>
       <listitem>
-        <para>В следующем окне предоставляется возможность выбрать дополнительные компоненты и сменить каталог установки программы, нажав на кнопку <guibutton>Обзор</guibutton> и выбрав новый путь. Нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <para>В следующем окне предлагается ввести номер порта сервера. Оставьте порт по умолчанию и нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
         <figure>
-          <title>Установка PostgreSQL. Шаг 4</title>
+          <title>Установка PostgreSQL</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_4.png" width="100%" scalefit="1" contentdepth="100%"/>
+              <imagedata align="center" fileref="img/postgres9_5.png"/>
             </imageobject>
           </mediaobject>
         </figure>
       </listitem>
       <listitem>
-        <para>В следующем окне нужно обязательно убедиться в том, что установлена галочка <guilabel>Установить как сервис</guilabel>. В поле ввода <guilabel>Домен</guilabel> отображается имя Вашего компьютера. В поля <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль, который будет использоваться при входе в учетную запись. Нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <para>В следующем окне выберите локаль из списка  и нажмите на кнопку  <guibutton>Next&gt;</guibutton>.</para>
         <figure>
-          <title>Установка PostgreSQL. Шаг 5</title>
+          <title>Установка PostgreSQL</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_5.png" width="100%" scalefit="1" contentdepth="100%"/>
+              <imagedata align="center" fileref="img/postgres9_6.png"/>
             </imageobject>
           </mediaobject>
         </figure>
       </listitem>
       <listitem>
-        <para>Если Вы впервые создаете учетную запись, возникнет окно  <guilabel>Ошибка учетной записи</guilabel>. Если у Вас появилось такое окно, нажмите на кнопку <guibutton>Да</guibutton>.</para>
+        <para>В следующем окне после нажатия на кнопку <guibutton>Next&gt;</guibutton> будет произведена установка <application>PostgreSQL</application> на Ваш компьютер.</para>
         <figure>
-          <title>Установка PostgreSQL. Шаг 6</title>
+          <title>Установка PostgreSQL</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_6.png"/>
+              <imagedata align="center" fileref="img/postgres9_7.png"/>
             </imageobject>
           </mediaobject>
         </figure>
       </listitem>
       <listitem>
-        <para>Если на следующем шаге возникнет окно с предложением заменить Ваш пароль, нажмите на кнопку <guibutton>Нет</guibutton>.</para>
-        <figure>
-          <title>Установка PostgreSQL. Шаг 7</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_7.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </listitem>
-      <listitem>
-        <para>В следующем окне введите пароль для пользователя <authorinitials>postgres</authorinitials>  в базе данных. Рекомендуем использовать пароль <userinput role="italic">postgres</userinput>. Выберите в качестве кодировки сервера и кодировки клиента <code>UTF-8</code>.</para>
-        <figure>
-          <title>Установка PostgreSQL. Шаг 8</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_8.png" width="100%" scalefit="1" contentdepth="100%"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </listitem>
-      <listitem>
-        <para>В следующем окне нажмите на кнопку <guibutton>Далее</guibutton>.</para>
-        <figure>
-          <title>Установка PostgreSQL. Шаг 9</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_9.png" width="100%" scalefit="1" contentdepth="100%"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </listitem>
-      <listitem>
-        <para>В следующем окне установите следующие галочки: <guilabel>Adminpack</guilabel>, <guilabel>Table Functions</guilabel>, <guilabel>UUID OSSP</guilabel>.</para>
-        <figure>
-          <title>Установка PostgreSQL. Шаг 10</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_10.png" width="100%" scalefit="1" contentdepth="100%"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </listitem>
-      <listitem>
-        <para>В следующем окне нажмите на кнопку <guibutton>Далее</guibutton>.</para>
-        <figure>
-          <title>Установка PostgreSQL. Шаг 11</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_11.png" width="100%" scalefit="1" contentdepth="100%"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </listitem>
-      <listitem>
-        <para>В следующем окне отображается информация об успешном завершении установки. Нажмите на кнопку <guibutton>Завершить</guibutton>.</para>
-        <figure>
-          <title>Установка PostgreSQL. Шаг 12</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_postgres_12.png" width="100%" scalefit="1" contentdepth="100%"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
+        <para>После завершения установки нажмите на кнопку <guibutton>Finish</guibutton>.</para>
       </listitem>
     </orderedlist>
-    <para>После установки убедимся в работоспособности сервера базы данных. Для этого зайдите в меню <guimenu>Пуск</guimenu>, далее −   <guimenu>PostgreSQL 8.3</guimenu>, далее −   <guisubmenu>pgAdmin III</guisubmenu>. На экране отобразится  окно, представленное на рисунке:</para>
+    <para>После установки убедимся в работоспособности сервера базы данных. Для этого зайдите в меню <guimenu>Пуск</guimenu>, далее −   <guimenu>PostgreSQL 9.1</guimenu>, далее −   <guisubmenu>pgAdmin III</guisubmenu>. На экране отобразится  окно, представленное на рисунке:</para>
     <figure>
       <title>Установка PostgreSQL. Шаг 13</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/ch1_db_1.png" width="100%"/>
+          <imagedata align="center" fileref="img/ch1_db_1.png"/>
         </imageobject>
       </mediaobject>
     </figure>
-    <para>Создадим нового пользователя. Для этого нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 8.3 (localhost:5432)</guilabel> и в отобразившемся контекстном меню выберите <guimenuitem>Подсоединение</guimenuitem>. Далее нажмите правой клавишей мыши на <guilabel>Роли входа</guilabel>  и в открывшемся контекстном меню выберите <guimenuitem>Новое правило</guimenuitem>. На экране отобразится окно, представленное на рисунке:</para>
+    <para>Создадим нового пользователя. Для этого нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 9.1 (localhost:5432)</guilabel> и в отобразившемся контекстном меню выберите <guimenuitem>Подключение</guimenuitem>. Далее нажмите правой клавишей мыши на <guilabel>Роли входа</guilabel>  и в открывшемся контекстном меню выберите <guimenuitem>Новая роль</guimenuitem>. На экране отобразится окно, представленное на рисунке:</para>
     <figure>
-      <title>Установка PostgreSQL. Шаг 14</title>
+      <title>Настройка PostgreSQL. Создание роли входа</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/ch1_db_2.png" width="100%" scalefit="1" contentdepth="100%"/>
+          <imagedata align="center" fileref="img/ch1_db_2.png" contentwidth="80%"/>
         </imageobject>
       </mediaobject>
     </figure>
-    <para>В этом окне в качестве имени роли и пароля укажите <userinput role="italic">root</userinput>. В списке <guilabel>Привилегии роли</guilabel> установите флажок <guilabel>Суперюзер</guilabel>.</para>
+    <para>В этом окне в качестве имени роли укажите <userinput role="italic">root</userinput>. Далее перейдите на вкладку <guilabel>Определение</guilabel>. </para>
+    <figure>
+      <title>Настройка PostgreSQL. Создание роли входа</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/ch1_db_3.png" contentwidth="80%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>В полях <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль <userinput>root</userinput>. Далее перейдите на вкладку <guilabel>Привилегии роли</guilabel>. </para>
+    <para>Установите флажок <guilabel>Суперпользователь</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
     <para>Установка и настройка базы данных завершена.</para>
+    <figure>
+      <title>Настройка PostgreSQL. Создание роли входа</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/ch1_db_4.png" contentwidth="80%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
   </section>
   <section>
     <title>Установка Java SE 7</title>
@@ -200,10 +166,10 @@
       </imageobject>
     </mediaobject>
     <para>Сайт компании-разработчика: <ulink url="http://oracle.com/technetwork/java/">http://oracle.com/technetwork/java/</ulink></para>
-    <para>Дистрибутив: <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1637583.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1637583.html</ulink></para>
+    <para>Дистрибутив: <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1637583.html">http://www.oracle.com/technetwork/java/javase/downloads/ jdk7-downloads-1637583.html</ulink></para>
     <orderedlist>
       <listitem>
-        <para>Скачайте последнюю версию <application>JDK 7</application>, например, <filename>jdk-7u5-windows-x64.exe</filename>.</para>
+        <para>Скачайте последнюю версию <application>JDK 7</application>, например, <filename>jdk-7u5-windows-x64.exe.</filename></para>
       </listitem>
       <listitem>
         <para>Запустите файл <filename>jdk-7u5-windows-x64.exe</filename>.</para>
@@ -230,7 +196,7 @@
             <title>Окно управления свойствами системы</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/ch1_path_1.png" width="100%"/>
+                <imagedata align="center" fileref="img/ch1_path_1.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -239,7 +205,7 @@
             <title>Окно управления переменными среды</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/ch1_path_2.png" width="100%" scalefit="1" contentdepth="100%"/>
+                <imagedata align="center" fileref="img/ch1_path_2.png" contentwidth="80%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -248,7 +214,7 @@
             <title>Окно создания переменной среды Java_Home</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/ch_path_3.png"/>
+                <imagedata align="center" fileref="img/ch_path_3.png" contentwidth="80%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -257,7 +223,7 @@
             <title>Окно изменения переменной среды Path</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/ch1_path_4.png"/>
+                <imagedata align="center" fileref="img/ch1_path_4.png" contentwidth="80%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -281,18 +247,18 @@
       <title>Окно командной строки. Результат выполнения команды java -version</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/ch1_java_check_version.png" width="100%" scalefit="1" format="PNG"/>
+          <imagedata align="center" fileref="img/ch1_java_check_version.png"/>
         </imageobject>
       </mediaobject>
     </figure>
-    <para>Если в результате выполнения команды Вы увидите окно, вид которого представлен ниже, вернитесь к <link linkend="path_setting">пункту 7</link> и проверьте правильность установки переменных среды <envar>JAVA_HOME</envar> и <envar>Path</envar><figure>
+    <para>Если в результате выполнения команды Вы увидите окно, вид которого представлен ниже, вернитесь к <link linkend="path_setting">пункту 7</link> и проверьте правильность установки переменных среды <envar>JAVA_HOME</envar> и <envar>Path</envar>.<figure>
         <title>Окно командной строки. Результат выполнения команды java -version</title>
         <mediaobject>
           <imageobject>
-            <imagedata align="center" fileref="img/ch1_not_java.png" width="100%" format="PNG"/>
+            <imagedata align="center" fileref="img/ch1_not_java.png"/>
           </imageobject>
         </mediaobject>
-      </figure>.</para>
+      </figure></para>
     <para>Установка и настройка  <application>Java</application> завершена.</para>
   </section>
   <section>
@@ -320,7 +286,7 @@
       <title>Окно командной строки. Результат выполнения команды gradle -version</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/ch1_gradle.png" width="100%" format="PNG"/>
+          <imagedata align="center" fileref="img/ch1_gradle.png" format="PNG"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -381,7 +347,7 @@
           <title>Установка IntelliJ IDEA. Шаг 3</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/ch1_idea_7.png" width="100%"/>
+              <imagedata align="center" fileref="img/ch1_idea_7.png"/>
             </imageobject>
           </mediaobject>
         </figure>

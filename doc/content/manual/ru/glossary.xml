@@ -2,6 +2,29 @@
 <!-- This document was created with Syntext Serna Free. --><glossary id="glossary_id">
   <title>Основные определения и понятия</title>
   <glossdiv>
+    <title>А</title>
+    <glossentry id="glossary_annotation">
+      <glossterm>
+        <emphasis role="bold">Аннотация</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Специальная форма синтетических метаданных, которая может быть добавлена в исходный код. Аннотация выполняет следующие функции:</para>
+        <itemizedlist>
+          <listitem>
+            <para>дает необходимую информацию для компилятора;</para>
+          </listitem>
+          <listitem>
+            <para>дает информацию различным инструментам для генерации другого кода, конфигураций и т.д.;</para>
+          </listitem>
+          <listitem>
+            <para>может использоваться во время работы кода.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Более подробная информация представлена на сайте <application>Oracle</application>:  <ulink url="http://docs.oracle.com/javase/6/docs/technotes/guides/language/annotations.html">http://docs.oracle.com/javase/6/docs/technotes/guides/language/annotations.html</ulink></para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
     <title>Б</title>
     <glossentry id="glossary_process_id">
       <glossterm>
@@ -58,7 +81,7 @@
         <emphasis role="bold">Дескриптор FTS</emphasis>
       </glossterm>
       <glossdef>
-        <para>Дескриптор <glossterm linkend="glossary_fts_id">FTS</glossterm> представляет собой XML файл, содержащий настройки механизма полнотекстового поиска. Подробное описание механизма полнотекстового поиска содержится в главе <xref linkend="section_fts" xreflabel="select: labelnumber title"/></para>
+        <para>Дескриптор <glossterm linkend="section_fts">FTS</glossterm> представляет собой XML файл, содержащий настройки механизма полнотекстового поиска. Подробное описание механизма полнотекстового поиска содержится в главе <xref linkend="section_fts" xreflabel="select: labelnumber title"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -144,7 +167,7 @@
         <emphasis role="bold">Рабочий каталог</emphasis>
       </glossterm>
       <glossdef>
-        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter2_extension_creation">Создание и запуск проекта расширения для системы <application>&quot;ТЕЗИС&quot;</application></link>.</para>
+        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter3_development">Создание и запуск проекта расширения </link>.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -155,7 +178,7 @@
         <emphasis role="bold">Сущность, сущностный класс</emphasis>
       </glossterm>
       <glossdef>
-        <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущности (entity class) – это простой класс <application>Java</application>, как правило, соответствующий таблице в базе данных. При этом сущностные классы имеют следующие особенности:</para>
+        <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущности (entity class) – это простой класс <application>Java</application>, как правило, соответствующий таблице в базе данных. Помогает выполнять бизнес требования к необходимым объектам в приложении. Сущностные классы имеют следующие особенности:</para>
         <itemizedlist>
           <listitem>
             <para>Класс сущности должен быть унаследован от класса <classname>com.haulmont.cuba.core.entity.StandardEntity</classname>, который содержит в себе все системные поля.</para>
@@ -217,8 +240,8 @@
         </formalpara>
         <formalpara>
           <title>Принадлежность уровням</title>
-          <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней.</para>
-          <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>).</para>
+          <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
+           <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>).</para>
           <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
               <listitem>
                 <para>Из документации</para>
@@ -274,12 +297,12 @@ classpath:shop-app.properties
 file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <para>Здесь префикс <classname>classpath:</classname> означает, что данный файл нужно искать в Java classpath, префикс <classname>file:</classname> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <classname>catalina.home</classname> − путь к корню <application>Tomcat</application>.</para>
         <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
-        <para id="glossary_local_properties">Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Подробнее об этом файле можно узнать в определении <link linkend="glossary_local_app_properties_id">Local Application Properies</link>.</para>
+        <para id="glossary_local_properties">Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Подробнее об этом файле можно узнать в определении <link linkend="glossary_local_properties">Local Application Properties</link>.</para>
         <formalpara>
           <title>Таблица базы данных</title>
           <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
         </formalpara>
-        <para><emphasis role="bold">Значения по-умолчанию</emphasis></para>
+        <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
         <para>Если обращение к свойству производится через Java-интерфейс механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm> и если значение свойства не задано в месте его хранения (файлы <filename>*-app.properties</filename> или БД), то будет возвращено значение по умолчанию, если оно задано в аннотации соответствующего метода Java-интерфейса.</para>
         <para>Подробное описание свойств подсистемы безопасности содержится в <link linkend="appendix_security_properties">Приложении А</link>.</para>
       </glossdef>
@@ -405,6 +428,14 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
       </glossterm>
       <glossdef>
         <para>Java Management Extensions (JMX) − это Java-технология, которая предоставляет инструменты для управления  приложениями, объектами системы, устройствами. JMX определяет стандарт для написания JMX-компонентов − <link linkend="section_MBean_id">MBeans</link>. Более подробную информацию о технологии JMX вы сможете найти на сайте Oracle: <ulink url="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html">http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html</ulink></para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="glossary_jpql">
+      <glossterm>
+        <emphasis role="bold">JPQL</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Платформо-независимый объектно-ориентированный язык запросов, определенный как часть спецификации <application>Java Persistence API</application>. Подробнее о <application>JPQL</application> можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink></para>
       </glossdef>
     </glossentry>
   </glossdiv>

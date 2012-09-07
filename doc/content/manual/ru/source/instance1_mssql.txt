@@ -1,0 +1,1 @@
+﻿Instance -> Properties -> Security (Server authentification: SQL Server and Windows Authentification mode)

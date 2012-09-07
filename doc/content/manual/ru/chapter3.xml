@@ -7,11 +7,12 @@
   </section>
   <section>
     <title>Создание проекта</title>
+    <para>TODO</para>
   </section>
   <section>
     <title>Соглашения по именованию</title>
     <para>Ниже представлены соглашения, рекомендуемые для программирования на платформе <trademark>CUBA</trademark>.</para>
-    <para>При написании класов рекомендуем использовать стиль <application>IntelliJ IDEA</application> по умолчанию (это можно сделать с помощью сочетания клавиш <keycombo>
+    <para>При написании классов рекомендуем использовать стиль <application>IntelliJ IDEA</application> по умолчанию (это можно сделать с помощью сочетания клавиш <keycombo>
         <keycap function="control">Ctrl</keycap>
         <keycap function="alt">Alt</keycap>
         <keycap>L</keycap>
@@ -26,14 +27,14 @@
         <colspec colname="c3"/>
         <thead wordsize="16">
           <row>
-            <entry colname="Имя атрибута">Идентификатор</entry>
-            <entry colname="Тип атрибута">Правило именования</entry>
-            <entry colname="Тип атрибута">Пример</entry>
+            <entry colname="Имя атрибута" role="bord">Идентификатор</entry>
+            <entry colname="Тип атрибута" role="caption">Правило именования</entry>
+            <entry colname="Тип атрибута" role="caption">Пример</entry>
           </row>
         </thead>
         <tbody>
           <row>
-            <entry align="center" namest="c1" nameend="c3">
+            <entry role="left" align="center" namest="c1" nameend="c3">
               <emphasis role="bold">Java и Groovy классы </emphasis>
             </entry>
           </row>
@@ -43,9 +44,9 @@
             <entry align="left"><classname>Buyer</classname>, <classname>StandardEntity</classname></entry>
           </row>
           <row>
-            <entry align="left">Название класса контроллера</entry>
-            <entry align="left">UpperCamelCase, контроллеры экранов со списком сущностей − <classname>&lt;ИмяКлассаСущности&gt;Browser</classname>, контроллеры экранов редактирования − <classname>&lt;ИмяКлассаСущности&gt;Editor</classname></entry>
-            <entry align="left">
+            <entry role="left" align="left">Название класса контроллера</entry>
+            <entry role="special" align="left">UpperCamelCase, контроллеры экранов со списком сущностей − <classname>&lt;ИмяКлассаСущности&gt;Browser</classname>, контроллеры экранов редактирования − <classname>&lt;ИмяКлассаСущности&gt;Editor</classname></entry>
+            <entry role="right" align="left">
               <classname>BuyerBrowser</classname>
             </entry>
           </row>
@@ -57,9 +58,9 @@
             </entry>
           </row>
           <row>
-            <entry align="left">Событие</entry>
-            <entry align="left">UpperCamelCase</entry>
-            <entry align="left">
+            <entry role="left" align="left">Событие</entry>
+            <entry role="special" align="left">UpperCamelCase</entry>
+            <entry role="right" align="left">
               <classname>EditRoleAction</classname>
             </entry>
           </row>
@@ -71,9 +72,9 @@
             </entry>
           </row>
           <row>
-            <entry align="left">Статическое поле только для чтения</entry>
-            <entry align="left">UPPERCASE</entry>
-            <entry align="left">
+            <entry role="left" align="left">Статическое поле только для чтения</entry>
+            <entry role="special" align="left">UPPERCASE</entry>
+            <entry role="right" align="left">
               <classname>ENTITY_SPECIAL_KEY</classname>
             </entry>
           </row>
@@ -85,9 +86,9 @@
             </entry>
           </row>
           <row>
-            <entry align="left">Метод</entry>
-            <entry align="left">lowerCamelCase</entry>
-            <entry align="left">
+            <entry role="left" align="left">Метод</entry>
+            <entry role="special" align="left">lowerCamelCase</entry>
+            <entry role="right" align="left">
               <classname>setItem</classname>
             </entry>
           </row>
@@ -99,7 +100,7 @@
             </entry>
           </row>
           <row>
-            <entry align="center" namest="c1" nameend="c3">
+            <entry role="left" align="center" namest="c1" nameend="c3">
               <emphasis role="bold">XML-дескрипторы</emphasis>
             </entry>
           </row>
@@ -111,9 +112,9 @@
             </entry>
           </row>
           <row>
-            <entry align="left">Идентификатор источника данных</entry>
-            <entry align="left">lowerCamelCase, только буквы и цифры, оканчивается на <classname>Ds</classname></entry>
-            <entry align="left">
+            <entry role="left" align="left">Идентификатор источника данных</entry>
+            <entry role="special" align="left">lowerCamelCase, только буквы и цифры, оканчивается на <classname>Ds</classname></entry>
+            <entry role="right" align="left">
               <classname>attributesDs</classname>
             </entry>
           </row>
@@ -125,7 +126,7 @@
             </entry>
           </row>
           <row>
-            <entry align="center" namest="c1" nameend="c3">
+            <entry role="left" align="center" namest="c1" nameend="c3">
               <emphasis role="bold">Объекты базы данных</emphasis>
             </entry>
           </row>
@@ -137,9 +138,9 @@
             </entry>
           </row>
           <row>
-            <entry align="left">Идентификаторы</entry>
-            <entry align="left">UPPERCASE. Слова в названии разделяются подчеркиванием. В именах таблиц используется либо единственное число, либо множественное, но не оба сразу. Рекомендуем использовать единственное число.</entry>
-            <entry align="left">
+            <entry role="left" align="left">Идентификаторы</entry>
+            <entry role="special" align="left">UPPERCASE. Слова в названии разделяются подчеркиванием. В именах таблиц используется либо единственное число, либо множественное, но не оба сразу. Рекомендуем использовать единственное число.</entry>
+            <entry role="right" align="left">
               <classname>SYS_FTS_QUEUE</classname>
             </entry>
           </row>
@@ -152,20 +153,12 @@
     <section>
       <title>Использование правил оформления Java-кода</title>
       <para>В платформе CUBA при форматировании кода следует придерживаться стандартных правил Java-кодирования, кроме этого необходимо соблюдать дополнительно ещё несколько правил:</para>
-      <section>
-        <title>Не игнорируйте исключения</title>
-        <para>Иногда возникает соблазн написать код, который полностью игнорирует исключения вроде этого:</para>
-        <programlisting>void setServerPort(String value) {
-    try {
-        serverPort = Integer.parseInt(value);
-    } catch (NumberFormatException e) { }
-}</programlisting>
-        <para><ulink url="http://max-imsblog.blogspot.com/2011/10/android.html">http://max-imsblog.blogspot.com/2011/10/android.html</ulink></para>
-      </section>
+      <para>TODO</para>
     </section>
   </section>
   <section>
     <title>Отладка и тестирование</title>
+    <para>TODO</para>
   </section>
   <section>
     <title>Пошаговые практические руководства</title>
@@ -249,7 +242,7 @@ public class TaskWorkerBean implements TaskWorker {
       <programlisting>@Inject
 private TaskWorker taskWorker;</programlisting>
       <para>В этом случае контейнер автоматически найдет подходящую реализацию и установит ссылку на объект во время разворачивания приложения в памяти.</para>
-      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="section_MBean_id">МБин</link>.</para>
+      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например, кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="section_MBean_id">МБин</link>.</para>
     </section>
     <section id="section_mbeans_realization">
       <title>Правила создания Мбинов</title>
@@ -335,7 +328,7 @@ return ExceptionUtils.getStackTrace(e);
           <para><classname>Transaction.commit()</classname> – коммит, <classname>commitRetaining() </classname>– коммит и старт новой</para>
         </listitem>
         <listitem>
-          <para><classname>Transaction.end()</classname> – выполняет rollback если ранее не был вызван коммит</para>
+          <para><classname>Transaction.end()</classname> – выполняет rollback, если ранее не был вызван коммит</para>
         </listitem>
         <listitem>
           <para><classname>Locator.isInTransaction()</classname> – есть ли в данный момент транзакция</para>
@@ -357,7 +350,7 @@ try {
           <para><classname>Locator.createTransaction()</classname> всегда создает новую транзакцию. Если в этот момент уже есть открытая транзакция, она приостанавливается (REQUIRES_NEW).</para>
         </listitem>
         <listitem>
-          <para><classname>Locator.getTransaction()</classname> создает новую транзакцию только если в данный момент нет уже открытой транзакции (REQUIRES). </para>
+          <para><classname>Locator.getTransaction()</classname> создает новую транзакцию, только если в данный момент нет уже открытой транзакции (REQUIRES). </para>
         </listitem>
         <listitem>
           <para>Варианты использования см. в тесте <classname>com.haulmont.cuba.core.TransactionTest</classname></para>

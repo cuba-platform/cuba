@@ -5,7 +5,7 @@
       <year>2012</year>
       <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Платформа разработки бизнес-приложений <trademark>CUBA</trademark>. Руководство программиста</title>
+    <title>Платформа <trademark>CUBA</trademark>. Руководство программиста</title>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
@@ -29,7 +29,7 @@
             <para>RDBMS (SQL, DDL).</para>
           </listitem>
         </itemizedlist></para>
-      <para>Кроме того, полезным является знание следующих технологии и фреймворков:</para>
+      <para>Кроме того, полезным является знание следующих технологий и фреймворков:</para>
       <itemizedlist>
         <listitem>
           <para>SpringFramework 3.x (<ulink url="http://www.springsource.org">http://www.springsource.org</ulink>)</para>
@@ -50,7 +50,7 @@
     </section>
     <section>
       <title>Структура руководства</title>
-      <para>Данное Руководство состоит из следующих разделов.</para>
+      <para>Данное Руководство состоит из следующих глав.</para>
       <para><link linkend="chapter0_introduction">
           <emphasis role="bold">Глава 1. Введение</emphasis>
         </link></para>
@@ -58,7 +58,7 @@
       <para><link linkend="chapter1_setup">
           <emphasis role="bold">Глава 2. Установка и настройка инструментария</emphasis>
         </link></para>
-      <para>В данной главе приводится список программного обеспечения, необходимого для создания бизнес-приложей на основе платформы <trademark>CUBA</trademark>. Приведены инструкции по установке и настройке инструментов.</para>
+      <para>В данной главе приводится список программного обеспечения, необходимого для создания бизнес-приложений на основе платформы <trademark>CUBA</trademark>. Приведены инструкции по установке и настройке инструментов.</para>
       <para><link linkend="chapter_quickStart">
           <emphasis role="bold">Глава 3. Быстрый старт</emphasis>
         </link></para>
@@ -139,28 +139,28 @@ encrypt = true </programlisting>
               <listitem id="text_injection_IoC">
                 <para>Dependency Injection and Inversion of Control <itemizedlist>
                     <listitem>
-                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/ html/</ulink></para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
               <listitem id="text_springAOP">
                 <para>Aspect Oriented Programming <itemizedlist>
                     <listitem>
-                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/ html/</ulink></para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
               <listitem>
                 <para>Transaction Management <itemizedlist>
                     <listitem>
-                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/ html/</ulink></para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
               <listitem>
                 <para>Web services<itemizedlist>
                     <listitem>
-                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+                      <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/ html/</ulink></para>
                     </listitem>
                     <listitem>
                       <para><ulink url="http://static.springsource.org/spring-ws/sites/2.0/reference/html/index.html">http://static.springsource.org/spring-ws/sites/2.0/reference/html/index.html</ulink></para>
@@ -182,7 +182,7 @@ encrypt = true </programlisting>
             <para>Краткие сведения о том, что такое <firstterm>Object-relational mapping</firstterm> (ORM), Вы можете найти по следующей ссылке: <ulink url="http://ru.wikipedia.org/wiki/ORM">http://ru.wikipedia.org/wiki/ORM</ulink></para>
           </listitem>
         </varlistentry>
-        <varlistentry>
+        <varlistentry id="text_openJPA">
           <term>Информация по OpenJPA</term>
           <listitem>
             <para>Веб-сайт <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink> также содержит информацию, которая может быть полезна для Вас.</para>
@@ -198,9 +198,9 @@ encrypt = true </programlisting>
     </section>
     <section>
       <title>Обратная связь</title>
-      <para>Если Вы нашли ошибку в платформе, или у Вас появились вопросы, ответы на которые отсутствуют в данном Руководстве, пожалуйста, обратитесть в службу поддержки по электронной почте <email>name@haulmont.com</email>. В теме письма укажите</para>
+      <para>Если Вы нашли ошибку в платформе, или у Вас появились вопросы, ответы на которые отсутствуют в данном Руководстве, пожалуйста, обратитесь в службу поддержки по электронной почте <email>name@haulmont.com</email>. В теме письма укажите</para>
       <para><code>PlatformDocumentation</code></para>
-      <para>Если у Вас есть предложения по улучшению данного руководства, постарайтесь сформулировать их как можно точнее. Если Вы обнаружили ошибку, укажите, пожалуйста, номер раздела и приведите небольшой участок окружающего текста для облегчения поиска. </para>
+      <para>Если у Вас есть предложения по улучшению данного руководства, постарайтесь сформулировать их как можно точнее. Если Вы обнаружили ошибку, укажите, пожалуйста, номер главы и приведите небольшой участок окружающего текста для облегчения поиска. </para>
     </section>
   </preface>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
@@ -211,6 +211,7 @@ encrypt = true </programlisting>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
   <appendix>
     <title>Часто задаваемые вопросы</title>
+    <para>TODO</para>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="qanda.xml" encoding="UTF-8"/>
   </appendix>
   <appendix>
@@ -219,7 +220,7 @@ encrypt = true </programlisting>
       <title>Схема базы данных</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/dbStructure.png" contentwidth="100%" scalefit="1"/>
+          <imagedata align="center" fileref="img/dbStructure.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -246,7 +247,7 @@ encrypt = true </programlisting>
         <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
       </listitem>
       <listitem>
-        <para><parameter>cuba.trustedClientPassword</parameter>. Пароль, используемый методом <methodname>LoginService.loginTrusted()</methodname>. Доверенный клиент может зайти в систему, не вводя пользовательский пароль. Это свойство используется при интеграции с <link linkend="section_AD">Active Directory</link></para>
+        <para><parameter>cuba.trustedClientPassword</parameter>. Пароль, используемый методом <methodname>LoginService.loginTrusted()</methodname>. Доверенный клиент может зайти в систему, не вводя пользовательский пароль. Это свойство используется при интеграции с <application>Active Directory</application>.</para>
         <para>Интерфейсы: <classname>GlobalConfig</classname>, <classname>ServerConfig</classname></para>
         <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
       </listitem>
@@ -330,6 +331,137 @@ encrypt = true </programlisting>
       </listitem>
     </itemizedlist>
   </appendix>
+  <appendix id="appendix_shop_conf_files">
+    <title>Конфигурационные файлы приложения Магазин</title>
+    <variablelist>
+      <varlistentry>
+        <term>Модуль core</term>
+        <listitem>
+          <variablelist>
+            <varlistentry>
+              <term>context.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/core/context.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-app.properties</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/core/shop-app.properties" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-scheduling-spring.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/core/shop-scheduling-spring.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-spring.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/core/shop-spring.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-views.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/core/shop-views.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>web.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/core/web.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Модуль global</term>
+        <listitem>
+          <variablelist>
+            <varlistentry>
+              <term>shop-metadata.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/global/shop-metadata.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-persistence.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/global/shop-persistence.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Модуль gui</term>
+        <listitem>
+          <variablelist>
+            <varlistentry>
+              <term>shop-screens.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/gui/shop-screens.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Модуль web</term>
+        <listitem>
+          <variablelist>
+            <varlistentry>
+              <term>context.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/context.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-web-app.properties</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/shop-web-app.properties" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-web-menu.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/shop-web-menu.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-web-permissions.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/shop-web-permissions.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-web-screens.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/shop-web-screens.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>shop-web-spring.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/shop-web-spring.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>web.xml</term>
+              <listitem>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/web.xml" encoding="UTF-8" parse="text"/></programlisting>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </appendix>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" encoding="UTF-8"/>
-  <index type="А" lang="ru"/>
+  <index type="А" lang="ru">
+    <para>TODO</para>
+  </index>
 </book>

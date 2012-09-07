@@ -1,0 +1,4 @@
+﻿@OneToMany(mappedBy = "buyer")
+@Composition
+@OnDelete(DeletePolicy.CASCADE)
+private List<Discount> discounts;

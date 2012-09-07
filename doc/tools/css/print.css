@@ -10,7 +10,8 @@
 	margin-bottom: 2.2cm;
 	margin-top: 3cm;
     @bottom-left {
-        content: 'Платформа CUBA. Генератор отчетов';
+        content: 'Платформа CUBA™. Руководство программиста';
+		/*content: 'Платформа CUBA™. Подсистема безопасности';*/
         font-family: 'Arial', 'Verdana', sans-serif;
         font-size: 12pt;
         color: #777777;
@@ -114,12 +115,12 @@ a {
 
 .titlepage .copyright{
 	text-align=center;
-	margin-top: 65%;
+	margin-top: 75%;
 }
 
 .book.bookinfo .copyright{
 	text-align=center;
-	margin-top: 60%;
+	margin-top: 55%;
 }
 
 .copyright p{
@@ -135,7 +136,7 @@ a {
 	font-size: 40pt;
     margin: 0;
     color: #0b6ec7;
-	padding-top: 50%;
+	padding-top: 33%;
 }
 
 .titlepage h2.subtitle {
