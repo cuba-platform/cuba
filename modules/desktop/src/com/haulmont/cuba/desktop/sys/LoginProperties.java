@@ -21,23 +21,26 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- *
  * @author devyatkin
  * @version $Id$
  */
 public class LoginProperties {
 
-    private static Log log = LogFactory.getLog(LoginProperties.class);
+    private Log log = LogFactory.getLog(getClass());
+
+    private File propertiesFile;
 
     private static String LOGIN = "login";
-            
-    public static void saveLogin(String login) {
+
+    public LoginProperties() {
+        propertiesFile = loadFile();
+    }
+
+    public void saveLogin(String login) {
         Properties properties = new Properties();
         properties.setProperty(LOGIN, login);
         try {
-
-            File file = loadFile();
-            FileOutputStream stream = FileUtils.openOutputStream(file);
+            FileOutputStream stream = FileUtils.openOutputStream(propertiesFile);
             try {
                 properties.store(stream, "Login properties");
             } finally {
@@ -48,12 +51,11 @@ public class LoginProperties {
         }
     }
 
-    public static String loadLastLogin() {
+    public String loadLastLogin() {
         Properties properties = new Properties();
         try {
-            File file = loadFile();
-            if (file.exists()) {
-                FileInputStream stream = FileUtils.openInputStream(file);
+            if (propertiesFile.exists()) {
+                FileInputStream stream = FileUtils.openInputStream(propertiesFile);
                 try {
                     properties.load(stream);
                 } finally {
@@ -65,8 +67,8 @@ public class LoginProperties {
         }
         return properties.getProperty(LOGIN);
     }
-    
-    private static File loadFile(){
+
+    private File loadFile() {
         String dataDir = AppBeans.get(Configuration.NAME, Configuration.class).getConfig(GlobalConfig.class).getDataDir();
         return new File(dataDir, "login.properties");
     }
