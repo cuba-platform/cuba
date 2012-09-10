@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.sys.LoginProperties;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
@@ -65,7 +66,10 @@ public class LoginDialog extends JDialog {
 
         final JTextField nameField = new JTextField();
         String defaultName = AppContext.getProperty("cuba.desktop.loginDialogDefaultUser");
-        if (!StringUtils.isBlank(defaultName))
+        String lastLogin = LoginProperties.loadLastLogin();
+        if (!StringUtils.isBlank(lastLogin))
+            nameField.setText(lastLogin);
+        else if (!StringUtils.isBlank(defaultName))
             nameField.setText(defaultName);
         panel.add(nameField, "width 150!, wrap");
 
@@ -94,6 +98,7 @@ public class LoginDialog extends JDialog {
                         try {
                             connection.login(name, DigestUtils.md5Hex(password), locale);
                             setVisible(false);
+                            LoginProperties.saveLogin(name);
                             App.getInstance().enable();
                         } catch (LoginException ex) {
                             String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
