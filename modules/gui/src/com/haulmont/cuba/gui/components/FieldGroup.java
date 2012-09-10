@@ -214,6 +214,13 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
      * to one of <code>FieldGroup.addCustomField</code> methods.
      */
     interface CustomFieldGenerator {
+        /**
+         * Called by the {@link FieldGroup} to get a generated field instance.
+         *
+         * @param datasource    a datasource specified for the field or the whole FieldGroup in XML
+         * @param propertyId    field identifier as defined in XML, with <code>custom</code> attribute set to true
+         * @return  a component to be rendered for the field
+         */
         Component generateField(Datasource datasource, String propertyId);
     }
 }

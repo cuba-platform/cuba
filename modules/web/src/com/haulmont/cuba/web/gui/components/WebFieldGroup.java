@@ -194,7 +194,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     @Override
     public void addCustomField(final Field field, final CustomFieldGenerator fieldGenerator) {
         if (!field.isCustom()) {
-            throw new IllegalStateException(String.format("Field '%s' must by custom", field.getId()));
+            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", field.getId()));
         }
         component.addCustomField(field.getId(), new FieldGroup.CustomFieldGenerator() {
             @Override
@@ -211,12 +211,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
                 String id = (String) propertyId;
 
+                c = fieldGenerator.generateField(ds, id);
+                assignTypicalAttributes(c);
+                f = getFieldComponent(c);
+
                 MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(id);
                 if (propertyPath != null) {
-                    c = fieldGenerator.generateField(ds, id);
-                    assignTypicalAttributes(c);
-                    f = getFieldComponent(c);
-
                     if (f.getPropertyDataSource() == null) {
                         if (field.getDatasource() != null) {
                             final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
@@ -226,10 +226,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                             f.setPropertyDataSource(itemWrapper.getItemProperty(propertyPath));
                         }
                     }
-                } else {
-                    c = fieldGenerator.generateField(null, null);
-                    assignTypicalAttributes(c);
-                    f = getFieldComponent(c);
                 }
 
                 if (f.getCaption() == null) {
