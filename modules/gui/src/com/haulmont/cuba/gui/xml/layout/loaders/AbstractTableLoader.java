@@ -108,20 +108,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
 
-        //paging
-        final String pagingAttribute = element.attributeValue("pagingMode");
-        if (!StringUtils.isEmpty(pagingAttribute)) {
-            final Table.PagingMode pagingMode = Table.PagingMode.valueOf(pagingAttribute);
-            component.setPagingMode(pagingMode);
-
-            if (pagingMode == Table.PagingMode.PAGE) {
-                Element pagingElement = element.element("paging");
-                if (pagingElement != null) {
-                    loadPaging(component, pagingElement);
-                }
-            }
-        }
-
         return component;
     }
 
@@ -177,53 +163,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                 component.setButtonsPanel(panel);
             }
         }
-    }
-
-    private void loadPaging(Table component, final Element element) {
-        component.setPagingProvider(new Table.PagingProvider() {
-            public String firstCaption() {
-                return loadResourceString(element.attributeValue("firstCaption"));
-            }
-
-            public String prevCaption() {
-                return loadResourceString(element.attributeValue("prevCaption"));
-            }
-
-            public String nextCaption() {
-                return loadResourceString(element.attributeValue("nextCaption"));
-            }
-
-            public String lastCaption() {
-                return loadResourceString(element.attributeValue("lastCaption"));
-            }
-
-            public String pageLengthSelectorCaption() {
-                return loadResourceString(element.attributeValue("selectCaption"));
-            }
-
-            public boolean showPageLengthSelector() {
-                String selectPageLength = element.attributeValue("selectPageLength");
-                return selectPageLength != null && "true".equals(selectPageLength);
-            }
-
-            public int[] pageLengths() {
-                if (showPageLengthSelector()) {
-                    String s = element.attributeValue("availablePageLengths");
-                    if (!StringUtils.isEmpty(s)) {
-                        String[] lengths = s.split(",");
-
-                        int[] result = new int[lengths.length];
-                        for (int i = 0; i < lengths.length; i++) {
-                            result[i] = Integer.parseInt(lengths[i]);
-                        }
-                        return result;
-                    } else {
-                        return new int[] {10, 30, 50, 100};
-                    }
-                }
-                return null;
-            }
-        });
     }
 
     private void loadRequired(T component, Table.Column column) {

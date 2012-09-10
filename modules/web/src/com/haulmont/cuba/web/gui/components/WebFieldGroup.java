@@ -213,7 +213,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
                 MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(id);
                 if (propertyPath != null) {
-                    c = fieldGenerator.generateField(ds, propertyId);
+                    c = fieldGenerator.generateField(ds, id);
                     assignTypicalAttributes(c);
                     f = getFieldComponent(c);
 

@@ -12,7 +12,6 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.AttributePermissionsFra
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
 import com.haulmont.cuba.security.entity.ui.AttributeTarget;
 import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
@@ -27,14 +26,11 @@ import java.util.Iterator;
 public class AttributePermissionsFrameCompanion implements AttributePermissionsFrame.Companion {
     @Override
     public void initPermissionColoredColumn(final Table propertyPermissionsTable) {
-        propertyPermissionsTable.addGeneratedColumn("permissionsInfo", new Table.ColumnGenerator() {
+        propertyPermissionsTable.addGeneratedColumn("permissionsInfo", new Table.ColumnGenerator<MultiplePermissionTarget>() {
             @Override
-            public Component generateCell(Table table, Object itemId) {
+            public Component generateCell(MultiplePermissionTarget target) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
                 JLabel jLabel = (JLabel) DesktopComponentsHelper.unwrap(label);
-
-                CollectionDatasource<MultiplePermissionTarget, String> datasource = propertyPermissionsTable.getDatasource();
-                MultiplePermissionTarget target = datasource.getItem((String) itemId);
 
                 int i = 0;
                 StringBuilder builder = new StringBuilder("<html>");

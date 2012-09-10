@@ -90,7 +90,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         categoryFieldGroup.setDatasource(rds.getMainDs());
         categoryFieldGroup.addCustomField("category", new FieldGroup.CustomFieldGenerator() {
             @Override
-            public Component generateField(Datasource datasource, Object propertyId) {
+            public Component generateField(Datasource datasource, String propertyId) {
                 LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
                 field.setDatasource(rds.getMainDs(), "category");
                 field.setOptionsDatasource(categoriesDs);
@@ -182,14 +182,13 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                         if (field.getId().equals(property.getName())) {
                             field.setCustom(true);
                             component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
-
                                 @Override
-                                public Component generateField(Datasource datasource, Object propertyId) {
+                                public Component generateField(Datasource datasource, String propertyId) {
                                     LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
                                     field.setFrame(RuntimePropertiesFrame.this);
-                                    CollectionDatasource fieldDs = getDsContext().get((String) propertyId);
+                                    CollectionDatasource fieldDs = getDsContext().get(propertyId);
                                     field.setOptionsDatasource(fieldDs);
-                                    field.setDatasource(rds, (String) propertyId);
+                                    field.setDatasource(rds, propertyId);
                                     //field.setHeight("-1px");
                                     field.setWidth(fieldWidth);
                                     return field;
@@ -200,7 +199,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 } else {
                     component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
                         @Override
-                        public Component generateField(Datasource datasource, Object propertyId) {
+                        public Component generateField(Datasource datasource, String propertyId) {
                             //todo move field generation to generator previous to this block (upper)
                             final PickerField pickerField;
                             Boolean lookup = ((RuntimePropertiesEntity) datasource.getItem()).getCategoryValue(property.getName()).getCategoryAttribute().getLookup();
@@ -224,7 +223,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             }
                             pickerField.setMetaClass(ds.getMetaClass());
                             pickerField.setFrame(RuntimePropertiesFrame.this);
-                            pickerField.setDatasource(ds, (String) propertyId);
+                            pickerField.setDatasource(ds, propertyId);
                             PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
                             if (lookupAction != null) {
                                 RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) ds.getItem();

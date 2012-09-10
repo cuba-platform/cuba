@@ -142,11 +142,10 @@ public class CategoryAttrsFrame extends AbstractFrame {
 
     private void initDataTypeColumn() {
         categoryAttrsTable.removeGeneratedColumn("dataType");
-        categoryAttrsTable.addGeneratedColumn("dataType", new Table.ColumnGenerator() {
-            public Component generateCell(Table table, Object itemId) {
+        categoryAttrsTable.addGeneratedColumn("dataType", new Table.ColumnGenerator<CategoryAttribute>() {
+            public Component generateCell(CategoryAttribute attribute) {
                 Label dataTypeLabel = factory.createComponent(Label.NAME);
                 String labelContent;
-                CategoryAttribute attribute = (CategoryAttribute) table.getDatasource().getItem(itemId);
                 if (BooleanUtils.isTrue(attribute.getIsEntity())) {
                     try {
                         Class clazz = Class.forName(attribute.getDataType());
@@ -166,12 +165,10 @@ public class CategoryAttrsFrame extends AbstractFrame {
     }
 
     private void initDefaultValueColumn() {
-        categoryAttrsTable.addGeneratedColumn("defaultValue", new Table.ColumnGenerator() {
+        categoryAttrsTable.addGeneratedColumn("defaultValue", new Table.ColumnGenerator<CategoryAttribute>() {
             @Override
-            public Component generateCell(Table table, Object itemId) {
+            public Component generateCell(CategoryAttribute attribute) {
                 String defaultValue = "";
-
-                CategoryAttribute attribute = (CategoryAttribute) table.getDatasource().getItem(itemId);
 
                 if (BooleanUtils.isNotTrue(attribute.getIsEntity())) {
                     RuntimePropsDatasource.PropertyType dataType = RuntimePropsDatasource.PropertyType.valueOf(attribute.getDataType());

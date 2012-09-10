@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.PermissionVariant;
 
@@ -28,16 +27,15 @@ import javax.swing.*;
 public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.Companion {
     @Override
     public void initPermissionColoredColumns(TreeTable screenPermissionsTree) {
-        screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator() {
+        screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
             @Override
-            public Component generateCell(Table table, Object itemId) {
+            public Component generateCell(BasicPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
                 JLabel jLabel = (JLabel) DesktopComponentsHelper.unwrap(label);
 
                 StringBuilder builder = new StringBuilder();
 
-                CollectionDatasource<BasicPermissionTarget, String> ds = table.getDatasource();
-                PermissionVariant permissionVariant = ds.getItem((String) itemId).getPermissionVariant();
+                PermissionVariant permissionVariant = entity.getPermissionVariant();
 
                 if (permissionVariant != PermissionVariant.NOTSET) {
                     builder.append("<html>");

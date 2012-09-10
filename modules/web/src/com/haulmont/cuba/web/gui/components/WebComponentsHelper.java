@@ -267,17 +267,6 @@ public class WebComponentsHelper {
         }
     }
 
-    public static Table.PagingMode convertPagingMode(com.haulmont.cuba.gui.components.Table.PagingMode pagingMode) {
-        switch (pagingMode) {
-            case SCROLLING:
-                return Table.PagingMode.SCROLLING;
-            case PAGE:
-                return Table.PagingMode.PAGE;
-            default:
-                throw new IllegalArgumentException("Unknow paging mode: " + pagingMode);
-        }
-    }
-
     public static AggregationContainer.Type convertAggregationType(
             AggregationInfo.Type function
     ) {

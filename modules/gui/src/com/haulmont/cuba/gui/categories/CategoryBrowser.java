@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.AppConfig;
@@ -48,12 +49,11 @@ public class CategoryBrowser extends AbstractLookup {
 
         categoryTable.removeGeneratedColumn("entityType");
 
-        categoryTable.addGeneratedColumn("entityType",new Table.ColumnGenerator(){
+        categoryTable.addGeneratedColumn("entityType",new Table.ColumnGenerator<Category>(){
             @Override
-            public Component generateCell(Table table, Object itemId) {
+            public Component generateCell(Category entity) {
                 Label dataTypeLabel = AppConfig.getFactory().createComponent(Label.NAME);
-                Category category = (Category) table.getDatasource().getItem(itemId);
-                MetaClass meta = metadata.getSession().getClassNN(category.getEntityType());
+                MetaClass meta = metadata.getSession().getClassNN(entity.getEntityType());
                 dataTypeLabel.setValue(messageTools.getEntityCaption(meta));
                 return dataTypeLabel;
             }

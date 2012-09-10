@@ -209,7 +209,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         }
     }
 
+    /**
+     * Allows to show an arbitrary field inside a {@link FieldGroup}. Implementors of this interface have to be passed
+     * to one of <code>FieldGroup.addCustomField</code> methods.
+     */
     interface CustomFieldGenerator {
-        Component generateField(Datasource datasource, Object propertyId);
+        Component generateField(Datasource datasource, String propertyId);
     }
 }

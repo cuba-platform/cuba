@@ -152,7 +152,7 @@ public class UserEditor extends AbstractEditor<User> {
         if (isNew) {
             fieldGroup.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
                 @Override
-                public Component generateField(Datasource datasource, Object propertyId) {
+                public Component generateField(Datasource datasource, String propertyId) {
                     passwField = factory.createComponent(TextField.NAME);
                     passwField.setRequiredMessage(getMessage("passwMsg"));
                     passwField.setSecret(true);
@@ -167,7 +167,7 @@ public class UserEditor extends AbstractEditor<User> {
 
             fieldGroup.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
                 @Override
-                public Component generateField(Datasource datasource, Object propertyId) {
+                public Component generateField(Datasource datasource, String propertyId) {
                     confirmPasswField = factory.createComponent(TextField.NAME);
                     confirmPasswField.setSecret(true);
                     confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
@@ -183,10 +183,10 @@ public class UserEditor extends AbstractEditor<User> {
 
         fieldGroup.addCustomField("language", new FieldGroup.CustomFieldGenerator() {
             @Override
-            public Component generateField(Datasource datasource, Object propertyId) {
+            public Component generateField(Datasource datasource, String propertyId) {
                 languageLookup = factory.createComponent(LookupField.NAME);
 
-                languageLookup.setDatasource(datasource, (String) propertyId);
+                languageLookup.setDatasource(datasource, propertyId);
 
                 Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
                 TreeMap<String, Object> options = new TreeMap<>();

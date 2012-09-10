@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.formatters.DateFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface Table
@@ -65,12 +66,95 @@ public interface Table
     boolean isAllowMultiStringCells();
     void setAllowMultiStringCells(boolean value);
 
+    /**
+     * Repaint UI representation of the table (columns, generated columns) without refreshing the table data
+     */
+    void repaint();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     interface ColumnCollapseListener {
         void columnCollapsed(Column collapsedColumn, boolean collapsed);
     }
 
     void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener);
     void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    enum RowHeaderMode {
+        NONE,
+        ICON
+    }
+
+    void setRowHeaderMode(RowHeaderMode mode);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Allows to define different styles for table cells.
+     */
+    interface StyleProvider<E extends Entity> {
+        /**
+         * Called by {@link Table} to get a style for row or cell.
+         * @param entity    an entity instance represented by the current row
+         * @param property  column identifier if getting a style for a cell, or null if getting the style for a row
+         * @return          style name or null to apply the default
+         */
+        @Nullable
+        String getStyleName(@Nullable E entity, @Nullable String property);
+
+        /**
+         * Called by {@link Table} to get an icon to be shown for a row.
+         * @param entity    an entity instance represented by the current row
+         * @return          icon name or null to show no icon
+         */
+        @Nullable
+        String getItemIcon(@Nullable E entity);
+    }
+
+    /**
+     * Set the cell style provider for the table.
+     */
+    void setStyleProvider(StyleProvider styleProvider);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Allows rendering of an arbitrary {@link Component} inside a table cell.
+     */
+    public interface ColumnGenerator<E extends Entity> {
+        /**
+         * Called by {@link Table} when rendering a column for which the generator was created.
+         *
+         * @param entity    an entity instance represented by the current row
+         * @return          a component to be rendered inside of the cell
+         */
+        Component generateCell(E entity);
+    }
+
+    /**
+     * Add a generated column to the table.
+     *
+     * @param columnId  column identifier as defined in XML descriptor. May or may not correspond to an entity property.
+     * @param generator column generator instance
+     */
+    void addGeneratedColumn(String columnId, ColumnGenerator generator);
+
+    /**
+     * Add a generated column to the table.
+     * <p/> This method useful for desktop UI. Table can make addititional look, feel and performance tweaks
+     * if it knows the class of components that will be generated.
+     *
+     * @param columnId column identifier as defined in XML descriptor. May or may not correspond to an entity property.
+     * @param generator column generator instance
+     * @param componentClass class of components that generator will provide
+     */
+    void addGeneratedColumn(String columnId, ColumnGenerator generator, Class<? extends Component> componentClass);
+
+    void removeGeneratedColumn(String columnId);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static class Column implements HasXmlDescriptor, HasCaption, HasFomatter {
 
@@ -222,73 +306,4 @@ public interface Table
             }
         }
     }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    enum RowHeaderMode {
-        NONE,
-        ICON
-    }
-
-    void setRowHeaderMode(RowHeaderMode mode);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    interface StyleProvider {
-        String getStyleName(Entity item, Object property);
-        String getItemIcon(Entity item);
-    }
-
-    void setStyleProvider(StyleProvider styleProvider);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Deprecated
-    enum PagingMode {
-        PAGE,
-        SCROLLING
-    }
-
-    @Deprecated
-    void setPagingMode(PagingMode mode);
-
-    interface PagingProvider {
-        String firstCaption();
-        String prevCaption();
-        String nextCaption();
-        String lastCaption();
-
-        String pageLengthSelectorCaption();
-        boolean showPageLengthSelector();
-        int[] pageLengths();
-    }
-
-    @Deprecated
-    void setPagingProvider(PagingProvider pagingProvider);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public interface ColumnGenerator {
-        Component generateCell(Table table, Object itemId);
-    }
-
-    void addGeneratedColumn(String columnId, ColumnGenerator generator);
-
-    /**
-     * Method useful for desktop UI.
-     * Table can make addititional look, feel and performance tweaks
-     * if it knows class of components that will be generated.
-     *
-     * @param columnId column identifier
-     * @param generator column generator
-     * @param componentClass class of components that generator will provide
-     */
-    void addGeneratedColumn(String columnId, ColumnGenerator generator, Class<? extends Component> componentClass);
-
-    void removeGeneratedColumn(String columnId);
-
-    /**
-     * Repaint ui representation of table (columns, generated columns) without refresh table data
-     */
-    void repaint();
 }

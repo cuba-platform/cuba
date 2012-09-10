@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.gui.app.core.entitydiff;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityBasicPropertyDiff;
 import com.haulmont.cuba.core.global.EntityClassPropertyDiff;
@@ -23,12 +22,11 @@ import com.haulmont.cuba.gui.components.Table;
 public class DiffStyleProvider implements Table.StyleProvider {
 
     @Override
-    public String getStyleName(Entity item, Object property) {
+    public String getStyleName(Entity entity, String property) {
         if (property != null) {
-            MetaPropertyPath metaPropertyPath = (MetaPropertyPath) property;
-            if ("name".equals(metaPropertyPath.getMetaProperty().getName())) {
-                if (item instanceof EntityClassPropertyDiff) {
-                    switch (((EntityPropertyDiff) item).getItemState()) {
+            if ("name".equals(property)) {
+                if (entity instanceof EntityClassPropertyDiff) {
+                    switch (((EntityPropertyDiff) entity).getItemState()) {
                         case Added:
                             return "addedItem";
 
@@ -36,7 +34,7 @@ public class DiffStyleProvider implements Table.StyleProvider {
                             return "modifiedItem";
 
                         case Normal:
-                            if (((EntityClassPropertyDiff) item).isLinkChange())
+                            if (((EntityClassPropertyDiff) entity).isLinkChange())
                                 return "chainItem";
                             else
                                 return "modifiedItem";
@@ -44,9 +42,9 @@ public class DiffStyleProvider implements Table.StyleProvider {
                         case Removed:
                             return "removedItem";
                     }
-                } else if (item instanceof EntityCollectionPropertyDiff) {
+                } else if (entity instanceof EntityCollectionPropertyDiff) {
                     return "categoryItem";
-                } else if (item instanceof EntityBasicPropertyDiff) {
+                } else if (entity instanceof EntityBasicPropertyDiff) {
                     //return "modifiedItem";
                 }
             }
@@ -55,7 +53,7 @@ public class DiffStyleProvider implements Table.StyleProvider {
     }
 
     @Override
-    public String getItemIcon(Entity item) {
+    public String getItemIcon(Entity entity) {
         return null;
     }
 }

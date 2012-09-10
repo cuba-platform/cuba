@@ -106,7 +106,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         Entity item = desktopAbstractTable.getTableModel().getItem(row);
 
         StopWatch sw = new Log4JStopWatch("TableColumnGenerator." + desktopAbstractTable.getId());
-        com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(desktopAbstractTable, item.getId());
+        com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(item);
         sw.stop();
 
         Component comp;

@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.UiPermissionsFrame;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.ui.UiPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.UiPermissionVariant;
 
@@ -27,16 +26,15 @@ import javax.swing.*;
 public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion {
     @Override
     public void initPermissionsColoredColumns(Table uiPermissionsTable) {
-        uiPermissionsTable.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator() {
+        uiPermissionsTable.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<UiPermissionTarget>() {
             @Override
-            public Component generateCell(Table table, Object itemId) {
+            public Component generateCell(UiPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
                 JLabel jLabel = (JLabel) DesktopComponentsHelper.unwrap(label);
 
                 StringBuilder builder = new StringBuilder();
 
-                CollectionDatasource<UiPermissionTarget, String> ds = table.getDatasource();
-                UiPermissionVariant permissionVariant = ds.getItem((String) itemId).getPermissionVariant();
+                UiPermissionVariant permissionVariant = entity.getPermissionVariant();
 
                 if (permissionVariant != UiPermissionVariant.NOTSET) {
                     builder.append("<html>");

@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.PermissionVariant;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -26,17 +25,16 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.Companion{
     @Override
     public void initPermissionColoredColumns(TreeTable screenPermissionsTree) {
-        screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator() {
+        screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
             @Override
-            public Component generateCell(Table table, Object itemId) {
+            public Component generateCell(BasicPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
                 com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
                 vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
 
                 StringBuilder builder = new StringBuilder();
 
-                CollectionDatasource<BasicPermissionTarget, String> ds = table.getDatasource();
-                PermissionVariant permissionVariant = ds.getItem((String) itemId).getPermissionVariant();
+                PermissionVariant permissionVariant = entity.getPermissionVariant();
 
                 if (permissionVariant != PermissionVariant.NOTSET) {
                     builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")

@@ -28,9 +28,9 @@ public class SessionAttributeEditor extends AbstractEditor {
         FieldGroup.Field field = fields.getField("datatype");
         fields.addCustomField(field,
                 new FieldGroup.CustomFieldGenerator() {
-                    public Component generateField(Datasource datasource, Object propertyId) {
+                    public Component generateField(Datasource datasource, String propertyId) {
                         LookupField lookup = AppConfig.getFactory().createComponent(LookupField.NAME);
-                        lookup.setDatasource(datasource, (String) propertyId);
+                        lookup.setDatasource(datasource, propertyId);
                         lookup.setRequiredMessage(getMessage("datatypeMsg"));
                         lookup.setRequired(true);
 

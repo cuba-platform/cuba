@@ -38,7 +38,6 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
@@ -85,10 +84,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected Table.StyleProvider styleProvider;
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
-
-    protected Table.PagingMode pagingMode;
-
-    protected Table.PagingProvider pagingProvider;
 
     protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap = new HashMap<>();
 
@@ -319,8 +314,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setPageLength(15);
 
         component.addActionHandler(new ActionsAdapter());
-
-        setPagingMode(Table.PagingMode.SCROLLING);
 
         component.addListener(new Property.ValueChangeListener() {
             @Override
@@ -698,7 +691,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             public String getStyle(Object itemId, Object propertyId) {
                 @SuppressWarnings({"unchecked"})
                 final Entity item = datasource.getItem(itemId);
-                return styleProvider.getStyleName(item, propertyId);
+                return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
             }
         });
     }
@@ -828,19 +821,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setCaption(caption);
     }
 
-    public Table.PagingMode getPagingMode() {
-        return pagingMode;
-    }
-
-    @Override
-    public void setPagingMode(Table.PagingMode pagingMode) {
-        this.pagingMode = pagingMode;
-        component.setPagingMode(WebComponentsHelper.convertPagingMode(pagingMode));
-        if (pagingMode == Table.PagingMode.PAGE) {
-            setPagingProvider(new DefaultPagingProvider());
-        }
-    }
-
     @Override
     public void setMultiSelect(boolean multiselect) {
         component.setNullSelectionAllowed(multiselect);
@@ -869,47 +849,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     @Override
-    public void setPagingProvider(final Table.PagingProvider pagingProvider) {
-        this.pagingProvider = pagingProvider;
-        component.setPagingProvider(new com.haulmont.cuba.web.toolkit.ui.Table.PagingProvider() {
-            @Override
-            public String firstCaption() {
-                return pagingProvider.firstCaption();
-            }
-
-            @Override
-            public String prevCaption() {
-                return pagingProvider.prevCaption();
-            }
-
-            @Override
-            public String nextCaption() {
-                return pagingProvider.nextCaption();
-            }
-
-            @Override
-            public String lastCaption() {
-                return pagingProvider.lastCaption();
-            }
-
-            @Override
-            public String pageLengthSelectorCaption() {
-                return pagingProvider.pageLengthSelectorCaption();
-            }
-
-            @Override
-            public boolean showPageLengthSelector() {
-                return pagingProvider.showPageLengthSelector();
-            }
-
-            @Override
-            public int[] pageLengths() {
-                return pagingProvider.pageLengths();
-            }
-        });
-    }
-
-    @Override
     public void addGeneratedColumn(String columnId, final ColumnGenerator generator) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");
@@ -928,7 +867,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 new com.vaadin.ui.Table.ColumnGenerator() {
                     @Override
                     public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                        com.haulmont.cuba.gui.components.Component component = generator.generateCell(WebAbstractTable.this, itemId);
+                        Entity entity = getDatasource().getItem(itemId);
+                        com.haulmont.cuba.gui.components.Component component = generator.generateCell(entity);
                         if (component == null)
                             return null;
                         else {
@@ -957,7 +897,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     @Override
     public void removeGeneratedColumn(String columnId) {
         MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
-        removeGeneratedColumn(targetCol);
+        removeGeneratedColumn(targetCol == null ? columnId : targetCol);
     }
 
     /**
@@ -1373,43 +1313,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             if (field instanceof CheckBox) {
                 ((CheckBox) field).setLayoutCaption(true);
             }
-        }
-    }
-
-    class DefaultPagingProvider implements Table.PagingProvider {
-        @Override
-        public String firstCaption() {
-            return null;
-        }
-
-        @Override
-        public String prevCaption() {
-            return MessageProvider.getMessage(App.class, "paging.prevCaption");
-        }
-
-        @Override
-        public String nextCaption() {
-            return MessageProvider.getMessage(App.class, "paging.nextCaption");
-        }
-
-        @Override
-        public String lastCaption() {
-            return null;
-        }
-
-        @Override
-        public String pageLengthSelectorCaption() {
-            return null;
-        }
-
-        @Override
-        public boolean showPageLengthSelector() {
-            return false;
-        }
-
-        @Override
-        public int[] pageLengths() {
-            return new int[0];
         }
     }
 

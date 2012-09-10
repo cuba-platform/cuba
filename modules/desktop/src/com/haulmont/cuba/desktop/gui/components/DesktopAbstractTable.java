@@ -782,14 +782,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     @Override
-    public void setPagingMode(PagingMode mode) {
-    }
-
-    @Override
-    public void setPagingProvider(PagingProvider pagingProvider) {
-    }
-
-    @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
         addGeneratedColumn(columnId, generator, null);
     }
@@ -1151,7 +1143,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         int modelColumn = table.convertColumnIndexToModel(column);
         Object property = columnsOrder.get(modelColumn).getId();
 
-        return styleProvider.getStyleName(item, property);
+        return styleProvider.getStyleName(item, property.toString());
     }
 
     /**

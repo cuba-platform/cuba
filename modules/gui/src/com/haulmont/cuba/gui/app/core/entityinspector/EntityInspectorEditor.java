@@ -526,8 +526,8 @@ public class EntityInspectorEditor extends AbstractEditor {
             //custom field generator creates an pickerField
             fieldGroup.addCustomField(field, new FieldGroup.CustomFieldGenerator() {
                 @Override
-                public Component generateField(Datasource datasource, Object propertyId) {
-                    MetaProperty metaProperty = datasource.getMetaClass().getProperty(propertyId.toString());
+                public Component generateField(Datasource datasource, String propertyId) {
+                    MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(propertyId);
                     MetaClass propertyMeta = metaProperty.getRange().asClass();
                     PickerField field = componentsFactory.createComponent(PickerField.NAME);
                     String caption = getPropertyCaption(metaProperty.getDomain(), metaProperty);
@@ -551,7 +551,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                         }
                         field.setEditable(false);
                     }
-                    field.setDatasource(datasource, propertyId.toString());
+                    field.setDatasource(datasource, propertyId);
                     return field;
                 }
             });
