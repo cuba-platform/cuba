@@ -9,14 +9,14 @@
         messagesPack="com.haulmont.cuba.gui.app.security.group"
         caption="msg://editor.caption"
         datasource="group"
-        focusComponent="name"
+        focusComponent="fieldGroup"
         >
     <dsContext>
         <datasource id="group" class="com.haulmont.cuba.security.entity.Group" view="group.browse"/>
     </dsContext>
 
     <layout expand="windowActions">
-        <fieldGroup datasource="group">
+        <fieldGroup id="fieldGroup" datasource="group">
             <field id="name" required="true" requiredMessage="msg://nameMsg" width="300px"/>
         </fieldGroup>
 

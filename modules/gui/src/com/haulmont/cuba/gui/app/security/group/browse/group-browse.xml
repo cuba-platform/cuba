@@ -9,7 +9,7 @@
         messagesPack="com.haulmont.cuba.gui.app.security.group"
         class="com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser"
         caption="msg://browser.caption"
-        focusComponent="groups"
+        focusComponent="groupsTree"
         >
     <dsContext>
         <hierarchicalDatasource
