@@ -24,6 +24,9 @@ import java.util.*;
 
 public class AttributeHelper {
     public static Object convert(String type, String str) {
+        if (str == null)
+            return null;
+
         if (String.class.getName().equals(type)) {
             return str;
         }

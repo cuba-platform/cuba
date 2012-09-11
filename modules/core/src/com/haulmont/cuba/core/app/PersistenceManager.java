@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 22.05.2009 12:54:58
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -38,16 +33,19 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Class that caches database metadata information and entity statistics.
+ * Class that caches database metadata information and entity statistics. Also delegates some funtionality
+ * to {@link DbUpdater}.
  *
  * @author krivopustov
  * @version $Id$
  */
 @ManagedBean(PersistenceManagerAPI.NAME)
-public class PersistenceManager extends ManagementBean implements PersistenceManagerMBean, PersistenceManagerAPI
-{
+public class PersistenceManager extends ManagementBean implements PersistenceManagerMBean, PersistenceManagerAPI {
+
     private static Log log = LogFactory.getLog(PersistenceManager.class);
+
     private boolean metadataLoaded;
+
     private Set<String> softDeleteTables = new HashSet<>();
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -68,14 +66,17 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
 
     private PersistenceConfig config;
 
+    private Configuration configuration;
+
     @Inject
-    public void setConfigProvider(Configuration configuration) {
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
         config = configuration.getConfig(PersistenceConfig.class);
     }
 
     private void initDbMetadata() {
         log.info("Initializing DB metadata");
-        DataSource datasource = PersistenceProvider.getDataSource();
+        DataSource datasource = persistence.getDataSource();
         Connection conn = null;
         try {
             conn = datasource.getConnection();
@@ -234,7 +235,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         try {
             List<String> list = dbUpdater.findUpdateDatabaseScripts();
             if (!list.isEmpty()) {
-                String dbDirName = ConfigProvider.getConfig(ServerConfig.class).getDbDir();
+                String dbDirName = configuration.getConfig(ServerConfig.class).getDbDir();
                 File dbDir = new File(dbDirName);
                 URI dbDirUri = dbDir.toURI();
 
@@ -345,7 +346,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
     @Override
     public String refreshStatistics(String entityName) {
         if (StringUtils.isBlank(entityName))
-            return "Pass an entity name or 'all' to refresh statistics for all entities.\n" +
+            return "Pass an entity name (MetaClass name, e.g. sec$User) or 'all' to refresh statistics for all entities.\n" +
                     "Be careful, it can take very long time.";
 
         try {
@@ -403,6 +404,87 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
+    public synchronized String enterStatistics(String name, Long instanceCount, Integer fetchUI, Integer maxFetchUI,
+                                               Integer lazyCollectionThreshold, Integer lookupScreenThreshold) {
+        if (StringUtils.isBlank(name))
+            return "Entity name is required";
+        try {
+            login();
+            Transaction tx = persistence.createTransaction();
+            EntityStatistics es;
+            try {
+                EntityManager em = persistence.getEntityManager();
+
+                es = getEntityStatisticsInstance(name, em);
+
+                if (instanceCount != null) {
+                    es.setInstanceCount(instanceCount);
+                }
+                if (fetchUI != null) {
+                    es.setFetchUI(fetchUI);
+                }
+                if (maxFetchUI != null) {
+                    es.setMaxFetchUI(maxFetchUI);
+                }
+                if (lazyCollectionThreshold != null) {
+                    es.setLazyCollectionThreshold(lazyCollectionThreshold);
+                }
+                if (lookupScreenThreshold != null) {
+                    es.setLookupScreenThreshold(lookupScreenThreshold);
+                }
+
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+
+            statisticsCache = null;
+
+            StringBuilder sb = new StringBuilder("Statistics for ").append(name).append(" changed:\n");
+            sb.append("instanceCount=").append(es.getInstanceCount()).append("\n");
+            sb.append("fetchUI=").append(es.getFetchUI()).append("\n");
+            sb.append("maxFetchUI=").append(es.getMaxFetchUI()).append("\n");
+            sb.append("lazyCollectionThreshold=").append(es.getLazyCollectionThreshold()).append("\n");
+            sb.append("lookupScreenThreshold=").append(es.getLookupScreenThreshold()).append("\n");
+            return sb.toString();
+        } catch (Exception e) {
+            log.error("enterStatistics error", e);
+            return ExceptionUtils.getStackTrace(e);
+        } finally {
+            logout();
+        }
+    }
+
+    @Override
+    public String deleteStatistics(String name) {
+        if (StringUtils.isBlank(name))
+            return "Entity name is required";
+        try {
+            login();
+            Transaction tx = persistence.createTransaction();
+            try {
+                EntityManager em = persistence.getEntityManager();
+                Query q = em.createQuery("delete from sys$EntityStatistics s where s.name = ?1");
+                q.setParameter(1, name);
+                q.executeUpdate();
+
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+
+            statisticsCache = null;
+
+            return "Entity statistics for " + name + " has been deleted";
+        } catch (Exception e) {
+            log.error("deleteStatistics error", e);
+            return ExceptionUtils.getStackTrace(e);
+        } finally {
+            logout();
+        }
+    }
+
     private void refreshStatisticsForEntity(String name) {
         log.debug("Refreshing statistics for entity " + name);
         Transaction tx = persistence.createTransaction();
@@ -412,25 +494,29 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
             Query q = em.createQuery("select count(e) from " + name + " e");
             Long count = (Long) q.getSingleResult();
 
-            q = em.createQuery("select s from sys$EntityStatistics s where s.name = ?1");
-            q.setParameter(1, name);
-            List<EntityStatistics> list = q.getResultList();
-
-            EntityStatistics es;
-            if (list.isEmpty()) {
-                es = new EntityStatistics();
-                es.setName(name);
-                es.setInstanceCount(count);
-                em.persist(es);
-            } else {
-                es = list.get(0);
-                es.setInstanceCount(count);
-            }
+            EntityStatistics es = getEntityStatisticsInstance(name, em);
+            es.setInstanceCount(count);
             getStatisticsCache().put(name, es);
 
             tx.commit();
         } finally {
             tx.end();
         }
+    }
+
+    private EntityStatistics getEntityStatisticsInstance(String name, EntityManager em) {
+        Query q = em.createQuery("select s from sys$EntityStatistics s where s.name = ?1");
+        q.setParameter(1, name);
+        List<EntityStatistics> list = q.getResultList();
+
+        EntityStatistics es;
+        if (list.isEmpty()) {
+            es = new EntityStatistics();
+            es.setName(name);
+            em.persist(es);
+        } else {
+            es = list.get(0);
+        }
+        return es;
     }
 }

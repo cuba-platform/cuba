@@ -1,30 +1,24 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 22.05.2009 12:54:22
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
- * Management interface of {@link PersistenceManager}.
- *
- * <p>$Id$</p>
+ * JMX interface of {@link PersistenceManager}.
  *
  * @author krivopustov
+ * @version $Id$
  */
-public interface PersistenceManagerMBean
-{
-    String OBJECT_NAME = "haulmont.cuba:service=PersistenceManager";
-    
+@ManagedResource(description = "Manages entity statistics and updates database")
+public interface PersistenceManagerMBean {
+
     int getDefaultLookupScreenThreshold();
     void setDefaultLookupScreenThreshold(int value);
 
@@ -41,7 +35,7 @@ public interface PersistenceManagerMBean
      * Show list of tables supporting soft deletion.
      * @return  operation result
      */
-    @ManagedOperation(description = "Show list of tables supporting soft deletion.")
+    @ManagedOperation(description = "Show list of tables supporting soft deletion")
     String printSoftDeleteTables();
 
     /**
@@ -49,15 +43,15 @@ public interface PersistenceManagerMBean
      * @param token 'update' string must be passed to avoid accidental invocation
      * @return  operation result
      */
-    @ManagedOperation(description = "Start the database update.")
-    @ManagedOperationParameters({@ManagedOperationParameter(name = "token", description = "")})
+    @ManagedOperation(description = "Start the database update")
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "token", description = "Enter 'update' here")})
     String updateDatabase(String token);
 
     /**
      * Show database update scripts that will be executed on next update.
      * @return  operation result
      */
-    @ManagedOperation(description = "Show database update scripts that will be executed on next update.")
+    @ManagedOperation(description = "Show database update scripts that will be executed on next update")
     String findUpdateDatabaseScripts();
 
     /**
@@ -68,8 +62,9 @@ public interface PersistenceManagerMBean
      * @param queryString   JPQL query string
      * @return              list of loaded entities as string
      */
-    @ManagedOperation(description = "Execute a JPQL query.")
-    @ManagedOperationParameters({@ManagedOperationParameter(name = "queryString", description = "")})
+    @ManagedOperation(description = "Execute a JPQL query")
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "queryString",
+            description = "May contain security-related parameters: session$userLogin, session$userId, session$userGroupId, session$<SESSION_ATTRIBUTE>")})
     String jpqlLoadList(String queryString);
 
     /**
@@ -78,7 +73,7 @@ public interface PersistenceManagerMBean
      * @param softDeletion  soft deletion sign
      * @return              number of entity instances affected by update
      */
-    @ManagedOperation(description = "Execute a JPQL update statement.")
+    @ManagedOperation(description = "Execute a JPQL update statement")
     @ManagedOperationParameters({
             @ManagedOperationParameter(name = "queryString", description = ""),
             @ManagedOperationParameter(name = "softDeletion", description = "")
@@ -91,8 +86,9 @@ public interface PersistenceManagerMBean
      * @param entityName    entity name or 'all' to refresh for all entities
      * @return              operation result
      */
-    @ManagedOperation(description = "Calculate and refresh statistics for the specified entity.")
-    @ManagedOperationParameters({@ManagedOperationParameter(name = "entityName", description = "")})
+    @ManagedOperation(description = "Calculate and refresh statistics for the specified entity")
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "entityName",
+            description = "MetaClass name, e.g. 'sec$User', or 'all' to refresh for all entities")})
     String refreshStatistics(String entityName);
 
     /**
@@ -100,14 +96,35 @@ public interface PersistenceManagerMBean
      * @param entityName    entity name or blank to show all entities
      * @return              operation result
      */
-    @ManagedOperation(description = "Show current statistics for the specified entity.")
-    @ManagedOperationParameters({@ManagedOperationParameter(name = "entityName", description = "")})
+    @ManagedOperation(description = "Show current statistics for the specified entity")
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "entityName", description = "MetaClass name, e.g. sec$User")})
     String showStatistics(String entityName);
+
+    /**
+     * Manually update statistics for an entity.
+     */
+    @ManagedOperation(description = "Enter statistics for the specified entity")
+    @ManagedOperationParameters({
+            @ManagedOperationParameter(name = "entityName", description = "MetaClass name, e.g. sec$User"),
+            @ManagedOperationParameter(name = "instanceCount", description = ""),
+            @ManagedOperationParameter(name = "fetchUI", description = ""),
+            @ManagedOperationParameter(name = "maxFetchUI", description = ""),
+            @ManagedOperationParameter(name = "lazyCollectionThreshold", description = ""),
+            @ManagedOperationParameter(name = "lookupScreenThreshold", description = "")
+    })
+    String enterStatistics(String entityName, Long instanceCount, Integer fetchUI, Integer maxFetchUI,
+                           Integer lazyCollectionThreshold, Integer lookupScreenThreshold);
+
+    @ManagedOperation(description = "Delete statistics for the specified entity")
+    @ManagedOperationParameters({
+            @ManagedOperationParameter(name = "entityName", description = "MetaClass name, e.g. sec$User")
+    })
+    String deleteStatistics(String entityName);
 
     /**
      * Flush statistics cache. It will be loaded on a next request.
      * @return  operation result
      */
-    @ManagedOperation(description = "Flush statistics cache. It will be loaded on a next request.")
+    @ManagedOperation(description = "Flush statistics cache. It will be reloaded on a next request")
     String flushStatisticsCache();
 }

@@ -24,6 +24,8 @@ import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.ui.jmxcontrol.util.AttributeEditor;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,9 +49,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     @Inject
     protected CollectionDatasource<ManagedBeanAttribute, UUID> attrDs;
 
-    public MbeanInspectWindow(IFrame frame) {
-        super(frame);
-    }
+    private Log log = LogFactory.getLog(getClass());
 
     @Override
     public void init(Map<String, Object> params) {
@@ -197,6 +197,7 @@ public class MbeanInspectWindow extends AbstractEditor {
                 paramValues[i] = attrProviders.get(i).getAttributeValue();
             }
         } catch (Exception e) {
+            log.error("Conversion error", e);
             showNotification(getMessage("invokeOperation.conversionError"), NotificationType.HUMANIZED);
             return;
         }
