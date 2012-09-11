@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.gui.app.core.scheduled;
 
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
@@ -15,17 +16,25 @@ import javax.inject.Inject;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ScheduledExecutionBrowser extends AbstractWindow {
 
     @Inject
     protected Table executionsTable;
 
+    @Inject
+    protected CollectionDatasource executionsDs;
+
+    @Inject
+    protected PersistenceManagerService persistenceManager;
+
     @Override
     public void init(Map<String, Object> params) {
         executionsTable.addAction(new RefreshAction(executionsTable));
+
+        int maxResults = persistenceManager.getFetchUI(executionsDs.getMetaClass().getName());
+        executionsDs.setMaxResults(maxResults);
     }
 }
