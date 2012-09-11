@@ -80,14 +80,18 @@ public class FetchPlanManager {
         if (view.isIncludeSystemProperties()) {
             includeSystemProperties(view, fetchPlanFields);
         }
+        // Always add SoftDelete properties to support EntityManager contract
+        if (SoftDelete.class.isAssignableFrom(view.getEntityClass())) {
+            for (String property : SoftDelete.PROPERTIES) {
+                fetchPlanFields.add(createFetchPlanField(view.getEntityClass(), property));
+            }
+        }
 
         for (ViewProperty property : view.getProperties()) {
             if (property.isLazy())
                 continue;
 
-
-            FetchPlanField field = new FetchPlanField(
-                    getRealClass(view.getEntityClass(), property.getName()), property.getName());
+            FetchPlanField field = createFetchPlanField(view.getEntityClass(), property.getName());
             fetchPlanFields.add(field);
             if (property.getView() != null) {
                 processView(property.getView(), fetchPlanFields);
@@ -99,19 +103,18 @@ public class FetchPlanManager {
         Class<? extends Entity> entityClass = view.getEntityClass();
         if (BaseEntity.class.isAssignableFrom(entityClass)) {
             for (String property : BaseEntity.PROPERTIES) {
-                fetchPlanFields.add(new FetchPlanField(getRealClass(entityClass, property), property));
+                fetchPlanFields.add(createFetchPlanField(entityClass, property));
             }
         }
         if (Updatable.class.isAssignableFrom(entityClass)) {
             for (String property : Updatable.PROPERTIES) {
-                fetchPlanFields.add(new FetchPlanField(getRealClass(entityClass, property), property));
+                fetchPlanFields.add(createFetchPlanField(entityClass, property));
             }
         }
-        if (SoftDelete.class.isAssignableFrom(entityClass)) {
-            for (String property : SoftDelete.PROPERTIES) {
-                fetchPlanFields.add(new FetchPlanField(getRealClass(entityClass, property), property));
-            }
-        }
+    }
+
+    private FetchPlanField createFetchPlanField(Class<? extends Entity> entityClass, String property) {
+        return new FetchPlanField(getRealClass(entityClass, property), property);
     }
 
     /**

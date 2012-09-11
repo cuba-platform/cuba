@@ -6,6 +6,8 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
@@ -58,6 +60,9 @@ public abstract class CubaTestCase extends TestCase
 
     protected static boolean initialized;
 
+    protected Persistence persistence;
+    protected Metadata metadata;
+
     protected void setUp() throws Exception {
         super.setUp();
         if (!initialized) {
@@ -71,6 +76,8 @@ public abstract class CubaTestCase extends TestCase
 
             initialized = true;
         }
+        persistence = AppBeans.get(Persistence.class);
+        metadata = AppBeans.get(Metadata.class);
     }
 
     protected void initDataSources() throws Exception {
