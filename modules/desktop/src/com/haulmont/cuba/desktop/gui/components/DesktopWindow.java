@@ -177,6 +177,8 @@ public class DesktopWindow implements Window, Component.Disposable,
         else
             saveSettings();
 
+        delegate.disposeComponents();
+
         windowManager.close(this);
         boolean res = onClose(actionId);
         if (res && doAfterClose != null) {

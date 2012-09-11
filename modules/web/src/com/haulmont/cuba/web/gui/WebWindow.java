@@ -672,6 +672,8 @@ public class WebWindow
         else
             saveSettings();
 
+        delegate.disposeComponents();
+
         windowManager.close(this);
         boolean res = onClose(actionId);
         if (res && doAfterClose != null) {

@@ -114,9 +114,6 @@ public class WindowDelegate {
                             }
                             WindowDelegate.this.settings.setModified(modified);
                         }
-                        if (component instanceof Component.Disposable) {
-                            ((Component.Disposable) component).dispose();
-                        }
                     }
                 }
         );
@@ -142,6 +139,19 @@ public class WindowDelegate {
                                     ((Component.HasPresentations) component).applyPresentationAsDefault(defaultId);
                                 }
                             }
+                        }
+                    }
+                }
+        );
+    }
+
+    public void disposeComponents() {
+        ComponentsHelper.walkComponents(
+                window,
+                new ComponentVisitor() {
+                    public void visit(Component component, String name) {
+                        if (component instanceof Component.Disposable) {
+                            ((Component.Disposable) component).dispose();
                         }
                     }
                 }
