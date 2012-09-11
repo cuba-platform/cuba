@@ -225,6 +225,20 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private void switchToUse() {
         editing = false;
         editor = null;
+
+        if (filterEntity == null) {
+            filterEntity = ((ItemWrapper<FilterEntity>) select.getValue()).getItem();
+            if (filterEntity.equals(noFilter)) {
+                filterEntity = null;
+            }
+            if ((filterEntity != null) && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+                Table table = (Table) applyTo;
+                setActions(table);
+            }
+
+            parseFilterXml();
+        }
+
         updateControls();
         impl.remove(editPanel);
 

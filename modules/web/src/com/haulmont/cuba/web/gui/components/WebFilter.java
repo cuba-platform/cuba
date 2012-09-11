@@ -1070,6 +1070,17 @@ public class WebFilter
     private void switchToUse() {
         editing = false;
         editor = null;
+
+        if (filterEntity == null) {
+            filterEntity = (FilterEntity) select.getValue();
+            if ((filterEntity != null) && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+                Table table = (Table) applyTo;
+                setActions(table);
+            }
+
+            parseFilterXml();
+        }
+
         updateControls();
         component.removeComponent(editLayout);
         createParamsLayout(true);
