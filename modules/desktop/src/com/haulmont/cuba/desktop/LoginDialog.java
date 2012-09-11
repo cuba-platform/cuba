@@ -37,8 +37,7 @@ public class LoginDialog extends JDialog {
 
     private Connection connection;
     private Map<String,Locale> locales;
-    private LoginProperties loginProperties;
-    
+
     public LoginDialog(JFrame owner, Connection connection) {
         super(owner);
         this.connection = connection;
@@ -67,8 +66,8 @@ public class LoginDialog extends JDialog {
 
         final JTextField nameField = new JTextField();
         String defaultName = AppContext.getProperty("cuba.desktop.loginDialogDefaultUser");
-        
-        String lastLogin = getLoginProperties().loadLastLogin();
+        final LoginProperties loginProperties = new LoginProperties();
+        String lastLogin = loginProperties.loadLastLogin();
         if (!StringUtils.isBlank(lastLogin))
             nameField.setText(lastLogin);
         else if (!StringUtils.isBlank(defaultName))
@@ -100,7 +99,7 @@ public class LoginDialog extends JDialog {
                         try {
                             connection.login(name, DigestUtils.md5Hex(password), locale);
                             setVisible(false);
-                            getLoginProperties().saveLogin(name);
+                            loginProperties.saveLogin(name);
                             App.getInstance().enable();
                         } catch (LoginException ex) {
                             String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
@@ -138,14 +137,5 @@ public class LoginDialog extends JDialog {
     public void open() {
         App.getInstance().disable(null);
         setVisible(true);
-    }
-
-    public LoginProperties getLoginProperties() {
-        if (loginProperties == null) {
-            loginProperties = new LoginProperties();
-            return loginProperties;
-        } else {
-            return loginProperties;
-        }
     }
 }
