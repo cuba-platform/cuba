@@ -23,7 +23,7 @@
     </dsContext>
 
     <layout expand="infoTable">
-        <table id="infoTable">
+        <table id="infoTable" width="100%">
             <columns>
                 <column id="key" caption="msg://showInfo.name"/>
                 <column id="keyValue" caption="msg://showInfo.value"/>
