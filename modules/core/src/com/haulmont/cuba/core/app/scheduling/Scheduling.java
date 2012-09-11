@@ -148,8 +148,13 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
         for (ScheduledTask task : tasks) {
             sb.append(task);
             if (BooleanUtils.isTrue(task.getSingleton())) {
-                sb.append(", lastStart=").append(dateFormat.format(task.getLastStartTime()))
-                        .append(" on ").append(task.getLastStartServer());
+                sb.append(", lastStart=");
+                if (task.getLastStartTime() != null) {
+                    sb.append(dateFormat.format(task.getLastStartTime()));
+                    sb.append(" on ").append(task.getLastStartServer());
+                } else {
+                    sb.append("<never>");
+                }
             } else {
                 Long time = lastStartCache.get(task);
                 if (time != null) {
