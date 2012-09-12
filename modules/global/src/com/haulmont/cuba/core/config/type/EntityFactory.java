@@ -23,6 +23,9 @@ public class EntityFactory extends TypeFactory {
         if (StringUtils.isBlank(string))
             return null;
         EntityLoadInfo info = EntityLoadInfo.parse(string);
+        if (info == null)
+            throw new IllegalStateException("Unable to parse " + string);
+
         DataService ds = (DataService) AppContext.getApplicationContext().getBean(DataService.NAME);
 
         LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());

@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 18.01.2010 15:01:53
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -14,8 +9,23 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Class that encapsulates an information needed to load an entity instance.
+ * <p/> This information has the following string representation:
+ * <code>metaclassName-id{-viewName}</code>, e.g.:
+ * <pre>
+ * sec$User-60885987-1b61-4247-94c7-dff348347f93
+ * sec$Role-0c018061-b26f-4de2-a5be-dff348347f93-role.browse
+ * </pre>
+ * Use {@link #parse(String)} and {@link #toString()} methods to convert from/to a string.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class EntityLoadInfo {
 
     private MetaClass metaClass;
@@ -36,20 +46,39 @@ public class EntityLoadInfo {
         return metaClass;
     }
 
+    @Nullable
     public String getViewName() {
         return viewName;
     }
 
-    public static EntityLoadInfo create(Entity entity, String viewName) {
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+    /**
+     * Create a new info instance.
+     * @param entity    entity instance
+     * @param viewName  view name, can be null
+     * @return          info instance
+     */
+    public static EntityLoadInfo create(Entity entity, @Nullable String viewName) {
+        Objects.requireNonNull(entity, "entity is null");
+
+        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClassNN(entity.getClass());
         return new EntityLoadInfo((UUID) entity.getId(), metaClass, viewName);
     }
 
+    /**
+     * Create a new info instance with empty view name.
+     * @param entity    entity instance
+     * @return          info instance
+     */
     public static EntityLoadInfo create(Entity entity) {
         return create(entity, null);
     }
 
-    public static EntityLoadInfo parse(String str) {
+    /**
+     * Parse an info from the string.
+     * @param str   string representation of the info
+     * @return      info instance or null if the string can not be parsed. Any exception is silently swallowed.
+     */
+    public static @Nullable EntityLoadInfo parse(String str) {
         int dashCount = StringUtils.countMatches(str, "-");
         if (dashCount < 5) {
             return null;
@@ -57,7 +86,7 @@ public class EntityLoadInfo {
 
         int idDashPos = str.indexOf('-');
         String entityName = str.substring(0, idDashPos);
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
+        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(entityName);
         if (metaClass == null) {
             return null;
         }
