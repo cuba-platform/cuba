@@ -156,8 +156,10 @@ public class VMaskedTextField extends VTextField {
 
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         debug("updateFromUIDL: " + uidl);
-        if (!(uidl.getBooleanAttribute("readonly")))
-            setMask(uidl.getStringAttribute("mask"));
+        if (!(uidl.getBooleanAttribute("readonly"))) {
+            String maskParam = uidl.getStringAttribute("mask");
+            setMask(maskParam == null ? "" : maskParam);
+        }
         super.updateFromUIDL(uidl, client);
     }
 
