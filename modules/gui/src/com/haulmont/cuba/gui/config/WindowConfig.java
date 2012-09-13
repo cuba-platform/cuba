@@ -122,7 +122,7 @@ public class WindowConfig
             }
         }
         if (windowInfo == null)
-            throw new NoSuchScreenException("Screen '" + id + "' is not defined");
+            throw new NoSuchScreenException(id);
         return windowInfo;
     }
 
