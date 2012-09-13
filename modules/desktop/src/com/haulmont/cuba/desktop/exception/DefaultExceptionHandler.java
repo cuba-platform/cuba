@@ -16,7 +16,6 @@ import org.jdesktop.swingx.error.ErrorInfo;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Locale;
 
 /**
  * <p>$Id$</p>
@@ -27,7 +26,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public boolean handle(Thread thread, Throwable exception) {
-        final DialogWindow lastDialogWindow = App.getInstance().getWindowManager().getLastDialogWindow();
+        final DialogWindow lastDialogWindow = App.getInstance().getMainFrame().getWindowManager().getLastDialogWindow();
 
         ErrorInfo ei = new ErrorInfo(
                 getMessage("errorPane.title"), getMessage("errorPane.message"),
@@ -42,7 +41,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                         if (lastDialogWindow != null)
                             lastDialogWindow.enableWindow();
                         else
-                            App.getInstance().enable();
+                            App.getInstance().getMainFrame().activate();
                     }
                 }
         );
@@ -51,7 +50,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         if (lastDialogWindow != null)
             lastDialogWindow.disableWindow(null);
         else
-            App.getInstance().disable(null);
+            App.getInstance().getMainFrame().deactivate(null);
 
         dialog.setVisible(true);
         return true;

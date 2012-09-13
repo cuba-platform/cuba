@@ -29,6 +29,6 @@ public class EntityAccessExceptionHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String msg = MessageProvider.formatMessage(getClass(), "entityAccessException.message");
-        App.getInstance().showNotification(msg, IFrame.NotificationType.WARNING);
+        App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.WARNING);
     }
 }

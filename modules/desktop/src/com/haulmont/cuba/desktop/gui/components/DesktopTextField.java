@@ -303,7 +303,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     private void showValidationMessage() {
-        App.getInstance().showNotification(
+        DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
                 MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
                 IFrame.NotificationType.TRAY
         );

@@ -116,6 +116,7 @@
             <xs:enumeration value="NEW_TAB"/>
             <xs:enumeration value="THIS_TAB"/>
             <xs:enumeration value="DIALOG"/>
+            <xs:enumaretion value="NEW_WINDOW"/>
         </xs:restriction>
     </xs:simpleType>
 

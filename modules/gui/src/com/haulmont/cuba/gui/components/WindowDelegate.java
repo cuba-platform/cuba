@@ -34,7 +34,6 @@ import java.util.UUID;
 public class WindowDelegate {
 
     protected Window window;
-    protected WindowManager windowManager;
     protected Window wrapper;
     protected Settings settings;
 
@@ -42,9 +41,8 @@ public class WindowDelegate {
 
     private Log log = LogFactory.getLog(getClass());
 
-    public WindowDelegate(Window window, WindowManager windowManager) {
+    public WindowDelegate(Window window) {
         this.window = window;
-        this.windowManager = windowManager;
     }
 
     public Window wrapBy(Class<Window> wrapperClass) {
@@ -185,51 +183,51 @@ public class WindowDelegate {
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openWindow(windowInfo, openType, params);
+        return window.getWindowManager().openWindow(windowInfo, openType, params);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openWindow(windowInfo, openType);
+        return window.getWindowManager().openWindow(windowInfo, openType);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openEditor(windowInfo, item, openType, params, parentDs);
+        return window.getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openEditor(windowInfo, item, openType, params);
+        return window.getWindowManager().openEditor(windowInfo, item, openType, params);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openEditor(windowInfo, item, openType, parentDs);
+        return window.getWindowManager().openEditor(windowInfo, item, openType, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openEditor(windowInfo, item, openType);
+        return window.getWindowManager().openEditor(windowInfo, item, openType);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openLookup(windowInfo, handler, openType, params);
+        return window.getWindowManager().openLookup(windowInfo, handler, openType, params);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openLookup(windowInfo, handler, openType);
+        return window.getWindowManager().openLookup(windowInfo, handler, openType);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openFrame(wrapper, parent, windowInfo);
+        return window.getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return windowManager.<T>openFrame(wrapper, parent, windowInfo, params);
+        return window.getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }
 }

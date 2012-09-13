@@ -7,7 +7,6 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.filter.HasAction;
@@ -68,7 +67,7 @@ public class RuntimePropOperationEditor extends OperationEditor implements HasAc
             }
         });
         JDialog dlgImpl = dlg.getImpl();
-        App.getInstance().disable(null);
+        DesktopComponentsHelper.getTopLevelFrame(getImpl()).deactivate(null);
         dlgImpl.setVisible(true);
     }
 }

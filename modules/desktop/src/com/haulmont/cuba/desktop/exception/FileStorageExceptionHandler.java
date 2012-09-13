@@ -37,6 +37,6 @@ public class FileStorageExceptionHandler extends AbstractExceptionHandler {
         if (msg == null) {
             msg = MessageProvider.getMessage(getClass(), "fileStorageException.message");
         }
-        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

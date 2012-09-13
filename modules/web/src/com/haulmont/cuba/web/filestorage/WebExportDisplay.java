@@ -7,6 +7,10 @@ package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -110,6 +114,11 @@ public class WebExportDisplay implements ExportDisplay {
     public void show(FileDescriptor fileDescriptor, ExportFormat format) {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
     }
+
+    @Override
+    public void setFrame(IFrame frame) {
+    }
+
 
     public void show(FileDescriptor fileDescriptor) {
         ExportFormat format = ExportFormat.getByExtension(fileDescriptor.getExtension());

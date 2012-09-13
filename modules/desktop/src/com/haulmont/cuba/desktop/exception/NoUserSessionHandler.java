@@ -37,7 +37,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
             return;
 
         try {
-            App.getInstance().getWindowManager().showOptionDialog(
+            App.getInstance().getMainFrame().getWindowManager().showOptionDialog(
                     getMessage("dialogs.Information"),
                     getMessage("noUserSession.message"),
                     IFrame.MessageType.CONFIRMATION,

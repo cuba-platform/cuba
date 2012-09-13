@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
@@ -101,78 +102,82 @@ public class DesktopFrame
         }
     }
 
+    private DesktopWindowManager getWindowManager(){
+        return DesktopComponentsHelper.getTopLevelFrame(this).getWindowManager();
+    }
+
     public DialogParams getDialogParams() {
-        return App.getInstance().getWindowManager().getDialogParams();
+        return getWindowManager().getDialogParams();
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params);
+        return getWindowManager().openWindow(windowInfo, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params, parentDs);
+        return getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
+        return getWindowManager().openEditor(windowInfo, item, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, parentDs);
+        return getWindowManager().openEditor(windowInfo, item, openType, parentDs);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType);
+        return getWindowManager().openEditor(windowInfo, item, openType);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
+        return getWindowManager().openWindow(windowInfo, openType);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType, params);
+        return getWindowManager().openLookup(windowInfo, handler, openType, params);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType);
+        return getWindowManager().openLookup(windowInfo, handler, openType);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openFrame((Window) wrapper, parent, windowInfo);
+        return getWindowManager().openFrame((Window) wrapper, parent, windowInfo);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openFrame((Window) wrapper, parent, windowInfo, params);
+        return getWindowManager().openFrame((Window) wrapper, parent, windowInfo, params);
     }
 
     public void showMessageDialog(String title, String message, MessageType messageType) {
-        App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
+        getWindowManager().showMessageDialog(title, message, messageType);
     }
 
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
+        getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
-        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
+        getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
     public void showNotification(String caption, String description, NotificationType type) {
-        App.getInstance().getWindowManager().showNotification(caption, description, type);
+        getWindowManager().showNotification(caption, description, type);
     }
 
     public void showNotification(String caption, NotificationType type) {
-        App.getInstance().getWindowManager().showNotification(caption, type);
+        getWindowManager().showNotification(caption, type);
     }
 
     public IFrame wrapBy(Class<? extends IFrame> aClass) {

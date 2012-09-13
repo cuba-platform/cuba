@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
@@ -38,6 +39,8 @@ public class DesktopExportDisplay implements ExportDisplay {
 
     private final JFileChooser fileChooser = new JFileChooser();
 
+    private IFrame frame;
+
     /**
      * Show/Download resource at client side
      *
@@ -49,7 +52,6 @@ public class DesktopExportDisplay implements ExportDisplay {
      */
     @Override
     public void show(final ExportDataProvider dataProvider, String resourceName, ExportFormat format) {
-        final JFrame mainFrame = App.getInstance().getMainFrame();
 
         String fileName = resourceName;
         if (format != null) {
@@ -63,7 +65,7 @@ public class DesktopExportDisplay implements ExportDisplay {
         dialogMessage = String.format(dialogMessage, fileName);
 
         final String finalFileName = fileName;
-        App.getInstance().getWindowManager().showOptionDialog(fileCaption, dialogMessage, IFrame.MessageType.CONFIRMATION,
+        getFrame().getWindowManager().showOptionDialog(fileCaption, dialogMessage, IFrame.MessageType.CONFIRMATION,
                 new com.haulmont.cuba.gui.components.Action[]{
                         new AbstractAction("action.openFile") {
                             @Override
@@ -74,7 +76,7 @@ public class DesktopExportDisplay implements ExportDisplay {
                         new AbstractAction("action.saveFile") {
                             @Override
                             public void actionPerform(Component component) {
-                                saveFileAction(finalFileName, mainFrame, dataProvider);
+                                saveFileAction(finalFileName, getFrame(), dataProvider);
                             }
                         },
                         new AbstractAction("action.cancel") {
@@ -86,9 +88,9 @@ public class DesktopExportDisplay implements ExportDisplay {
                 });
     }
 
-    private void saveFileAction(String fileName, JFrame mainFrame, ExportDataProvider dataProvider) {
+    private void saveFileAction(String fileName, JFrame frame, ExportDataProvider dataProvider) {
         fileChooser.setSelectedFile(new File(fileName));
-        if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             saveFile(dataProvider, selectedFile);
         }
@@ -100,7 +102,7 @@ public class DesktopExportDisplay implements ExportDisplay {
             destFile = File.createTempFile("tempCubaFile", "." + getFileExt(finalFileName));
         } catch (IOException e) {
             String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.tempFileError");
-            App.getInstance().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+            getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
         }
 
         if (destFile != null) {
@@ -109,7 +111,7 @@ public class DesktopExportDisplay implements ExportDisplay {
                     Desktop.getDesktop().open(destFile);
                 } catch (IOException ex) {
                     String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.openError");
-                    App.getInstance().getWindowManager().showNotification(message,
+                    getFrame().getWindowManager().showNotification(message,
                             IFrame.NotificationType.WARNING);
                 }
             }
@@ -142,6 +144,11 @@ public class DesktopExportDisplay implements ExportDisplay {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
     }
 
+    @Override
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
+    }
+
     private boolean saveFile(ExportDataProvider dataProvider, File destinationFile) {
         try {
             if (!destinationFile.exists()) {
@@ -164,7 +171,7 @@ public class DesktopExportDisplay implements ExportDisplay {
             }
         } catch (IOException e) {
             String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.saveError");
-            App.getInstance().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+            getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
             return false;
         }
         return true;
@@ -176,5 +183,18 @@ public class DesktopExportDisplay implements ExportDisplay {
             return StringUtils.substring(fileName, i + 1, i + 20);
         else
             return "";
+    }
+
+    private TopLevelFrame getFrame() {
+        if (frame != null) {
+            if (frame instanceof DesktopWindow) {
+                return DesktopComponentsHelper.getTopLevelFrame(((DesktopWindow) frame).getComposition());
+            } else {
+                Component.Wrapper wrapper = (Component.Wrapper) ((AbstractFrame) frame).getComposition();
+                return DesktopComponentsHelper.getTopLevelFrame((Container) wrapper.getComposition());
+            }
+        } else {
+            return App.getInstance().getMainFrame();
+        }
     }
 }

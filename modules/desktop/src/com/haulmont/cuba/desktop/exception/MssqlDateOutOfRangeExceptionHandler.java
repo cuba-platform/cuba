@@ -61,6 +61,6 @@ public class MssqlDateOutOfRangeExceptionHandler implements ExceptionHandler {
 
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String msg = MessageProvider.formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
-        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

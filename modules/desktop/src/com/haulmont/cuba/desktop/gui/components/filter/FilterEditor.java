@@ -471,7 +471,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     @Override
     protected void showNotification(String caption, String description) {
-        App.getInstance().getWindowManager().showNotification
+        DesktopComponentsHelper.getTopLevelFrame(this.getPanel()).getWindowManager().showNotification
                 (caption, description, IFrame.NotificationType.HUMANIZED);
     }
 
@@ -672,7 +672,7 @@ public class FilterEditor extends AbstractFilterEditor {
                             addCondition(descriptor);
                         }
                     });
-            App.getInstance().disable(null);
+            DesktopComponentsHelper.getTopLevelFrame(FilterEditor.this.getPanel()).deactivate(null);
             dlg.setVisible(true);
         }
     }

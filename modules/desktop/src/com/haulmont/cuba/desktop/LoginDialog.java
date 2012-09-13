@@ -47,7 +47,7 @@ public class LoginDialog extends JDialog {
                 new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                        App.getInstance().enable();
+                        DesktopComponentsHelper.getTopLevelFrame(LoginDialog.this).activate();
                     }
                 }
         );
@@ -100,10 +100,10 @@ public class LoginDialog extends JDialog {
                             connection.login(name, DigestUtils.md5Hex(password), locale);
                             setVisible(false);
                             loginProperties.saveLogin(name);
-                            App.getInstance().enable();
+                            DesktopComponentsHelper.getTopLevelFrame(LoginDialog.this).activate();
                         } catch (LoginException ex) {
                             String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
-                            App.getInstance().showNotification(
+                            App.getInstance().getMainFrame().showNotification(
                                     caption,
                                     ex.getMessage(),
                                     IFrame.NotificationType.ERROR
@@ -135,7 +135,7 @@ public class LoginDialog extends JDialog {
     }
 
     public void open() {
-        App.getInstance().disable(null);
+        DesktopComponentsHelper.getTopLevelFrame(this).deactivate(null);
         setVisible(true);
     }
 }

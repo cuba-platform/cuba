@@ -84,7 +84,7 @@ public class MenuBuilder {
         } catch (NoSuchScreenException e) {
             return;
         }
-        final MenuCommand command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
+        final MenuCommand command = new MenuCommand(App.getInstance().getMainFrame().getWindowManager(), item, windowInfo);
         jMenuItem.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {

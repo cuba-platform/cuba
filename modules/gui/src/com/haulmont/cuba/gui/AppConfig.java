@@ -8,9 +8,11 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -60,6 +62,17 @@ public abstract class AppConfig
      */
     public static ExportDisplay createExportDisplay() {
         return AppBeans.get(ExportDisplay.NAME);
+    }
+
+    /**
+     * Client-specific ExportDisplay for concrete frame.
+     * Should be used in desktop client for properly showing user notifications in multiple windows applications.
+     * @return  a new ExportDisplay instance
+     */
+    public static ExportDisplay createExportDisplay(IFrame frame) {
+        ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.NAME);
+        exportDisplay.setFrame(frame);
+        return exportDisplay;
     }
 
     /**

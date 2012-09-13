@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
@@ -107,6 +108,11 @@ public class AbstractWindow extends AbstractFrame
      */
     public boolean validateAll() {
         return ((Editor) frame).validateAll();
+    }
+
+    @Override
+    public WindowManager getWindowManager() {
+        return ((Window) frame).getWindowManager();
     }
 
     /**

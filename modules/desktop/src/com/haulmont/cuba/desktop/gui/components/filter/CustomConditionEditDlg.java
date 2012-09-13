@@ -72,13 +72,13 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-        App.getInstance().showNotification(msg, type);
+        DesktopComponentsHelper.getTopLevelFrame(getImpl()).showNotification(msg, type);
     }
 
     @Override
     protected void closeDlg() {
         impl.dispose();
-        App.getInstance().enable();
+        DesktopComponentsHelper.getTopLevelFrame(getImpl()).activate();
     }
 
     private class EditDlg extends JDialog {
@@ -179,7 +179,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
             addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    App.getInstance().enable();
+                    DesktopComponentsHelper.getTopLevelFrame(EditDlg.this).activate();
                 }
             });
         }

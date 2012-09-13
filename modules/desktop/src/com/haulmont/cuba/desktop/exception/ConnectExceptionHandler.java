@@ -23,11 +23,11 @@ public class ConnectExceptionHandler implements ExceptionHandler {
         if (exception instanceof RemoteAccessException) {
             String msg = MessageProvider.getMessage(getClass(), "connectException.message");
             if (exception.getCause() == null) {
-                App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
+                App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
             } else {
                 String description = MessageProvider.formatMessage(getClass(), "connectException.description",
                         exception.getCause().toString());
-                App.getInstance().showNotification(msg, description, IFrame.NotificationType.ERROR);
+                App.getInstance().getMainFrame().showNotification(msg, description, IFrame.NotificationType.ERROR);
             }
             return true;
         }

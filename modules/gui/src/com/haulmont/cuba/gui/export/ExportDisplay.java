@@ -11,6 +11,11 @@
 package com.haulmont.cuba.gui.export;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowInfo;
 
 import javax.annotation.Nullable;
 
@@ -27,4 +32,6 @@ public interface ExportDisplay
     void show(ExportDataProvider dataProvider, String resourceName);
 
     void show(FileDescriptor fileDescriptor, @Nullable ExportFormat format);
+    
+    void setFrame(IFrame frame);
 }

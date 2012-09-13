@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShortcutAction;
@@ -182,5 +183,27 @@ public class DesktopComponentsHelper {
 
     public static void decorateMissingValue(JComponent jComponent, boolean missingValueState) {
         jComponent.setBackground(missingValueState ? requiredBgColor : defaultBgColor);
+    }
+
+    /**
+     * Returns {@link TopLevelFrame} of container.
+     *
+     * @param container
+     * @return {@link TopLevelFrame} of container
+     */
+    public static TopLevelFrame getTopLevelFrame(Container container) {
+        while (container.getParent() != null)
+            container = container.getParent();
+        return (TopLevelFrame) container;
+    }
+
+    /**
+     * Returns {@link TopLevelFrame} of component.
+     *
+     * @param component
+     * @return {@link TopLevelFrame} of component
+     */
+    public static TopLevelFrame getTopLevelFrame(DesktopAbstractComponent component) {
+        return getTopLevelFrame(component.getComposition());
     }
 }

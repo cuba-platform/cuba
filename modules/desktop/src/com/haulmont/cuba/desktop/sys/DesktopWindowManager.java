@@ -10,7 +10,9 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
@@ -41,17 +43,26 @@ import java.util.List;
  */
 public class DesktopWindowManager extends WindowManager {
 
+    private static final float NEW_WINDOW_SCALE = 0.7f;
+
     private JTabbedPane tabsPane;
 
     private final Map<JComponent, WindowBreadCrumbs> tabs = new HashMap<>();
     private final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
     private final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
     private final Map<Window, Integer> windows = new HashMap<>();
+    private final TopLevelFrame frame;
+    private final boolean isMainWindowManager;
 
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
     private Log log = LogFactory.getLog(DesktopWindowManager.class);
+
+    public DesktopWindowManager(TopLevelFrame frame) {
+        this.frame = frame;
+        isMainWindowManager = frame == App.getInstance().getMainFrame();
+    }
 
     public void setTabsPane(final JTabbedPane tabsPane) {
         this.tabsPane = tabsPane;
@@ -147,11 +158,13 @@ public class DesktopWindowManager extends WindowManager {
         window.setCaption(caption);
         window.setDescription(description);
 
-        WindowOpenMode openMode = new WindowOpenMode(window, openType);
         Object windowData;
 
         switch (openType) {
             case NEW_TAB:
+                if (!isMainWindowManager) {
+                    throw new UnsupportedOperationException();
+                }
                 Integer hashCode = getWindowHashCode(window);
                 JComponent tab;
                 if (hashCode != null && !multipleOpen && (tab = findTab(hashCode)) != null) {
@@ -169,27 +182,59 @@ public class DesktopWindowManager extends WindowManager {
                 }
                 break;
             case THIS_TAB:
+                if (!isMainWindowManager) {
+                    throw new UnsupportedOperationException();
+                }
                 windowData = showWindowThisTab(window, caption, description);
                 break;
             case DIALOG:
                 windowData = showWindowDialog(window, caption, description, forciblyDialog);
                 break;
+            case NEW_WINDOW:
+                windowData = showNewWindow(window, caption);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
 
-        openMode.setData(windowData);
-
-        if (window instanceof Window.Wrapper) {
-            Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
-            windowOpenMode.put(wrappedWindow, openMode);
-        } else {
-            windowOpenMode.put(window, openMode);
+        if (openType != OpenType.NEW_WINDOW) {
+            addWindowData(window,windowData,openType);
         }
+    }
 
-        addShortcuts(window);
+    private JComponent showNewWindow(Window window, String caption) {
+        final TopLevelFrame windowFrame = new TopLevelFrame(caption);
+        windowFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        afterShowWindow(window);
+        Dimension size = frame.getSize();
+        int width = Math.round(size.width * NEW_WINDOW_SCALE);
+        int height = Math.round(size.height * NEW_WINDOW_SCALE);
+
+        windowFrame.setSize(width, height);
+        windowFrame.setLocationRelativeTo(frame);
+        windowFrame.add(DesktopComponentsHelper.getComposition(window));
+
+        windowFrame.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        windowFrame.getWindowManager().checkModificationsAndCloseAll(new Runnable() {
+                            public void run() {
+                                windowFrame.setVisible(false);
+                                windowFrame.dispose();
+                                windowFrame.getWindowManager().dispose();
+                                App.getInstance().unregisterFrame(windowFrame);
+                            }
+                        }, null);
+                    }
+                }
+        );
+
+        App.getInstance().registerFrame(windowFrame);
+        JComponent windowData = DesktopComponentsHelper.getComposition(window);
+        windowFrame.getWindowManager().addWindowData(window, windowData, OpenType.NEW_WINDOW);
+        windowFrame.setVisible(true);
+        return windowData;
     }
 
     protected void addShortcuts(final Window window) {
@@ -203,16 +248,18 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     private JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
-        JDialog dialog = new DialogWindow(App.getInstance().getMainFrame(), caption);
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        final JDialog dialog = new DialogWindow(frame, caption);
+        dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         JComponent jComponent = DesktopComponentsHelper.getComposition(window);
         dialog.add(jComponent);
         dialog.addWindowListener(
                 new WindowAdapter() {
                     @Override
-                    public void windowClosed(WindowEvent e) {
-                        window.close("close", true);
+                    public void windowClosing(WindowEvent e) {
+                        if (window.close("close", false)) {
+                            dialog.dispose();
+                        }
                     }
                 }
         );
@@ -244,11 +291,11 @@ public class DesktopWindowManager extends WindowManager {
         }
         dialog.setMinimumSize(dim);
         dialog.pack();
-        dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
+        dialog.setLocationRelativeTo(frame);
 
         DialogWindow lastDialogWindow = getLastDialogWindow();
         if (lastDialogWindow == null)
-            App.getInstance().disable(null);
+            frame.deactivate(null);
         else
             lastDialogWindow.disableWindow(null);
 
@@ -265,7 +312,7 @@ public class DesktopWindowManager extends WindowManager {
             throw new IllegalStateException("BreadCrumbs not found");
 
         Window currentWindow = breadCrumbs.getCurrentWindow();
-        windowOpenMode.get(currentWindow.getFrame()).setFocusOwner(App.getInstance().getMainFrame().getFocusOwner());
+        windowOpenMode.get(currentWindow.getFrame()).setFocusOwner(frame.getFocusOwner());
 
         Set<Map.Entry<Window, Integer>> set = windows.entrySet();
         boolean pushed = false;
@@ -434,7 +481,7 @@ public class DesktopWindowManager extends WindowManager {
             case DIALOG: {
                 JDialog dialog = (JDialog) openMode.getData();
                 dialog.setVisible(false);
-
+                dialog.dispose();
                 cleanupAfterModalDialogClosed(window);
 
                 fireListeners(window, tabs.size() != 0);
@@ -519,7 +566,7 @@ public class DesktopWindowManager extends WindowManager {
             }
         }
         if (previous == null) {
-            App.getInstance().enable();
+            frame.activate();
         } else if (previous.getData() instanceof DialogWindow) {
             ((DialogWindow) previous.getData()).enableWindow();
         } else if (previous.getData() instanceof JDialog) {
@@ -529,12 +576,12 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        App.getInstance().showNotification(caption, type);
+        frame.showNotification(caption, type);
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        App.getInstance().showNotification(caption, description, type);
+        frame.showNotification(caption, description, type);
     }
 
     @Override
@@ -544,7 +591,7 @@ public class DesktopWindowManager extends WindowManager {
             @Override
             public void run() {
                 JOptionPane.showMessageDialog(
-                        App.getInstance().getMainFrame(),
+                        frame,
                         message,
                         title,
                         swingMessageType
@@ -556,7 +603,7 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, final Action[] actions) {
 
-        final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, false);
+        final JDialog dialog = new JDialog(frame, title, false);
 
         Object[] options = new Object[actions.length];
         for (int i = 0; i < actions.length; i++) {
@@ -645,8 +692,8 @@ public class DesktopWindowManager extends WindowManager {
         });
 
         dialog.pack();
-        dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
-        App.getInstance().disable(null);
+        dialog.setLocationRelativeTo(frame);
+        frame.deactivate(null);
         dialog.setVisible(true);
     }
 
@@ -695,16 +742,15 @@ public class DesktopWindowManager extends WindowManager {
         // Stop background tasks
         AppBeans.get(WatchDog.class).stopTasks();
         // Dispose windows
-        for (WindowBreadCrumbs windowBreadCrumbs : tabs.values()) {
-            Window window = windowBreadCrumbs.getCurrentWindow();
-            while (window != null) {
-                IFrame frame = window.getFrame();
-                if (frame instanceof Component.Disposable)
-                    ((Component.Disposable) frame).dispose();
-                windowBreadCrumbs.removeWindow();
-                window = windowBreadCrumbs.getCurrentWindow();
-            }
+        for (Window window : windowOpenMode.keySet()) {
+            IFrame frame = window.getFrame();
+            if (frame instanceof Component.Disposable)
+                ((Component.Disposable) frame).dispose();
         }
+
+        tabs.clear();
+        windowOpenMode.clear();
+        stacks.clear();
     }
 
     protected static class WindowOpenMode {
@@ -757,6 +803,74 @@ public class DesktopWindowManager extends WindowManager {
             if (windowToClose != null) {
                 windowToClose.closeAndRun("close", new TabCloseTask(breadCrumbs));
             }
+        }
+    }
+
+    public void addWindowData(Window window, Object windowData, OpenType openType) {
+        WindowOpenMode openMode = new WindowOpenMode(window, openType);
+        openMode.setData(windowData);
+        if (window instanceof Window.Wrapper) {
+            Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
+            windowOpenMode.put(wrappedWindow, openMode);
+        } else {
+            windowOpenMode.put(window, openMode);
+        }
+
+        addShortcuts(window);
+        afterShowWindow(window);
+    }
+
+    public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
+        boolean modified = false;
+        for (Window window : getOpenWindows()) {
+            if (!disableSavingScreenHistory) {
+                screenHistorySupport.saveScreenHistory(window, windowOpenMode.get(window).getOpenType());
+            }
+
+            if (window instanceof WrappedWindow && ((WrappedWindow) window).getWrapper() != null)
+                ((WrappedWindow) window).getWrapper().saveSettings();
+            else
+                window.saveSettings();
+
+            if (window.getDsContext() != null && window.getDsContext().isModified()) {
+                modified = true;
+            }
+        }
+        disableSavingScreenHistory = true;
+        if (modified) {
+            showOptionDialog(
+                    messages.getMessage(DesktopWindow.class, "closeUnsaved.caption"),
+                    messages.getMessage(DesktopWindow.class, "closeUnsaved"),
+                    IFrame.MessageType.WARNING,
+                    new Action[]{
+                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMessage(DesktopWindow.class, "actions.Yes")) {
+                                @Override
+                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    if (runIfOk != null)
+                                        runIfOk.run();
+                                }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/ok.png";
+                                }
+                            },
+                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMessage(DesktopWindow.class, "actions.No")) {
+                                @Override
+                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    if (runIfCancel != null)
+                                        runIfCancel.run();
+                                }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/cancel.png";
+                                }
+                            }
+                    }
+            );
+        } else {
+            runIfOk.run();
         }
     }
 

@@ -52,6 +52,7 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="NEW_TAB"/>
             <xs:enumeration value="DIALOG"/>
+            <xs:enumeration value="NEW_WINDOW"/>
         </xs:restriction>
     </xs:simpleType>
 

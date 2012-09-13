@@ -71,7 +71,7 @@ public class FontDialog extends JDialog {
                 new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                        App.getInstance().enable();
+                        DesktopComponentsHelper.getTopLevelFrame(FontDialog.this).activate();
                     }
                 }
         );
@@ -252,7 +252,7 @@ public class FontDialog extends JDialog {
     }
 
     public void open() {
-        App.getInstance().disable(null);
+        DesktopComponentsHelper.getTopLevelFrame(this).deactivate(null);
         setVisible(true);
     }
 

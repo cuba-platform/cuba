@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.settings.Settings;
 
@@ -79,6 +80,12 @@ public interface Window extends IFrame, Component.HasCaption {
      * @return true if the validation was succesful, false if there were any problems
      */
     boolean validateAll();
+
+    /**
+     * Returns current {@link WindowManager} of this window
+     * @return window manager
+     */
+    WindowManager getWindowManager();
 
     /**
      * Window intended for editing an entity instance

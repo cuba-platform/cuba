@@ -13,9 +13,7 @@ package com.haulmont.cuba.gui.components.actions;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 
@@ -45,7 +43,7 @@ public class ExcelAction extends AbstractAction {
      * @param table     table containing this action
      */
     public ExcelAction(Table table) {
-        this(table, AppConfig.createExportDisplay(), false, ACTION_ID);
+        this(table, AppConfig.createExportDisplay(table.<IFrame>getFrame()), false, ACTION_ID);
     }
 
     /**

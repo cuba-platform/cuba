@@ -31,7 +31,7 @@ public class NumericOverflowExceptionHandler extends AbstractExceptionHandler {
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         if (StringUtils.containsIgnoreCase(message, "Numeric field overflow")) {
             String msg = MessageProvider.getMessage(getClass(), "numericFieldOverflow.message");
-            App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
+            App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
         }
     }
 }

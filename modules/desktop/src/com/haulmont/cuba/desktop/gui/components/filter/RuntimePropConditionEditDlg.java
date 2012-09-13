@@ -34,7 +34,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
     @Override
     protected void closeDlg() {
         impl.dispose();
-        App.getInstance().enable();
+        DesktopComponentsHelper.getTopLevelFrame(getImpl()).activate();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-        App.getInstance().showNotification(msg, type);
+        DesktopComponentsHelper.getTopLevelFrame(getImpl()).showNotification(msg, type);
     }
 
     protected class Editor extends JDialog {
@@ -124,34 +124,11 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
             buttonsPanel.add(cancelButton);
 
             setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            addWindowListener(new WindowListener() {
-                @Override
-                public void windowOpened(WindowEvent e) {
-                }
-
-                @Override
-                public void windowClosing(WindowEvent e) {
-                }
+            addWindowListener(new WindowAdapter() {
 
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    App.getInstance().enable();
-                }
-
-                @Override
-                public void windowIconified(WindowEvent e) {
-                }
-
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-                }
-
-                @Override
-                public void windowActivated(WindowEvent e) {
-                }
-
-                @Override
-                public void windowDeactivated(WindowEvent e) {
+                    DesktopComponentsHelper.getTopLevelFrame(getImpl()).activate();
                 }
             });
         }

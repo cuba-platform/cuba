@@ -126,7 +126,7 @@ public class ServerLogWindow extends AbstractWindow {
         String fileName = logFileNamesField.getValue();
         String zipName = logManagerService.packLog(fileName);
         if (zipName != null) {
-            AppConfig.createExportDisplay().show(new SimpleFileDataProvider(zipName), fileName + ".zip");
+            AppConfig.createExportDisplay(this).show(new SimpleFileDataProvider(zipName), fileName + ".zip");
             logManagerService.deleteTempFile(zipName);
         } else
             showNotification(getMessage("fileDownload"), NotificationType.HUMANIZED);

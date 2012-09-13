@@ -49,6 +49,8 @@ public class Param extends AbstractParam<JComponent> {
 
     public static final Dimension TEXT_COMPONENT_DIM = new Dimension(120, Integer.MAX_VALUE);
 
+    private DesktopFrame frame;
+
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
                  boolean inExpr, boolean required) {
         super(name, javaClass, entityWhere, entityView, datasource, inExpr, required);
@@ -67,7 +69,7 @@ public class Param extends AbstractParam<JComponent> {
     @Override
     public JComponent createEditComponent() {
         JComponent component;
-
+        frame = (DesktopFrame) datasource.getDsContext().getWindowContext().getFrame();
         switch (type) {
             case DATATYPE:
                 component = createDatatypeField(Datatypes.get(javaClass));
@@ -233,7 +235,7 @@ public class Param extends AbstractParam<JComponent> {
                             try {
                                 p = datatype.parse(part, UserSessionProvider.getLocale());
                             } catch (ParseException e) {
-                                App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
+                                DesktopComponentsHelper.getTopLevelFrame(frame).getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                         "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                                 return;
                             }
@@ -243,8 +245,9 @@ public class Param extends AbstractParam<JComponent> {
                         try {
                             v = datatype.parse((String) value, UserSessionProvider.getLocale());
                         } catch (ParseException e) {
-                            App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
-                                    "Param.numberInvalid"), IFrame.NotificationType.ERROR);
+                            DesktopComponentsHelper.getTopLevelFrame(frame).getWindowManager()
+                                    .showNotification(MessageProvider.getMessage(AbstractParam.class,
+                                            "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                             return;
                         }
                     }
@@ -300,8 +303,9 @@ public class Param extends AbstractParam<JComponent> {
                         try {
                             setValue(UUID.fromString((String) value));
                         } catch (IllegalArgumentException ie) {
-                            App.getInstance().getWindowManager().showNotification
-                                    (MessageProvider.getMessage(AbstractParam.class, "Param.uuid.Err"), IFrame.NotificationType.HUMANIZED);
+                            DesktopComponentsHelper.getTopLevelFrame(frame).getWindowManager().showNotification
+                                    (MessageProvider.getMessage(AbstractParam.class, "Param.uuid.Err"),
+                                            IFrame.NotificationType.HUMANIZED);
                         }
                     }
                 else if (value instanceof String && StringUtils.isBlank((String) value))

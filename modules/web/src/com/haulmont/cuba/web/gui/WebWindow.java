@@ -100,7 +100,7 @@ public class WebWindow
     }
 
     protected WindowDelegate createDelegate() {
-        return new WindowDelegate(this, App.getInstance().getWindowManager());
+        return new WindowDelegate(this);
     }
 
     protected com.vaadin.ui.Component createLayout() {
@@ -275,6 +275,11 @@ public class WebWindow
     }
 
     @Override
+    public WebWindowManager getWindowManager() {
+        return App.getInstance().getWindowManager();
+    }
+
+    @Override
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();
     }
@@ -333,17 +338,17 @@ public class WebWindow
 
     @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
-        App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
+        getWindowManager().showMessageDialog(title, message, messageType);
     }
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
+        getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
-        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
+        getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
     @Override
@@ -640,7 +645,7 @@ public class WebWindow
         if (closing)
             return true;
         closing = true;
-        WebWindowManager windowManager = App.getInstance().getWindowManager();
+        WebWindowManager windowManager = getWindowManager();
 
         if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
             windowManager.showOptionDialog(
@@ -744,7 +749,7 @@ public class WebWindow
 
         @Override
         protected WindowDelegate createDelegate() {
-            return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
+            return new EditorWindowDelegate(this);
         }
 
         @Override
@@ -986,7 +991,7 @@ public class WebWindow
             super.setId(id);
 
             if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
-                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                WebWindowManager windowManager = getWindowManager();
                 windowManager.setDebugId(selectButton, id + ".selectButton");
                 windowManager.setDebugId(cancelButton, id + ".cancelButton");
             }

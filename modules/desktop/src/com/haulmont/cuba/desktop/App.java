@@ -15,22 +15,18 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
-import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.plaf.InputMapUIResource;
 import java.awt.*;
@@ -41,10 +37,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * <p>$Id$</p>
@@ -57,19 +51,17 @@ public class App implements ConnectionListener {
 
     private Log log;
 
-    protected JFrame frame;
+    protected TopLevelFrame mainFrame;
 
     protected JMenuBar menuBar;
 
     protected Connection connection;
 
-    protected DesktopWindowManager windowManager;
-
     private JTabbedPane tabsPane;
 
-    private DisabledGlassPane glassPane;
-
     protected DesktopTheme theme;
+
+    protected LinkedList<TopLevelFrame> topLevelFrames = new LinkedList<>();
 
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -113,8 +105,8 @@ public class App implements ConnectionListener {
     }
 
     public void show() {
-        if (!frame.isVisible()) {
-            frame.setVisible(true);
+        if (!mainFrame.isVisible()) {
+            mainFrame.setVisible(true);
         }
     }
 
@@ -127,8 +119,8 @@ public class App implements ConnectionListener {
     }
 
     public void showLoginDialog() {
-        LoginDialog loginDialog = new LoginDialog(frame, connection);
-        loginDialog.setLocationRelativeTo(frame);
+        LoginDialog loginDialog = new LoginDialog(mainFrame, connection);
+        loginDialog.setLocationRelativeTo(mainFrame);
         loginDialog.open();
     }
 
@@ -197,11 +189,9 @@ public class App implements ConnectionListener {
 
     protected void initUI() {
         ToolTipManager.sharedInstance().setEnabled(false);
-        frame = new JFrame(getApplicationTitle());
-        frame.setName("MainFrame");
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-        frame.addWindowListener(
+        mainFrame = new TopLevelFrame(getApplicationTitle());
+        mainFrame.setName("MainFrame");
+        mainFrame.addWindowListener(
                 new WindowAdapter() {
                     @Override
                     public void windowClosing(WindowEvent e) {
@@ -210,17 +200,13 @@ public class App implements ConnectionListener {
                 }
         );
 
-        glassPane = new DisabledGlassPane();
-        JRootPane rootPane = SwingUtilities.getRootPane(frame);
-        rootPane.setGlassPane(glassPane);
-
-        frame.setContentPane(createStartContentPane());
-
+        mainFrame.setContentPane(createStartContentPane());
+        registerFrame(mainFrame);
         createMainWindowProperties().load();
     }
 
     protected MainWindowProperties createMainWindowProperties() {
-        return new MainWindowProperties(frame);
+        return new MainWindowProperties(mainFrame);
     }
 
     protected void initConnection() {
@@ -229,9 +215,14 @@ public class App implements ConnectionListener {
     }
 
     protected void exit() {
-        createMainWindowProperties().save();
-        AppContext.stopContext();
-        System.exit(0);
+        recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
+            @Override
+            public void run() {
+                createMainWindowProperties().save();
+                AppContext.stopContext();
+                System.exit(0);
+            }
+        });
     }
 
     protected Container createStartContentPane() {
@@ -295,7 +286,7 @@ public class App implements ConnectionListener {
         item.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        connection.logout();
+                        logout();
                     }
                 }
         );
@@ -315,6 +306,34 @@ public class App implements ConnectionListener {
         builder.build();
 
         return menuBar;
+    }
+
+    private void logout() {
+        final Iterator<TopLevelFrame> it = topLevelFrames.iterator();
+        recursiveClosingFrames(it, new Runnable() {
+            @Override
+            public void run() {
+                connection.logout();
+            }
+        });
+    }
+
+    private void recursiveClosingFrames(final Iterator<TopLevelFrame> it, final Runnable onSuccess) {
+        final TopLevelFrame frame = it.next();
+        frame.getWindowManager().checkModificationsAndCloseAll(new Runnable() {
+            @Override
+            public void run() {
+                if (!it.hasNext()) {
+                    onSuccess.run();
+                } else {
+                    frame.getWindowManager().dispose();
+                    frame.dispose();
+                    it.remove();
+                    recursiveClosingFrames(it, onSuccess);
+                }
+            }
+        }, null
+        );
     }
 
     protected JComponent createBottomPane() {
@@ -409,9 +428,9 @@ public class App implements ConnectionListener {
         if (connection.isConnected()) {
             messagesClient.setRemoteSearch(true);
 
-            windowManager = getWindowManager();
-            frame.setContentPane(createContentPane());
-            frame.repaint();
+            DesktopWindowManager windowManager = mainFrame.getWindowManager();
+            mainFrame.setContentPane(createContentPane());
+            mainFrame.repaint();
             windowManager.setTabsPane(tabsPane);
 
             initExceptionHandlers(true);
@@ -419,12 +438,24 @@ public class App implements ConnectionListener {
 
         } else {
             messagesClient.setRemoteSearch(false);
+            Iterator<TopLevelFrame> it = topLevelFrames.iterator();
+            while (it.hasNext()) {
+                TopLevelFrame frame = it.next();
+                if (frame != mainFrame) {
+                    DesktopWindowManager windowManager = frame.getWindowManager();
+                    if (windowManager != null)
+                        windowManager.dispose();
+                    frame.dispose();
+                    it.remove();
+                }
+            }
 
+            DesktopWindowManager windowManager = mainFrame.getWindowManager();
             if (windowManager != null)
                 windowManager.dispose();
-            windowManager = null;
-            frame.setContentPane(createStartContentPane());
-            frame.repaint();
+
+            mainFrame.setContentPane(createStartContentPane());
+            mainFrame.repaint();
 
             initExceptionHandlers(false);
             showLoginDialog();
@@ -441,133 +472,20 @@ public class App implements ConnectionListener {
         }
     }
 
-    public DesktopWindowManager getWindowManager() {
-        if (windowManager == null)
-            windowManager = new DesktopWindowManager();
-
-        return windowManager;
+    public TopLevelFrame getMainFrame() {
+        return mainFrame;
     }
 
-    public JFrame getMainFrame() {
-        return frame;
+    public void registerFrame(TopLevelFrame frame) {
+        topLevelFrames.addFirst(frame);
     }
 
-    public void disable(@Nullable String message) {
-        glassPane.activate(message);
-    }
-
-    public void enable() {
-        glassPane.deactivate();
+    public void unregisterFrame(TopLevelFrame frame) {
+        topLevelFrames.remove(frame);
     }
 
     public DesktopResources getResources() {
         return theme.getResources();
-    }
-
-    protected void showNotificationPopup(String title, String caption, IFrame.NotificationType type) {
-        JPanel panel = new JPanel(new MigLayout("flowy"));
-        panel.setBorder(BorderFactory.createLineBorder(Color.gray));
-        JFrame frame = getMainFrame();
-
-        switch (type) {
-            case WARNING:
-                panel.setBackground(Color.yellow);
-                break;
-            case ERROR:
-                panel.setBackground(Color.orange);
-                break;
-            default:
-                panel.setBackground(Color.cyan);
-        }
-
-        FontMetrics fontMetrics = frame.getGraphics().getFontMetrics();
-
-        if (StringUtils.isNotBlank(title)) {
-            caption = String.format("<b>%s</b><br>%s", title, caption);
-        }
-        int height = (int) fontMetrics.getStringBounds(caption, frame.getGraphics()).getHeight();
-        int width = 0;
-        StringBuilder sb = new StringBuilder("<html>");
-        String[] strings = caption.split("(<br>)|(<br/>)");
-        for (String string : strings) {
-            int w = (int) fontMetrics.getStringBounds(string, frame.getGraphics()).getWidth();
-            width = Math.max(width, w);
-            sb.append(string).append("<br/>");
-        }
-        sb.append("</html>");
-
-        JLabel label = new JLabel(sb.toString());
-        panel.add(label);
-
-        int x = frame.getX() + frame.getWidth() - (50 + width);
-        int y = frame.getY() + frame.getHeight() - (50 + ((height + 5) * strings.length));
-
-        PopupFactory factory = PopupFactory.getSharedInstance();
-        final Popup popup = factory.getPopup(frame, panel, x, y);
-        popup.show();
-        final Point location = MouseInfo.getPointerInfo().getLocation();
-        final Timer timer = new Timer(3000, null);
-        timer.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        if (!MouseInfo.getPointerInfo().getLocation().equals(location)) {
-                            popup.hide();
-                            timer.stop();
-                        }
-                    }
-                }
-        );
-        timer.start();
-    }
-
-    public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        DesktopConfig config = ConfigProvider.getConfig(DesktopConfig.class);
-        if (config.isDialogNotificationsEnabled() && type != IFrame.NotificationType.TRAY) {
-            showNotificationDialog(caption, description, type);
-        } else {
-            showNotificationPopup(caption, description, type);
-        }
-    }
-
-    public void showNotification(String caption, IFrame.NotificationType type) {
-        showNotification(null, caption, type);
-    }
-
-    protected void showNotificationDialog(String caption, String description, IFrame.NotificationType type) {
-        String title = MessageProvider.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
-        String text;
-        if (StringUtils.isNotBlank(caption)) {
-            text = String.format("<html><b>%s</b><br>%s", caption, description);
-        } else {
-            text = "<html>" + description;
-        }
-
-        Component parentComponent = getMainFrame();
-        int messageType = DesktopComponentsHelper.convertNotificationType(type);
-
-        String closeText = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Close");
-        JButton option = new JButton(closeText);
-        option.setPreferredSize(new Dimension(80, DesktopComponentsHelper.BUTTON_HEIGHT));
-
-        JOptionPane pane = new JOptionPane(text, messageType,
-                JOptionPane.DEFAULT_OPTION, null,
-                new Object[]{option}, option);
-
-        final JDialog dialog = pane.createDialog(parentComponent, title);
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        option.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.setVisible(false);
-            }
-        });
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                dialog.setVisible(true);
-            }
-        });
     }
 
     public Locale getLocale() {

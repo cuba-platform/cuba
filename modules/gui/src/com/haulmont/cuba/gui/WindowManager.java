@@ -45,7 +45,7 @@ import java.util.concurrent.Callable;
 public abstract class WindowManager {
 
     /**
-     * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}
+     * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}, {@link #NEW_WINDOW}
      */
     public enum OpenType {
         /**
@@ -59,7 +59,11 @@ public abstract class WindowManager {
         /**
          * In modal dialog
          */
-        DIALOG
+        DIALOG,
+        /**
+         *  In new window in desktop client, new tab in web client 
+         */
+        NEW_WINDOW
     }
 
     public interface WindowCloseListener {

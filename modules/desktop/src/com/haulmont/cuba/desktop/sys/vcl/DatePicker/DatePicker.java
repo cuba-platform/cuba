@@ -10,6 +10,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.ObjectUtils;
@@ -158,7 +159,7 @@ public class DatePicker extends JXDatePicker {
             try {
                 return super.stringToValue(text);
             } catch (ParseException e) {
-                App.getInstance().showNotification(
+                DesktopComponentsHelper.getTopLevelFrame(getParent()).showNotification(
                         MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
                         IFrame.NotificationType.TRAY
                 );

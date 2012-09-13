@@ -235,6 +235,7 @@ public class WebWindowManager extends WindowManager {
 
         switch (type) {
             case NEW_TAB:
+            case NEW_WINDOW:
                 closeStartupScreen(appWindow);
                 if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
 

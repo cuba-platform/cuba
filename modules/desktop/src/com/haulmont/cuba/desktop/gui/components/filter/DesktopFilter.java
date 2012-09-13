@@ -617,7 +617,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
-                WindowManager wm = App.getInstance().getWindowManager();
+
+                WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
 
                 boolean haveRequiredConditions = haveFilledRequiredConditions();
                 if (!haveRequiredConditions) {
@@ -1246,7 +1247,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     window.setDescription(descr);
                     initialized = true;
                 } else {
-                    DesktopWindowManager wManager = (DesktopWindowManager) App.getInstance().getWindowManager();
+                    DesktopWindowManager wManager = DesktopComponentsHelper.getTopLevelFrame(
+                            DesktopFilter.this.getComposition()).getWindowManager();
                     wManager.setCurrentWindowCaption(window, window.getCaption(), descr);
                 }
             }

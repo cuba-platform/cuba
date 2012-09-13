@@ -44,7 +44,7 @@ public class FileBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 FileDescriptor fileDescriptor = filesTable.getSingleSelected();
                 if (fileDescriptor != null) {
-                    AppConfig.createExportDisplay().show(fileDescriptor, null);
+                    AppConfig.createExportDisplay(FileBrowser.this).show(fileDescriptor, null);
                 }
             }
         });

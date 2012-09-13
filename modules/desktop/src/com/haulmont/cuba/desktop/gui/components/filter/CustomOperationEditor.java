@@ -8,7 +8,6 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.filter.HasAction;
@@ -46,7 +45,7 @@ public class CustomOperationEditor extends OperationEditor implements HasAction 
     @Override
     public void doAction() {
         CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
-        App.getInstance().disable(null);
+        DesktopComponentsHelper.getTopLevelFrame(getImpl()).deactivate(null);
         dlg.getImpl().setVisible(true);
     }
 }

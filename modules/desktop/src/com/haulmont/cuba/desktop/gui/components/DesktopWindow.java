@@ -10,8 +10,10 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.*;
@@ -96,7 +98,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     protected WindowDelegate createDelegate() {
-        return new WindowDelegate(this, App.getInstance().getWindowManager());
+        return new WindowDelegate(this);
     }
 
     @Override
@@ -147,7 +149,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public boolean close(final String actionId) {
-        WindowManager windowManager = App.getInstance().getWindowManager();
+        WindowManager windowManager = getWindowManager();
 
         if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
             windowManager.showOptionDialog(
@@ -324,7 +326,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public DialogParams getDialogParams() {
-        return App.getInstance().getWindowManager().getDialogParams();
+        return DesktopComponentsHelper.getTopLevelFrame(this.getComposition()).getWindowManager().getDialogParams();
     }
 
     @Override
@@ -377,29 +379,33 @@ public class DesktopWindow implements Window, Component.Disposable,
         return delegate.<T>openFrame(parent, windowAlias, params);
     }
 
+    public DesktopWindowManager getWindowManager() {
+        return DesktopComponentsHelper.getTopLevelFrame(this.getComposition()).getWindowManager();
+    }
+
     @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
-        App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
+        getWindowManager().showMessageDialog(title, message, messageType);
     }
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
+        getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
     @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
-        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
+        getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
     @Override
     public void showNotification(String caption, NotificationType type) {
-        App.getInstance().getWindowManager().showNotification(caption, type);
+        getWindowManager().showNotification(caption, type);
     }
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
-        App.getInstance().getWindowManager().showNotification(caption, description, type);
+        getWindowManager().showNotification(caption, description, type);
     }
 
     @Override
@@ -739,8 +745,6 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     public static class Editor extends DesktopWindow implements Window.Editor {
 
-        private static final long serialVersionUID = -7042930104147784581L;
-
         public Editor() {
             super();
             addAction(new AbstractShortcutAction("commitAndCloseAction",
@@ -754,7 +758,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         @Override
         protected WindowDelegate createDelegate() {
-            return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
+            return new EditorWindowDelegate(this);
         }
 
         public Entity getItem() {

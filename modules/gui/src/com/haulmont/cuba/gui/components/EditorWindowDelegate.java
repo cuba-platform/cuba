@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -39,8 +38,8 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
     protected LockService lockService = AppBeans.get(LockService.class);
 
-    public EditorWindowDelegate(Window window, WindowManager windowManager) {
-        super(window, windowManager);
+    public EditorWindowDelegate(Window window) {
+        super(window);
     }
 
     public Window wrapBy(Class<Window> wrapperClass) {
@@ -158,7 +157,7 @@ public class EditorWindowDelegate extends WindowDelegate {
             if (lockInfo == null) {
                 justLocked = true;
             } else if (!(lockInfo instanceof LockNotSupported)) {
-                windowManager.showNotification(
+                window.getWindowManager().showNotification(
                         messages.getMainMessage("entityLocked.msg"),
                         String.format(messages.getMainMessage("entityLocked.desc"),
                                 lockInfo.getUser().getLogin(),
