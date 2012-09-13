@@ -552,8 +552,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 }
                 // enable selection change listener
                 isRowsAjusting = false;
-                // apply selection
-                setSelected(newSelection);
                 if (focused && newSelection != null && !newSelection.isEmpty()) {
                     int minimalSelectionRowIndex = Integer.MAX_VALUE;
                     for (Entity entity : newSelection) {
@@ -566,6 +564,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     if (focusManager != null)
                         focusManager.focusSelectedRow(minimalSelectionRowIndex);
                 }
+                setSelected(newSelection);
             }
 
             @Override
