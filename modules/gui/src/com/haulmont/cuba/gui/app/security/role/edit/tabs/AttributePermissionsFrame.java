@@ -355,7 +355,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
 
         emptyLabel = uiFactory.createComponent(Label.NAME);
-        emptyLabel.setValue("[" + getMessage("allEntities") + "]");
+        emptyLabel.setValue(getMessage("allEntities"));
         editGrid.add(emptyLabel, 0, 1);
 
         editGrid.add(allModifyCheck, 1, 1);
