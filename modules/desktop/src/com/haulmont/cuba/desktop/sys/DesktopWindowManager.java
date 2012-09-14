@@ -12,7 +12,6 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
-import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
@@ -839,11 +838,11 @@ public class DesktopWindowManager extends WindowManager {
         disableSavingScreenHistory = true;
         if (modified) {
             showOptionDialog(
-                    messages.getMessage(DesktopWindow.class, "closeUnsaved.caption"),
-                    messages.getMessage(DesktopWindow.class, "closeUnsaved"),
+                    messages.getMainMessage("closeUnsaved.caption"),
+                    messages.getMainMessage("closeUnsaved"),
                     IFrame.MessageType.WARNING,
                     new Action[]{
-                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMessage(DesktopWindow.class, "actions.Yes")) {
+                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMainMessage("actions.Yes")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfOk != null)
@@ -855,7 +854,7 @@ public class DesktopWindowManager extends WindowManager {
                                     return "icons/ok.png";
                                 }
                             },
-                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMessage(DesktopWindow.class, "actions.No")) {
+                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMainMessage("actions.No")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null)

@@ -8,10 +8,7 @@ package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.app.ServerInfoService;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
@@ -20,12 +17,16 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.remoting.RemoteAccessException;
 
 import javax.swing.*;
 import javax.swing.plaf.InputMapUIResource;
@@ -36,6 +37,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -62,6 +64,8 @@ public class App implements ConnectionListener {
     protected DesktopTheme theme;
 
     protected LinkedList<TopLevelFrame> topLevelFrames = new LinkedList<>();
+
+    protected Messages messages;
 
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -98,6 +102,7 @@ public class App implements ConnectionListener {
             initLookAndFeelDefaults();
             initUI();
             initExceptionHandling();
+            messages = AppBeans.get(Messages.class);
         } catch (Throwable t) {
             log.error("Error initializing application", t);
             System.exit(-1);
@@ -215,14 +220,28 @@ public class App implements ConnectionListener {
     }
 
     protected void exit() {
-        recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
-            @Override
-            public void run() {
-                createMainWindowProperties().save();
-                AppContext.stopContext();
-                System.exit(0);
-            }
-        });
+        try {
+            recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
+                @Override
+                public void run() {
+                    createMainWindowProperties().save();
+                    AppContext.stopContext();
+                    System.exit(0);
+                }
+            });
+        } catch (RemoteAccessException exception) {
+            String text = messages.getMainMessage("connectException.message");
+            String title = messages.getMainMessage("exceptionDialog.caption");
+
+            mainFrame.getWindowManager().showOptionDialog(title, text, IFrame.MessageType.WARNING,
+                    new Action[]{new DialogAction(DialogAction.Type.OK) {
+                        @Override
+                        public void actionPerform(Component component) {
+                            AppContext.stopContext();
+                            System.exit(0);
+                        }
+                    }});
+        }
     }
 
     protected Container createStartContentPane() {
