@@ -45,6 +45,8 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
 
     private Log log = LogFactory.getLog(WebTimeField.class);
 
+    protected static final int DIGIT_WIDTH = 23;
+    
     public WebTimeField() {
         timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
@@ -115,16 +117,17 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
     }
 
     private void updateWidth() {
-        int width = isAmPmUsed() ? 23 : 0;
+        int width = isAmPmUsed() ? DIGIT_WIDTH : 0;
         if (showSeconds) {
-            width = width + 23;
+            width = width + DIGIT_WIDTH;
         }
         switch (resolution) {
             case HOUR:
-                component.setWidth((23 + width) + "px");
+                component.setWidth((DIGIT_WIDTH + width) + "px");
                 break;
             case MIN:
-                component.setWidth((46 + width) + "px");
+            case SEC:
+                component.setWidth((DIGIT_WIDTH * 2 + width) + "px");
 
         }
     }

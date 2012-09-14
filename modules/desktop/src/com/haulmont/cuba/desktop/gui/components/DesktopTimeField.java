@@ -58,6 +58,8 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private DateField.Resolution resolution;
     private boolean editable = true;
 
+    protected static final int DIGIT_WIDTH = 23;
+
     public DesktopTimeField() {
         timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
@@ -289,18 +291,19 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     private void updateWidth() {
-        int width = isAmPmUsed() ? 23 : 0;
+        int width = isAmPmUsed() ? DIGIT_WIDTH : 0;
         if (showSeconds) {
-            width = width + 23;
+            width = width + DIGIT_WIDTH;
         }
         int height = impl.getPreferredSize().height;
 
         switch (resolution) {
             case HOUR:
-                impl.setMinimumSize(new Dimension(23 + width, height));
+                impl.setMinimumSize(new Dimension(DIGIT_WIDTH + width, height));
                 break;
             case MIN:
-                impl.setMinimumSize(new Dimension(46 + width, height));
+            case SEC:
+                impl.setMinimumSize(new Dimension(DIGIT_WIDTH * 2 + width, height));
         }
     }
 

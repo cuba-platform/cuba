@@ -129,6 +129,9 @@ public class DesktopDateField
 
     private void _setResolution(Resolution resolution) {
         this.resolution = resolution;
+        if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+            timeField.setResolution(resolution);
+        }
     }
 
     @Override
@@ -149,6 +152,7 @@ public class DesktopDateField
             time.delete(0, timeStartPos);
             timeFormat = StringUtils.trimToEmpty(time.toString());
             timeField.setFormat(timeFormat);
+            _setResolution(resolution);
             date.delete(timeStartPos, dateFormat.length());
         } else if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             _setResolution(Resolution.DAY);
