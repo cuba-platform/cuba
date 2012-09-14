@@ -6,9 +6,7 @@
 
 package com.haulmont.cuba.desktop;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.LoginProperties;
@@ -37,7 +35,8 @@ public class LoginDialog extends JDialog {
 
     private Connection connection;
     private Map<String,Locale> locales;
-
+    private Messages messages = AppBeans.get(Messages.class);
+    
     public LoginDialog(JFrame owner, Connection connection) {
         super(owner);
         this.connection = connection;
@@ -82,11 +81,14 @@ public class LoginDialog extends JDialog {
             passwordField.setText(defaultPassword);
         panel.add(passwordField, "width 150!, wrap");
 
-        panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.localesSelect", Locale.getDefault())));
+        Configuration configuration = AppBeans.get(Configuration.class);
 
         final JComboBox localeCombo = new JComboBox();
         initLocales(localeCombo);
-        panel.add(localeCombo, "width 150!, wrap");
+        if (configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible()) {
+            panel.add(new JLabel(messages.getMainMessage("loginWindow.localesSelect")));
+            panel.add(localeCombo, "width 150!, wrap");
+        }
 
         JButton loginBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.okButton", Locale.getDefault()));
         loginBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));

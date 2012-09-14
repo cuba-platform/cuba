@@ -326,7 +326,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public DialogParams getDialogParams() {
-        return DesktopComponentsHelper.getTopLevelFrame(this.getComposition()).getWindowManager().getDialogParams();
+        return DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager().getDialogParams();
     }
 
     @Override
@@ -380,7 +380,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     public DesktopWindowManager getWindowManager() {
-        return DesktopComponentsHelper.getTopLevelFrame(this.getComposition()).getWindowManager();
+        return DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
     }
 
     @Override

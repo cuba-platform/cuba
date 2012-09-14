@@ -106,7 +106,7 @@ public interface GlobalConfig extends Config {
      * Show locale select in LoginWindow.
      * @return true if show
      */
-    @Property("cuba.web.localeSelectVisible")
+    @Property("cuba.localeSelectVisible")
     @DefaultBoolean(true)
     boolean getLocaleSelectVisible();
 
