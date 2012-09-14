@@ -30,9 +30,8 @@ import java.awt.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopTreeTable
         extends DesktopAbstractTable<JXTreeTableExt>
@@ -74,6 +73,9 @@ public class DesktopTreeTable
 
             @Override
             public boolean isCellEditable(int row, int column) {
+                if (column < 0 || row < 0)
+                    return false;
+
                 DesktopTreeTable treeTable = DesktopTreeTable.this;
                 Column editColumn = treeTable.getColumns().get(column);
                 return (treeTable.isEditable() && editColumn.isEditable())
