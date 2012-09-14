@@ -576,13 +576,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     protected void clearGeneratedColumnsCache() {
-        TableColumnModel columnModel = impl.getColumnModel();
         for (Column column : columnsOrder) {
             if (tableModel.isGeneratedColumn(column)) {
-                int columnIndex = columnModel.getColumnIndex(column);
-                TableColumn tableColumn = columnModel.getColumn(columnIndex);
-                DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
-                cellEditor.clearCache();
+                TableColumn tableColumn = getColumn(column);
+                if (tableColumn != null) {
+                    DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
+                    cellEditor.clearCache();
+                }
             }
         }
     }
@@ -773,8 +773,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             if (tableModel.isGeneratedColumn(col)) {
                 // it handles styles himself
             } else {
-                TableColumnModel columnModel = impl.getColumnModel();
-                TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
+                TableColumn tableColumn = getColumn(col);
                 tableColumn.setCellRenderer(styleProvider != null ? new StylingCellRenderer() : null);
             }
         }
@@ -796,8 +795,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         Column col = getColumn(columnId);
         tableModel.addGeneratedColumn(col);
         col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
-        TableColumnModel columnModel = impl.getColumnModel();
-        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
+        TableColumn tableColumn = getColumn(col);
         DesktopTableCellEditor cellEditor = new DesktopTableCellEditor(this, generator, componentClass);
         tableColumn.setCellEditor(cellEditor);
         tableColumn.setCellRenderer(cellEditor);
@@ -1066,23 +1064,36 @@ public abstract class DesktopAbstractTable<C extends JTable>
         if (generatedColumnsCount <= 0) {
             return true;
         }
-        TableColumnModel columnModel = impl.getColumnModel();
+
         for (Column column : columnsOrder) {
             if (!tableModel.isGeneratedColumn(column)) {
                 continue;
             }
 
-            int columnIndex = columnModel.getColumnIndex(column);
-            TableColumn tableColumn = columnModel.getColumn(columnIndex);
-            DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
-            boolean inline = cellEditor.isInline();
-            if (!inline) {
-                return false;
+            TableColumn tableColumn = getColumn(column);
+            if (tableColumn != null) {
+                DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
+                boolean inline = cellEditor.isInline();
+                if (!inline) {
+                    return false;
+                }
             }
         }
         return true;
     }
 
+    private TableColumn getColumn(Column column) {
+        Enumeration<TableColumn> enumeration = impl.getColumnModel().getColumns();
+        TableColumn aColumn;
+
+        while (enumeration.hasMoreElements()) {
+            aColumn = enumeration.nextElement();
+            if (column.equals(aColumn.getIdentifier()))
+                return aColumn;
+        }
+        return null;
+    }
+    
     @Override
     public void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener) {
     }
