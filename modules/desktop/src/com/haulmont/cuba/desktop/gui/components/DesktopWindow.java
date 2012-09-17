@@ -380,7 +380,8 @@ public class DesktopWindow implements Window, Component.Disposable,
         return delegate.<T>openFrame(parent, windowAlias, params);
     }
 
-    public WindowManager getWindowManager() {
+    @Override
+    public DesktopWindowManager getWindowManager() {
         return windowManager;
     }
 
