@@ -204,7 +204,7 @@ public class DesktopWindowManager extends WindowManager {
     private JComponent showNewWindow(Window window, String caption) {
         final TopLevelFrame windowFrame = new TopLevelFrame(caption);
         windowFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
+        window.setWindowManager(windowFrame.getWindowManager());
         Dimension size = frame.getSize();
         int width = Math.round(size.width * NEW_WINDOW_SCALE);
         int height = Math.round(size.height * NEW_WINDOW_SCALE);
