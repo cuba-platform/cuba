@@ -7,14 +7,13 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.TopLevelFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ShortcutAction;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
 import org.apache.commons.lang.ArrayUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.Collections;
@@ -205,5 +204,24 @@ public class DesktopComponentsHelper {
      */
     public static TopLevelFrame getTopLevelFrame(DesktopAbstractComponent component) {
         return getTopLevelFrame(component.getComposition());
+    }
+
+    /**
+     * Returns {@link TopLevelFrame} of frame.
+     *
+     * @param frame
+     * @return {@link TopLevelFrame} of component
+     */
+    public static TopLevelFrame getTopLevelFrame(IFrame frame) {
+        if (frame instanceof DesktopWindow) {
+            return getTopLevelFrame(((DesktopWindow) frame).getComposition());
+        } else if (frame instanceof DesktopFrame) {
+            return getTopLevelFrame(((DesktopFrame) frame).getComposition());
+        } else if (frame instanceof AbstractFrame) {
+            Component.Wrapper wrapper = (Component.Wrapper) ((AbstractFrame) frame).getComposition();
+            return getTopLevelFrame((Container) wrapper.getComposition());
+        } else {
+            throw new IllegalArgumentException("Can not get top level frame");
+        }
     }
 }

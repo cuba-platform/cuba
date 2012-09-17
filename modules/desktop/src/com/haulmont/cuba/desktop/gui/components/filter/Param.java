@@ -49,7 +49,7 @@ public class Param extends AbstractParam<JComponent> {
 
     public static final Dimension TEXT_COMPONENT_DIM = new Dimension(120, Integer.MAX_VALUE);
 
-    private DesktopFrame frame;
+    private IFrame frame;
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
                  boolean inExpr, boolean required) {
@@ -69,7 +69,7 @@ public class Param extends AbstractParam<JComponent> {
     @Override
     public JComponent createEditComponent() {
         JComponent component;
-        frame = (DesktopFrame) datasource.getDsContext().getWindowContext().getFrame();
+        frame = datasource.getDsContext().getWindowContext().getFrame();
         switch (type) {
             case DATATYPE:
                 component = createDatatypeField(Datatypes.get(javaClass));

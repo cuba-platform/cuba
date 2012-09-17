@@ -187,12 +187,7 @@ public class DesktopExportDisplay implements ExportDisplay {
 
     private TopLevelFrame getFrame() {
         if (frame != null) {
-            if (frame instanceof DesktopWindow) {
-                return DesktopComponentsHelper.getTopLevelFrame(((DesktopWindow) frame).getComposition());
-            } else {
-                Component.Wrapper wrapper = (Component.Wrapper) ((AbstractFrame) frame).getComposition();
-                return DesktopComponentsHelper.getTopLevelFrame((Container) wrapper.getComposition());
-            }
+            return DesktopComponentsHelper.getTopLevelFrame(frame);
         } else {
             return App.getInstance().getMainFrame();
         }

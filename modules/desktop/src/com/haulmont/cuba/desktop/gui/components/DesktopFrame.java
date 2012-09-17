@@ -9,7 +9,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
@@ -102,8 +101,8 @@ public class DesktopFrame
         }
     }
 
-    private DesktopWindowManager getWindowManager(){
-        return DesktopComponentsHelper.getTopLevelFrame(this).getWindowManager();
+    private DesktopWindowManager getWindowManager() {
+        return DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
     }
 
     public DialogParams getDialogParams() {
