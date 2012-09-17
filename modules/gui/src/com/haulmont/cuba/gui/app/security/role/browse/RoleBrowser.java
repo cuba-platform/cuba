@@ -37,7 +37,7 @@ public class RoleBrowser extends AbstractLookup {
                     showNotification(getMessage("selectRole.msg"), NotificationType.HUMANIZED);
                     return;
                 }
-                final Role role = (Role) table.getSelected().iterator().next();
+                final Role role = table.<Role>getSelected().iterator().next();
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("multiSelect", "true");
                 openLookup("sec$User.lookup", new Handler() {

@@ -321,14 +321,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             public void valueChange(Property.ValueChangeEvent event) {
                 if (datasource == null) return;
 
-                final Set selected = getSelected();
+                final Set<Entity> selected = getSelected();
                 if (selected.isEmpty()) {
                     datasource.setItem(null);
                 } else {
                     // reset selection and select new item
                     if (isMultiSelect())
                         datasource.setItem(null);
-                    datasource.setItem((Entity) selected.iterator().next());
+                    datasource.setItem(selected.iterator().next());
                 }
             }
         });

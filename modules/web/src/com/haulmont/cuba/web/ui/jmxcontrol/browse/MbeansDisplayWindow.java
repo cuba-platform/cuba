@@ -54,9 +54,9 @@ public class MbeansDisplayWindow extends AbstractWindow {
             private static final long serialVersionUID = 3804486579147680485L;
 
             public void actionPerform(Component component) {
-                Set selected = mbeansTable.getSelected();
+                Set<ManagedBeanInfo> selected = mbeansTable.getSelected();
                 if (!selected.isEmpty()) {
-                    ManagedBeanInfo mbi = (ManagedBeanInfo) selected.iterator().next();
+                    ManagedBeanInfo mbi = selected.iterator().next();
                     if (mbi.getObjectName() != null) { // otherwise it's a fake root node
                         openEditor("jmxcontrol$InspectMbean", mbi, WindowManager.OpenType.THIS_TAB);
                     } else { // expand / collapse fake root node

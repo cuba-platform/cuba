@@ -70,12 +70,12 @@ public class MbeanInspectWindow extends AbstractEditor {
     }
 
     public void editAttribute() {
-        Set selected = attrTable.getSelected();
+        Set<ManagedBeanAttribute> selected = attrTable.getSelected();
         if (selected.isEmpty()) {
             return;
         }
 
-        ManagedBeanAttribute mba = (ManagedBeanAttribute) selected.iterator().next();
+        ManagedBeanAttribute mba = selected.iterator().next();
         if (!mba.getWriteable() || AttributeHelper.isArray(mba.getType())) {
             return;
         }

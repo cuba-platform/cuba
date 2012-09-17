@@ -246,14 +246,14 @@ public class DesktopTreeTable
     }
 
     @Override
-    public Set getSelected() {
-        Set selected = new HashSet();
+    public <T extends Entity> Set<T> getSelected() {
+        Set<T> selected = new HashSet<>();
         TreePath[] selectionPaths = impl.getTreeSelectionModel().getSelectionPaths();
         if (selectionPaths != null) {
             for (TreePath path : selectionPaths) {
                 Entity entity = ((TreeTableModelAdapter) tableModel).getEntity(path.getLastPathComponent());
                 if (entity != null)
-                    selected.add(entity);
+                    selected.add((T) entity);
             }
         }
         return selected;

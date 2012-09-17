@@ -217,10 +217,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     @SuppressWarnings("unused")
     public void applyPermissionMask() {
-        Set selected = entityPermissionsTable.getSelected();
+        Set<OperationPermissionTarget> selected = entityPermissionsTable.getSelected();
         if (!selected.isEmpty() && (selected.size() > 1)) {
-            for (Object obj : selected) {
-                OperationPermissionTarget target = (OperationPermissionTarget) obj;
+            for (OperationPermissionTarget target : selected) {
                 for (EntityOperationControl control : operationControls) {
                     if (control.isControlVisible() && control.applicableToEntity(target.getEntityClass())) {
                         PermissionVariant variant;

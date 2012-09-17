@@ -29,14 +29,16 @@ public abstract class WebAbstractList<T extends AbstractSelect>
                 null : (T) datasource.getItem(selected.iterator().next());
     }
 
-    public Set getSelected() {
-        final Set<Object> itemIds = getSelectedItemIds();
+    @Override
+    public <T extends Entity> Set<T> getSelected() {
+        Set<Object> itemIds = getSelectedItemIds();
 
         if (itemIds != null) {
-            final Set<Object> res = new LinkedHashSet<Object>();
+            Set<T> res = new LinkedHashSet<>();
             for (Object id : itemIds) {
-                final Object o = datasource.getItem(id);
-                if (o != null) res.add(o);
+                Entity item = datasource.getItem(id);
+                if (item != null)
+                    res.add((T) item);
             }
             return res;
         } else {

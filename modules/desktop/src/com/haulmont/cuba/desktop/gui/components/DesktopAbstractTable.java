@@ -927,19 +927,19 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public <T extends Entity> T getSingleSelected() {
-        Set selected = getSelected();
-        return selected.isEmpty() ? null : (T) selected.iterator().next();
+        Set<T> selected = getSelected();
+        return selected.isEmpty() ? null : selected.iterator().next();
     }
 
     @Override
-    public Set getSelected() {
-        Set set = new HashSet();
+    public <T extends Entity> Set<T> getSelected() {
+        Set<T> set = new HashSet<>();
         int[] rows = impl.getSelectedRows();
         for (int row : rows) {
             int modelRow = impl.convertRowIndexToModel(row);
             Object item = tableModel.getItem(modelRow);
             if (item != null)
-                set.add(item);
+                set.add((T) item);
         }
         return set;
     }

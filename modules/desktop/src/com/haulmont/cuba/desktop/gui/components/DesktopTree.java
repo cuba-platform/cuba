@@ -185,14 +185,14 @@ public class DesktopTree
     }
 
     @Override
-    public Set getSelected() {
-        Set<Object> selected = new HashSet<Object>();
+    public <T extends Entity> Set<T> getSelected() {
+        Set<T> selected = new HashSet<>();
         TreePath[] selectionPaths = impl.getSelectionPaths();
         if (selectionPaths != null) {
             for (TreePath selectionPath : selectionPaths) {
                 Entity entity = model.getEntity(selectionPath.getLastPathComponent());
                 if (entity != null)
-                    selected.add(entity);
+                    selected.add((T) entity);
             }
         }
         return selected;

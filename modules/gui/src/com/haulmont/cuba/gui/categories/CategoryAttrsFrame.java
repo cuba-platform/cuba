@@ -84,11 +84,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
         ((Button)getComponent("moveUp")).setAction(new AbstractAction("moveUp") {
             @Override
             public void actionPerform(Component component) {
-                Set selected = categoryAttrsTable.getSelected();
+                Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
                 if (selected.isEmpty())
                     return;
 
-                CategoryAttribute currentAttr = (CategoryAttribute) selected.iterator().next();
+                CategoryAttribute currentAttr = selected.iterator().next();
                 UUID prevId = categoryAttrsDs.prevItemId(currentAttr.getId());
                 if (prevId == null)
                     return;
@@ -110,11 +110,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
         AbstractAction action = new AbstractAction("moveDown") {
             @Override
             public void actionPerform(Component component) {
-                Set selected = categoryAttrsTable.getSelected();
+                Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
                 if (selected.isEmpty())
                     return;
 
-                CategoryAttribute currentAttr = (CategoryAttribute) selected.iterator().next();
+                CategoryAttribute currentAttr = selected.iterator().next();
                 UUID nextId = categoryAttrsDs.nextItemId(currentAttr.getId());
                 if (nextId == null)
                     return;
@@ -242,10 +242,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
 
         @Override
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            if (!categoryAttrsTable.getSelected().isEmpty()) {
+            Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
+            if (!selected.isEmpty()) {
                 AttributeEditor editor = openEditor(
                         "sys$CategoryAttribute.edit",
-                        (CategoryAttribute) categoryAttrsTable.getSelected().iterator().next(),
+                        selected.iterator().next(),
                         WindowManager.OpenType.DIALOG,
                         categoryAttrsTable.getDatasource());
                 editor.addListener(new Window.CloseListener() {

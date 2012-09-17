@@ -28,10 +28,7 @@ import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author abramov
@@ -95,8 +92,9 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public void copy() {
-        if (!usersTable.getSelected().isEmpty()) {
-            User selectedUser = (User) usersTable.getSelected().iterator().next();
+        Set<User> selected = usersTable.getSelected();
+        if (!selected.isEmpty()) {
+            User selectedUser = selected.iterator().next();
             selectedUser = dataService.reload(selectedUser, "user.edit");
             User newUser = metadata.create(User.class);
             if (selectedUser.getUserRoles() != null) {
@@ -125,11 +123,12 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public void copySettings() {
-        if (!usersTable.getSelected().isEmpty()) {
+        Set<User> selected = usersTable.getSelected();
+        if (!selected.isEmpty()) {
             openWindow(
                     "sec$User.copySettings",
                     WindowManager.OpenType.DIALOG,
-                    new SingletonMap("users", usersTable.getSelected())
+                    new SingletonMap("users", selected)
             );
         }
     }
@@ -138,7 +137,7 @@ public class UserBrowser extends AbstractLookup {
         if (!usersTable.getSelected().isEmpty()) {
             openEditor(
                     "sec$User.changePassw",
-                    (Entity) usersTable.getSelected().iterator().next(),
+                    usersTable.getSelected().iterator().next(),
                     WindowManager.OpenType.DIALOG
             );
         }

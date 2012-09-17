@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -96,8 +97,9 @@ public class CategoryBrowser extends AbstractLookup {
 
         @Override
         public void actionPerform(Component component) {
-            if (!categoryTable.getSelected().isEmpty()) {
-                Category category = (Category) categoryTable.getSelected().iterator().next();
+            Set<Category> selected = categoryTable.getSelected();
+            if (!selected.isEmpty()) {
+                Category category = selected.iterator().next();
                 CategoryEditor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
                 editor.addListener(new CloseListener() {
                     @Override

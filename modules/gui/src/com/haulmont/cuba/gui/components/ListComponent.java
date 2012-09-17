@@ -11,7 +11,7 @@ public interface ListComponent extends Component, Component.BelongToFrame, Compo
     void setMultiSelect(boolean multiselect);
 
     <T extends Entity> T getSingleSelected();
-    Set getSelected();
+    <T extends Entity> Set<T> getSelected();
 
     void setSelected(Entity item);
     void setSelected(Collection<Entity> items);
