@@ -26,6 +26,9 @@ public interface Window extends IFrame, Component.HasCaption {
     /** Standard actionId passed to {@link CloseListener}s after succesful commit */
     String COMMIT_ACTION_ID = "commit";
 
+    /** Standard actionId passed to {@link CloseListener}s after close */
+    String CLOSE_ACTION_ID = "close";
+
     void addListener(CloseListener listener);
     void removeListener(CloseListener listener);
 

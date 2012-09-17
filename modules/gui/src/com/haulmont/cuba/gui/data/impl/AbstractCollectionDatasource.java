@@ -18,6 +18,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -471,6 +473,20 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return 0;
     }
 
+    protected String getLoggingTag(String prefix) {
+        String windowId = "";
+        WindowContext windowContext = dsContext.getWindowContext();
+        if (windowContext != null) {
+            IFrame frame = windowContext.getFrame();
+            if (frame != null)
+                windowId = frame.getId();
+        }
+        String tag = prefix + " " + id;
+        if (StringUtils.isNotBlank(windowId))
+            tag = windowId + "." + id;
+        return tag;
+    }
+
     protected void prepareLoadContext(LoadContext context) {
     }
 
@@ -497,6 +513,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     private class ComponentValueListener implements ValueListener {
+        @Override
         public void valueChanged(Object source, String property, Object prevValue, Object value) {
             refresh();
         }

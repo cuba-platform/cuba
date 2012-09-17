@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -30,8 +31,11 @@ import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -82,7 +86,7 @@ public abstract class WindowManager {
 
     private DialogParams dialogParams;
 
-    protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
+    protected List<WindowCloseListener> listeners = new ArrayList<>();
 
     protected WindowManager() {
         dialogParams = createDialogParams();
@@ -107,6 +111,10 @@ public abstract class WindowManager {
 
     protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
         checkPermission(windowInfo);
+
+        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + ".loadDescriptor",
+                Logger.getLogger(UIPerformanceLogger.class));
+        loadDescriptorWatch.start();
 
         String templatePath = windowInfo.getTemplate();
 
@@ -152,14 +160,23 @@ public abstract class WindowManager {
             initDebugIds(window);
         }
 
+        loadDescriptorWatch.stop();
+
+        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + ".uiPermissions",
+                Logger.getLogger(UIPerformanceLogger.class));
+        uiPermissionsWatch.start();
+
         // apply ui permissions
         WindowCreationHelper.applyUiPermissions(window);
+
+        uiPermissionsWatch.stop();
 
         return windowWrapper;
     }
 
     protected void initDebugIds(final Window window) {
         ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+            @Override
             public void visit(Component component, String name) {
                 component.setDebugId(window.getId() + "." + name);
             }
@@ -240,21 +257,33 @@ public abstract class WindowManager {
         final Window window;
         try {
             window = (Window) windowInfo.getScreenClass().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
         window.setId(windowInfo.getId());
         window.setWindowManager(this);
+
+        StopWatch initStopWatch = new Log4JStopWatch(windowInfo.getId() + ".init",
+                Logger.getLogger(UIPerformanceLogger.class));
+        initStopWatch.start();
+
         try {
             ReflectionHelper.invokeMethod(window, "init", params);
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException ignored) {
             // Do nothing
         }
 
+        initStopWatch.stop();
+
+        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + ".uiPermissions",
+                Logger.getLogger(UIPerformanceLogger.class));
+        uiPermissionsWatch.start();
+
         // apply ui permissions
         WindowCreationHelper.applyUiPermissions(window);
+
+        uiPermissionsWatch.stop();
 
         return window;
     }
@@ -277,11 +306,7 @@ public abstract class WindowManager {
             } else {
                 obj = constructor.newInstance(params);
             }
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
 
@@ -430,7 +455,14 @@ public abstract class WindowManager {
             }
         }
         ((Window.Editor) window).setParentDs(parentDs);
+
+        StopWatch setItemWatch = new Log4JStopWatch(windowInfo.getId() + ".setItem",
+                Logger.getLogger(UIPerformanceLogger.class));
+        setItemWatch.start();
+
         ((Window.Editor) window).setItem(item);
+
+        setItemWatch.stop();
 
         final String caption = loadCaption(window, params);
         final String description = loadDescription(window, params);
@@ -632,14 +664,25 @@ public abstract class WindowManager {
             ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow);
             dependencyInjector.inject();
 
+            StopWatch initStopWatch = new Log4JStopWatch(window.getId() + ".init", Logger.getLogger(UIPerformanceLogger.class));
+            initStopWatch.start();
+
             try {
                 ReflectionHelper.invokeMethod(wrappingWindow, "init", params);
             } catch (NoSuchMethodException e) {
                 // do nothing
             }
 
+            initStopWatch.stop();
+
+            StopWatch uiPermissionsWatch = new Log4JStopWatch(wrappingWindow.getId() + ".uiPermissions",
+                    Logger.getLogger(UIPerformanceLogger.class));
+            uiPermissionsWatch.start();
+
             // apply ui permissions
             WindowCreationHelper.applyUiPermissions(wrappingWindow);
+
+            uiPermissionsWatch.stop();
 
             return wrappingWindow;
         } else {

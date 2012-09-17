@@ -25,8 +25,10 @@ import com.haulmont.cuba.gui.filter.Condition;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.LogicalCondition;
 import com.haulmont.cuba.gui.filter.LogicalOp;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -434,7 +436,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (!UserSessionProvider.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ))
             return;
 
-        StopWatch sw = new Log4JStopWatch("CDS " + id);
+        String tag = getLoggingTag("CDS");
+        StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
 
         if (needLoading()) {
             final LoadContext context = new LoadContext(metaClass);

@@ -10,21 +10,21 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TemplateHelper;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
+import org.apache.log4j.Logger;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.Collection;
 import java.util.Map;
-
-import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
 
 public class CustomCollectionDatasource<T extends Entity<K>, K>
     extends
@@ -44,7 +44,7 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     protected void loadData(Map<String, Object> params) {
-        StopWatch sw = new Log4JStopWatch("CCDS " + id);
+        StopWatch sw = new Log4JStopWatch(getLoggingTag("CCDS"), Logger.getLogger(UIPerformanceLogger.class));
 
         for (Object entity : data.values()) {
             detachListener((Instance) entity);

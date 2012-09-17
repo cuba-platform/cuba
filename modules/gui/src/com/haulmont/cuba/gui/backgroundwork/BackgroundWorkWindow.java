@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -137,6 +138,6 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
     public void cancel() {
         if (!taskHandler.cancel())
-            close("close");
+            close(Window.CLOSE_ACTION_ID);
     }
 }

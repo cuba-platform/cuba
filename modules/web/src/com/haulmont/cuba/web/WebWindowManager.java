@@ -336,15 +336,14 @@ public class WebWindowManager extends WindowManager {
                             if (getCurrentWindowData().stacks.get(breadCrumbs).empty()) {
                                 ((AppWindow.AppTabSheet) tabSheet).closeTabAndSelectPrevious(layout);
                             } else {
-                                breadCrumbs.getCurrentWindow().close("close");
+                                breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
                             }
-
                         }
                     }
                 } else {
                     Iterator<WindowBreadCrumbs> it = getCurrentWindowData().tabs.values().iterator();
                     if (it.hasNext()) {
-                        it.next().getCurrentWindow().close("close");
+                        it.next().getCurrentWindow().close(Window.CLOSE_ACTION_ID);
                     }
                 }
             }
@@ -382,7 +381,7 @@ public class WebWindowManager extends WindowManager {
                                 Window currentWindow = breadCrumbs.getCurrentWindow();
 
                                 if (currentWindow != null && window != currentWindow) {
-                                    currentWindow.closeAndRun("close", this);
+                                    currentWindow.closeAndRun(Window.CLOSE_ACTION_ID, this);
                                 }
                             }
                         };
@@ -472,7 +471,7 @@ public class WebWindowManager extends WindowManager {
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
-                windowToClose.closeAndRun("close", new TabCloseTask(breadCrumbs));
+                windowToClose.closeAndRun(Window.CLOSE_ACTION_ID, new TabCloseTask(breadCrumbs));
             }
         }
     }
@@ -565,7 +564,8 @@ public class WebWindowManager extends WindowManager {
         return layout;
     }
 
-    protected Component showWindowDialog(final Window window, final String caption, final String description, AppWindow appWindow, boolean forciblyDialog) {
+    protected Component showWindowDialog(final Window window, final String caption, final String description,
+                                         AppWindow appWindow, boolean forciblyDialog) {
         removeWindowsWithName(window.getId());
 
         final com.vaadin.ui.Window win = createDialogWindow(window);
@@ -584,7 +584,7 @@ public class WebWindowManager extends WindowManager {
         win.addListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                window.close("close", true);
+                window.close(Window.CLOSE_ACTION_ID, true);
             }
         });
 
@@ -597,7 +597,7 @@ public class WebWindowManager extends WindowManager {
         actions.put(exitAction, new Runnable() {
             @Override
             public void run() {
-                window.close("close", true);
+                window.close(Window.CLOSE_ACTION_ID, true);
             }
         });
 
@@ -720,7 +720,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void closeAll() {
-        List<Map.Entry<Window, WindowOpenMode>> entries = new ArrayList(getWindowOpenMode().entrySet());
+        List<Map.Entry<Window, WindowOpenMode>> entries = new ArrayList<>(getWindowOpenMode().entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
             Window window = entries.get(i).getKey();
             if (window instanceof WebWindow.Editor) {
@@ -732,7 +732,7 @@ public class WebWindowManager extends WindowManager {
         getWindowOpenMode().clear();
         getCurrentWindowData().windows.clear();
         Collection windows = App.getInstance().getWindows();
-        for (Object win : new ArrayList(windows)) {
+        for (Object win : new ArrayList<Object>(windows)) {
             if (!win.equals(App.getInstance().getAppWindow())) {
                 App.getInstance().removeWindow((com.vaadin.ui.Window) win);
                 if (win instanceof AppWindow)

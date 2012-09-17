@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +29,10 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class LayoutLoader {
     protected ComponentLoader.Context context;
     private ComponentsFactory factory;

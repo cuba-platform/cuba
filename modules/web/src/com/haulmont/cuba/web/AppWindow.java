@@ -152,7 +152,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private void updateClientSystemMessages() {
-        Map<String, String> localeMessages = new HashMap<String, String>();
+        Map<String, String> localeMessages = new HashMap<>();
         App.CubaSystemMessages systemMessages = App.compileSystemMessages(App.getInstance().getLocale());
 
         localeMessages.put("communicationErrorCaption", systemMessages.getCommunicationErrorCaption());
@@ -276,7 +276,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return tabSheet;
     }
 
-    public void setTabSheet(TabSheet tabSheet) {
+    public void setTabSheet(@Nullable TabSheet tabSheet) {
         this.tabSheet = tabSheet;
     }
 

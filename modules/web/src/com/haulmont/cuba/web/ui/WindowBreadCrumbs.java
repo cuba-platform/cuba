@@ -65,7 +65,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Window window = getCurrentWindow();
-                    window.close("close");
+                    window.close(Window.CLOSE_ACTION_ID);
                 }
             });
             closeBtn.setIcon(new ThemeResource("images/close.png"));

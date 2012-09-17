@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 15:27:37
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -23,6 +19,10 @@ import org.dom4j.Element;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WindowLoader extends FrameLoader implements ComponentLoader {
 
     public WindowLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -111,6 +111,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             final String onTimer = element.attributeValue("onTimer");
             if (!StringUtils.isEmpty(onTimer)) {
                 timer.addTimerListener(new Timer.TimerListener() {
+                    @Override
                     public void onTimer(Timer timer) {
                         if (onTimer.startsWith("invoke:")) {
                             String methodName = onTimer.substring("invoke:".length()).trim();
@@ -126,6 +127,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
                         }
                     }
 
+                    @Override
                     public void onStopTimer(Timer timer) {
                         //do nothing
                     }
@@ -147,6 +149,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
     private void addAssignTimerFrameTask(final Timer timer) {
         context.addPostInitTask(new PostInitTask() {
+            @Override
             public void execute(Context context, IFrame window) {
                 timer.setFrame((Window) window);
             }
