@@ -221,7 +221,7 @@ public class DesktopComponentsHelper {
             Component.Wrapper wrapper = (Component.Wrapper) ((AbstractFrame) frame).getComposition();
             return getTopLevelFrame((Container) wrapper.getComposition());
         } else {
-            throw new IllegalArgumentException("Can not get top level frame");
+            throw new IllegalArgumentException("Can not get top level frame for "+ frame);
         }
     }
 }

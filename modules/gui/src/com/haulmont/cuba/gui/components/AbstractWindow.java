@@ -115,6 +115,11 @@ public class AbstractWindow extends AbstractFrame
         return ((Window) frame).getWindowManager();
     }
 
+    @Override
+    public void setWindowManager(WindowManager windowManager) {
+        ((Window) frame).setWindowManager(windowManager);
+    }
+
     /**
      * Hook to be implemented in subclasses. Called by {@link #validateAll()} at the end of standard validation.
      * @param errors the list of validation errors. Caller fills it by errors found during the default validation.

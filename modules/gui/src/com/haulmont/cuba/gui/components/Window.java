@@ -88,6 +88,13 @@ public interface Window extends IFrame, Component.HasCaption {
     WindowManager getWindowManager();
 
     /**
+     * Assign {@link WindowManager} to this window
+     *
+     * @param windowManager
+     */
+    void setWindowManager(WindowManager windowManager);
+
+    /**
      * Window intended for editing an entity instance
      */
     interface Editor extends Window {

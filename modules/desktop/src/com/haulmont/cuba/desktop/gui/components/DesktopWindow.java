@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
@@ -83,6 +82,8 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected List<Timer> timers = new ArrayList<Timer>();
 
     private Log log = LogFactory.getLog(DesktopWindow.class);
+
+    private DesktopWindowManager windowManager;
 
     public DesktopWindow() {
         initLayout();
@@ -326,7 +327,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public DialogParams getDialogParams() {
-        return DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager().getDialogParams();
+        return getWindowManager().getDialogParams();
     }
 
     @Override
@@ -379,8 +380,13 @@ public class DesktopWindow implements Window, Component.Disposable,
         return delegate.<T>openFrame(parent, windowAlias, params);
     }
 
-    public DesktopWindowManager getWindowManager() {
-        return DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
+    public WindowManager getWindowManager() {
+        return windowManager;
+    }
+
+    @Override
+    public void setWindowManager(WindowManager windowManager) {
+        this.windowManager = (DesktopWindowManager) windowManager;
     }
 
     @Override

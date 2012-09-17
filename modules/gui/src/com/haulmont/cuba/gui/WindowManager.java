@@ -142,6 +142,8 @@ public abstract class WindowManager {
         window.setContext(frameContext);
         dsContext.setWindowContext(frameContext);
 
+        window.setWindowManager(this);
+
         final Window windowWrapper = wrapByCustomClass(window, element, params);
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
@@ -244,6 +246,7 @@ public abstract class WindowManager {
             throw new RuntimeException(e);
         }
         window.setId(windowInfo.getId());
+        window.setWindowManager(this);
         try {
             ReflectionHelper.invokeMethod(window, "init", params);
         } catch (NoSuchMethodException e) {

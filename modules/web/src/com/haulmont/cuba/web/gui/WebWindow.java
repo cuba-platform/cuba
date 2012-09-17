@@ -76,6 +76,8 @@ public class WebWindow
 
     private Runnable doAfterClose;
 
+    private WebWindowManager windowManager;
+
     protected WindowDelegate delegate;
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
@@ -279,12 +281,17 @@ public class WebWindow
 
     @Override
     public WebWindowManager getWindowManager() {
-        return App.getInstance().getWindowManager();
+        return windowManager;
+    }
+
+    @Override
+    public void setWindowManager(WindowManager windowManager) {
+        this.windowManager = (WebWindowManager) windowManager;
     }
 
     @Override
     public DialogParams getDialogParams() {
-        return App.getInstance().getWindowManager().getDialogParams();
+        return getWindowManager().getDialogParams();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
