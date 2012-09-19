@@ -89,10 +89,10 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')       
         compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')       
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
-        compile(group: 'org.springframework', name: 'spring-core', version: '3.1.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-beans', version: '3.1.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-context', version: '3.1.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-web', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-core', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-beans', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-web', version: '3.1.2.RELEASE')
 
         testCompile(group: 'com.haulmont.thirdparty', name: 'jmockit', version: '0.999.10')
         testCompile(group: 'junit', name: 'junit', version: '4.5')
@@ -160,10 +160,10 @@ configure(coreModule) {
         compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.5')
         compile(group: 'org.mybatis', name: 'mybatis-spring', version: '1.0.1')
         compile(group: 'org.json', name: 'json', version: '20090211')
-        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.1.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-orm', version: '3.1.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-orm', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.2.RELEASE')
         compile(poi) // POI is actually not required by core, but remains here to simplify dependencies for reports project
 
         provided(servletApi)
@@ -280,7 +280,7 @@ configure(webModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
         compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2')
         compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.2.RELEASE')
         compile(vaadin)
         compile(popupbutton)
 
@@ -395,7 +395,7 @@ configure(portalModule) {
         }
     }
 
-    def springSecurityVersion = '3.1.1.RELEASE'
+    def springSecurityVersion = '3.1.2.RELEASE'
 
     dependencies {
         compile(globalModule)
@@ -410,8 +410,8 @@ configure(portalModule) {
         groovy(groovyArtifact)
         groovy(asm)
 
-        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.1.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-jdbc', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-jdbc', version: '3.1.2.RELEASE')
 
         testCompile(clientModule.sourceSets.test.output)
     }
