@@ -295,22 +295,25 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkState();
         checkPermission();
 
-        __getCollection().remove(item);
-        detachListener(item);
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            collection.remove(item);
+            detachListener(item);
 
-        modified = true;
-        if (cascadeProperty) {
-            final Entity parentItem = masterDs.getItem();
-            ((DatasourceImplementation) masterDs).modified(parentItem);
-        } else {
-            deleted(item);
-            if (PersistenceHelper.isNew(item) && commitMode == CommitMode.PARENT) {
-                if (parentDs instanceof CollectionDatasource)
-                    ((CollectionDatasource) parentDs).removeItem(item);
+            modified = true;
+            if (cascadeProperty) {
+                final Entity parentItem = masterDs.getItem();
+                ((DatasourceImplementation) masterDs).modified(parentItem);
+            } else {
+                deleted(item);
+                if (PersistenceHelper.isNew(item) && commitMode == CommitMode.PARENT) {
+                    if (parentDs instanceof CollectionDatasource)
+                        ((CollectionDatasource) parentDs).removeItem(item);
+                }
             }
-        }
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        }
     }
 
     public synchronized void excludeItem(T item) throws UnsupportedOperationException {
