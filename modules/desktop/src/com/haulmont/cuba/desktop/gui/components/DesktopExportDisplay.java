@@ -7,12 +7,13 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.TopLevelFrame;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
@@ -35,11 +36,18 @@ import java.io.InputStream;
  */
 @ManagedBean(ExportDisplay.NAME)
 @Scope("prototype")
+@SuppressWarnings({"UnusedDeclaration"})
 public class DesktopExportDisplay implements ExportDisplay {
 
     private final JFileChooser fileChooser = new JFileChooser();
 
     private IFrame frame;
+
+    private Messages messages;
+
+    public DesktopExportDisplay() {
+        messages = AppBeans.get(Messages.NAME);
+    }
 
     /**
      * Show/Download resource at client side
@@ -59,8 +67,8 @@ public class DesktopExportDisplay implements ExportDisplay {
                 fileName += "." + format.getFileExt();
         }
 
-        String dialogMessage = MessageProvider.getMessage(getClass(), "export.saveFile");
-        String fileCaption = MessageProvider.getMessage(getClass(), "export.fileCaption");
+        String dialogMessage = messages.getMessage(getClass(), "export.saveFile");
+        String fileCaption = messages.getMessage(getClass(), "export.fileCaption");
 
         dialogMessage = String.format(dialogMessage, fileName);
 
@@ -101,7 +109,7 @@ public class DesktopExportDisplay implements ExportDisplay {
         try {
             destFile = File.createTempFile("tempCubaFile", "." + getFileExt(finalFileName));
         } catch (IOException e) {
-            String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.tempFileError");
+            String message = messages.getMessage(DesktopExportDisplay.class, "export.tempFileError");
             getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
         }
 
@@ -110,7 +118,7 @@ public class DesktopExportDisplay implements ExportDisplay {
                 try {
                     Desktop.getDesktop().open(destFile);
                 } catch (IOException ex) {
-                    String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.openError");
+                    String message = messages.getMessage(DesktopExportDisplay.class, "export.openError");
                     getFrame().getWindowManager().showNotification(message,
                             IFrame.NotificationType.WARNING);
                 }
@@ -144,6 +152,11 @@ public class DesktopExportDisplay implements ExportDisplay {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
     }
 
+    public void show(FileDescriptor fileDescriptor) {
+        ExportFormat format = ExportFormat.getByExtension(fileDescriptor.getExtension());
+        show(fileDescriptor, format);
+    }
+
     @Override
     public void setFrame(IFrame frame) {
         this.frame = frame;
@@ -170,7 +183,7 @@ public class DesktopExportDisplay implements ExportDisplay {
                 dataProvider.close();
             }
         } catch (IOException e) {
-            String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.saveError");
+            String message = messages.getMessage(DesktopExportDisplay.class, "export.saveError");
             getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
             return false;
         }

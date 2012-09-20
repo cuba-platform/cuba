@@ -6,11 +6,9 @@
 package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -23,6 +21,9 @@ import java.util.UUID;
 
 /**
  * Allows to show exported data in web browser or download it
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(ExportDisplay.NAME)
 @Scope("prototype")
@@ -72,7 +73,8 @@ public class WebExportDisplay implements ExportDisplay {
             else
                 fileExt = FileDownloadHelper.getFileExt(resourceName);
 
-            WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            WebConfig webConfig = configuration.getConfig(WebConfig.class);
             boolean viewFlag = webConfig.getViewFileExtensions().contains(fileExt);
             attachment = !viewFlag;
             newWindow = viewFlag;
@@ -118,7 +120,6 @@ public class WebExportDisplay implements ExportDisplay {
     @Override
     public void setFrame(IFrame frame) {
     }
-
 
     public void show(FileDescriptor fileDescriptor) {
         ExportFormat format = ExportFormat.getByExtension(fileDescriptor.getExtension());
