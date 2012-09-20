@@ -87,7 +87,7 @@ public class DesktopExportDisplay implements ExportDisplay {
                                 saveFileAction(finalFileName, getFrame(), dataProvider);
                             }
                         },
-                        new AbstractAction("action.cancel") {
+                        new AbstractAction("actions.Cancel") {
                             @Override
                             public void actionPerform(Component component) {
                                 // do nothing
