@@ -10,10 +10,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
@@ -213,9 +210,7 @@ public class EntityRestore extends AbstractWindow {
     }
 
     private String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
-        int idx = meta.getName().indexOf('$') + 1;
-        return MessageProvider.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
-                + "." + metaProperty.getFullName());
+        return messageTools.getPropertyCaption(meta, metaProperty.getFullName());
     }
 
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
