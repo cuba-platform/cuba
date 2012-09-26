@@ -64,18 +64,24 @@ public class LoginDialog extends JDialog {
         panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginField", Locale.getDefault())));
 
         final JTextField nameField = new JTextField();
+        final JTextField passwordField = new JPasswordField();
+
         String defaultName = AppContext.getProperty("cuba.desktop.loginDialogDefaultUser");
         final LoginProperties loginProperties = new LoginProperties();
         String lastLogin = loginProperties.loadLastLogin();
-        if (!StringUtils.isBlank(lastLogin))
+        if (!StringUtils.isBlank(lastLogin)) {
             nameField.setText(lastLogin);
-        else if (!StringUtils.isBlank(defaultName))
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    passwordField.requestFocus();
+                }
+            });
+        } else if (!StringUtils.isBlank(defaultName))
             nameField.setText(defaultName);
         panel.add(nameField, "width 150!, wrap");
 
         panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.passwordField", Locale.getDefault())));
-
-        final JTextField passwordField = new JPasswordField();
         String defaultPassword = AppContext.getProperty("cuba.desktop.loginDialogDefaultPassword");
         if (!StringUtils.isBlank(defaultPassword))
             passwordField.setText(defaultPassword);
