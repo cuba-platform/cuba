@@ -9,19 +9,29 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
+import java.awt.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -30,14 +40,20 @@ import java.util.*;
  */
 public class DesktopFrame
         extends DesktopVBox
-        implements IFrame, WrappedFrame, Component.HasXmlDescriptor
-{
+        implements IFrame, WrappedFrame, Component.HasXmlDescriptor {
     private String messagePack;
     private WindowContext context;
     private DsContext dsContext;
     private IFrame wrapper;
     private Map<String, Component> allComponents = new HashMap<String, Component>();
 
+    private boolean detached;
+    private DetachedFrame detachedFrame;
+    private int componentPosition = -1;
+    private HierarchyListener hierarchyListener;
+
+    private List<DetachListener> detachListeners = new ArrayList<>();
+    
     private WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     private DesktopFrameActionsHolder actionsHolder;
@@ -157,6 +173,88 @@ public class DesktopFrame
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openFrame((Window) wrapper, parent, windowInfo, params);
+    }
+
+    @Override
+    public void detachFrame(String caption) {
+        if (isDetached()) {
+            throw new RuntimeException("Frame already detached");
+        }
+        final java.awt.Container parent = impl.getParent();
+
+        detachedFrame = new DetachedFrame(caption, parent);
+
+        for (int i = 0; i < parent.getComponentCount(); i++) {
+            if (impl == parent.getComponent(i)) {
+                componentPosition = i;
+                break;
+            }
+        }
+
+        hierarchyListener = new HierarchyListener() {
+            @Override
+            public void hierarchyChanged(HierarchyEvent e) {
+                if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) == HierarchyEvent.DISPLAYABILITY_CHANGED
+                        && !parent.isDisplayable()) {
+                    parent.removeHierarchyListener(this);
+                    attachFrame();
+                }
+            }
+        };
+
+        detachedFrame.setLocationRelativeTo(DesktopComponentsHelper.getTopLevelFrame(impl));
+        detachedFrame.setSize(impl.getSize());
+        detachedFrame.add(impl);
+        detachedFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                parent.removeHierarchyListener(hierarchyListener);
+                attachFrame();
+            }
+        });
+        parent.revalidate();
+        parent.repaint();
+        parent.addHierarchyListener(hierarchyListener);
+        detachedFrame.setVisible(true);
+        detached = true;
+        for (DetachListener listener : detachListeners) {
+            listener.frameDetached(this);
+        }
+    }
+
+    @Override
+    public void attachFrame() {
+        if (!isDetached()) {
+            throw new RuntimeException("Frame is already attached");
+        }
+        java.awt.Container parent = detachedFrame.getParentContainer();
+        parent.add(impl, componentPosition);
+        detachedFrame.dispose();
+        parent.removeHierarchyListener(hierarchyListener);
+        detachedFrame = null;
+        detached = false;
+        parent.revalidate();
+        parent.repaint();
+        for (DetachListener listener : detachListeners) {
+            listener.frameAttached(this);
+        }
+    }
+
+    @Override
+    public void addDetachListener(DetachListener listener) {
+        if (!detachListeners.contains(listener)) {
+            detachListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeDetachListener(DetachListener listener) {
+        detachListeners.remove(listener);
+    }
+
+    @Override
+    public boolean isDetached() {
+        return detached;
     }
 
     public void showMessageDialog(String title, String message, MessageType messageType) {

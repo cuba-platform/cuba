@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
@@ -49,8 +48,6 @@ public class Param extends AbstractParam<JComponent> {
 
     public static final Dimension TEXT_COMPONENT_DIM = new Dimension(120, Integer.MAX_VALUE);
 
-    private IFrame frame;
-
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
                  boolean inExpr, boolean required) {
         super(name, javaClass, entityWhere, entityView, datasource, inExpr, required);
@@ -69,7 +66,7 @@ public class Param extends AbstractParam<JComponent> {
     @Override
     public JComponent createEditComponent() {
         JComponent component;
-        frame = datasource.getDsContext().getWindowContext().getFrame();
+
         switch (type) {
             case DATATYPE:
                 component = createDatatypeField(Datatypes.get(javaClass));
@@ -235,8 +232,9 @@ public class Param extends AbstractParam<JComponent> {
                             try {
                                 p = datatype.parse(part, UserSessionProvider.getLocale());
                             } catch (ParseException e) {
-                                DesktopComponentsHelper.getTopLevelFrame(frame).getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
-                                        "Param.numberInvalid"), IFrame.NotificationType.ERROR);
+                                DesktopComponentsHelper.getTopLevelFrame(field).getWindowManager()
+                                        .showNotification(MessageProvider.getMessage(AbstractParam.class,
+                                                "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                                 return;
                             }
                             ((java.util.List) v).add(p);
@@ -245,7 +243,7 @@ public class Param extends AbstractParam<JComponent> {
                         try {
                             v = datatype.parse((String) value, UserSessionProvider.getLocale());
                         } catch (ParseException e) {
-                            DesktopComponentsHelper.getTopLevelFrame(frame).getWindowManager()
+                            DesktopComponentsHelper.getTopLevelFrame(field).getWindowManager()
                                     .showNotification(MessageProvider.getMessage(AbstractParam.class,
                                             "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                             return;
@@ -303,7 +301,7 @@ public class Param extends AbstractParam<JComponent> {
                         try {
                             setValue(UUID.fromString((String) value));
                         } catch (IllegalArgumentException ie) {
-                            DesktopComponentsHelper.getTopLevelFrame(frame).getWindowManager().showNotification
+                            DesktopComponentsHelper.getTopLevelFrame(field).getWindowManager().showNotification
                                     (MessageProvider.getMessage(AbstractParam.class, "Param.uuid.Err"),
                                             IFrame.NotificationType.HUMANIZED);
                         }

@@ -51,6 +51,11 @@ public class TabsheetLoader extends ContainerLoader {
                 tab = component.addTab(name, loader.loadComponent(factory, tabElement, null));
             }
 
+            final String detachable = tabElement.attributeValue("detachable");
+            if (StringUtils.isNotEmpty(detachable)) {
+                tab.setDetachable(evaluateBoolean(detachable));
+            }
+
             String caption = tabElement.attributeValue("caption");
 
             if (!StringUtils.isEmpty(caption)) {

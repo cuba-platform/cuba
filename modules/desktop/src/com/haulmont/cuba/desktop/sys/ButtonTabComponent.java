@@ -37,10 +37,12 @@ package com.haulmont.cuba.desktop.sys;
  * @author krivopustov
  */
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.awt.event.*;
@@ -53,21 +55,37 @@ import java.awt.event.*;
 public class ButtonTabComponent extends JPanel {
 
     protected JButton tabButton;
+    protected JButton detachButton;
+
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public interface CloseListener {
         void onTabClose(int tabIndex);
     }
 
-    private final JTabbedPane pane;
-    private CloseListener listener;
-    private JLabel titleLabel;
+    public interface DetachListener {
+        void onDetach(int tabIndex);
+    }
 
-    public ButtonTabComponent(final JTabbedPane pane, CloseListener listener) {
+    private final JTabbedPane pane;
+    private CloseListener closeListener;
+    private DetachListener detachListener;
+    private JLabel titleLabel;
+    private boolean closeable;
+    private boolean detachable;
+
+    public ButtonTabComponent(final JTabbedPane pane, boolean closeable, boolean detachable,
+                              CloseListener closeListener, DetachListener detachListener) {
         //unset default FlowLayout' gaps
         super(new FlowLayout(FlowLayout.LEFT, 0, 0));
         if (pane == null) {
             throw new NullPointerException("TabbedPane is null");
         }
+        this.closeable = closeable;
+        this.detachable = detachable;
+        this.detachListener = detachListener;
+        this.closeListener = closeListener;
+
         this.pane = pane;
         setOpaque(false);
 
@@ -85,13 +103,19 @@ public class ButtonTabComponent extends JPanel {
         add(titleLabel);
         //add more space between the label and the button
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+        detachButton = new DetachButton();
+        if (detachable) {
+            add(detachButton);
+        }
         //tab button
         tabButton = new TabButton();
-        add(tabButton);
+        if (closeable) {
+            add(tabButton);
+        }
         //add more space to the top of the component
         setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
 
-        this.listener = listener;
+        this.closeListener = closeListener;
     }
 
     public String getCaption() {
@@ -106,13 +130,45 @@ public class ButtonTabComponent extends JPanel {
         titleLabel.setText(caption);
         tabButton.revalidate();
         tabButton.repaint();
+        detachButton.revalidate();
+        detachButton.repaint();
+    }
+
+    public boolean isCloseable() {
+        return closeable;
+    }
+
+    public void setCloseable(boolean closeable) {
+        if (this.closeable != closeable) {
+            this.closeable = closeable;
+            if (closeable) {
+                add(tabButton, 2);
+            } else {
+                remove(tabButton);
+            }
+        }
+    }
+
+    public boolean isDetachable() {
+        return detachable;
+    }
+
+    public void setDetachable(boolean detachable) {
+        if (this.detachable != detachable) {
+            this.detachable = detachable;
+            if (detachable) {
+                add(detachButton, 1);
+            } else {
+                remove(detachButton);
+            }
+        }
     }
 
     private class TabButton extends JButton implements ActionListener {
         public TabButton() {
             int size = 17;
             setPreferredSize(new Dimension(size, size));
-            setToolTipText(MessageProvider.getMessage(AppConfig.getMessagesPack(), "closeTabToolTip"));
+            setToolTipText(messages.getMainMessage("closeTabToolTip"));
             //Make the button looks the same for all Laf's
             setUI(new BasicButtonUI());
             //Make it transparent
@@ -124,6 +180,8 @@ public class ButtonTabComponent extends JPanel {
             //Making nice rollover effect
             //we use the same listener for all buttons
             addMouseListener(buttonMouseListener);
+            addAncestorListener(ancestorListener);
+
             setRolloverEnabled(true);
             //Close the proper tab by clicking the button
             addActionListener(this);
@@ -132,8 +190,8 @@ public class ButtonTabComponent extends JPanel {
         public void actionPerformed(ActionEvent e) {
             int i = pane.indexOfTabComponent(ButtonTabComponent.this);
             if (i != -1) {
-                if (listener != null) {
-                    listener.onTabClose(i);
+                if (closeListener != null) {
+                    closeListener.onTabClose(i);
                 } else
                     pane.remove(i);
             }
@@ -146,6 +204,10 @@ public class ButtonTabComponent extends JPanel {
         //paint the cross
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            doPaintContent(g);
+        }
+
+        protected void doPaintContent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             //shift the image for pressed buttons
             if (getModel().isPressed()) {
@@ -159,6 +221,43 @@ public class ButtonTabComponent extends JPanel {
             int delta = 6;
             g2.drawLine(delta, delta, getWidth() - delta - 1, getHeight() - delta - 1);
             g2.drawLine(getWidth() - delta - 1, delta, delta, getHeight() - delta - 1);
+            g2.dispose();
+        }
+    }
+
+    private class DetachButton extends TabButton {
+
+        public DetachButton() {
+            setToolTipText(messages.getMainMessage("detach"));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            int i = pane.indexOfTabComponent(ButtonTabComponent.this);
+            if (i != -1) {
+                if (detachListener != null) {
+                    detachListener.onDetach(i);
+                } else
+                    pane.remove(i);
+            }
+        }
+
+        protected void doPaintContent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            //shift the image for pressed buttons
+            if (getModel().isPressed()) {
+                g2.translate(1, 1);
+            }
+            g2.setStroke(new BasicStroke(1));
+            g2.setColor(Color.BLACK);
+            if (getModel().isRollover()) {
+                g2.setColor(Color.RED);
+            }
+            int delta = 6;
+            //back
+            g2.drawLine(delta, delta - 2, delta + delta, delta - 2);
+            g2.drawLine(delta + delta, delta - 2, delta + delta, delta - 2 + delta);
+            //front
+            g2.drawRect(delta - 2, delta, delta, delta);
             g2.dispose();
         }
     }
@@ -178,6 +277,22 @@ public class ButtonTabComponent extends JPanel {
                 AbstractButton button = (AbstractButton) component;
                 button.setBorderPainted(false);
             }
+        }
+    };
+
+    private final AncestorListener ancestorListener = new AncestorListener() {
+        @Override
+        public void ancestorAdded(AncestorEvent event) {
+            detachButton.setBorderPainted(false);
+            tabButton.setBorderPainted(false);
+        }
+
+        @Override
+        public void ancestorRemoved(AncestorEvent event) {
+        }
+
+        @Override
+        public void ancestorMoved(AncestorEvent event) {
         }
     };
 }

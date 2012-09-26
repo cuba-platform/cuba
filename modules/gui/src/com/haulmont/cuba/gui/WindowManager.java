@@ -342,7 +342,9 @@ public abstract class WindowManager {
             window.setId(windowInfo.getId());
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
-            putToWindowMap(window, hashCode);
+            if (openType == OpenType.NEW_TAB) {
+                putToWindowMap(window, hashCode);
+            }
             showWindow(window, caption, description, openType, windowInfo.getMultipleOpen());
             return (T) window;
         } else {
@@ -350,7 +352,9 @@ public abstract class WindowManager {
             if (screenClass != null) {
                 //noinspection unchecked
                 window = createWindowByScreenClass(windowInfo, params);
-                putToWindowMap(window, hashCode);
+                if (openType == OpenType.NEW_TAB) {
+                    putToWindowMap(window, hashCode);
+                }
                 return (T) window;
             } else
                 return null;

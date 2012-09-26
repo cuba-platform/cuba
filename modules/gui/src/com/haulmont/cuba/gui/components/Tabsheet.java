@@ -51,6 +51,9 @@ public interface Tabsheet
         boolean isClosable(); // false by default
         void setClosable(boolean closable);
 
+        boolean isDetachable(); //false by default
+        void setDetachable(boolean detachable);
+
         // use this to override close behavior, default action is to just remove tab
         TabCloseHandler getCloseHandler();
         void setCloseHandler(TabCloseHandler tabCloseHandler);

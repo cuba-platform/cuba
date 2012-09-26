@@ -10,7 +10,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
@@ -46,19 +46,22 @@ public class AddConditionDlg extends JDialog {
     private SelectionHandler selectionHandler;
     private JTree tree;
     private JButton okBtn;
+    private TopLevelFrame topLevelFrame;
 
     public AddConditionDlg(MetaClass metaClass,
                            List<AbstractConditionDescriptor> propertyDescriptors,
                            DescriptorBuilder descriptorBuilder,
-                           SelectionHandler selectionHandler)
+                           SelectionHandler selectionHandler,
+                           JComponent parent)
     {
-        super(App.getInstance().getMainFrame());
+        super(DesktopComponentsHelper.getTopLevelFrame(parent));
         this.selectionHandler = selectionHandler;
+        this.topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(parent);
 
         setTitle(MessageProvider.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
         setSize(400, 300);
         setResizable(false);
-        setLocationRelativeTo(App.getInstance().getMainFrame());
+        setLocationRelativeTo(topLevelFrame);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -114,7 +117,7 @@ public class AddConditionDlg extends JDialog {
 
     private void close() {
         setVisible(false);
-        DesktopComponentsHelper.getTopLevelFrame(this).activate();
+        topLevelFrame.activate();
     }
 
     private class CommitAction extends AbstractAction {

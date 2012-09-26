@@ -127,4 +127,29 @@ public class AbstractWindow extends AbstractFrame
      */
     protected void postValidate(ValidationErrors errors) {
     }
+
+    @Override
+    public void detachFrame(String caption) {
+        throw new UnsupportedOperationException("Can not detach " + getClass());
+    }
+
+    @Override
+    public void attachFrame() {
+        throw new UnsupportedOperationException("Can not attach " + getClass());
+    }
+
+    @Override
+    public void addDetachListener(DetachListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeDetachListener(DetachListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isDetached() {
+        return false;
+    }
 }

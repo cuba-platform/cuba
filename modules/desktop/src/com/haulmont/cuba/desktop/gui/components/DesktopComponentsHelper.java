@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
@@ -191,9 +192,19 @@ public class DesktopComponentsHelper {
      * @return {@link TopLevelFrame} of container
      */
     public static TopLevelFrame getTopLevelFrame(Container container) {
-        while (container.getParent() != null)
-            container = container.getParent();
-        return (TopLevelFrame) container;
+        Container prevContainer;
+        Container parent = container;
+        do {
+            prevContainer = parent;
+            if (parent instanceof DetachedFrame) {
+                parent = ((DetachedFrame) parent).getParentContainer();
+            } else {
+                parent = parent.getParent();
+            }
+        } while (parent != null);
+
+
+        return (TopLevelFrame) prevContainer;
     }
 
     /**

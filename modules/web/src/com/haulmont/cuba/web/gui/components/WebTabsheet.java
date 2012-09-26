@@ -148,6 +148,15 @@ public class WebTabsheet
             tab.setClosable(closable);
         }
 
+        @Override
+        public boolean isDetachable() {
+            return false;
+        }
+
+        @Override
+        public void setDetachable(boolean detachable) {
+        }
+
         public TabCloseHandler getCloseHandler() {
             return closeHandler;
         }

@@ -233,6 +233,27 @@ public class WebFrame extends WebVBoxLayout
         return App.getInstance().getWindowManager().<T>openFrame((Window) wrapper, parent, windowInfo, params);
     }
 
+    @Override
+    public void detachFrame(String caption) {
+    }
+
+    @Override
+    public void attachFrame() {
+    }
+
+    @Override
+    public void addDetachListener(IFrame.DetachListener listener) {
+    }
+
+    @Override
+    public void removeDetachListener(IFrame.DetachListener listener) {
+    }
+
+    @Override
+    public boolean isDetached() {
+        return false;
+    }
+
     public void showMessageDialog(String title, String message, MessageType messageType) {
         App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
     }

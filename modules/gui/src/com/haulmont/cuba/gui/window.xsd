@@ -116,7 +116,7 @@
             <xs:enumeration value="NEW_TAB"/>
             <xs:enumeration value="THIS_TAB"/>
             <xs:enumeration value="DIALOG"/>
-            <xs:enumaretion value="NEW_WINDOW"/>
+            <xs:enumeration value="NEW_WINDOW"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -978,6 +978,7 @@
                     <xs:attribute name="margin" type="xs:boolean" use="optional"/>
                     <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
                     <xs:attribute name="expand" type="xs:string" use="optional"/>
+                    <xs:attribute name="detachable" type="xs:boolean" use="optional"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>

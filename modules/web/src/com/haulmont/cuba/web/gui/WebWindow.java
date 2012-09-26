@@ -347,6 +347,31 @@ public class WebWindow
     }
 
     @Override
+    public void detachFrame(String caption) {
+        throw new UnsupportedOperationException("Can not detach " + getClass());
+    }
+
+    @Override
+    public void attachFrame() {
+        throw new UnsupportedOperationException("Can not attach " + getClass());
+    }
+
+    @Override
+    public void addDetachListener(DetachListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeDetachListener(DetachListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isDetached() {
+        return false;
+    }
+
+    @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
         getWindowManager().showMessageDialog(title, message, messageType);
     }

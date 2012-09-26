@@ -29,6 +29,7 @@ import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
+import org.jdesktop.swingx.JXTable;
 
 
 import javax.swing.*;
@@ -483,6 +484,8 @@ public class FilterEditor extends AbstractFilterEditor {
         protected Map<Object, JComponent> components = new HashMap<Object, JComponent>();
         protected Map<Object, JPanel> wrappers = new HashMap<Object, JPanel>();
 
+        private JComponent activeComponent;
+
         @Override
         public boolean isCellEditable(EventObject anEvent) {
             return true;
@@ -516,7 +519,12 @@ public class FilterEditor extends AbstractFilterEditor {
 
         @Override
         public Object getCellEditorValue() {
-            return null;
+            if (activeComponent != null) {
+                // post specific event for handle focus lost
+                FocusEvent focusEvent = new FocusEvent(activeComponent, FocusEvent.FOCUS_LOST, false, table);
+                activeComponent.dispatchEvent(focusEvent);
+            }
+            return "";
         }
 
         protected void fireEditingCanceled() {
@@ -583,6 +591,7 @@ public class FilterEditor extends AbstractFilterEditor {
                 wrapper = wrappers.get(value);
             }
             setColors(wrapper, isSelected);
+            activeComponent = wrapper;
             return wrapper;
         }
 
@@ -654,7 +663,7 @@ public class FilterEditor extends AbstractFilterEditor {
         }
     }
 
-    private class ConditionsTable extends JTable {
+    private class ConditionsTable extends JXTable {
         public boolean isCellSelected(int row, int column) {
             return (row == getSelectedRow());
         }
@@ -671,8 +680,9 @@ public class FilterEditor extends AbstractFilterEditor {
                         public void select(AbstractConditionDescriptor descriptor) {
                             addCondition(descriptor);
                         }
-                    });
-            DesktopComponentsHelper.getTopLevelFrame(FilterEditor.this.getPanel()).deactivate(null);
+                    },
+                    getPanel());
+            DesktopComponentsHelper.getTopLevelFrame(getPanel()).deactivate(null);
             dlg.setVisible(true);
         }
     }
