@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
@@ -352,14 +353,28 @@ public abstract class AbstractMessages implements Messages {
                 properties.load(reader);
                 list.add(properties);
 
-                for (String k : properties.stringPropertyNames()) {
-                    if (k.equals("@include"))
-                        getAllIncludes(list, properties.getProperty(k), locale, defaultLocale);
-                }
+                processIncludes(list, locale, defaultLocale, properties);
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void processIncludes(List<Properties> list, Locale locale, boolean defaultLocale, Properties properties) {
+        for (String k : properties.stringPropertyNames()) {
+            if (k.equals("@include")) {
+                String includesProperty = properties.getProperty(k);
+                // multiple includes separated by comma
+                String[] includes = StringUtils.split(includesProperty, ',');
+                if (includes != null && includes.length > 0) {
+                    for (String includePath : includes) {
+                        includePath = StringUtils.trimToNull(includePath);
+                        if (StringUtils.isNotEmpty(includePath))
+                            getAllIncludes(list, includePath, locale, defaultLocale);
+                    }
+                }
+            }
         }
     }
 
@@ -368,8 +383,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private void cachePropertiesFromStream(String pack, Locale locale, boolean defaultLocale,
-                                           InputStream stream, String packPath)
-    {
+                                           InputStream stream, String packPath) {
         try {
             InputStreamReader reader = new InputStreamReader(stream, ENCODING);
             Properties properties = new Properties();
@@ -381,10 +395,7 @@ public abstract class AbstractMessages implements Messages {
 
             // process includes after to support overriding
             List<Properties> includes = new ArrayList<>();
-            for (String k : properties.stringPropertyNames()) {
-                if (k.equals("@include"))
-                    getAllIncludes(includes, properties.getProperty(k), locale, defaultLocale);
-            }
+            processIncludes(includes, locale, defaultLocale, properties);
             for (Properties includedProperties : includes) {
                 for (String k : includedProperties.stringPropertyNames()) {
                     if (!k.equals("@include"))

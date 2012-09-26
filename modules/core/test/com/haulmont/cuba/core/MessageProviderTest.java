@@ -53,4 +53,11 @@ public class MessageProviderTest extends CubaTestCase
         assertEquals("Overridden Included Message", msg);
     }
 
+    public void testMultiInclude() {
+        String msg1 = MessageProvider.getMessage("com.haulmont.cuba.core.mp_test.includes", "oneKey");
+        assertEquals(msg1, "OK");
+
+        String msg2 = MessageProvider.getMessage("com.haulmont.cuba.core.mp_test.includes", "twoKey");
+        assertEquals(msg2, "OK");
+    }
 }
