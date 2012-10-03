@@ -65,6 +65,8 @@ public class WebWindowManager extends WindowManager {
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
+    private ShortcutListener escapeShortcut = null;
+    
     private WebConfig webConfig;
 
     private Messages messages;
@@ -323,7 +325,14 @@ public class WebWindowManager extends WindowManager {
             }
         }
 
-        appWindow.getMainLayout().getWindow().addAction(new ShortcutListener("onEscape", com.vaadin.event.ShortcutAction.KeyCode.ESCAPE, null) {
+        if (escapeShortcut == null)
+            escapeShortcut = createEscapeShortcut();
+
+        appWindow.getMainLayout().getWindow().addAction(escapeShortcut);
+    }
+
+    private ShortcutListener createEscapeShortcut() {
+        return new ShortcutListener("onEscape", com.vaadin.event.ShortcutAction.KeyCode.ESCAPE, null) {
             @Override
             public void handleAction(Object sender, Object target) {
                 AppWindow appWindow = app.getAppWindow();
@@ -347,7 +356,7 @@ public class WebWindowManager extends WindowManager {
                     }
                 }
             }
-        });
+        };
     }
 
     protected Layout createNewWinLayout(Window window, Component... components) {
