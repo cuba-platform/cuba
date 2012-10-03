@@ -63,6 +63,9 @@
 
     <screen id="multiuploadDialog" template="/com/haulmont/cuba/gui/app/core/file/multiupload.xml"/>
 
+    <screen id="fileUploadDialog"
+            template="/com/haulmont/cuba/gui/app/core/file/file-upload-dialog.xml"/>
+
     <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
 
     <screen id="sys$BackgroundWorkWindow"

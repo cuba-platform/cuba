@@ -1,0 +1,12 @@
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.file.FileUploadDialog"
+        messagesPack="com.haulmont.cuba.gui.app.core.file"
+        caption="msg://fileUploadDialog.caption"
+        focusComponent="fileUpload">
+
+    <layout>
+        <hbox>
+            <upload id="fileUpload"/>
+        </hbox>
+    </layout>
+</window>
