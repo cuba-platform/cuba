@@ -94,7 +94,7 @@ public class PermissionConfig {
             caption = StringEscapeUtils.unescapeHtml(caption);
 
             if (info.getChildren() != null && !info.getChildren().isEmpty()) {
-                Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(new BasicPermissionTarget("category:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
+                Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(new BasicPermissionTarget("category:" + id, caption, UserSession.getScreenPermissionTarget(id)));
                 node.addChild(n);
                 for (MenuItem item : info.getChildren()) {
                     walkMenu(item, n);
@@ -102,7 +102,7 @@ public class PermissionConfig {
             } else {
                 if (!"-".equals(info.getId())) {
                     Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
-                            new BasicPermissionTarget("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
+                            new BasicPermissionTarget("item:" + id, caption, UserSession.getScreenPermissionTarget(id)));
                     node.addChild(n);
                 }
             }
@@ -118,7 +118,7 @@ public class PermissionConfig {
                 String id = info.getId();
                 if (!menuItems.contains("item:" + id)) {
                     Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
-                               new BasicPermissionTarget("item:" + id, id, UserSession.getScreenPermissionTarget(clientType, id)));
+                               new BasicPermissionTarget("item:" + id, id, UserSession.getScreenPermissionTarget(id)));
                     othersRoot.addChild(n);
                 }
             }

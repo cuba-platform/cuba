@@ -6,7 +6,6 @@
 package com.haulmont.cuba.security.global;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.security.entity.*;
 
@@ -46,8 +45,8 @@ public class UserSession implements Serializable
 
     protected Map<String, Serializable> attributes;
 
-    public static String getScreenPermissionTarget(ClientType clientType, String windowAlias) {
-        return clientType.getId() + Permission.TARGET_PATH_DELIMETER + windowAlias;
+    public static String getScreenPermissionTarget(String windowAlias) {
+        return windowAlias;
     }
 
     public static String getEntityOpPermissionTarget(MetaClass metaClass, EntityOp operation) {
@@ -209,9 +208,9 @@ public class UserSession implements Serializable
     }
 
     /** Check user permission for the screen */
-    public boolean isScreenPermitted(ClientType clientType, String windowAlias) {
+    public boolean isScreenPermitted(String windowAlias) {
         return isPermitted(PermissionType.SCREEN,
-                getScreenPermissionTarget(clientType, windowAlias));
+                getScreenPermissionTarget(windowAlias));
     }
 
     /** Check user permission for the entity operation */

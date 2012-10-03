@@ -11,7 +11,6 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
@@ -70,7 +69,7 @@ public class MenuItem {
         if (StringUtils.isEmpty(id)) {
              return true;
         } else {
-            boolean screenPermitted = session.isScreenPermitted(AppConfig.getClientType(), id);
+            boolean screenPermitted = session.isScreenPermitted(id);
             if (screenPermitted) {
                 Element permissionsElem = descriptor.element("permissions");
                 if (permissionsElem != null) {

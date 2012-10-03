@@ -30,7 +30,7 @@ public class SecurityImpl implements Security {
 
     @Override
     public boolean isScreenPermitted(ClientType clientType, String windowAlias) {
-        return userSessionSource.getUserSession().isScreenPermitted(clientType, windowAlias);
+        return userSessionSource.getUserSession().isScreenPermitted(windowAlias);
     }
 
     @Override
