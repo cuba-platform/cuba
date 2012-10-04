@@ -98,20 +98,21 @@
         </layout>
     </appender>
 
-    <!--<appender name="GuiCreateWindowTiming" class="org.perf4j.log4j.GraphingStatisticsAppender">-->
-        <!-- Possible GraphTypes are Mean, Min, Max, StdDev, Count and TPS -->
-        <!--<param name="GraphType" value="Mean"/>-->
-        <!-- The tags of the timed execution blocks to graph are specified here -->
-        <!--<param name="TagNamesToGraph" value="WindowManager.createWindow"/>-->
-        <!--<appender-ref ref="GraphsFileAppender"/>-->
-    <!--</appender>-->
+	<!-- UI Performance statistics -->
 
-    <!--<appender name="GraphsFileAppender" class="org.apache.log4j.FileAppender">-->
-        <!--<param name="File" value="${catalina.home}/logs/app-perfgraphs.log"/>-->
-        <!--<layout class="org.apache.log4j.PatternLayout">-->
-            <!--<param name="ConversionPattern" value="%m%n"/>-->
-        <!--</layout>-->
-    <!--</appender>-->
+    <appender name="UICoalescingStatistics" class="org.perf4j.log4j.AsyncCoalescingStatisticsAppender">
+        <param name="TimeSlice" value="120000"/>
+        <appender-ref ref="UIPerfFileAppender"/>
+    </appender>
+
+    <appender name="UIPerfFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${user.home}/.haulmont/cuba/logs/app-ui-perfstat.log"/>
+        <param name="Append" value="true"/>
+        <param name="DatePattern" value="'.'yyyy-ww"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%m%n"/>
+        </layout>
+    </appender>
 
     <!-- ================ -->
     <!-- Limit categories -->
@@ -142,6 +143,11 @@
     <logger name="org.perf4j.TimingLogger" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="CoalescingStatistics"/>
+    </logger>
+
+    <logger name="com.haulmont.cuba.gui.logging.UIPerformanceLogger" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="UICoalescingStatistics"/>
     </logger>
 
     <!-- End Perf4J -->
