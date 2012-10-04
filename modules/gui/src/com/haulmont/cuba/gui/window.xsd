@@ -73,7 +73,7 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="composition">
+    <xs:simpleType name="aggregation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="SUM"/>
             <xs:enumeration value="COUNT"/>
@@ -658,12 +658,12 @@
             <xs:element name="editable" minOccurs="0" maxOccurs="1"/>
             <xs:element name="calculatable" minOccurs="0" maxOccurs="1"/>
             <xs:element name="required" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="composition" minOccurs="0" maxOccurs="1">
+            <xs:element name="aggregation" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
                     </xs:sequence>
-                    <xs:attribute name="type" type="composition" use="required"/>
+                    <xs:attribute name="type" type="aggregation" use="required"/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="visible" minOccurs="0" maxOccurs="1"/>
