@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
-import java.awt.*;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
@@ -40,7 +39,7 @@ import java.util.List;
  */
 public class DesktopFrame
         extends DesktopVBox
-        implements IFrame, WrappedFrame, Component.HasXmlDescriptor {
+        implements DetachableFrame, WrappedFrame, Component.HasXmlDescriptor {
     private String messagePack;
     private WindowContext context;
     private DsContext dsContext;
@@ -118,7 +117,7 @@ public class DesktopFrame
     }
 
     private DesktopWindowManager getWindowManager() {
-        return DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
+        return DesktopComponentsHelper.getTopLevelFrame((IFrame) this).getWindowManager();
     }
 
     public DialogParams getDialogParams() {

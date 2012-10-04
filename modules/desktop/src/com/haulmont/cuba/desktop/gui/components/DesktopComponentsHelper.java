@@ -225,14 +225,20 @@ public class DesktopComponentsHelper {
      */
     public static TopLevelFrame getTopLevelFrame(IFrame frame) {
         if (frame instanceof DesktopWindow) {
-            return getTopLevelFrame(((DesktopWindow) frame).getComposition());
+            return ((DesktopWindow) frame).getWindowManager().getFrame();
         } else if (frame instanceof DesktopFrame) {
-            return getTopLevelFrame(((DesktopFrame) frame).getComposition());
+            return getTopLevelFrame((frame).getFrame());
         } else if (frame instanceof AbstractFrame) {
             Component.Wrapper wrapper = (Component.Wrapper) ((AbstractFrame) frame).getComposition();
-            return getTopLevelFrame((Container) wrapper.getComposition());
+            if (wrapper instanceof DesktopWindow) {
+                return ((DesktopWindow) wrapper).getWindowManager().getFrame();
+            } else if (wrapper instanceof DesktopFrame) {
+                return getTopLevelFrame(((DesktopFrame) wrapper).getFrame());
+            } else {
+                return getTopLevelFrame((Container) wrapper.getComposition());
+            }
         } else {
-            throw new IllegalArgumentException("Can not get top level frame for "+ frame);
+            throw new IllegalArgumentException("Can not get top level frame for " + frame);
         }
     }
 }

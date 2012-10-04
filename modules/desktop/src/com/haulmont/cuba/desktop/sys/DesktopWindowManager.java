@@ -63,6 +63,10 @@ public class DesktopWindowManager extends WindowManager {
         isMainWindowManager = frame == App.getInstance().getMainFrame();
     }
 
+    public TopLevelFrame getFrame() {
+        return frame;
+    }
+
     public void setTabsPane(final JTabbedPane tabsPane) {
         this.tabsPane = tabsPane;
 

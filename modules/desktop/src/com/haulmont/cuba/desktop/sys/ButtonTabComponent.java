@@ -142,7 +142,7 @@ public class ButtonTabComponent extends JPanel {
         if (this.closeable != closeable) {
             this.closeable = closeable;
             if (closeable) {
-                add(tabButton, 2);
+                add(tabButton, detachable ? 2 : 1);
             } else {
                 remove(tabButton);
             }

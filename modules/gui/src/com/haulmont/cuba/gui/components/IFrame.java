@@ -188,47 +188,6 @@ public interface IFrame
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Listener for frame attach/detach
-     */
-    public interface DetachListener {
-
-        /**
-         * Invoked after frame attached
-         *
-         * @param frame
-         */
-        void frameAttached(IFrame frame);
-
-        /**
-         * Invoked after frame detached
-         *
-         * @param frame
-         */
-        void frameDetached(IFrame frame);
-    }
-
-    /**
-     * Detach frame to new Window.
-     *
-     * @param caption
-     */
-    void detachFrame(String caption);
-
-    /**
-     * Attach already detached frame to parent
-     */
-    void attachFrame();
-
-
-    void addDetachListener(DetachListener listener);
-
-    void removeDetachListener(DetachListener listener);
-
-    boolean isDetached();
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     enum MessageType {
         CONFIRMATION,
         WARNING
