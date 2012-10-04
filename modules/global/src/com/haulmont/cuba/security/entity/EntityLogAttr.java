@@ -10,18 +10,16 @@
  */
 package com.haulmont.cuba.security.entity;
 
-import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.global.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
 import java.util.UUID;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.persistence.Persistent;
 
 /**
  * Record containing changed entity attribute.
@@ -93,8 +91,7 @@ public class EntityLogAttr extends BaseUuidEntity {
         }
         final String entityName = getLogItem().getEntity();
         try {
-            Class<?> aClass = Class.forName(entityName);
-            com.haulmont.chile.core.model.MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
+            com.haulmont.chile.core.model.MetaClass metaClass = getClassFromEntityName(entityName);
             com.haulmont.chile.core.model.MetaProperty property = metaClass.getProperty(getName());
             if (property != null) {
                 if (property.getRange().isDatatype()) {
@@ -131,10 +128,23 @@ public class EntityLogAttr extends BaseUuidEntity {
 
     @MetaProperty
     public String getDisplayName() {
-        final String entityName = getLogItem().getEntity();
-        final String message = MessageProvider.getMessage(entityName.substring(0, entityName.lastIndexOf(".")),
-                entityName.substring(entityName.lastIndexOf(".") + 1, entityName.length()) + "." + getName());
-        return message == null || message.contains(getClass().getSimpleName()) ? getName() : message;
+        String entityName = getLogItem().getEntity();
+        String message = null;
+        try {
+            MetaClass metaClass = getClassFromEntityName(entityName);
+            Messages messages = AppBeans.get(Messages.class);
+            message = messages.getTools().getPropertyCaption(metaClass, getName());
+        } catch (ClassNotFoundException e) {
+            // if entityClass not found
+            return getName();
+        }
+        return (message != null ? message : getName());
+    }
+
+    private com.haulmont.chile.core.model.MetaClass getClassFromEntityName(String entityName) throws ClassNotFoundException {
+        Class<?> entityClass = Class.forName(entityName);
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return metadata.getSession().getClass(entityClass);
     }
 
     @MetaProperty
