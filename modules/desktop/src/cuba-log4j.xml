@@ -88,7 +88,6 @@
     <appender name="CoalescingStatistics" class="org.perf4j.log4j.AsyncCoalescingStatisticsAppender">
         <param name="TimeSlice" value="30000"/>
         <appender-ref ref="PerfFileAppender"/>
-        <!--<appender-ref ref="GuiCreateWindowTiming"/>-->
     </appender>
 
     <appender name="PerfFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
