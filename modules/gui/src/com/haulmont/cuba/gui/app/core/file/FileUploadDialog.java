@@ -27,24 +27,19 @@ public class FileUploadDialog extends AbstractWindow {
     @Inject
     private FileUploadField fileUpload;
 
-    @Inject
-    private FileUploadingAPI fileUploading;
+    private UUID fileId;
 
-    private File file;
-
-    public File getFile() {
-        return file;
+    public UUID getFileId() {
+        return fileId;
     }
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-
         fileUpload.addListener(new FileUploadField.ListenerAdapter() {
             @Override
             public void uploadSucceeded(Event event) {
-                UUID fileId = fileUpload.getFileId();
-                file = fileUploading.getFile(fileId);
+                fileId = fileUpload.getFileId();
                 close(Window.COMMIT_ACTION_ID);
             }
         });
