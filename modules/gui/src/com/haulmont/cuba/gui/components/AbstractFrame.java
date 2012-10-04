@@ -1,12 +1,13 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
@@ -48,143 +49,185 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     public void init(Map<String, Object> params) {
     }
 
+    @Override
     public String getId() {
         return frame.getId();
     }
 
+    @Override
     public void setId(String id) {
         frame.setId(id);
     }
 
+    @Override
     public String getDebugId() {
         return frame.getDebugId();
     }
 
+    @Override
     public void setDebugId(String id) {
         frame.setDebugId(id);
     }
 
+    @Override
     public boolean isEnabled() {
         return frame.isEnabled();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         frame.setEnabled(enabled);
     }
 
+    @Override
     public boolean isVisible() {
         return frame.isVisible();
     }
 
+    @Override
     public void setVisible(boolean visible) {
         frame.setVisible(visible);
     }
 
+    @Override
     public void requestFocus() {
         frame.requestFocus();
     }
 
+    @Override
     public float getHeight() {
         return frame.getHeight();
     }
 
+    @Override
     public int getHeightUnits() {
         return frame.getHeightUnits();
     }
 
+    @Override
     public void setHeight(String height) {
         frame.setHeight(height);
     }
 
+    @Override
     public float getWidth() {
         return frame.getWidth();
     }
 
+    @Override
     public int getWidthUnits() {
         return frame.getWidthUnits();
     }
 
+    @Override
     public void setWidth(String width) {
         frame.setWidth(width);
     }
 
+    @Override
     public Alignment getAlignment() {
         return frame.getAlignment();
     }
 
+    @Override
     public void setAlignment(Alignment alignment) {
         frame.setAlignment(alignment);
     }
 
+    @Override
     public void add(Component component) {
         frame.add(component);
     }
 
+    @Override
     public void remove(Component component) {
         frame.remove(component);
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
-        return frame.<T>getOwnComponent(id);
+        return frame.getOwnComponent(id);
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
-        return frame.<T>getComponent(id);
+        return frame.getComponent(id);
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return frame.getOwnComponents();
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return frame.getComponents();
     }
 
+    @Override
     public <T> T getComponent() {
         return (T) frame;
     }
 
+    @Override
     public Object getComposition() {
         return frame;
     }
 
+    @Override
     public void expand(Component component, String height, String width) {
         frame.expand(component, height, width);
     }
 
+    @Override
     public void expand(Component component) {
         frame.expand(component);
     }
 
+    @Override
+    public String getFullId() {
+        String id = getId();
+        if (getFrame() != null && getFrame() != frame)
+            id = getFrame().getFullId() + "." + id;
+        return id;
+    }
+
+    @Override
     public WindowContext getContext() {
         return frame.getContext();
     }
 
+    @Override
     public void setContext(WindowContext ctx) {
         frame.setContext(ctx);
     }
 
+    @Override
     public DsContext getDsContext() {
         return frame.getDsContext();
     }
 
+    @Override
     public void setDsContext(DsContext dsContext) {
         frame.setDsContext(dsContext);
     }
 
+    @Override
     public String getMessagesPack() {
         return frame.getMessagesPack();
     }
 
+    @Override
     public void setMessagesPack(String name) {
         frame.setMessagesPack(name);
     }
 
+    @Override
     public String getMessage(String key) {
         String msgPack = getMessagesPack();
         if (msgPack == null)
             throw new IllegalStateException("MessagePack is not set");
-        return MessageProvider.getMessage(msgPack, key);
+        return AppBeans.get(Messages.class).getMessage(msgPack, key);
     }
 
     // wonder, if getMessage() is invoked anywhere from non-child class
@@ -193,9 +236,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         if (msgPack == null)
             throw new IllegalStateException("MessagePack is not set");
 
-        return MessageProvider.formatMessage(msgPack, key, params);
+        return AppBeans.get(Messages.class).formatMessage(msgPack, key, params);
     }
 
+    @Override
     public void registerComponent(Component component) {
         frame.registerComponent(component);
     }
@@ -210,6 +254,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.validate();
     }
 
+    @Override
     public DialogParams getDialogParams() {
         return frame.getDialogParams();
     }
@@ -222,38 +267,46 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         this._companion = companion;
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.<T>openWindow(windowAlias, openType, params);
+        return frame.openWindow(windowAlias, openType, params);
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        return frame.<T>openWindow(windowAlias, openType);
+        return frame.openWindow(windowAlias, openType);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        return frame.<T>openEditor(windowAlias, item, openType, params, parentDs);
+        return frame.openEditor(windowAlias, item, openType, params, parentDs);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.<T>openEditor(windowAlias, item, openType, params);
+        return frame.openEditor(windowAlias, item, openType, params);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        return frame.<T>openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+        return frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        return frame.<T>openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
+        return frame.openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
     }
 
+    @Override
     public <T extends Window> T openLookup(
             String windowAlias, @Nullable Window.Lookup.Handler handler,
             WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.<T>openLookup(windowAlias, handler, openType, params);
+        return frame.openLookup(windowAlias, handler, openType, params);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return frame.<T>openLookup(windowAlias, handler, openType, Collections.<String, Object>emptyMap());
+        return frame.openLookup(windowAlias, handler, openType, Collections.<String, Object>emptyMap());
     }
 
     /**
@@ -281,18 +334,22 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.showMessageDialog(title, message, messageType);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
         frame.showOptionDialog(title, message, messageType, actions);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
         frame.showOptionDialog(title, message, messageType, actions);
     }
 
+    @Override
     public void showNotification(String caption, NotificationType type) {
         frame.showNotification(caption, type);
     }
 
+    @Override
     public void showNotification(String caption, String description, NotificationType type) {
         frame.showNotification(caption, description, type);
     }
@@ -321,20 +378,24 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         }
     }
 
+    @Override
     public <A extends IFrame> A getFrame() {
         return (A) this.frame.getFrame();
     }
 
+    @Override
     public void setFrame(IFrame frame) {
         this.frame.setFrame(frame);
         // register this wrapper instead of underlying frame
         frame.registerComponent(this);
     }
 
+    @Override
     public String getStyleName() {
         return styleName;
     }
 
+    @Override
     public void setStyleName(String styleName) {
         this.styleName = styleName;
     }
@@ -343,26 +404,32 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setSpacing(enabled);
     }
 
+    @Override
     public void setMargin(boolean enable) {
         frame.setMargin(enable);
     }
 
+    @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         frame.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
 
+    @Override
     public void addAction(Action action) {
         frame.addAction(action);
     }
 
+    @Override
     public void removeAction(Action action) {
         frame.removeAction(action);
     }
 
+    @Override
     public Collection<Action> getActions() {
         return frame.getActions();
     }
 
+    @Override
     public Action getAction(String id) {
         return frame.getAction(id);
     }

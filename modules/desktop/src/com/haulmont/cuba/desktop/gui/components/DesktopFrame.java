@@ -16,9 +16,6 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -30,12 +27,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopFrame
         extends DesktopVBox
@@ -44,7 +39,7 @@ public class DesktopFrame
     private WindowContext context;
     private DsContext dsContext;
     private IFrame wrapper;
-    private Map<String, Component> allComponents = new HashMap<String, Component>();
+    private Map<String, Component> allComponents = new HashMap<>();
 
     private boolean detached;
     private DetachedFrame detachedFrame;
@@ -61,41 +56,55 @@ public class DesktopFrame
         actionsHolder = new DesktopFrameActionsHolder(this, impl);
     }
 
+    @Override
+    public String getFullId() {
+        return wrapper.getFullId();
+    }
+
+    @Override
     public WindowContext getContext() {
         return context == null ? getFrame().getContext() : context;
     }
 
+    @Override
     public void setContext(WindowContext ctx) {
         this.context = ctx;
     }
 
+    @Override
     public DsContext getDsContext() {
         return dsContext == null ? getFrame().getDsContext() : dsContext;
     }
 
+    @Override
     public void setDsContext(DsContext dsContext) {
         this.dsContext = dsContext;
     }
 
+    @Override
     public String getMessagesPack() {
         return messagePack;
     }
 
+    @Override
     public void setMessagesPack(String name) {
         messagePack = name;
     }
 
+    @Override
     public String getMessage(String key) {
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
         return MessageProvider.getMessage(messagePack, key);
     }
 
+    @Override
     public void registerComponent(Component component) {
         if (component.getId() != null)
             allComponents.put(component.getId(), component);
     }
 
+    @Override
     public boolean isValid() {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
@@ -107,6 +116,7 @@ public class DesktopFrame
         return true;
     }
 
+    @Override
     public void validate() throws ValidationException {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
@@ -120,55 +130,66 @@ public class DesktopFrame
         return DesktopComponentsHelper.getTopLevelFrame((IFrame) this).getWindowManager();
     }
 
+    @Override
     public DialogParams getDialogParams() {
         return getWindowManager().getDialogParams();
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openWindow(windowInfo, openType, params);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType, params);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType, parentDs);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openEditor(windowInfo, item, openType);
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openWindow(windowInfo, openType);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openLookup(windowInfo, handler, openType, params);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openLookup(windowInfo, handler, openType);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openFrame((Window) wrapper, parent, windowInfo);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return getWindowManager().openFrame((Window) wrapper, parent, windowInfo, params);
@@ -256,22 +277,27 @@ public class DesktopFrame
         return detached;
     }
 
+    @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
         getWindowManager().showMessageDialog(title, message, messageType);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
         getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
         getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
+    @Override
     public void showNotification(String caption, String description, NotificationType type) {
         getWindowManager().showNotification(caption, description, type);
     }
 
+    @Override
     public void showNotification(String caption, NotificationType type) {
         getWindowManager().showNotification(caption, type);
     }
@@ -299,6 +325,7 @@ public class DesktopFrame
         }
     }
 
+    @Override
     public IFrame getWrapper() {
         return wrapper;
     }

@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 11.12.2008 19:02:39
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui;
 
@@ -39,6 +34,10 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class WebWindow
         implements
         Window,
@@ -390,6 +389,11 @@ public class WebWindow
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public String getFullId() {
+        return id;
+    }
 
     @Override
     public WindowContext getContext() {

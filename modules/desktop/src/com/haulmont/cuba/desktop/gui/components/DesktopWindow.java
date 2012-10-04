@@ -39,9 +39,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopWindow implements Window, Component.Disposable,
         Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer
@@ -270,6 +269,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String getFullId() {
+        return id;
     }
 
     @Override

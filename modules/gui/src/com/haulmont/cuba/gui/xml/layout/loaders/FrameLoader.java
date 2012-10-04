@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 15:27:37
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -19,6 +15,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.DeclarativeShortcutAction;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -26,7 +23,10 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -36,16 +36,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
     public FrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException
-    {
-        final Map<String,Object> params = context.getParams();
+            throws InstantiationException, IllegalAccessException {
+
+        final Map<String, Object> params = context.getParams();
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
         element = processor.getResultRoot();
 
@@ -113,8 +118,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
     }
 
     protected IFrame wrapByCustomClass(IFrame frame, Element element, Map<String, Object> params,
-                                       ComponentLoaderContext parentContext)
-    {
+                                       ComponentLoaderContext parentContext) {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
@@ -166,7 +170,9 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
     }
 
-    protected <T> T invokeMethod(IFrame frame, String name, Object...params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    protected <T> T invokeMethod(IFrame frame, String name, Object... params)
+            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
         List<Class> paramClasses = new ArrayList<Class>();
         for (Object param : params) {
             if (param == null) throw new IllegalStateException("Null parameter");
@@ -244,14 +250,26 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         @Override
         public void execute(Context context, IFrame window) {
             if (wrapped) {
+                StopWatch initStopWatch = new Log4JStopWatch(window.getFullId() + ".init",
+                        Logger.getLogger(UIPerformanceLogger.class));
+                initStopWatch.start();
+
                 try {
                     ReflectionHelper.invokeMethod(this.frame, "init", params);
                 } catch (NoSuchMethodException e) {
                     // do nothing
                 }
 
+                initStopWatch.stop();
+
+                StopWatch uiPermissionsWatch = new Log4JStopWatch(window.getFullId() + ".uiPermissions",
+                        Logger.getLogger(UIPerformanceLogger.class));
+                uiPermissionsWatch.start();
+
                 // apply ui permissions
                 WindowCreationHelper.applyUiPermissions(window);
+
+                uiPermissionsWatch.stop();
 
                 FrameLoader.this.context.executePostInitTasks();
             }

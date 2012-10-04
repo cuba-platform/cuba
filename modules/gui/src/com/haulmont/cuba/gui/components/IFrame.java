@@ -33,6 +33,11 @@ public interface IFrame
 {
     String NAME = "iframe";
 
+    /**
+     * @return Full component path with '.' delimeter
+     */
+    String getFullId();
+
     WindowContext getContext();
 
     void setContext(WindowContext ctx);

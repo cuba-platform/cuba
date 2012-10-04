@@ -33,6 +33,10 @@ import org.dom4j.Element;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 @ClientWidget(VVerticalActionsLayout.class)
 public class WebFrame extends WebVBoxLayout
@@ -61,10 +65,12 @@ public class WebFrame extends WebVBoxLayout
     public WebFrame() {
         super();
         addActionHandler(new com.vaadin.event.Action.Handler() {
+            @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 return actionsHolder.getActionImplementations();
             }
 
+            @Override
             public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
                 Action action = actionsHolder.getAction(actionImpl);
                 if (action != null && action.isEnabled() && action.isVisible()) {
@@ -74,6 +80,7 @@ public class WebFrame extends WebVBoxLayout
         });
     }
 
+    @Override
     public IFrame wrapBy(Class<? extends IFrame> aClass) {
         try {
             // First try to find an old-style constructor with IFrame parameter
@@ -97,14 +104,17 @@ public class WebFrame extends WebVBoxLayout
         }
     }
 
+    @Override
     public IFrame getWrapper() {
         return wrapper;
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
@@ -122,6 +132,11 @@ public class WebFrame extends WebVBoxLayout
             } else
                 return null;
         }
+    }
+
+    @Override
+    public String getFullId() {
+        return wrapper.getFullId();
     }
 
     public WindowContext getContext() {

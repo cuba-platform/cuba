@@ -479,7 +479,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (windowContext != null) {
             IFrame frame = windowContext.getFrame();
             if (frame != null)
-                windowId = frame.getId();
+                windowId = frame.getFullId();
         }
         String tag = prefix + " " + id;
         if (StringUtils.isNotBlank(windowId))

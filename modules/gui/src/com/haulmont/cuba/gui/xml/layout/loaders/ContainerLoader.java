@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 9:52:04
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -24,6 +20,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class ContainerLoader extends ComponentLoader {
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
@@ -35,12 +35,12 @@ public abstract class ContainerLoader extends ComponentLoader {
     }
 
     protected Collection<Component> loadSubComponents(Component component, Element element, String ...exceptTags) {
-        final List<Component> res = new ArrayList<Component>();
+        final List<Component> res = new ArrayList<>();
 
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
-        
+
         for (Element subElement : (Collection<Element>)element.elements()) {
             final String name = subElement.getName();
             if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {
@@ -70,7 +70,7 @@ public abstract class ContainerLoader extends ComponentLoader {
     protected void loadMargin(Component.Margin layout, Element element) {
         final String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
-            if (margin.indexOf(";") > -1) {
+            if (margin.contains(";")) {
                 final String[] margins = margin.split(";");
                 if (margins.length != 4) {
                     throw new IllegalStateException(

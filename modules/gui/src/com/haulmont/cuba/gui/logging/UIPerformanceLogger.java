@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.logging;
 
 /**
  * Logger class for UI performance stats
+ * Constant empty interface
  *
  * @author artamonov
  * @version $Id$

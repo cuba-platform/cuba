@@ -137,6 +137,9 @@ public abstract class WindowManager {
 
         WindowCreationHelper.deployViews(element);
 
+        // it needs for initialized id, when nested components loading
+        params.put("windowId", windowInfo.getId());
+
         final DsContext dsContext = loadDsContext(element);
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
 
@@ -553,6 +556,10 @@ public abstract class WindowManager {
             }
         }
 
+        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + ".loadDescriptor",
+                Logger.getLogger(UIPerformanceLogger.class));
+        loadDescriptorWatch.start();
+
         final IFrame component;
         try {
             component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
@@ -566,7 +573,9 @@ public abstract class WindowManager {
         component.setFrame(window);
         context.setFrame(component);
         context.executePostInitTasks();
-
+        
+        loadDescriptorWatch.stop();
+        
         if (parent != null)
             showFrame(parent, component);
 

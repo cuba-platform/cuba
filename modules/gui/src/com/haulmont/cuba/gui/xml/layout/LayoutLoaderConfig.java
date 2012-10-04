@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 15:29:12
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout;
 
@@ -16,6 +12,10 @@ import com.haulmont.cuba.gui.xml.layout.loaders.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class LayoutLoaderConfig {
 
     private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders =
@@ -27,7 +27,7 @@ public class LayoutLoaderConfig {
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
     private static Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> customLoaders =
-            new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
+            new HashMap<>();
 
     static {
         windowLoaders.register("window", WindowLoader.class);

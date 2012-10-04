@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 16.03.2009 11:24:47
- * $Id$
  */
 
 package com.haulmont.cuba.gui.data.impl;
@@ -17,31 +13,36 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
+/**
+ * @param <T> Entity
+ * @param <K> Key
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
-    extends
-        CollectionDatasourceImpl<T, K>
-    implements
-        HierarchicalDatasource<T, K>
-{
+        extends CollectionDatasourceImpl<T, K>
+        implements HierarchicalDatasource<T, K> {
     protected Tree<T> tree;
     protected Map<K, Node<T>> nodes;
 
     public AbstractTreeDatasource(
             DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, String viewName)
-    {
+            String id, MetaClass metaClass, String viewName) {
         super(context, dataservice, id, metaClass, viewName);
     }
 
     @Override
     protected void loadData(Map<String, Object> params) {
-        StopWatch sw = new Log4JStopWatch("TDS " + id);
+        String tag = getLoggingTag("TDS");
+        StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
 
         this.tree = loadTree(params);
 
@@ -93,7 +94,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
     }
 
     @Override
-     public K getParent(K itemId) {
+    public K getParent(K itemId) {
         final Node<T> node = nodes.get(itemId);
         return node == null ? null : node.getParent() == null ? null : node.getParent().getData().getId();
     }

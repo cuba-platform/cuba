@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 18.02.2009 9:55:51
- * $Id$
  */
 package com.haulmont.cuba.gui;
 
@@ -19,6 +15,10 @@ import org.apache.commons.lang.ArrayUtils;
 import java.util.*;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class FrameContext implements WindowContext {
 
     private static final long serialVersionUID = -6616685746440637906L;
@@ -46,18 +46,22 @@ public class FrameContext implements WindowContext {
         return (T) params.get("param$" + property);
     }
 
+    @Override
     public IFrame getFrame() {
         return frame;
     }
 
+    @Override
     public Map<String, Object> getParams() {
         return params;
     }
 
+    @Override
     public <T> T getParamValue(String param) {
         return (T) params.get(param);
     }
 
+    @Override
     public <T> T getValue(String property) {
         final String[] elements = ValuePathHelper.parse(property);
         String[] path = elements;
@@ -119,6 +123,7 @@ public class FrameContext implements WindowContext {
         }
     }
 
+    @Override
     public void setValue(String property, Object value) {
         final Component component = frame.getComponent(property);
         if (component instanceof Component.HasValue) {
@@ -128,6 +133,7 @@ public class FrameContext implements WindowContext {
         }
     }
 
+    @Override
     public void addValueListener(String componentName, ValueListener listener) {
         Component component = frame.getComponent(componentName);
         if (component == null)
@@ -141,6 +147,7 @@ public class FrameContext implements WindowContext {
         }
     }
 
+    @Override
     public void removeValueListener(String componentName, ValueListener listener) {
         Component component = frame.getComponent(componentName);
         if (component == null)
