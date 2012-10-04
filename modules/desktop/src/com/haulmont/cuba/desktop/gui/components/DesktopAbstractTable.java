@@ -88,6 +88,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected int generatedColumnsCount = 0;
 
     protected boolean isRowsAjusting = false;
+    protected boolean isRowSelecting = false;
 
     protected boolean fontInitialized = false;
     protected int defaultRowHeight = 24;
@@ -594,19 +595,24 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     @SuppressWarnings("unchecked")
                     public void valueChanged(ListSelectionEvent e) {
                         // ignore selection change while data changing
-                        if (e.getValueIsAdjusting() || isRowsAjusting)
+                        if (e.getValueIsAdjusting() || isRowsAjusting || isRowSelecting)
                             return;
 
-                        selectionBackup = getSelected();
+                        isRowSelecting = true;
+                        try {
+                            selectionBackup = getSelected();
 
-                        final Set selected = getSelected();
-                        if (selected.isEmpty()) {
-                            datasource.setItem(null);
-                        } else {
-                            // reset selection and select new item
-                            if (isMultiSelect())
+                            final Set selected = getSelected();
+                            if (selected.isEmpty()) {
                                 datasource.setItem(null);
-                            datasource.setItem((Entity) selected.iterator().next());
+                            } else {
+                                // reset selection and select new item
+                                if (isMultiSelect())
+                                    datasource.setItem(null);
+                                datasource.setItem((Entity) selected.iterator().next());
+                            }
+                        } finally {
+                            isRowSelecting = false;
                         }
                     }
                 }
