@@ -25,9 +25,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class TableModelAdapter extends AbstractTableModel implements AnyTableModelAdapter {
 
@@ -248,6 +247,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
             properties.remove((MetaPropertyPath) column.getId());
 
         fireTableStructureChanged();
+    }
+
+    @Override
+    public Table.Column getColumn(int index) {
+        return columns.get(index);
     }
 
     @Override

@@ -14,9 +14,8 @@ import javax.swing.table.TableModel;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface AnyTableModelAdapter extends TableModel {
 
@@ -35,6 +34,8 @@ public interface AnyTableModelAdapter extends TableModel {
     void addColumn(Table.Column column);
 
     void removeColumn(Table.Column column);
+
+    Table.Column getColumn(int index);
 
     void addChangeListener(DataChangeListener changeListener);
 

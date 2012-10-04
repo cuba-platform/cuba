@@ -11,9 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RowSorterImpl extends RowSorter<AnyTableModelAdapter> {
 
@@ -31,6 +30,9 @@ public class RowSorterImpl extends RowSorter<AnyTableModelAdapter> {
 
     @Override
     public void toggleSortOrder(int column) {
+        if (model.isGeneratedColumn(model.getColumn(column)))
+            return;
+
         SortKey key;
         if (sortKey != null && sortKey.getColumn() == column) {
             if (sortKey.getSortOrder() == SortOrder.ASCENDING) {

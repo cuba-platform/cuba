@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class TreeTableModelAdapter extends AbstractTreeTableModel implements AnyTableModelAdapter {
 
@@ -157,6 +156,11 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     @Override
     public void removeColumn(Table.Column column) {
+    }
+
+    @Override
+    public Table.Column getColumn(int index) {
+        return tableDelegate.getColumn(index);
     }
 
     @Override
