@@ -28,6 +28,9 @@
         <font family="Verdana" style="bold" size="14"/>
     </style>
 
+    <style name="centered">
+    </style>
+
     <style name="edit-area">
         <components>
             com.haulmont.cuba.desktop.gui.components.DesktopVBox
