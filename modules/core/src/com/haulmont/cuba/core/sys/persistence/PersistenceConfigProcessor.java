@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
@@ -21,15 +23,19 @@ import java.io.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
+ * Generates a working persistence.xml file combining classes and properties from a set of given persistence.xml files,
+ * defined in <code>cuba.persistenceConfig</code> app property.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class PersistenceConfigProcessor {
 
     private String baseDir;
     private List<String> sourceFileNames;
     private String outFileName;
+
+    private Log log = LogFactory.getLog(getClass());
 
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;
@@ -42,51 +48,6 @@ public class PersistenceConfigProcessor {
     public void setOutputFile(String file) {
         outFileName = file;
     }
-
-//    public static void main(String[] args) {
-//        Options options = new Options();
-//        options.addOption("e", false, "enhance entities");
-//        options.addOption("c", false, "create persistence config");
-//        options.addOption("f", true, "source persistence.xml comma-separated list");
-//        options.addOption("o", true, "output persistence.xml");
-//
-//        CommandLineParser parser = new PosixParser();
-//        CommandLine cmd = null;
-//        try {
-//            cmd = parser.parse( options, args);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//            System.exit(-1);
-//        }
-//
-//        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
-//        if (cmd.hasOption('f')) {
-//            String[] strings = cmd.getOptionValue('f').split(",");
-//            processor.setSourceFiles(Arrays.asList(strings));
-//        }
-//
-//        if (cmd.hasOption('c')) {
-//            processor.create();
-//        } else if (cmd.hasOption('e')) {
-//            processor.enhance();
-//        } else {
-//            HelpFormatter formatter = new HelpFormatter();
-//            formatter.printHelp("PersistenceConfigProcessor", options);
-//        }
-//    }
-//
-//    public void enhance() {
-//        if (sourceFileNames == null || sourceFileNames.isEmpty())
-//            throw new IllegalStateException("Source file not set");
-//
-//        List<String> options = new ArrayList<String>();
-//
-//        options.add("-properties");
-//        options.add(sourceFileNames.get(0));
-//
-//        System.out.println("Enhancing " + sourceFileNames.get(0));
-//        PCEnhancer.main(options.toArray(new String[options.size()]));
-//    }
 
     public void create() {
         if (sourceFileNames == null || sourceFileNames.isEmpty())
@@ -106,6 +67,20 @@ public class PersistenceConfigProcessor {
                 throw new IllegalStateException("No persistence unit named 'cuba' found among multiple units inside " + fileName);
             addClasses(puElem, classes);
             addProperties(puElem, properties);
+        }
+
+        File outFile;
+        try {
+            outFile = new File(outFileName).getCanonicalFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        outFile.getParentFile().mkdirs();
+
+        String disableOrmGenProp = AppContext.getProperty("cuba.disableOrmXmlGeneration");
+        if (!Boolean.parseBoolean(disableOrmGenProp)) {
+            MappingFileCreator mappingFileCreator = new MappingFileCreator(classes.values(), properties, outFile.getParentFile());
+            mappingFileCreator.create();
         }
 
         String fileName = sourceFileNames.get(sourceFileNames.size() - 1);
@@ -137,9 +112,7 @@ public class PersistenceConfigProcessor {
             element.addAttribute("value", entry.getValue());
         }
 
-        File outFile = new File(outFileName);
-        outFile.getParentFile().mkdirs();
-
+        log.info("Creating file " + outFile);
         OutputStream os = null;
         try {
             os = new FileOutputStream(outFileName);
