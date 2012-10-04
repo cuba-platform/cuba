@@ -105,6 +105,9 @@ class MappingFileCreator {
         File file = writeDocument(doc);
 
         String filePath = file.getAbsolutePath().replace("\\", "/");
+        if (!filePath.startsWith("/"))
+            filePath = "/" + filePath;
+
         String prop = properties.get("openjpa.MetaDataFactory");
         if (prop != null)
             log.warn("Please don't set openjpa.MetaDataFactory in your persistence.xml, it is overridden anyway");
