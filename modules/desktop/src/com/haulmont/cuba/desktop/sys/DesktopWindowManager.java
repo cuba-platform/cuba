@@ -228,10 +228,7 @@ public class DesktopWindowManager extends WindowManager {
                     public void windowClosing(WindowEvent e) {
                         windowFrame.getWindowManager().checkModificationsAndCloseAll(new Runnable() {
                             public void run() {
-                                windowFrame.setVisible(false);
-                                windowFrame.dispose();
-                                windowFrame.getWindowManager().dispose();
-                                App.getInstance().unregisterFrame(windowFrame);
+                                closeFrame(windowFrame);
                             }
                         }, null);
                     }
@@ -241,12 +238,19 @@ public class DesktopWindowManager extends WindowManager {
         return windowFrame;
     }
 
+    private void closeFrame(TopLevelFrame frame) {
+        frame.setVisible(false);
+        frame.dispose();
+        frame.getWindowManager().dispose();
+        App.getInstance().unregisterFrame(getFrame());
+    }
+
     private JComponent showNewWindow(Window window, String caption) {
         final TopLevelFrame windowFrame = createTopLevelFrame(caption);
         window.setWindowManager(windowFrame.getWindowManager());
         WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
         breadCrumbs.addWindow(window);
-        JComponent tabContent = createTabSheetPanel(window,breadCrumbs);
+        JComponent tabContent = createTabSheetPanel(window, breadCrumbs);
 
         windowFrame.add(tabContent);
         App.getInstance().registerFrame(windowFrame);
@@ -373,12 +377,12 @@ public class DesktopWindowManager extends WindowManager {
     private void setWindowCaption(String caption, String description, int tabIndex) {
         ((ButtonTabComponent) tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
     }
-    
-    private void setTopLevelWindowCaption(String caption){
+
+    private void setTopLevelWindowCaption(String caption) {
         frame.setTitle(caption);
     }
 
-    private WindowBreadCrumbs createBreadCrumbs(){
+    private WindowBreadCrumbs createBreadCrumbs() {
         final WindowBreadCrumbs breadCrumbs = new WindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
@@ -409,7 +413,7 @@ public class DesktopWindowManager extends WindowManager {
         return tabContent;
     }
 
-    protected JPanel createTabSheetPanel(Window window,WindowBreadCrumbs breadCrumbs){
+    protected JPanel createTabSheetPanel(Window window, WindowBreadCrumbs breadCrumbs) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(breadCrumbs, BorderLayout.NORTH);
         JComponent composition = DesktopComponentsHelper.getComposition(window);
@@ -580,19 +584,22 @@ public class DesktopWindowManager extends WindowManager {
             case NEW_TAB: {
                 JComponent layout = (JComponent) openMode.getData();
                 layout.remove(DesktopComponentsHelper.getComposition(window));
+                if (isMainWindowManager) {
+                    tabsPane.remove(layout);
 
-                tabsPane.remove(layout);
+                    WindowBreadCrumbs windowBreadCrumbs = tabs.get(layout);
+                    if (windowBreadCrumbs != null) {
+                        windowBreadCrumbs.clearListeners();
+                        windowBreadCrumbs.removeWindow();
+                    }
 
-                WindowBreadCrumbs windowBreadCrumbs = tabs.get(layout);
-                if (windowBreadCrumbs != null) {
-                    windowBreadCrumbs.clearListeners();
-                    windowBreadCrumbs.removeWindow();
+                    tabs.remove(layout);
+                    stacks.remove(windowBreadCrumbs);
+
+                    fireListeners(window, tabs.size() != 0);
+                } else {
+                    closeFrame(getFrame());
                 }
-
-                tabs.remove(layout);
-                stacks.remove(windowBreadCrumbs);
-
-                fireListeners(window, tabs.size() != 0);
                 break;
             }
             case THIS_TAB: {
@@ -637,6 +644,14 @@ public class DesktopWindowManager extends WindowManager {
                     component.repaint();
                 }
                 fireListeners(window, tabs.size() != 0);
+                break;
+            }
+            case NEW_WINDOW: {
+                checkModificationsAndCloseAll(new Runnable() {
+                    public void run() {
+                        closeFrame(getFrame());
+                    }
+                }, null);
                 break;
             }
             default:
