@@ -8,7 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
@@ -45,8 +46,6 @@ import java.util.List;
 public class DesktopWindow implements Window, Component.Disposable,
         Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer
 {
-    private static final long serialVersionUID = 1026363207247384464L;
-
     private boolean disposed = false;
 
     protected BoxLayoutAdapter layoutAdapter;
@@ -54,10 +53,10 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected String id;
 
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-    protected Collection<Component> ownComponents = new HashSet<Component>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected Collection<Component> ownComponents = new HashSet<>();
 
-    protected Map<String, Component> allComponents = new HashMap<String, Component>();
+    protected Map<String, Component> allComponents = new HashMap<>();
 
     protected DsContext dsContext;
     protected WindowContext context;
@@ -66,19 +65,19 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected String caption;
     protected String description;
     protected Component expandedComponent;
-    protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
-    protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
+    protected Map<Component, ComponentCaption> captions = new HashMap<>();
+    protected Map<Component, JPanel> wrappers = new HashMap<>();
 
     protected WindowDelegate delegate;
 
     protected DesktopFrameActionsHolder actionsHolder;
 
-    private List<CloseListener> listeners = new ArrayList<CloseListener>();
+    private List<CloseListener> listeners = new ArrayList<>();
 
     protected boolean forceClose;
     protected Runnable doAfterClose;
 
-    protected List<Timer> timers = new ArrayList<Timer>();
+    protected List<Timer> timers = new ArrayList<>();
 
     private Log log = LogFactory.getLog(DesktopWindow.class);
 
@@ -152,9 +151,10 @@ public class DesktopWindow implements Window, Component.Disposable,
         WindowManager windowManager = getWindowManager();
 
         if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
+            Messages messages = AppBeans.get(Messages.NAME);
             windowManager.showOptionDialog(
-                    MessageProvider.getMessage(AppConfig.getMessagesPack(), "closeUnsaved.caption"),
-                    MessageProvider.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
+                    messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved.caption"),
+                    messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
                     MessageType.WARNING,
                     new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
@@ -272,11 +272,6 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public String getFullId() {
-        return id;
-    }
-
-    @Override
     public WindowContext getContext() {
         return context;
     }
@@ -310,7 +305,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     public String getMessage(String key) {
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
-        return MessageProvider.getMessage(messagePack, key);
+        return AppBeans.get(Messages.class).getMessage(messagePack, key);
     }
 
     @Override
@@ -336,52 +331,52 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        return delegate.<T>openWindow(windowAlias, openType, params);
+        return delegate.openWindow(windowAlias, openType, params);
     }
 
     @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        return delegate.<T>openWindow(windowAlias, openType);
+        return delegate.openWindow(windowAlias, openType);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        return delegate.<T>openEditor(windowAlias, item, openType, params, parentDs);
+        return delegate.openEditor(windowAlias, item, openType, params, parentDs);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return delegate.<T>openEditor(windowAlias, item, openType, params);
+        return delegate.openEditor(windowAlias, item, openType, params);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        return delegate.<T>openEditor(windowAlias, item, openType, parentDs);
+        return delegate.openEditor(windowAlias, item, openType, parentDs);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        return delegate.<T>openEditor(windowAlias, item, openType);
+        return delegate.openEditor(windowAlias, item, openType);
     }
 
     @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        return delegate.<T>openLookup(windowAlias, handler, openType, params);
+        return delegate.openLookup(windowAlias, handler, openType, params);
     }
 
     @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return delegate.<T>openLookup(windowAlias, handler, openType);
+        return delegate.openLookup(windowAlias, handler, openType);
     }
 
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
-        return delegate.<T>openFrame(parent, windowAlias);
+        return delegate.openFrame(parent, windowAlias);
     }
 
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
-        return delegate.<T>openFrame(parent, windowAlias, params);
+        return delegate.openFrame(parent, windowAlias, params);
     }
 
     @Override
@@ -748,7 +743,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                 buffer.append(error.description).append("<br/>");
             }
             showNotification(
-                    MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail.caption"),
+                    AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "validationFail.caption"),
                     buffer.toString(),
                     NotificationType.HUMANIZED
             );
@@ -793,6 +788,7 @@ public class DesktopWindow implements Window, Component.Disposable,
             ((EditorWindowDelegate) delegate).releaseLock();
         }
 
+        @Override
         public void setParentDs(Datasource parentDs) {
             ((EditorWindowDelegate) delegate).setParentDs(parentDs);
         }
@@ -801,10 +797,12 @@ public class DesktopWindow implements Window, Component.Disposable,
             return delegate.getDatasource();
         }
 
+        @Override
         public boolean commit() {
             return commit(true);
         }
 
+        @Override
         public boolean commit(boolean validate) {
             if (validate && !getWrapper().validateAll())
                 return false;
@@ -812,6 +810,7 @@ public class DesktopWindow implements Window, Component.Disposable,
             return ((EditorWindowDelegate) delegate).commit(false);
         }
 
+        @Override
         public void commitAndClose() {
             if (!getWrapper().validateAll())
                 return;
@@ -820,10 +819,10 @@ public class DesktopWindow implements Window, Component.Disposable,
                 close(COMMIT_ACTION_ID);
         }
 
+        @Override
         public boolean isLocked() {
             return ((EditorWindowDelegate) delegate).isLocked();
         }
-
     }
 
     public static class Lookup extends DesktopWindow implements Window.Lookup {
@@ -922,13 +921,15 @@ public class DesktopWindow implements Window, Component.Disposable,
 
             selectListener = new SelectListener();
 
-            JButton selectBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
+            Messages messages = AppBeans.get(Messages.NAME);
+
+            JButton selectBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
             selectBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
             selectBtn.addActionListener(selectListener);
             DesktopComponentsHelper.adjustSize(selectBtn);
             buttonsPanel.add(selectBtn);
 
-            JButton cancelBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+            JButton cancelBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
             cancelBtn.setIcon(App.getInstance().getResources().getIcon("icons/cancel.png"));
             cancelBtn.addActionListener(
                     new ActionListener() {

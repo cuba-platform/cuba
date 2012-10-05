@@ -8,9 +8,7 @@ package com.haulmont.cuba.web.gui;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
@@ -44,17 +42,16 @@ public class WebWindow
         Component.Wrapper,
         Component.HasXmlDescriptor,
         WrappedWindow {
-    private static final long serialVersionUID = -686695761338837334L;
 
     private boolean closing = false;
 
     private String id;
     private String debugId;
 
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-    protected Collection<Component> ownComponents = new HashSet<Component>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected Collection<Component> ownComponents = new HashSet<>();
 
-    protected Map<String, Component> allComponents = new HashMap<String, Component>();
+    protected Map<String, Component> allComponents = new HashMap<>();
 
     private String messagePack;
 
@@ -251,7 +248,7 @@ public class WebWindow
             buffer.append(error.description).append("<br/>");
         }
 
-        showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
+        showNotification(AppBeans.get(Messages.class).getMessage(WebWindow.class, "validationFail.caption"),
                 buffer.toString(), NotificationType.TRAY);
         if (component != null) {
             try {
@@ -297,52 +294,52 @@ public class WebWindow
 
     @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        return delegate.<T>openWindow(windowAlias, openType, params);
+        return delegate.openWindow(windowAlias, openType, params);
     }
 
     @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        return delegate.<T>openWindow(windowAlias, openType);
+        return delegate.openWindow(windowAlias, openType);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        return delegate.<T>openEditor(windowAlias, item, openType, params, parentDs);
+        return delegate.openEditor(windowAlias, item, openType, params, parentDs);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return delegate.<T>openEditor(windowAlias, item, openType, params);
+        return delegate.openEditor(windowAlias, item, openType, params);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        return delegate.<T>openEditor(windowAlias, item, openType, parentDs);
+        return delegate.openEditor(windowAlias, item, openType, parentDs);
     }
 
     @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        return delegate.<T>openEditor(windowAlias, item, openType);
+        return delegate.openEditor(windowAlias, item, openType);
     }
 
     @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        return delegate.<T>openLookup(windowAlias, handler, openType, params);
+        return delegate.openLookup(windowAlias, handler, openType, params);
     }
 
     @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return delegate.<T>openLookup(windowAlias, handler, openType);
+        return delegate.openLookup(windowAlias, handler, openType);
     }
 
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
-        return delegate.<T>openFrame(parent, windowAlias);
+        return delegate.openFrame(parent, windowAlias);
     }
 
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
-        return delegate.<T>openFrame(parent, windowAlias, params);
+        return delegate.openFrame(parent, windowAlias, params);
     }
 
     @Override
@@ -389,11 +386,6 @@ public class WebWindow
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public String getFullId() {
-        return id;
-    }
 
     @Override
     public WindowContext getContext() {
@@ -661,10 +653,12 @@ public class WebWindow
         closing = true;
         WebWindowManager windowManager = getWindowManager();
 
+        Messages messages = AppBeans.get(Messages.NAME);
+
         if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
             windowManager.showOptionDialog(
-                    MessageProvider.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                    MessageProvider.getMessage(WebWindow.class, "closeUnsaved"),
+                    messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
+                    messages.getMessage(WebWindow.class, "closeUnsaved"),
                     MessageType.WARNING,
                     new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
@@ -967,16 +961,18 @@ public class WebWindow
             okbar.setMargin(true, false, false, false);
             okbar.setSpacing(true);
 
+            Messages messages = AppBeans.get(Messages.NAME);
+
             final String messagesPackage = AppConfig.getMessagesPack();
             selectAction = new SelectAction(this);
             selectButton = WebComponentsHelper.createButton();
-            selectButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Select"));
+            selectButton.setCaption(messages.getMessage(messagesPackage, "actions.Select"));
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
             selectButton.addListener(selectAction);
             selectButton.setStyleName("Window-actionButton");
 
             cancelButton = WebComponentsHelper.createButton();
-            cancelButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Cancel"));
+            cancelButton.setCaption(messages.getMessage(messagesPackage, "actions.Cancel"));
             cancelButton.addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
@@ -1004,7 +1000,9 @@ public class WebWindow
         public void setId(String id) {
             super.setId(id);
 
-            if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+
+            if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
                 WebWindowManager windowManager = getWindowManager();
                 windowManager.setDebugId(selectButton, id + ".selectButton");
                 windowManager.setDebugId(cancelButton, id + ".cancelButton");

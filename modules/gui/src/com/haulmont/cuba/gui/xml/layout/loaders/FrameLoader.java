@@ -6,11 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ControllerDependencyInjector;
-import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.WindowCreationHelper;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -74,6 +70,12 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         ComponentLoaderContext newContext = new ComponentLoaderContext(
                 dsContext == null ? parentContext.getDsContext() : dsContext,
                 params);
+
+        String frameId = parentContext.getCurrentIFrameId();
+        if (parentContext.getFullFrameId() != null)
+            frameId = parentContext.getFullFrameId() + "." + frameId;
+
+        newContext.setFullFrameId(frameId);
         newContext.setFrame(component);
         newContext.setParent(parentContext);
         setContext(newContext);
@@ -122,21 +124,37 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
-                Class<Window> aClass = ScriptingProvider.loadClass(screenClass);
+                Class<Window> aClass = scripting.loadClass(screenClass);
                 if (aClass == null)
                     aClass = ReflectionHelper.getClass(screenClass);
                 IFrame wrappingFrame = ((WrappedFrame) frame).wrapBy(aClass);
 
+                String loggingId = context.getFullFrameId();
+
                 if (wrappingFrame instanceof AbstractFrame) {
                     Element companionsElem = element.element("companions");
                     if (companionsElem != null) {
+                        StopWatch companionStopWatch = new Log4JStopWatch(loggingId + "#" +
+                                UIPerformanceLogger.LifeCycle.COMPANION,
+                                Logger.getLogger(UIPerformanceLogger.class));
+                        companionStopWatch.start();
+
                         initCompanion(companionsElem, (AbstractFrame) wrappingFrame);
+
+                        companionStopWatch.stop();
                     }
                 }
                 parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, true));
 
+                StopWatch injectStopWatch = new Log4JStopWatch(loggingId + "#" +
+                        UIPerformanceLogger.LifeCycle.INJECTION,
+                        Logger.getLogger(UIPerformanceLogger.class));
+                injectStopWatch.start();
+
                 ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame);
                 dependencyInjector.inject();
+
+                injectStopWatch.stop();
 
                 return wrappingFrame;
             } catch (Throwable e) {
@@ -153,7 +171,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         if (element != null) {
             String className = element.attributeValue("class");
             if (!StringUtils.isBlank(className)) {
-                Class aClass = ScriptingProvider.loadClass(className);
+                Class aClass = scripting.loadClass(className);
                 Object companion;
                 try {
                     if (AbstractCompanion.class.isAssignableFrom(aClass)) {
@@ -173,7 +191,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
     protected <T> T invokeMethod(IFrame frame, String name, Object... params)
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
-        List<Class> paramClasses = new ArrayList<Class>();
+        List<Class> paramClasses = new ArrayList<>();
         for (Object param : params) {
             if (param == null) throw new IllegalStateException("Null parameter");
 
@@ -250,7 +268,9 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         @Override
         public void execute(Context context, IFrame window) {
             if (wrapped) {
-                StopWatch initStopWatch = new Log4JStopWatch(window.getFullId() + ".init",
+                String loggingId = ComponentsHelper.getFullFrameId(this.frame);
+                StopWatch initStopWatch = new Log4JStopWatch(loggingId + "#" +
+                        UIPerformanceLogger.LifeCycle.INIT,
                         Logger.getLogger(UIPerformanceLogger.class));
                 initStopWatch.start();
 
@@ -262,7 +282,8 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
                 initStopWatch.stop();
 
-                StopWatch uiPermissionsWatch = new Log4JStopWatch(window.getFullId() + ".uiPermissions",
+                StopWatch uiPermissionsWatch = new Log4JStopWatch(loggingId + "#" +
+                        UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
                         Logger.getLogger(UIPerformanceLogger.class));
                 uiPermissionsWatch.start();
 

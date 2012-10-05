@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.*;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -16,9 +17,8 @@ import java.util.*;
 /**
  * Utility class working with GenericUI components.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class ComponentsHelper {
     public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex",
@@ -31,7 +31,7 @@ public abstract class ComponentsHelper {
      */
     public static Collection<Component> getComponents(Component.Container container) {
         final Collection<Component> ownComponents = container.getOwnComponents();
-        Set<Component> res = new HashSet<Component>(ownComponents);
+        Set<Component> res = new HashSet<>(ownComponents);
 
         for (Component component : ownComponents) {
             if (component instanceof Component.Container) {
@@ -116,6 +116,17 @@ public abstract class ComponentsHelper {
             frame = frame.getFrame();
         }
         return null;
+    }
+
+    public static String getFullFrameId(IFrame frame) {
+        LinkedList<String> frameIds = new LinkedList<>();
+        frameIds.addFirst(frame.getId());
+        while (frame != null && !(frame instanceof Window)) {
+            frame = frame.getFrame();
+            if (frame != null)
+                frameIds.addFirst(frame.getId());
+        }
+        return StringUtils.join(frameIds, '.');
     }
 
     /**

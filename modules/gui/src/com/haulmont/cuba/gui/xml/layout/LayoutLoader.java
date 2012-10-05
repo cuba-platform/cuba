@@ -10,24 +10,21 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.core.global.TemplateHelper;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
+import com.haulmont.cuba.gui.components.Component;
 import org.apache.commons.io.IOUtils;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
-import java.io.InputStream;
-import java.io.StringReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Collections;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author abramov

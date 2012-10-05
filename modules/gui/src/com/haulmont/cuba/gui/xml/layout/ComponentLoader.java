@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 15:31:30
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout;
 
@@ -18,6 +14,10 @@ import org.dom4j.Element;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public interface ComponentLoader {
 
     public interface Context {
@@ -30,6 +30,12 @@ public interface ComponentLoader {
 
         IFrame getFrame();
         void setFrame(IFrame frame);
+
+        String getFullFrameId();
+        void setFullFrameId(String frameId);
+
+        String getCurrentIFrameId();
+        void setCurrentIFrameId(String currentFrameId);
 
         Context getParent();
         void setParent(Context parent);

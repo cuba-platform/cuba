@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -58,8 +57,10 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         if (element.attributeValue("id") != null)
             screenPath = element.attributeValue("id");
 
+        String frameId = screenPath;
+
         if (context.getFrame() != null) {
-            String parentId = context.getFrame().getFullId();
+            String parentId = context.getFullFrameId();
             if (StringUtils.isNotEmpty(parentId))
                 screenPath = parentId + "." + screenPath;
         }
@@ -68,7 +69,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        InputStream stream = ScriptingProvider.getResourceAsStream(src);
+        InputStream stream = resources.getResourceAsStream(src);
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
             if (stream == null) {
@@ -76,12 +77,14 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
             }
         }
 
-        StopWatch loadDescriptorWatch = new Log4JStopWatch(screenPath + ".loadDescriptor",
+        StopWatch loadDescriptorWatch = new Log4JStopWatch(screenPath + "#" +
+                UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
         loadDescriptorWatch.start();
 
         final IFrame component;
         try {
+            context.setCurrentIFrameId(frameId);
             component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
         } finally {
             IOUtils.closeQuietly(stream);

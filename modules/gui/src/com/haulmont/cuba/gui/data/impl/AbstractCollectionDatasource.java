@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 30.03.2009 11:52:49
- * $Id$
  */
 
 package com.haulmont.cuba.gui.data.impl;
@@ -17,6 +13,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.*;
@@ -34,6 +31,12 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @param <T> Entity
+ * @param <K> Key
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         extends
         DatasourceImpl<T>
@@ -81,6 +84,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public String getQuery() {
         return query;
     }
@@ -90,14 +94,17 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public QueryFilter getQueryFilter() {
         return filter;
     }
 
+    @Override
     public synchronized void setQuery(String query) {
         setQuery(query, null);
     }
 
+    @Override
     public void setQueryFilter(QueryFilter filter) {
         String query = getQuery();
         if (query == null)
@@ -105,22 +112,27 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         setQuery(query, filter);
     }
 
+    @Override
     public int getMaxResults() {
         return maxResults;
     }
 
+    @Override
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
     }
 
+    @Override
     public boolean getRefreshOnComponentValueChange() {
         return refreshOnComponentValueChange;
     }
 
+    @Override
     public void setRefreshOnComponentValueChange(boolean refresh) {
         refreshOnComponentValueChange = refresh;
     }
 
+    @Override
     public void setQuery(String query, QueryFilter filter) {
         if (ObjectUtils.equals(this.query, query) && ObjectUtils.equals(this.filter, filter))
             return;
@@ -152,6 +164,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     dsContext.registerDependency(this, ds, property);
                 } else {
                     ((DsContextImplementation) dsContext).addLazyTask(new DsContextImplementation.LazyTask() {
+                        @Override
                         public void execute(DsContext context) {
                             final String[] strings = path.split("\\.");
                             String source = strings[0];
@@ -353,10 +366,12 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return templateParams;
     }
 
+    @Override
     public boolean isSoftDeletion() {
         return softDeletion;
     }
 
+    @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
     }
@@ -479,11 +494,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (windowContext != null) {
             IFrame frame = windowContext.getFrame();
             if (frame != null)
-                windowId = frame.getFullId();
+                windowId = ComponentsHelper.getFullFrameId(windowContext.getFrame());
         }
         String tag = prefix + " " + id;
         if (StringUtils.isNotBlank(windowId))
-            tag = windowId + "." + id;
+            tag = windowId + "@" + id;
         return tag;
     }
 

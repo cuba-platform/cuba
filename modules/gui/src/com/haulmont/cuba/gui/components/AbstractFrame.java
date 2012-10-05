@@ -185,14 +185,6 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
-    public String getFullId() {
-        String id = getId();
-        if (getFrame() != null && getFrame() != frame)
-            id = getFrame().getFullId() + "." + id;
-        return id;
-    }
-
-    @Override
     public WindowContext getContext() {
         return frame.getContext();
     }
@@ -315,6 +307,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
      * @param windowAlias   frame ID as defined in <code>screens.xml</code>
      * @return              frame's controller instance
      */
+    @Override
     public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias) {
         return frame.<T>openFrame(parent, windowAlias);
     }
@@ -326,10 +319,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
      * @param params        parameters to be passed into the frame's controller <code>init</code> method
      * @return              frame's controller instance
      */
+    @Override
     public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
         return frame.<T>openFrame(parent, windowAlias, params);
     }
 
+    @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
         frame.showMessageDialog(title, message, messageType);
     }

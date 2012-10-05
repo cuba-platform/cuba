@@ -2,16 +2,12 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.12.2008 9:51:22
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
@@ -135,49 +131,54 @@ public class WebFrame extends WebVBoxLayout
     }
 
     @Override
-    public String getFullId() {
-        return wrapper.getFullId();
-    }
-
     public WindowContext getContext() {
         return context == null ? getFrame().getContext() : context;
     }
 
+    @Override
     public void setContext(WindowContext ctx) {
         this.context = ctx;
     }
 
+    @Override
     public DsContext getDsContext() {
         return dsContext == null ? getFrame().getDsContext() : dsContext;
     }
 
+    @Override
     public void setDsContext(DsContext dsContext) {
         this.dsContext = dsContext;
     }
 
+    @Override
     public String getMessagesPack() {
         return messagePack;
     }
 
+    @Override
     public void setMessagesPack(String name) {
         messagePack = name;
     }
 
+    @Override
     public String getMessage(String key) {
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
-        return MessageProvider.getMessage(messagePack, key);
+        return AppBeans.get(Messages.class).getMessage(messagePack, key);
     }
 
+    @Override
     public void registerComponent(com.haulmont.cuba.gui.components.Component component) {
         if (component.getId() != null)
             allComponents.put(component.getId(), component);
     }
 
+    @Override
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();
     }
 
+    @Override
     public boolean isValid() {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
@@ -189,6 +190,7 @@ public class WebFrame extends WebVBoxLayout
         return true;
     }
 
+    @Override
     public void validate() throws ValidationException {
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
@@ -198,88 +200,107 @@ public class WebFrame extends WebVBoxLayout
         }
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params);
+        return App.getInstance().getWindowManager().openWindow(windowInfo, openType, params);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params, parentDs);
+        return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType, params, parentDs);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
+        return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType, params);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, parentDs);
+        return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType, parentDs);
     }
 
+    @Override
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType);
+        return App.getInstance().getWindowManager().openEditor(windowInfo, item, openType);
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
+        return App.getInstance().getWindowManager().openWindow(windowInfo, openType);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType, params);
+        return App.getInstance().getWindowManager().openLookup(windowInfo, handler, openType, params);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType);
+        return App.getInstance().getWindowManager().openLookup(windowInfo, handler, openType);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openFrame((Window) wrapper, parent, windowInfo);
+        return App.getInstance().getWindowManager().openFrame((Window) wrapper, parent, windowInfo);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openFrame((Window) wrapper, parent, windowInfo, params);
+        return App.getInstance().getWindowManager().openFrame((Window) wrapper, parent, windowInfo, params);
     }
 
+    @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
         App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
+    @Override
     public void showNotification(String caption, String description, NotificationType type) {
         getWindow().showNotification(caption, description, WebComponentsHelper.convertNotificationType(type));
     }
 
+    @Override
     public void showNotification(String caption, NotificationType type) {
         getWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
     }
 
+    @Override
     public Element getXmlDescriptor() {
         return element;
     }
 
+    @Override
     public void setXmlDescriptor(Element element) {
         this.element = element;
     }
 
+    @Override
     public void addActionHandler(com.vaadin.event.Action.Handler actionHandler) {
         getActionManager().addActionHandler(actionHandler);
     }
 
+    @Override
     public void removeActionHandler(com.vaadin.event.Action.Handler actionHandler) {
         if (actionManager != null) {
             actionManager.removeActionHandler(actionHandler);
@@ -302,25 +323,29 @@ public class WebFrame extends WebVBoxLayout
     }
 
     @Override
-    public void changeVariables(Object source, Map variables) {
+    public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
         if (actionManager != null) {
             actionManager.handleActions(variables, this);
         }
     }
 
+    @Override
     public void addAction(Action action) {
         actionsHolder.addAction(action);
     }
 
+    @Override
     public void removeAction(Action action) {
         actionsHolder.removeAction(action);
     }
 
+    @Override
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
         return actionsHolder.getActions();
     }
 
+    @Override
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         return actionsHolder.getAction(id);
     }

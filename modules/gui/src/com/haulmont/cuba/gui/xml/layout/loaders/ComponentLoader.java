@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.12.2008 10:16:44
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -35,6 +31,10 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected Locale locale;
     protected String messagesPack;
@@ -44,6 +44,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected Messages messages = AppBeans.get(Messages.class);
     protected Scripting scripting = AppBeans.get(Scripting.class);
+    protected Resources resources = AppBeans.get(Resources.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     private static Log log = LogFactory.getLog(ComponentLoader.class);

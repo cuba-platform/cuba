@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 26.01.2009 11:14:00
- * $Id$
  */
 package com.haulmont.cuba.gui;
 
@@ -45,6 +41,8 @@ import java.util.concurrent.Callable;
 
 /**
  * GenericUI class intended for creating and opening application screens.
+ * @author abramov
+ * @version $Id$
  */
 public abstract class WindowManager {
 
@@ -65,7 +63,7 @@ public abstract class WindowManager {
          */
         DIALOG,
         /**
-         *  In new window in desktop client, new tab in web client 
+         * In new window in desktop client, new tab in web client
          */
         NEW_WINDOW
     }
@@ -112,7 +110,8 @@ public abstract class WindowManager {
     protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
         checkPermission(windowInfo);
 
-        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + ".loadDescriptor",
+        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
         loadDescriptorWatch.start();
 
@@ -137,11 +136,10 @@ public abstract class WindowManager {
 
         WindowCreationHelper.deployViews(element);
 
-        // it needs for initialized id, when nested components loading
-        params.put("windowId", windowInfo.getId());
-
         final DsContext dsContext = loadDsContext(element);
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
+        componentLoaderContext.setFullFrameId(windowInfo.getId());
+        componentLoaderContext.setCurrentIFrameId(windowInfo.getId());
 
         final Window window = loadLayout(windowInfo.getTemplate(), element, componentLoaderContext, layoutConfig);
 
@@ -165,7 +163,8 @@ public abstract class WindowManager {
 
         loadDescriptorWatch.stop();
 
-        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + ".uiPermissions",
+        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
                 Logger.getLogger(UIPerformanceLogger.class));
         uiPermissionsWatch.start();
 
@@ -267,7 +266,8 @@ public abstract class WindowManager {
         window.setId(windowInfo.getId());
         window.setWindowManager(this);
 
-        StopWatch initStopWatch = new Log4JStopWatch(windowInfo.getId() + ".init",
+        StopWatch initStopWatch = new Log4JStopWatch(windowInfo.getId() +
+                "#" + UIPerformanceLogger.LifeCycle.INIT,
                 Logger.getLogger(UIPerformanceLogger.class));
         initStopWatch.start();
 
@@ -279,7 +279,8 @@ public abstract class WindowManager {
 
         initStopWatch.stop();
 
-        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + ".uiPermissions",
+        StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
                 Logger.getLogger(UIPerformanceLogger.class));
         uiPermissionsWatch.start();
 
@@ -327,7 +328,7 @@ public abstract class WindowManager {
             throw new IllegalStateException("Screen class must be an instance of Callable<Window> or Runnable");
     }
 
-    public boolean windowExist(WindowInfo windowInfo, Map<String,Object> params){
+    public boolean windowExist(WindowInfo windowInfo, Map<String, Object> params) {
         return (getWindow(getHash(windowInfo, params)) != null);
     }
 
@@ -428,8 +429,7 @@ public abstract class WindowManager {
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
                                            OpenType openType, Map<String, Object> params,
-                                           Datasource parentDs)
-    {
+                                           Datasource parentDs) {
         checkCanOpenWindow(windowInfo, openType, params);
 
         Integer hashCode = getHash(windowInfo, params);
@@ -463,7 +463,8 @@ public abstract class WindowManager {
         }
         ((Window.Editor) window).setParentDs(parentDs);
 
-        StopWatch setItemWatch = new Log4JStopWatch(windowInfo.getId() + ".setItem",
+        StopWatch setItemWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.SET_ITEM,
                 Logger.getLogger(UIPerformanceLogger.class));
         setItemWatch.start();
 
@@ -542,6 +543,7 @@ public abstract class WindowManager {
         String src = windowInfo.getTemplate();
 
         ComponentLoaderContext context = new ComponentLoaderContext(window.getDsContext(), params);
+        context.setFullFrameId(windowInfo.getId());
 
         final LayoutLoader loader =
                 new LayoutLoader(context, AppConfig.getFactory(), LayoutLoaderConfig.getFrameLoaders());
@@ -556,7 +558,8 @@ public abstract class WindowManager {
             }
         }
 
-        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + ".loadDescriptor",
+        StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
         loadDescriptorWatch.start();
 
@@ -573,9 +576,9 @@ public abstract class WindowManager {
         component.setFrame(window);
         context.setFrame(component);
         context.executePostInitTasks();
-        
+
         loadDescriptorWatch.stop();
-        
+
         if (parent != null)
             showFrame(parent, component);
 
@@ -674,10 +677,19 @@ public abstract class WindowManager {
                 }
             }
 
+            StopWatch injectStopWatch = new Log4JStopWatch(window.getId() + "#" +
+                    UIPerformanceLogger.LifeCycle.INIT,
+                    Logger.getLogger(UIPerformanceLogger.class));
+            injectStopWatch.start();
+
             ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow);
             dependencyInjector.inject();
 
-            StopWatch initStopWatch = new Log4JStopWatch(window.getId() + ".init", Logger.getLogger(UIPerformanceLogger.class));
+            injectStopWatch.stop();
+
+            StopWatch initStopWatch = new Log4JStopWatch(window.getId() + "#" +
+                    UIPerformanceLogger.LifeCycle.INIT,
+                    Logger.getLogger(UIPerformanceLogger.class));
             initStopWatch.start();
 
             try {
@@ -688,7 +700,8 @@ public abstract class WindowManager {
 
             initStopWatch.stop();
 
-            StopWatch uiPermissionsWatch = new Log4JStopWatch(wrappingWindow.getId() + ".uiPermissions",
+            StopWatch uiPermissionsWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
+                    UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
                     Logger.getLogger(UIPerformanceLogger.class));
             uiPermissionsWatch.start();
 

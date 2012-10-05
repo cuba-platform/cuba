@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.12.2008 9:53:35
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -23,6 +19,9 @@ import java.util.Map;
  * Represents a reusable part of a window.
  * Having its own XML descriptor, but can be instantiated only inside a {@link Window}.
  * Includes functionality for work with datasources and other windows.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public interface IFrame
         extends ExpandingLayout,
@@ -32,11 +31,6 @@ public interface IFrame
                 Component.ActionsHolder
 {
     String NAME = "iframe";
-
-    /**
-     * @return Full component path with '.' delimeter
-     */
-    String getFullId();
 
     WindowContext getContext();
 
