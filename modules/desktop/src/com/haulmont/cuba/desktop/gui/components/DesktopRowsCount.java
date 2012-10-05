@@ -11,6 +11,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -22,9 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.RowsCountComponent> implements RowsCount {
 
@@ -38,10 +38,12 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         impl = new RowsCountComponent();
     }
 
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         if (datasource != null) {
@@ -76,6 +78,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                         }
                     }
             );
+            if (datasource.getState() == Datasource.State.VALID) {
+                onCollectionChanged();
+            }
         }
     }
 

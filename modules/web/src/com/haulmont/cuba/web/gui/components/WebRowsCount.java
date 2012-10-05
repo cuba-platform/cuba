@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.02.11 14:56
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -14,9 +9,14 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.vaadin.ui.Button;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class WebRowsCount
         extends WebAbstractComponent<com.haulmont.cuba.web.toolkit.ui.RowsCount>
         implements RowsCount {
@@ -31,10 +31,12 @@ public class WebRowsCount
         component.setStyleName("table-rows-count");
     }
 
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         if (datasource != null) {
@@ -48,6 +50,7 @@ public class WebRowsCount
             );
             component.getCountButton().addListener(
                     new Button.ClickListener() {
+                        @Override
                         public void buttonClick(Button.ClickEvent event) {
                             onLinkClick();
                         }
@@ -55,6 +58,7 @@ public class WebRowsCount
             );
             component.getPrevButton().addListener(
                     new Button.ClickListener() {
+                        @Override
                         public void buttonClick(Button.ClickEvent event) {
                             onPrevClick();
                         }
@@ -62,11 +66,15 @@ public class WebRowsCount
             );
             component.getNextButton().addListener(
                     new Button.ClickListener() {
+                        @Override
                         public void buttonClick(Button.ClickEvent event) {
                             onNextClick();
                         }
                     }
             );
+            if (datasource.getState() == Datasource.State.VALID) {
+                onCollectionChanged();
+            }
         }
     }
 
