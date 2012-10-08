@@ -15,10 +15,15 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.TriggeringEventEvaluator;
 
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Transport;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
@@ -44,6 +49,64 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
 
     public void setInterval(int interval) {
         this.interval = interval;
+    }
+
+    @Override
+    public void activateOptions() {
+        super.activateOptions();
+
+        // additionally add to the end of message host name and IP address of machine.
+        String hostName = null;
+        try {
+            hostName = determineHostName();
+        } catch (Exception ex) {
+            LogLog.error("Unable to determine host name", ex);
+        }
+
+        try {
+            String compoundSubject = getCompoundSubject(hostName);
+            if (compoundSubject.length() > 0) {
+                try {
+                    msg.setSubject(MimeUtility.encodeText(compoundSubject, "UTF-8", null));
+                } catch (UnsupportedEncodingException ex) {
+                    LogLog.error("Unable to encode SMTP subject", ex);
+                }
+            }
+        } catch (MessagingException e) {
+            LogLog.error("Could not activate SMTPAppender options.", e);
+        }
+    }
+
+    private String getCompoundSubject(String hostName) {
+        StringBuilder sb = new StringBuilder();
+        if (getSubject() != null) {
+            sb.append(getSubject());
+        }
+        if (hostName != null && hostName.length() > 0) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(hostName);
+        }
+
+        return sb.toString();
+    }
+
+    private String determineHostName() {
+        InetAddress address;
+        try {
+            address = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            LogLog.error("Unable to get local host IP address", e);
+            return "<unknown>";
+        }
+        StringBuilder sb = new StringBuilder()
+                .append(address.getHostName())
+                .append(" (")
+                .append(address.getHostAddress())
+                .append(")");
+        String res = sb.toString();
+        return res;
     }
 
     public void close() {
