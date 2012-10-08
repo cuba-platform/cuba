@@ -43,22 +43,22 @@ import java.util.*;
 public class DbUpdaterImpl implements DbUpdater {
 
     // File extension handler
-    private interface FileHandler {
+    protected interface FileHandler {
         void run(File file);
     }
 
     @Inject
-    private Scripting scripting;
+    protected Scripting scripting;
 
-    private boolean changelogTableExists;
+    protected boolean changelogTableExists;
 
     protected File dbDir;
 
-    private static final String SQL_EXTENSION = "sql";
-    private static final String GROOVY_EXTENSION = "groovy";
+    protected static final String SQL_EXTENSION = "sql";
+    protected static final String GROOVY_EXTENSION = "groovy";
 
     // register handlers for script files
-    private HashMap<String, FileHandler> extensionHandlers = new HashMap<>();
+    protected HashMap<String, FileHandler> extensionHandlers = new HashMap<>();
 
     {
         extensionHandlers.put(SQL_EXTENSION, new FileHandler() {
@@ -75,7 +75,7 @@ public class DbUpdaterImpl implements DbUpdater {
         });
     }
 
-    private ClusterManagerAPI clusterManager;
+    protected ClusterManagerAPI clusterManager;
 
     private Log log = LogFactory.getLog(DbUpdaterImpl.class);
 
@@ -130,7 +130,7 @@ public class DbUpdaterImpl implements DbUpdater {
         return list;
     }
 
-    private boolean dbInitialized() {
+    protected boolean dbInitialized() {
         Connection connection = null;
         try {
             connection = PersistenceProvider.getDataSource().getConnection();
@@ -158,7 +158,7 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private void doInit() {
+    protected void doInit() {
         log.info("Initializing database");
 
         createChangelogTable();
@@ -174,7 +174,7 @@ public class DbUpdaterImpl implements DbUpdater {
         log.info("Database initialized");
     }
 
-    private List<File> getUpdateScripts() {
+    protected List<File> getUpdateScripts() {
         List<File> databaseScripts = new ArrayList<>();
         List<File> groovyScripts = new ArrayList<>();
 
@@ -201,7 +201,7 @@ public class DbUpdaterImpl implements DbUpdater {
         return databaseScripts;
     }
 
-    private List<File> getScriptsByExtension(Collection files, final URI scriptDirUri, final String extension) {
+    protected List<File> getScriptsByExtension(Collection files, final URI scriptDirUri, final String extension) {
         Collection scriptsCollection = CollectionUtils.select(files, new Predicate() {
             @Override
             public boolean evaluate(Object object) {
@@ -222,7 +222,7 @@ public class DbUpdaterImpl implements DbUpdater {
         return scripts;
     }
 
-    private String getScriptName(File file) {
+    protected String getScriptName(File file) {
         try {
             String path = file.getCanonicalPath();
             String dir = dbDir.getCanonicalPath();
@@ -232,7 +232,7 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private void doUpdate() {
+    protected void doUpdate() {
         log.info("Updating database...");
 
         if (!changelogTableExists) {
@@ -267,13 +267,13 @@ public class DbUpdaterImpl implements DbUpdater {
      * Mark all SQL updates scripts as evaluated
      * Try to execute Groovy scripts
      */
-    private void prepareScripts() {
+    protected void prepareScripts() {
         List<File> updateFiles = getUpdateScripts();
         for (File file : updateFiles)
             markScript(getScriptName(file), true);
     }
 
-    private Set<String> getExecutedScripts() {
+    protected Set<String> getExecutedScripts() {
         QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
         try {
             Set<String> scripts = runner.query("select SCRIPT_NAME from SYS_DB_CHANGELOG",
@@ -293,7 +293,7 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private void createChangelogTable() {
+    protected void createChangelogTable() {
         QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
         try {
             runner.update("create table SYS_DB_CHANGELOG(" +
@@ -305,7 +305,7 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private void executeSqlScript(File file) {
+    protected void executeSqlScript(File file) {
         String script;
         try {
             script = FileUtils.readFileToString(file);
@@ -336,12 +336,12 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private void executeGroovyScript(File file) {
+    protected void executeGroovyScript(File file) {
         Binding bind = new Binding();
         scripting.runGroovyScript(getScriptName(file), bind);
     }
 
-    private void executeScript(File file) {
+    protected void executeScript(File file) {
         log.info("Executing script " + file.getPath());
         String filename = file.getName();
         String extension = getFileExtension(filename);
@@ -356,12 +356,12 @@ public class DbUpdaterImpl implements DbUpdater {
             log.warn("Update script ignored, file extension undefined:" + file.getName());
     }
 
-    private String getFileExtension(String filename) {
+    protected String getFileExtension(String filename) {
         int dotPos = filename.lastIndexOf(".");
         return filename.substring(dotPos + 1);
     }
 
-    private void markScript(String name, boolean init) {
+    protected void markScript(String name, boolean init) {
         QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
         try {
             runner.update("insert into SYS_DB_CHANGELOG (SCRIPT_NAME, IS_INIT) values (?, ?)",
@@ -372,7 +372,7 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private List<File> getInitScripts() {
+    protected List<File> getInitScripts() {
         List<File> files = new ArrayList<>();
         if (dbDir.exists()) {
             String[] moduleDirs = dbDir.list();
