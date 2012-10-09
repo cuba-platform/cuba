@@ -27,7 +27,6 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
 
     private final List<TimerListener> timerListeners = new LinkedList<TimerListener>();
 
-    private static final long serialVersionUID = -6176423005954649715L;
     protected Listener listener;
 
     public WebTimer() {

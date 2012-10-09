@@ -53,8 +53,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.util.*;
 
-import com.haulmont.cuba.web.toolkit.Timer;
-
 /**
  * Left panel containing application and search folders.
  *
@@ -147,6 +145,9 @@ public class FoldersPane extends VerticalLayout {
 
     protected MenuBar.Command createMenuBarCommand() {
         return new MenuBar.Command() {
+
+            private static final long serialVersionUID = 6869815029204595973L;
+
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 showFolders(!visible);
@@ -291,6 +292,8 @@ public class FoldersPane extends VerticalLayout {
             }
         }
         tree.addListener(new Tree.ExpandListener() {
+            private static final long serialVersionUID = 5469841059576722790L;
+
             @Override
             public void nodeExpand(Tree.ExpandEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
@@ -301,6 +304,8 @@ public class FoldersPane extends VerticalLayout {
             }
         });
         tree.addListener(new Tree.CollapseListener() {
+            private static final long serialVersionUID = 5575939977767407729L;
+
             @Override
             public void nodeCollapse(Tree.CollapseEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
@@ -616,6 +621,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class FolderTreeStyleProvider implements Tree.ItemStyleGenerator {
+        private static final long serialVersionUID = 3346848644718707748L;
+
         @Override
         public String getStyle(Object itemId) {
             Folder folder = ((Folder) itemId);
@@ -641,6 +648,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
+        private static final long serialVersionUID = -5975272418037777967L;
+
         @Override
         public void itemClick(ItemClickEvent event) {
             Folder folder = (Folder) event.getItemId();
@@ -658,6 +667,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class AppFolderActionsHandler implements Action.Handler {
+
+        private static final long serialVersionUID = -2312945707104156806L;
 
         private OpenAction openAction = new OpenAction();
         private CreateAction createAction = new CreateAction(true);
@@ -692,6 +703,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class SearchFolderActionsHandler extends AppFolderActionsHandler {
+
+        private static final long serialVersionUID = -4187914216755933883L;
 
         private OpenAction openAction = new OpenAction();
         private CopyAction copyAction = new CopyAction();
@@ -775,6 +788,8 @@ public class FoldersPane extends VerticalLayout {
 
     protected abstract class FolderAction extends Action {
 
+        private static final long serialVersionUID = -4097329335200783939L;
+
         public FolderAction(String caption) {
             super(caption);
         }
@@ -783,6 +798,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class OpenAction extends FolderAction {
+
+        private static final long serialVersionUID = 1000154780292112851L;
 
         public OpenAction() {
             super(messages.getMainMessage("folders.openFolderAction"));
@@ -796,6 +813,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class CreateAction extends FolderAction {
+
+        private static final long serialVersionUID = -7050374751418360734L;
 
         private boolean isAppFolder;
 
@@ -820,6 +839,8 @@ public class FoldersPane extends VerticalLayout {
                     });
 
             window.addListener(new com.vaadin.ui.Window.CloseListener() {
+                private static final long serialVersionUID = 5604371155722856067L;
+
                 @Override
                 public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                     App.getInstance().getAppWindow().removeWindow(window);
@@ -830,6 +851,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class CopyAction extends FolderAction {
+        private static final long serialVersionUID = -4472902118887902921L;
+
         public CopyAction() {
             super(messages.getMainMessage("folders.copyFolderAction"));
         }
@@ -844,6 +867,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class EditAction extends FolderAction {
+
+        private static final long serialVersionUID = 297056776792080638L;
 
         public EditAction() {
             super(messages.getMainMessage("folders.editFolderAction"));
@@ -873,6 +898,8 @@ public class FoldersPane extends VerticalLayout {
                     return;
             }
             window.addListener(new com.vaadin.ui.Window.CloseListener() {
+                private static final long serialVersionUID = 3267969862627920749L;
+
                 @Override
                 public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                     App.getInstance().getAppWindow().removeWindow(window);
@@ -883,6 +910,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class RemoveAction extends FolderAction {
+
+        private static final long serialVersionUID = 6861269931995018516L;
 
         public RemoveAction() {
             super(messages.getMainMessage("folders.removeFolderAction"));
@@ -910,6 +939,8 @@ public class FoldersPane extends VerticalLayout {
 
     protected class ExportAction extends FolderAction {
 
+        private static final long serialVersionUID = -8455267774573271204L;
+
         public ExportAction() {
             super(messages.getMainMessage("folders.exportFolderAction"));
         }
@@ -925,6 +956,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     private class ImportAction extends FolderAction {
+        private static final long serialVersionUID = 5466565178242730937L;
+
         protected ImportAction() {
             super(messages.getMainMessage("folders.importFolderAction"));
         }
