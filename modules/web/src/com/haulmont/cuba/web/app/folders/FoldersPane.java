@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -22,6 +23,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
@@ -42,6 +44,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -928,29 +931,30 @@ public class FoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
-            // TODO Get rid of ReportImportDialog here
-//            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-//            final ReportImportDialog importDialog = App.getInstance().getWindowManager().
-//                    openWindow(windowConfig.getWindowInfo("report$Report.fileUploadDialog"),
-//                            WindowManager.OpenType.DIALOG);
-//
-//            importDialog.addListener(new Window.CloseListener() {
-//                @Override
-//                public void windowClosed(String actionId) {
-//                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-//                        try {
-//                            foldersService.importFolder(folder, importDialog.getBytes());
-//                        } catch (Exception ex) {
-//                            importDialog.showNotification(
-//                                    importDialog.getMessage("notification.importFailed"),
-//                                    ex.getMessage(),
-//                                    IFrame.NotificationType.ERROR
-//                            );
-//                        }
-//                        refreshFolders();
-//                    }
-//                }
-//            });
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+            final FileUploadDialog dialog = App.getInstance().getWindowManager().
+                    openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
+
+            dialog.addListener(new Window.CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        try {
+                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.class);
+                            byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
+                            fileUploading.deleteFile(dialog.getFileId());
+                            foldersService.importFolder(folder, data);
+                        } catch (Exception ex) {
+                            dialog.showNotification(
+                                    dialog.getMessage("notification.importFailed"),
+                                    ex.getMessage(),
+                                    IFrame.NotificationType.ERROR
+                            );
+                        }
+                        refreshFolders();
+                    }
+                }
+            });
         }
     }
 
