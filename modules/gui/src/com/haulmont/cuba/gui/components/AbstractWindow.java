@@ -107,7 +107,7 @@ public class AbstractWindow extends AbstractFrame
      * @return true if the validation was succesful, false if there were any problems
      */
     public boolean validateAll() {
-        return ((Editor) frame).validateAll();
+        return ((Window) frame).validateAll();
     }
 
     @Override
