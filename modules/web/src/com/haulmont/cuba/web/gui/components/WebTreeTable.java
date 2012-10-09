@@ -116,10 +116,7 @@ public class WebTreeTable
             } else {
                 for (Map.Entry<Object, Column> entry : columns.entrySet()) {
                     if (entry.getKey() instanceof MetaPropertyPath) {
-                        final MetaPropertyPath propertyPath = (MetaPropertyPath) entry.getKey();
-                        if (view == null || metadataTools.viewContainsProperty(view, propertyPath)) {
-                            properties.add(propertyPath);
-                        }
+                        properties.add((MetaPropertyPath) entry.getKey());
                     }
                 }
             }
