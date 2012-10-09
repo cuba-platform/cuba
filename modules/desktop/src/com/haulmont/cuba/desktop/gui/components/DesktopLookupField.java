@@ -13,14 +13,16 @@ import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -28,20 +30,22 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopLookupField
         extends DesktopAbstractOptionsField<JComponent>
         implements LookupField {
     private static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
-    private BasicEventList<Object> items = new BasicEventList<Object>();
+    private BasicEventList<Object> items = new BasicEventList<>();
     private AutoCompleteSupport<Object> autoComplete;
     private String caption;
     private NewOptionHandler newOptionHandler;
@@ -109,6 +113,7 @@ public class DesktopLookupField
                             } else if ((selectedItem != null) && !newOptionAllowed) {
                                 updateComponent(prevValue);
                             }
+
                             updateMissingValueState();
                         }
                     }
@@ -136,12 +141,21 @@ public class DesktopLookupField
 
         textField = new JTextField();
         textField.setEditable(false);
-        valueFormatter = new DefaultValueFormatter(UserSessionProvider.getLocale());
+        valueFormatter = new DefaultValueFormatter(AppBeans.get(UserSessionSource.class).getLocale());
 
         composition.add(comboBox);
         impl = comboBox;
 
         DesktopComponentsHelper.adjustSize(comboBox);
+    }
+
+    private void updateOptionsDsItem() {
+        if (optionsDatasource != null) {
+            updatingInstance = true;
+            if (!ObjectUtils.equals(getValue(), optionsDatasource.getItem()))
+                optionsDatasource.setItem((Entity) getValue());
+            updatingInstance = false;
+        }
     }
 
     private void checkSelectedValue() {
@@ -156,6 +170,7 @@ public class DesktopLookupField
                 else
                     updateComponent(nullOption);
             }
+
             resetValueState = false;
         }
     }
@@ -222,7 +237,7 @@ public class DesktopLookupField
                 title = InstanceUtils.getInstanceName((Instance) value);
 
             if (value instanceof Enum)
-                title = MessageProvider.getMessage((Enum) value);
+                title = AppBeans.get(Messages.class).getMessage((Enum) value);
 
             return new MapKeyWrapper(title);
         } else if (optionsList != null) {
@@ -383,6 +398,7 @@ public class DesktopLookupField
         settingValue = true;
         try {
             super.setValue(value);
+            updateOptionsDsItem();
         } finally {
             settingValue = false;
         }
