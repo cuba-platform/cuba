@@ -19,6 +19,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.*;
@@ -53,9 +54,9 @@ public abstract class AbstractMessages implements Messages {
 
     private String mainMessagePack;
 
-    protected Map<String, String> strCache = new ConcurrentHashMap<String, String>();
+    protected Map<String, String> strCache = new ConcurrentHashMap<>();
 
-    protected Map<String, String> notFoundCache = new ConcurrentHashMap<String, String>();
+    protected Map<String, String> notFoundCache = new ConcurrentHashMap<>();
 
     protected abstract Locale getUserLocale();
 
@@ -177,7 +178,7 @@ public abstract class AbstractMessages implements Messages {
         if (key == null)
             throw new IllegalArgumentException("Message key is null");
 
-        String notFoundKey = makeCacheKey(packs, key, locale);
+        String notFoundKey = makeCacheKey(packs, key, locale, false);
         String notFoundValue = notFoundCache.get(notFoundKey);
         if (notFoundValue != null)
             return notFoundValue;
@@ -191,7 +192,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private String searchMessage(String packs, String key, Locale locale, boolean defaultLocale) {
-        List<String> processedPacks = new ArrayList<String>();
+        List<String> processedPacks = new ArrayList<>();
         StrTokenizer tokenizer = new StrTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
@@ -204,7 +205,7 @@ public abstract class AbstractMessages implements Messages {
             if (msg == null && !defaultLocale) {
                 msg = searchRemotely(pack, key, locale);
                 if (msg != null) {
-                    String cacheKey = makeCacheKey(pack, key, locale);
+                    String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
                     cache(cacheKey, msg);
                 }
             }
@@ -212,7 +213,7 @@ public abstract class AbstractMessages implements Messages {
             if (msg != null) {
                 if (!processedPacks.isEmpty()) {
                     for (String p : processedPacks) {
-                        String cacheKey = makeCacheKey(p, key, locale);
+                        String cacheKey = makeCacheKey(p, key, locale, defaultLocale);
                         cache(cacheKey, msg);
                     }
                 }
@@ -226,7 +227,7 @@ public abstract class AbstractMessages implements Messages {
         else {
             if (log.isTraceEnabled()) {
                 String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
-                log.trace("Resource '" + makeCacheKey(packName, key, locale) + "' not found");
+                log.trace("Resource '" + makeCacheKey(packName, key, locale, defaultLocale) + "' not found");
             }
             return null;
         }
@@ -258,7 +259,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private String searchFiles(String pack, String key, Locale locale, boolean defaultLocale) {
-        String cacheKey = makeCacheKey(pack, key, locale);
+        String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
 
         String msg = strCache.get(cacheKey);
         if (msg != null)
@@ -296,7 +297,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private String searchClasspath(String pack, String key, Locale locale, boolean defaultLocale) {
-        String cacheKey = makeCacheKey(pack, key, locale);
+        String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
 
         String msg = strCache.get(cacheKey);
         if (msg != null)
@@ -390,7 +391,7 @@ public abstract class AbstractMessages implements Messages {
             properties.load(reader);
             for (String k : properties.stringPropertyNames()) {
                 if (!k.equals("@include"))
-                    cache(makeCacheKey(pack, k, locale), properties.getProperty(k));
+                    cache(makeCacheKey(pack, k, locale, defaultLocale), properties.getProperty(k));
             }
 
             // process includes after to support overriding
@@ -399,12 +400,9 @@ public abstract class AbstractMessages implements Messages {
             for (Properties includedProperties : includes) {
                 for (String k : includedProperties.stringPropertyNames()) {
                     if (!k.equals("@include"))
-                        cache(makeCacheKey(pack, k, locale), includedProperties.getProperty(k));
+                        cache(makeCacheKey(pack, k, locale, defaultLocale), includedProperties.getProperty(k));
                 }
             }
-
-        } catch (UnsupportedEncodingException e) {
-            log.warn("Unable to read " + packPath, e);
         } catch (IOException e) {
             log.warn("Unable to read " + packPath, e);
         } finally {
@@ -412,7 +410,10 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
-    private String makeCacheKey(String pack, String key, Locale locale) {
+    private String makeCacheKey(String pack, String key, @Nullable Locale locale, boolean defaultLocale) {
+        if (defaultLocale)
+            return pack + "/default/" + key;
+
         return pack + "/" + (locale == null ? "default" : locale) + "/" + key;
     }
 
