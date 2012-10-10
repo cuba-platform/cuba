@@ -4,34 +4,24 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import java.util.Date;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.DateTimeService;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.VCalendarPanel.FocusChangeListener;
 import com.vaadin.terminal.gwt.client.ui.VCalendarPanel.FocusOutListener;
 import com.vaadin.terminal.gwt.client.ui.VCalendarPanel.SubmitListener;
 import com.vaadin.terminal.gwt.client.ui.VCalendarPanel.TimeChangeListener;
+
+import java.util.Date;
 
 /**
  * Represents a date selection component with a text field and a popup date
@@ -46,19 +36,20 @@ import com.vaadin.terminal.gwt.client.ui.VCalendarPanel.TimeChangeListener;
 public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         ClickHandler, CloseHandler<PopupPanel>, SubPartAware {
 
-    private final Button calendarToggle;
+    protected final Button calendarToggle;
 
-    private VCalendarPanel calendar;
+    protected VCalendarPanel calendar;
 
-    private final VOverlay popup;
-    private boolean open = false;
-    private boolean parsable = true;
+    protected final VOverlay popup;
+    protected boolean open = false;
+    protected boolean parsable = true;
 
     public VPopupCalendar() {
         super();
 
         calendarToggle = new Button();
-        calendarToggle.setStyleName(CLASSNAME + "-button");
+//        calendarToggle.setStyleName(CLASSNAME + "-button");
+        calendarToggle.setStylePrimaryName(CLASSNAME + "-button");
         calendarToggle.setText("");
         calendarToggle.addClickHandler(this);
         calendarToggle.getElement().setTabIndex(-2);

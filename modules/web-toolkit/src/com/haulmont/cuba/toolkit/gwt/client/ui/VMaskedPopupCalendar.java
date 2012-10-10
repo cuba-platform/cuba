@@ -142,12 +142,16 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
                 setMask(mask);
             else
                 textBox.setCursorPos(getPreviousPos(0));
+
+            calendarToggle.addStyleDependentName("focus");
         }
     };
 
     private BlurHandler blurHandler = new BlurHandler() {
 
         public void onBlur(BlurEvent event) {
+            calendarToggle.removeStyleDependentName("focus");
+
             if (isReadonly())
                 return;
             if (!string.toString().equals(nullRepresentation)) {

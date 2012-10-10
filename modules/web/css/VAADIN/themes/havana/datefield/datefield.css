@@ -16,9 +16,13 @@
     width: 25px;
     margin: 0;
     border: none;
-    background: #fff url(img/date-select-btn.png) no-repeat right 0;
+    background: #fff url(img/normal/date-select-btn.png) no-repeat right 0;
     vertical-align: top;
     cursor: pointer;
+}
+
+.v-datefield-button-focus {
+    background: #fff url(img/focus/date-select-btn-focus.png) no-repeat right 0;
 }
 
 .v-datefield-button-readonly {
