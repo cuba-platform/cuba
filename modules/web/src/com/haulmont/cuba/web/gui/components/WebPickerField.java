@@ -49,7 +49,7 @@ public class WebPickerField
 
     protected MetaClass metaClass;
 
-    protected List<Action> actions = new ArrayList<Action>();
+    protected List<Action> actions = new ArrayList<>();
 
     public WebPickerField() {
         component = new Picker(this);

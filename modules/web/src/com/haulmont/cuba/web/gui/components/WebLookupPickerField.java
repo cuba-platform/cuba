@@ -18,9 +18,8 @@ import com.vaadin.ui.Component;
 import java.util.Collection;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class WebLookupPickerField
         extends WebLookupField
@@ -107,6 +106,16 @@ public class WebLookupPickerField
     }
 
     @Override
+    public void setDescription(String description) {
+        pickerField.setDescription(description);
+    }
+
+    @Override
+    public String getDescription() {
+        return pickerField.getDescription();
+    }
+
+    @Override
     public Action getAction(String id) {
         return pickerField.getAction(id);
     }
@@ -141,12 +150,6 @@ public class WebLookupPickerField
     public void setRequired(boolean required) {
         component.setNullSelectionAllowed(!required);
         pickerField.setRequired(required);
-    }
-
-    @Override
-    public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
-        pickerField.setRequiredMessage(msg);
     }
 
     @Override

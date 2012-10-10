@@ -8,19 +8,15 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class PickerField extends CustomField {
 
@@ -31,7 +27,7 @@ public class PickerField extends CustomField {
     protected boolean required;
     protected String requiredError;
 
-    protected List<Button> buttons = new ArrayList<Button>();
+    protected List<Button> buttons = new ArrayList<>();
     private HorizontalLayout container;
 
     public PickerField() {
@@ -49,6 +45,7 @@ public class PickerField extends CustomField {
         container.setWidth("100%");
 
         container.addComponent(field);
+        container.setComponentAlignment(field, Alignment.BOTTOM_LEFT);
         field.setWidth("100%");
         container.setExpandRatio(field, 1);
 
@@ -82,6 +79,7 @@ public class PickerField extends CustomField {
         button.setTabIndex(-1);
         buttons.add(button);
         container.addComponent(button);
+        container.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
     }
 
     public void removeButton(Button button) {

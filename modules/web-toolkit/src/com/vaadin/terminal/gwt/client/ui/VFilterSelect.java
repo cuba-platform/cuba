@@ -1132,6 +1132,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
 
         addStyleDependentName("focus");
+
+        Container layout = Util.getLayout(this);
+        if (layout instanceof VOrderedLayout) {
+            VOrderedLayout orderedLayout = (VOrderedLayout) layout;
+            orderedLayout.addStyleDependentName("childfocus");
+        }
     }
 
     /**
@@ -1182,6 +1188,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             }
         }
         removeStyleDependentName("focus");
+
+        Container layout = Util.getLayout(this);
+        if (layout instanceof VOrderedLayout) {
+            VOrderedLayout orderedLayout = (VOrderedLayout) layout;
+            orderedLayout.removeStyleDependentName("childfocus");
+        }
 
         if (client.hasEventListeners(this, EventId.BLUR)) {
             client.updateVariable(paintableId, EventId.BLUR, "", true);

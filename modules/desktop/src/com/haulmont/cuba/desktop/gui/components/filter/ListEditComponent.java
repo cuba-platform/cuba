@@ -55,7 +55,7 @@ public class ListEditComponent extends Picker {
         contentPanel.setOpaque(false);
         actionsPanel.setOpaque(false);
 
-        pickerButton = new JButton(App.getInstance().getResources().getIcon("pickerfield/img/lookup-btn.png"));
+        pickerButton = new JButton(App.getInstance().getResources().getIcon("pickerfield/img/normal/lookup-btn.png"));
         addButton(pickerButton);
         this.itemClass = itemClass;
 
