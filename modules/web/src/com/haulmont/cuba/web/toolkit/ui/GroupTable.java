@@ -693,6 +693,15 @@ public class GroupTable extends Table implements GroupTableContainer {
                 groupProperties[i] = columnIdMap.get(ids[i].toString());
             }
             newGroupProperties = groupProperties;
+            // Deny group by generated columns
+            if (!columnGenerators.isEmpty()) {
+                List<Object> notGeneratedProperties = new ArrayList<>();
+                for (Object id : newGroupProperties) {
+                    if (!columnGenerators.containsKey(id))
+                        notGeneratedProperties.add(id);
+                }
+                newGroupProperties = notGeneratedProperties.toArray();
+            }
         }
 
         if (variables.containsKey("collapsedcolumns")) {
@@ -793,7 +802,17 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     public Collection<?> getGroupProperties() {
-        return ((GroupTableContainer) items).getGroupProperties();
+        Collection<?> groupProperties = ((GroupTableContainer) items).getGroupProperties();
+         // Deny group by generated columns
+        if (!columnGenerators.isEmpty()) {
+            List<Object> notGeneratedGroupProps = new ArrayList<>();
+            for (Object id : groupProperties) {
+                if (!columnGenerators.containsKey(id))
+                    notGeneratedGroupProps.add(id);
+            }
+            return notGeneratedGroupProps;
+        } else
+            return groupProperties;
     }
 
     public void expand(Object id) {
