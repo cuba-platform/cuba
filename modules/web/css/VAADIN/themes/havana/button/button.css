@@ -53,7 +53,11 @@
 
 .v-button-link:focus {
     outline: none;
-    border: none;
+    border: 1px dashed #4d7ab2;
+}
+
+.breadcrumbs .v-button-link:focus {
+    border-style: none;
 }
 
 .v-button:hover {
@@ -134,10 +138,15 @@
 /* Link style (we really should deprecate this) */
 .v-button-link,
 .v-nativebutton-link {
-    border: none;
+    border: 1px solid transparent;
     text-align: left;
     background: transparent;
     padding: 0;
+}
+
+.breadcrumbs .v-button-link,
+.breadcrumbs .v-nativebutton-link {
+    border: none;
 }
 
 .v-button-link:hover,
