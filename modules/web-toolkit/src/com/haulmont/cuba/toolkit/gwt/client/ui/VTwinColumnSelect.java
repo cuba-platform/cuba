@@ -430,7 +430,11 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
         selections.addDoubleClickHandler(this);
 
         options.addStyleName(CLASSNAME + "-options");
+        addFocusHandler(options);
+
         selections.addStyleName(CLASSNAME + "-selections");
+        addFocusHandler(selections);
+
         buttons = new FlowPanel();
         buttons.setStyleName(CLASSNAME + "-buttons");
         add = new VButton();
@@ -448,6 +452,24 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
         buttons.add(remove);
         panel.add(buttons);
         panel.add(selections);
+    }
+
+    protected void addFocusHandler(final TwinColListBox listbox) {
+        listbox.addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event) {
+                if (!isDisabled() && !isReadonly())
+                    listbox.addStyleDependentName("focus");
+                else
+                    listbox.removeStyleDependentName("focus");
+            }
+        });
+        listbox.addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent event) {
+                listbox.removeStyleDependentName("focus");
+            }
+        });
     }
 
     @Override

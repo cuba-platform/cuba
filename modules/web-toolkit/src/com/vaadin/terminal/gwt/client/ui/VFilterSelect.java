@@ -561,6 +561,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     private final FlowPanel panel = new FlowPanel();
 
+    private Integer tabindex = null;
+
     private final TextBox tb = new TextBox() {
         @Override
         public void onBrowserEvent(Event event) {
@@ -725,8 +727,14 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         // not a FocusWidget -> needs own tabindex handling
         if (uidl.hasAttribute("tabindex")) {
-            tb.setTabIndex(uidl.getIntAttribute("tabindex"));
+            tabindex = uidl.getIntAttribute("tabindex");
         }
+
+        if (enabled & !readonly) {
+            if (tabindex != null)
+                tb.setTabIndex(tabindex);
+        } else
+            tb.setTabIndex(-1);
 
         immediate = uidl.hasAttribute("immediate");
 
@@ -858,9 +866,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         // Focus dependent style names are lost during the update, so we add
         // them here back again
-        if (focused) {
-            addStyleDependentName("focus");
-        }
+        updateFocused();
 
         initDone = true;
     }
@@ -1131,12 +1137,26 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             setPromptingOff("");
         }
 
-        addStyleDependentName("focus");
+        updateFocused();
+    }
 
-        Container layout = Util.getLayout(this);
-        if (layout instanceof VOrderedLayout) {
-            VOrderedLayout orderedLayout = (VOrderedLayout) layout;
-            orderedLayout.addStyleDependentName("childfocus");
+    private void updateFocused() {
+        if (focused && enabled && !readonly) {
+            addStyleDependentName("focus");
+
+            Container layout = Util.getLayout(this);
+            if (layout instanceof VOrderedLayout) {
+                VOrderedLayout orderedLayout = (VOrderedLayout) layout;
+                orderedLayout.addStyleDependentName("childfocus");
+            }
+        } else {
+            removeStyleDependentName("focus");
+
+            Container layout = Util.getLayout(this);
+            if (layout instanceof VOrderedLayout) {
+                VOrderedLayout orderedLayout = (VOrderedLayout) layout;
+                orderedLayout.removeStyleDependentName("childfocus");
+            }
         }
     }
 

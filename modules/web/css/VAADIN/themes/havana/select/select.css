@@ -101,9 +101,10 @@
     font-size: 8pt;
 }
 
-.v-app .v-filterselect .v-filterselect-input:focus,
-.v-window .v-filterselect .v-filterselect-input:focus,
-.v-popupview-popup .v-filterselect .v-filterselect-input:focus {
+.v-app .v-filterselect-focus .v-filterselect-input:focus,
+
+.v-window .v-filterselect-focus .v-filterselect-input:focus,
+.v-popupview-popup .v-filterselect-focus .v-filterselect-input:focus {
     background: #fff url(img/focus/bg-center-filter-focus.png) no-repeat right top;
 }
 

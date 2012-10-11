@@ -4,7 +4,7 @@
 }
 
 .twincolumn-listBox {
-    border: 1px solid #c3c3c3;
+    border: 1px solid #a5c4e0;
     background: #fff none;
     float: left;
     overflow-x: auto;
@@ -13,6 +13,10 @@
 
 .twincolumn-listBox:focus {
     outline-style: none;
+}
+
+.twincolumn-listBox-focus {
+    border-color: #4d7ab2;
 }
 
 .twincolumn-listBox-deco {

@@ -61,6 +61,8 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     private boolean lenient;
 
+    protected Integer tabindex = null;
+
     private static final String CLASSNAME_PROMPT = "prompt";
     private static final String ATTR_INPUTPROMPT = "prompt";
     private String inputPrompt = "";
@@ -131,8 +133,14 @@ public class VTextualDate extends VDateField implements Paintable, Field,
         buildDate();
         // not a FocusWidget -> needs own tabindex handling
         if (uidl.hasAttribute("tabindex")) {
-            text.setTabIndex(uidl.getIntAttribute("tabindex"));
+            tabindex = uidl.getIntAttribute("tabindex");
         }
+
+        if (enabled & !readonly) {
+            if (tabindex != null)
+                text.setTabIndex(tabindex);
+        } else
+            text.setTabIndex(-1);
 
         if (readonly) {
             text.addStyleDependentName("readonly");

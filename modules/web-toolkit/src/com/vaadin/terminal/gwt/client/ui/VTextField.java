@@ -16,8 +16,12 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.vaadin.terminal.gwt.client.*;
 
@@ -59,6 +63,8 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
     private boolean prompting = false;
 
     protected ShortcutActionHandler shortcutHandler;
+
+    private Integer fieldTabIndex = null;
 
     public VTextField() {
         this(DOM.createInputText());
@@ -142,7 +148,7 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
              * stabilized. In tests, about ten times better performance is
              * achieved with this optimization. See for eg. #2898
              */
-            DeferredCommand.addCommand(new Command() {
+            Scheduler.get().scheduleDeferred(new Command() {
                 public void execute() {
                     setText(fieldValue);
                 }
@@ -161,6 +167,17 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
                 }
                 shortcutHandler.updateActionMap(data);
             }
+        }
+
+        if (!isEnabled() || isReadOnly()) {
+            if (getTabIndex() != -1)
+                fieldTabIndex = getTabIndex();
+            setTabIndex(-1);
+        } else {
+            if (fieldTabIndex != null)
+                setTabIndex(fieldTabIndex);
+            else
+                fieldTabIndex = getTabIndex();
         }
     }
 
