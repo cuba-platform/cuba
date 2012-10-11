@@ -42,7 +42,7 @@
         <hbox id="contentPane" expand="contentSplit" spacing="true" margin="true" width="100%">
             <split id="contentSplit" height="100%" orientation="horizontal" pos="80" width="100%">
                 <!-- Table -->
-                <groupTable id="uiPermissionsTable" height="100%">
+                <groupTable id="uiPermissionsTable" height="100%" width="100%">
                     <columns>
                         <group>
                             <column id="screen" width="200"/>
@@ -53,7 +53,7 @@
                     <rows datasource="uiPermissionTargetsDs"/>
                 </groupTable>
                 <!-- Edit pane -->
-                <groupBox id="editPane" width="250" height="100%" caption="msg://permissions">
+                <groupBox id="editPane" width="100%" height="100%" caption="msg://permissions">
                     <vbox id="selectedComponentPanel" expand="panelSpacer" spacing="true" width="100%" height="100%"
                           visible="false">
                         <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"
