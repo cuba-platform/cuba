@@ -22,6 +22,10 @@
     margin: 0;
 }
 
+.pickerfield .v-button-link {
+    border: none;
+}
+
 .pickerfield .v-icon {
     margin: 0;
 }
