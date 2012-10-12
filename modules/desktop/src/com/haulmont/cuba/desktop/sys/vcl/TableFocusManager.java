@@ -18,6 +18,12 @@ import java.util.Set;
 /**
  * <p>Handle focus traversing in table</p>
  * <p>Supports focus forward, backward, up and down navigation</p>
+ * <p>Keys:
+ * <li>TAB - next cell/control</li>
+ * <li>SHIFT+TAB - previous cell/control</li>
+ * <li>CTRL+TAB - next component after table</li>
+ * <li>CTRL+SHIFT+TAB - previous component before table</li>
+ * </p>
  *
  * @author artamonov
  * @version $Id$
@@ -37,10 +43,16 @@ public class TableFocusManager {
         Set<AWTKeyStroke> backwardKeys = KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(
                 KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
         if (forwardKeys.contains(ks)) {
-            nextFocusElement();
+            if ((e.getModifiers() & KeyEvent.CTRL_MASK) > 0)
+                moveFocusToNextControl();
+            else
+                nextFocusElement();
             return true;
         } else if (backwardKeys.contains(ks)) {
-            prevFocusElement();
+            if ((e.getModifiers() & KeyEvent.CTRL_MASK) > 0)
+                moveFocusToPrevControl();
+            else
+                prevFocusElement();
             return true;
         } else if (e.getModifiers() == 0) {
             return processExtraKeyBinding(ks, e, condition, pressed);

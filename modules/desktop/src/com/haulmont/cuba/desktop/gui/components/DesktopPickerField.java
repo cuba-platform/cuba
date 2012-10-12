@@ -33,9 +33,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopPickerField
         extends DesktopAbstractField<Picker>
@@ -331,6 +330,7 @@ public class DesktopPickerField
         actionsOrder.add(action);
         DesktopButton dButton = new DesktopButton();
         dButton.setAction(action);
+        dButton.getImpl().setFocusable(false);
         impl.addButton(dButton.getImpl());
         // apply Editable after action owner is set
         if (action instanceof StandardAction)
@@ -348,10 +348,12 @@ public class DesktopPickerField
         }
     }
 
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionsOrder);
     }
 
+    @Override
     public Action getAction(String id) {
         for (Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {

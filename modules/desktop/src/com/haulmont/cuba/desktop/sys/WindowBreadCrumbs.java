@@ -9,18 +9,16 @@ package com.haulmont.cuba.desktop.sys;
 import com.haulmont.cuba.gui.components.Window;
 import org.jdesktop.swingx.JXHyperlink;
 
-import java.awt.FlowLayout;
-import java.awt.Color;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class WindowBreadCrumbs extends JPanel {
 
@@ -28,10 +26,10 @@ public class WindowBreadCrumbs extends JPanel {
         void windowClick(Window window);
     }
 
-    protected LinkedList<Window> windows = new LinkedList<Window>();
-    protected Map<JButton, Window> btn2win = new HashMap<JButton, Window>();
+    protected LinkedList<Window> windows = new LinkedList<>();
+    protected Map<JButton, Window> btn2win = new HashMap<>();
 
-    protected Set<Listener> listeners = new HashSet<Listener>();
+    protected Set<Listener> listeners = new HashSet<>();
 
     public WindowBreadCrumbs() {
         FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 5, 5);
@@ -87,9 +85,11 @@ public class WindowBreadCrumbs extends JPanel {
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
             JButton button = new JXHyperlink();
+            button.setFocusable(false);
             button.setText(window.getCaption().trim());
             button.addActionListener(
                     new ActionListener() {
+                        @Override
                         public void actionPerformed(ActionEvent e) {
                             Window win = btn2win.get((JButton)e.getSource());
                             if (win != null)
