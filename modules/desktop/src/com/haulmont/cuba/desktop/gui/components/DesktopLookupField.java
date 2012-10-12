@@ -152,8 +152,10 @@ public class DesktopLookupField
     private void updateOptionsDsItem() {
         if (optionsDatasource != null) {
             updatingInstance = true;
-            if (!ObjectUtils.equals(getValue(), optionsDatasource.getItem()))
-                optionsDatasource.setItem((Entity) getValue());
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                if (!ObjectUtils.equals(getValue(), optionsDatasource.getItem()))
+                    optionsDatasource.setItem((Entity) getValue());
+            }
             updatingInstance = false;
         }
     }
