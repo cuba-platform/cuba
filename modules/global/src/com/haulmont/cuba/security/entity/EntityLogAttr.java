@@ -10,11 +10,15 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -142,7 +146,7 @@ public class EntityLogAttr extends BaseUuidEntity {
     }
 
     private com.haulmont.chile.core.model.MetaClass getClassFromEntityName(String entityName) throws ClassNotFoundException {
-        Class<?> entityClass = Class.forName(entityName);
+        Class<?> entityClass = ReflectionHelper.loadClass(entityName);
         Metadata metadata = AppBeans.get(Metadata.class);
         return metadata.getSession().getClass(entityClass);
     }
