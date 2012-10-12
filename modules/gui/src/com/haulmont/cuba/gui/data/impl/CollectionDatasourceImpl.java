@@ -290,8 +290,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
+    @Override
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
+
+        if (item == this.item)
+            setItem(null);
 
         data.remove(item.getId());
         detachListener(item);

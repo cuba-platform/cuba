@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 16:06:25
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
@@ -33,6 +29,13 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+/**
+ * @param <T>
+ * @param <K>
+ *
+ * @author abramov
+ * @version $Id$
+ */
 public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         extends
         PropertyDatasourceImpl<T>
@@ -291,12 +294,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
 
         Collection<T> collection = __getCollection();
         if (collection != null) {
+            if (item == this.item)
+                setItem(null);
+
             collection.remove(item);
             detachListener(item);
 

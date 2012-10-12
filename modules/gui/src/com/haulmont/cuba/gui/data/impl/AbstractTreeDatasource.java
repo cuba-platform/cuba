@@ -107,7 +107,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         else {
             final List<Node<T>> children = node.getChildren();
 
-            final List<K> ids = new ArrayList<K>();
+            final List<K> ids = new ArrayList<>();
             for (Node<T> targetNode : children) {
                 ids.add(targetNode.getData().getId());
             }
