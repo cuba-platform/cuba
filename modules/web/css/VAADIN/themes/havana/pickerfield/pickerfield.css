@@ -46,7 +46,12 @@
     background-color: transparent;
 }
 
+.pickerfield {
+    background-color: #fff;
+}
+
 .pickerfield .v-filterselect,
-.pickerfield .v-button {
+.pickerfield .v-button,
+.pickerfield .v-textfield-readonly {
     background-color: #fff;
 }
