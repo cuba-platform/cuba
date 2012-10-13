@@ -83,6 +83,8 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     private DesktopWindowManager windowManager;
 
+    private String focusComponentId = null;
+
     public DesktopWindow() {
         initLayout();
         delegate = createDelegate();
@@ -133,12 +135,18 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void setFocusComponent(String componentId) {
+        this.focusComponentId = componentId;
         Component component = getComponent(componentId);
         if (component != null) {
             component.requestFocus();
         } else {
             log.error("Can't find focus component: " + componentId);
         }
+    }
+
+    @Override
+    public String getFocusComponent() {
+        return focusComponentId;
     }
 
     @Override

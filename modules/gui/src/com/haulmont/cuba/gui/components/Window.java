@@ -41,6 +41,9 @@ public interface Window extends IFrame, Component.HasCaption {
     /** Set focus to component **/
     void setFocusComponent(String componentId);
 
+    /** Set focus to component id **/
+    String getFocusComponent();
+
     /** Get this window user settings */
     Settings getSettings();
 

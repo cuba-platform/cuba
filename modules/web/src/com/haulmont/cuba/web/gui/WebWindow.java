@@ -78,6 +78,8 @@ public class WebWindow
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
+    private String focusComponentId = null;
+
     public WebWindow() {
         component = createLayout();
         delegate = createDelegate();
@@ -409,12 +411,18 @@ public class WebWindow
 
     @Override
     public void setFocusComponent(String componentId) {
+        this.focusComponentId = componentId;
         Component component = getComponent(componentId);
         if (component != null) {
             component.requestFocus();
         } else {
             log.error("Can't find focus component: " + componentId);
         }
+    }
+
+    @Override
+    public String getFocusComponent() {
+        return focusComponentId;
     }
 
     @Override
