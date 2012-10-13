@@ -108,6 +108,7 @@ public class DesktopLookupField
                             if (selectedItem instanceof ValueWrapper) {
                                 Object selectedValue = ((ValueWrapper) selectedItem).getValue();
                                 setValue(selectedValue);
+                                updateOptionsDsItem();
                             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                                 newOptionHandler.addNewOption((String) selectedItem);
                             } else if ((selectedItem != null) && !newOptionAllowed) {
@@ -400,7 +401,6 @@ public class DesktopLookupField
         settingValue = true;
         try {
             super.setValue(value);
-            updateOptionsDsItem();
         } finally {
             settingValue = false;
         }
