@@ -28,50 +28,62 @@ public class AbstractWindow extends AbstractFrame
         super(frame);
     }
 
+    @Override
     public Element getXmlDescriptor() {
         return ((HasXmlDescriptor) frame).getXmlDescriptor();
     }
 
+    @Override
     public void setXmlDescriptor(Element element) {
         ((HasXmlDescriptor) frame).setXmlDescriptor(element);
     }
 
+    @Override
     public DsContext getDsContext() {
         return frame.getDsContext();
     }
 
+    @Override
     public void setDsContext(DsContext dsContext) {
         frame.setDsContext(dsContext);
     }
 
+    @Override
     public void addListener(CloseListener listener) {
         ((Window) frame).addListener(listener);
     }
 
+    @Override
     public void removeListener(CloseListener listener) {
         ((Window) frame).removeListener(listener);
     }
 
+    @Override
     public String getCaption() {
         return ((Window) frame).getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         ((Window) frame).setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return ((Window) frame).getDescription();
     }
 
+    @Override
     public void setDescription(String description) {
         ((Window) frame).setDescription(description);
     }
 
+    @Override
     public <T extends Window> T getWrappedWindow() {
         return (T) frame;
     }
 
+    @Override
     public void applySettings(Settings settings) {
         ((Window) frame).applySettings(settings);
     }
@@ -81,19 +93,25 @@ public class AbstractWindow extends AbstractFrame
     }
 
     public void setFocusComponent(String componentId) {
-        Component component = getComponent(componentId);
-        if (component != null)
-            component.requestFocus();
+        ((Window) frame).setFocusComponent(componentId);
     }
 
+    @Override
+    public String getFocusComponent() {
+        return ((Window) frame).getFocusComponent();
+    }
+
+    @Override
     public Settings getSettings() {
         return ((Window) frame).getSettings();
     }
 
+    @Override
     public void addTimer(Timer timer) {
         ((Window) frame).addTimer(timer);
     }
 
+    @Override
     public Timer getTimer(String id) {
         return ((Window) frame).getTimer(id);
     }
