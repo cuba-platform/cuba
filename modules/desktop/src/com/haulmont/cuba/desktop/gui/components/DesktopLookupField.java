@@ -367,6 +367,7 @@ public class DesktopLookupField
             impl = comboBox;
         }
         this.editable = editable;
+        impl.setFocusable(editable);
         updateMissingValueState();
     }
 

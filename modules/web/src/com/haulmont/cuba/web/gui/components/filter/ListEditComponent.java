@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 23.09.2010 15:19:40
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
@@ -40,6 +35,10 @@ import org.apache.commons.lang.text.StrBuilder;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ListEditComponent extends CustomComponent implements com.vaadin.ui.Field {
 
     public static final int DEFAULT_WIDTH = 250;
@@ -57,9 +56,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     private List<String> runtimeEnum;
 
     private List listValue;
-    private Map<Object, String> values = new LinkedHashMap<Object, String>();
+    private Map<Object, String> values = new LinkedHashMap<>();
 
-    private List<ValueChangeListener> listeners = new ArrayList<ValueChangeListener>();
+    private List<ValueChangeListener> listeners = new ArrayList<>();
 
     public ListEditComponent(Class itemClass) {
         this.itemClass = itemClass;
@@ -83,6 +82,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         pickerButton.addStyleName("pickButton");
         pickerButton.addListener(
                 new Button.ClickListener() {
+                    @Override
                     public void buttonClick(Button.ClickEvent event) {
                         ListEditWindow window = new ListEditWindow(values);
                         com.haulmont.cuba.web.App.getInstance().getAppWindow().addWindow(window);
@@ -94,6 +94,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         clearButton.addStyleName("clearButton");
         clearButton.addListener(
                 new Button.ClickListener() {
+                    @Override
                     public void buttonClick(Button.ClickEvent event) {
                         setValue(null);
                         values.clear();
@@ -160,11 +161,11 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
     private void updateIcons() {
         if (isReadOnly()) {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/readonly/lookup-btn-readonly.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/readonly/clear-btn-readonly.png"));
+            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn-readonly.png"));
+            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn-readonly.png"));
         } else {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/normal/lookup-btn.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/normal/clear-btn.png"));
+            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn.png"));
+            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn.png"));
         }
     }
 
@@ -178,46 +179,57 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         pickerButton.addListener(listener);
     }
 
+    @Override
     public boolean isInvalidCommitted() {
         return field.isInvalidCommitted();
     }
 
+    @Override
     public void setInvalidCommitted(boolean isCommitted) {
         field.setInvalidCommitted(isCommitted);
     }
 
+    @Override
     public void commit() throws SourceException, com.vaadin.data.Validator.InvalidValueException {
         field.commit();
     }
 
+    @Override
     public void discard() throws SourceException {
         field.discard();
     }
 
+    @Override
     public boolean isModified() {
         return field.isModified();
     }
 
+    @Override
     public boolean isWriteThrough() {
         return field.isWriteThrough();
     }
 
+    @Override
     public void setWriteThrough(boolean writeTrough) throws SourceException, com.vaadin.data.Validator.InvalidValueException {
         field.setWriteThrough(writeTrough);
     }
 
+    @Override
     public boolean isReadThrough() {
         return field.isReadThrough();
     }
 
+    @Override
     public void setReadThrough(boolean readTrough) throws SourceException {
         field.setReadThrough(readTrough);
     }
 
+    @Override
     public Object getValue() {
         return listValue;
     }
 
+    @Override
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
         if (!ObjectUtils.equals(listValue, newValue)) {
             listValue = (List) newValue;
@@ -244,85 +256,105 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         return values;
     }
 
+    @Override
     public Class getType() {
         return List.class;
     }
 
+    @Override
     public Property getPropertyDataSource() {
         return field.getPropertyDataSource();
     }
 
+    @Override
     public void setPropertyDataSource(Property newDataSource) {
         field.setPropertyDataSource(newDataSource);
     }
 
+    @Override
     public void addValidator(com.vaadin.data.Validator validator) {
         field.addValidator(validator);
     }
 
+    @Override
     public Collection getValidators() {
         return field.getValidators();
     }
 
+    @Override
     public void removeValidator(com.vaadin.data.Validator validator) {
         field.removeValidator(validator);
     }
 
+    @Override
     public boolean isValid() {
         return field.isValid();
     }
 
+    @Override
     public void validate() throws com.vaadin.data.Validator.InvalidValueException {
         field.validate();
     }
 
+    @Override
     public boolean isInvalidAllowed() {
         return field.isInvalidAllowed();
     }
 
+    @Override
     public void setInvalidAllowed(boolean invalidAllowed) throws UnsupportedOperationException {
         field.setInvalidAllowed(invalidAllowed);
     }
 
+    @Override
     public void addListener(ValueChangeListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
     }
 
+    @Override
     public void removeListener(ValueChangeListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public void valueChange(Property.ValueChangeEvent event) {
         field.valueChange(event);
     }
 
+    @Override
     public void focus() {
         field.focus();
     }
 
+    @Override
     public int getTabIndex() {
         return field.getTabIndex();
     }
 
+    @Override
     public void setTabIndex(int tabIndex) {
         field.setTabIndex(tabIndex);
     }
 
+    @Override
     public boolean isRequired() {
         return required;
     }
 
+    @Override
     public void setRequired(boolean required) {
         this.required = required;
         requestRepaint();
     }
 
+    @Override
     public void setRequiredError(String requiredMessage) {
         this.requiredError = requiredMessage;
         requestRepaint();
     }
 
+    @Override
     public String getRequiredError() {
         return requiredError;
     }
@@ -396,6 +428,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 );
 
                 lookup.addListener(new ValueListener() {
+                    @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
                         if (value != null) {
                             String str = addEntityInstance((Instance) value);
@@ -416,6 +449,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
                 picker.addListener(
                         new ValueListener() {
+                            @Override
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                                 if (value != null) {
                                     String str = addEntityInstance((Instance) value);
@@ -434,6 +468,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 lookup.setOptionsList(runtimeEnum);
 
                 lookup.addListener(new ValueListener() {
+                    @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
                         if (value != null) {
                             String str = addRuntimeEnumValue((String) value);
@@ -455,6 +490,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 lookup.setOptionsMap(options);
 
                 lookup.addListener(new ValueListener() {
+                    @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
                         if (value != null) {
                             String str = addEnumValue((Enum) value);
@@ -506,6 +542,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             okBtn.setStyleName(WebButton.ICON_STYLE);
             okBtn.addListener(
                     new Button.ClickListener() {
+                        @Override
                         public void buttonClick(Button.ClickEvent event) {
                             commitList();
                         }
@@ -518,6 +555,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
             cancelBtn.addListener(
                     new Button.ClickListener() {
+                        @Override
                         public void buttonClick(Button.ClickEvent event) {
                             close();
                         }
@@ -561,6 +599,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             delItemBtn.addStyleName("filter-param-list-edit-del");
             delItemBtn.addListener(
                     new Button.ClickListener() {
+                        @Override
                         public void buttonClick(Button.ClickEvent event) {
                             values.remove(value);
                             listLayout.removeComponent(itemLayout);
@@ -586,4 +625,3 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
     }
 }
-

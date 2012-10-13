@@ -14,16 +14,15 @@ import com.haulmont.cuba.gui.components.Component;
 import javax.swing.*;
 
 /**
- * <p>$Id$</p>
- *
- * @author Alexander Budarov
+ * @author budarov
+ * @version $Id$
  */
 public class ComponentCaption extends JPanel {
 
     private Component owner;
 
     public ComponentCaption(Component owner) {
-        BoxLayoutAdapter adapter = BoxLayoutAdapter.create(this);
+        BoxLayoutAdapter.create(this);
         this.owner = owner;
         takeOwnerProperties();
     }
@@ -34,6 +33,7 @@ public class ComponentCaption extends JPanel {
         label.setText(((Component.HasCaption) owner).getCaption());
         if (((Component.HasCaption) owner).getDescription() != null) {
             ToolTipButton btn = new ToolTipButton();
+            btn.setFocusable(false);
             btn.setToolTipText(((Component.HasCaption) owner).getDescription());
             DesktopToolTipManager.getInstance().registerTooltip(btn);
             add(btn);

@@ -27,6 +27,7 @@ import java.util.Map;
  *
  * @see LookupPickerField
  *
+ * @author abramov
  * @version $Id$
  */
 public interface PickerField extends Field, Component.ActionsHolder {
@@ -113,8 +114,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     public static class LookupAction extends StandardAction {
 
-        private static final long serialVersionUID = 8632079803045944261L;
-
         public static final String NAME = ActionType.LOOKUP.getId();
 
         protected String lookupScreen;
@@ -124,7 +123,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/normal/lookup-btn.png";
+            icon = "pickerfield/img/lookup-btn.png";
         }
 
         public String getLookupScreen() {
@@ -186,7 +185,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/normal/clear-btn.png";
+            icon = "pickerfield/img/clear-btn.png";
         }
 
         @Override
@@ -208,7 +207,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public OpenAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/normal/open-btn.png";
+            icon = "pickerfield/img/open-btn.png";
         }
 
         public String getEditScreen() {

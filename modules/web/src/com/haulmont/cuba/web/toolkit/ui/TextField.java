@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 24.11.2009 15:29:23
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
@@ -17,8 +12,15 @@ import com.vaadin.terminal.PaintTarget;
 
 import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class TextField extends com.vaadin.ui.TextField implements Action.Container {
+
+    private boolean allowFocusReadonly = false;
+
     @Override
     protected ActionManager getActionManager() {
         if (actionManager == null) {
@@ -27,10 +29,12 @@ public class TextField extends com.vaadin.ui.TextField implements Action.Contain
         return actionManager;
     }
 
+    @Override
     public void addActionHandler(Action.Handler actionHandler) {
         getActionManager().addActionHandler(actionHandler);
     }
 
+    @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         if (actionManager != null) {
             actionManager.removeActionHandler(actionHandler);
@@ -43,6 +47,7 @@ public class TextField extends com.vaadin.ui.TextField implements Action.Contain
         if (actionManager != null) {
             actionManager.paintActions(null, target);
         }
+        target.addAttribute("allowFocusReadonly", allowFocusReadonly);
     }
 
     @Override
@@ -64,6 +69,15 @@ public class TextField extends com.vaadin.ui.TextField implements Action.Contain
     @Override
     public void setNullRepresentation(String nullRepresentation) {
         super.setNullRepresentation(nullRepresentation);
+        requestRepaint();
+    }
+
+    public boolean isAllowFocusReadonly() {
+        return allowFocusReadonly;
+    }
+
+    public void setAllowFocusReadonly(boolean allowFocusReadonly) {
+        this.allowFocusReadonly = allowFocusReadonly;
         requestRepaint();
     }
 }

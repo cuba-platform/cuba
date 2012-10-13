@@ -39,6 +39,7 @@ import java.util.LinkedList;
 public class DesktopPickerField
         extends DesktopAbstractField<Picker>
         implements PickerField {
+
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
@@ -53,7 +54,7 @@ public class DesktopPickerField
 
     private boolean editable = true;
 
-    protected java.util.List<Action> actionsOrder = new LinkedList<Action>();
+    protected java.util.List<Action> actionsOrder = new LinkedList<>();
     private String caption;
     private boolean updatingInstance;
 
@@ -320,7 +321,9 @@ public class DesktopPickerField
                 ((StandardAction) action).setEditable(isEditable());
         }
         if (!editable && impl.getEditor() instanceof JTextComponent) {
-            ((JTextComponent) impl.getEditor()).setEditable(editable);
+            JTextComponent editor = (JTextComponent) impl.getEditor();
+            editor.setEditable(editable);
+            editor.setFocusable(editable);
         }
         updateMissingValueState();
     }

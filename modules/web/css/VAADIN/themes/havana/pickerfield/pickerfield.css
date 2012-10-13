@@ -7,15 +7,15 @@
 .pickerfield .v-button {
     height: 25px;
     line-height: 18px;
-    background: url(img/normal/lookup-picker-btn.png) right;
+    background: url(img/lookup-picker-btn.png) right;
 }
 
 .pickerfield.v-readonly .v-button {
-    background: url(img/readonly/lookup-picker-btn-readonly.png) right;
+    background: url(img/lookup-picker-btn-readonly.png) right;
 }
 
 .pickerfield .v-horizontallayout-childfocus .v-button {
-    background: url(img/focus/lookup-picker-btn-focus.png) right;
+    background: url(img/lookup-picker-btn-focus.png) right;
 }
 
 .pickerfield .v-button-caption {

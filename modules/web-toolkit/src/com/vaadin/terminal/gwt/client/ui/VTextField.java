@@ -65,6 +65,7 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
     protected ShortcutActionHandler shortcutHandler;
 
     private Integer fieldTabIndex = null;
+    private boolean allowFocusReadonly = false;
 
     public VTextField() {
         this(DOM.createInputText());
@@ -169,15 +170,20 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
             }
         }
 
-        if (!isEnabled() || isReadOnly()) {
-            if (getTabIndex() != -1)
-                fieldTabIndex = getTabIndex();
-            setTabIndex(-1);
-        } else {
-            if (fieldTabIndex != null)
-                setTabIndex(fieldTabIndex);
-            else
-                fieldTabIndex = getTabIndex();
+        if (uidl.hasAttribute("allowFocusReadonly"))
+            allowFocusReadonly = uidl.getBooleanAttribute("allowFocusReadonly");
+
+        if (!allowFocusReadonly) {
+            if (!isEnabled() || isReadOnly()) {
+                if (getTabIndex() != -1)
+                    fieldTabIndex = getTabIndex();
+                setTabIndex(-1);
+            } else {
+                if (fieldTabIndex != null)
+                    setTabIndex(fieldTabIndex);
+                else
+                    fieldTabIndex = getTabIndex();
+            }
         }
     }
 

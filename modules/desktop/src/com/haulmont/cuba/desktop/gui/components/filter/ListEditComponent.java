@@ -31,9 +31,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class ListEditComponent extends Picker {
     protected JButton pickerButton;
@@ -46,16 +45,16 @@ public class ListEditComponent extends Picker {
     private List<String> runtimeEnum;
 
     private List listValue;
-    private Map<Object, String> values = new LinkedHashMap<Object, String>();
+    private Map<Object, String> values = new LinkedHashMap<>();
 
-    private List<ValueListener> listeners = new ArrayList<ValueListener>();
+    private List<ValueListener> listeners = new ArrayList<>();
 
     public ListEditComponent(Class itemClass) {
         setOpaque(false);
         contentPanel.setOpaque(false);
         actionsPanel.setOpaque(false);
 
-        pickerButton = new JButton(App.getInstance().getResources().getIcon("pickerfield/img/normal/lookup-btn.png"));
+        pickerButton = new JButton(App.getInstance().getResources().getIcon("pickerfield/img/lookup-btn.png"));
         addButton(pickerButton);
         this.itemClass = itemClass;
 
@@ -124,7 +123,6 @@ public class ListEditComponent extends Picker {
         String caption = new StrBuilder().appendWithSeparators(values.values(), ",").toString();
         setText(caption);
     }
-
 
     private class ListEditWindow extends JDialog {
         protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
@@ -349,8 +347,5 @@ public class ListEditComponent extends Picker {
             setValues(values);
             this.dispose();
         }
-
     }
-
-
 }

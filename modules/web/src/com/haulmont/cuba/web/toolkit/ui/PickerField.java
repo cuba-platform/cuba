@@ -69,6 +69,7 @@ public class PickerField extends CustomField {
         field.setImmediate(true);
         field.setReadOnly(true);
         ((TextField) field).setNullRepresentation("");
+        ((TextField) field).setAllowFocusReadonly(true);
     }
 
     public List<Button> getButtons() {
@@ -154,4 +155,3 @@ public class PickerField extends CustomField {
         field.focus();
     }
 }
-
