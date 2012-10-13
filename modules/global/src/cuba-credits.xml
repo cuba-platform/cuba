@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
   ~ Haulmont Technology proprietary and confidential.
   ~ Use is subject to license terms.
   -->
@@ -155,11 +156,7 @@ included both in freemarker.jar and in the source code:
 
         <item name="Apache HttpComponents" web="http://hc.apache.org/" license="apache-2.0"/>
 
-        <item name="iText" web="http://itextpdf.com/" license="mpl-1.1"/>
-
         <item name="jCIFS" web="http://jcifs.samba.org/" license="lgpl-2.1"/>
-
-        <item name="JFreeChart" web="http://www.jfree.org/jfreechart/" license="lgpl-2.1"/>
 
         <item name="JGroups" web="http://www.jgroups.org/" license="lgpl-2.1"/>
 
@@ -176,6 +173,8 @@ The Software shall be used for Good, not Evil.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                     ]]></license>
         </item>
+
+        <item name="jTDS" web="http://jtds.sourceforge.net/" license="lgpl-3"/>
 
         <item name="JUnit" web="http://www.junit.org/" license="cpl-1.0"/>
 
@@ -258,8 +257,6 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
 WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.]]></license>
         </item>
-
-        <item name="OpenOffice.org" web="http://www.openoffice.org/" license="lgpl-3"/>
 
         <item name="Google Web Toolkit" web="http://code.google.com/intl/en/webtoolkit/" license="apache-2.0"/>
 

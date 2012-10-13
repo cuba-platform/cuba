@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
   ~ Haulmont Technology proprietary and confidential.
   ~ Use is subject to license terms.
   -->
 
-<views xmlns="http://schemas.haulmont.com/cuba/3.3/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/4.0/view.xsd">
 
     <!-- View definitions here -->
 

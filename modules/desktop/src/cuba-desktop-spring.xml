@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -46,7 +52,6 @@
                 <entry key="cuba_FileStorageService" value="com.haulmont.cuba.core.app.FileStorageService"/>
                 <entry key="cuba_UniqueNumbersService" value="com.haulmont.cuba.core.app.UniqueNumbersService"/>
                 <entry key="cuba_LocalizedMessageService" value="com.haulmont.cuba.core.app.LocalizedMessageService"/>
-                <entry key="report_ReportService" value="com.haulmont.cuba.report.app.ReportService"/>
                 <entry key="cuba_ResourceService" value="com.haulmont.cuba.core.app.ResourceService"/>
                 <entry key="cuba_ScheduledTasksService" value="com.haulmont.cuba.core.app.SchedulingService"/>
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
@@ -68,7 +73,6 @@
                 <value>com.haulmont.cuba.desktop.exception.DeletePolicyHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.NumericOverflowExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.OptimisticExceptionHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.ReportExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.FileStorageExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.EntityAccessExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.MssqlDateOutOfRangeExceptionHandler</value>
@@ -86,7 +90,7 @@
 
     <!--
 
-    For use BackgroundWorker in project add to {app}-desktop-spring.xml this sheduler definition:
+    To use BackgroundWorker in a project add to {app}-desktop-spring.xml this scheduler definition:
 
     <bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
