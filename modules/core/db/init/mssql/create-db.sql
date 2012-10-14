@@ -676,6 +676,7 @@ create table SYS_CATEGORY(
     DELETED_BY varchar(50),
     --
     NAME varchar(255),
+    CODE varchar(50),
 	SPECIAL varchar(50),
 	ENTITY_TYPE varchar(30),
 	IS_DEFAULT tinyint,
@@ -684,6 +685,7 @@ create table SYS_CATEGORY(
 	primary key (ID)
 )^
 
+create unique index IDX_SYS_CATEGORY_ATTR_CODE on SYS_CATEGORY_ATTR (CATEGORY_ID, CODE) where code is not null^
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_CATEGORY_ATTR (

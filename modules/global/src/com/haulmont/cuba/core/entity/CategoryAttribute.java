@@ -30,6 +30,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name="NAME")
     private String name;
 
+    @Column(name="CODE", length = 50)
+    private String code;
+
     @Column(name="DEFAULT_STRING")
     private String defaultString;
 
@@ -212,5 +215,13 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setDefaultDateIsCurrent(Boolean defaultDateIsCurrent) {
         this.defaultDateIsCurrent = defaultDateIsCurrent;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

@@ -43,6 +43,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     private Container fieldsContainer;
     private TextField nameField;
+    private TextField codeField;
     private CheckBox requiredField;
     private CheckBox lookupField;
     private LookupField dataTypeField;
@@ -85,6 +86,19 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         });
         fieldsContainer.add(nameField);
+
+        codeField = factory.createComponent(TextField.NAME);
+        codeField.setId("code");
+        codeField.setCaption(getMessage("code"));
+        codeField.setWidth(FIELD_WIDTH);
+        codeField.requestFocus();
+        codeField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                attribute.setCode((String) value);
+            }
+        });
+        fieldsContainer.add(codeField);
 
         requiredField = factory.createComponent(CheckBox.NAME);
         requiredField.setId("required");
@@ -162,6 +176,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 if (ca.getName().equals(categoryAttribute.getName())
                         && (!ca.equals(categoryAttribute))) {
                     errors.add(getMessage("uniqueName"));
+                    return;
+                }else if (ca.getCode().equals(categoryAttribute.getCode())
+                        && (!ca.equals(categoryAttribute))) {
+                    errors.add(getMessage("uniqueCode"));
                     return;
                 }
             }

@@ -707,6 +707,7 @@ create table SYS_CATEGORY_ATTR(
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     NAME varchar(255),
+    CODE varchar(50),
 	CATEGORY_ID varchar(36),
 	IS_ENTITY boolean,
 	DATA_TYPE varchar(200),
@@ -724,6 +725,9 @@ create table SYS_CATEGORY_ATTR(
 	LOOKUP boolean,
 	primary key (ID)
 );
+
+--partial index doesnt work in hsqldb
+--create unique index IDX_SYS_CATEGORY_ATTR_CODE on SYS_CATEGORY_ATTR (CATEGORY_ID, CODE) where code is not null^
 
 alter table SYS_CATEGORY_ATTR add constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID);
 

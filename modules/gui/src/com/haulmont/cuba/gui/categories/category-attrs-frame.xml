@@ -23,6 +23,7 @@
             </buttonsPanel>
             <columns>
                 <column id="name"/>
+                <column id="code"/>
                 <column id="dataType"/>
                 <column id="required"/>
                 <column id="defaultValue" caption="msg://defaultValue"/>
