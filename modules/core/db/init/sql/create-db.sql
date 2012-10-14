@@ -106,6 +106,9 @@ create table SYS_SCHEDULED_TASK (
 
     BEAN_NAME varchar(50),
     METHOD_NAME varchar(50),
+    DEFINED_BY varchar(1) default 'B',
+    CLASS_NAME varchar(500),
+    SCRIPT_NAME varchar(500),
     USER_NAME varchar(50),
     USER_PASSWORD varchar(50),
     IS_SINGLETON smallint,

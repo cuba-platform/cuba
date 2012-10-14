@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -30,17 +31,15 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 /**
  * Standard implementation of {@link Runner} interface used by {@link Scheduling} to run scheduled tasks.
- *
+ * <p/>
  * <p>$Id$</p>
  *
  * @author krivopustov
@@ -75,6 +74,9 @@ public class RunnerBean implements Runner {
     @Inject
     private UserSessionManager userSessionManager;
 
+    @Inject
+    private Scripting scripting;
+
     private Map<String, UUID> userSessionIds = new ConcurrentHashMap<String, UUID>();
 
     public RunnerBean() {
@@ -103,7 +105,7 @@ public class RunnerBean implements Runner {
                     ScheduledExecution execution = registerExecutionStart(taskCopy, now);
                     scheduling.setRunning(taskCopy, true);
                     try {
-                        Object result = invokeBean(taskCopy);
+                        Object result = executeTask(taskCopy);
                         registerExecutionFinish(taskCopy, execution, result);
                     } catch (Throwable throwable) {
                         registerExecutionFinish(taskCopy, execution, throwable);
@@ -174,14 +176,38 @@ public class RunnerBean implements Runner {
         }
     }
 
-    private Object invokeBean(ScheduledTask task) {
-        log.trace(task + ": invoking bean");
-        Object bean = AppBeans.get(task.getBeanName());
-        try {
-            Method method = bean.getClass().getMethod(task.getMethodName(), new Class[0]);
-            return method.invoke(bean);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+    private Object executeTask(ScheduledTask task) {
+        switch (task.getDefinedBy()) {
+            case BEAN: {
+                log.trace(task + ": invoking bean");
+                Object bean = AppBeans.get(task.getBeanName());
+                try {
+                    Method method = bean.getClass().getMethod(task.getMethodName(), new Class[0]);
+                    return method.invoke(bean);
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            case CLASS: {
+                try {
+                    Class taskClass = scripting.loadClass(task.getClassName());
+                    Callable callable = (Callable) taskClass.newInstance();
+                    return callable.call();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException(String.format("An error occurred while instantiating class %s.", task.getClassName()), e);
+                } catch (Exception e) {
+                    throw new RuntimeException(String.format("An error occurred while running method call() of class %s.", task.getClassName()), e);
+                }
+            }
+
+            case SCRIPT: {
+                return scripting.runGroovyScript(task.getScriptName(), Collections.<String, Object>emptyMap());
+            }
+
+            default: {
+                throw new IllegalStateException(String.format("\"Defined by\" field has illegal value: %s. Task id: [%s].", task.getDefinedBy(), task.getId()));
+            }
         }
     }
 }

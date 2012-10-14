@@ -33,6 +33,8 @@
                 <column id="active"/>
                 <column id="beanName"/>
                 <column id="methodName"/>
+                <column id="className"/>
+                <column id="scriptName"/>
                 <column id="userName"/>
                 <column id="singleton"/>
                 <column id="period"/>

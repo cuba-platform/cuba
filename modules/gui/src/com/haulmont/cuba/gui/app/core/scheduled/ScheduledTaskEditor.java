@@ -8,18 +8,14 @@ package com.haulmont.cuba.gui.app.core.scheduled;
 
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.core.entity.ScheduledTaskDefinedBy;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -38,7 +34,28 @@ public class ScheduledTaskEditor extends AbstractEditor {
     protected LookupField userNameField;
 
     @Inject
+    protected LookupField definedByField;
+
+    @Inject
     protected TextField userPasswordField;
+
+    @Inject
+    protected TextField classNameField;
+
+    @Inject
+    protected TextField scriptNameField;
+
+    @Inject
+    protected Label beanNameLabel;
+
+    @Inject
+    protected Label methodNameLabel;
+
+    @Inject
+    protected Label classNameLabel;
+
+    @Inject
+    protected Label scriptNameLabel;
 
     @Inject
     protected Datasource<ScheduledTask> taskDs;
@@ -48,7 +65,43 @@ public class ScheduledTaskEditor extends AbstractEditor {
 
     @Override
     public void init(Map<String, Object> params) {
-        final Map<String,List<String>> availableBeans = service.getAvailableBeans();
+        definedByField.setOptionsList(Arrays.asList(ScheduledTaskDefinedBy.values()));
+        definedByField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                if (ScheduledTaskDefinedBy.BEAN == value) {
+                    hideAll();
+                    show(beanNameField, beanNameLabel, methodNameField, methodNameLabel);
+                } else if (ScheduledTaskDefinedBy.CLASS == value) {
+                    hideAll();
+                    show(classNameField, classNameLabel);
+                } else if (ScheduledTaskDefinedBy.SCRIPT == value) {
+                    hideAll();
+                    show(scriptNameField, scriptNameLabel);
+                } else {
+                    hideAll();
+                }
+            }
+
+            private void show(Component... components) {
+                for (Component component : components) {
+                    component.setVisible(true);
+                }
+            }
+
+            private void hideAll() {
+                classNameField.setVisible(false);
+                classNameLabel.setVisible(false);
+                scriptNameField.setVisible(false);
+                scriptNameLabel.setVisible(false);
+                beanNameField.setVisible(false);
+                beanNameLabel.setVisible(false);
+                methodNameField.setVisible(false);
+                methodNameLabel.setVisible(false);
+            }
+        });
+
+        final Map<String, List<String>> availableBeans = service.getAvailableBeans();
         beanNameField.setOptionsList(new ArrayList<String>(availableBeans.keySet()));
         beanNameField.addListener(new ValueListener<LookupField>() {
             @Override

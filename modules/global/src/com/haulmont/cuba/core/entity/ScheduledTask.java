@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -17,14 +18,14 @@ import java.util.Date;
 
 /**
  * Entity that stores an information about a scheduled task.
- *
+ * <p/>
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
 @Entity(name = "sys$ScheduledTask")
 @Table(name = "SYS_SCHEDULED_TASK")
-@NamePattern("%s.%s|beanName,methodName")
+@NamePattern("#name|beanName,methodName,className,scriptName")
 public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -2330884126746644884L;
@@ -45,11 +46,20 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
     protected String deletedBy;
 
+    @Column(name = "DEFINED_BY")
+    protected String definedBy;
+
     @Column(name = "BEAN_NAME")
     protected String beanName;
 
     @Column(name = "METHOD_NAME")
     protected String methodName;
+
+    @Column(name = "CLASS_NAME")
+    protected String className;
+
+    @Column(name = "SCRIPT_NAME")
+    protected String scriptName;
 
     @Column(name = "USER_NAME")
     protected String userName;
@@ -259,6 +269,41 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     public void setLastStartServer(String lastStartServer) {
         this.lastStartServer = lastStartServer;
+    }
+
+    public ScheduledTaskDefinedBy getDefinedBy() {
+        return ScheduledTaskDefinedBy.fromId(definedBy);
+    }
+
+    public void setDefinedBy(ScheduledTaskDefinedBy definedBy) {
+        this.definedBy = ScheduledTaskDefinedBy.getId(definedBy);
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getScriptName() {
+        return scriptName;
+    }
+
+    public void setScriptName(String scriptName) {
+        this.scriptName = scriptName;
+    }
+
+    @MetaProperty
+    public String name() {
+        if (beanName != null && methodName != null) {
+            return beanName + "." + methodName;
+        } else if (className != null) {
+            return className;
+        } else {
+            return scriptName;
+        }
     }
 
     @Override
