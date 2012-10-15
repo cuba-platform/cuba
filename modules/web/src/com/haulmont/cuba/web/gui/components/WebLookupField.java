@@ -2,14 +2,9 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 18:12:13
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
@@ -26,23 +21,26 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebLookupField
-        extends
-        WebAbstractOptionsField<FilterSelect>
-        implements
-        LookupField, Component.Wrapper {
+        extends  WebAbstractOptionsField<FilterSelect>
+        implements  LookupField, Component.Wrapper {
     private Object nullOption;
     private FilterMode filterMode;
     private NewOptionHandler newOptionHandler;
 
     public WebLookupField() {
         this.component = new FilterSelect() {
+
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 if (newDataSource == null) {
                     super.setPropertyDataSource(null);
                 } else {
-                    super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+                    super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource) {
                         @Override
                         public Object getValue() {
                             final Object o = itemProperty.getValue();
@@ -52,7 +50,12 @@ public class WebLookupField
                         @Override
                         public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
                             if (!optionsInitialization) {
-                                final Object v = getValueFromKey(newValue);
+                                Object v = getValueFromKey(newValue);
+                                if (v == null && !items.containsId(v)) {
+                                    Object valueKey = WebLookupField.super.getValue();
+                                    if (newValue == valueKey)
+                                        v = getValueFromDs();
+                                }
                                 itemProperty.setValue(v);
                             }
                         }
@@ -79,6 +82,16 @@ public class WebLookupField
                 newOptionHandler.addNewOption(newItemCaption);
             }
         });
+    }
+
+    private Object getValueFromDs() {
+        Object value;
+        Entity containingEntity = this.datasource.getItem();
+        if (this.metaPropertyPath != null)
+            value = InstanceUtils.getValueEx(containingEntity, this.metaPropertyPath.getPath());
+        else
+            value = containingEntity.getValue(this.metaProperty.getName());
+        return value;
     }
 
     @Override
@@ -227,49 +240,65 @@ public class WebLookupField
         component.disablePaging();
     }
 
+    private abstract class LookupPropertyAdapter extends PropertyAdapter {
+        public LookupPropertyAdapter(Property itemProperty) {
+            super(itemProperty);
+        }
+
+        public Object getInternalValue() {
+            return itemProperty.getValue();
+        }
+    }
+
+    // Shows LookupFiled value even if it is not present in options list
     private class DsWrapper extends CollectionDsWrapper implements com.vaadin.data.Container.Ordered {
 
-        public DsWrapper(CollectionDatasource datasource) {
-            super(datasource);
-        }
+        private Object previousValue = null;
 
         public DsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
             super(datasource, autoRefresh);
-        }
-
-        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties);
-        }
-
-        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
-            super(datasource, properties, autoRefresh);
         }
 
         @Override
         public Collection getItemIds() {
             Collection itemIds = super.getItemIds();
             Object valueKey = WebLookupField.super.getValue();
+            if (valueKey != null && previousValue == null)
+                previousValue = valueKey;
+
             if (valueKey != null && !itemIds.contains(valueKey)) {
                 itemIds = new HashSet(itemIds);
                 itemIds.add(valueKey);
+            } else if (previousValue != null && !itemIds.contains(previousValue)) {
+                itemIds = new HashSet(itemIds);
+                itemIds.add(previousValue);
             }
+
             return itemIds;
         }
 
         @Override
         public Item getItem(Object itemId) {
             Item item = super.getItem(itemId);
-            if (item == null && WebLookupField.this.datasource != null) {
-                Entity containingEntity = WebLookupField.this.datasource.getItem();
+            if (item == null) {
+                if (WebLookupField.this.datasource != null) {
+                    Object value = WebLookupField.this.getValueFromDs();
 
-                Object value;
-                if (WebLookupField.this.metaPropertyPath != null)
-                    value = InstanceUtils.getValueEx(containingEntity, WebLookupField.this.metaPropertyPath.getPath());
-                else
-                    value = containingEntity.getValue(WebLookupField.this.metaProperty.getName());
+                    if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
+                        item = getItemWrapper(value);
+                    }
+                } else if (WebLookupField.this.component.getPropertyDataSource() != null) {
+                    // For work in field group
+                    Property propertyDataSource = WebLookupField.this.component.getPropertyDataSource();
+                    Object value;
+                    if (propertyDataSource instanceof LookupPropertyAdapter)
+                        value = ((LookupPropertyAdapter) propertyDataSource).getInternalValue();
+                    else
+                        value = propertyDataSource.getValue();
 
-                if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
-                    item = getItemWrapper(value);
+                    if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
+                        item = getItemWrapper(value);
+                    }
                 }
             }
             return item;
@@ -323,13 +352,7 @@ public class WebLookupField
             if (datasource instanceof CollectionDatasource.Ordered) {
                 Object itemId = ((CollectionDatasource.Ordered) datasource).firstItemId();
                 if (itemId == null && WebLookupField.this.datasource != null) {
-                    Entity containingEntity = WebLookupField.this.datasource.getItem();
-
-                    Object value;
-                    if (WebLookupField.this.metaPropertyPath != null)
-                        value = InstanceUtils.getValueEx(containingEntity, WebLookupField.this.metaPropertyPath.getPath());
-                    else
-                        value = containingEntity.getValue(WebLookupField.this.metaProperty.getName());
+                    Object value = WebLookupField.this.getValueFromDs();
 
                     if (value instanceof Entity) {
                         return ((Entity) value).getId();
