@@ -15,7 +15,7 @@
 }
 
 .pickerfield .v-horizontallayout-childfocus .v-button {
-    background: url(img/lookup-picker-btn-focus.png) right;
+    background: url(img/lookup-picker-btn-focus.png) right white;
 }
 
 .pickerfield .v-button-caption {
@@ -46,12 +46,8 @@
     background-color: transparent;
 }
 
-.pickerfield {
-    background-color: #fff;
-}
-
 .pickerfield .v-filterselect,
 .pickerfield .v-button,
-.pickerfield .v-textfield-readonly {
+.pickerfield .v-textfield.v-readonly {
     background-color: #fff;
 }
