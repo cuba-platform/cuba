@@ -107,13 +107,13 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by c.level",
                 "sec$Group");
-        try {
+        // commented out, because since 3.4 we don't check equality of targetEntity and an entity in the query
+//        try {
             transformer.addWhere("a.createdBy = :par1");
-            fail();
-        } catch (Exception e) {
-            assertTrue(e instanceof RuntimeException);
-        }
-
+//            fail();
+//        } catch (Exception e) {
+//            assertTrue(e instanceof RuntimeException);
+//        }
     }
 
     public void testJoin() {

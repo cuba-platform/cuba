@@ -23,9 +23,10 @@ import java.util.regex.Matcher;
 public class QueryParserRegex implements QueryParser {
 
     public static final String ENTITY_PATTERN_REGEX = "(\\b[_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)(\\s+as\\b)?\\s+([a-z]+[a-z0-9]*)*\\b";
-    public static final Pattern ENTITY_PATTERN = Pattern.compile(ENTITY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
     public static final Pattern FROM_ENTITY_PATTERN = Pattern.compile("\\b(from|update)\\s+" + ENTITY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+    public static final int FEP_ENTITY = 2;
+    public static final int FEP_ALIAS = 4;
 
     public static final String DISTINCT_PATTERN_REGEX = "\\bDISTINCT\\b";
     public static final Pattern DISTINCT_PATTERN = Pattern.compile(DISTINCT_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
@@ -76,15 +77,12 @@ public class QueryParserRegex implements QueryParser {
 
     public String getEntityAlias(String targetEntity) {
         String alias = null;
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(source);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                alias = entityMatcher.group(3);
-                break;
-            }
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(source);
+        if (entityMatcher.find()) {
+            alias = entityMatcher.group(FEP_ALIAS);
         }
         if (StringUtils.isBlank(alias))
-            throw new RuntimeException("No alias for target entity " + targetEntity + " found [" + source + "]");
+            throw new RuntimeException("Unable to find entity alias [" + source + "]");
 
         return alias;
     }

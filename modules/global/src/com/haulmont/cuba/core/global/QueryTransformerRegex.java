@@ -22,19 +22,17 @@ import java.util.regex.Matcher;
  */
 public class QueryTransformerRegex extends QueryParserRegex implements QueryTransformer
 {
-    private String targetEntity;
     private StringBuffer buffer;
     private Set<String> addedParams;
 
     QueryTransformerRegex(String source, String targetEntity) {
         super(source);
-        this.targetEntity = targetEntity;
         buffer = new StringBuffer(source);
         addedParams = new HashSet<String>();
     }
 
     public void addWhere(String where) {
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
 
         int insertPos = buffer.length();
@@ -76,7 +74,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void addWhereAsIs(String where) {
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         findAlias(entityMatcher);
 
         int insertPos = buffer.length();
@@ -102,7 +100,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void addJoinAsIs(String join) {
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         findAlias(entityMatcher);
 
         int insertPos = buffer.length();
@@ -128,7 +126,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void addJoinAndWhere(String join, String where) {
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
 
         int insertPos = buffer.length();
@@ -211,12 +209,13 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void replaceWithCount() {
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
 
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
-        buffer.replace(0, entityMatcher.start(), "select count("+ (distinctMatcher.find() ? "distinct " : "") + alias + ") from ");
+        buffer.replace(0, entityMatcher.start(),
+                "select count("+ (distinctMatcher.find() ? "distinct " : "") + alias + ") ");
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {
@@ -226,12 +225,13 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     @Override
     public void replaceWithSelectId() {
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
 
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
-        buffer.replace(0, entityMatcher.start(), "select "+ (distinctMatcher.find() ? "distinct " : "") + alias + ".id from ");
+        buffer.replace(0, entityMatcher.start(),
+                "select "+ (distinctMatcher.find() ? "distinct " : "") + alias + ".id ");
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {
@@ -250,7 +250,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void replaceOrderBy(String property, boolean desc) {
-        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
 
         int dotPos = property.lastIndexOf(".");
@@ -290,14 +290,12 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     @Override
     public void replaceEntityName(String newName) {
-        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(source);
-        while (entityMatcher.find()) {
-            if (entityMatcher.group(2).equals(targetEntity)) {
-                buffer.replace(entityMatcher.start(2), entityMatcher.end(2), newName);
-                return;
-            }
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
+        if (entityMatcher.find()) {
+            buffer.replace(entityMatcher.start(FEP_ENTITY), entityMatcher.end(FEP_ENTITY), newName);
+            return;
         }
-        throw new IllegalStateException("Unable to find entity name [" + source + "]");
+        error("Unable to find entity name");
     }
 
     public void reset() {
@@ -315,14 +313,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     private String findAlias(Matcher entityMatcher) {
         String alias = null;
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                alias = entityMatcher.group(3);
-                break;
-            }
+        if (entityMatcher.find()) {
+            alias = entityMatcher.group(FEP_ALIAS);
         }
         if (StringUtils.isBlank(alias))
-            error("No alias for target entity " + targetEntity + " found");
+            error("Unable to find entity alias");
         return alias;
     }
 
