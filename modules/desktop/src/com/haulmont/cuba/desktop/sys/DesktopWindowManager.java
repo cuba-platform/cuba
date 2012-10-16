@@ -484,8 +484,8 @@ public class DesktopWindowManager extends WindowManager {
 
         final TopLevelFrame windowFrame = createTopLevelFrame(window.getCaption());
         App.getInstance().registerFrame(windowFrame);
-        windowFrame.getWindowManager().attachTab(breadCrumbs, stack, window, hashCode, tabContent, detachOpenModes);
         windowFrame.setVisible(true);
+        windowFrame.getWindowManager().attachTab(breadCrumbs, stack, window, hashCode, tabContent, detachOpenModes);
     }
 
     public void attachTab(WindowBreadCrumbs breadCrumbs, Stack<Map.Entry<Window, Integer>> stack,
