@@ -12,8 +12,12 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -51,6 +55,15 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
     private Map<String, Set<String>> entitiesAuto;
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    @Inject
+    protected TimeSource timeSource;
+
+    @Inject
+    protected Persistence persistence;
+
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -117,9 +130,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         log.debug("Loading entities");
         entitiesManual = new HashMap<String, Set<String>>();
         entitiesAuto = new HashMap<String, Set<String>>();
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query q = em.createQuery("select e from sec$LoggedEntity e where e.auto = true or e.manual = true");
 //            q.setView(null);
             List<LoggedEntity> list = q.getResultList();
@@ -146,16 +159,24 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         log.debug("Loaded: entitiesAuto=" + entitiesAuto.size() + ", entitiesManual=" + entitiesManual.size());
     }
 
+    private String getEntityName(BaseEntity entity) {
+        MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+        return originalMetaClass != null ? originalMetaClass.getName() : metaClass.getName();
+    }
+
     public void registerCreate(BaseEntity entity) {
+        if (entity == null)
+            return;
         registerCreate(entity, false);
     }
 
     public void registerCreate(BaseEntity entity, boolean auto) {
-        if (!isEnabled())
+        if (entity == null || !isEnabled())
             return;
 
         try {
-            String entityName = entity.getClass().getName();
+            String entityName = getEntityName(entity);
             Set<String> attributes = getLoggedAttributes(entityName, auto);
             if (attributes != null && attributes.contains("*")) {
                 attributes = getAllAttributes(entity);
@@ -163,8 +184,8 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             if (attributes == null) {
                 return;
             }
-            Date ts = TimeProvider.currentTimestamp();
-            EntityManager em = PersistenceProvider.getEntityManager();
+            Date ts = timeSource.currentTimestamp();
+            EntityManager em = persistence.getEntityManager();
             User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
 
             EntityLogItem item = new EntityLogItem();
@@ -196,7 +217,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             return;
 
         try {
-            String entityName = entity.getClass().getName();
+            String entityName = getEntityName(entity);
             Set<String> attributes = getLoggedAttributes(entityName, auto);
             if (attributes != null && attributes.contains("*")) {
                 attributes = getAllAttributes(entity);
@@ -204,10 +225,10 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             if (attributes == null) {
                 return;
             }
-            Date ts = TimeProvider.currentTimestamp();
-            EntityManager em = PersistenceProvider.getEntityManager();
+            Date ts = timeSource.currentTimestamp();
+            EntityManager em = persistence.getEntityManager();
             User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
-            Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
+            Set<String> dirty = persistence.getTools().getDirtyFields(entity);
 
             Properties properties = new Properties();
             for (String attr : attributes) {
@@ -262,7 +283,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             return;
 
         try {
-            String entityName = entity.getClass().getName();
+            String entityName = getEntityName(entity);
             Set<String> attributes = getLoggedAttributes(entityName, auto);
             if (attributes != null && attributes.contains("*")) {
                 attributes = getAllAttributes(entity);
@@ -270,8 +291,8 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             if (attributes == null) {
                 return;
             }
-            Date ts = TimeProvider.currentTimestamp();
-            EntityManager em = PersistenceProvider.getEntityManager();
+            Date ts = timeSource.currentTimestamp();
+            EntityManager em = persistence.getEntityManager();
             User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
 
             EntityLogItem item = new EntityLogItem();
@@ -297,7 +318,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
     private Set<String> getAllAttributes(Entity entity) {
         if (entity == null) return null;
         Set<String> attributes = new HashSet<String>();
-        for (MetaProperty metaProperty : MetadataProvider.getSession().getClass(entity.getClass()).getProperties()) {
+        for (MetaProperty metaProperty : metadata.getSession().getClassNN(entity.getClass()).getProperties()) {
             attributes.add(metaProperty.getName());
         }
         return attributes;
@@ -305,7 +326,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
 
     private UUID getValueId(Object value) {
         if (value instanceof Entity) {
-            return ((Entity<UUID>) value).getId();
+            return (UUID) ((Entity) value).getId();
         } else {
             return null;
         }
@@ -318,22 +339,12 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             return ((Instance) value).getInstanceName();
         } else if (value instanceof Date) {
             SimpleDateFormat df = new SimpleDateFormat(
-                    Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat());
+                    Datatypes.getFormatStrings(userSessionSource.getLocale()).getDateTimeFormat());
             return df.format(value);
-        } else if (value instanceof Set) {
-            StringBuffer sb = new StringBuffer();
+        } else if (value instanceof Iterable) {
+            StringBuilder sb = new StringBuilder();
             sb.append("[");
-            for (Object obj : (Set) value) {
-                sb.append(stringify(obj)).append(",");
-            }
-            if (sb.length() > 1)
-                sb.deleteCharAt(sb.length() - 1);
-            sb.append("]");
-            return sb.toString();
-        } else if (value instanceof List) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("[");
-            for (Object obj : (List) value) {
+            for (Object obj : (Iterable) value) {
                 sb.append(stringify(obj)).append(",");
             }
             if (sb.length() > 1)

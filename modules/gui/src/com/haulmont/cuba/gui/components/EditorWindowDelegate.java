@@ -7,6 +7,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
@@ -34,6 +35,7 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected boolean commitActionPerformed;
     protected boolean commitAndCloseButtonExists;
 
+    protected Metadata metadata = AppBeans.get(Metadata.class);
     protected Messages messages = AppBeans.get(Messages.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
     protected LockService lockService = AppBeans.get(LockService.class);
@@ -153,7 +155,12 @@ public class EditorWindowDelegate extends WindowDelegate {
         ((DatasourceImplementation) ds).setModified(false);
 
         if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
-            LockInfo lockInfo = lockService.lock(ds.getMetaClass().getName(), item.getId().toString());
+            // lock original metaClass, if any, because by convention all the configuration is based on original entities
+            MetaClass metaClass = metadata.getExtendedEntities().getOriginalMetaClass(ds.getMetaClass());
+            if (metaClass == null) {
+                metaClass = ds.getMetaClass();
+            }
+            LockInfo lockInfo = lockService.lock(metaClass.getName(), item.getId().toString());
             if (lockInfo == null) {
                 justLocked = true;
             } else if (!(lockInfo instanceof LockNotSupported)) {
