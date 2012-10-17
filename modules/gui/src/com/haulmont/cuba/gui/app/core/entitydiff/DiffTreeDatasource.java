@@ -9,11 +9,9 @@ package com.haulmont.cuba.gui.app.core.entitydiff;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.app.EntitySnapshotService;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
@@ -27,24 +25,22 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDiff, UUID> {
 
-    private static final long serialVersionUID = -6298466301673067199L;
-
     private EntityDiff entityDiff;
 
-    public DiffTreeDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
+    public DiffTreeDatasource(DsContext context, DataService dataservice, String id,
+                              MetaClass metaClass, String viewName) {
         super(context, dataservice, id, metaClass, viewName);
     }
 
     @Override
     protected Tree<EntityPropertyDiff> loadTree(Map params) {
-        Tree<EntityPropertyDiff> diffTree = new Tree<EntityPropertyDiff>();
-        List<Node<EntityPropertyDiff>> rootNodes = new ArrayList<Node<EntityPropertyDiff>>();
+        Tree<EntityPropertyDiff> diffTree = new Tree<>();
+        List<Node<EntityPropertyDiff>> rootNodes = new ArrayList<>();
         if (entityDiff != null) {
             for (EntityPropertyDiff childPropertyDiff : entityDiff.getPropertyDiffs()) {
                 Node<EntityPropertyDiff> childPropDiffNode = loadPropertyDiff(childPropertyDiff);
@@ -62,15 +58,15 @@ public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDif
         if (propertyDiff != null) {
             // check security
             String propName = propertyDiff.getViewProperty().getName();
-            MetaClass propMetaClass = MetadataProvider.getSession().getClass(propertyDiff.getMetaClassName());
-            UserSession userSession = UserSessionProvider.getUserSession();
+            MetaClass propMetaClass = AppBeans.get(Metadata.class).getSession().getClass(propertyDiff.getMetaClassName());
+            UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
             if (!userSession.isEntityOpPermitted(propMetaClass, EntityOp.READ))
                 return diffNode;
 
             if (!userSession.isEntityAttrPermitted(propMetaClass, propName, EntityAttrAccess.VIEW))
                 return diffNode;
 
-            diffNode = new Node<EntityPropertyDiff>(propertyDiff);
+            diffNode = new Node<>(propertyDiff);
             if (propertyDiff instanceof EntityClassPropertyDiff) {
 
                 EntityClassPropertyDiff classPropertyDiff = (EntityClassPropertyDiff) propertyDiff;
@@ -79,7 +75,6 @@ public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDif
                     if (childPropDiffNode != null)
                         diffNode.addChild(childPropDiffNode);
                 }
-
             } else if (propertyDiff instanceof EntityCollectionPropertyDiff) {
                 EntityCollectionPropertyDiff collectionPropertyDiff = (EntityCollectionPropertyDiff) propertyDiff;
                 for (EntityPropertyDiff childPropertyDiff : collectionPropertyDiff.getAddedEntities()) {
@@ -105,7 +100,7 @@ public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDif
     }
 
     public EntityDiff loadDiff(EntitySnapshot firstSnap, EntitySnapshot secondSnap) {
-        EntitySnapshotService snapshotService = ServiceLocator.lookup(EntitySnapshotService.NAME);
+        EntitySnapshotService snapshotService = AppBeans.get(EntitySnapshotService.NAME);
         entityDiff = snapshotService.getDifference(firstSnap, secondSnap);
 
         this.refresh();

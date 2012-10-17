@@ -19,9 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class EntityDiffViewer extends AbstractFrame {
 
@@ -51,10 +50,6 @@ public class EntityDiffViewer extends AbstractFrame {
 
     @Inject
     private Component diffValuesField;
-
-    public EntityDiffViewer(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

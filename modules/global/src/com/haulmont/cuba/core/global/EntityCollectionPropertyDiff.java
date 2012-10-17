@@ -13,20 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @MetaClass(name = "sys$EntityCollectionPropertyDiff")
 public class EntityCollectionPropertyDiff extends EntityPropertyDiff {
 
     private static final long serialVersionUID = -7472572229609999760L;
 
-    private List<EntityPropertyDiff> addedEntities = new ArrayList<EntityPropertyDiff>();
+    private List<EntityPropertyDiff> addedEntities = new ArrayList<>();
 
-    private List<EntityPropertyDiff> removedEntities = new ArrayList<EntityPropertyDiff>();
+    private List<EntityPropertyDiff> removedEntities = new ArrayList<>();
 
-    private List<EntityPropertyDiff> modifiedEntities = new ArrayList<EntityPropertyDiff>();
+    private List<EntityPropertyDiff> modifiedEntities = new ArrayList<>();
 
     public EntityCollectionPropertyDiff(ViewProperty viewProperty,
                                         MetaProperty metaProperty) {

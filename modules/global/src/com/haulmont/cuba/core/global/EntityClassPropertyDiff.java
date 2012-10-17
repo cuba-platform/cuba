@@ -15,9 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @MetaClass(name = "sys$EntityClassPropertyDiff")
 public class EntityClassPropertyDiff extends EntityPropertyDiff {
@@ -31,7 +30,7 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
 
     private boolean isLinkChange;
 
-    private List<EntityPropertyDiff> propertyDiffs = new ArrayList<EntityPropertyDiff>();
+    private List<EntityPropertyDiff> propertyDiffs = new ArrayList<>();
 
     private String beforeString = "";
 
@@ -95,7 +94,7 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
 
     @Override
     public String getBeforeString() {
-        if (itemState != ItemState.Added)
+        if (itemState != ItemState.Added && isLinkChange)
             return beforeString;
         else
             return "";
@@ -103,7 +102,7 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
 
     @Override
     public String getAfterString() {
-        if (itemState != ItemState.Removed)
+        if (itemState != ItemState.Removed && isLinkChange)
             return afterString;
         else
             return "";

@@ -30,9 +30,8 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @ManagedBean(EntitySnapshotAPI.NAME)
 @SuppressWarnings({"unchecked", "unused"})
@@ -47,8 +46,19 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Inject
     private EntityDiffManager diffManager;
 
+    @Inject
+    private ExtendedEntities extendedEntities;
+
+    @Inject
+    private UserSessionSource userSessionSource;
+
+    @Inject
+    private TimeSource timeSource;
+
     @Override
     public List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id) {
+        metaClass = getOriginalOrCurrentMetaClass(metaClass);
+
         List<EntitySnapshot> resultList = null;
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
         Transaction tx = persistence.createTransaction();
@@ -135,6 +145,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping) {
+        metaClass = getOriginalOrCurrentMetaClass(metaClass);
+
         // load snapshots
         List<EntitySnapshot> snapshotList = getSnapshots(metaClass, id);
         Class javaClass = metaClass.getJavaClass();
@@ -142,7 +154,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         MetaClass mappedMetaClass = null;
         if (classMapping.containsKey(javaClass)) {
             Class mappedClass = classMapping.get(javaClass);
-            mappedMetaClass = MetadataProvider.getSession().getClass(mappedClass);
+            mappedMetaClass = getOriginalOrCurrentMetaClass(mappedClass);
         }
 
         for (EntitySnapshot snapshot : snapshotList) {
@@ -172,13 +184,13 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view) {
-        return createSnapshot(entity, view, TimeProvider.currentTimestamp());
+        return createSnapshot(entity, view, timeSource.currentTimestamp());
     }
 
     @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate) {
-        User user = UserSessionProvider.getUserSession().getUser();
-        return createSnapshot(entity, view, TimeProvider.currentTimestamp(), user);
+        User user = userSessionSource.getUserSession().getUser();
+        return createSnapshot(entity, view, timeSource.currentTimestamp(), user);
     }
 
     @Override
@@ -198,7 +210,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         EntitySnapshot snapshot = new EntitySnapshot();
         snapshot.setEntityId(entity.getUuid());
 
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+        MetaClass metaClass = getOriginalOrCurrentMetaClass(entity.getClass());
+
         snapshot.setEntityMetaClass(metaClass.getName());
 
         snapshot.setViewXml(toXML(view));
@@ -234,6 +247,18 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Override
     public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
         return diffManager.getDifference(first, second);
+    }
+
+    private MetaClass getOriginalOrCurrentMetaClass(Class javaClass) {
+        MetaClass metaClass = metadata.getSession().getClass(javaClass);
+        return getOriginalOrCurrentMetaClass(metaClass);
+    }
+
+    private MetaClass getOriginalOrCurrentMetaClass(MetaClass mappedMetaClass) {
+        MetaClass originalMappedMetaClass = extendedEntities.getOriginalMetaClass(mappedMetaClass);
+        if (originalMappedMetaClass != null)
+            mappedMetaClass = originalMappedMetaClass;
+        return mappedMetaClass;
     }
 
     private Object fromXML(String xml) {

@@ -11,9 +11,8 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaProperty;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @MetaClass(name = "sys$EntityBasicPropertyDiff")
 public class EntityBasicPropertyDiff extends EntityPropertyDiff {
@@ -76,7 +75,7 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     private String getEnumItemName(Object enumItem) {
         String nameKey = enumItem.getClass().getSimpleName() + "." + enumItem.toString();
-        return MessageProvider.getMessage(enumItem.getClass(), nameKey);
+        return AppBeans.get(Messages.class).getMessage(enumItem.getClass(), nameKey);
     }
 
     @Override

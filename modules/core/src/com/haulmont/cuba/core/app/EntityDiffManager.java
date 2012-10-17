@@ -44,6 +44,12 @@ public class EntityDiffManager {
     @Inject
     private MetadataTools metadataTools;
 
+    @Inject
+    private ExtendedEntities extendedEntities;
+
+    @Inject
+    private Metadata metadata;
+
     private Log log = LogFactory.getLog(EntityDiffManager.class);
 
     public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
@@ -92,7 +98,7 @@ public class EntityDiffManager {
             result.setBeforeEntity(first);
             result.setAfterEntity(second);
 
-            Stack<Object> diffBranch = new Stack<Object>();
+            Stack<Object> diffBranch = new Stack<>();
             diffBranch.push(second);
 
             List<EntityPropertyDiff> propertyDiffs = getPropertyDiffs(diffView, firstEntity, secondEntity, diffBranch);
@@ -112,9 +118,11 @@ public class EntityDiffManager {
      */
     private List<EntityPropertyDiff> getPropertyDiffs(View diffView, Entity firstEntity, Entity secondEntity,
                                                       Stack<Object> diffBranch) {
-        List<EntityPropertyDiff> propertyDiffs = new LinkedList<EntityPropertyDiff>();
+        List<EntityPropertyDiff> propertyDiffs = new LinkedList<>();
 
-        MetaClass metaClass = MetadataProvider.getSession().getClass(diffView.getEntityClass());
+        MetaClass viewMetaClass = metadata.getSession().getClass(diffView.getEntityClass());
+        MetaClass metaClass = extendedEntities.getEffectiveMetaClass(viewMetaClass);
+
         Collection<MetaPropertyPath> metaProperties = metadataTools.getViewPropertyPaths(diffView, metaClass);
 
         for (MetaPropertyPath metaPropertyPath : metaProperties) {
@@ -219,6 +227,8 @@ public class EntityDiffManager {
                                                     Stack<Object> diffBranch) {
         // link
         boolean isLinkChange = !ObjectUtils.equals(firstValue, secondValue);
+        isLinkChange = !(diffObject instanceof EmbeddableEntity) && isLinkChange;
+
         EntityClassPropertyDiff classPropertyDiff = new EntityClassPropertyDiff(firstValue, secondValue,
                 viewProperty, metaProperty, isLinkChange);
 
@@ -235,8 +245,6 @@ public class EntityDiffManager {
             classPropertyDiff.setPropertyDiffs(propertyDiffs);
         }
 
-        isLinkChange = !(diffObject instanceof EmbeddableEntity) && isLinkChange;
-
         if (isInternalChange || isLinkChange)
             return classPropertyDiff;
         else
@@ -248,9 +256,9 @@ public class EntityDiffManager {
                                                  Stack<Object> diffBranch) {
         EntityPropertyDiff propertyDiff = null;
 
-        Collection<Entity> addedEntities = new LinkedList<Entity>();
-        Collection<Entity> removedEntities = new LinkedList<Entity>();
-        Collection<Pair<Entity, Entity>> modifiedEntities = new LinkedList<Pair<Entity, Entity>>();
+        Collection<Entity> addedEntities = new LinkedList<>();
+        Collection<Entity> removedEntities = new LinkedList<>();
+        Collection<Pair<Entity, Entity>> modifiedEntities = new LinkedList<>();
 
         // collection
         Collection firstCollection = getCollection(firstValue);
