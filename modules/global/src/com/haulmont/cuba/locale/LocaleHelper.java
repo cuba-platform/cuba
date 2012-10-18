@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.locale;
 
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
@@ -15,9 +16,8 @@ import java.util.Locale;
 import java.util.Properties;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public final class LocaleHelper {
 
@@ -25,7 +25,7 @@ public final class LocaleHelper {
     }
 
     public static String getLocalizedName(String localeBundle) {
-        Locale locale = UserSessionProvider.getLocale();
+        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
         String localeName = null;
         if (StringUtils.isNotEmpty(localeBundle)) {
             // find locale name
