@@ -840,7 +840,7 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
             }
         }
 
-        private void fireClick(Event evt) {
+        private void fireClick(final Event evt) {
             /*
              * Ensure we have focus in tree before sending variables. Otherwise
              * previously modified field may contain dirty variables.
@@ -861,7 +861,8 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                 public void execute() {
                     // non-immediate iff an immediate select event is going to
                     // happen
-                    boolean imm = !immediate
+                    boolean imm = (evt.getTypeInt() == Event.ONDBLCLICK && doubleClickMode)
+                            || !immediate
                             || !selectable
                             || (!isNullSelectionAllowed && isSelected() && selectedIds
                                     .size() == 1);

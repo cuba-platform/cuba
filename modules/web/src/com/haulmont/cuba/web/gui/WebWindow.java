@@ -13,7 +13,9 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -22,6 +24,7 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
@@ -897,6 +900,24 @@ public class WebWindow
                     @Override
                     public void actionPerform(Component component) {
                         fireSelectAction();
+                    }
+                });
+            } else if (lookupComponent instanceof Tree) {
+                final Tree tree = (Tree) lookupComponent;
+                com.haulmont.cuba.web.toolkit.ui.Tree treeComponent =
+                        (com.haulmont.cuba.web.toolkit.ui.Tree) WebComponentsHelper.unwrap(tree);
+                treeComponent.setDoubleClickMode(true);
+                treeComponent.addListener(new ItemClickEvent.ItemClickListener() {
+                    @Override
+                    public void itemClick(ItemClickEvent event) {
+                        CollectionDatasource treeCds = tree.getDatasource();
+                        if (treeCds != null) {
+                            Entity item = treeCds.getItem(event.getItemId());
+                            if (item != null) {
+                                treeCds.setItem(item);
+                                fireSelectAction();
+                            }
+                        }
                     }
                 });
             }

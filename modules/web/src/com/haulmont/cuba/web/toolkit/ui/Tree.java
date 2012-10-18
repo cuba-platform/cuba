@@ -29,7 +29,8 @@ public class Tree extends com.vaadin.ui.Tree {
     }
 
     @Override
-    protected void paintItem(PaintTarget target, Object itemId, LinkedList<String> selectedKeys, LinkedList<String> expandedKeys) throws PaintException {
+    protected void paintItem(PaintTarget target, Object itemId, LinkedList<String> selectedKeys,
+                             LinkedList<String> expandedKeys) throws PaintException {
         super.paintItem(target, itemId, selectedKeys, expandedKeys);
         if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
             target.addAttribute("hasChildren", true);
@@ -42,5 +43,6 @@ public class Tree extends com.vaadin.ui.Tree {
 
     public void setDoubleClickMode(boolean doubleClickMode) {
         this.doubleClickMode = doubleClickMode;
+        requestRepaint();
     }
 }

@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
+import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -33,9 +35,12 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -877,6 +882,28 @@ public class DesktopWindow implements Window, Component.Disposable,
                                 fireSelectAction();
                             }
                         });
+            } else if (lookupComponent instanceof Tree) {
+                final Tree tree = (Tree) lookupComponent;
+                final JTree treeComponent = (JTree) DesktopComponentsHelper.unwrap(tree);
+                treeComponent.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (e.getClickCount() == 2) {
+                            int rowForLocation = treeComponent.getRowForLocation(e.getX(), e.getY());
+                            TreePath pathForLocation = treeComponent.getPathForRow(rowForLocation);
+                            if (pathForLocation != null) {
+                                CollectionDatasource treeCds = tree.getDatasource();
+                                if (treeCds != null) {
+                                    TreeModelAdapter.Node treeItem = (TreeModelAdapter.Node) pathForLocation.getLastPathComponent();
+                                    if (treeItem != null) {
+                                        treeCds.setItem(treeItem.getEntity());
+                                        fireSelectAction();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
         }
 
