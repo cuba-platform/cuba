@@ -126,6 +126,50 @@ public class PersistenceTest extends CubaTestCase
         } finally {
             tx.end();
         }
+
+        /*
+         * test Persistence.getReferenceId() when field value is NULL
+         * (ticket XXX)
+         */
+        // create user without group
+        User userWithoutGroup = new User();
+        userWithoutGroup.setLogin("ForeverAlone");
+
+        // save to DB
+        tx = PersistenceProvider.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            em.persist(userWithoutGroup);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        // test method
+        try {
+            tx = PersistenceProvider.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                em.setView(new View(User.class).addProperty("login"));
+                User reloadedUser = em.find(User.class, userWithoutGroup.getId());
+
+                UUID groupId = PersistenceProvider.getReferenceId(reloadedUser, "group");
+
+                // MUST BE
+                // assertNull(groupId)
+                // BUT we have exception instead
+                fail("Method call fails with exception");
+
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        } catch (IllegalArgumentException e) {
+            // MUST BE
+            // fail(e.getMessage())
+            // BUT we have instead
+            assertEquals(e.getMessage(), "Property group is not a reference");
+        }
     }
 
     public void testLoadByCombinedView() throws Exception {
