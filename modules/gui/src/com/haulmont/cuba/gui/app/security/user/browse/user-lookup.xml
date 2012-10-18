@@ -38,7 +38,7 @@
                 (ur.role.id = ?)
             </custom>
         </filter>
-        <table id="usersTable" editable="false">
+        <table id="usersTable" editable="false" width="100%">
             <rowsCount/>
             <columns>
                 <column id="login"/>
