@@ -63,6 +63,7 @@ public class WebExportDisplay implements ExportDisplay {
      * @see com.haulmont.cuba.gui.export.FileDataProvider
      * @see com.haulmont.cuba.gui.export.ByteArrayDataProvider
      */
+    @Override
     public void show(ExportDataProvider dataProvider, String resourceName, final ExportFormat format) {
 
         if (useViewList) {
@@ -107,12 +108,14 @@ public class WebExportDisplay implements ExportDisplay {
      * @see com.haulmont.cuba.gui.export.FileDataProvider
      * @see com.haulmont.cuba.gui.export.ByteArrayDataProvider
      */
+    @Override
     public void show(ExportDataProvider dataProvider, String resourceName) {
         String extension = FileDownloadHelper.getFileExt(resourceName);
         ExportFormat format = ExportFormat.getByExtension(extension);
         show(dataProvider, resourceName, format);
     }
 
+    @Override
     public void show(FileDescriptor fileDescriptor, ExportFormat format) {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
     }
@@ -121,6 +124,7 @@ public class WebExportDisplay implements ExportDisplay {
     public void setFrame(IFrame frame) {
     }
 
+    @Override
     public void show(FileDescriptor fileDescriptor) {
         ExportFormat format = ExportFormat.getByExtension(fileDescriptor.getExtension());
         show(fileDescriptor, format);

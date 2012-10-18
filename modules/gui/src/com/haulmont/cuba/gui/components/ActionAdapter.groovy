@@ -10,10 +10,12 @@
  */
 package com.haulmont.cuba.gui.components
 
-import com.haulmont.cuba.gui.components.AbstractAction
-import com.haulmont.cuba.gui.components.Component
 import com.haulmont.cuba.core.global.MessageProvider
 
+/**
+ * @deprecated Use anonymous classes
+ */
+@Deprecated
 public class ActionAdapter extends AbstractAction {
 
   private Map<String, Closure> methods

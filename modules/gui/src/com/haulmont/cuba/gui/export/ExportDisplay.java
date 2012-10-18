@@ -27,4 +27,6 @@ public interface ExportDisplay {
     void show(FileDescriptor fileDescriptor, @Nullable ExportFormat format);
 
     void setFrame(IFrame frame);
+
+    void show(FileDescriptor fileDescriptor);
 }

@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * Allows to show exported data in external desktop app or download it
+ *
  * @author artamonov
  * @version $Id$
  */
@@ -152,6 +154,7 @@ public class DesktopExportDisplay implements ExportDisplay {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
     }
 
+    @Override
     public void show(FileDescriptor fileDescriptor) {
         ExportFormat format = ExportFormat.getByExtension(fileDescriptor.getExtension());
         show(fileDescriptor, format);

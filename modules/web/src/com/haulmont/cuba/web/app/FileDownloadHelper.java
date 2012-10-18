@@ -2,20 +2,13 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.11.2009 10:48:16
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
@@ -29,8 +22,18 @@ import org.apache.commons.lang.StringUtils;
 
 import java.text.NumberFormat;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FileDownloadHelper {
 
+    /**
+     * @deprecated Use {@link org.apache.commons.io.FilenameUtils#getExtension(String)}
+     * @param fileName
+     * @return
+     */
+    @Deprecated
     public static String getFileExt(String fileName) {
         int i = fileName.lastIndexOf('.');
         if (i > -1)
@@ -55,7 +58,7 @@ public class FileDownloadHelper {
     public static String makeUrl(FileDescriptor fd, boolean attachment) {
         StringBuilder sb = new StringBuilder();
         sb.append("dispatch/download?")
-                .append("s=").append(UserSessionProvider.getUserSession().getId()).append("&")
+                .append("s=").append(AppBeans.get(UserSessionSource.class).getUserSession().getId()).append("&")
                 .append("f=").append(fd.getId());
         if (attachment)
             sb.append("&a=true");
@@ -136,6 +139,8 @@ public class FileDownloadHelper {
     }
 
     public static String formatFileSize(long longSize, int decimalPos) {
+        Messages messages = AppBeans.get(Messages.NAME);
+
         NumberFormat fmt = NumberFormat.getNumberInstance();
         if (decimalPos >= 0) {
             fmt.setMaximumFractionDigits(decimalPos);
@@ -143,13 +148,13 @@ public class FileDownloadHelper {
         final double size = longSize;
         double val = size / (1024 * 1024);
         if (val > 1) {
-            return fmt.format(val).concat(" " + MessageProvider.getMessage(FileDownloadHelper.class, "fmtMb"));
+            return fmt.format(val).concat(" " + messages.getMessage(FileDownloadHelper.class, "fmtMb"));
         }
         val = size / 1024;
         if (val > 10) {
-            return fmt.format(val).concat(" " + MessageProvider.getMessage(FileDownloadHelper.class, "fmtKb"));
+            return fmt.format(val).concat(" " + messages.getMessage(FileDownloadHelper.class, "fmtKb"));
         }
-        return fmt.format(size).concat(" " + MessageProvider.getMessage(FileDownloadHelper.class, "fmtB"));
+        return fmt.format(size).concat(" " + messages.getMessage(FileDownloadHelper.class, "fmtB"));
     }
 
     public static String formatFileSize(long fileSize) {
