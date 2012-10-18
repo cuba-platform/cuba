@@ -57,7 +57,7 @@ public class SecurityContextHandlerInterceptor extends HandlerInterceptorAdapter
             if (session != null && session.isAuthenticated()) {
                 UserSessionService userSessionSource = AppContext.getBean(UserSessionService.NAME);
                 try {
-                    userSessionSource.pingSession();
+                    userSessionSource.getMessages();
                 } catch (NoUserSessionException e) {
                     httpSession.invalidate();
                     response.sendRedirect(request.getRequestURI());

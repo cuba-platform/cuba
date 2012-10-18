@@ -41,6 +41,9 @@
     <screen id="sec$UserSessionEntity.browse"
             template="/com/haulmont/cuba/gui/app/security/session/browse/session-browse.xml"/>
 
+    <screen id="sessionMessageWindow"
+            template="/com/haulmont/cuba/gui/app/security/session/browse/session-message.xml"/>
+
     <screen id="sec$Constraint.edit"
             template="/com/haulmont/cuba/gui/app/security/constraint/edit/constraint-edit.xml"/>
 

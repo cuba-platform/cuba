@@ -125,7 +125,7 @@ public class AnonymousSessionHolder {
     private void pingSession(UserSession userSession) {
         AppContext.setSecurityContext(new SecurityContext(userSession));
         try {
-            userSessionService.pingSession();
+            userSessionService.getMessages();
         } catch (NoUserSessionException e) {
             log.warn("Anonymous session has been lost, try restore");
             // auto restore anonymous session

@@ -580,10 +580,14 @@ public abstract class App extends Application
             timer.addListener(new Timer.Listener() {
                 public void onTimer(Timer timer) {
                     if (connected) {
+                        log.debug("Ping session");
                         UserSessionService service = AppBeans.get(UserSessionService.NAME);
-                        service.pingSession();
+                        String message = service.getMessages();
+                        if (message != null) {
+                            message = message.replace("\n", "<br/>");
+                            getAppWindow().showNotification(message, Window.Notification.TYPE_ERROR_MESSAGE);
+                        }
                     }
-                    log.debug("Ping session");
                 }
 
                 public void onStopTimer(Timer timer) {

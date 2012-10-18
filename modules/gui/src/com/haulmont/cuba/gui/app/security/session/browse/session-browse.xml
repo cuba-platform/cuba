@@ -22,29 +22,33 @@
         </groupDatasource>
     </dsContext>
 
-    <layout>
-        <vbox expand="sessionsTable" width="100%" height="100%">
-            <groupTable id="sessionsTable" editable="false">
-                <buttonsPanel>
-                    <button action="sessionsTable.refresh" caption="msg://refresh"/>
-                    <button action="sessionsTable.kill" caption="msg://kill"/>
-                </buttonsPanel>
-                <rowsCount/>
-                <columns>
-                    <column id="id" caption="msg://id"/>
-                    <column id="login" caption="msg://login"/>
-                    <column id="userName" caption="msg://userName"/>
-                    <column id="address" caption="msg://address"/>
-                    <column id="clientInfo" caption="msg://clientInfo"/>
-                    <column id="since" caption="msg://since"/>
-                    <column id="lastUsedTs" caption="msg://lastUsedTs"/>
-                </columns>
-                <rows datasource="sessionsDs"/>
-            </groupTable>
-            <hbox>
-                <label value="msg://lastUpdate"/>
-                <label id="lastUpdateTsLable"/>
-            </hbox>
-        </vbox>
+    <layout expand="sessionsTable" spacing="true">
+        <groupTable id="sessionsTable" multiselect="true" width="100%">
+            <actions>
+                <action id="refresh" caption="msg://refresh" invoke="refresh"/>
+                <action id="message" caption="msg://message" invoke="message"/>
+                <action id="kill" caption="msg://kill" invoke="kill"/>
+            </actions>
+            <buttonsPanel>
+                <button action="sessionsTable.refresh"/>
+                <button action="sessionsTable.message"/>
+                <button action="sessionsTable.kill"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="id" caption="msg://id"/>
+                <column id="login" caption="msg://login"/>
+                <column id="userName" caption="msg://userName"/>
+                <column id="address" caption="msg://address"/>
+                <column id="clientInfo" caption="msg://clientInfo"/>
+                <column id="since" caption="msg://since"/>
+                <column id="lastUsedTs" caption="msg://lastUsedTs"/>
+            </columns>
+            <rows datasource="sessionsDs"/>
+        </groupTable>
+        <hbox spacing="true">
+            <label value="msg://lastUpdate"/>
+            <label id="lastUpdateTsLab"/>
+        </hbox>
     </layout>
 </window>

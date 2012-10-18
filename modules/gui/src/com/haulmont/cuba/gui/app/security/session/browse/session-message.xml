@@ -1,0 +1,24 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.gui.app.security.session.browse.SessionMessageWindow"
+        caption="msg://messageWindow.caption"
+        messagesPack="com.haulmont.cuba.gui.app.security.session.browse"
+        focusComponent="messageField">
+
+    <dsContext/>
+
+    <layout spacing="true">
+        <optionsGroup id="whomOptionsGroup" multiselect="false"/>
+        <textField id="messageField" caption="msg://messageWindow.textField" rows="5" width="100%"/>
+        <hbox spacing="true">
+            <button id="sendBtn" caption="msg://messageWindow.send" invoke="send"/>
+            <button id="cancelBtn" caption="msg://com.haulmont.cuba.gui/actions.Cancel" invoke="close"/>
+        </hbox>
+    </layout>
+</window>
