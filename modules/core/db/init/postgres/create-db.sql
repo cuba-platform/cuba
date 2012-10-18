@@ -697,8 +697,6 @@ create table SYS_CATEGORY_ATTR (
 )^
 
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR (CATEGORY_ID)^
-
-create unique index IDX_SYS_CATEGORY_ATTR_CODE on SYS_CATEGORY_ATTR (CATEGORY_ID, CODE) where code is not null^
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_ATTR_VALUE(

@@ -729,9 +729,6 @@ create table SYS_CATEGORY_ATTR(
 	primary key (ID)
 );
 
---partial index doesnt work in hsqldb
---create unique index IDX_SYS_CATEGORY_ATTR_CODE on SYS_CATEGORY_ATTR (CATEGORY_ID, CODE) where code is not null^
-
 alter table SYS_CATEGORY_ATTR add constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID);
 
 create table SYS_ATTR_VALUE(

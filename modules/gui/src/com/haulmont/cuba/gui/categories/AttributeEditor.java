@@ -177,7 +177,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                         && (!ca.equals(categoryAttribute))) {
                     errors.add(getMessage("uniqueName"));
                     return;
-                }else if (ca.getCode().equals(categoryAttribute.getCode())
+                } else if (ca.getCode() != null && ca.getCode().equals(categoryAttribute.getCode())
                         && (!ca.equals(categoryAttribute))) {
                     errors.add(getMessage("uniqueCode"));
                     return;
