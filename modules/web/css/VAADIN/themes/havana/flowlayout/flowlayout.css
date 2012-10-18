@@ -10,19 +10,19 @@
 }
 
 .flow-layout-m-t {
-    padding-top: 10px;
+    padding-top: 5px;
 }
 
 .flow-layout-m-r {
-    padding-right: 10px;
+    padding-right: 5px;
 }
 
 .flow-layout-m-b {
-    padding-bottom: 10px;
+    padding-bottom: 5px;
 }
 
 .flow-layout-m-l {
-    padding-left: 10px;
+    padding-left: 5px;
 }
 
 .flow-layout-s .flow-layout-widget {
