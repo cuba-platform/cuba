@@ -1,6 +1,6 @@
 allprojects {
     ext.artifactGroup = 'com.haulmont.shop'
-    ext.artifactVersion = '4.0.0'
+    ext.artifactVersion = '1.0'
     ext.isSnapshot = true
 }
 buildscript {
@@ -15,7 +15,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.1'
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT'
     }
 }
 def cubaVersion = '4.0.0-SNAPSHOT'
@@ -39,19 +39,11 @@ configure([globalModule, coreModule, guiModule, webModule]) {
     }
     dependencies {
         compile("com.haulmont.cuba:cuba-global:$cubaVersion")
-        testCompile('junit:junit:4.5')
-    }
-    task sourceJar(type: Jar) {
-        from file('src')
-        classifier = 'sources'
-    }
-    artifacts {
-        archives sourceJar
     }
 }
 configure(globalModule) {
     dependencies {
-        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.1')
+        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT')
     }
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/shop-persistence.xml"
@@ -70,19 +62,11 @@ configure(coreModule) {
         compile(globalModule)
         compile("com.haulmont.cuba:cuba-core:$cubaVersion")
         compile("com.haulmont.cuba:cuba-test-ui:$cubaVersion")
-        testCompile("com.haulmont.cuba:cuba-core:$cubaVersion:tests")
-        testCompile('junit:junit:4.5')
-        testCompile("com.haulmont.cuba:cuba-shared-lib:$cubaVersion")
         provided(servletApi)
         jdbc(postgres)
-        testRuntime(postgres)
         dbscripts("com.haulmont.cuba:cuba-core:$cubaVersion:db@zip")
     }
-    test {
-        scanForTestClasses = false
-        includes = ['**/*Test.class']
-		jvmArgs '-XX:-UseSplitVerifier'
-    }
+    
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'app-core'
         jarNames = coreJarNames
@@ -93,12 +77,7 @@ configure(coreModule) {
         dbUser = 'root'
         dbPassword = 'root'
     }
-    task createTestDb(dependsOn: assemble, description: 'Creates local Postgres database for tests', type: CubaDbCreation) {
-        dbms = 'postgres'
-        dbName = 'shop_test'
-        dbUser = 'root'
-        dbPassword = 'root'
-    }
+    
 }
 configure(guiModule) {
     dependencies {

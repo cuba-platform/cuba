@@ -15,6 +15,7 @@
     </listitem>
   </itemizedlist>
   <para>На Вашей рабочей машине уже должно быть установлено и настроено необходимое программное обеспечение. Информация о том, как установить и настроить программное обеспечение, содержится в главе <xref linkend="chapter1_setup" xrefstyle="select: title"/>.</para>
+  <para>Шаблон проекта, рассмотренного в главе Быстрый старт,  находится по адресу <ulink url="http://docs.haulmont.com/cuba/4.0/manual/shop">http://docs.haulmont.com/cuba/4.0/manual/shop</ulink></para>
   <section id="section_quick_start_data_model">
     <title>Описание предметной области</title>
     <para>Наше первое приложение предназначено для ведения сведений о покупателях и скидках. </para>
@@ -76,6 +77,21 @@
       <listitem>
         <para>Создайте в этой папке файл <filename>build.gradle</filename> следующего содержания:</para>
         <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/build.gradle" parse="text"/></programlisting>
+        <caution>
+          <title>Подсказка</title>
+          <para>Создайте системные переменные  <code>HAULMONT_REPOSITORY_USER</code> и <code>HAULMONT_REPOSITORY_PASSWORD</code>.</para>
+          <figure>
+            <title>Задание системных переменных</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/setSystemVar.png" contentwidth="80%"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para><code>HAULMONT_REPOSITORY_USER</code>: external
+</para>
+          <para><code>HAULMONT_REPOSITORY_PASSWORD</code>: aiva33n8</para>
+        </caution>
       </listitem>
       <listitem>
         <para>Создайте в этой папке файл <filename>settings.gradle</filename> следующего содержания:</para>

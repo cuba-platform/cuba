@@ -219,92 +219,7 @@
         <emphasis role="bold">Application Properties</emphasis>
       </glossterm>
       <glossdef>
-        <para wordsize="20"><emphasis role="bold">Основные понятия</emphasis></para>
         <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
-        <para>По назначению свойства приложения можно классифицировать следующим образом:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Конфигурационные параметры: определяют наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса. Например: <parameter>cuba.springContextConfig</parameter>, <parameter>cuba.web.useLightHeader</parameter>.</para>
-          </listitem>
-          <listitem>
-            <para>Параметры развертывания: различные URL для соединения <glossterm linkend="glossary_app_tiers">уровней</glossterm> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType,</parameter> <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
-          </listitem>
-          <listitem>
-            <para>Параметры времени выполнения: активность аудита, параметры отсылки email и т.д. Например, <parameter>cuba.security.EntityLog.enabled</parameter>, <parameter>cuba.email.smtpHost</parameter>.</para>
-          </listitem>
-        </itemizedlist>
-        <para><emphasis role="bold">Работа со свойствами приложения</emphasis></para>
-        <formalpara>
-          <title>Программный доступ к свойствам</title>
-          <para>Основной способ доступа к свойствам приложения из программного кода − использование Java-интерфейсов механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm>. Кроме того, все свойства конфигурации и развертывания доступны через методы класса <classname>com.haulmont.cuba.core.sys.AppContext</classname>.</para>
-        </formalpara>
-        <formalpara>
-          <title>Принадлежность уровням</title>
-          <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
-           <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>).</para>
-          <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
-              <listitem>
-                <para>Из документации</para>
-              </listitem>
-              <listitem>
-                <para>Проследив использование свойства в коде приложения</para>
-              </listitem>
-              <listitem>
-                <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>:</para>
-                <itemizedlist>
-                  <listitem>
-                    <para><structname>global</structname> − свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm></para>
-                  </listitem>
-                  <listitem>
-                    <para><structname>core</structname> − <glossterm>Middleware</glossterm></para>
-                  </listitem>
-                  <listitem>
-                    <para><structname>client</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
-                  </listitem>
-                  <listitem>
-                    <para><structname>web</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm></para>
-                  </listitem>
-                  <listitem>
-                    <para><structname>web-portal</structname> − <glossterm linkend="text_portal_id">Web Portal</glossterm></para>
-                  </listitem>
-                  <listitem>
-                    <para><structname>desktop</structname> − <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
-                  </listitem>
-                </itemizedlist>
-              </listitem>
-            </itemizedlist></para>
-        </formalpara>
-        <formalpara>
-          <title>JMX-интерфейс</title>
-          <para>Некоторые <glossterm linkend="glossary_app_tiers">уровни приложения</glossterm> определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm> имеется JMX-интерфейс <classname>ConfigStorageMBean</classname> с именем <classname>app-core.cuba:service=ConfigStorage</classname>, а на уровне <glossterm linkend="text_webclient_id">Web Client</glossterm> − <classname>ConfigurationMBean</classname> с именем <classname>app.cuba:service=Configuration</classname>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="glossary_saving_properties">хранения</link> этих категорий свойств.</para>
-        </formalpara>
-        <para id="glossary_saving_properties"><emphasis role="bold">Хранение значений свойств</emphasis></para>
-        <formalpara id="text_properties_files">
-          <title>Файлы свойств</title>
-          <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый <glossterm linkend="glossary_app_tiers">уровень приложения</glossterm> имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
-        </formalpara>
-        <itemizedlist>
-          <listitem>
-            <para>Для уровней, являющихся веб-приложениями (<glossterm linkend="text_middleware_id">Middleware</glossterm>, <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
-          </listitem>
-          <listitem>
-            <para>Для уровня <glossterm linkend="text_desktop_id">Desktop Client</glossterm> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Например, набор файлов свойств уровня <glossterm linkend="text_middleware_id">Middleware</glossterm> проекта <application>shop</application> − <filename>web.xml</filename> − выглядит следующим образом:</para>
-        <programlisting>classpath:cuba-app.properties
-classpath:shop-app.properties
-file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
-        <para>Здесь префикс <classname>classpath:</classname> означает, что данный файл нужно искать в Java classpath, префикс <classname>file:</classname> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <classname>catalina.home</classname> − путь к корню <application>Tomcat</application>.</para>
-        <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
-        <para id="glossary_local_properties">Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Подробнее об этом файле можно узнать в определении <link linkend="glossary_local_properties">Local Application Properties</link>.</para>
-        <formalpara>
-          <title>Таблица базы данных</title>
-          <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
-        </formalpara>
-        <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
-        <para>Если обращение к свойству производится через Java-интерфейс механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm> и если значение свойства не задано в месте его хранения (файлы <filename>*-app.properties</filename> или БД), то будет возвращено значение по умолчанию, если оно задано в аннотации соответствующего метода Java-интерфейса.</para>
-        <para>Подробное описание свойств подсистемы безопасности содержится в <link linkend="appendix_security_properties">Приложении А</link>.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -349,12 +264,18 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
   </glossdiv>
   <glossdiv>
     <title>E</title>
+    <glossentry id="glossary_eagerFetching">
+      <glossterm>Eager Fetching</glossterm>
+      <glossdef>
+        <para>Возможность эффективно загружать данные подклассов и связанных объектов одновременно с основной запрашиваемой сущностью .</para>
+      </glossdef>
+    </glossentry>
     <glossentry id="glossary_entityManager_id">
       <glossterm>
         <emphasis role="bold">EntityManager</emphasis>
       </glossterm>
       <glossdef>
-        <para>Служит для извлечения <glossterm linkend="glossary_entity">сущностей</glossterm> из БД и сохранения их в БД. Может быть получен только в слое <glossterm linkend="glossary_middleware_id">middleware</glossterm> с помощью <classname>PersistenceProvider</classname>.</para>
+        <para>Служит для извлечения <glossterm linkend="glossary_entity">сущностей</glossterm> из БД и сохранения их в БД. Может быть получен только в слое <glossterm linkend="glossary_middleware_id">middleware</glossterm> с помощью <classname>PersistenceProvider</classname>. Для получения более подробной информации обратитесь к главе <link linkend="text_entityManager">ORM</link>.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
