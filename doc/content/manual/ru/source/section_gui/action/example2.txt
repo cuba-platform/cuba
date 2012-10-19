@@ -1,0 +1,5 @@
+﻿<table id="coloursTable">
+    <actions>
+        <action id="testSorting" caption="TestSorting" icon="icons/ok.png" invoke="testSorting"/>
+    </actions>
+    ...

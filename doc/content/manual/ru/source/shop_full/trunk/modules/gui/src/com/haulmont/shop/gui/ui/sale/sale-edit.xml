@@ -1,0 +1,80 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.shop.gui.ui.sale.SaleEditor"
+        caption="msg://editorCaption"
+        datasource="saleDs"
+        messagesPack="com.haulmont.shop.gui.ui.sale">
+
+    <dsContext>
+        <datasource id="saleDs"
+                    class="com.haulmont.shop.core.entity.Sale"
+                    view="saleEdit">
+        </datasource>
+        <collectionDatasource id="buyersDs" class="com.haulmont.shop.core.entity.Buyer" view="buyerEdit"/>
+        <collectionDatasource id="productsDs" class="com.haulmont.shop.core.entity.Product" view="_local"/>
+        <collectionDatasource id="salesPersonsDs" class="com.haulmont.shop.core.entity.SalesPerson" view="_local"/>
+    </dsContext>
+    <#assign width = 200>
+    <layout expand="windowActions">
+        <vbox spacing="true" width="-1px"
+              height="-1px">
+            <grid margin="true" spacing="true" stylename="edit-area">
+                <columns count="2"/>
+                <rows>
+                    <row>
+                        <label value="msg://buyer"/>
+                        <lookupPickerField id="buyer" datasource="saleDs" property="buyer" optionsDatasource="buyersDs"
+                                           width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://product"/>
+                        <pickerField id="product" datasource="saleDs" property="product"
+                                     lookupScreen="shop$Product.lookup" width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://salesPerson"/>
+                        <pickerField id="salesPerson" datasource="saleDs" property="salesPerson"
+                                     lookupScreen="shop$SalesPerson.lookup" width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://orderDate"/>
+                        <dateField id="orderDate" datasource="saleDs" property="orderDate" width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://quantity"/>
+                        <textField id="quantity" datasource="saleDs" property="quantity" required="true"
+                                   width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://price"/>
+                        <hbox spacing="true">
+                            <textField id="price" datasource="saleDs" property="price" width="${width}"/>
+                            <button id="calcPrice" caption="msg://calcPrice" invoke="calcPrice" icon="icons/run.png"/>
+                        </hbox>
+                    </row>
+                    <row>
+                        <label value="msg://deliveryDate"/>
+                        <dateField id="deliveryDate" datasource="saleDs" property="deliveryDate" width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://deliveryAddress"/>
+                        <textField id="deliveryAddress" datasource="saleDs" property="deliveryAddress"
+                                   width="${width}"/>
+                    </row>
+                    <row>
+                        <label value="msg://priceDescription"/>
+                        <textField id="priceDescription" datasource="saleDs" property="priceDescription" width="340px"
+                                   rows="5"/>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+        <iframe id="windowActions" screen="editWindowActions">
+        </iframe>
+    </layout>
+</window>

@@ -1,0 +1,6 @@
+rootProject.name = 'shop'
+include(':shop-global', ':shop-core', ':shop-gui', ':shop-web')
+project(':shop-global').projectDir = new File(settingsDir, 'modules/global')
+project(':shop-core').projectDir = new File(settingsDir, 'modules/core')
+project(':shop-gui').projectDir = new File(settingsDir, 'modules/gui')
+project(':shop-web').projectDir = new File(settingsDir, 'modules/web')

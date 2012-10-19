@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        messagesPack="com.haulmont.shop.gui.ui.buyer"
+        caption="msg://browserCaption"
+        lookupComponent="buyersTable"
+        >
+
+    <dsContext>
+        <collectionDatasource id="buyersDs"
+                              class="com.haulmont.shop.core.entity.Buyer"
+                              view="buyerBrowse">
+            <query>
+                select b from shop$Buyer b
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="table-panel"
+              expand="buyersTable"
+              spacing="true"
+              height="100%">
+
+            <groupBox id="filterBox" collapsable="false" stylename="edit-area">
+                <filter id="genericBuyersFilter"
+                        datasource="buyersDs">
+                    <properties include=".*"
+                                exclude=""/>
+                </filter>
+            </groupBox>
+
+            <table id="buyersTable"
+                   editable="false" width="100%">
+                <actions>
+                    <action id="create"/>
+                    <action id="edit"/>
+                    <action id="remove"/>
+                    <action id="refresh"/>
+                    <action id="excel"/>
+                </actions>
+                <buttonsPanel alwaysVisible="true">
+                    <button action="buyersTable.create"/>
+                    <button action="buyersTable.edit"/>
+                    <button action="buyersTable.remove"/>
+                    <button action="buyersTable.excel"/>
+                    <button action="buyersTable.refresh"/>
+                </buttonsPanel>
+                <rowsCount/>
+                <columns>
+                    <column id="personalData.fullName"/>
+                    <column id="personalData.birthday"/>
+                    <column id="personalData.email"/>
+                    <column id="personalData.phone"/>
+                    <column id="deliveryAddress"/>
+                </columns>
+                <rows datasource="buyersDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

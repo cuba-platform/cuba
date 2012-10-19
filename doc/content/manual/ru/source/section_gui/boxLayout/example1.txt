@@ -1,0 +1,7 @@
+<flowbox spacing="true" stylename="myFlow" margin="true">
+    <label value="msg://Label1" stylename="link" width="100px"/>
+    <label value="msg://Button2"/>
+    <label value="msg://Label3" stylename="link" width="200px"/>
+    <label value="msg://Button4"/>
+    <label value="msg://Label5" stylename="link" width="150px"/>
+</flowbox>

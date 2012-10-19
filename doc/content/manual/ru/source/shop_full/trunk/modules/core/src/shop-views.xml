@@ -1,0 +1,63 @@
+<views xmlns="http://schemas.haulmont.com/cuba/4.0/view.xsd">
+    <view class="com.haulmont.shop.core.entity.Product"
+          name="editProduct"
+          extends="_local">
+        <property name="unit"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.Buyer"
+          name="buyerEdit"
+          extends="_local">
+        <property name="personalData" view="_local"/>
+        <property name="discounts" view="discountBrowse"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.Buyer"
+          name="buyerBrowse"
+          extends="_local">
+        <property name="personalData" view="_local"/>
+        <property name="discounts" view="discountBrowse"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.SalesPerson"
+          name="salespersonEdit"
+          extends="_local">
+        <property name="personalData" view="_local"/>
+        <property name="user" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.SalesPerson"
+          name="salespersonBrowse"
+          extends="_local">
+        <property name="personalData" view="_local"/>
+        <property name="user" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.Discount"
+          name="discountBrowse"
+          extends="_local">
+        <property name="product" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.Discount"
+          name="discountEdit"
+          extends="_local">
+        <property name="product" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.Sale"
+          name="saleBrowse"
+          extends="_local">
+        <property name="buyer" view="buyerBrowse"/>
+        <property name="product" view="_local"/>
+        <property name="salesPerson" view="salespersonBrowse"/>
+    </view>
+
+    <view class="com.haulmont.shop.core.entity.Sale"
+          name="saleEdit"
+          extends="_local">
+        <property name="buyer" view="buyerBrowse"/>
+        <property name="product" view="_local"/>
+        <property name="salesPerson" view="salespersonBrowse"/>
+    </view>
+</views>

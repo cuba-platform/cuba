@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.gui.components.AbstractEditor"
+        caption="msg://editorCaption"
+        datasource="discountDs"
+        messagesPack="com.haulmont.shop.gui.ui.discount">
+
+    <dsContext>
+        <datasource id="discountDs"
+                    class="com.haulmont.shop.core.entity.Discount"
+                    view="discountEdit">
+        </datasource>
+        <collectionDatasource id="productsDs" class="com.haulmont.shop.core.entity.Product" view="_local"/>
+    </dsContext>
+    <layout expand="windowActions">
+        <fieldGroup id="fieldGroup"
+                    datasource="discountDs"
+                    stylename="edit-area">
+            <column width="250px">
+                <field id="product" optionsDatasource="productsDs"/>
+                <field id="minQuantity"/>
+                <field id="price"/>
+                <field id="fromDate"/>
+                <field id="tillDate"/>
+            </column>
+        </fieldGroup>
+        <iframe id="windowActions" screen="editWindowActions"/>
+    </layout>
+</window>

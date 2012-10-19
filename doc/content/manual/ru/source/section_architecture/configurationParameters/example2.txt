@@ -1,0 +1,2 @@
+FileUploadConfig config = configuration.getConfig(FileUploadConfig.class);
+String uploadDir = config.getUploadDir();

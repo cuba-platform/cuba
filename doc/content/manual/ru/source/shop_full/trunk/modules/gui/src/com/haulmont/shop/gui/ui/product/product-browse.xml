@@ -1,0 +1,61 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        messagesPack="com.haulmont.shop.gui.ui.product"
+        caption="msg://browserCaption"
+        lookupComponent="productsTable"
+        >
+
+    <dsContext>
+        <collectionDatasource id="productsDs"
+                              class="com.haulmont.shop.core.entity.Product"
+                              view="_local">
+            <query>
+                select p from shop$Product p order by p.name
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="table-panel"
+              expand="productsTable"
+              spacing="true"
+              height="100%">
+            <groupBox id="filterBox" collapsable="false" stylename="edit-area">
+                <filter id="genericProductFilter"
+                        datasource="productsDs">
+                    <properties include=".*"
+                                exclude=""/>
+                </filter>
+            </groupBox>
+            <table id="productsTable"
+                   editable="false" width="100%">
+                <actions>
+                    <action id="create"/>
+                    <action id="edit"/>
+                    <action id="remove"/>
+                    <action id="refresh"/>
+                    <action id="excel"/>
+                </actions>
+                <buttonsPanel alwaysVisible="true">
+                    <button action="productsTable.create"/>
+                    <button action="productsTable.edit"/>
+                    <button action="productsTable.remove"/>
+                    <button action="productsTable.excel"/>
+                    <button action="productsTable.refresh"/>
+                </buttonsPanel>
+                <rowsCount/>
+                <columns>
+                    <column id="name"/>
+                    <column id="price"/>
+                    <column id="unit"/>
+                </columns>
+                <rows datasource="productsDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

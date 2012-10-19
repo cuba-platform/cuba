@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.shop.gui.ui.salesperson.SalesPersonEditor"
+        caption="msg://editorCaption"
+        datasource="salespersonDs"
+        messagesPack="com.haulmont.shop.gui.ui.salesperson">
+
+    <dsContext>
+        <datasource id="salespersonDs"
+                    class="com.haulmont.shop.core.entity.SalesPerson"
+                    view="salespersonEdit">
+            <datasource id="personalDataDs" property="personalData"/>
+        </datasource>
+        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User" view="_local">
+            <query>
+                <![CDATA[select u from sec$User u where not exists(select e from shop$SalesPerson e where e.user.id = u.id and e.id <> :ds$salespersonDs and e.deleteTs is null)
+                order by u.name]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="windowActions">
+
+        <fieldGroup id="personalFieldGroup"
+                    stylename="edit-area"
+                    datasource="salespersonDs">
+            <column width="250px">
+                <field id="fullName" datasource="personalDataDs"/>
+                <field id="birthday" datasource="personalDataDs"/>
+                <field id="email" datasource="personalDataDs"/>
+                <field id="phone" datasource="personalDataDs"/>
+                <field id="address"/>
+                <field id="worksFrom"/>
+                <field id="user" optionsDatasource="usersDs"/>
+            </column>
+        </fieldGroup>
+
+        <iframe id="windowActions" screen="editWindowActions"/>
+    </layout>
+</window>

@@ -1,0 +1,8 @@
+<menu-config xmlns="http://schemas.haulmont.com/cuba/4.0/menu.xsd">
+    <menu id="shop" insertBefore="help">
+        <item id="shop$Product.browse"/>
+        <item id="shop$Buyer.browse"/>
+        <item id="shop$SalesPerson.browse"/>
+        <item id="shop$Sale.browse"/>
+    </menu>
+</menu-config>

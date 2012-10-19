@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <!--<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="cuba-mybatis.xml"/>
+        <property name="mapperLocations" value="com/haulmont/refapp/core/sqlmap/*.xml"/>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>-->
+
+    <!--<bean id="workflow_DesignCompiler" parent="base_workflow_DesignCompiler">
+        <property name="moduleClasses">
+            <map merge="true">
+                <entry key="Endorsement" value="com.haulmont.refapp.core.app.workflow.EndorsementModule"/>
+            </map>
+        </property>
+    </bean>-->
+
+    <!-- Annotation-based beans -->
+    <context:component-scan base-package="com.haulmont.shop"/>
+
+    <!-- MBeans registration -->
+
+    <!--<bean id="refapp_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+        <property name="beans">
+            <map>
+                <entry key="${cuba.webContextName}:service=Sample" value-ref="refapp_Sample"/>
+            </map>
+        </property>
+        <property name="assembler">
+            <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+                <property name="interfaceMappings">
+                    <map>
+                        <entry key="refapp_Sample" value="com.haulmont.refapp.core.app.SampleMBean"/>
+                    </map>
+                </property>
+            </bean>
+        </property>
+    </bean>-->
+
+</beans>

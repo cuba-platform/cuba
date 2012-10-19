@@ -1,0 +1,8 @@
+<table id="coloursTable">
+    <actions>
+        <action id="create"/>
+        <action id="edit"/>
+        <action id="remove"/>
+        <action id="refresh"/>
+    </actions>
+    ...
