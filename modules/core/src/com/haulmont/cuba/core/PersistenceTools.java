@@ -121,6 +121,8 @@ public class PersistenceTools {
         BitSet loaded = stateManager.getLoaded();
         if (loaded.get(index)) {
             Object reference = ((Instance) entity).getValue(property);
+            if (reference == null)
+                return null;
             if (!(reference instanceof Instance))
                 throw new IllegalArgumentException("Property " + property + " is not a reference");
             id = ((Instance) reference).getUuid();

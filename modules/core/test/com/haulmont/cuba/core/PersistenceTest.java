@@ -155,20 +155,14 @@ public class PersistenceTest extends CubaTestCase
 
                 UUID groupId = PersistenceProvider.getReferenceId(reloadedUser, "group");
 
-                // MUST BE
-                // assertNull(groupId)
-                // BUT we have exception instead
-                fail("Method call fails with exception");
+                assertNull(groupId);
 
                 tx.commit();
             } finally {
                 tx.end();
             }
         } catch (IllegalArgumentException e) {
-            // MUST BE
-            // fail(e.getMessage())
-            // BUT we have instead
-            assertEquals(e.getMessage(), "Property group is not a reference");
+            fail(e.getMessage());
         }
     }
 
