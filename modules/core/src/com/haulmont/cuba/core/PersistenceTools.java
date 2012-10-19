@@ -21,6 +21,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.ObjectId;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -106,9 +107,11 @@ public class PersistenceTools {
      *
      * @param entity   master entity
      * @param property name of reference property
-     * @return UUID of the referenced entity
+     * @return UUID of the referenced entity or null if the reference is null
      * @throws IllegalStateException if the entity is not in Managed state
+     * @throws IllegalArgumentException if the specified property is not a reference
      */
+    @Nullable
     public UUID getReferenceId(Object entity, String property) {
         OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
         if (!(stateManager instanceof StateManagerImpl))
