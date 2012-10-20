@@ -7,23 +7,6 @@
 
 <permission-config>
 
-    <specific>
-
-        <category id="cuba">
-            <category id="cuba.gui">
-                <permission id="cuba.gui.showInfo"/>
-                <category id="cuba.gui.filter">
-                    <permission id="cuba.gui.filter.global"/>
-                    <permission id="cuba.gui.filter.edit"/>
-                    <permission id="cuba.gui.filter.customConditions"/>
-                    <permission id="cuba.gui.filter.maxResults"/>
-                </category>
-                <permission id="cuba.gui.searchFolder.global"/>
-                <permission id="cuba.gui.presentations.global"/>
-                <permission id="cuba.gui.appFolder.global"/>
-            </category>
-        </category>
-        
-    </specific>
+    <include file="/com/haulmont/cuba/gui/cuba-permissions.xml"/>
 
 </permission-config>
