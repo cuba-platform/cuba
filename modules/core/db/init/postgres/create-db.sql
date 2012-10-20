@@ -213,8 +213,8 @@ create table SEC_USER (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    LOGIN varchar(50),
-    LOGIN_LC varchar(50),
+    LOGIN varchar(50) not null,
+    LOGIN_LC varchar(50) not null,
     PASSWORD varchar(32),
     NAME varchar(255),
     FIRST_NAME varchar(255),

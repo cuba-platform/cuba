@@ -26,6 +26,9 @@ import java.util.List;
 
 /**
  * User
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$User")
 @Table(name = "SEC_USER")
@@ -36,10 +39,10 @@ public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;
 
-    @Column(name = "LOGIN", length = LOGIN_FIELD_LEN)
+    @Column(name = "LOGIN", length = LOGIN_FIELD_LEN, nullable = false)
     protected String login;
 
-    @Column(name = "LOGIN_LC", length = LOGIN_FIELD_LEN)
+    @Column(name = "LOGIN_LC", length = LOGIN_FIELD_LEN, nullable = false)
     protected String loginLowerCase;
 
     @Column(name = "PASSWORD", length = 32)
@@ -69,7 +72,7 @@ public class User extends StandardEntity
     @Column(name = "ACTIVE")
     protected Boolean active = true;
 
-    @ManyToOne(/*optional = false,*/ fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
     @OnDeleteInverse(DeletePolicy.DENY)
     protected Group group;
