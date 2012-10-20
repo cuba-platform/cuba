@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 22.06.2010 15:42:19
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -15,6 +10,10 @@ import org.dom4j.Element;
 
 import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasBorder,
         Component.Editable, Component.Collapsable, Component.HasSettings, Component.Validatable {
 
@@ -101,34 +100,42 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
             return id;
         }
 
+        @Override
         public String getCaption() {
             return caption;
         }
 
+        @Override
         public void setCaption(String caption) {
             this.caption = caption;
         }
 
+        @Override
         public String getDescription() {
             return description;
         }
 
+        @Override
         public void setDescription(String description) {
             this.description = description;
         }
 
+        @Override
         public Formatter getFormatter() {
             return formatter;
         }
 
+        @Override
         public void setFormatter(Formatter formatter) {
             this.formatter = formatter;
         }
 
+        @Override
         public Element getXmlDescriptor() {
             return element;
         }
 
+        @Override
         public void setXmlDescriptor(Element element) {
             this.element = element;
         }

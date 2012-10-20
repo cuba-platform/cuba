@@ -112,7 +112,6 @@ public abstract class ContainerLoader extends ComponentLoader {
         return null;
     }
 
-
     protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {

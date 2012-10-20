@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 03.02.2009 12:59:26
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -25,6 +21,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected boolean[][] spanMatrix;
 
@@ -32,6 +32,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         super(context, config, factory);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         GridLayout component = factory.createComponent("grid");
 
@@ -69,7 +70,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         }
 
         final List<Element> rowElements = rowsElement.elements("row");
-        final Set<Element> invisibleRows = new HashSet<Element>();
+        final Set<Element> invisibleRows = new HashSet<>();
 
         int rowCount = 0;
         for (Element rowElement : rowElements) {
@@ -82,7 +83,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             }
 
             if (!StringUtils.isEmpty(visible)) {
-                Boolean value = evaluateBoolean(visible);
+                Boolean value = Boolean.valueOf(visible);
 
                 if (BooleanUtils.toBoolean(value)) {
                     rowCount++;
@@ -169,7 +170,6 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             } else {
                 Label label = factory.createComponent("label");
                 grid.add(label, c1, r1, c2, r2);
-//                throw new UnsupportedOperationException("Invalid nested components count");
             }
         } else {
             grid.add(subComponent, c1, r1, c2, r2);

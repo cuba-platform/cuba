@@ -2,16 +2,12 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 18:20:37
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -22,11 +18,13 @@ import org.dom4j.Element;
 
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
-
-    private static final long serialVersionUID = 4810695977418474135L;
 
     public AbstractFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context);
@@ -34,6 +32,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
         this.factory = factory;
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final Field component = factory.createComponent(element.getName());
 

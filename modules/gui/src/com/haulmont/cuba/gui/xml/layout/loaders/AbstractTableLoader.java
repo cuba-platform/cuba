@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 06.04.2009 11:44:49
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -29,6 +25,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
 
     protected ComponentsFactory factory;
@@ -40,7 +41,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         this.config = config;
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         final T component = createComponent(factory);
 
         assignXmlDescriptor(component, element);
@@ -94,7 +98,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         if (columnsElement != null) {
             availableColumns = loadColumns(component, columnsElement, cds);
         } else {
-            availableColumns = new ArrayList<Table.Column>();
+            availableColumns = new ArrayList<>();
         }
 
         for (Table.Column column : availableColumns) {
@@ -120,18 +124,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     }
 
     protected List<Table.Column> loadColumns(Table component, Element columnsElement, CollectionDatasource ds) {
-        final List<Table.Column> columns = new ArrayList<Table.Column>();
+        final List<Table.Column> columns = new ArrayList<>();
         //noinspection unchecked
         for (final Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
             String visible = columnElement.attributeValue("visible");
-            if (visible == null) {
-                final Element e = columnElement.element("visible");
-                if (e != null) {
-                    visible = e.getText();
-                }
-            }
-
-            if (StringUtils.isEmpty(visible) || evaluateBoolean(visible)) {
+            if (StringUtils.isEmpty(visible) || Boolean.valueOf(visible)) {
                 columns.add(loadColumn(columnElement, ds));
             }
         }
@@ -193,7 +190,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected abstract T createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException;
+    protected abstract T createComponent(ComponentsFactory factory)
+            throws InstantiationException, IllegalAccessException;
 
     private Table.Column loadColumn(Element element, Datasource ds) {
         final String id = element.attributeValue("id");
@@ -212,7 +210,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
 
         if (!StringUtils.isEmpty(editable)) {
-            column.setEditable(evaluateBoolean(editable));
+            column.setEditable(Boolean.valueOf(editable));
         }
 
         String collapsed = element.attributeValue("collapsed");
@@ -224,7 +222,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
 
         if (!StringUtils.isEmpty(collapsed)) {
-            column.setCollapsed(evaluateBoolean(collapsed));
+            column.setCollapsed(Boolean.valueOf(collapsed));
         }
 
         loadCaption(column, element);
@@ -278,7 +276,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
     private void loadCalculatable(Table.Column column, Element columnElement) {
         String calc = columnElement.attributeValue("calculatable");
-        if (!StringUtils.isEmpty(calc) && isBoolean(calc)) {
+        if (!StringUtils.isEmpty(calc)) {
             column.setCalculatable(Boolean.valueOf(calc));
         }
     }
@@ -331,12 +329,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
     protected void loadSortable(T component, Element element) {
         final String sortable = element.attributeValue("sortable");
-        if (!StringUtils.isEmpty(sortable) && isBoolean(sortable)) {
+        if (!StringUtils.isEmpty(sortable)) {
             component.setSortable(Boolean.valueOf(sortable));
         }
     }
 
-    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
+    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name)
+            throws IllegalAccessException, InstantiationException {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
             throw new IllegalStateException(String.format("Unknown component '%s'", name));

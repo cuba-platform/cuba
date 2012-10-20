@@ -166,7 +166,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
 
         if (!StringUtils.isEmpty(visible)) {
-            component.setVisible(evaluateBoolean(visible));
+            component.setVisible(Boolean.valueOf(visible));
         }
     }
 
@@ -179,8 +179,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             }
         }
 
-        if (!StringUtils.isEmpty(enable) && isBoolean(enable)) {
-            component.setEnabled(evaluateBoolean(enable));
+        if (!StringUtils.isEmpty(enable)) {
+            component.setEnabled(Boolean.valueOf(enable));
         }
     }
 
@@ -199,6 +199,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         final String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
             context.addPostInitTask(new PostInitTask() {
+                @Override
                 public void execute(Context context, IFrame window) {
                     component.setAlignment(Component.Alignment.valueOf(align));
                 }
@@ -263,6 +264,12 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             throw new IllegalStateException("ComponentLoaderContext.frame is null");
     }
 
+    /**
+     * @deprecated Do not use!
+     * @param expression
+     * @return
+     */
+    @Deprecated
     protected Boolean evaluateBoolean(String expression) {
         Boolean value;
         if (isBoolean(expression)) {
@@ -286,8 +293,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadPresentations(Component.HasPresentations component, Element element) {
         String presentations = element.attributeValue("presentations");
-        if (!StringUtils.isEmpty(presentations) && isBoolean(presentations)) {
-            component.usePresentations(evaluateBoolean(presentations));
+        if (!StringUtils.isEmpty(presentations)) {
+            component.usePresentations(Boolean.valueOf(presentations));
             context.addPostInitTask(new LoadPresentationsPostInitTask(component));
         }
     }

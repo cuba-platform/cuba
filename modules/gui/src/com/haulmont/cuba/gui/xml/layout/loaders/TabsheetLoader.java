@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 02.02.2009 16:46:18
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -19,12 +15,19 @@ import org.dom4j.Element;
 
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class TabsheetLoader extends ContainerLoader {
     public TabsheetLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         final Tabsheet component = factory.createComponent("tabsheet");
 
         assignXmlDescriptor(component, element);
@@ -53,7 +56,7 @@ public class TabsheetLoader extends ContainerLoader {
 
             final String detachable = tabElement.attributeValue("detachable");
             if (StringUtils.isNotEmpty(detachable)) {
-                tab.setDetachable(evaluateBoolean(detachable));
+                tab.setDetachable(Boolean.valueOf(detachable));
             }
 
             String caption = tabElement.attributeValue("caption");
@@ -72,9 +75,7 @@ public class TabsheetLoader extends ContainerLoader {
             }
 
             if (!StringUtils.isEmpty(enable)) {
-                if (isBoolean(enable)) {
-                    tab.setEnabled(Boolean.valueOf(enable));
-                }
+                tab.setEnabled(Boolean.valueOf(enable));
             }
         }
 

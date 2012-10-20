@@ -42,7 +42,7 @@
                 </field>
                 <field id="ipMask"/>
                 <!-- hidden, todo rewrite broken permission lookups -->
-                <field id="permissionsLookupField" caption="msg://permissions" custom="true" visible="false"/>
+                <!--<field id="permissionsLookupField" caption="msg://permissions" custom="true" visible="false"/>-->
             </column>
             <column flex="3" width="${width}">
                 <field id="group" required="true" requiredMessage="msg://groupMsg"/>

@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 23.06.2010 11:49:55
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -33,6 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class FieldGroupLoader extends AbstractFieldLoader {
     public FieldGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -40,7 +39,9 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         final FieldGroup component = factory.createComponent("fieldGroup");
 
         assignXmlDescriptor(component, element);
@@ -107,6 +108,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     loadRequired(component, field);
                     loadEditable(component, field);
                     loadEnabled(component, field);
+                    loadVisible(component, field);
                 }
             }
         });
@@ -135,19 +137,9 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     protected List<FieldGroup.Field> loadFields(FieldGroup component, List<Element> elements, Datasource ds) {
-        final List<FieldGroup.Field> fields = new ArrayList<FieldGroup.Field>(elements.size());
+        final List<FieldGroup.Field> fields = new ArrayList<>(elements.size());
         for (final Element fieldElement : elements) {
-            String visible = fieldElement.attributeValue("visible");
-            if (visible == null) {
-                final Element e = fieldElement.element("visible");
-                if (e != null) {
-                    visible = e.getText();
-                }
-            }
-
-            if (StringUtils.isEmpty(visible) || evaluateBoolean(visible)) {
-                fields.add(loadField(component, fieldElement, ds));
-            }
+            fields.add(loadField(component, fieldElement, ds));
         }
         return fields;
     }
@@ -260,7 +252,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             if (StringUtils.isEmpty(requiredMsg)) {
                 if (metaClass != null) {
                     MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
-                    requiredMsg = MessageProvider.formatMessage(
+                    requiredMsg = messages.formatMessage(
                             AppConfig.getMessagesPack(),
                             "validation.required.defaultMsg",
                             AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty)
@@ -276,7 +268,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         FieldGroup fieldGroup = (FieldGroup) component;
         if (fieldGroup.getDatasource() != null) {
             MetaClass metaClass = fieldGroup.getDatasource().getMetaClass();
-            UserSession userSession = UserSessionProvider.getUserSession(); // UserSessionClient.getUserSession();
+            UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
             boolean editable = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
                     || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE));
             if (!editable) {
@@ -302,7 +294,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 MetaClass metaClass = metaClass(component, field);
                 MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
 
-                UserSession userSession = UserSessionProvider.getUserSession();
+                UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
                 boolean editableFromPermissions = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
                         || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
                         && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
@@ -343,6 +335,14 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         final String enabled = element.attributeValue("enabled");
         if (!StringUtils.isEmpty(enabled)) {
             component.setEnabled(field, component.isEnabled() && BooleanUtils.toBoolean(enabled));
+        }
+    }
+
+    protected void loadVisible(FieldGroup component, FieldGroup.Field field) {
+        Element element = field.getXmlDescriptor();
+        final String visible = element.attributeValue("visible");
+        if (!StringUtils.isEmpty(visible)) {
+            component.setVisible(field, component.isVisible() && BooleanUtils.toBoolean(visible));
         }
     }
 
