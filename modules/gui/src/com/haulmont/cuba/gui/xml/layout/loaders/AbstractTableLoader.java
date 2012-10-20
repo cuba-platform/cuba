@@ -62,6 +62,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadWidth(component, element);
 
         loadSortable(component, element);
+        loadReorderingAllowed(component, element);
+        loadColumnControlVisible(component, element);
         loadAggregatable(component, element);
 
         loadPresentations(component, element);
@@ -331,6 +333,20 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String sortable = element.attributeValue("sortable");
         if (!StringUtils.isEmpty(sortable)) {
             component.setSortable(Boolean.valueOf(sortable));
+        }
+    }
+
+    protected void loadReorderingAllowed(T component, Element element) {
+        final String reorderingAllowed = element.attributeValue("reorderingAllowed");
+        if (!StringUtils.isEmpty(reorderingAllowed)) {
+            component.setColumnReorderingAllowed(Boolean.valueOf(reorderingAllowed));
+        }
+    }
+
+    protected void loadColumnControlVisible(T component, Element element) {
+        final String columnControlVisible = element.attributeValue("columnControlVisible");
+        if (!StringUtils.isEmpty(columnControlVisible)) {
+            component.setColumnControlVisible(Boolean.valueOf(columnControlVisible));
         }
     }
 

@@ -38,6 +38,7 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.ColumnControlButton;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
@@ -46,10 +47,7 @@ import javax.swing.AbstractAction;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.Component;
 import java.awt.event.*;
@@ -60,7 +58,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public abstract class DesktopAbstractTable<C extends JTable>
+public abstract class DesktopAbstractTable<C extends JXTable>
         extends DesktopAbstractActionsHolderComponent<C>
         implements Table {
 
@@ -368,7 +366,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
-        UserSession userSession = UserSessionProvider.getUserSession();
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
         final Collection<Object> properties;
@@ -453,7 +451,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         setVisibleColumns(columnsOrder);
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();
@@ -697,6 +695,28 @@ public abstract class DesktopAbstractTable<C extends JTable>
     @Override
     public boolean isSortable() {
         return sortable;
+    }
+
+    @Override
+    public void setColumnReorderingAllowed(boolean columnReorderingAllowed) {
+        JTableHeader tableHeader = impl.getTableHeader();
+        tableHeader.setReorderingAllowed(columnReorderingAllowed);
+    }
+
+    @Override
+    public boolean getColumnReorderingAllowed() {
+        JTableHeader tableHeader = impl.getTableHeader();
+        return tableHeader.getReorderingAllowed();
+    }
+
+    @Override
+    public void setColumnControlVisible(boolean columnCollapsingAllowed) {
+        impl.setColumnControlVisible(columnCollapsingAllowed);
+    }
+
+    @Override
+    public boolean getColumnControlVisible() {
+        return impl.isColumnControlVisible();
     }
 
     @Override

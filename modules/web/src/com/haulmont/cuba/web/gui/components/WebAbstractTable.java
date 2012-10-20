@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 06.04.2009 10:41:54
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -70,6 +66,11 @@ import java.util.*;
 
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
 
@@ -77,7 +78,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected List<Table.Column> columnsOrder = new ArrayList<>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
     protected boolean editable;
-    protected boolean sortable = true;
     protected Action itemClickAction;
     protected Action enterPressAction;
 
@@ -105,8 +105,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected TablePresentations tablePresentations;
 
     private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
-
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -168,12 +166,32 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public boolean isSortable() {
-        return sortable;
+        return !component.isSortDisabled();
     }
 
     @Override
     public void setSortable(boolean sortable) {
-        this.sortable = sortable;
+        component.setSortDisabled(!sortable);
+    }
+
+    @Override
+    public void setColumnReorderingAllowed(boolean columnReorderingAllowed) {
+        component.setColumnReorderingAllowed(columnReorderingAllowed);
+    }
+
+    @Override
+    public boolean getColumnReorderingAllowed() {
+        return component.isColumnReorderingAllowed();
+    }
+
+    @Override
+    public void setColumnControlVisible(boolean columnCollapsingAllowed) {
+        component.setColumnCollapsingAllowed(columnCollapsingAllowed);
+    }
+
+    @Override
+    public boolean getColumnControlVisible() {
+        return component.isColumnCollapsingAllowed();
     }
 
     @Override

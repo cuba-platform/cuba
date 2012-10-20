@@ -56,6 +56,12 @@ public interface Table
     void setShowTotalAggregation(boolean showAggregation);
     boolean isShowTotalAggregation();
 
+    void setColumnReorderingAllowed(boolean columnReorderingAllowed);
+    boolean getColumnReorderingAllowed();
+
+    void setColumnControlVisible(boolean columnCollapsingAllowed);
+    boolean getColumnControlVisible();
+
     void sortBy(Object propertyId, boolean ascending);
 
     void selectAll();

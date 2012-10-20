@@ -250,6 +250,8 @@
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
         <xs:attribute name="margin" type="xs:string" use="optional"/>
         <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="reorderingAllowed" type="xs:boolean" use="optional"/>
+        <xs:attribute name="columnControlVisible" type="xs:boolean" use="optional"/>
 
         <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
         <xs:attribute name="presentations" type="xs:boolean" use="optional"/>
