@@ -167,7 +167,16 @@ public class DeletePolicyHelper
         query.setParameter(1, entity.getId());
         List<Entity> list = query.getResultList();
 
-        return list;
+        // Check whether the collection items still belong to the master entity, because they could be changed in the
+        // current transaction that not affected the database yet
+        List<Entity> result = new ArrayList<>(list.size());
+        for (Entity item : list) {
+            Entity master = item.getValue(invPropName);
+            if (entity.equals(master))
+                result.add(item);
+        }
+
+        return result;
     }
 
     private boolean referenceExists(MetaProperty property) {
