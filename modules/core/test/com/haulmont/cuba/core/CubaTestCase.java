@@ -50,9 +50,8 @@ import java.util.UUID;
  * <p>Descendant classes must override methods <code>initDataSources()</code> and <code>getTestAppProperties()</code>
  * to supply project-specific properties.</p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class CubaTestCase extends TestCase
 {
@@ -63,6 +62,7 @@ public abstract class CubaTestCase extends TestCase
     protected Persistence persistence;
     protected Metadata metadata;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         if (!initialized) {
@@ -174,7 +174,7 @@ public abstract class CubaTestCase extends TestCase
 
     protected void deleteRecord(String table, UUID id) {
         String sql = "delete from " + table + " where ID = '" + id.toString() + "'";
-        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
             runner.update(sql);
         } catch (SQLException e) {
