@@ -66,82 +66,68 @@ public class LinkHandler {
                 return;
             }
 
-            String itemStr = requestParams.get("item");
-            if (itemStr == null) {
-                app.getWindowManager().openWindow(windowInfo,
-                        WindowManager.OpenType.NEW_TAB,
-                        getParamsMap());
-            } else {
-                final EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
-                if (info == null) {
-                    log.warn("Invalid item definition: " + itemStr);
-                    return;
+            UUID userId = getUUID(requestParams.get("user"));
+            if (!(userId == null || app.getConnection().getSession().getCurrentOrSubstitutedUser().getId().equals(userId))) {
+                final User substitutedUser = loadUser(userId, app.getConnection().getSession().getUser());
+                if (substitutedUser != null)
+                    app.getWindowManager().showOptionDialog(
+                            MessageProvider.getMessage(getClass(), "toSubstitutedUser.title"),
+                            getDialogMessage(substitutedUser),
+                            IFrame.MessageType.CONFIRMATION,
+                            new Action[]{
+                                    new ChangeSubstUserAction(substitutedUser) {
+                                        @Override
+                                        public void doAfterChangeUser() {
+                                            super.doAfterChangeUser();
+                                            openWindow(windowInfo);
+                                        }
+
+                                        @Override
+                                        public void doRevert() {
+                                            super.doRevert();
+                                            app.getAppWindow().executeJavaScript("window.close();");
+                                        }
+
+                                        @Override
+                                        public String getCaption() {
+                                            return MessageProvider.getMessage(getClass(), "action.switch");
+                                        }
+                                    },
+                                    new DoNotChangeSubstUserAction() {
+                                        @Override
+                                        public void actionPerform(Component component) {
+                                            super.actionPerform(component);
+                                            app.getAppWindow().executeJavaScript("window.close();");
+                                        }
+
+                                        @Override
+                                        public String getCaption() {
+                                            return MessageProvider.getMessage(getClass(), "action.cancel");
+                                        }
+                                    }
+                            });
+                else {
+                    User user = loadUser(userId);
+                    app.getWindowManager().showOptionDialog(
+                            MessageProvider.getMessage(getClass(), "warning.title"),
+                            getWarningMessage(user),
+                            IFrame.MessageType.WARNING,
+                            new Action[]{
+                                    new DialogAction(DialogAction.Type.OK) {
+                                        @Override
+                                        public void actionPerform(Component component) {
+                                            app.getAppWindow().executeJavaScript("window.close();");
+                                        }
+                                    }
+                            });
                 }
-
-                UUID userId = getUUID(requestParams.get("user"));
-                if (!(userId == null || app.getConnection().getSession().getCurrentOrSubstitutedUser().getId().equals(userId))) {
-                    final User substitutedUser = loadUser(userId, app.getConnection().getSession().getUser());
-                    if (substitutedUser != null)
-                        app.getWindowManager().showOptionDialog(
-                                MessageProvider.getMessage(getClass(), "toSubstitutedUser.title"),
-                                getDialogMessage(substitutedUser),
-                                IFrame.MessageType.CONFIRMATION,
-                                new Action[]{
-                                        new ChangeSubstUserAction(substitutedUser){
-                                            @Override
-                                            public void doAfterChangeUser() {
-                                                super.doAfterChangeUser();
-                                                openWindow(windowInfo, info);
-                                            }
-
-                                            @Override
-                                            public void doRevert() {
-                                                super.doRevert();
-                                                app.getAppWindow().executeJavaScript("window.close();");
-                                            }
-
-                                            @Override
-                                            public String getCaption() {
-                                                return MessageProvider.getMessage(getClass(), "action.switch");
-                                            }
-                                        },
-                                        new DoNotChangeSubstUserAction() {
-                                            @Override
-                                            public void actionPerform(Component component) {
-                                                super.actionPerform(component);
-                                                app.getAppWindow().executeJavaScript("window.close();");
-                                            }
-
-                                            @Override
-                                            public String getCaption() {
-                                                return MessageProvider.getMessage(getClass(), "action.cancel");
-                                            }
-                                        }
-                                });
-                    else {
-                        User user = loadUser(userId);
-                        app.getWindowManager().showOptionDialog(
-                                MessageProvider.getMessage(getClass(), "warning.title"),
-                                getWarningMessage(user),
-                                IFrame.MessageType.WARNING,
-                                new Action[]{
-                                        new DialogAction(DialogAction.Type.OK) {
-                                            @Override
-                                            public void actionPerform(Component component) {
-                                                app.getAppWindow().executeJavaScript("window.close();");
-                                            }
-                                        }
-                                });
-                    }
-                } else
-                    openWindow(windowInfo, info);
-
-            }
+            } else
+                openWindow(windowInfo);
         } catch (AccessDeniedException e) {
             new AccessDeniedHandler().handle(e, app);
         } catch (NoSuchScreenException e) {
             new NoSuchScreenHandler().handle(e, app);
-        }  catch (EntityAccessException e) {
+        } catch (EntityAccessException e) {
             new EntityAccessExceptionHandler().handle(e, app);
         }
     }
@@ -162,7 +148,11 @@ public class LinkHandler {
     private String getWarningMessage(User user) {
         if (user == null)
             return MessageProvider.getMessage(getClass(), "warning.userNotFound");
-        return MessageProvider.formatMessage(getClass(), "warning.msg", StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName());
+        return MessageProvider.formatMessage(
+                getClass(),
+                "warning.msg",
+                StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName()
+        );
     }
 
     private User loadUser(UUID userId, User user) {
@@ -190,18 +180,29 @@ public class LinkHandler {
     }
 
     private String getDialogMessage(User user) {
-        return MessageProvider.formatMessage(getClass(), "toSubstitutedUser.msg", StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName());
+        return MessageProvider.formatMessage(
+                getClass(),
+                "toSubstitutedUser.msg",
+                StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName()
+        );
     }
 
-    private void openWindow(WindowInfo windowInfo, EntityLoadInfo info) {
-        Entity entity = loadEntityInstance(info);
-        if (entity != null) 
-            app.getWindowManager().openEditor(windowInfo,
-                    entity,
-                    WindowManager.OpenType.NEW_TAB,
-                    getParamsMap());
-    else 
-        throw new EntityAccessException();
+    private void openWindow(WindowInfo windowInfo) {
+        String itemStr = requestParams.get("item");
+        if (itemStr == null) {
+            app.getWindowManager().openWindow(windowInfo, WindowManager.OpenType.NEW_TAB, getParamsMap());
+        } else {
+            EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
+            if (info == null) {
+                log.warn("Invalid item definition: " + itemStr);
+            } else {
+                Entity entity = loadEntityInstance(info);
+                if (entity != null)
+                    app.getWindowManager().openEditor(windowInfo, entity, WindowManager.OpenType.NEW_TAB, getParamsMap());
+                else
+                    throw new EntityAccessException();
+            }
+        }
     }
 
     private Map<String, Object> getParamsMap() {
