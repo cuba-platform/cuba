@@ -155,12 +155,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         ((DatasourceImplementation) ds).setModified(false);
 
         if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
-            // lock original metaClass, if any, because by convention all the configuration is based on original entities
-            MetaClass metaClass = metadata.getExtendedEntities().getOriginalMetaClass(ds.getMetaClass());
-            if (metaClass == null) {
-                metaClass = ds.getMetaClass();
-            }
-            LockInfo lockInfo = lockService.lock(metaClass.getName(), item.getId().toString());
+            LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
             if (lockInfo == null) {
                 justLocked = true;
             } else if (!(lockInfo instanceof LockNotSupported)) {
@@ -225,10 +220,20 @@ public class EditorWindowDelegate extends WindowDelegate {
 
     public void releaseLock() {
         if (justLocked) {
-            Entity entity = getDatasource().getItem();
+            Datasource ds = getDatasource();
+            Entity entity = ds.getItem();
             if (entity != null) {
-                lockService.unlock(getDatasource().getMetaClass().getName(), entity.getId().toString());
+                lockService.unlock(getMetaClassForLocking(ds).getName(), entity.getId().toString());
             }
         }
+    }
+
+    protected MetaClass getMetaClassForLocking(Datasource ds) {
+        // lock original metaClass, if any, because by convention all the configuration is based on original entities
+        MetaClass metaClass = metadata.getExtendedEntities().getOriginalMetaClass(ds.getMetaClass());
+        if (metaClass == null) {
+            metaClass = ds.getMetaClass();
+        }
+        return metaClass;
     }
 }
