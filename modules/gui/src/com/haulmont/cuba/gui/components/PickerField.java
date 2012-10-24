@@ -93,7 +93,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public abstract Action createAction(PickerField pickerField);
     }
 
-    public static abstract class StandardAction extends AbstractAction {
+    public static abstract class StandardAction extends AbstractAction implements ShortcutAction{
 
         private static final long serialVersionUID = 8103707056784950383L;
 
@@ -119,6 +119,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected String lookupScreen;
         protected WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
         protected Map<String, Object> lookupScreenParams;
+        protected KeyCombination keyCombination = KeyCombination.create("CTRL-ALT-L");
 
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -176,11 +177,18 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 );
             }
         }
+
+        @Override
+        public KeyCombination getKeyCombination() {
+            return keyCombination;
+        }
     }
 
     public static class ClearAction extends StandardAction {
 
         public static final String NAME = ActionType.CLEAR.getId();
+
+        protected KeyCombination keyCombination = KeyCombination.create("CTRL-ALT-C");
 
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -194,9 +202,16 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 pickerField.setValue(null);
             }
         }
+
+        @Override
+        public KeyCombination getKeyCombination() {
+            return keyCombination;
+        }
     }
 
     public static class OpenAction extends StandardAction {
+
+        protected KeyCombination keyCombination = KeyCombination.create("CTRL-ALT-O");
 
         public static final String NAME = ActionType.OPEN.getId();
 
@@ -337,6 +352,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
             }
 
             return sb.toString();
+        }
+
+        @Override
+        public KeyCombination getKeyCombination() {
+            return keyCombination;
         }
     }
 }

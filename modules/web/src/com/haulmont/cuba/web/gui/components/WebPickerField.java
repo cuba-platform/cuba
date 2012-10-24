@@ -31,10 +31,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class WebPickerField
         extends
@@ -50,6 +47,8 @@ public class WebPickerField
     protected MetaClass metaClass;
 
     protected List<Action> actions = new ArrayList<>();
+
+    protected WebPickerFieldActionHandler actionHandler;
 
     public WebPickerField() {
         component = new Picker(this);
@@ -84,11 +83,14 @@ public class WebPickerField
         });
 
         attachListener(component);
+
+        initActionHandler();
     }
 
     public WebPickerField(com.haulmont.cuba.web.toolkit.ui.PickerField component) {
         this.component = component;
         attachListener(component);
+        initActionHandler();
     }
 
     private ItemWrapper createItemWrapper(final Object newValue) {
@@ -278,6 +280,7 @@ public class WebPickerField
     @Override
     public void addAction(Action action) {
         actions.add(action);
+        actionHandler.addAction(action);
         PickerButton pButton = new PickerButton();
         pButton.setAction(action);
         component.addButton(pButton.<Button>getComponent());
@@ -289,6 +292,7 @@ public class WebPickerField
     @Override
     public void removeAction(Action action) {
         actions.remove(action);
+        actionHandler.removeAction(action);
         if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
             Button button = ((WebButton) action.getOwner()).getComponent();
             component.removeButton(button);
@@ -318,6 +322,12 @@ public class WebPickerField
                 return action;
         }
         return null;
+    }
+
+    protected void initActionHandler() {
+        com.vaadin.event.Action.Container actionContainer = ((com.vaadin.event.Action.Container) component.getField());
+        actionHandler = new WebPickerFieldActionHandler(this);
+        actionContainer.addActionHandler(actionHandler);
     }
 
     private static class PickerButton extends WebButton {

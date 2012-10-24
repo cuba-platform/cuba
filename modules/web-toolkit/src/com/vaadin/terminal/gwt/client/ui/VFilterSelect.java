@@ -559,6 +559,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     protected int pageLength = 10;
 
+    protected ShortcutActionHandler shortcutHandler;
+
     private final FlowPanel panel = new FlowPanel();
 
     private Integer tabindex = null;
@@ -569,6 +571,11 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             super.onBrowserEvent(event);
             if (client != null) {
                 //client.handleTooltipEvent(event, VFilterSelect.this);
+            }
+
+            final int type = DOM.eventGetType(event);
+            if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+                shortcutHandler.handleKeyboardEvent(event);
             }
         }
     };
@@ -864,6 +871,16 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             updateRootWidth();
         }
 
+        for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
+            final UIDL data = (UIDL) it.next();
+            if (data.getTag().equals("actions")) {
+                if (shortcutHandler == null) {
+                    shortcutHandler = new ShortcutActionHandler(uidl.getId(), client);
+                }
+                shortcutHandler.updateActionMap(data);
+            }
+        }
+
         // Focus dependent style names are lost during the update, so we add
         // them here back again
         updateFocused();
@@ -1041,7 +1058,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                     }
                 break;
             default:
-                filterOptions(currentPage);
+                if (!event.isControlKeyDown() && !event.isAltKeyDown()) {
+                    filterOptions(currentPage);
+                }
                 break;
             }
         }

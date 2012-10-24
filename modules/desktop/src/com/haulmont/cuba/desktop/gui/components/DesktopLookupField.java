@@ -371,6 +371,14 @@ public class DesktopLookupField
         updateMissingValueState();
     }
 
+    protected JComponent getInputComponent() {
+        if (impl == comboBox) {
+            return (JComponent) comboBox.getEditor().getEditorComponent();
+        } else {
+            return impl;
+        }
+    }
+
     private void updateTextField() {
         if (metaProperty != null) {
             valueFormatter.setMetaProperty(metaProperty);

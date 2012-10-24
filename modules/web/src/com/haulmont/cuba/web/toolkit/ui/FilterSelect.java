@@ -11,6 +11,8 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.event.Action;
+import com.vaadin.event.ActionManager;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -22,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 
 @SuppressWarnings("serial")
-public class FilterSelect extends Select {
+public class FilterSelect extends Select implements Action.Container {
 
     private boolean fixedTextBoxWidth = false;
 
@@ -40,6 +42,9 @@ public class FilterSelect extends Select {
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
+        if (actionManager != null) {
+            actionManager.paintActions(null, target);
+        }
         if (fixedTextBoxWidth) {
             target.addAttribute("fixedTextBoxWidth", true);
         }
@@ -342,5 +347,34 @@ public class FilterSelect extends Select {
             currentPage = Math.round(count / getPageLength());
         }
         isFirstChange = false;
+        if (actionManager != null) {
+            actionManager.handleActions(variables, this);
+        }
+    }
+
+    @Override
+    public void attach() {
+        super.attach();
+        if (actionManager != null) {
+            actionManager.setViewer(this);
+        }
+    }
+
+    @Override
+    protected ActionManager getActionManager() {
+        if (actionManager == null) {
+            actionManager = new ActionManager(this);
+        }
+        return actionManager;
+    }
+
+    @Override
+    public void addActionHandler(Action.Handler actionHandler) {
+        getActionManager().addActionHandler(actionHandler);
+    }
+
+    @Override
+    public void removeActionHandler(Action.Handler actionHandler) {
+        getActionManager().removeActionHandler(actionHandler);
     }
 }

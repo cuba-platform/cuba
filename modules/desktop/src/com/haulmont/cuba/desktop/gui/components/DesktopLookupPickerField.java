@@ -124,11 +124,22 @@ public class DesktopLookupPickerField
         pickerField.setEditable(editable);
     }
 
+    @Override
+    public void setEnabled(boolean enabled){
+        super.setEnabled(enabled);
+        pickerField.setEnabled(enabled);
+    }
+
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {
         @Override
         protected void initEditor() {
             // put LookupField into PickerField composition
             editor = DesktopLookupPickerField.super.getComposition();
+        }
+
+        @Override
+        public JComponent getInputField() {
+            return getInputComponent();
         }
 
         @Override
