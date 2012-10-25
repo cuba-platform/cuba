@@ -77,7 +77,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         TOP
     }
 
-    public class Field implements HasXmlDescriptor, HasCaption, HasFomatter {
+    public class Field implements HasXmlDescriptor, HasCaption, HasFormatter {
         private String id;
         private String caption;
         private String description;

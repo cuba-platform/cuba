@@ -29,9 +29,8 @@ import javax.swing.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implements FieldGroup, AutoExpanding {
 
@@ -592,8 +591,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         return new CustomFieldGenerator() {
             public Component generateField(Datasource datasource, String propertyId) {
                 Component component = fieldFactory.createField(datasource, propertyId, field.getXmlDescriptor());
-                if (component instanceof HasFomatter) {
-                    ((HasFomatter) component).setFormatter(field.getFormatter());
+                if (component instanceof HasFormatter) {
+                    ((HasFormatter) component).setFormatter(field.getFormatter());
                 }
                 return component;
             }

@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 29.12.2008 13:21:13
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -17,6 +13,10 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public interface Table
     extends
         ListComponent, Component.Editable, Component.HasSettings,
@@ -162,7 +162,7 @@ public interface Table
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static class Column implements HasXmlDescriptor, HasCaption, HasFomatter {
+    public static class Column implements HasXmlDescriptor, HasCaption, HasFormatter {
 
         protected Object id;
         protected String caption;
