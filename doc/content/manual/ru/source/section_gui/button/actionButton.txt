@@ -1,0 +1,5 @@
+﻿<actions>
+	<action id="saveAction" caption="msg://saveAction" icon="icons/save.png"/>
+</actions>
+/*...*/
+<button action="saveAction"/>

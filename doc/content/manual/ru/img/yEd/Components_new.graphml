@@ -412,7 +412,7 @@
           <y:Geometry height="30.0" width="83.0" x="223.1499999999999" y="209.35000000000008"/>
           <y:Fill color="#FF9900" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="70.685546875" x="6.1572265625" y="5.6494140625">TwinColumn<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="70.685546875" x="6.157226562499972" y="5.6494140625">TwinColumn<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -814,7 +814,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="33.850000000000136" sy="2.0" tx="-19.0" ty="0.0">
-            <y:Point x="208.35000000000014" y="-75.0"/>
+            <y:Point x="210.0" y="-75.0"/>
           </y:Path>
           <y:LineStyle color="#FF9900" type="line" width="4.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -835,10 +835,9 @@
       </data>
     </edge>
     <edge id="e29" source="n25" target="n28">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-19.0" sy="-15.0" tx="47.61392425102531" ty="0.0">
+          <y:Path sx="-19.0" sy="2.0" tx="47.61392425102531" ty="0.0">
             <y:Point x="330.0" y="-43.04411026314841"/>
             <y:Point x="222.1139242510253" y="-43.04411026314841"/>
           </y:Path>

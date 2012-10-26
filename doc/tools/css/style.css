@@ -299,11 +299,11 @@ pre {
     margin-left: 1em;
 }
 
-.mediaobject {
-    align: center; /* Выравнивание по ширине 
+/*.mediaobject {
+    align: center;  Выравнивание по ширине 
 	padding-bottom: 1em;
-	padding-top: 1em;*/
-}
+	padding-top: 1em;
+}*/
 
 /*
  * Tables
@@ -313,13 +313,12 @@ pre {
     border-collapse: collapse;
     font-size: 11pt;
     min-width: 50%;
-    /*border: solid #2250bd 1px;*/
-	border: solid rgb(0,149,182) 1px;
+    /*border: solid #2250bd 1px;
+	border: solid rgb(0,149,182) 1px;*/
 	page-break-inside: auto;
 }
 
 .informaltable table td {
-    text-align: center;
     vertical-align: text-top;
     padding-left: 0.8em;
     padding-right: 0.8em;
@@ -371,7 +370,6 @@ div.informaltable {
 
 .table .title {
     white-space: nowrap;
-    text-align:center;
     margin-top: 0;
     margin-bottom: 0.6em;
 	font-family: 'Arial', 'Verdana', sans-serif;
@@ -565,6 +563,13 @@ div.informaltable {
 	line-height: 0.9;
 }*/
 
+div.orderedlist {
+  margin-top: 3em;
+}
+
+div.orderedlist li {
+  margin-top: 1em;
+}
 
 
 

@@ -1,0 +1,1 @@
+﻿<label id="labelInfo" value="msg://labelVal"/>

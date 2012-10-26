@@ -1,0 +1,2 @@
+﻿<button id="disabledButton" invoke="blockButton" caption="msg://block"
+        description="Blocks the button"/>

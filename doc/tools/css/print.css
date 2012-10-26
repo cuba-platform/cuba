@@ -386,6 +386,11 @@ a {
 	color: #1a334c;
 }
 
+.link {
+	font-style: italic;
+	color: #1a334c;
+}
+
 .ulink
 {
 	border-bottom: 1px solid
@@ -407,7 +412,7 @@ a {
     white-space: pre-line;
 }
 
-.programlisting a img, pre a img, td a img, td img {
+.programlisting a img {
     display:inline;
     margin:0 0;
 }
@@ -420,13 +425,12 @@ a {
     border-collapse: collapse;
     font-size: 11pt;
     min-width: 50%;
-    /*border: solid #2250bd 1px;*/
-	border: solid rgb(0,149,182) 0.5px;
+    /*border: solid #2250bd 1px;
+	border: solid rgb(0,149,182) 0.5px;*/
 	page-break-inside: auto;
 }
 
 .informaltable table td {
-    text-align: center;
     vertical-align: text-top;
     padding-left: 0.8em;
     padding-right: 0.8em;

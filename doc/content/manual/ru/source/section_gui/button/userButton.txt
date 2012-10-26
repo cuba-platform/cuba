@@ -1,0 +1,1 @@
+﻿<button id="userButton" caption="msg://saveAction" description="Press me" stylename="test"/>

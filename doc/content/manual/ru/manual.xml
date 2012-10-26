@@ -988,516 +988,769 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <title>Диаграмма компонентов</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/components/Components_new.png"/>
+                <imagedata align="center" fileref="img/Components_new.png"/>
               </imageobject>
             </mediaobject>
           </figure>
           <para><classname>Component</classname> − предок всех визуальных компонентов. Он содержит базовые атрибуты, позволяющие идентифицировать компонент и располагать его на экране.</para>
-          <itemizedlist>
-            <listitem>
-              <para><link linkend="section_button">Button</link> − простая кнопка</para>
-              <para><inlinemediaobject>
-                  <imageobject>
-                    <imagedata fileref="img/components/Button.png"/>
-                  </imageobject>
-                </inlinemediaobject></para>
-              <itemizedlist>
-                <listitem>
-                  <para><link linkend="section_popupButton">PopupButton</link> − кнопка с выпадающим списком действий</para>
-                  <para><inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="img/components/PopupButton.png"/>
-                      </imageobject>
-                    </inlinemediaobject></para>
-                </listitem>
-                <listitem>
-                  <para><link linkend="section_linkButton">LinkButton</link> − кнопка, выглядящая как html-гиперссылка</para>
-                  <para><inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="img/components/LinkButton.png"/>
-                      </imageobject>
-                    </inlinemediaobject></para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-            <listitem>
-              <para>DatasourceComponent − базовый интерфейс компонентов, предназначенных для работы с данными одного экземпляра сущности. Имеет методы для установки источника данных и указания атрибута сущности, из которого брать значение</para>
-              <itemizedlist>
-                <listitem>
-                  <para><link linkend="section_label">Label</link> − надпись, предназначена для отображения статической строки либо значения атрибута сущности</para>
-                  <para><inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="img/components/Label.png"/>
-                      </imageobject>
-                    </inlinemediaobject></para>
-                </listitem>
-                <listitem>
-                  <para>Field − базовый интерфейс компонентов, предназначенных для отображения и редактирования атрибута сущности</para>
-                  <itemizedlist>
-                    <listitem>
-                      <para><link linkend="section_textField">TextField</link> − поле ввода простого текста, может состоять из нескольких строк</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref="img/components/TextField.png"/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                    <listitem>
-                      <para><link linkend="section_gui_textArea">TextArea</link> − поле ввода форматированного текста</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref="img/components/TextArea.png"/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                    <listitem>
-                      <para><link linkend="section_dateField">DateField</link> − поле ввода даты и времени</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref="img/components/DateField.png"/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                    <listitem>
-                      <para>TimeField − поле ввода  времени</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref="img/components/TimeField.png"/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                    <listitem>
-                      <para><link linkend="section_checkBox">CheckBox</link> − переключатель</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref="img/components/CheckBox.png"/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                    <listitem>
-                      <para><link linkend="section_pickerField">PickerField</link> − поле ввода с дополнительными кнопками действий</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref="img/components/PickerField.png"/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                    <listitem>
-                      <para>OptionsField − базовый класс компонентов, позволяющих выбрать значение из некоторого списка. Имеет методы для задания списка опций − через CollectionDatasource, List или Map</para>
-                      <itemizedlist>
-                        <listitem>
-                          <para><link linkend="section_gui_optionsGroup">OptionsGroup</link> − переключатель либо набор флажков.</para>
-                          <para><inlinemediaobject>
-                              <imageobject>
-                                <imagedata fileref="img/components/OptionsGroup.png"/>
-                              </imageobject>
-                            </inlinemediaobject></para>
-                        </listitem>
-                        <listitem>
-                          <para><link linkend="section_lookupField">LookupField</link> − выпадающий список с расширенной функциональностью</para>
-                          <para><inlinemediaobject>
-                              <imageobject>
-                                <imagedata fileref="img/components/LookupField.png"/>
-                              </imageobject>
-                            </inlinemediaobject></para>
-                          <itemizedlist>
-                            <listitem>
-                              <para><link linkend="section_lookupPickerField">LookupPickerField</link> − поле ввода с возможностью выбора из выпадающего списка и вызова дополнительных действий по встроенным кнопкам</para>
-                              <para><inlinemediaobject>
-                                  <imageobject>
-                                    <imagedata fileref="img/components/LookupPickerField.png"/>
-                                  </imageobject>
-                                </inlinemediaobject></para>
-                            </listitem>
-                          </itemizedlist>
-                        </listitem>
-                        <listitem>
-                          <para><link linkend="section_twinColumn">TwinColumn</link> − компонент выбора на основе двух списков</para>
-                          <para><inlinemediaobject>
-                              <imageobject>
-                                <imagedata fileref="img/components/TwinColumn.png"/>
-                              </imageobject>
-                            </inlinemediaobject></para>
-                        </listitem>
-                      </itemizedlist>
-                    </listitem>
-                  </itemizedlist>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-            <listitem>
-              <para>Embedded − компонент для внедрения в экран внешнего содержимого</para>
-            </listitem>
-            <listitem>
-              <para><link linkend="section_upload">FileUploadField</link> − компонент для загрузки файлов</para>
-              <para><inlinemediaobject>
-                  <imageobject>
-                    <imagedata fileref="img/components/Upload.png"/>
-                  </imageobject>
-                </inlinemediaobject></para>
-            </listitem>
-            <listitem>
-              <para>List − базовый интерфейс компонентов, предназначенных для работы с коллекциями сущностей</para>
-              <itemizedlist>
-                <listitem>
-                  <para><link linkend="section_gui_table">Table</link> − таблица</para>
-                  <para><inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="img/components/Table.png"/>
-                      </imageobject>
-                    </inlinemediaobject></para>
-                  <itemizedlist>
-                    <listitem>
-                      <para><link linkend="section_gui_treetable">TreeTable</link> − таблица, отображающая иерархическую сущность</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref=""/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                    <listitem>
-                      <para><link linkend="section_gui_groupTable">GroupTable</link> − таблица с возможностью динамической группировки по любому полю</para>
-                      <para><inlinemediaobject>
-                          <imageobject>
-                            <imagedata fileref="img/components/GroupTable.png"/>
-                          </imageobject>
-                        </inlinemediaobject></para>
-                    </listitem>
-                  </itemizedlist>
-                </listitem>
-                <listitem>
-                  <para><link linkend="section_gui_tree">Tree</link> − дерево</para>
-                  <para><inlinemediaobject>
-                      <imageobject>
-                        <imagedata fileref="img/components/Tree.png"/>
-                      </imageobject>
-                    </inlinemediaobject></para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-            <listitem>
-              <para><link linkend="section_gui_fieldGroup">FieldGroup</link> − компонент для автоматического отображения и редактирования набора атрибутов сущности с помощью соответствующих визуальных компонентов, располагаемых внутри GroupBoxLayout</para>
-              <para><inlinemediaobject>
-                  <imageobject>
-                    <imagedata fileref="img/components/FieldGroup.png"/>
-                  </imageobject>
-                </inlinemediaobject></para>
-            </listitem>
-            <listitem>
-              <para>TokenList − специфический компонент для выбора и отображения коллекции сущностей в виде коротких меток</para>
-            </listitem>
-          </itemizedlist>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/Button.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_button">Button</link></para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/PopupButton.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_popupButton">PopupButton</link></para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/LinkButton.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_linkButton">LinkButton</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/gui_label.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_label">Label</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/gui_textField.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_textField">TextField</link> </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/TextArea.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_gui_textArea">TextArea</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/DateField.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_dateField">DateField</link> </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/TimeField.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>TimeField </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/CheckBox.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_checkBox">CheckBox</link> </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/PickerField.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_pickerField">PickerField</link> </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/OptionsGroup.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_gui_optionsGroup">OptionsGroup</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/LookupField.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_lookupField">LookupField</link> </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/LookupPickerField.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_lookupPickerField">LookupPickerField</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/TwinColumn.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_twinColumn">TwinColumn</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/Upload.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_upload">FileUploadField</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/Table.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_gui_table">Table</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/Tree.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_gui_treetable">TreeTable</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/GroupTable.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_gui_groupTable">GroupTable</link>  </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/Tree.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_gui_tree">Tree</link> </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/FieldGroup.png"/>
+            </imageobject>
+          </mediaobject>
+          <para><link linkend="section_gui_fieldGroup">FieldGroup</link>  </para>
+          <para>TokenList</para>
           <section id="section_button">
             <title>Button</title>
-            <para>Button − кнопка</para>
+            <para>Кнопка (<classname>Button</classname>) −  компонент пользовательского интерфейса, содержащий  текст или пиктограмму (или и то и другое). Кнопка обеспечивает выполнение некоторых действий при нажатии на нее пользователем.</para>
             <para>XML-имя компонента: <classname>button</classname></para>
-            <para>Атрибуты button:</para>
-            <itemizedlist role="test">
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_Button_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса кнопок: для веб-приложений (класс <classname id="class_WebButton">WebButton</classname>) и для десктоп-приложений (класс <classname id="class_DesktopButton">DesktopButton</classname>). Оба этих класса реализуют интерфейс <interfacename>Button</interfacename>, который, в свою очередь, наследуется от интерфейсов <link linkend="section_interface_component">Component</link>, <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>,
+        <link linkend="section_interface_actionOwner">Component.ActionOwner</link>, <link linkend="section_interface_hasIcon">Component.HasIcon.</link> <classname>WebButton</classname> реализует к тому же интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Кнопка может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
+            <figure>
+              <title>Типы кнопок</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_buttonTypes.png" contentwidth="50%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код: </para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/textButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Для создания кнопки с пиктограммой:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/iconButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Для создания кнопки с пользовательским стилем необходимо указать атрибут <property>stylename</property>, а также задать стиль компонента в файле CSS.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/userButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Определение стиля:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/cssButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Основная функция кнопки −  выполнить некоторое действие при нажатии на нее. Определить метод <glossterm linkend="glossary_controller_id">контроллера</glossterm>, который будет вызываться при нажатии на кнопку, можно с помощью атрибута <property id="attr_invoke">invoke</property>. Значением атрубута должно быть    имя  метода контроллера, вызываемого в ответ на событие нажатия кнопки. Метод должен:</para>
+            <itemizedlist>
               <listitem>
-                <para><link linkend="attr_id">id</link></para>
+                <para>Быть <classname>public</classname></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
+                <para>Возвращать <classname>void</classname></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_icon">icon</link></para>
-              </listitem>
-              <listitem>
-                <para>action − полное имя Action, соответствующего данной кнопке.</para>
-              </listitem>
-              <listitem>
-                <para>invoke − имя вызываемого метода контроллера. Метод должен быть <classname>public</classname>, не возвращать результата, и либо не иметь аргументов, либо иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки. Данный атрибут игнорируется, если для кнопки задан атрибут <parameter>action</parameter>.</para>
+                <para>Не иметь аргументов или иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки.</para>
               </listitem>
             </itemizedlist>
-            <example>
-              <title/>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
-            </example>
+            <para>В качестве примера показано описание кнопки, вызывающей метод <methodname>blockButton:</methodname></para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/invokeButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана необходимо определить метод <methodname>blockButton</methodname>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/methodButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибут <property>invoke</property> игнорируется, если для кнопки задан атрибут <property>action</property>. Атрибут <property id="attr_action">action</property> содержит имя <link linkend="section_gui_action">Action</link>, соответствующего данной кнопке.</para>
+            <para>Пример кнопки с атрибутом <property>action</property>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/actionButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибуты <classname>button</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_action">action</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_align">align</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_icon">icon</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_invoke">invoke</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_popupButton">
             <title>PopupButton</title>
             <para>Кнопка с выпадающим списком действий.</para>
-            <para>XML-имя компонента: popupButton.</para>
-            <para>Атрибуты popupButton:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_icon">icon</link></para>
-              </listitem>
-              <listitem>
-                <para>action − полное имя Action, соответствующего данной кнопке.</para>
-              </listitem>
-              <listitem>
-                <para>invoke − имя вызываемого метода контроллера. Метод должен быть <classname>public</classname>, не возвращать результата, и либо не иметь аргументов, либо иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки. Данный атрибут игнорируется, если для кнопки задан атрибут <parameter>action</parameter>.</para>
-              </listitem>
-            </itemizedlist>
+            <para>XML-имя компонента: <classname>popupButton</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_popupButton_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса кнопок: для веб-приложений (класс <classname>WebPopupButton</classname>) и для десктоп-приложений (класс <classname>DesktopPopupButton</classname>). Оба этих класса реализуют интерфейс <interfacename>PopupButton</interfacename>, который, в свою очередь, наследуется от интерфейсов  <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>,
+        <link linkend="section_interface_actionsHolder">Component.ActionsHolder</link>, <link linkend="section_interface_hasIcon">Component.HasIcon.</link></para>
+            <para>Кнопка с выпадающим списоком действий может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
+            <figure>
+              <title>Типы кнопок</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_popupButtonTypes.png" contentwidth="50%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код: </para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/popupButton/textPopupButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Для создания кнопки с пиктограммой:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/popupButton/iconPopupButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Кнопка <classname>popupButton</classname> содержит выпадающий список действий,  которые задаются в элементе <link linkend="section_gui_action">actions</link>.</para>
+            <figure>
+              <title>Кнопка с выпадающим списком действий</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/PopupButton.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>popupButton</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_align">align</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_icon">icon</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_caption">caption</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>popupButton</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="section_gui_action">actions</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_linkButton">
             <title>LinkButton</title>
-            <para>Кнопка, выглядящая как html-гиперссылка.</para>
-            <para>XML-имя компонента: linkButton</para>
-            <para>Атрибуты button:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_icon">icon</link></para>
-              </listitem>
-              <listitem>
-                <para>action − полное имя Action, соответствующего данной кнопке.</para>
-              </listitem>
-              <listitem>
-                <para>invoke − имя вызываемого метода контроллера. Метод должен быть <classname>public</classname>, не возвращать результата, и либо не иметь аргументов, либо иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки. Данный атрибут игнорируется, если для кнопки задан атрибут <parameter>action</parameter>.</para>
-              </listitem>
-            </itemizedlist>
+            <para>Кнопка-ссылка (<classname>LinkButton</classname>) − кнопка, выглядящая как гиперссылка.</para>
+            <para>XML-имя компонента: <classname>linkButton</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_linkButton_dia.png" contentwidth="70%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса кнопок-ссылок: для веб-приложений (класс <classname>WebLinkButton</classname>) и для десктоп-приложений (класс <classname>DesktopLinkButton</classname>). Оба этих класса реализуют интерфейс <interfacename>LinkButton</interfacename>, который, в свою очередь, наследуется от интерфейса  <link linkend="section_button">Button</link>. Класс <classname>WebLinkButton</classname> наследуется от класса <link linkend="class_WebButton">WebButton</link>, класс <classname>DesktopLinkButton</classname> наследуется от класса <link linkend="class_DesktopButton">DesktopButton</link>.</para>
+            <para>Кнопка-ссылка  может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
+            <figure>
+              <title>Типы кнопок-ссылок</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_linkButtonTypes.png" contentwidth="40%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код: </para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/linkButton/textLinkButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Для создания кнопки с пиктограммой:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/linkButton/iconLinkButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Для кнопки-ссылки, также как и для обычной кнопки (<link linkend="section_button">Button</link>), можно в атрибуте <link linkend="attr_invoke">invoke</link> задать метод <glossterm linkend="glossary_controller_id">контроллера</glossterm>, который будет вызываться при нажатии на нее.</para>
+            <para>В качестве примера показано описание кнопки, вызывающей метод <methodname>saveActionTest:</methodname></para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/linkButton/invokeLinkButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана необходимо определить метод <methodname>saveActionTest</methodname>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/linkButton/methodLinkButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибуты <classname>linkButton</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_action">action</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_align">align</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_icon">icon</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_invoke">invoke</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_label">
             <title>Label</title>
-            <para>Надпись, сообщение</para>
-            <para>XML-имя компонента: label</para>
-            <para>Атрибуты label:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para>value − текст надписьи, обычно задается ключом пакета сообщений: value=&quot;msg://infoLabel&quot;</para>
-              </listitem>
-            </itemizedlist>
-            <para>Элементы label:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="element_formatter">formatter</link></para>
-              </listitem>
-            </itemizedlist>
+            <para>Надпись (<classname>Label</classname>) − текстовый компонент, отображающий  статический текст либо значения атрибута <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
+            <para>XML-имя компонента: <classname>label</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_label_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса компонента <classname>Label</classname>: для веб-приложений (класс <classname>WebLabel</classname>) и для десктоп-приложений (класс <classname>DesktopLabel</classname>). Оба этих класса реализуют интерфейс <interfacename>Label</interfacename>, который, в свою очередь, наследуется от интерфейсов 
+        <link linkend="section_interface_DatasourceComponent ">DatasourceComponent</link> и  <link linkend="section_interface_hasFormatter">Component.HasFormatter.</link> <classname>WebLabel</classname> реализует к тому же интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <figure>
+              <title>Типы надписей</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_labelTypes.png" contentwidth="40%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для того чтобы создать компонент надписи, создайте в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/label.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибут <property id="attr_value">value</property> предназначен для отображения текста надписи. Обычно значение атрибута задается с помощью ключа <glossterm linkend="glossary_localized_folders_id">пакета сообщений</glossterm>.</para>
+            <para>Текст, содержащийся в атрибуте <property>value</property>, будет перенесен на следующую строку, если по длине он превысит значение атрибута <link linkend="attr_width">width</link>. Поэтому если Вам нужно использовать многострочную надпись, укажите требуемое значение атрибута <link linkend="attr_width">width</link> (применимо только для веб-приложений). Если текст надписи слишком длинный, и значение атрибута <link linkend="attr_width">width</link> неопределено, то текст будет урезан.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_label_truncated.png" contentwidth="30%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>В компоненте надписи есть возможность отображать значение атрибута сущности. Для этого используются атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/labelWithDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибуты <classname>label</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_align">align</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_value">value</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>label</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_formatter">formatter</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_textField">
             <title>TextField</title>
             <para>Поле для редактирования текста.</para>
-            <para>XML-имя компонента: textField</para>
-            <para>Атрибуты textField:</para>
+            <para>XML-имя компонента: <classname>textField</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса текстовых полей: для веб-приложений (класс <classname>WebTextField</classname>) и для десктоп-приложений (класс <classname>DesktopTextField</classname>). Оба этих класса реализуют интерфейс <interfacename>TextField</interfacename>, который, в свою очередь, наследуется от интерфейсов  <interfacename>Field</interfacename> и <link linkend="section_interface_hasFormatter">Component.HasFormatter</link>. Класс <classname>WebTextField</classname> наследуется от класса <classname>WebAbstractTextField</classname>, класс <classname>DesktopTextField</classname> наследуется от класса <classname>DesktopAbstractField</classname>. Класс <classname>WebTextField</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Текстовое поле служит для обеспечения возможности получить текстовую информацию от пользователя.</para>
+            <para>Для создания простого текстового поля достаточно в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> написать следующий код:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textField.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>TextField</classname>.</para>
+            </warning>
+            <para>На рисунке ниже показан вид простого текстового поля.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textField.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Текстовому полю можно задавать количество строк и столбцов текста с помощью атрибутов <property id="attr_cols">cols</property> и <property id="attr_rows">rows</property>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldColsRows.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textFieldColsRows.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Вы можете связять текстовое поле с типом данных с помощью атрибута <property id="attr_datatype">datatype</property>. Атрибут используется  для форматирования значения поля в том случае, если поле не связано с данными (то есть не указан источник данных и название атрибута). Значением атрибута <property>datatype</property> является имя типа данных из списка:</para>
             <itemizedlist>
               <listitem>
-                <para><link linkend="attr_id">id</link></para>
+                <para><property>boolean</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
+                <para><property>byte array</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_height">height</link></para>
+                <para><property>date</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_width">width</link></para>
+                <para><property>decimal</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
+                <para><property>double</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
+                <para><property>int</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
+                <para><property>long</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_property">property</link></para>
+                <para><property>string</property></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para>cols − количество колонок текста</para>
-              </listitem>
-              <listitem>
-                <para>rows − количество строк текста</para>
-              </listitem>
-              <listitem>
-                <para>maxLength − максимальная длина вводимого текста. Устанавливается по умолчанию на основании длины строкового атрибута сущности, если этот параметр указан в <glossterm linkend="glossary_annotation">аннотации</glossterm> <glossterm linkend="glossary_entity">сущности</glossterm>. Значение &quot;-1&quot; означает отсутствие ограничения.</para>
-              </listitem>
-              <listitem>
-                <para>secret − если установлен в true, значение поля будет замаскировано (например для ввода пароля).</para>
-              </listitem>
-              <listitem>
-                <para>datatype − используется для форматирования значения поля, если поле не связано с данными (не указан атрибут <link linkend="attr_datasource">datasource</link>. Должен содержать имя типа данных, с которым он зарегистрирован в объекте <interfacename>Datatypes</interfacename> (смотрите главу <link linkend="section_metadata_framework">Metadata Framework</link>, а также классы, реализующие интерфейс <interfacename>Datatype</interfacename>).</para>
-              </listitem>
-              <listitem>
-                <para>trim − отсекать ли пробелы в начале и в конце значения. По-умолчанию true.</para>
+                <para><property>uuid</property></para>
               </listitem>
             </itemizedlist>
-            <para>Элементы textField:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="element_validator">validator</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="element_formatter">formatter</link></para>
-              </listitem>
-            </itemizedlist>
+            <para>В качестве примера рассмотрим текстовое поле, связянное с типом данных <type>Integer</type>. </para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldInt.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>При переходе из  текстового поля, в котором введено  значение, не  являющееся типом данных <type>Integer</type>, приложение выдаст сообщение об ошибке и очистит текстовое поле.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textField_int.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Текстовое поле можно связать с <glossterm linkend="glossary_datasource_id">источником данных</glossterm> и атрибутом <glossterm linkend="glossary_entity">сущности</glossterm>. Для этого используются атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textField_data.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для текстового компонента можно ограничить максимальную длину вводимого текста с помощью атрибута <property id="attr_maxLength">maxLength</property>. Значение атрибута устанавливается по умолчанию на основании длины строкового атрибута <glossterm linkend="glossary_entity">сущности</glossterm>, если этот параметр указан в <glossterm linkend="glossary_annotation">аннотации</glossterm> сущности. Значение &quot;-1&quot; означает отсутствие ограничения.</para>
+            <para>Ниже показан пример, ограничивающий длину вводимого текста в 10 символов.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldMaxLength.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Для компонента <classname>TextField</classname> существует атрибут <property id="attr_resizable">resizable</property>. При задании атрибуту значения <property>true</property> и установке количества строк, больших одной, у пользователя появляется возможность  изменять размеры компонента.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldResizable.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textField_resizable.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для отсечения лишних пробелов в начале и конце значения используется атрибут <property id="attr_trim">trim</property>. По умолчанию значение атрибута равно <property>true</property>. Пробелы отсекаются в момент получения значения поля с помощью метода доступа.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldTrim.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="section_button">кнопку</link>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldTrimContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибут <property id="attr_secret">secret</property> позволяет преобразовать текстовое поле в  поле, которое не показывает символы, введенные пользователем. Вместо этого поле отображает символы, отличные от введенных. </para>
+            <warning>
+              <para>Текстовое поле с атрибутом <property>secret=&quot;true&quot;</property>  скрывает введенные данные только в визуальном представлении. При получении значения поля с помощью метода доступа это значение представляется в текстовой форме.</para>
+            </warning>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldSecret.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="section_button">кнопку</link>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldSecretContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textField_secret.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>textField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_editable">editable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry><entry>
+                      <link linkend="attr_secret">secret</link>
+                    </entry></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_cols">cols</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_resizable">resizable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_required">required</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_trim">trim</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datatype">datatype</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_maxLength">maxLength</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_rows">rows</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>textField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_formatter">formatter</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_gui_textArea">
             <title>TextArea</title>
-            <para>Поле для редактирования rich-текста. Содержит элементы управления для форматирования текста.</para>
-            <para>XML-имя компонента: textArea</para>
-            <para>Атрибуты textArea:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para>cols − количество колонок текста</para>
-              </listitem>
-              <listitem>
-                <para>rows − количество строк текста</para>
-              </listitem>
-            </itemizedlist>
-            <para>Элементы textArea:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="element_validator">validator</link></para>
-              </listitem>
-            </itemizedlist>
-          </section>
-          <section id="section_buttonsPanel">
-            <title>ButtonsPanel</title>
-            <para>Унифицирует использование и размещение кнопок для управления данными в таблице.</para>
-            <para>XML-имя компонента: <parameter>buttonsPanel</parameter>.</para>
-            <para>Атрибуты <parameter>buttonsPanel</parameter>:</para>
-            <itemizedlist>
-              <listitem>
-                <para>id</para>
-              </listitem>
-              <listitem>
-                <para>visible</para>
-              </listitem>
-              <listitem>
-                <para>align</para>
-              </listitem>
-              <listitem>
-                <para>expandable</para>
-              </listitem>
-              <listitem>
-                <para>width</para>
-              </listitem>
-              <listitem>
-                <para>height</para>
-              </listitem>
-            </itemizedlist>
+            <para>Многострочное текстовое поле для редактирования текста. Содержит элементы управления для форматирования текста.</para>
+            <para>XML-имя компонента: <classname>textArea</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textArea_dia.png" contentwidth="60%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Класс многострочного текстового поля существует только для веб-приложений (класс <classname>WebTextArea</classname>). Класс реализует интерфейс <interfacename>TextArea</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebTextArea</classname> наследуется от класса <classname>WebAbstractField</classname>. Класс <classname>WebTextArea</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>К тексту, вводимому в компоненте <classname>TextArea</classname>, можно применять средства для форматирования: изменять начертание шрифта, его размер, гарнитуру − с помощью элементов управления, расположенных в верхней части компонента.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_textAreaInfo.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>textArea</classname>:</para>
+            <para>Элементы <classname>textArea</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_formatter">formatter</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_checkBox">
             <title>CheckBox</title>
@@ -2329,6 +2582,64 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <section>
           <title>Размещение компонентов внутри контейнера</title>
           <section>
+            <title>SplitPanel</title>
+            <para>SplitPanel - контейнер, разбитый на 2 области, размер которых по одному из направление(горизонтали либо вертикали) можно менять путем перемещения сплиттера.</para>
+            <para>XML-имя компонента: split.</para>
+            <para>Атрибуты split:</para>
+            <itemizedlist>
+              <listitem>
+                <para><link linkend="attr_id">id</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_visible">visible</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_stylename">styleName</link></para>
+              </listitem>
+              <listitem>
+                <para>orientation - необязательные атрибут, ориентация панели (vertical или horizontal). По-умолчанию vertical.</para>
+              </listitem>
+              <listitem>
+                <para>pos - необязательный атрибут, определяет процентное соотношение областей. Например, pos=&quot;30%&quot; означает соотношение областей 30/70. По-умолчанию 50/50.</para>
+              </listitem>
+              <listitem>
+                <para>обязательный элемент - 2 контейнера, содержащие вложенные элементы: vbox либо hbox.</para>
+              </listitem>
+            </itemizedlist>
+            <para>Пример использования XML-дескриптора:</para>
+            <programlisting>&lt;split id=&quot;split&quot; orientation=&quot;horizontal&quot; pos=&quot;30&quot;&gt;
+            &lt;vbox&gt;
+                ...
+            &lt;/vbox&gt;
+            &lt;vbox&gt;
+                ...
+            &lt;/vbox&gt;
+        &lt;/split&gt;</programlisting>
+          </section>
+          <section id="section_buttonsPanel">
+            <title>ButtonsPanel</title>
+            <para>Унифицирует использование и размещение кнопок для управления данными в таблице.</para>
+            <para>XML-имя компонента: <parameter>buttonsPanel</parameter>.</para>
+            <para>Атрибуты <parameter>buttonsPanel</parameter>:</para>
+            <itemizedlist>
+              <listitem>
+                <para><link linkend="attr_id">id</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_visible">visible</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_align">align</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_width">width</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_height">height</link></para>
+              </listitem>
+            </itemizedlist>
+          </section>
+          <section>
             <title>BoxLayout</title>
             <para><classname>BoxLayout</classname> представляет собой контейнер с последовательным размещением компонентов.</para>
             <para>Существует 3 типа <classname>BoxLayout</classname>, определяемых именем XML-элемента:</para>
@@ -2346,37 +2657,34 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <para>Могут быть использованы следующие XML-атрибуты:</para>
             <itemizedlist>
               <listitem>
-                <para>id</para>
+                <para><link linkend="attr_id">id</link></para>
               </listitem>
               <listitem>
-                <para>stylename</para>
+                <para><link linkend="attr_stylename">stylename</link></para>
               </listitem>
               <listitem>
-                <para>enable</para>
+                <para><link linkend="attr_enable">enable</link></para>
               </listitem>
               <listitem>
-                <para>visible</para>
+                <para><link linkend="attr_visible">visible</link></para>
               </listitem>
               <listitem>
-                <para>width</para>
+                <para><link linkend="attr_width">width</link></para>
               </listitem>
               <listitem>
-                <para>height</para>
+                <para><link linkend="attr_height">height</link></para>
               </listitem>
               <listitem>
-                <para>align</para>
+                <para><link linkend="attr_align">align</link></para>
               </listitem>
               <listitem>
-                <para>margin</para>
+                <para><link linkend="attr_margin">margin</link></para>
               </listitem>
               <listitem>
-                <para>spacing</para>
+                <para><link linkend="attr_spacing">spacing</link></para>
               </listitem>
               <listitem>
-                <para>expand</para>
-              </listitem>
-              <listitem>
-                <para>expandable</para>
+                <para><link linkend="attr_expand">expand</link></para>
               </listitem>
             </itemizedlist>
             <para>Пример использования:</para>
@@ -2389,43 +2697,40 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <para>Атрибуты <parameter>groupBox</parameter>:</para>
             <itemizedlist>
               <listitem>
-                <para><property>id</property></para>
+                <para><link linkend="attr_id">id</link></para>
               </listitem>
               <listitem>
-                <para><property>stylename</property></para>
+                <para><link linkend="attr_stylename">stylename</link></para>
               </listitem>
               <listitem>
-                <para><property>height</property></para>
+                <para><link linkend="attr_height">height</link></para>
               </listitem>
               <listitem>
-                <para><property>width</property></para>
+                <para><link linkend="attr_width">width</link></para>
               </listitem>
               <listitem>
-                <para><property>visible</property></para>
+                <para><link linkend="attr_visible">visible</link></para>
               </listitem>
               <listitem>
-                <para><property>enable</property></para>
+                <para><link linkend="attr_enable">enable</link></para>
               </listitem>
               <listitem>
-                <para><property>expandable</property></para>
+                <para><link linkend="attr_expand">expand</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_caption">caption</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_description">description</link></para>
+              </listitem>
+              <listitem>
+                <para>orientation - задает направление расположения вложенных компонентов - horizontal или vertical, по-умолчанию vertical.</para>
               </listitem>
               <listitem>
                 <para><property>collapsable</property> − необязательный атрибут. Может принимать значение <property>true</property>, в этом случае компонент может сворачивать свое содержимое, или значение <property>false</property>.</para>
               </listitem>
               <listitem>
                 <para><property>collapsed</property> − необязательный атрибут, принимающий значение <property>true</property> или <property>false</property>. В значении <property>true</property> компонент будет свернут по умолчанию.</para>
-              </listitem>
-            </itemizedlist>
-            <para>Элементы <parameter>groupBox</parameter>:</para>
-            <itemizedlist>
-              <listitem>
-                <para><property>caption</property> − необязательный элемент, его атрибут <property>label</property> содержит заголовок компонента.</para>
-              </listitem>
-              <listitem>
-                <para><property>description</property> − необязательный элемент, его атрибут <property>label</property> содержит описание.</para>
-              </listitem>
-              <listitem>
-                <para>обязательный элемент − контейнер, содержащий вложенные компоненты (vbox, hbox, grid, flowbox).</para>
               </listitem>
             </itemizedlist>
             <para>Пример использование компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
@@ -2446,28 +2751,25 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <para>Атрибуты <parameter>grid</parameter>:</para>
             <itemizedlist>
               <listitem>
-                <para><property>id</property></para>
+                <para><link linkend="attr_id">id</link></para>
               </listitem>
               <listitem>
-                <para><property>visible</property></para>
+                <para><link linkend="attr_visible">visible</link></para>
               </listitem>
               <listitem>
-                <para><property>spacing</property></para>
+                <para><link linkend="attr_spacing">spacing</link></para>
               </listitem>
               <listitem>
-                <para><property>margin</property></para>
+                <para><link linkend="attr_margin">margin</link></para>
               </listitem>
               <listitem>
-                <para><property>width</property></para>
+                <para><link linkend="attr_width">width</link></para>
               </listitem>
               <listitem>
-                <para><property>height</property></para>
+                <para><link linkend="attr_height">height</link></para>
               </listitem>
               <listitem>
-                <para><property>expandable</property></para>
-              </listitem>
-              <listitem>
-                <para><property>align</property></para>
+                <para><link linkend="attr_align">align</link></para>
               </listitem>
               <listitem>
                 <para><property>column</property> − необязательный элемент, декларирует атрибуты колонок сетки. Атрибуты:</para>
@@ -2495,13 +2797,13 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
                     <para><property>flex</property> − необязательный атрибут, задает соотношение высот рядов сетки.</para>
                   </listitem>
                   <listitem>
-                    <para><property>visible</property></para>
+                    <para><link linkend="attr_visible">visible</link></para>
                   </listitem>
                   <listitem>
-                    <para><property>spacing</property></para>
+                    <para><link linkend="attr_spacing">spacing</link></para>
                   </listitem>
                   <listitem>
-                    <para><property>align</property></para>
+                    <para><link linkend="attr_align">align</link></para>
                   </listitem>
                 </itemizedlist>
               </listitem>
@@ -2528,28 +2830,61 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
 &lt;/grid&gt;</programlisting></para>
           </section>
           <section>
+            <title>ScrollBoxLayout</title>
+            <para><classname>ScrollBoxLayout</classname> − контейнер, которые позволяет прокручивать свое содержимое.</para>
+            <para>XML-имя компонента: scrollBox</para>
+            <para>Атрибуты scrollBox:</para>
+            <itemizedlist>
+              <listitem>
+                <para><link linkend="attr_id">id</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_visible">visible</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_stylename">stylename</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_height">height</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_width">width</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_align">align</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_spacing">spacing</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_margin">margin</link></para>
+              </listitem>
+              <listitem>
+                <para>orientation - задает направление расположения вложенных компонентов - horizontal или vertical, по-умолчанию vertical.</para>
+              </listitem>
+            </itemizedlist>
+            <para>Вложенные в scrollBox компоненты должны иметь фиксированные размеры или размеры по-умолчанию. Нельзя устанавливать height=&quot;100%&quot; или width=&quot;100%&quot;.</para>
+          </section>
+          <section>
             <title>Tabsheet</title>
             <para>Контейнер, содержащий закладки (<parameter>tabs</parameter>).</para>
             <para>XML-имя компонента: <parameter>tabsheet</parameter>.</para>
             <para>Атрибуты <parameter>tabsheet</parameter>:</para>
             <itemizedlist>
               <listitem>
-                <para>id</para>
+                <para><link linkend="attr_id">id</link></para>
               </listitem>
               <listitem>
-                <para>stylename</para>
+                <para><link linkend="attr_stylename">stylename</link></para>
               </listitem>
               <listitem>
-                <para>height</para>
+                <para><link linkend="attr_height">height</link></para>
               </listitem>
               <listitem>
-                <para>width</para>
+                <para><link linkend="attr_width">width</link></para>
               </listitem>
               <listitem>
-                <para>visible</para>
-              </listitem>
-              <listitem>
-                <para>expandable</para>
+                <para><link linkend="attr_visible">visi</link>ble</para>
               </listitem>
             </itemizedlist>
             <para><parameter>tabsheet</parameter> должен содержать элементы <parameter>tab</parameter>, определяющие содержимое закладок. Каждый элемент <parameter>tab</parameter> может содержать следующие атрибуты:</para>
@@ -2568,6 +2903,56 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
 Если компоненты lazy-закладки требуют инициализации, проводить ее нужно не напрямую в методе <methodname>init()</methodname> <glossterm linkend="glossary_controller_id">контроллера</glossterm>, а в слушателе на переключение закладок <classname>Tabsheet.TabChangeListener</classname>.</para>
               </listitem>
             </itemizedlist>
+          </section>
+          <section>
+            <title>IFrame</title>
+            <para>Фреймы предназначены для декомпозиции и многократного использования частей экранов.</para>
+            <para>Фрейм включается в экран с помощью элемента iframe.</para>
+            <para>Атрибуты:</para>
+            <itemizedlist>
+              <listitem>
+                <para><link linkend="attr_id">id</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_stylename">stylename</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_visible">visible</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_height">height</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_width">width</link></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="attr_align">align</link></para>
+              </listitem>
+              <listitem>
+                <para>src - путь к XML-дескриптору фрейма</para>
+              </listitem>
+              <listitem>
+                <para>src - путь к XML-дескриптору фрейма</para>
+              </listitem>
+            </itemizedlist>
+            <para>Обязательно должен быть указан один из атрибутов src или screen.</para>
+            <para>Дескриптор фрейма идентичен описателю окна и может содержать собственный metadataContext, dsContext, messagesPack. Кроме того, фрейм может иметь собственный контроллер.</para>
+            <para>Правила взаимодействия окна и вложенного в него фрейма:</para>
+            <itemizedlist>
+              <listitem>
+                <para>из окна обращаться к компонентам фрейма можно через точку: frame_id.component_id</para>
+              </listitem>
+              <listitem>
+                <para>из контроллера фрейма получить компонент окна можно обычным вызовом getComponent(component_id), но только в том случае, если компонент с таким именем не объявлен в самом фрейме. Т.е. компоненты фрейма маскируют компоненты окна.</para>
+              </listitem>
+              <listitem>
+                <para>из фрейма получить датасорс окна можно простым вызовом getDsContext().get(ds_id) либо в запросе ds$ds_id , но только в том случае, если датасорс с таким именем не объявлен в самом фрейме (аналогично компонентам).</para>
+              </listitem>
+              <listitem>
+                <para>из окна получить датасорс фрейма можно только через итерацию по getDsContext().getChildren()</para>
+              </listitem>
+            </itemizedlist>
+            <para>При коммите окна вызывается также коммит измененных датасорсов фрейма.</para>
           </section>
         </section>
         <section>
@@ -2839,6 +3224,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <listitem>
                 <para>XML-атрибут компонента, реализующего интерфейс <interfacename>DatasourceComponent</interfacename>.</para>
                 <para>Предназначен для задания <link linkend="glossary_datasource_id">источника данных</link> и должен содержать имя источника данных, описанного в секции <parameter>dsContext</parameter> <link linkend="glossary_xml_descriptor_id">дескриптора</link> экрана.</para>
+                <para>Атрибут property является обязательным, иначе возникает ошибка java.lang.IllegalStateException: Can&apos;t set assign datasource &apos;sampleDs&apos; for component &apos;labelInfo&apos; due &apos;property&apos; attribute is not defined. </para>
                 <para>Смотрите также атрибут property.</para>
               </listitem>
             </varlistentry>
@@ -2867,6 +3253,13 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
 По умолчанию у всех компонентов enable = true.</para>
               </listitem>
             </varlistentry>
+            <varlistentry id="attr_expand">
+              <term>expand</term>
+              <listitem>
+                <para>Атрибут контейнера для управления его внутренней компоновкой.</para>
+                <para>Задает компонент внутри контейнера, который необходимо &quot;развернуть&quot;, т.е. установить ему максимально возможную высоту и ширину.</para>
+              </listitem>
+            </varlistentry>
             <varlistentry id="attr_height">
               <term>height</term>
               <listitem>
@@ -2892,6 +3285,22 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
                 <para>Возможное значение − любой допустимый Java-идентификатор. Рекомендуется использовать только camelСase, например, <classname>userGrid</classname>, <classname>filterPanel</classname>.
 
 Может быть указан для любого компонента и должен быть уникальным в пределах экрана.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="attr_margin">
+              <term>margin</term>
+              <listitem>
+                <para>Атрибут margin устанавливает наличие отступа между внешними границами и содержимым контейнера.</para>
+                <para>Может иметь 2 вида значений:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para>margin=&quot;true&quot; - установить отступ со всех сторон сразу</para>
+                  </listitem>
+                  <listitem>
+                    <para>margin=&quot;true;false;true;false;&quot; - установить отступ только сверху и снизу (формат значения &quot;сверху,справа,снизу,слева&quot;)</para>
+                  </listitem>
+                </itemizedlist>
+                <para>По умолчанию отступы отсутствуют.</para>
               </listitem>
             </varlistentry>
             <varlistentry id="attr_optionsDatasource">
@@ -2923,6 +3332,14 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <listitem>
                 <para>XML-атрибут, используемый совместно с атрибутом <link linkend="attr_required">required</link>. Позволяет установить сообщение, выводимое пользователю в случае нарушения требования <link linkend="attr_required">required</link>.</para>
                 <para>Атрибут должен содержать ключ сообщения в пакете, например: requiredMessage=&quot;msg://infoTextField.requiredMessage&quot;</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="attr_spacing">
+              <term>spacing</term>
+              <listitem>
+                <para>Атрибут spacing устанавливает наличие отступов между компонентами внутри контейнера.</para>
+                <para>Возможные значения - true, false.</para>
+                <para>По умолчанию отступы отсутствуют.</para>
               </listitem>
             </varlistentry>
             <varlistentry id="attr_stylename">
@@ -3030,6 +3447,45 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </listitem>
             </varlistentry>
           </variablelist>
+        </section>
+        <section>
+          <title>Интерфейсы</title>
+          <section id="section_interface_component">
+            <title>Component</title>
+            <para>Root of the GenericUI components hierarchy</para>
+          </section>
+          <section id="section_interface_DatasourceComponent ">
+            <title>DatasourceComponent</title>
+            <para>Базовый интерфейс компонентов, предназначенных для работы с данными одного экземпляра сущности. Имеет методы для установки <glossterm linkend="glossary_datasource_id">источника данных</glossterm> и указания атрибута <glossterm linkend="glossary_entity">сущности</glossterm>, из которого брать значение.</para>
+          </section>
+          <section id="section_interface_wrapper">
+            <title>Component.Wrapper</title>
+            <para>Component delegating work to some &quot;wrapped&quot; client-specific implementation</para>
+          </section>
+          <section id="section_interface_hasCaption">
+            <title>Component.HasCaption</title>
+            <para>Object having a caption</para>
+          </section>
+          <section id="section_interface_hasFormatter">
+            <title>Component.HasFormatter</title>
+            <para>Object having a formatter</para>
+          </section>
+          <section id="section_interface_belongToFrame">
+            <title>Component.BelongToFrame</title>
+            <para>Component belonging to a frame</para>
+          </section>
+          <section id="section_interface_actionOwner">
+            <title>Component.ActionOwner</title>
+            <para>Component supporting an action</para>
+          </section>
+          <section id="section_interface_hasIcon">
+            <title>Component.HasIcon</title>
+            <para>Component having an icon</para>
+          </section>
+          <section id="section_interface_actionsHolder">
+            <title>Component.ActionsHolder</title>
+            <para>Component containing  Actions</para>
+          </section>
         </section>
       </section>
       <section id="section_datasource">

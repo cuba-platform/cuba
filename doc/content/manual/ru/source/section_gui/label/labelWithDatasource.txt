@@ -1,0 +1,6 @@
+﻿<!--Определяем источник данных-->
+<dsContext>
+	<datasource id="sampleDs" class="com.haulmont.refapp.core.entity.sample.TestEntity" view="_local"/>
+</dsContext>
+<!--Указываем источник данных и имя атрибута-->
+<label id="labelInfo" datasource="sampleDs" property="name"/>
