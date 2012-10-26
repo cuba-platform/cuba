@@ -387,8 +387,6 @@
 
         <xs:attributeGroup ref="hasDatasource"/>
         <xs:attributeGroup ref="hasValue"/>
-
-        <xs:attribute name="control" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- CheckBox -->
