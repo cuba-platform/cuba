@@ -35,8 +35,8 @@ import java.util.List;
 @Listeners("com.haulmont.cuba.security.listener.UserEntityListener")
 @NamePattern("#getCaption|login,name")
 @TrackEditScreenHistory
-public class User extends StandardEntity
-{
+public class User extends StandardEntity {
+
     private static final long serialVersionUID = 5007187642916030394L;
 
     @Column(name = "LOGIN", length = LOGIN_FIELD_LEN, nullable = false)
@@ -48,8 +48,11 @@ public class User extends StandardEntity
     @Column(name = "PASSWORD", length = 32)
     protected String password;
 
+    @Column(name = "SALT", length = 16)
+    protected String salt;
+
     @Column(name = "NAME", length = 100)
-    protected String name = "" ;
+    protected String name = "";
 
     @Column(name = "FIRST_NAME", length = 255)
     protected String firstName = "";
@@ -71,6 +74,9 @@ public class User extends StandardEntity
 
     @Column(name = "ACTIVE")
     protected Boolean active = true;
+
+    @Column(name = "CHANGE_PASSWORD_AT_LOGON")
+    protected Boolean changePasswordAtNextLogon = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
@@ -232,6 +238,14 @@ public class User extends StandardEntity
             pattern = "{1} [{0}]";
         }
         MessageFormat fmt = new MessageFormat(pattern);
-        return fmt.format(new Object[] {login, name});
+        return fmt.format(new Object[]{login, name});
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

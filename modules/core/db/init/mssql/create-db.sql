@@ -219,7 +219,8 @@ create table SEC_USER (
     --
     LOGIN varchar(50) not null,
     LOGIN_LC varchar(50) not null,
-    PASSWORD varchar(32),
+    PASSWORD varchar(40),
+    SALT varchar(16),
     NAME varchar(255),
     FIRST_NAME varchar(255),
     LAST_NAME varchar(255),
@@ -232,6 +233,7 @@ create table SEC_USER (
     DEFAULT_SUBSTITUTED_USER_ID uniqueidentifier,
     IP_MASK varchar(200),
     TYPE varchar(1),
+    CHANGE_PASSWORD_AT_LOGON tinyint,
     --
     primary key nonclustered (ID),
     constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
@@ -769,14 +771,17 @@ create index IDX_SYS_QUERY_RESULT_SESSION_KEY on SYS_QUERY_RESULT (SESSION_ID, Q
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
-values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, SALT, NAME, GROUP_ID, ACTIVE, TYPE)
+values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 'admin', 'admin',
+'e2ee8ae9b2032aa615087de49bc36fd4c7bf911f',
+'a90a64e4ec8f0f4b',
+'Administrator', 0, '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
-values ('60885987-1b61-4247-94c7-dff348347f94', current_timestamp, 0, 'emailer', 'emailer', '2f22cf032e4be87de59e4e8bfd066ed1', 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
-
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
-values ('83075c20-fe23-11df-abc9-3f87313a5ebe', current_timestamp, 0, 'SchedulerUser', 'scheduleruser', '7e0ffe513f4e8c8f1376da12fe9c5561', 'SchedulerUser', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, SALT, NAME, GROUP_ID, ACTIVE, TYPE)
+values ('60885987-1b61-4247-94c7-dff348347f94', current_timestamp, 'emailer', 'emailer',
+'929729119f27328ae6220829e6b1262b8ee0aa72',
+'d216146f85597225',
+'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 10)^

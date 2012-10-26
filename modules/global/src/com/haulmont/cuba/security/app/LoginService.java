@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.core.entity.HashMethod;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -55,4 +56,6 @@ public interface LoginService
     void ping();
 
     UserSession getSession(UUID sessionId);
+
+    HashMethod getPasswordEncryptionMethod();
 }

@@ -64,13 +64,24 @@
 
     <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
 
+    <bean id="authenticatedMBeanInterceptor" class="com.haulmont.cuba.core.sys.AuthenticatedMBeanInterceptor"/>
+
     <aop:config proxy-target-class="false">
         <aop:aspect id="serviceAspect" ref="serviceInterceptor">
             <aop:around method="aroundInvoke" pointcut="@within(org.springframework.stereotype.Service)"/>
         </aop:aspect>
 
-        <aop:aspect id="mbeanAspect" ref="mbeanInterceptor">
-            <aop:around method="aroundInvoke" pointcut="execution(* *..*MBean.*(..))"/>
+        <aop:aspect id="mbeanAspect" ref="mbeanInterceptor" order="1">
+            <aop:around method="aroundInvoke"
+                        pointcut="execution(* *..*MBean.*(..)) &amp;&amp;
+                        !@annotation(com.haulmont.cuba.core.app.Authenticated)"/>
+        </aop:aspect>
+
+        <aop:aspect id="authenticatedMBeanAscpect" ref="authenticatedMBeanInterceptor" order="2">
+            <aop:around method="beforeInvoke"
+                        pointcut="execution(* *..*MBean.*(..)) &amp;&amp;
+                        within(com.haulmont.cuba.core.app.ManagementBean+) &amp;&amp;
+                        @annotation(com.haulmont.cuba.core.app.Authenticated)"/>
         </aop:aspect>
     </aop:config>
 
@@ -94,6 +105,7 @@
                 <entry key="${cuba.webContextName}.cuba:service=ScriptingManager" value-ref="cuba_ScriptingManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=ServerInfo" value-ref="cuba_ServerInfo"/>
                 <entry key="${cuba.webContextName}.cuba:service=EmailManager" value-ref="cuba_EmailManager"/>
+                <entry key="${cuba.webContextName}.cuba:service=EncryptionSupport" value-ref="cuba_EncryptionSupport"/>
                 <entry key="${cuba.webContextName}.cuba:service=Scheduling" value-ref="cuba_Scheduling"/>
                 <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
                        value-ref="cuba_ObjectsCacheManager"/>

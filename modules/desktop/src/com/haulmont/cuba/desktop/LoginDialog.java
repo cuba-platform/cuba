@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -27,20 +26,21 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class LoginDialog extends JDialog {
 
     private Connection connection;
     private Map<String,Locale> locales;
     private Messages messages = AppBeans.get(Messages.class);
-    
+    private Encryption encryption = AppBeans.get(Encryption.class);
+
     public LoginDialog(JFrame owner, Connection connection) {
         super(owner);
         this.connection = connection;
-        this.locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
+        Configuration configuration = AppBeans.get(Configuration.class);
+        this.locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
 
         addWindowListener(
                 new WindowAdapter() {
@@ -51,7 +51,7 @@ public class LoginDialog extends JDialog {
                 }
         );
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setTitle(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.caption", Locale.getDefault()));
+        setTitle(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.caption", Locale.getDefault()));
         setContentPane(createContentPane());
         setResizable(false);
         pack();
@@ -61,7 +61,7 @@ public class LoginDialog extends JDialog {
         MigLayout layout = new MigLayout("fillx, insets dialog", "[right][]");
         JPanel panel = new JPanel(layout);
 
-        panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginField", Locale.getDefault())));
+        panel.add(new JLabel(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginField", Locale.getDefault())));
 
         final JTextField nameField = new JTextField();
         final JTextField passwordField = new JPasswordField();
@@ -81,7 +81,7 @@ public class LoginDialog extends JDialog {
             nameField.setText(defaultName);
         panel.add(nameField, "width 150!, wrap");
 
-        panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.passwordField", Locale.getDefault())));
+        panel.add(new JLabel(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.passwordField", Locale.getDefault())));
         String defaultPassword = AppContext.getProperty("cuba.desktop.loginDialogDefaultPassword");
         if (!StringUtils.isBlank(defaultPassword))
             passwordField.setText(defaultPassword);
@@ -89,28 +89,30 @@ public class LoginDialog extends JDialog {
 
         Configuration configuration = AppBeans.get(Configuration.class);
 
-        final JComboBox localeCombo = new JComboBox();
+        final JComboBox<String> localeCombo = new JComboBox<>();
         initLocales(localeCombo);
         if (configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible()) {
             panel.add(new JLabel(messages.getMainMessage("loginWindow.localesSelect")));
             panel.add(localeCombo, "width 150!, wrap");
         }
 
-        JButton loginBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.okButton", Locale.getDefault()));
+        JButton loginBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.okButton", Locale.getDefault()));
         loginBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
         loginBtn.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         String name = nameField.getText();
                         String password = passwordField.getText();
-                        Locale locale = locales.get((String) localeCombo.getSelectedItem());
+                        String selectedItem = (String) localeCombo.getSelectedItem();
+                        Locale locale = locales.get(selectedItem);
                         try {
-                            connection.login(name, DigestUtils.md5Hex(password), locale);
+                            connection.login(name, encryption.getPlainHash(password), locale);
                             setVisible(false);
                             loginProperties.saveLogin(name);
                             DesktopComponentsHelper.getTopLevelFrame(LoginDialog.this).activate();
                         } catch (LoginException ex) {
-                            String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
+                            String caption = messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
                             App.getInstance().getMainFrame().showNotification(
                                     caption,
                                     ex.getMessage(),
@@ -128,7 +130,7 @@ public class LoginDialog extends JDialog {
         return panel;
     }
 
-    protected void initLocales(JComboBox localeCombo) {
+    protected void initLocales(JComboBox<String> localeCombo) {
         Locale loc = new Locale(Locale.getDefault().getLanguage());
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {

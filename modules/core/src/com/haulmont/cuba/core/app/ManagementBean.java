@@ -10,14 +10,15 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.Encryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,8 +29,7 @@ import java.util.UUID;
  * Base class for MBeans.<br>
  * Main purpose is to provide login/logout support for methods invoked from schedulers or JMX-console.
  */
-public class ManagementBean
-{
+public class ManagementBean {
     private Log log = LogFactory.getLog(getClass());
 
     @Inject
@@ -38,7 +38,10 @@ public class ManagementBean
     @Inject
     private UserSessionManager userSessionManager;
 
-    private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<Boolean>();
+    @Inject
+    protected Encryption encryption;
+
+    private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<>();
 
     protected UUID sessionId;
 
@@ -47,7 +50,8 @@ public class ManagementBean
      * First checks if a current thread session exists or the bean is already logged in and that session is still valid.
      * If no, performs login and stores sessionId in the protected field.<br>
      * No logout assumed.
-     * @throws LoginException
+     *
+     * @throws LoginException If access denied
      */
     protected void loginOnce() throws LoginException {
         // first check if a current thread session exists - may be got here from Web UI 
@@ -62,10 +66,7 @@ public class ManagementBean
             ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
             String name = credentialsForLogin.getUserName();
             String password = credentialsForLogin.getPassword();
-            if (password.startsWith("md5:"))
-                password = password.substring("md5:".length(), password.length());
-            else
-                password = DigestUtils.md5Hex(password);
+            password = getPasswordFromPropertyValue(password);
 
             session = loginWorker.loginSystem(name, password);
             loginPerformed.set(true);
@@ -76,23 +77,31 @@ public class ManagementBean
         AppContext.setSecurityContext(new SecurityContext(session));
     }
 
+    private String getPasswordFromPropertyValue(String password) {
+        if (StringUtils.isNotEmpty(password)) {
+            if (password.startsWith("hash:"))
+                password = password.substring("hash:".length(), password.length());
+            else
+                password = encryption.getPlainHash(password);
+        }
+        return password;
+    }
+
     /**
      * Performs login with credentials set in cuba-app.properties<br>
      * Should be placed inside try/finally block with logout in "finally" section
-     * @throws LoginException
+     *
+     * @throws LoginException If access denied
      */
     protected void login() throws LoginException {
         // first check if a current thread session exists - may be got here from Web UI
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext == null || userSessionManager.findSession(securityContext.getSessionId()) == null) {
             // no current thread session or it is expired
-            ManagementBean.Credentials credintialsForLogin = getCredentialsForLogin();
-            String name = credintialsForLogin.getUserName();
-            String password = credintialsForLogin.getPassword();
-            if (password.startsWith("md5:"))
-                password = password.substring("md5:".length(), password.length());
-            else
-                password = DigestUtils.md5Hex(password);
+            ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
+            String name = credentialsForLogin.getUserName();
+            String password = credentialsForLogin.getPassword();
+            password = getPasswordFromPropertyValue(password);
 
             UserSession session = loginWorker.loginSystem(name, password);
             AppContext.setSecurityContext(new SecurityContext(session));

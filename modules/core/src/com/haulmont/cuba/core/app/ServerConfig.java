@@ -9,18 +9,21 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
-import com.haulmont.cuba.core.config.defaults.DefaultInteger;
-import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.config.type.Stringify;
+import com.haulmont.cuba.core.entity.HashMethod;
+import com.haulmont.cuba.core.global.HashMethodStringify;
+import com.haulmont.cuba.core.global.HashMethodTypeFactory;
 
 /**
  * Configuration parameters interface used by the CORE layer.
  *
- * <p>$Id</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Source(type = SourceType.APP)
 public interface ServerConfig extends Config {
@@ -41,6 +44,12 @@ public interface ServerConfig extends Config {
     @Property("cuba.trustedClientPassword")
     @DefaultString("")
     String getTrustedClientPassword();
+
+    @Property("cuba.passwordEncryption")
+    @Factory(factory = HashMethodTypeFactory.class)
+    @Stringify(stringify = HashMethodStringify.class)
+    @Default("sha1")
+    HashMethod getPasswordEncryption();
 
     /**
      * @return User session expiration timeout in seconds.

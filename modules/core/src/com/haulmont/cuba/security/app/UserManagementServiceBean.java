@@ -6,10 +6,7 @@
 
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.Group;
@@ -89,7 +86,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
             em.setView(metadata.getViewRepository().getView(User.class, MOVE_USER_TO_GROUP_VIEW));
 
-            Query query = em.createQuery("select u from sec$User u where u.id in (:userIds)");
+            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in (:userIds)", User.class);
             query.setParameter("userIds", userIds);
 
             List<User> users = query.getResultList();

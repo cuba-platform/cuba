@@ -2,18 +2,10 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 05.01.2009 11:59:54
- *
- * $Id$
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
@@ -25,7 +17,6 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -42,6 +33,9 @@ import java.util.Map;
  * <p/>
  * Specific application should inherit from this class and create appropriate
  * instance in {@link DefaultApp#createLoginWindow()} method
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @SuppressWarnings("serial")
 public class LoginWindow extends Window implements Action.Handler {
@@ -68,14 +62,23 @@ public class LoginWindow extends Window implements Action.Handler {
 
     protected Button okButton;
 
+    protected Messages messages;
+    protected Configuration configuration;
+    protected Encryption encryption;
+
     public LoginWindow(App app, Connection connection) {
         super();
         loc = app.getLocale();
-        globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
-        webConfig = ConfigProvider.getConfig(WebConfig.class);
+
+        configuration = AppBeans.get(Configuration.NAME);
+        messages = AppBeans.get(Messages.NAME);
+        encryption = AppBeans.get(Encryption.NAME);
+
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+        webConfig = configuration.getConfig(WebConfig.class);
         locales = globalConfig.getAvailableLocales();
 
-        setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.caption", loc));
+        setCaption(messages.getMessage(getMessagesPack(), "loginWindow.caption", loc));
         this.connection = connection;
 
         loginField = new TextField();
@@ -123,7 +126,7 @@ public class LoginWindow extends Window implements Action.Handler {
         welcomeLayout.setHeight("-1px");
         welcomeLayout.setSpacing(true);
 
-        Label label = new Label(MessageProvider.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
+        Label label = new Label(messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
         label.setWidth("-1px");
         label.setStyleName("login-caption");
 
@@ -154,20 +157,20 @@ public class LoginWindow extends Window implements Action.Handler {
         centerLayout.addComponent(form);
         centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
 
-        loginField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginField", loc));
+        loginField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.loginField", loc));
         form.addField("loginField", loginField);
         loginField.setWidth(fieldWidth + "px");
         loginField.setStyleName("login-field");
         formLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
-        passwordField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
+        passwordField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
         passwordField.setWidth(fieldWidth + "px");
         passwordField.setStyleName("password-field");
         form.addField("passwordField", passwordField);
         formLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);
 
         if (localesSelectVisible) {
-            localesSelect.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
+            localesSelect.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
             localesSelect.setWidth(fieldWidth + "px");
             localesSelect.setNullSelectionAllowed(false);
             formLayout.addComponent(localesSelect);
@@ -175,13 +178,13 @@ public class LoginWindow extends Window implements Action.Handler {
         }
 
         if (rememberMe != null) {
-            rememberMe.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.rememberMe", loc));
+            rememberMe.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.rememberMe", loc));
             rememberMe.setStyleName("rememberMe");
             form.addField("rememberMe", rememberMe);
             formLayout.setComponentAlignment(rememberMe, Alignment.MIDDLE_CENTER);
         }
 
-        okButton.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
+        okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
         okButton.addListener(new SubmitListener());
         okButton.setStyleName("submit-login-btn");
         okButton.setIcon(new ThemeResource("images/tick.png"));
@@ -217,7 +220,7 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected void initUI(App app) {
-        initStandartUI(app, 310, -1, 125, ConfigProvider.getConfig(GlobalConfig.class).getLocaleSelectVisible());
+        initStandartUI(app, 310, -1, 125, configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible());
     }
 
     protected void initRememberMe(final App app) {
@@ -323,7 +326,7 @@ public class LoginWindow extends Window implements Action.Handler {
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
                 String value = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
-                String passwd = loginByRememberMe ? value : DigestUtils.md5Hex(value);
+                String passwd = loginByRememberMe ? value : encryption.getPlainHash(value);
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 login(login, passwd, locale);
@@ -331,7 +334,7 @@ public class LoginWindow extends Window implements Action.Handler {
         } catch (LoginException e) {
             // todo Fix notification about exception while AD Auth
             showNotification(
-                    MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc),
+                    messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc),
                     e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
 
             if (loginByRememberMe) {
@@ -400,7 +403,7 @@ public class LoginWindow extends Window implements Action.Handler {
                     }
 
                     app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(encodedLogin));
-                    app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
+                    app.addCookie(COOKIE_PASSWORD, encryption.getPlainHash(password));
                 }
             } else {
                 app.removeCookie(COOKIE_REMEMBER_ME);
@@ -425,7 +428,7 @@ public class LoginWindow extends Window implements Action.Handler {
             if (browserInfo.isIE() && !browserInfo.isChromeFrame()) {
                 final Layout layout = new VerticalLayout();
                 layout.setStyleName("loginUserHint");
-                layout.addComponent(new Label(MessageProvider.getMessage(getMessagesPack(), "chromeframe.hint", loc),
+                layout.addComponent(new Label(messages.getMessage(getMessagesPack(), "chromeframe.hint", loc),
                         Label.CONTENT_XHTML));
                 return layout;
             }

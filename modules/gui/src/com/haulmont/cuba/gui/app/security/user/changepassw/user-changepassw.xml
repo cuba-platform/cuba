@@ -5,15 +5,15 @@
   -->
 
 <window
-    xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-    datasource="user"
-    caption="msg://caption"
-    class="com.haulmont.cuba.gui.app.security.user.changepassw.UserChangePassw"
-    messagesPack="com.haulmont.cuba.gui.app.security.user.changepassw"
-    focusComponent="passw"
->
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        datasource="userDs"
+        caption="msg://caption"
+        class="com.haulmont.cuba.gui.app.security.user.changepassw.UserChangePassw"
+        messagesPack="com.haulmont.cuba.gui.app.security.user.changepassw"
+        focusComponent="passwField"
+        >
     <dsContext>
-        <datasource id="user"
+        <datasource id="userDs"
                     class="com.haulmont.cuba.security.entity.User"
                     view="user.changepassw">
         </datasource>
@@ -29,15 +29,15 @@
                 <rows>
                     <row>
                         <label id="passwLab" value="msg://password"/>
-                        <textField id="passw" secret="true"/>
+                        <textField id="passwField" secret="true"/>
                     </row>
                     <row>
                         <label id="confirmPasswLab" value="msg://confirmPassword"/>
-                        <textField id="confirmPassw" secret="true"/>
+                        <textField id="confirmPasswField" secret="true"/>
                     </row>
                 </rows>
             </grid>
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+            <iframe id="windowActions" screen="editWindowActions"/>
         </vbox>
     </layout>
 </window>

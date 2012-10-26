@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.core.entity.HashMethod;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -19,13 +20,11 @@ import java.util.UUID;
 /**
  * Service to provide methods for user login/logout to the middleware.
  *
- * @version $Id$
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(LoginService.NAME)
-public class LoginServiceBean implements LoginService
-{
+public class LoginServiceBean implements LoginService {
     private Log log = LogFactory.getLog(LoginServiceBean.class);
 
     private LoginWorker loginWorker;
@@ -88,5 +87,10 @@ public class LoginServiceBean implements LoginService
     @Override
     public UserSession getSession(UUID sessionId) {
         return loginWorker.getSession(sessionId);
+    }
+
+    @Override
+    public HashMethod getPasswordEncryptionMethod() {
+        return loginWorker.getPasswordEncryptionMethod();
     }
 }

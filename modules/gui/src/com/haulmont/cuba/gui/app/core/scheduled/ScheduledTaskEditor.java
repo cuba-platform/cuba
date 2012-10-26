@@ -9,18 +9,17 @@ package com.haulmont.cuba.gui.app.core.scheduled;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.ScheduledTaskDefinedBy;
+import com.haulmont.cuba.core.global.Encryption;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.inject.Inject;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ScheduledTaskEditor extends AbstractEditor {
 
@@ -63,6 +62,9 @@ public class ScheduledTaskEditor extends AbstractEditor {
     @Inject
     protected SchedulingService service;
 
+    @Inject
+    protected Encryption encryption;
+
     @Override
     public void init(Map<String, Object> params) {
         definedByField.setOptionsList(Arrays.asList(ScheduledTaskDefinedBy.values()));
@@ -102,7 +104,7 @@ public class ScheduledTaskEditor extends AbstractEditor {
         });
 
         final Map<String, List<String>> availableBeans = service.getAvailableBeans();
-        beanNameField.setOptionsList(new ArrayList<String>(availableBeans.keySet()));
+        beanNameField.setOptionsList(new ArrayList<>(availableBeans.keySet()));
         beanNameField.addListener(new ValueListener<LookupField>() {
             @Override
             public void valueChanged(LookupField source, String property, Object prevValue, Object value) {
@@ -121,7 +123,7 @@ public class ScheduledTaskEditor extends AbstractEditor {
         userPasswordField.addListener(new ValueListener<TextField>() {
             @Override
             public void valueChanged(TextField source, String property, Object prevValue, Object value) {
-                taskDs.getItem().setUserPassword(DigestUtils.md5Hex((String) value));
+                taskDs.getItem().setUserPassword(encryption.getPlainHash((String) value));
             }
         });
     }

@@ -2,17 +2,13 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 17.12.2008 14:44:41
- *
- * $Id$
  */
 package com.haulmont.cuba.security.listener;
 
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.Group;
@@ -22,9 +18,15 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+@SuppressWarnings({"UnusedDeclaration"})
 public class GroupEntityListener implements
         BeforeInsertEntityListener<Group>,
         BeforeUpdateEntityListener<Group> {
+
     @Override
     public void onBeforeInsert(Group entity) {
         createNewHierarchy(entity, entity.getParent());
@@ -40,7 +42,7 @@ public class GroupEntityListener implements
         if (parentPc.pcIsNew() && !parentPc.pcIsPersistent())
             throw new IllegalStateException("Unable to create GroupHierarchy. Commit parent group first.");
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
 
         if (entity.getHierarchyList() == null) {
             entity.setHierarchyList(new ArrayList<GroupHierarchy>());
@@ -70,10 +72,12 @@ public class GroupEntityListener implements
 
     @Override
     public void onBeforeUpdate(Group entity) {
-        if (!PersistenceProvider.getDirtyFields(entity).contains("parent"))
+        Persistence persistence = AppBeans.get(Persistence.class);
+
+        if (!persistence.getTools().getDirtyFields(entity).contains("parent"))
             return;
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
 
         for (GroupHierarchy oldHierarchy : entity.getHierarchyList()) {
             em.remove(oldHierarchy);

@@ -7,6 +7,7 @@
 package com.haulmont.cuba.portal.sys.security;
 
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Encryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
@@ -16,7 +17,6 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,9 +40,14 @@ public class AnonymousSessionHolder {
     protected Configuration configuration;
 
     @Inject
+    protected Encryption encryption;
+
+    @Inject
+    @SuppressWarnings({"SpringJavaAutowiringInspection"})
     protected LoginService loginService;
 
     @Inject
+    @SuppressWarnings({"SpringJavaAutowiringInspection"})
     protected UserSessionService userSessionService;
 
     private volatile UserSession anonymousSession;
@@ -68,10 +73,10 @@ public class AnonymousSessionHolder {
         String login = config.getMiddlewareLogin();
         String password = config.getMiddlewarePassword();
 
-        if (password.startsWith("md5:")) {
-            password = password.substring("md5:".length(), password.length());
+        if (password.startsWith("hash:")) {
+            password = password.substring("hash:".length(), password.length());
         } else {
-            password = DigestUtils.md5Hex(password);
+            password = encryption.getPlainHash(password);
         }
 
         Locale defaulLocale = new Locale(config.getDefaultLocale());

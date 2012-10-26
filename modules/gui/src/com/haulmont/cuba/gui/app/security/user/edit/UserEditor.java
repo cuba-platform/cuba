@@ -26,7 +26,6 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -78,6 +77,12 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Inject
     protected Configuration configuration;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected Encryption encryption;
 
     public interface Companion {
         void initPasswordField(TextField passwordField);
@@ -236,7 +241,10 @@ public class UserEditor extends AbstractEditor<User> {
                             return false;
                         }
                     } else {
-                        getItem().setPassword(DigestUtils.md5Hex(passw));
+                        HashDescriptor hDesc = encryption.getPasswordHash(passw);
+
+                        getItem().setPassword(hDesc.getHash());
+                        getItem().setSalt(hDesc.getSalt());
                         return true;
                     }
                 } else {
@@ -368,7 +376,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         @Override
         public void actionPerform(Component component) {
-            final UserSubstitution substitution = MetadataProvider.create(UserSubstitution.class);
+            final UserSubstitution substitution = metadata.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
 
             Map<String, Object> params = new HashMap<>();
