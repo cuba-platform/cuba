@@ -58,6 +58,8 @@ public class Sha1EncryptionModule implements EncryptionModule {
 
     @Override
     public String getHash(String content, String salt) {
+        if (salt == null)
+            salt = "";
         String result;
         try {
             result = apply(content, Hex.decodeHex(salt.toCharArray()));
