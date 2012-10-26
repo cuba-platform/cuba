@@ -2,28 +2,28 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.12.2008 9:41:17
- *
- * $Id$
  */
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Locale;
 import java.util.UUID;
 
-public class PermissionTest extends CubaTestCase
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class PermissionTest extends CubaTestCase {
+
     private static final String USER_NAME = "testUser";
-    private static final String USER_PASSW = DigestUtils.md5Hex("testUser");
+    private static final String USER_PASSW = "testUser";
     private static final String PROFILE_NAME = "testProfile";
     private static final String PERM_TARGET_SCREEN = "w:sys$Server.browse";
     private static final String PERM_TARGET_ATTR = "sys$Server:address";
@@ -31,12 +31,13 @@ public class PermissionTest extends CubaTestCase
     private UUID role1Id, permission1Id, role2Id, permission2Id, userId, groupId,
             userRole1Id, userRole2Id;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Role role1 = new Role();
             role1Id = role1.getId();
@@ -73,7 +74,11 @@ public class PermissionTest extends CubaTestCase
             userId = user.getId();
             user.setName(USER_NAME);
             user.setLogin(USER_NAME);
-            user.setPassword(USER_PASSW);
+
+            HashDescriptor pwd = encryption.getPasswordHash(USER_PASSW);
+            user.setPassword(pwd.getHash());
+            user.setSalt(pwd.getSalt());
+
             user.setGroup(group);
             em.persist(user);
 
@@ -95,10 +100,11 @@ public class PermissionTest extends CubaTestCase
         }
     }
 
+    @Override
     protected void tearDown() throws Exception {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Query q;
 
@@ -133,9 +139,9 @@ public class PermissionTest extends CubaTestCase
     }
 
     public void test() throws LoginException {
-        LoginWorker lw = Locator.lookup(LoginWorker.NAME);
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME, encryption.getPlainHash(USER_PASSW), Locale.getDefault());
         assertNotNull(userSession);
 
         boolean permitted = userSession.isPermitted(PermissionType.SCREEN, PERM_TARGET_SCREEN);

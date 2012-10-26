@@ -7,6 +7,7 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Encryption;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -61,6 +62,7 @@ public abstract class CubaTestCase extends TestCase
 
     protected Persistence persistence;
     protected Metadata metadata;
+    protected Encryption encryption;
 
     @Override
     protected void setUp() throws Exception {
@@ -78,6 +80,7 @@ public abstract class CubaTestCase extends TestCase
         }
         persistence = AppBeans.get(Persistence.class);
         metadata = AppBeans.get(Metadata.class);
+        encryption = AppBeans.get(Encryption.class);
     }
 
     protected void initDataSources() throws Exception {

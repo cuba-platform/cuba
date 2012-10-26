@@ -2,41 +2,39 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.12.2008 17:39:53
- *
- * $Id$
  */
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.app.LoginWorker;
-import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.Constraint;
+import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 
-import java.util.UUID;
-import java.util.Locale;
 import java.util.List;
-import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
-public class ConstraintTest extends CubaTestCase
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class ConstraintTest extends CubaTestCase {
     private static final String USER_LOGIN = "testUser";
-    private static final String USER_PASSW = DigestUtils.md5Hex("testUser");
+    private static final String USER_PASSW = "testUser";
 
     private UUID constraintId, parentConstraintId, groupId, parentGroupId, userId;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Group parentGroup = new Group();
             parentGroupId = parentGroup.getId();
@@ -44,7 +42,7 @@ public class ConstraintTest extends CubaTestCase
             em.persist(parentGroup);
 
             tx.commitRetaining();
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
 
             Constraint parentConstraint = new Constraint();
             parentConstraintId = parentConstraint.getId();
@@ -69,7 +67,11 @@ public class ConstraintTest extends CubaTestCase
             User user = new User();
             userId = user.getId();
             user.setLogin(USER_LOGIN);
-            user.setPassword(USER_PASSW);
+
+            HashDescriptor pwd = encryption.getPasswordHash(USER_PASSW);
+            user.setPassword(pwd.getHash());
+            user.setSalt(pwd.getSalt());
+
             user.setGroup(group);
             em.persist(user);
 
@@ -80,9 +82,9 @@ public class ConstraintTest extends CubaTestCase
     }
 
     protected void tearDown() throws Exception {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Query q;
 
@@ -119,9 +121,9 @@ public class ConstraintTest extends CubaTestCase
     }
 
     public void test() throws LoginException {
-        LoginWorker lw = Locator.lookup(LoginWorker.NAME);
+        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
+        UserSession userSession = lw.login(USER_LOGIN, encryption.getPlainHash(USER_PASSW), Locale.getDefault());
         assertNotNull(userSession);
 
         List<String[]> constraints = userSession.getConstraints("sys$Server");
