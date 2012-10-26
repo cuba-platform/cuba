@@ -7,7 +7,7 @@
 .pickerfield .v-button {
     height: 25px;
     line-height: 18px;
-    background: url(img/lookup-picker-btn.png) right;
+    background: url(img/lookup-picker-btn.png) right white;
 }
 
 .pickerfield.v-readonly .v-button {
@@ -15,6 +15,18 @@
 }
 
 .pickerfield .v-horizontallayout-childfocus .v-button {
+    background: url(img/lookup-picker-btn-focus.png) right white;
+}
+
+.v-table-cell-content .pickerfield .v-button.v-button-link {
+    background: url(img/lookup-picker-btn.png) right white;
+}
+
+.v-table-cell-content .pickerfield.v-readonly .v-button.v-button-link {
+    background: url(img/lookup-picker-btn-readonly.png) right;
+}
+
+.v-table-cell-content .pickerfield .v-horizontallayout-childfocus .v-button.v-button-link {
     background: url(img/lookup-picker-btn-focus.png) right white;
 }
 
