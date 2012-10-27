@@ -140,9 +140,9 @@ public class UserManagementServiceBean implements UserManagementService {
         if (userIds.isEmpty())
             return 0;
 
-        Map<User, String> modifiedUsers = resetPasswords(userIds, true);
+        Map<User, String> modifiedUsers = updateUserPasswords(userIds, true);
 
-        // send emails
+        // email templates
         ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
         String resetPasswordBodyTemplate = serverConfig.getResetPasswordEmailBodyTemplate();
         String resetPasswordSubjectTemplate = serverConfig.getResetPasswordEmailSubjectTemplate();
@@ -156,6 +156,7 @@ public class UserManagementServiceBean implements UserManagementService {
         Template bodyDefaultTemplate = loadDefaultTemplate(resetPasswordBodyTemplate, templateEngine);
         Template subjectDefaultTemplate = loadDefaultTemplate(resetPasswordSubjectTemplate, templateEngine);
 
+        // send emails
         for (User user : modifiedUsers.keySet()) {
             if (StringUtils.isNotEmpty(user.getEmail())) {
 
@@ -178,7 +179,7 @@ public class UserManagementServiceBean implements UserManagementService {
         if (userIds.isEmpty())
             return Collections.emptyMap();
 
-        Map<User, String> modifiedUsers = resetPasswords(userIds, generatePassword);
+        Map<User, String> modifiedUsers = updateUserPasswords(userIds, generatePassword);
         Map<UUID, String> userPasswords = new LinkedHashMap<>();
         for (Map.Entry<User, String> entry : modifiedUsers.entrySet())
             userPasswords.put(entry.getKey().getId(), entry.getValue());
@@ -287,7 +288,7 @@ public class UserManagementServiceBean implements UserManagementService {
         emailerAPI.sendMessagesAsync(emailInfo);
     }
 
-    private Map<User, String> resetPasswords(List<UUID> userIds, boolean generatePassword) {
+    private Map<User, String> updateUserPasswords(List<UUID> userIds, boolean generatePassword) {
         Map<User, String> modifiedUsers = new LinkedHashMap<>();
 
         Transaction tx = persistence.getTransaction();
