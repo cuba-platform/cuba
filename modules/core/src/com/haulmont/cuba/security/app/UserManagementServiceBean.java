@@ -140,7 +140,7 @@ public class UserManagementServiceBean implements UserManagementService {
         if (userIds.isEmpty())
             return 0;
 
-        Map<User, String> modifiedUsers = resetPasswords(userIds);
+        Map<User, String> modifiedUsers = resetPasswords(userIds, true);
 
         // send emails
         ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
@@ -172,13 +172,13 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     @Override
-    public Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds) {
+    public Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds, boolean generatePassword) {
         checkNotNull(userIds, "Null users list");
 
         if (userIds.isEmpty())
             return Collections.emptyMap();
 
-        Map<User, String> modifiedUsers = resetPasswords(userIds);
+        Map<User, String> modifiedUsers = resetPasswords(userIds, generatePassword);
         Map<UUID, String> userPasswords = new LinkedHashMap<>();
         for (Map.Entry<User, String> entry : modifiedUsers.entrySet())
             userPasswords.put(entry.getKey().getId(), entry.getValue());
@@ -287,7 +287,7 @@ public class UserManagementServiceBean implements UserManagementService {
         emailerAPI.sendMessagesAsync(emailInfo);
     }
 
-    private Map<User, String> resetPasswords(List<UUID> userIds) {
+    private Map<User, String> resetPasswords(List<UUID> userIds, boolean generatePassword) {
         Map<User, String> modifiedUsers = new LinkedHashMap<>();
 
         Transaction tx = persistence.getTransaction();
@@ -305,11 +305,14 @@ public class UserManagementServiceBean implements UserManagementService {
                 throw new IllegalStateException("Not all users found in database");
 
             for (User user : users) {
-                String password = encryption.generateRandomPassword();
+                String password = null;
+                if (generatePassword) {
+                    password = encryption.generateRandomPassword();
 
-                HashDescriptor pwd = encryption.getPasswordHash(password);
-                user.setPassword(pwd.getHash());
-                user.setSalt(pwd.getSalt());
+                    HashDescriptor pwd = encryption.getPasswordHash(password);
+                    user.setPassword(pwd.getHash());
+                    user.setSalt(pwd.getSalt());
+                }
                 user.setChangePasswordAtNextLogon(true);
 
                 modifiedUsers.put(user, password);

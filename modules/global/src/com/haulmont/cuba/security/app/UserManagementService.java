@@ -50,7 +50,8 @@ public interface UserManagementService {
      * Change passwords at logon for specified users
      *
      * @param userIds User ids
+     * @param generatePassword Generate new passwords
      * @return Map with userId and new password
      */
-    Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds);
+    Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds, boolean generatePassword);
 }

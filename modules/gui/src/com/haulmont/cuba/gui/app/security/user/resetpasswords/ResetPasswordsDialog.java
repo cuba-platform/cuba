@@ -9,6 +9,7 @@ package com.haulmont.cuba.gui.app.security.user.resetpasswords;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.ValueListener;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -22,11 +23,26 @@ public class ResetPasswordsDialog extends AbstractWindow {
     @Inject
     protected CheckBox sendEmailsCheckBox;
 
+    @Inject
+    protected CheckBox generatePasswordsCheckBox;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         getDialogParams().setResizable(false);
+
+        generatePasswordsCheckBox.addListener(new ValueListener<CheckBox>() {
+            @Override
+            public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
+                if (Boolean.TRUE.equals(generatePasswordsCheckBox.getValue())) {
+                    sendEmailsCheckBox.setEnabled(true);
+                } else {
+                    sendEmailsCheckBox.setValue(false);
+                    sendEmailsCheckBox.setEnabled(false);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unused")
@@ -40,6 +56,10 @@ public class ResetPasswordsDialog extends AbstractWindow {
     }
 
     public boolean getSendEmails() {
-        return Boolean.TRUE.equals(sendEmailsCheckBox.getValue());
+        return Boolean.TRUE.equals(sendEmailsCheckBox.getValue()) && getGeneratePasswords();
+    }
+
+    public boolean getGeneratePasswords() {
+        return Boolean.TRUE.equals(generatePasswordsCheckBox.getValue());
     }
 }

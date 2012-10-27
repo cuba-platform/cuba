@@ -137,15 +137,16 @@ public class UserBrowser extends AbstractLookup {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         boolean sendEmails = resetPasswordsDialog.getSendEmails();
+                        boolean generatePasswords = resetPasswordsDialog.getGeneratePasswords();
                         Set<User> users = usersTable.getSelected();
-                        resetPasswordsForUsers(users, sendEmails);
+                        resetPasswordsForUsers(users, sendEmails, generatePasswords);
                     }
                 }
             });
         }
     }
 
-    private void resetPasswordsForUsers(Set<User> users, boolean sendEmails) {
+    private void resetPasswordsForUsers(Set<User> users, boolean sendEmails, boolean generatePasswords) {
         List<UUID> usersForModify = new ArrayList<>();
         for (User user : users) {
             usersForModify.add(user.getId());
@@ -155,19 +156,22 @@ public class UserBrowser extends AbstractLookup {
             Integer modifiedCount = userManagementService.changePasswordsAtLogonAndSendEmails(usersForModify);
             usersDs.refresh();
 
-            // show notification
             showNotification(String.format(getMessage("resetPasswordCompleted"), modifiedCount),
                     NotificationType.HUMANIZED);
         } else {
-            Map<UUID, String> changedPasswords = userManagementService.changePasswordsAtLogon(usersForModify);
+            Map<UUID, String> changedPasswords = userManagementService.changePasswordsAtLogon(usersForModify, generatePasswords);
 
-            Map<User, String> userPasswords = new LinkedHashMap<>();
-            for (Map.Entry<UUID, String> entry : changedPasswords.entrySet()) {
-                userPasswords.put(usersDs.getItem(entry.getKey()), entry.getValue());
+            if (generatePasswords) {
+                Map<User, String> userPasswords = new LinkedHashMap<>();
+                for (Map.Entry<UUID, String> entry : changedPasswords.entrySet()) {
+                    userPasswords.put(usersDs.getItem(entry.getKey()), entry.getValue());
+                }
+                Map<String, Object> params = Collections.singletonMap("passwords", (Object) userPasswords);
+                openWindow("sec$User.newPasswords", WindowManager.OpenType.DIALOG, params);
+            } else {
+                showNotification(String.format(getMessage("changePasswordAtLogonCompleted"), changedPasswords.size()),
+                        NotificationType.HUMANIZED);
             }
-            Map<String, Object> params = Collections.singletonMap("passwords", (Object) userPasswords);
-            openWindow("sec$User.newPasswords", WindowManager.OpenType.DIALOG, params);
-
             usersDs.refresh();
         }
     }
