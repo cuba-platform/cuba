@@ -14,6 +14,10 @@ import com.haulmont.cuba.core.sys.encryption.Md5EncryptionModule;
 import com.haulmont.cuba.core.sys.encryption.Sha1EncryptionModule;
 import com.haulmont.cuba.core.sys.encryption.UnsupportedHashMethodException;
 import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.codec.binary.Base64;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * @author artamonov
@@ -45,6 +49,19 @@ public abstract class AbstractEncryption implements Encryption {
             default:
                 throw new UnsupportedHashMethodException();
         }
+    }
+
+    @Override
+    public String generateRandomPassword() {
+        SecureRandom random;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] passwordBytes = new byte[6];
+        random.nextBytes(passwordBytes);
+        return new String(Base64.encodeBase64(passwordBytes)).replace("=", "");
     }
 
     @Override

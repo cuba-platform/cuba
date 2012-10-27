@@ -276,18 +276,23 @@ public class DesktopWindowManager extends WindowManager {
         final JDialog dialog = new DialogWindow(frame, caption);
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
+        final DialogParams dialogParams = getDialogParams();
         JComponent jComponent = DesktopComponentsHelper.getComposition(window);
         dialog.add(jComponent);
-        dialog.addWindowListener(
-                new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent e) {
-                        if (window.close("close", false)) {
-                            dialog.dispose();
+
+        if (dialogParams.getCloseable() == null ||
+                dialogParams.getCloseable()) {
+            dialog.addWindowListener(
+                    new WindowAdapter() {
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+                            if (window.close("close", false)) {
+                                dialog.dispose();
+                            }
                         }
                     }
-                }
-        );
+            );
+        }
 
         Dimension dim = new Dimension();
         if (forciblyDialog) {
@@ -297,7 +302,6 @@ public class DesktopWindowManager extends WindowManager {
             dim.height = 500;
             dialog.setResizable(true);
         } else {
-            final DialogParams dialogParams = getDialogParams();
             if (dialogParams.getWidth() != null)
                 dim.width = dialogParams.getWidth();
             else
@@ -307,13 +311,14 @@ public class DesktopWindowManager extends WindowManager {
                 dim.height = dialogParams.getHeight();
             }
             dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
-            if (dialogParams.getCloseable() != null) {
-                if (!dialogParams.getCloseable())
-                    dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-            }
-
-            dialogParams.reset();
         }
+
+        if (dialogParams.getCloseable() != null) {
+            if (!dialogParams.getCloseable())
+                dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        }
+        dialogParams.reset();
+
         dialog.setMinimumSize(dim);
         dialog.pack();
         dialog.setLocationRelativeTo(frame);

@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 04.06.2009 11:45:24
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.export;
 
@@ -18,8 +13,8 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -42,6 +37,9 @@ import java.util.List;
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
  * and show using {@link ExportDisplay}.
  * <br>Just create an instance of this class and invoke one of <code>exportTable</code> methods.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class ExcelExporter {
     private static final int COL_WIDTH_MAGIC = 48;
@@ -58,9 +56,18 @@ public class ExcelExporter {
 
     private ExcelAutoColumnSizer[] sizers;
 
-    private final String trueStr = MessageProvider.getMessage(getClass(), "excelExporter.true");
+    private final String trueStr;
 
-    private final String falseStr = MessageProvider.getMessage(getClass(), "excelExporter.false");
+    private final String falseStr;
+
+    private final Messages messages;
+
+    public ExcelExporter() {
+        messages = AppBeans.get(Messages.class);
+
+        trueStr = messages.getMessage(getClass(), "excelExporter.true");
+        falseStr = messages.getMessage(getClass(), "excelExporter.false");
+    }
 
     public void exportTable(Table table, ExportDisplay display) {
         exportTable(table, table.getColumns(), display);
@@ -188,7 +195,7 @@ public class ExcelExporter {
         HSSFRow row = sheet.createRow(rowNumber);
         HSSFCell cell = row.createCell(groupNumber);
         Object val = groupInfo.getValue();
-        val = val == null ? MessageProvider.getMessage(getClass(), "excelExporter.empty") : val;
+        val = val == null ? AppBeans.get(Messages.class).getMessage(getClass(), "excelExporter.empty") : val;
         formatValueCell(cell, val, groupNumber++, rowNumber, 0, true);
 
         int oldRowNumber = rowNumber;
@@ -212,7 +219,7 @@ public class ExcelExporter {
             return;
         }
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = (Instance) table.getDatasource().getItem(itemId);
+        Instance instance = table.getDatasource().getItem(itemId);
 
         int level = 0;
         if (table instanceof TreeTable) {
@@ -224,6 +231,9 @@ public class ExcelExporter {
             Table.Column column = columns.get(c);
             if (column.getId() instanceof MetaPropertyPath) {
                 Object val = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
+                if (column.getFormatter() != null)
+                    val = column.getFormatter().format(val);
+
                 TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
                 boolean isFull = true;
                 if (tt != null && tt == TemporalType.DATE)
@@ -299,15 +309,16 @@ public class ExcelExporter {
             }
         } else if (val instanceof EnumClass) {
             String nameKey = val.getClass().getSimpleName() + "." + val.toString();
-            final String message = sizersIndex == 0 ? createSpaceString(level) + MessageProvider.getMessage(val.getClass(), nameKey)
-                    : MessageProvider.getMessage(val.getClass(), nameKey);
+            final String message = sizersIndex == 0 ? createSpaceString(level) + messages.getMessage(val.getClass(), nameKey)
+                    : messages.getMessage(val.getClass(), nameKey);
+
             cell.setCellValue(message);
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(message, stdFont);
             }
         } else if (val instanceof Entity){
             Entity entityVal = (Entity) val;
-            String instanceName = ((Instance) entityVal).getInstanceName();
+            String instanceName = entityVal.getInstanceName();
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {

@@ -10,13 +10,10 @@ import com.haulmont.cuba.core.entity.HashMethod;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AbstractEncryption;
 import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,15 +44,7 @@ public class EncryptionSupport extends ManagementBean implements EncryptionSuppo
 
     @Override
     public String getRandomPassword() {
-        SecureRandom random;
-        try {
-            random = SecureRandom.getInstance("SHA1PRNG");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        byte[] passwordBytes = new byte[8];
-        random.nextBytes(passwordBytes);
-        return new String(Base64.encodeBase64(passwordBytes)).replace("=", "");
+        return encryption.generateRandomPassword();
     }
 
     @Override

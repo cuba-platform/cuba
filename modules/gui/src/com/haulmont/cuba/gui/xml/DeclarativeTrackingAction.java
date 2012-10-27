@@ -1,13 +1,12 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.gui.components.actions;
+package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -17,14 +16,11 @@ import com.haulmont.cuba.gui.data.Datasource;
  * @author artamonov
  * @version $Id$
  */
-public class ItemTrackingAction extends AbstractAction implements CollectionDatasourceListener {
+public class DeclarativeTrackingAction extends DeclarativeAction implements CollectionDatasourceListener {
 
-    protected ItemTrackingAction(String id) {
-        super(id);
-    }
-
-    @Override
-    public void actionPerform(Component component) {
+    public DeclarativeTrackingAction(String id, String caption, String icon, String enable,
+                                     String visible, String methodName, Component.ActionsHolder holder) {
+        super(id, caption, icon, enable, visible, methodName, holder);
     }
 
     @Override

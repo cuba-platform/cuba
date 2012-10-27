@@ -61,7 +61,7 @@ public interface EmailerAPI {
      *              If deadline has come and message has not been sent, status of this message will changed to SendingStatus.NOTSENT
      * @throws EmailException
      */
-    void sendEmailAsync(EmailInfo info, Integer attemptsCount,Date deadline) throws EmailException;
+    void sendEmailAsync(EmailInfo info, Integer attemptsCount,Date deadline);
 
     /**
      *
@@ -69,11 +69,10 @@ public interface EmailerAPI {
      * @return List of created SendingMessage
      * @throws EmailException
      */
-    List<SendingMessage> sendMessagesAsync(EmailInfo info) throws EmailException;
+    List<SendingMessage> sendMessagesAsync(EmailInfo info);
 
     /**
      * Don't use
      */
     void scheduledSendEmail(SendingMessage sendingMessage) throws LoginException, EmailException;
-
 }

@@ -1,0 +1,1 @@
+Password reset for user ${user.login}

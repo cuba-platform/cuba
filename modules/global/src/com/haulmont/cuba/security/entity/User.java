@@ -248,4 +248,12 @@ public class User extends StandardEntity {
     public void setSalt(String salt) {
         this.salt = salt;
     }
+
+    public Boolean getChangePasswordAtNextLogon() {
+        return changePasswordAtNextLogon;
+    }
+
+    public void setChangePasswordAtNextLogon(Boolean changePasswordAtNextLogon) {
+        this.changePasswordAtNextLogon = changePasswordAtNextLogon;
+    }
 }

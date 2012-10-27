@@ -12,14 +12,22 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
-import com.haulmont.cuba.desktop.sys.*;
+import com.haulmont.cuba.desktop.sys.DesktopAppContextLoader;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.MainWindowProperties;
+import com.haulmont.cuba.desktop.sys.MenuBuilder;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
@@ -37,15 +45,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class App implements ConnectionListener {
 
@@ -441,6 +447,7 @@ public class App implements ConnectionListener {
         }
     }
 
+    @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
         MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
 
@@ -455,6 +462,12 @@ public class App implements ConnectionListener {
             initExceptionHandlers(true);
             initTimeZone();
 
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    afterLoggedIn();
+                }
+            });
         } else {
             messagesClient.setRemoteSearch(false);
             Iterator<TopLevelFrame> it = topLevelFrames.iterator();
@@ -478,6 +491,22 @@ public class App implements ConnectionListener {
 
             initExceptionHandlers(false);
             showLoginDialog();
+        }
+    }
+
+    /**
+     * Perform actions after success login
+     */
+    private void afterLoggedIn() {
+        final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
+            // Change password on logon
+        if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
+            mainFrame.deactivate("");
+            DesktopWindowManager wm = mainFrame.getWindowManager();
+            WindowInfo changePasswordDialog = AppBeans.get(WindowConfig.class).getWindowInfo("sec$User.changePassw");
+            wm.getDialogParams().setCloseable(false);
+            Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object)Boolean.FALSE);
+            wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
         }
     }
 

@@ -58,7 +58,8 @@ public class DialogParams {
     public DialogParams reset() {
         this.height = null;
         this.width = null;
-        resizable = null;
+        this.resizable = null;
+        this.closeable = null;
         return this;
     }
 }

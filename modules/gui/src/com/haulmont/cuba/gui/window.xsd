@@ -362,6 +362,7 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attribute name="icon" type="xs:string" use="optional"/>
+        <xs:attribute name="trackSelection" type="xs:boolean" use="optional"/>
         <xs:attribute name="invoke" type="xs:string" use="optional"/>
     </xs:complexType>
 

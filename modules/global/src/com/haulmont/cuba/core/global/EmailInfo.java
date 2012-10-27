@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: DEGTYARJOV EUGENIY
- * Created: 11.09.2009 12:03:04
- *
- * $Id$
  */
 
 package com.haulmont.cuba.core.global;
@@ -16,9 +11,15 @@ import java.io.Serializable;
 
 /**
  * Contains information about email sending.<br>
- * Used by {@link com.haulmont.cuba.core.app.EmailerAPI#sendEmail(EmailInfo)} method.
+ * Used by {@link com.haulmont.cuba.core.app.EmailService#sendEmail(EmailInfo)} method.
+ *
+ * @author degtyarjov
+ * @version $Id$
  */
 public class EmailInfo implements Serializable {
+
+    private static final long serialVersionUID = -382773435130109083L;
+
     private String addresses;
     private String caption;
     private String from;
@@ -26,9 +27,10 @@ public class EmailInfo implements Serializable {
     private Map<String, Serializable> templateParameters;
     private String body;
     private EmailAttachment[] attachment;
-    private static final long serialVersionUID = -382773435130109083L;
 
-    public EmailInfo(String addresses, String caption, String from, String templatePath, Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
+    public EmailInfo(String addresses, String caption, String from, String templatePath,
+                     Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
+
         this.addresses = addresses;
         this.caption = caption;
         this.templatePath = templatePath;

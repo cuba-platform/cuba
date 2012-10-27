@@ -146,6 +146,8 @@ public class ApplicationConnection {
 
     private Set<String> unregistryBag = new HashSet<String>();
 
+    private boolean errorShown = false;
+
     class ApplicationTimer extends Timer {
         private String id;
         private boolean repeat;
@@ -696,6 +698,10 @@ public class ApplicationConnection {
      */
     private void showError(String details, String caption, String message,
             String url) {
+        if (errorShown)
+            return;
+
+        errorShown = true;
 
         StringBuilder html = new StringBuilder();
         if (caption != null) {

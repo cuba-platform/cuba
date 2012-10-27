@@ -2,18 +2,19 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 22.10.2010 17:15:47
- *
- * $Id: DefaultApp.java 3262 2010-11-26 06:41:45Z krokhin $
  */
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.Timer;
@@ -24,7 +25,13 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class DefaultApp extends App implements ConnectionListener {
 
     private static Log log = LogFactory.getLog(DefaultApp.class);
@@ -45,6 +52,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
     /**
      * Should be overridden in descendant to create an application-specific login window
+     *
      * @return Login form
      */
     protected LoginWindow createLoginWindow() {
@@ -59,6 +67,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
     /**
      * Get or create new LoginWindow
+     *
      * @return LoginWindow
      */
     private LoginWindow getLoginWindow() {
@@ -148,8 +157,9 @@ public class DefaultApp extends App implements ConnectionListener {
                 linkHandler.handle();
                 linkHandler = null;
             }
-        }
-        else {
+
+            afterLoggedIn();
+        } else {
             log.debug("Closing all windows");
             getWindowManager().closeAll();
 
@@ -172,6 +182,24 @@ public class DefaultApp extends App implements ConnectionListener {
             currentWindowName.set(window.getName());
 
             initExceptionHandlers(false);
+        }
+    }
+
+    /**
+     * Perform actions after success login
+     */
+    private void afterLoggedIn() {
+        Configuration configuration = AppBeans.get(Configuration.class);
+        if (!configuration.getConfig(WebConfig.class).getUseActiveDirectory()) {
+            final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
+            // Change password on logon
+            if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
+                WebWindowManager wm = getWindowManager();
+                WindowInfo changePasswordDialog = AppBeans.get(WindowConfig.class).getWindowInfo("sec$User.changePassw");
+                wm.getDialogParams().setCloseable(false);
+                Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
+                wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
+            }
         }
     }
 

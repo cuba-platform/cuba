@@ -51,6 +51,14 @@ public interface ServerConfig extends Config {
     @Default("sha1")
     HashMethod getPasswordEncryption();
 
+    @Property("cuba.security.resetPasswordTemplateBody")
+    @Default("/com/haulmont/cuba/security/app/email/reset-password-body.gsp")
+    String getResetPasswordEmailBodyTemplate();
+
+    @Property("cuba.security.resetPasswordTemplateSubject")
+    @Default("/com/haulmont/cuba/security/app/email/reset-password-subject.gsp")
+    String getResetPasswordEmailSubjectTemplate();
+
     /**
      * @return User session expiration timeout in seconds.
      * Not the same as HTTP session timeout, but should have the same value.

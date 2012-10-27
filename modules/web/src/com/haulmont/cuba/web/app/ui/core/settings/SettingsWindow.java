@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 07.06.2010 12:05:05
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app.ui.core.settings;
 
@@ -25,9 +20,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class SettingsWindow extends AbstractWindow {
-
-    private static final long serialVersionUID = 9041481396509565824L;
 
     protected boolean changeThemeEnabled = false;
     protected OptionsGroup modeOptions;
@@ -43,12 +40,19 @@ public class SettingsWindow extends AbstractWindow {
     @Inject
     protected UserSessionSource userSessionSource;
 
+    @Inject
+    protected Button okBtn;
+
+    @Inject
+    protected Button cancelBtn;
+
     @Override
     public void init(Map<String, Object> params) {
         Boolean changeThemeEnabledParam = (Boolean) params.get("changeThemeEnabled");
         if (changeThemeEnabledParam != null) {
             changeThemeEnabled = changeThemeEnabledParam;
         }
+
         AppWindow.Mode mode = userSettingsTools.loadAppWindowMode();
         msgTabbed = getMessage("modeTabbed");
         msgSingle = getMessage("modeSingle");
@@ -85,7 +89,6 @@ public class SettingsWindow extends AbstractWindow {
             changePasswBtn.setEnabled(false);
         }
 
-        Button okBtn = getComponent("ok");
         okBtn.setAction(
                 new AbstractAction("ok") {
                     @Override
@@ -104,7 +107,6 @@ public class SettingsWindow extends AbstractWindow {
                 }
         );
 
-        Button cancelBtn = getComponent("cancel");
         cancelBtn.setAction(
                 new AbstractAction("cancel") {
                     @Override

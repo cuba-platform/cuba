@@ -6,19 +6,19 @@
 
 package com.haulmont.cuba.gui.app.security.user.browse;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
+import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
 import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -54,6 +54,9 @@ public class UserBrowser extends AbstractLookup {
     @Inject
     protected DataService dataService;
 
+    @Inject
+    protected UserManagementService userManagementService;
+
     @Override
     public void init(Map<String, Object> params) {
         usersDs.addListener(new DsListenerAdapter<User>() {
@@ -68,29 +71,9 @@ public class UserBrowser extends AbstractLookup {
         Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiselect"));
         if (multiSelect != null)
             usersTable.setMultiSelect(multiSelect);
-
-        usersTable.addAction(new ItemTrackingAction("copy") {
-            @Override
-            public void actionPerform(Component component) {
-                copy();
-            }
-        });
-
-        usersTable.addAction(new ItemTrackingAction("copySettings") {
-            @Override
-            public void actionPerform(Component component) {
-                copySettings();
-            }
-        });
-
-        usersTable.addAction(new ItemTrackingAction("changePassw") {
-            @Override
-            public void actionPerform(Component component) {
-                changePassword();
-            }
-        });
     }
 
+    @SuppressWarnings("unused")
     public void copy() {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
@@ -122,6 +105,7 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
+    @SuppressWarnings("unused")
     public void copySettings() {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
@@ -133,6 +117,7 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
+    @SuppressWarnings("unused")
     public void changePassword() {
         if (!usersTable.getSelected().isEmpty()) {
             openEditor(
@@ -140,6 +125,50 @@ public class UserBrowser extends AbstractLookup {
                     usersTable.getSelected().iterator().next(),
                     WindowManager.OpenType.DIALOG
             );
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void changePasswordAtLogon() {
+        if (!usersTable.getSelected().isEmpty()) {
+            final ResetPasswordsDialog resetPasswordsDialog = openWindow("sec$User.resetPasswords", WindowManager.OpenType.DIALOG);
+            resetPasswordsDialog.addListener(new CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        boolean sendEmails = resetPasswordsDialog.getSendEmails();
+                        Set<User> users = usersTable.getSelected();
+                        resetPasswordsForUsers(users, sendEmails);
+                    }
+                }
+            });
+        }
+    }
+
+    private void resetPasswordsForUsers(Set<User> users, boolean sendEmails) {
+        List<UUID> usersForModify = new ArrayList<>();
+        for (User user : users) {
+            usersForModify.add(user.getId());
+        }
+
+        if (sendEmails) {
+            Integer modifiedCount = userManagementService.changePasswordsAtLogonAndSendEmails(usersForModify);
+            usersDs.refresh();
+
+            // show notification
+            showNotification(String.format(getMessage("resetPasswordCompleted"), modifiedCount),
+                    NotificationType.HUMANIZED);
+        } else {
+            Map<UUID, String> changedPasswords = userManagementService.changePasswordsAtLogon(usersForModify);
+
+            Map<User, String> userPasswords = new LinkedHashMap<>();
+            for (Map.Entry<UUID, String> entry : changedPasswords.entrySet()) {
+                userPasswords.put(usersDs.getItem(entry.getKey()), entry.getValue());
+            }
+            Map<String, Object> params = Collections.singletonMap("passwords", (Object) userPasswords);
+            openWindow("sec$User.newPasswords", WindowManager.OpenType.DIALOG, params);
+
+            usersDs.refresh();
         }
     }
 }

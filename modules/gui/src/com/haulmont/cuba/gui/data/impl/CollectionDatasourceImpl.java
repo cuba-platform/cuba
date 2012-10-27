@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 15:06:46
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
@@ -34,20 +30,30 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
+/**
+ *
+ * @param <T> Enity
+ * @param <K> Key
+ *
+ * @author abramov
+ * @version $Id$
+ */
 public class CollectionDatasourceImpl<T extends Entity<K>, K>
         extends
-        AbstractCollectionDatasource<T, K>
+            AbstractCollectionDatasource<T, K>
         implements
-        CollectionDatasource.Sortable<T, K>,
-        CollectionDatasource.Aggregatable<T, K>,
-        CollectionDatasource.Suspendable<T, K>,
-        CollectionDatasource.SupportsPaging<T, K>,
-        CollectionDatasource.SupportsApplyToSelected<T, K> {
+            CollectionDatasource.Sortable<T, K>,
+            CollectionDatasource.Aggregatable<T, K>,
+            CollectionDatasource.Suspendable<T, K>,
+            CollectionDatasource.SupportsPaging<T, K>,
+            CollectionDatasource.SupportsApplyToSelected<T, K> {
 
     protected LinkedMap data = new LinkedMap();
 
     private boolean inRefresh;
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
+
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -55,6 +61,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             return CollectionDatasourceImpl.this.getItem(itemId);
         }
 
+        @Override
         public Object getItemValue(MetaPropertyPath property, K itemId) {
             return CollectionDatasourceImpl.this.getItemValue(property, itemId);
         }
@@ -66,10 +73,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected int firstResult;
 
-    protected boolean sortOnDb = ConfigProvider.getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
+    protected boolean sortOnDb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
 
     protected LoadContext.Query lastQuery;
-    protected LinkedList<LoadContext.Query> prevQueries = new LinkedList<LoadContext.Query>();
+    protected LinkedList<LoadContext.Query> prevQueries = new LinkedList<>();
     protected Integer queryKey;
 
     /**
@@ -107,6 +114,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         super.invalidate();
     }
 
+    @Override
     public void refreshIfNotSuspended() {
         if (suspended) {
             if (!state.equals(State.VALID)) {
@@ -132,7 +140,26 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             return;
 
         if (refreshMode == RefreshMode.NEVER) {
-            valid();
+            invalidate();
+
+            State prevState = state;
+            if (!prevState.equals(State.VALID)) {
+                valid();
+                fireStateChanged(prevState);
+            }
+            inRefresh = true;
+
+            setItem(getItem());
+
+            if (sortInfos != null && sortInfos.length > 0)
+                doSort();
+
+            suspended = false;
+            refreshOnResumeRequired = false;
+
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+
+            inRefresh = false;
             return;
         }
 
@@ -181,6 +208,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         this.refreshMode = refreshMode;
     }
 
+    @Override
     public synchronized T getItem(K key) {
         if (State.NOT_INITIALIZED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
@@ -190,10 +218,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public K getItemId(T item) {
         return item == null ? null : item.getId();
     }
 
+    @Override
     public synchronized Collection<K> getItemIds() {
         if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
@@ -202,6 +232,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized int size() {
         if (State.NOT_INITIALIZED.equals(state) || suspended) {
             return 0;
@@ -210,6 +241,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public void sort(SortInfo[] sortInfos) {
         if (sortInfos.length != 1)
             throw new UnsupportedOperationException("Supporting sort by one field only");
@@ -240,6 +272,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public K firstItemId() {
         if (!data.isEmpty()) {
             return (K) data.firstKey();
@@ -247,6 +280,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @Override
     public K lastItemId() {
         if (!data.isEmpty()) {
             return (K) data.lastKey();
@@ -254,18 +288,22 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @Override
     public K nextItemId(K itemId) {
         return (K) data.nextKey(itemId);
     }
 
+    @Override
     public K prevItemId(K itemId) {
         return (K) data.previousKey(itemId);
     }
 
+    @Override
     public boolean isFirstId(K itemId) {
         return itemId != null && itemId.equals(firstItemId());
     }
 
+    @Override
     public boolean isLastId(K itemId) {
         return itemId != null && itemId.equals(lastItemId());
     }
@@ -276,6 +314,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
@@ -309,6 +348,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    @Override
     public synchronized void includeItem(T item) throws UnsupportedOperationException {
         checkState();
 
@@ -318,6 +358,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
+    @Override
     public synchronized void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
 
@@ -331,6 +372,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    @Override
     public synchronized void clear() throws UnsupportedOperationException {
         // Get items
         List<Object> collectionItems = new ArrayList<Object>(data.values());
@@ -345,6 +387,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public void revert() throws UnsupportedOperationException {
         if (refreshMode != RefreshMode.NEVER)
             refresh();
@@ -355,6 +398,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public void modifyItem(T item) {
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {
@@ -368,6 +412,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public void updateItem(T item) {
         checkState();
 
@@ -382,10 +427,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized boolean containsItem(K itemId) {
         return data.containsKey(itemId);
     }
 
+    @Override
     public void committed(Set<Entity> entities) {
         for (Entity newEntity : entities) {
             if (newEntity.equals(item))
@@ -437,7 +484,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
      * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
      */
     protected void loadData(Map<String, Object> params) {
-        if (!UserSessionProvider.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ))
+        if (!userSessionSource.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ))
             return;
 
         String tag = getLoggingTag("CDS");
@@ -518,10 +565,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public boolean isSuspended() {
         return suspended;
     }
 
+    @Override
     public void setSuspended(boolean suspended) {
         boolean wasSuspended = this.suspended;
         this.suspended = suspended;
@@ -531,22 +580,23 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public int getFirstResult() {
         return firstResult;
     }
 
+    @Override
     public void setFirstResult(int startPosition) {
         this.firstResult = startPosition;
     }
 
-
     protected void incrementQueryKey() {
-        queryKey = UserSessionProvider.getUserSession().getAttribute("_queryKey");
+        queryKey = userSessionSource.getUserSession().getAttribute("_queryKey");
         if (queryKey == null)
             queryKey = 1;
         else
             queryKey++;
-        UserSessionProvider.getUserSession().setAttribute("_queryKey", queryKey);
+        userSessionSource.getUserSession().setAttribute("_queryKey", queryKey);
     }
 
     @Override

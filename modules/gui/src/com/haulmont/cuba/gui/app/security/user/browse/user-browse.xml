@@ -40,10 +40,14 @@
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
-                <action id="copy" caption="msg://copy" icon="icons/copy.png"/>
+                <action id="copy" caption="msg://copy" icon="icons/copy.png" trackSelection="true" invoke="copy"/>
                 <action id="remove"/>
-                <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"/>
-                <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"/>
+                <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
+                        trackSelection="true" invoke="copySettings"/>
+                <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"
+                        trackSelection="true" invoke="changePassword"/>
+                <action id="changePasswAtLogon" caption="msg://changePasswAtLogon" icon="icons/change-pass-at-logon.png"
+                        trackSelection="true" invoke="changePasswordAtLogon"/>
                 <action id="excel"/>
             </actions>
             <buttonsPanel>
@@ -53,6 +57,7 @@
                 <button action="usersTable.remove"/>
                 <button action="usersTable.copySettings"/>
                 <button action="usersTable.changePassw"/>
+                <button action="usersTable.changePasswAtLogon"/>
                 <button action="usersTable.excel"/>
             </buttonsPanel>
             <rowsCount/>
@@ -63,6 +68,7 @@
                 <column id="group"/>
                 <column id="email"/>
                 <column id="active"/>
+                <column id="changePasswordAtNextLogon"/>
             </columns>
             <rows datasource="usersDs"/>
         </groupTable>

@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 18.05.2009 11:03:34
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -44,6 +39,9 @@ import java.util.*;
  * Emailer MBean implementation.
  * <p/>
  * Provides email functionality, allows to set some emailing parameters through JMX-console.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(EmailerAPI.NAME)
 public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {
@@ -81,10 +79,12 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         this.config = configuration.getConfig(EmailerConfig.class);
     }
 
+    @Override
     public void sendEmail(EmailInfo info) throws EmailException {
         sendEmail(info, true);
     }
 
+    @Override
     public void sendEmail(EmailInfo info, boolean sync) throws EmailException {
         if (sync) {
             sendEmailSync(info);
@@ -105,25 +105,28 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         }
     }
 
-    public void sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline) throws EmailException {
+    @Override
+    public void sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline) {
         prepareMessageBody(info);
         List<SendingMessage> sendingMessageList = splitEmail(info, attemptsCount, deadline);
         emailManager.addEmailsToQueue(sendingMessageList);
     }
 
-    public List<SendingMessage> sendMessagesAsync(EmailInfo info) throws EmailException {
+    @Override
+    public List<SendingMessage> sendMessagesAsync(EmailInfo info) {
         prepareMessageBody(info);
         List<SendingMessage> sendingMessageList = splitEmail(info);
         return emailManager.addEmailsToQueue(sendingMessageList);
     }
 
+    @Override
     public void scheduledSendEmail(SendingMessage sendingMessage) throws LoginException, EmailException {
         loginOnce();
         sendEmail(sendingMessage);
     }
 
     private List<SendingMessage> splitEmail(EmailInfo info, Integer attemptsCount, Date deadline) {
-        List<SendingMessage> sendingMessageList = new LinkedList<SendingMessage>();
+        List<SendingMessage> sendingMessageList = new LinkedList<>();
         String[] addrArr = info.getAddresses().split("[,;]");
         for (String addr : addrArr) {
             try {
@@ -134,7 +137,9 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                 } else {
                     fromEmail = info.getFrom();
                 }
-                SendingMessage sendingMessage = createSendingMessage(addr, fromEmail, info.getCaption(), info.getBody(), info.getAttachment(), attemptsCount, deadline);
+                SendingMessage sendingMessage = createSendingMessage(addr, fromEmail, info.getCaption(), info.getBody(),
+                        info.getAttachment(), attemptsCount, deadline);
+
                 sendingMessageList.add(sendingMessage);
             } catch (Exception e) {
                 log.error("Exception while creating SendingMessage:" + ExceptionUtils.getStackTrace(e));
@@ -147,13 +152,13 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         return splitEmail(info, null, null);
     }
 
+    @Override
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
             throws EmailException {
         sendEmail(addresses, caption, body, getFromAddress(), attachment);
     }
 
-    public void sendEmail(SendingMessage sendingMessage)
-            throws EmailException {
+    public void sendEmail(SendingMessage sendingMessage) {
         try {
             String addr = sendingMessage.getAddress().trim();
             String fromEmail;
@@ -167,22 +172,18 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             send(addr, message);
 
             updateSendingMessageStatus(sendingMessage, SendingStatus.SENT);
-        } catch (MessagingException e) {
-            log.warn("Unable to send email to '" + sendingMessage.getAddress() + "'", e);
-            updateSendingMessageStatus(sendingMessage, SendingStatus.QUEUE);
         } catch (Exception e) {
             log.warn("Unable to send email to '" + sendingMessage.getAddress() + "'", e);
             updateSendingMessageStatus(sendingMessage, SendingStatus.QUEUE);
         }
     }
 
-
     public void sendEmail(String addresses, String caption, String body, String from, EmailAttachment... attachment)
             throws EmailException {
         String[] addrArr = addresses.split("[,;]");
 
-        List<String> failedAddresses = new ArrayList<String>();
-        List<String> errorMessages = new ArrayList<String>();
+        List<String> failedAddresses = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
 
         for (String addr : addrArr) {
             SendingMessage sendingMessage = null;
@@ -199,12 +200,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                 send(addr, message);
 
                 updateSendingMessageStatus(sendingMessage, SendingStatus.SENT);
-            } catch (MessagingException e) {
-                log.warn("Unable to send email to '" + addr + "'", e);
-                failedAddresses.add(addr);
-                errorMessages.add(e.getMessage());
-                if (sendingMessage != null)
-                    updateSendingMessageStatus(sendingMessage, SendingStatus.NOTSENT);
             } catch (Exception e) {
                 log.warn("Unable to send email to '" + addr + "'", e);
                 failedAddresses.add(addr);
@@ -228,7 +223,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
             Transaction tx = persistence.createTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = persistence.getEntityManager();
                 StringBuilder queryStr = new StringBuilder("update sys$SendingMessage sm set sm.status = :status, sm.updateTs=:updateTs, sm.updatedBy = :updatedBy");
                 if (increaseAttemptsMade)
                     queryStr.append(", sm.attemptsMade = sm.attemptsMade + 1 ");
@@ -258,7 +253,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         message.setRecipient(Message.RecipientType.TO, internetAddress);
         mailSender.send(message);
         log.info("Email '" + message.getSubject() + "' to '" + addr + "' sent succesfully");
-
     }
 
     private MimeMessage createMessage(
@@ -322,11 +316,13 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         return msg;
     }
 
+    @Override
     public String getFromAddress() {
         String fromAddress = AppContext.getProperty(EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME);
         return fromAddress != null ? fromAddress : config.getFromAddress();
     }
 
+    @Override
     public void setFromAddress(String address) {
         if (address != null) {
             try {
@@ -340,6 +336,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         }
     }
 
+    @Override
     public String getSmtpHost() {
         String smtpHost = AppContext.getProperty(EMAIL_SMTP_HOST_PROPERTY_NAME);
         return smtpHost != null ? smtpHost : config.getSmtpHost();
@@ -355,6 +352,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         return sendAllToAdmin != null ? sendAllToAdmin : config.getSendAllToAdmin();
     }
 
+    @Override
     public String sendTestEmail(String addresses) {
         try {
             String att = "<html><body><h1>Test attachment</h1></body></html>";
@@ -375,22 +373,25 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             this.data = data;
         }
 
+        @Override
         public String getContentType() {
             return "application/octet-stream";
         }
 
+        @Override
         public InputStream getInputStream() throws IOException {
             return new ByteArrayInputStream(data);
         }
 
+        @Override
         public String getName() {
             return "ByteArray";
         }
 
+        @Override
         public OutputStream getOutputStream() throws IOException {
             return null;
         }
-
     }
 
     private SendingMessage storeMessage(String addr, String from, String caption, String body, EmailAttachment[] attachment, SendingStatus status) {
@@ -399,7 +400,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             sendingMessage.setStatus(status);
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.persist(sendingMessage);
             if (sendingMessage.getAttachments() != null && !sendingMessage.getAttachments().isEmpty()) {
                 for (SendingAttachment attach : sendingMessage.getAttachments())
@@ -415,12 +416,14 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         }
     }
 
-    private SendingMessage createSendingMessage(String addr, String from, String caption, String body, EmailAttachment[] attachment, Integer attemptsCount, Date deadline) {
+    private SendingMessage createSendingMessage(String addr, String from, String caption, String body,
+                                                EmailAttachment[] attachment, Integer attemptsCount, Date deadline) {
+
         SendingMessage sendingMessage = new SendingMessage();
         StringBuilder attachmentsName = new StringBuilder();
         List<SendingAttachment> sendingAttachments = null;
         if (attachment != null) {
-            sendingAttachments = new ArrayList<SendingAttachment>(attachment.length);
+            sendingAttachments = new ArrayList<>(attachment.length);
             for (EmailAttachment ea : attachment) {
                 if (ea != null) {
                     attachmentsName.append(ea.getName()).append(";");
@@ -447,12 +450,10 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         return sendingMessage;
     }
 
-
     @Override
     protected Credentials getCredentialsForLogin() {
         return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"), AppContext.getProperty(EmailerAPI.NAME + ".password"));
     }
-
 
     private EmailInfo getEmailInfo(SendingMessage sendingMessage) {
         EmailAttachment[] attachments = getEmailAttachments(sendingMessage);
@@ -470,7 +471,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     private EmailAttachment[] getEmailAttachments(SendingMessage sendingMessage) {
         EmailAttachment[] res;
-        List<EmailAttachment> emailAttachmentList = new LinkedList<EmailAttachment>();
+        List<EmailAttachment> emailAttachmentList = new LinkedList<>();
         List<SendingAttachment> sendingAttachments = sendingMessage.getAttachments();
         if (sendingAttachments != null && sendingAttachments.size() > 0) {
             for (SendingAttachment attachment : sendingAttachments)
@@ -484,5 +485,4 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     private EmailAttachment createEmailAttachment(SendingAttachment attachment) {
         return new EmailAttachment(attachment.getContent(), attachment.getName(), attachment.getContentId());
     }
-
 }

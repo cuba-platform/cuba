@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.ScriptValidator;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
+import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -88,8 +89,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         component.setId(id);
     }
 
-    protected void loadStyleName(Component component, Element element)
-    {
+    protected void loadStyleName(Component component, Element element) {
         final String styleName = element.attributeValue("stylename");
         if (!StringUtils.isEmpty(styleName)) {
             component.setStyleName(styleName);
@@ -143,15 +143,14 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadVisible(Component component, Element element) {
         if (component instanceof DatasourceComponent
-                && ((DatasourceComponent) component).getDatasource() != null)
-        {
+                && ((DatasourceComponent) component).getDatasource() != null) {
             MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
             MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
 
             UserSession userSession = userSessionSource.getUserSession();
             if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ)
-                    || ( (metaProperty != null) &&
-                         !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))) {
+                    || ((metaProperty != null) &&
+                    !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))) {
                 component.setVisible(false);
                 return;
             }
@@ -265,9 +264,9 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     /**
-     * @deprecated Do not use!
      * @param expression
      * @return
+     * @deprecated Do not use!
      */
     @Deprecated
     protected Boolean evaluateBoolean(String expression) {
@@ -375,14 +374,27 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (id == null)
             throw new IllegalStateException("No action id provided");
 
-        return new DeclarativeAction(
-                id,
-                loadResourceString(element.attributeValue("caption")),
-                loadResourceString(element.attributeValue("icon")),
-                element.attributeValue("enable"),
-                element.attributeValue("visible"),
-                element.attributeValue("invoke"),
-                actionsHolder
-        );
+        String trackSelection = element.attributeValue("trackSelection");
+        if (isBoolean(trackSelection) && Boolean.parseBoolean(trackSelection)) {
+            return new DeclarativeTrackingAction(
+                    id,
+                    loadResourceString(element.attributeValue("caption")),
+                    loadResourceString(element.attributeValue("icon")),
+                    element.attributeValue("enable"),
+                    element.attributeValue("visible"),
+                    element.attributeValue("invoke"),
+                    actionsHolder
+            );
+        } else {
+            return new DeclarativeAction(
+                    id,
+                    loadResourceString(element.attributeValue("caption")),
+                    loadResourceString(element.attributeValue("icon")),
+                    element.attributeValue("enable"),
+                    element.attributeValue("visible"),
+                    element.attributeValue("invoke"),
+                    actionsHolder
+            );
+        }
     }
 }

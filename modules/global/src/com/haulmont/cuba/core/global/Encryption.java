@@ -18,6 +18,8 @@ public interface Encryption {
 
     String NAME = "cuba_Encryption";
 
+    String generateRandomPassword();
+
     /**
      * Hash string
      *

@@ -15,6 +15,12 @@
     <screen id="sec$User.changePassw"
             template="/com/haulmont/cuba/gui/app/security/user/changepassw/user-changepassw.xml"/>
 
+    <screen id="sec$User.resetPasswords"
+            template="/com/haulmont/cuba/gui/app/security/user/resetpasswords/reset-passwords.xml"/>
+
+    <screen id="sec$User.newPasswords"
+            template="/com/haulmont/cuba/gui/app/security/user/resetpasswords/new-passwords-list.xml"/>
+
     <screen id="sec$User.copySettings"
             template="/com/haulmont/cuba/gui/app/security/user/copysettings/copy-settings.xml"/>
 

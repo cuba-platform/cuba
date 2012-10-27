@@ -17,6 +17,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * @author krivopustov
@@ -37,6 +38,26 @@ public class UserChangePassw extends AbstractEditor {
 
     @Inject
     protected Encryption encryption;
+
+    protected boolean cancelEnabled = true;
+
+    @Override
+    protected void postInit() {
+        super.postInit();
+
+        if (!cancelEnabled)
+            getComponent("windowActions.windowClose").setVisible(false);
+    }
+
+    @Override
+    public void init(Map<String, Object> params) {
+        super.init(params);
+
+        Boolean cancelEnabled = (Boolean) params.get("cancelEnabled");
+        if (Boolean.FALSE.equals(cancelEnabled)) {
+            this.cancelEnabled = false;
+        }
+    }
 
     @Override
     public void commitAndClose() {
@@ -68,5 +89,6 @@ public class UserChangePassw extends AbstractEditor {
 
         userDs.getItem().setPassword(hDesc.getHash());
         userDs.getItem().setSalt(hDesc.getSalt());
+        userDs.getItem().setChangePasswordAtNextLogon(false);
     }
 }

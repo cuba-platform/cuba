@@ -23,11 +23,9 @@ import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * <p>$Id$</p>
- *
  * @author ovchinnikov
+ * @version $Id$
  */
-
 @ManagedBean(EmailManagerAPI.NAME)
 public class EmailManager extends ManagementBean implements EmailManagerMBean,EmailManagerAPI {
 
@@ -59,9 +57,11 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
 
     @Override
     protected Credentials getCredentialsForLogin() {
-        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"), AppContext.getProperty(EmailerAPI.NAME + ".password"));
+        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"),
+                AppContext.getProperty(EmailerAPI.NAME + ".password"));
     }
 
+    @Override
     public void queueEmailsToSend() {
         try {
             int delay = getDelayCallCount();
@@ -72,11 +72,11 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
                 List<SendingMessage> updatedMessages = updateSendingMessagesStatus(loadedMessages);
 
                 if (messageQueue == null)
-                    messageQueue = new LinkedHashSet<SendingMessage>();
+                    messageQueue = new LinkedHashSet<>();
                 messageQueue.addAll(updatedMessages);
 
-                List<SendingMessage> processedMessages = new ArrayList<SendingMessage>();
-                List<UUID> notSentMessageIds = new ArrayList<UUID>();
+                List<SendingMessage> processedMessages = new ArrayList<>();
+                List<UUID> notSentMessageIds = new ArrayList<>();
                 for (SendingMessage msg : messageQueue) {
                     if (needToSetStatusNotSent(msg))
                         notSentMessageIds.add(msg.getId());
@@ -102,7 +102,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
                 .append("\t where sm.id in (:list)");
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.createQuery(updateQueryStr.toString())
                     .setParameter("status", status.getId())
                     .setParameter("list", messages)
@@ -140,7 +140,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
     private List<SendingMessage> loadEmailsToSend() {
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             View view = new View(SendingMessage.class, true)
                     .addProperty("attachments", new View(SendingAttachment.class, true)
                             .addProperty("content")
@@ -176,10 +176,10 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         if (messageList == null || messageList.isEmpty())
             return Collections.emptyList();
 
-        List<SendingMessage> messagesToRemove = new ArrayList<SendingMessage>();
+        List<SendingMessage> messagesToRemove = new ArrayList<>();
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             for (SendingMessage msg : messageList) {
                 int recordForUpdateCount = 0;
@@ -206,10 +206,11 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         return res;
     }
 
+    @Override
     public List<SendingMessage> addEmailsToQueue(List<SendingMessage> sendingMessageList) {
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             for (SendingMessage message : sendingMessageList) {
                 em.persist(message);
                 if (message.getAttachments() != null && !message.getAttachments().isEmpty()) {
@@ -231,7 +232,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
 
             Transaction tx = persistence.createTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = persistence.getEntityManager();
                 StringBuilder queryStr = new StringBuilder("update sys$SendingMessage sm set sm.status = :status, sm.updateTs=:updateTs, sm.updatedBy = :updatedBy, sm.version = sm.version + 1 ");
                 if (increaseAttemptsMade)
                     queryStr.append(", sm.attemptsMade = sm.attemptsMade + 1 ");
@@ -279,10 +280,12 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         return delayCallCount;
     }
 
+    @Override
     public String getDelayCallCountAsString() {
         return String.valueOf(getDelayCallCount());
     }
 
+    @Override
     public String getMessageQueueCapacityAsString() {
         return String.valueOf(getMessageQueueCapacity());
     }
