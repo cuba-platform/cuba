@@ -77,7 +77,10 @@ public class DesktopToolTipManager extends MouseAdapter {
                 }
                 event = (MouseEvent) e;
                 if (event.getID() == MouseEvent.MOUSE_PRESSED) {
-                    if (!isPointInComponent(event.getLocationOnScreen(), toolTipWindow))
+                    if (event.getComponent() != null && event.getComponent().isShowing()) {
+                        if (!isPointInComponent(event.getLocationOnScreen(), toolTipWindow))
+                            hideTooltip();
+                    } else
                         hideTooltip();
                 }
             }
@@ -85,6 +88,9 @@ public class DesktopToolTipManager extends MouseAdapter {
     }
 
     private boolean isPointInComponent(Point point, JComponent component) {
+        if (!component.isShowing())
+            return false;
+
         Point componentLocation = component.getLocationOnScreen();
         Rectangle bounds = component.getBounds();
         return (((point.x >= componentLocation.x) && (point.x <= componentLocation.x + bounds.width)) &&
@@ -137,18 +143,8 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
     }
 
-    private boolean isContainerVisible(JComponent component) {
-        Container c = component.getParent();
-        while (c != null)
-            if (!c.isVisible())
-                return false;
-            else
-                c = c.getParent();
-        return true;
-    }
-
     private void showTooltip(JComponent field, String text) {
-        if (!field.isVisible() || !isContainerVisible(field))
+        if (!field.isShowing())
             return;
 
         Point fieldLocation = field.getLocationOnScreen();
