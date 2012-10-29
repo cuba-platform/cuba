@@ -8,8 +8,9 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
@@ -37,9 +38,8 @@ import java.util.List;
 /**
  * Dialog to select a new generic filter condition.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class AddConditionDlg extends JDialog {
 
@@ -58,7 +58,9 @@ public class AddConditionDlg extends JDialog {
         this.selectionHandler = selectionHandler;
         this.topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(parent);
 
-        setTitle(MessageProvider.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
+        Messages messages = AppBeans.get(Messages.NAME);
+
+        setTitle(messages.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
         setSize(400, 300);
         setResizable(false);
         setLocationRelativeTo(topLevelFrame);
@@ -90,11 +92,11 @@ public class AddConditionDlg extends JDialog {
         tree.setExpandsSelectedPaths(true);
         add(new JScrollPane(tree), "wrap, spanx 2, grow");
 
-        okBtn = new JButton(MessageProvider.getMessage(getClass(), "actions.Ok"));
+        okBtn = new JButton(messages.getMessage(getClass(), "actions.Ok"));
         add(okBtn, "align right");
         okBtn.addActionListener(commitAction);
 
-        JButton cancelBtn = new JButton(MessageProvider.getMessage(getClass(), "actions.Cancel"));
+        JButton cancelBtn = new JButton(messages.getMessage(getClass(), "actions.Cancel"));
         add(cancelBtn);
         cancelBtn.addActionListener(cancelAction);
 
@@ -106,8 +108,13 @@ public class AddConditionDlg extends JDialog {
         tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-                Object pathComponent = e.getNewLeadSelectionPath().getLastPathComponent();
-                okBtn.setEnabled(pathComponent instanceof ModelItem && ((ModelItem) pathComponent).getDescriptor() != null);
+                TreePath newLeadSelectionPath = e.getNewLeadSelectionPath();
+                if (newLeadSelectionPath != null) {
+                    Object pathComponent = newLeadSelectionPath.getLastPathComponent();
+                    okBtn.setEnabled(pathComponent instanceof ModelItem && ((ModelItem) pathComponent).getDescriptor() != null);
+                } else {
+                    okBtn.setEnabled(false);
+                }
             }
         });
 
@@ -160,7 +167,7 @@ public class AddConditionDlg extends JDialog {
         }
 
         private void initRoot() {
-            rootModelItems = new ArrayList<ModelItem>();
+            rootModelItems = new ArrayList<>();
 
             rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorBuilder));
 
@@ -177,7 +184,7 @@ public class AddConditionDlg extends JDialog {
                 rootModelItems.add(new RootRuntimePropertiesModelItem(descriptorBuilder));
             }
 
-            if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+            if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
                 rootModelItems.add(new NewCustomConditionModelItem(descriptorBuilder));
             }
 
