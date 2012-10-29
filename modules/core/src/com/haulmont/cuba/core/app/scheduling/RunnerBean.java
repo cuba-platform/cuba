@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
+import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -31,10 +32,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -182,8 +180,17 @@ public class RunnerBean implements Runner {
                 log.trace(task + ": invoking bean");
                 Object bean = AppBeans.get(task.getBeanName());
                 try {
-                    Method method = bean.getClass().getMethod(task.getMethodName(), new Class[0]);
-                    return method.invoke(bean);
+                    List<MethodParameterInfo> methodParams = task.getMethodParameters();
+                    Class[] paramTypes = new Class[methodParams.size()];
+                    Object[] paramValues = new Object[methodParams.size()];
+
+                    for (int i = 0; i < methodParams.size(); i++) {
+                        paramTypes[i] = methodParams.get(i).getType();
+                        paramValues[i] = methodParams.get(i).getValue();
+                    }
+
+                    Method method = bean.getClass().getMethod(task.getMethodName(), paramTypes);
+                    return method.invoke(bean, paramValues);
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }

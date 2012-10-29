@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.app.scheduled.MethodInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public interface SchedulingService {
 
     /**
      * Return information about beans and their methods that can be invoked by scheduled tasks.
-     * @return  map of bean names to lists of their method names
+     * @return  map of bean names to lists of their methods
      */
-    Map<String, List<String>> getAvailableBeans();
+    Map<String, List<MethodInfo>> getAvailableBeans();
 
     /**
      * Return a list of user login names that can be used by scheduled tasks.

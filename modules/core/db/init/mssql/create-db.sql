@@ -104,6 +104,7 @@ create table SYS_SCHEDULED_TASK (
     SCRIPT_NAME varchar(500),
     BEAN_NAME varchar(50),
     METHOD_NAME varchar(50),
+    METHOD_PARAMS varchar(1000),
     USER_NAME varchar(50),
     USER_PASSWORD varchar(50),
     IS_SINGLETON tinyint,
@@ -122,7 +123,7 @@ create table SYS_SCHEDULED_TASK (
     primary key (ID)
 )^
 
-create unique index IDX_SYS_SCHEDULED_TASK_UNIQ_BEAN_METHOD on SYS_SCHEDULED_TASK (BEAN_NAME, METHOD_NAME, DELETE_TS)^
+create unique index IDX_SYS_SCHEDULED_TASK_UNIQ_BEAN_METHOD on SYS_SCHEDULED_TASK (BEAN_NAME, METHOD_NAME, METHOD_PARAMS, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 

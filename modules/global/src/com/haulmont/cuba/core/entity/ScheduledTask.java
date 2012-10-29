@@ -6,15 +6,22 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import org.apache.commons.lang.BooleanUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Entity that stores an information about a scheduled task.
@@ -73,7 +80,7 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     @Column(name = "IS_ACTIVE")
     protected Boolean active;
 
-    @Column(name = "PERIOD")
+    @Column(name = "PERIOD", nullable = false)
     protected Integer period;
 
     @Column(name = "TIMEOUT")
@@ -102,6 +109,9 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     @Column(name = "LAST_START_SERVER")
     protected String lastStartServer;
+
+    @Column(name = "METHOD_PARAMS")
+    protected String methodParamsXml;
 
     public Date getUpdateTs() {
         return updateTs;
@@ -293,6 +303,39 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     public void setScriptName(String scriptName) {
         this.scriptName = scriptName;
+    }
+
+    public String getMethodParamsXml() {
+        return methodParamsXml;
+    }
+
+    public void setMethodParamsXml(String methodParamsXml) {
+        this.methodParamsXml = methodParamsXml;
+    }
+
+    public List<MethodParameterInfo> getMethodParameters() {
+        ArrayList<MethodParameterInfo> result = new ArrayList<MethodParameterInfo>();
+        Document doc = Dom4j.readDocument(getMethodParamsXml());
+        List<Element> elements = Dom4j.elements(doc.getRootElement(), "param");
+        for (Element paramEl : elements) {
+            Class<?> type = ReflectionHelper.getClass(paramEl.attributeValue("type"));
+            String name = paramEl.attributeValue("name");
+            Object value = paramEl.getText();
+            result.add(new MethodParameterInfo(type, name, value));
+        }
+        return result;
+    }
+
+    public void updateMethodParameters(List<MethodParameterInfo> params) {
+        Document doc = DocumentHelper.createDocument();
+        Element paramsEl = doc.addElement("params");
+        for (MethodParameterInfo param : params) {
+            Element paramEl = paramsEl.addElement("param");
+            paramEl.addAttribute("type", param.getType().getName());
+            paramEl.addAttribute("name", param.getName());
+            paramEl.setText(param.getValue() != null ? param.getValue().toString() : "");
+        }
+        setMethodParamsXml(Dom4j.writeDocument(doc, true));
     }
 
     @MetaProperty

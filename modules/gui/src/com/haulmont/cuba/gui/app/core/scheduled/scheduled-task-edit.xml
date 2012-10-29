@@ -4,7 +4,7 @@
   ~ Use is subject to license terms.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/3.1/window.xsd"
         class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledTaskEditor"
         messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
         datasource="taskDs"
@@ -20,12 +20,15 @@
 
     <layout expand="windowActions">
         <grid spacing="true">
-            <columns count="2"/>
+            <columns count="3"/>
             <rows>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.definedBy"/>
                     <lookupField id="definedByField" datasource="taskDs" property="definedBy" width="300px"
                                  required="true"/>
+                    <groupBox id="methodParamsBox" rowspan="10" width="400px">
+                        <caption label="msg://methodParams"/>
+                    </groupBox>
                 </row>
                 <row>
                     <label id="beanNameLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.beanName"/>
@@ -33,8 +36,9 @@
                                  required="true"/>
                 </row>
                 <row>
-                    <label id="methodNameLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.methodName"/>
-                    <lookupField id="methodNameField" datasource="taskDs" property="methodName" width="300px"
+                    <label id="methodNameLabel"
+                           value="msg://com.haulmont.cuba.core.entity/ScheduledTask.methodName"/>
+                    <lookupField id="methodNameField" width="300px" captionProperty="methodSignature"
                                  required="true"/>
                 </row>
                 <row>
@@ -43,7 +47,8 @@
                                required="true"/>
                 </row>
                 <row>
-                    <label id="scriptNameLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.scriptName"/>
+                    <label id="scriptNameLabel"
+                           value="msg://com.haulmont.cuba.core.entity/ScheduledTask.scriptName"/>
                     <textField id="scriptNameField" datasource="taskDs" property="scriptName" width="300px"
                                required="true"/>
                 </row>
@@ -78,7 +83,7 @@
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.permittedServers"/>
                     <textField id="permittedServersField" datasource="taskDs" property="permittedServers"
-                               width="500px"/>
+                               width="500px" colspan="1"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.logStart"/>

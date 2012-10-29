@@ -6,13 +6,12 @@
 
 package com.haulmont.cuba.core.app.scheduling;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.SchedulingService;
+import com.haulmont.cuba.core.app.scheduled.MethodInfo;
+import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -20,6 +19,8 @@ import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.aop.TargetClassAware;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -57,56 +58,56 @@ public class SchedulingServiceBean implements SchedulingService {
     }
 
     @Override
-    public Map<String, List<String>> getAvailableBeans() {
-        Map<String, List<String>> result = new TreeMap<String, List<String>>();
+    public Map<String, List<MethodInfo>> getAvailableBeans() {
+        Map<String, List<MethodInfo>> result = new TreeMap<String, List<MethodInfo>>();
 
         String[] beanNames = AppContext.getApplicationContext().getBeanDefinitionNames();
         for (String name : beanNames) {
             if (AppContext.getApplicationContext().isSingleton(name)
-                    && name.contains("_") && !name.startsWith("base_") && !name.endsWith("Service"))
-            {
-                List<String> methodNames = getMethodNames(name);
-                if (!methodNames.isEmpty()) {
-                    result.put(name, methodNames);
-                }
+                    && name.contains("_") && !name.startsWith("base_") && !name.endsWith("Service")) {
+                List<MethodInfo> availableMethods = getAvailableMethods(name);
+                if (!availableMethods.isEmpty())
+                    result.put(name, availableMethods);
             }
         }
 
         return result;
     }
 
-    protected List<String> getMethodNames(String beanName) {
-        List<String> methodNames = new ArrayList<String>();
-        try {
-            Object bean = AppBeans.get(beanName);
+    protected List<MethodInfo> getAvailableMethods(String beanName) {
+        ArrayList<MethodInfo> methods = new ArrayList<MethodInfo>();
+        Object bean = AppContext.getBean(beanName);
 
+        try {
             List<Class> classes = ClassUtils.getAllInterfaces(bean.getClass());
             for (Class aClass : classes) {
                 if (aClass.getName().startsWith("org.springframework."))
                     continue;
 
+                Class<?> targetClass = bean instanceof TargetClassAware ? ((TargetClassAware) bean).getTargetClass() : aClass;
                 for (Method method : aClass.getMethods()) {
-                    if (method.getParameterTypes().length == 0) {
-                        if (!methodNames.contains(method.getName()))
-                            methodNames.add(method.getName());
+                    if (isMethodAvailable(method)) {
+                        Method targetClassMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
+                        List<MethodParameterInfo> methodParameters = getMethodParameters(targetClassMethod);
+                        MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
+                        methods.add(methodInfo);
                     }
                 }
-            }
 
-            if (methodNames.isEmpty()) {
-                for (Method method : bean.getClass().getMethods()) {
-                    if (!method.getDeclaringClass().equals(Object.class)
-                            && method.getParameterTypes().length == 0) {
-                        if (!methodNames.contains(method.getName()))
-                            methodNames.add(method.getName());
+                if (methods.isEmpty()) {
+                    for (Method method : bean.getClass().getMethods()) {
+                        if (!method.getDeclaringClass().equals(Object.class) && isMethodAvailable(method)) {
+                            List<MethodParameterInfo> methodParameters = getMethodParameters(method);
+                            MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
+                            methods.add(methodInfo);
+                        }
                     }
                 }
             }
         } catch (Throwable t) {
             log.debug(t.getMessage());
         }
-        Collections.sort(methodNames);
-        return methodNames;
+        return methods;
     }
 
     @Override
@@ -148,6 +149,32 @@ public class SchedulingServiceBean implements SchedulingService {
         } finally {
             tx.end();
         }
+    }
+
+    private boolean isMethodAvailable(Method method) {
+        for (Class<?> aClass : method.getParameterTypes()) {
+            if (!aClass.equals(String.class))
+                return false;
+        }
+        return true;
+    }
+
+    private List<MethodParameterInfo> getMethodParameters(Method method) {
+        ArrayList<MethodParameterInfo> params = new ArrayList<MethodParameterInfo>();
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+        String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
+
+        if (parameterTypes != null) {
+            for (int i = 0; i < parameterTypes.length; i++) {
+                String parameterName = parameterNames != null ? parameterNames[i] : "arg" + i;
+                MethodParameterInfo parameterInfo = new MethodParameterInfo(parameterTypes[i], parameterName, null);
+                params.add(parameterInfo);
+            }
+        }
+        return params;
     }
 
     public static class SetSchedulingActiveMsg implements Serializable {
