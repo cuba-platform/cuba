@@ -20,6 +20,7 @@
                     <properties include=".*"/>
                 </filter>
                 <table id="table" width="100%">
+                    <rowsCount/>
                     <columns>
                         <column id="address"/>
                         <column id="from"/>
