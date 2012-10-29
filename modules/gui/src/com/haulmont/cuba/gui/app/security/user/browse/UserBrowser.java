@@ -120,11 +120,21 @@ public class UserBrowser extends AbstractLookup {
     @SuppressWarnings("unused")
     public void changePassword() {
         if (!usersTable.getSelected().isEmpty()) {
-            openEditor(
+            final Editor changePasswordDialog = openEditor(
                     "sec$User.changePassw",
                     usersTable.getSelected().iterator().next(),
                     WindowManager.OpenType.DIALOG
             );
+
+            changePasswordDialog.addListener(new CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    if (COMMIT_ACTION_ID.equals(actionId)) {
+                        User item = (User) changePasswordDialog.getItem();
+                        usersDs.updateItem(item);
+                    }
+                }
+            });
         }
     }
 

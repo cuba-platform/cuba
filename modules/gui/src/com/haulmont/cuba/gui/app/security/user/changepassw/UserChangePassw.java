@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * @author krivopustov
- * @version $id$
+ * @version $Id$
  */
 public class UserChangePassw extends AbstractEditor {
     @Inject
