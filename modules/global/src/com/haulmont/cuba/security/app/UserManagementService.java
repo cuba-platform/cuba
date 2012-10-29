@@ -49,9 +49,16 @@ public interface UserManagementService {
     /**
      * Change passwords at logon for specified users
      *
-     * @param userIds User ids
+     * @param userIds          User ids
      * @param generatePassword Generate new passwords
      * @return Map with userId and new password
      */
     Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds, boolean generatePassword);
+
+    /**
+     * @param userId          User id
+     * @param newPasswordHash Plain hash of new password
+     * @return True if new and old password equals
+     */
+    boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash);
 }

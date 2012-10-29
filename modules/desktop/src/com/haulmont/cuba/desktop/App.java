@@ -21,10 +21,10 @@ import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
@@ -502,11 +502,21 @@ public class App implements ConnectionListener {
             // Change password on logon
         if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
             mainFrame.deactivate("");
-            DesktopWindowManager wm = mainFrame.getWindowManager();
+            final DesktopWindowManager wm = mainFrame.getWindowManager();
+            for (Window window : wm.getOpenWindows())
+                window.setEnabled(false);
+
             WindowInfo changePasswordDialog = AppBeans.get(WindowConfig.class).getWindowInfo("sec$User.changePassw");
             wm.getDialogParams().setCloseable(false);
             Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object)Boolean.FALSE);
-            wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
+            Window changePasswordWindow = wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
+            changePasswordWindow.addListener(new Window.CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    for (Window window : wm.getOpenWindows())
+                        window.setEnabled(true);
+                }
+            });
         }
     }
 

@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +40,9 @@ public class UserChangePassw extends AbstractEditor {
     @Inject
     protected Encryption encryption;
 
+    @Inject
+    protected UserManagementService userManagementService;
+
     protected boolean cancelEnabled = true;
 
     @Override
@@ -65,6 +69,10 @@ public class UserChangePassw extends AbstractEditor {
         String confPassw = confirmPasswField.getValue();
         if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
             showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
+        } else if (userManagementService.checkEqualsOfNewAndOldPassword(
+                userDs.getItem().getId(), encryption.getPlainHash(passw))) {
+            // old password equals to new password
+            showNotification(getMessage("oldPassword"), NotificationType.WARNING);
         } else if (ObjectUtils.equals(passw, confPassw)) {
             ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
             if (passwordPolicyConfig.getPasswordPolicyEnabled()) {

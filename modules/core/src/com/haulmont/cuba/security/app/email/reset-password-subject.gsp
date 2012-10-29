@@ -1,1 +1,1 @@
-Password reset for user ${user.login}
+[CUBA Application] Password reset

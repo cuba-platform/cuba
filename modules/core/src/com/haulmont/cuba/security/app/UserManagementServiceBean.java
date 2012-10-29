@@ -187,6 +187,34 @@ public class UserManagementServiceBean implements UserManagementService {
         return userPasswords;
     }
 
+    @Override
+    public boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash) {
+        checkNotNull(userId, "Null userId");
+        checkNotNull(newPasswordHash, "Null new password hash");
+
+        String salt;
+        String oldHash;
+
+        Transaction tx = persistence.getTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            em.setView(metadata.getViewRepository().getView(User.class, RESET_PASSWORD_VIEW));
+
+            User user = em.find(User.class, userId);
+            if (user == null)
+                throw new RuntimeException("Unable to find user with id: " + userId);
+
+            oldHash = user.getPassword();
+            salt = user.getSalt();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        return StringUtils.equals(encryption.getHash(newPasswordHash, salt), oldHash);
+    }
+
     private EmailTemplate getResetPasswordTemplate(User user,
                                                    SimpleTemplateEngine templateEngine,
                                                    String resetPasswordSubjectTemplate,

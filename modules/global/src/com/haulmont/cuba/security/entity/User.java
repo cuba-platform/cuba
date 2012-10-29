@@ -148,6 +148,7 @@ public class User extends StandardEntity {
         this.userRoles = userRoles;
     }
 
+    @Override
     public String toString() {
         return login;
     }
@@ -238,7 +239,7 @@ public class User extends StandardEntity {
             pattern = "{1} [{0}]";
         }
         MessageFormat fmt = new MessageFormat(pattern);
-        return fmt.format(new Object[]{login, name});
+        return StringUtils.trimToEmpty(fmt.format(new Object[]{login, name}));
     }
 
     public String getSalt() {

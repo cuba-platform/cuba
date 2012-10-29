@@ -67,27 +67,34 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
             int delay = getDelayCallCount();
             if (callCount >= delay) {
                 log.debug("Queueing Emails");
+
                 loginOnce();
-                List<SendingMessage> loadedMessages = loadEmailsToSend();
-                List<SendingMessage> updatedMessages = updateSendingMessagesStatus(loadedMessages);
+                try {
+                    List<SendingMessage> loadedMessages = loadEmailsToSend();
+                    List<SendingMessage> updatedMessages = updateSendingMessagesStatus(loadedMessages);
 
-                if (messageQueue == null)
-                    messageQueue = new LinkedHashSet<>();
-                messageQueue.addAll(updatedMessages);
+                    if (messageQueue == null)
+                        messageQueue = new LinkedHashSet<>();
+                    messageQueue.addAll(updatedMessages);
 
-                List<SendingMessage> processedMessages = new ArrayList<>();
-                List<UUID> notSentMessageIds = new ArrayList<>();
-                for (SendingMessage msg : messageQueue) {
-                    if (needToSetStatusNotSent(msg))
-                        notSentMessageIds.add(msg.getId());
-                    else {
-                        sendAsync(msg);
+                    List<SendingMessage> processedMessages = new ArrayList<>();
+                    List<UUID> notSentMessageIds = new ArrayList<>();
+                    for (SendingMessage msg : messageQueue) {
+                        if (needToSetStatusNotSent(msg))
+                            notSentMessageIds.add(msg.getId());
+                        else {
+                            sendAsync(msg);
+                        }
+                        processedMessages.add(msg);
                     }
-                    processedMessages.add(msg);
+                    messageQueue.removeAll(processedMessages);
+                    if (!notSentMessageIds.isEmpty())
+                        updateSendingMessagesStatus(notSentMessageIds, SendingStatus.NOTSENT);
+
+                } finally {
+                    AppContext.setSecurityContext(null);
                 }
-                messageQueue.removeAll(processedMessages);
-                if (!notSentMessageIds.isEmpty())
-                    updateSendingMessagesStatus(notSentMessageIds, SendingStatus.NOTSENT);
+
             } else {
                 callCount++;
             }

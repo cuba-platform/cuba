@@ -1,0 +1,1 @@
+[CUBA Application] Сброс пароля

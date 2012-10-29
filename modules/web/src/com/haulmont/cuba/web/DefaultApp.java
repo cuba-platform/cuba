@@ -194,11 +194,23 @@ public class DefaultApp extends App implements ConnectionListener {
             final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
             // Change password on logon
             if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
-                WebWindowManager wm = getWindowManager();
+                final WebWindowManager wm = getWindowManager();
+                for (com.haulmont.cuba.gui.components.Window window : wm.getOpenWindows())
+                    window.setEnabled(false);
+
                 WindowInfo changePasswordDialog = AppBeans.get(WindowConfig.class).getWindowInfo("sec$User.changePassw");
                 wm.getDialogParams().setCloseable(false);
                 Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
-                wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
+                com.haulmont.cuba.gui.components.Window changePasswordWindow = wm.openEditor(changePasswordDialog, user,
+                        WindowManager.OpenType.DIALOG, params);
+
+                changePasswordWindow.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        for (com.haulmont.cuba.gui.components.Window window : wm.getOpenWindows())
+                            window.setEnabled(true);
+                    }
+                });
             }
         }
     }
