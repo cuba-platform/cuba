@@ -6,11 +6,10 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -119,7 +118,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected String lookupScreen;
         protected WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
         protected Map<String, Object> lookupScreenParams;
-        protected KeyCombination keyCombination = KeyCombination.create("CTRL-ALT-L");
 
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -180,15 +178,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         @Override
         public KeyCombination getKeyCombination() {
-            return keyCombination;
+            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            return KeyCombination.create(clientConfig.getPickerLookupShortcut());
         }
     }
 
     public static class ClearAction extends StandardAction {
 
         public static final String NAME = ActionType.CLEAR.getId();
-
-        protected KeyCombination keyCombination = KeyCombination.create("CTRL-ALT-C");
 
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -205,13 +202,12 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         @Override
         public KeyCombination getKeyCombination() {
-            return keyCombination;
+            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            return KeyCombination.create(clientConfig.getPickerClearShortcut());
         }
     }
 
     public static class OpenAction extends StandardAction {
-
-        protected KeyCombination keyCombination = KeyCombination.create("CTRL-ALT-O");
 
         public static final String NAME = ActionType.OPEN.getId();
 
@@ -356,7 +352,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         @Override
         public KeyCombination getKeyCombination() {
-            return keyCombination;
+            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            return KeyCombination.create(clientConfig.getPickerOpenShortcut());
         }
     }
 }

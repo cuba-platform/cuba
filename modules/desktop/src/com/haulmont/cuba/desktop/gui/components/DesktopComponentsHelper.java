@@ -138,20 +138,29 @@ public class DesktopComponentsHelper {
         int modifiersMask = 0;
         if (modifiers != null && modifiers.length > 0) {
             for (ShortcutAction.Modifier modifier : modifiers) {
-                switch (modifier) {
-                    case CTRL:
-                        modifiersMask = modifiersMask | InputEvent.CTRL_DOWN_MASK;
-                        break;
-                    case ALT:
-                        modifiersMask = modifiersMask | InputEvent.ALT_DOWN_MASK;
-                        break;
-                    case SHIFT:
-                        modifiersMask = modifiersMask | InputEvent.SHIFT_DOWN_MASK;
-                        break;
-                }
+                modifiersMask = modifiersMask | convertModifier(modifier);
             }
         }
         return KeyStroke.getKeyStroke(combination.getKey().getVirtualKey(), modifiersMask, false);
+    }
+
+    /**
+     * Convert {@link ShortcutAction.Modifier} to {@link InputEvent} modifier constraint.
+     *
+     * @param modifier modifier to convert
+     * @return {@link InputEvent} modifier constraint
+     */
+    public static int convertModifier(ShortcutAction.Modifier modifier) {
+        switch (modifier) {
+            case CTRL:
+                return InputEvent.CTRL_DOWN_MASK;
+            case ALT:
+                return InputEvent.ALT_DOWN_MASK;
+            case SHIFT:
+                return InputEvent.SHIFT_DOWN_MASK;
+            default:
+                throw new IllegalArgumentException("Modifier " + modifier.name() + " not recognized");
+        }
     }
 
     /**

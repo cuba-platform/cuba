@@ -6,9 +6,13 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -18,7 +22,7 @@ import java.util.*;
  */
 public class WebPickerFieldActionHandler implements Action.Handler {
 
-    private static final int[] modifiers = {ShortcutAction.ModifierKey.CTRL, ShortcutAction.ModifierKey.ALT};
+    private final int[] modifiers;
 
     private Map<ShortcutAction, com.haulmont.cuba.gui.components.Action> actionsMap = new HashMap<>();
 
@@ -30,6 +34,12 @@ public class WebPickerFieldActionHandler implements Action.Handler {
 
     public WebPickerFieldActionHandler(PickerField component) {
         this.component = component;
+        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
+        modifiers = new int[strModifiers.length];
+        for (int i = 0; i < modifiers.length; i++) {
+            modifiers[i] = com.haulmont.cuba.gui.components.ShortcutAction.Modifier.valueOf(strModifiers[i]).getCode();
+        }
     }
 
     @Override

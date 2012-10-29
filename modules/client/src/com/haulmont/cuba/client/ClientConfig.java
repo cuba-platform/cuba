@@ -125,4 +125,20 @@ public interface ClientConfig extends Config {
     @Property("cuba.remoteMessagesSearchEnabled")
     @DefaultBoolean(true)
     boolean getRemoteMessagesSearchEnabled();
+
+    @Property("cuba.gui.pickerShortcut.modifiers")
+    @DefaultString("CTRL-ALT")
+    String getPickerShortcutModifiers();
+
+    @Property("cuba.gui.pickerShortcut.lookup")
+    @DefaultString("CTRL-ALT-L")
+    String getPickerLookupShortcut();
+
+    @Property("cuba.gui.pickerShortcut.open")
+    @DefaultString("CTRL-ALT-O")
+    String getPickerOpenShortcut();
+
+    @Property("cuba.gui.pickerShortcut.clear")
+    @DefaultString("CTRL-ALT-C")
+    String getPickerClearShortcut();
 }

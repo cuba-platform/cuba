@@ -11,7 +11,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.components.Action;
@@ -52,7 +55,7 @@ public class DesktopPickerField
 
     protected java.util.List<Action> actionsOrder = new LinkedList<>();
 
-    private static final int modifiersMask = InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK;
+    private int modifiersMask;
     private Map<Action, List<KeyStroke>> keyStrokesMap = new HashMap<>();
 
     private String caption;
@@ -62,10 +65,12 @@ public class DesktopPickerField
 
     public DesktopPickerField() {
         impl = new Picker();
+        initModifiersMask();
     }
 
     public DesktopPickerField(Picker picker) {
         impl = picker;
+        initModifiersMask();
     }
 
     @Override
@@ -156,6 +161,16 @@ public class DesktopPickerField
             prevValue = nullValue;
             prevTextValue = fieldText;
             listener.actionPerformed(fieldText, getValue());
+        }
+    }
+
+    private void initModifiersMask() {
+        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
+
+        for (String strModifier : strModifiers) {
+            ShortcutAction.Modifier modifier = ShortcutAction.Modifier.valueOf(strModifier);
+            modifiersMask = modifiersMask | DesktopComponentsHelper.convertModifier(modifier);
         }
     }
 
