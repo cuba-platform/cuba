@@ -23,6 +23,16 @@ import java.lang.reflect.Method;
 public class AuthenticatedMBeanInterceptor {
     private Log log = LogFactory.getLog(getClass());
 
+    private final Method loginMethod;
+    private final Method clearMethod;
+
+    public AuthenticatedMBeanInterceptor() {
+        loginMethod = ReflectionHelper.findMethod(ManagementBean.class, "loginOnce");
+        loginMethod.setAccessible(true);
+        clearMethod = ReflectionHelper.findMethod(ManagementBean.class, "clearSecurityContext");
+        clearMethod.setAccessible(true);
+    }
+
     private Object beforeInvoke(ProceedingJoinPoint ctx) throws Throwable {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
@@ -31,10 +41,7 @@ public class AuthenticatedMBeanInterceptor {
 
         try {
             if (ctx.getTarget() instanceof ManagementBean) {
-                ManagementBean target = (ManagementBean) ctx.getTarget();
-                Method loginMethod = ReflectionHelper.findMethod(ManagementBean.class, "loginOnce");
-                loginMethod.setAccessible(true);
-                loginMethod.invoke(target);
+                loginMethod.invoke(ctx.getTarget());
             }
 
             Object res = ctx.proceed();
@@ -45,6 +52,10 @@ public class AuthenticatedMBeanInterceptor {
         } catch (Throwable e) {
             log.error("MBeanInterceptor caught exception: ", e);
             throw e;
+        } finally {
+            if (ctx.getTarget() instanceof ManagementBean) {
+                clearMethod.invoke(ctx.getTarget());
+            }
         }
     }
 }

@@ -77,14 +77,12 @@ public class ManagementBean {
         AppContext.setSecurityContext(new SecurityContext(session));
     }
 
-    private String getPasswordFromPropertyValue(String password) {
-        if (StringUtils.isNotEmpty(password)) {
-            if (password.startsWith("hash:"))
-                password = password.substring("hash:".length(), password.length());
-            else
-                password = encryption.getPlainHash(password);
-        }
-        return password;
+    /**
+     * Performs cleanup for SecurityContext if there was previous loginOnce in this thread.<br>
+     * Should be placed into "finally" section of a try/finally block.
+     */
+    protected void clearSecurityContext() {
+        AppContext.setSecurityContext(null);
     }
 
     /**
@@ -130,6 +128,16 @@ public class ManagementBean {
         } catch (Exception e) {
             log.error("Error logging out", e);
         }
+    }
+
+    private String getPasswordFromPropertyValue(String password) {
+        if (StringUtils.isNotEmpty(password)) {
+            if (password.startsWith("hash:"))
+                password = password.substring("hash:".length(), password.length());
+            else
+                password = encryption.getPlainHash(password);
+        }
+        return password;
     }
 
     public class Credentials {
