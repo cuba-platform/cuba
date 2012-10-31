@@ -1,0 +1,8 @@
+﻿<pickerField id="pickerField3" datasource="carDs" property="colour"
+             caption="Picker Field Component with standart actions">
+	<actions>
+		<action id="clear"/>
+		<action id="lookup"/>
+		<action id="open"/>
+	</actions>
+</pickerField>

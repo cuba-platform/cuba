@@ -1,0 +1,25 @@
+﻿@Inject
+protected TokenList tokenList;
+
+@Inject
+protected CollectionDatasource<User, UUID> usersDs;
+
+@Inject
+protected CollectionDatasource<User, UUID> usersssDs;
+
+@Override
+public void init(Map<String, Object> params) {
+    tokenList.setItemChangeHandler(new TokenList.ItemChangeHandler() {
+       @Override
+       public void addItem(Object item) {
+           usersDs.addItem((User) item);
+           usersssDs.excludeItem((User) item);
+       }
+
+       @Override
+       public void removeItem(Object item) {
+           usersDs.removeItem((User) item);
+           usersssDs.addItem((User) item);
+       }
+    });
+}

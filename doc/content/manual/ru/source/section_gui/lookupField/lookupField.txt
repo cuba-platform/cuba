@@ -1,0 +1,2 @@
+﻿<lookupField id="lookupField" datasource="sampleDs" property="unit" 
+             width="200px" filterMode="STARTS_WITH"/>

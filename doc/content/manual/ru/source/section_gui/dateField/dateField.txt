@@ -1,0 +1,1 @@
+﻿<dateField id="dateField1" caption="msg://name1" description="msg://descr1"/>

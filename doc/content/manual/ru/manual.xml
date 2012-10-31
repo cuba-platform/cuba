@@ -1043,7 +1043,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <imagedata fileref="img/TimeField.png"/>
             </imageobject>
           </mediaobject>
-          <para>TimeField </para>
+          <para><link linkend="section_timeField">TimeField</link> </para>
           <mediaobject>
             <imageobject>
               <imagedata fileref="img/CheckBox.png"/>
@@ -1117,6 +1117,103 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           </mediaobject>
           <para><link linkend="section_gui_fieldGroup">FieldGroup</link>  </para>
           <para>TokenList</para>
+          <section id="section_label">
+            <title>Label</title>
+            <para>Надпись (<classname>Label</classname>) − текстовый компонент, отображающий  статический текст либо значения атрибута <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
+            <para>XML-имя компонента: <classname>label</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_label_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса компонента <classname>Label</classname>: для веб-приложений (класс <classname>WebLabel</classname>) и для десктоп-приложений (класс <classname>DesktopLabel</classname>). Оба этих класса реализуют интерфейс <interfacename>Label</interfacename>, который, в свою очередь, наследуется от интерфейсов 
+        <link linkend="section_interface_DatasourceComponent ">DatasourceComponent</link> и  <link linkend="section_interface_hasFormatter">Component.HasFormatter.</link> <classname>WebLabel</classname> реализует к тому же интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <figure>
+              <title>Типы надписей</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_labelTypes.png" contentwidth="40%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для того чтобы создать компонент надписи, создайте в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/label.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибут <property id="attr_value">value</property> предназначен для отображения текста надписи. Обычно значение атрибута задается с помощью ключа <glossterm linkend="glossary_localized_folders_id">пакета сообщений</glossterm>.</para>
+            <para>Текст, содержащийся в атрибуте <property>value</property>, будет перенесен на следующую строку, если по длине он превысит значение атрибута <link linkend="attr_width">width</link>. Поэтому если Вам нужно использовать многострочную надпись, укажите требуемое значение атрибута <link linkend="attr_width">width</link> (применимо только для веб-приложений). Если текст надписи слишком длинный, и значение атрибута <link linkend="attr_width">width</link> неопределено, то текст будет урезан.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_label_truncated.png" contentwidth="30%"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>В компоненте надписи есть возможность отображать значение атрибута сущности. Для этого используются атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/labelWithDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибуты <classname>label</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_align">align</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_value">value</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>label</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_formatter">formatter</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </section>
           <section id="section_button">
             <title>Button</title>
             <para>Кнопка (<classname>Button</classname>) −  компонент пользовательского интерфейса, содержащий  текст или пиктограмму (или и то и другое). Кнопка обеспечивает выполнение некоторых действий при нажатии на нее пользователем.</para>
@@ -1400,103 +1497,6 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </tgroup>
             </informaltable>
           </section>
-          <section id="section_label">
-            <title>Label</title>
-            <para>Надпись (<classname>Label</classname>) − текстовый компонент, отображающий  статический текст либо значения атрибута <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
-            <para>XML-имя компонента: <classname>label</classname></para>
-            <figure>
-              <title/>
-              <mediaobject>
-                <imageobject>
-                  <imagedata align="center" fileref="img/gui_label_dia.png"/>
-                </imageobject>
-              </mediaobject>
-            </figure>
-            <para>Существует два класса компонента <classname>Label</classname>: для веб-приложений (класс <classname>WebLabel</classname>) и для десктоп-приложений (класс <classname>DesktopLabel</classname>). Оба этих класса реализуют интерфейс <interfacename>Label</interfacename>, который, в свою очередь, наследуется от интерфейсов 
-        <link linkend="section_interface_DatasourceComponent ">DatasourceComponent</link> и  <link linkend="section_interface_hasFormatter">Component.HasFormatter.</link> <classname>WebLabel</classname> реализует к тому же интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
-            <figure>
-              <title>Типы надписей</title>
-              <mediaobject>
-                <imageobject>
-                  <imagedata align="center" fileref="img/gui_labelTypes.png" contentwidth="40%"/>
-                </imageobject>
-              </mediaobject>
-            </figure>
-            <para>Для того чтобы создать компонент надписи, создайте в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код:</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/label.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Атрибут <property id="attr_value">value</property> предназначен для отображения текста надписи. Обычно значение атрибута задается с помощью ключа <glossterm linkend="glossary_localized_folders_id">пакета сообщений</glossterm>.</para>
-            <para>Текст, содержащийся в атрибуте <property>value</property>, будет перенесен на следующую строку, если по длине он превысит значение атрибута <link linkend="attr_width">width</link>. Поэтому если Вам нужно использовать многострочную надпись, укажите требуемое значение атрибута <link linkend="attr_width">width</link> (применимо только для веб-приложений). Если текст надписи слишком длинный, и значение атрибута <link linkend="attr_width">width</link> неопределено, то текст будет урезан.</para>
-            <figure>
-              <title/>
-              <mediaobject>
-                <imageobject>
-                  <imagedata align="center" fileref="img/gui_label_truncated.png" contentwidth="30%"/>
-                </imageobject>
-              </mediaobject>
-            </figure>
-            <para>В компоненте надписи есть возможность отображать значение атрибута сущности. Для этого используются атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>.</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/labelWithDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Атрибуты <classname>label</classname>:</para>
-            <informaltable frame="none" align="left" pgwide="0">
-              <tgroup colsep="1" cols="4" rowsep="1" align="left">
-                <colspec colname="c1"/>
-                <colspec colname="c2"/>
-                <colspec colname="c3"/>
-                <colspec colname="c4">c</colspec>
-                <tbody>
-                  <row>
-                    <entry align="left">
-                      <link linkend="attr_align">align</link>
-                    </entry>
-                    <entry align="left">
-                      <link linkend="attr_property">property</link>
-                    </entry>
-                    <entry align="left">
-                      <link linkend="attr_width">width</link>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <link linkend="attr_datasource">datasource</link>
-                    </entry>
-                    <entry align="left">
-                      <link linkend="attr_stylename">stylename</link>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry align="left">
-                      <link linkend="attr_height">height</link>
-                    </entry>
-                    <entry align="left">
-                      <link linkend="attr_value">value</link>
-                    </entry>
-                    <entry/>
-                  </row>
-                  <row>
-                    <entry align="left">
-                      <link linkend="attr_id">id</link>
-                    </entry>
-                    <entry align="left">
-                      <link linkend="attr_visible">visible</link>
-                    </entry>
-                  </row>
-                </tbody>
-              </tgroup>
-            </informaltable>
-            <para>Элементы <classname>label</classname>:</para>
-            <informaltable frame="none" align="left" pgwide="0">
-              <tgroup colsep="1" cols="1" rowsep="1" align="left">
-                <colspec colname="c1"/>
-                <tbody>
-                  <row>
-                    <entry align="left">
-                      <link linkend="element_formatter">formatter</link>
-                    </entry>
-                  </row>
-                </tbody>
-              </tgroup>
-            </informaltable>
-          </section>
           <section id="section_textField">
             <title>TextField</title>
             <para>Поле для редактирования текста.</para>
@@ -1603,7 +1603,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldTrim.txt" encoding="UTF-8" parse="text"/></programlisting>
             <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="section_button">кнопку</link>.</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldTrimContr.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Атрибут <property id="attr_secret">secret</property> позволяет преобразовать текстовое поле в  поле, которое не показывает символы, введенные пользователем. Вместо этого поле отображает символы, отличные от введенных. </para>
+            <para>Атрибут <property id="attr_secret">secret</property> позволяет преобразовать текстовое поле в  поле, которое не показывает символы, введенные пользователем. Вместо этого поле отображает эхо-символы, отличные от введенных. </para>
             <warning>
               <para>Текстовое поле с атрибутом <property>secret=&quot;true&quot;</property>  скрывает введенные данные только в визуальном представлении. При получении значения поля с помощью метода доступа это значение представляется в текстовой форме.</para>
             </warning>
@@ -1715,7 +1715,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           </section>
           <section id="section_gui_textArea">
             <title>TextArea</title>
-            <para>Многострочное текстовое поле для редактирования текста. Содержит элементы управления для форматирования текста.</para>
+            <para>Текстовая область (<classname>TextArea</classname>) − многострочное текстовое поле для редактирования текста. Содержит элементы управления для форматирования текста.</para>
             <para>XML-имя компонента: <classname>textArea</classname></para>
             <figure>
               <title/>
@@ -1725,7 +1725,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
                 </imageobject>
               </mediaobject>
             </figure>
-            <para>Класс многострочного текстового поля существует только для веб-приложений (класс <classname>WebTextArea</classname>). Класс реализует интерфейс <interfacename>TextArea</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebTextArea</classname> наследуется от класса <classname>WebAbstractField</classname>. Класс <classname>WebTextArea</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Класс текстовой области существует только для веб-приложений (класс <classname>WebTextArea</classname>). Класс реализует интерфейс <interfacename>TextArea</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebTextArea</classname> наследуется от класса <classname>WebAbstractField</classname>. Класс <classname>WebTextArea</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
             <para>К тексту, вводимому в компоненте <classname>TextArea</classname>, можно применять средства для форматирования: изменять начертание шрифта, его размер, гарнитуру − с помощью элементов управления, расположенных в верхней части компонента.</para>
             <figure>
               <title/>
@@ -1736,6 +1736,65 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </mediaobject>
             </figure>
             <para>Атрибуты <classname>textArea</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_editable">editable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry><entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_cols">cols</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_required">required</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_rows">rows</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
             <para>Элементы <classname>textArea</classname>:</para>
             <informaltable frame="none" align="left" pgwide="0">
               <tgroup colsep="1" cols="1" rowsep="1" align="left">
@@ -1755,488 +1814,989 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </tgroup>
             </informaltable>
           </section>
-          <section id="section_checkBox">
-            <title>CheckBox</title>
-            <para>CheckBox − переключатель для ввода булевского значения.</para>
-            <para>XML-имя компонента: checkBox.</para>
-            <para>Атрибуты checkBox:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-            </itemizedlist>
-            <para>Элементы checkBox:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="element_validator">validator</link></para>
-              </listitem>
-            </itemizedlist>
-          </section>
           <section id="section_dateField">
             <title>DateField</title>
-            <para>Поле для редактирования даты и времени.</para>
-            <para>XML-имя компонента: <parameter>dateField</parameter>.</para>
-            <para>Атрибуты <parameter>dateField</parameter>:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para><property>dateFormat</property> − формат представления даты/времени по правилам <ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</ulink>. Значением атрибута может быть либо строка формата, либо ключ в <glossterm linkend="glossary_localized_folders_id">пакете сообщений</glossterm> (если строка начинается с msg://)</para>
-              </listitem>
-              <listitem>
-                <para><property>resolution</property> − точность представления даты/времени (день, час и т.д.). Значение атрибута должно соответствовать перечислению <classname>DateField.Resolution</classname> − <classname>MSEC</classname>, <classname>SEC</classname>, <classname>MIN</classname>, <classname>HOUR</classname>, <classname>DAY</classname>, <classname>MONTH</classname>, <classname>YEAR</classname>. По умолчанию точность определяется по аннотации <literal>javax.persistence.Temporal</literal> соответствующего атрибута сущности.</para>
-                <para>Если <property>resolution=&quot;DAY&quot;</property> и не указан атрибут <property>dateFormat</property>, то в качестве формата будет взят формат, указанный в главном пакете сообщений с ключом <property>dateFormat</property>.</para>
-                <para>Если <property>resolution=&quot;MIN&quot;</property> и не указан атрибут <property>dateFormat</property>, то в качестве формата будет взят формат, указанный в главном пакете сообщений с ключом <property>dateTimeFormat</property>.</para>
-              </listitem>
-            </itemizedlist>
-            <para>Элементы <parameter>dateField</parameter>:</para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="element_validator">validator</link></para>
-              </listitem>
-            </itemizedlist>
+            <para>Поле для отображения или ввода даты и времени. В самом простом варианте представляет собой поле для отображения даты, справа от него находится кнопка с выпадающим календарем, правее находится поле для ввода времени.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_dateFieldSimple.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Дата и время по умолчанию отображаются в формате, соответствующем выбранной локали.</para>
+            <para>XML-имя компонента: <classname>dateField</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_dateField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса полей для ввода даты и времени: для веб-приложений (класс <classname>WebDateField</classname>) и для десктоп-приложений (класс <classname>DesktopDateField</classname>). Оба этих класса реализуют интерфейс <interfacename>DateField</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebDateField</classname> наследуется от абстрактного класса <classname>WebAbstractComponent</classname>, класс <classname>DesktopDateField</classname> наследуется от абстрактного класса <classname>DesktopAbstractField</classname>. Класс <classname>WebDateField</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Для создания простого поля для ввода даты необходимо определить его в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующим образом:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateField.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>DateField</classname>.</para>
+            </warning>
+            <para>Возможно изменить формат представления даты и времени с помощью атрибута  <property id="attr_dateFormat">dateFormat</property> по правилам  SimpleDateFormat (<ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html</ulink>). Значением атрибута может быть либо строка формата, либо ключ в <glossterm linkend="glossary_app_folders_id">пакете сообщений</glossterm> (если строка начинается с msg://)</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateFieldFormat.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_dateField_format.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>В большинстве бизнес-приложений нет необходимости отображать милисекунды или даже время.  Точность представления даты или времени контролируется атрибутом <property id="attr_resolution">resolution</property>.  Значение атрибута должно соответствовать перечислению <classname>DateField.Resolution</classname> − <type>MSEC</type>, <type>SEC</type>, <type>MIN</type>, <type>HOUR</type>, <type>DAY</type>, <type>MONTH</type>, <type>YEAR</type>. По умолчанию точность определяется по <glossterm linkend="glossary_annotation">аннотации</glossterm> <classname>javax.persistence.Temporal</classname> соответствующего атрибута <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
+            <para>Если <property>resolution=&quot;DAY&quot;</property> и не указан атрибут <property>dateFormat</property>, то в качестве формата будет взят формат, указанный в <glossterm linkend="glossary_main_localized_folder_id">главном пакете сообщений</glossterm> с ключом <property>dateFormat</property>.</para>
+            <para>Если <property>resolution=&quot;MIN&quot;</property> и не указан атрибут <property>dateFormat</property>, то в качестве формата будет взят формат, указанный в <glossterm linkend="glossary_main_localized_folder_id">главном пакете сообщений</glossterm> с ключом <property>dateTimeFormat</property>.</para>
+            <para>Ниже показано определения поля для ввода даты с точностью до месяца.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateFieldResolution.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_dateField_resolution.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>dateField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_editable">editable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry><entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_required">required</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_dateFormat">dateFormat</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_resolution">resolution</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>dateField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry>
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
-          <section id="section_lookupField">
-            <title>LookupField</title>
-            <para>Компонент, реализующий выпадающий список. Он реализует фильтрацию значений в реальном времени (по мере ввода имени опции пользователем) и постраничный вывод доступных опций.</para>
-            <para>XML-имя компонента: <parameter>lookupField</parameter>.</para>
-            <para>Атрибуты <parameter>lookupField</parameter>: </para>
-            <itemizedlist>
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_optionsDatasource">optionsDatasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_captionProperty">captionProperty</link></para>
-              </listitem>
-              <listitem>
-                <para><property>nullName</property> − идентификатор опции, выбор которой будет равносилен установке значения в <property>null</property>.</para>
-              </listitem>
-              <listitem>
-                <para><property>filterMode</property> − тип фильтрации опций:</para>
-                <itemizedlist>
-                  <listitem>
-                    <para><property>NO</property> − нет фильтрации.</para>
-                  </listitem>
-                  <listitem>
-                    <para><property>STARTS_WITH</property> − по началу фразы.</para>
-                  </listitem>
-                  <listitem>
-                    <para><property>CONTAINS</property> − по любому вхождению.</para>
-                  </listitem>
-                </itemizedlist>
-              </listitem>
-              <listitem>
-                <para>validator</para>
-              </listitem>
-            </itemizedlist>
-            <para>Пример использования компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
-            <para><programlisting>&lt;lookupField id=&quot;docClass&quot; datasource=&quot;docType&quot; property=&quot;docClass&quot;
-             optionsDatasource=&quot;docClasses&quot; captionProperty=&quot;name&quot;
-             required=&quot;true&quot; width=&quot;300px&quot;/&gt;</programlisting></para>
+          <section id="section_timeField">
+            <title>TimeField</title>
+            <para>Поле для отображения или ввода времени. В самом простом варианте представляет собой поле для отображения или ввода времени в часах и минутах.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_timeField.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>timeField</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_timeField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса полей для ввода времени: для веб-приложений (класс <classname>WebTimeField</classname>) и для десктоп-приложений (класс <classname>DesktopTimeField</classname>). Оба этих класса реализуют интерфейс <interfacename>TimeField</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebTimeField</classname> наследуется от абстрактного класса <classname>WebAbstractField</classname>, класс <classname>DesktopTimeField</classname> наследуется от абстрактного класса <classname>DesktopAbstractField</classname>. Класс <classname>WebTimeField</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Для создания простого  поля для ввода времени необходимо определить его в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующим образом:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timeField/timeField.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>TimeField</classname>.</para>
+            </warning>
+            <para>С помощью установки атрибута <property id="attr_showSeconds">showSeconds</property> в значение <classname>true</classname> можно настроить отображение секунд.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timeField/timeFieldSec.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_timeFieldSec.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>timeField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_required">required</link>
+                    </entry><entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_showSeconds">showSeconds</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_editable">editable</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>timeField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry>
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
-          <section>
+          <section id="section_gui_fieldGroup">
+            <title>FieldGroup</title>
+            <para>Группа полей (<classname>FieldGroup</classname>) генерализует представление атрибутов одного или более <glossterm linkend="glossary_datasource_id">источника данных</glossterm>. Представление поля зависит от типа соответствующего атрибута. Для отображения сущностей может использоваться как <link linkend="section_lookupField">LookupField</link>, так и <link linkend="section_gui_pickerField">PickerField</link>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_fieldGroup.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>fieldGroup</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_FieldGroup_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса групп полей: для веб-приложений (класс <classname>WebFieldGroup</classname>) и для десктоп-приложений (класс <classname>DesktopFieldGroup</classname>). Оба этих класса реализуют интерфейс <interfacename>FieldGroup</interfacename>, который, в свою очередь, наследуется от интерфейсов  <link linkend="section_interface_component">Component</link>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>, <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <interfacename>Component.HasBorder</interfacename>,
+        <interfacename>Component.Editable</interfacename>, <interfacename>Component.Collapsable</interfacename>, <interfacename>Component.HasSettings</interfacename>, <interfacename>Component.Validatable</interfacename>. Класс <classname>WebFieldGroup</classname> наследуется от абстрактного класса <classname>WebAbstractComponent</classname>, класс <classname>DesktopFieldGroup</classname> наследуется от абстрактного класса <classname>DesktopAbstractComponent</classname> и реализует интерфейс <interfacename>AutoExpanding.</interfacename></para>
+            <para>Ниже представлено описание группы полей в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> экрана:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/fieldGroup/fieldGroup.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para id="attr_fG_datasource"><glossterm linkend="glossary_datasource_id">Источник данных</glossterm> (атрибут <link linkend="attr_datasource">datasource</link>) можно задать как для всего компонента целиком, так и для каждого поля в отдельности. Если для компонента <classname>fieldGroup</classname> атрибут не задан, то атрибут <property>datasource</property> должен быть задан для каждого поля в отдельности, либо представление полей должно задаваться разработчиком.</para>
+            <para id="attr_fG_datasource_1">При установке  атрибута <property id="attr_collapsable">collapsable</property>   в значение <classname>true</classname> компонент может сворачивать свое содержимое.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_fieldGroup_collapsable.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para id="attr_captionAlignment"><property>captionAlignment</property> − необязательный атрибут, задает позицию отображения заголовков полей. Может принимать два значения: <classname>LEFT</classname>, <classname>TOP</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_FieldGroup_captionAlignment.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Компонент <classname>fieldGroup</classname> состоит из списков <link linkend="attr_field">полей</link>, сгруппированных в элементе <property id="attr_fG_column">column</property>. </para>
+            <para>С помощью атрибута <property id="attr_fG_width">width</property> задается ширину всех полей (без учета заголовка) в колонке. Это значение может быть перекрыто в каждом отдельном поле.</para>
+            <para>Атрибут <property id="attr_fG_flex">flex</property> определяет  соотношение ширин колонок.</para>
+            <para>Элементами <link linkend="attr_fG_column">column</link> служат поля (<property>field</property>).</para>
+            <para id="attr_field"><property>field</property> − элемент, содержащий описание выводимого поля. Может содержать описание формата выводимого значения (<link linkend="element_formatter">formatter</link>) и описание валидаторов, применяемых к соответствующему полю (<link linkend="element_validator">validator</link>). Рассмотрим более подробно некоторые атрибуты элемента <property>field</property>. </para>
+            <para><link linkend="attr_id">id</link> − обязательный атрибут, идетификатор поля. Имеет физический смысл: в случае, если задан <glossterm linkend="glossary_datasource_id">источник данных</glossterm>, то идентификатором поля должно быть имя атрибута, иначе − просто идентификатор поля.</para>
+            <para>Есть возможность самостоятельно задать представление поля с помощью атрибута <property id="attr_custom">custom</property>. Значение атрибута в этом случае должно быть равно  <classname>true</classname>. </para>
+          </section>
+          <section id="section_checkBox">
+            <title>CheckBox</title>
+            <para>Флажок (<classname>CheckBox</classname>) − компонент, имеющий два состояния: выбран, не выбран. Флажки используются
+там, где нужно предоставить пользователю возможность что-то включить или
+выключить.</para>
+            <para>XML-имя компонента: <classname>checkBox</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_checkBox_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса флажков: для веб-приложений (класс <classname>WebCheckBox</classname>) и для десктоп-приложений (класс <classname>DesktopCheckBox</classname>). Оба этих класса реализуют интерфейс <interfacename>CheckBox</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebCheckBox</classname> наследуется от абстрактного класса <classname>WebAbstractField</classname>, класс <classname>DesktopTextField</classname> наследуется от абстрактного класса <classname>DesktopAbstractField</classname>. Класс <classname>WebCheckBox</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Для создания флажка достаточно в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> написать следующий код:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/checkBox/checkBox.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>CheckBox</classname>.</para>
+            </warning>
+            <para>Сброс или установка флажка изменяет его состояние. Состояние − это свойство типа <type>Boolean</type>, может быть получено с помощью метода  <methodname>getValue()</methodname> и установлено с помощью метода <methodname>setValue()</methodname>. </para>
+            <para>При каждом изменении состояния флажка генерируется событие элемента, которое может быть обработано с помощью <classname>ValueListener</classname>.</para>
+            <para>Ниже приведен код <glossterm linkend="glossary_controller_id">контроллера</glossterm>, демонстрирующий работу с флажком. При установке флажка на экране возникает сообщение <quote>Позволить создание нового документа</quote>, при сбросе флажка − <quote>Не позволять создание нового документа</quote>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/checkBox/checkBoxContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_checkBoxListener.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>checkBox</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_align">align</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_editable">editable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry><entry/></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_caption">caption</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>checkBox</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry>
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </section>
+          <section id="section_gui_pickerField">
             <title>PickerField</title>
-            <para><parameter>PickerField</parameter> позволяет отображать экземпляр <glossterm linkend="glossary_entity">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа.</para>
-            <para>XML-имя компонента: <parameter>pickerField</parameter>.</para>
-            <para>Атрибуты и элементы <parameter>pickerField</parameter>:</para>
+            <para>Поле ввода с дополнительными кнопками действий (<classname>PickerField</classname>) позволяет отображать экземпляр <glossterm linkend="glossary_entity">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа.</para>
+            <para>XML-имя компонента: <classname>pickerField</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_pickerField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса полей ввода с дополнительными кнопками действий: для веб-приложений (класс <classname>WebPickerField</classname>) и для десктоп-приложений (класс <classname>DesktopPickerField</classname>). Оба этих класса реализуют интерфейс <interfacename>PickerField</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename> и от <link linkend="section_interface_actionsHolder">Component.ActionsHolder</link>. Класс <classname>WebPickerField</classname> наследуется от абстрактного класса <classname>WebAbstractField</classname>, класс <classname>DesktopPickerField</classname> наследуется от абстрактного класса <classname>DesktopAbstractField</classname>. Класс <classname>WebPickerField</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Для того чтобы создать компонент <classname>PickerField</classname>, создайте в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldMetaClass.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>PickerField</classname>.</para>
+            </warning>
+            <para>Атрибут <property id="attr_metaclass">metaClass</property> задает тип <glossterm linkend="glossary_entity">сущности</glossterm>, экземпляр которой будет выбираться с помощью действия поиска (<classname>lookup</classname>). Для заданной сущности должен быть определен экран <classname>Название_сущности.lookup</classname> либо в атрибуте <property id="attr_lookupScreen">lookupScreen</property> указан идентификатор экрана, который нужно открыть для выбора экземпляра сущности.</para>
+            <para>Определить компонент можно также следующим образом:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldProperty.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Для правильной работы компонента <classname>PickerField</classname> необходима установка атрибута <link linkend="attr_metaclass">metaClass</link> либо одновременная установка атрибутов <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>.</para>
+            </warning>
+            <caution>
+              <title>Подсказка</title>
+              <para>Если при объявлении компонента никаких <link linkend="section_gui_action">действий</link> не задано, загрузчик XML определит для него действия <classname>lookup</classname> и <classname>clear</classname>. </para>
+            </caution>
+            <para>Поэтому если требуются все стандартные действия, их нужно определить с помощью элемента <property id="attr_actions_picker">actions</property>. <property>actions</property> − необязательный элемент, определяющий набор действий (<link linkend="section_gui_action">action</link>) (кнопок справа). В элементе <link linkend="section_gui_action">action</link> можно описывать как стандартные действия, так и произвольные.</para>
+            <para>Стандартные действия определяются перечислением <classname>PickerField.ActionType</classname>: <classname>lookup</classname>, <classname>clear</classname>, <classname>open</classname>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldStandartActions.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_pickerFieldActionsSt.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Ниже показано описание <classname>PickerField</classname>, имеющего проивольные действия.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldUserActions.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Действия необходимо определить в <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldUserActionsContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_pickerField_custom.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Для компонента определены горячие клавиши. Для стандартных действий:</para>
             <itemizedlist>
               <listitem>
-                <para><link linkend="attr_id">id</link></para>
+                <para><classname>Lookup</classname> − <keycombo>
+                    <keycap>CTRL</keycap>
+                    <keycap>ALT</keycap>
+                    <keycap>L</keycap>
+                  </keycombo></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
+                <para><classname>Open</classname> − <keycombo>
+                    <keycap>CTRL</keycap>
+                    <keycap>ALT</keycap>
+                    <keycap>O</keycap>
+                  </keycombo></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem id="section_pickerField">
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para><property>captionProperty</property> − при отображении экземпляра сущности задает имя атрибута, значение которого выводится в текстовом поле. Если данный атрибут не задан, компонент будет содержать <classname>Instance Name</classname> экземпляра.</para>
-              </listitem>
-              <listitem>
-                <para><property>metaClass</property> − если не установлен атрибут <property>datasource</property>, задает тип сущности, с которой будет работать компонент.</para>
-              </listitem>
-              <listitem>
-                <para><property>actions</property> − необязательный элемент, определяющий набор действий (кнопок справа)</para>
-                <itemizedlist>
-                  <listitem>
-                    <para><property>action</property> − элемент, определяющий действие. Кроме описания произвольного действия возможно использование стандартных действий, определяемых перечислением <classname>PickerField.ActionType</classname>: <classname>lookup</classname>, <classname>clear</classname>, <classname>open</classname>.</para>
-                  </listitem>
-                </itemizedlist>
+                <para><classname>Clear</classname> − <keycombo>
+                    <keycap>CTRL</keycap>
+                    <keycap>ALT</keycap>
+                    <keycap>C</keycap>
+                  </keycombo></para>
               </listitem>
             </itemizedlist>
-            <para>Если при объявлении компонента никаких действий не задано, загрузчик XML определит для него действия <classname>lookup</classname> и <classname>clear</classname>.</para>
-            <para>Пример использования компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
-            <para><programlisting>&lt;pickerField id=&quot;pickerField1&quot; datasource=&quot;carDs&quot; 
-             property=&quot;model&quot;  width=&quot;250px&quot;&gt;
-    &lt;actions&gt;
-        &lt;action id=&quot;clear&quot;/&gt;
-        &lt;action id=&quot;pickerAction1&quot; 
-                caption=&quot;&quot; 
-                icon=&quot;pickerfield/img/lookup-btn.png&quot; 
-                invoke=&quot;someActionMethod1&quot;/&gt;
-        &lt;action id=&quot;pickerAction2&quot; 
-                caption=&quot;&quot; 
-                icon=&quot;pickerfield/img/lookup-btn.png&quot; 
-                invoke=&quot;someActionMethod2&quot;/&gt;
-    &lt;/actions&gt;
-&lt;/pickerField&gt;</programlisting></para>
-          </section>
-          <section id="section_lookupPickerField">
-            <title>LookupPickerField</title>
-            <para><classname>LookupPickerField</classname> позволяет отображать экземпляр сущности в текстовом поле, выбирать экземпляр в выпадающем списке и выполнять действия нажатием на кнопки справа.</para>
-            <para>XML-имя компонента: lookupPickerField.</para>
-            <para>Атрибуты и элементы lookupPickerField:</para>
+            <para>Чтобы добавить пользовательскую горячую клавишу, необходимо чтобы класс <link linkend="section_gui_action">действия</link> реализовывал интерфейс <interfacename>com.haulmont.cuba.gui.components.ShortcutAction</interfacename></para>
+            <para>Также поддерживается вызов действий сочетанием <keycombo>
+                <keycap>CTRL</keycap>
+                <keycap>ALT</keycap>
+                <keycap>1</keycap>
+              </keycombo>, <keycombo>
+                <keycap>CTRL</keycap>
+                <keycap>ALT</keycap>
+                <keycap>2</keycap>
+              </keycombo> и так далее.</para>
+            <para>Сочетания клавиш можно переназначить в ClientConfig</para>
             <itemizedlist>
               <listitem>
-                <para><link linkend="attr_id">id</link></para>
+                <para><parameter>cuba.gui.pickerShortcut.modifiers</parameter> − Модификаторы для вызова <link linkend="section_gui_action">действий</link> по порядковому номеру</para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
+                <para><parameter>cuba.gui.pickerShortcut.lookup</parameter> − Lookup Action</para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_height">height</link></para>
+                <para><parameter>cuba.gui.pickerShortcut.open</parameter> − Open Action</para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem id="section_pickerField_1">
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_optionsDatasource">optionsDatasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_captionProperty">captionProperty</link></para>
-              </listitem>
-              <listitem>
-                <para>nullName − идентификатор опции, выбор которой будет равносилен установке значения в null.</para>
-              </listitem>
-              <listitem>
-                <para><property>filterMode</property> − тип фильтрации опций:</para>
-                <itemizedlist>
-                  <listitem>
-                    <para><property>NO</property> − нет фильтрации.</para>
-                  </listitem>
-                  <listitem>
-                    <para><property>STARTS_WITH</property> − по началу фразы.</para>
-                  </listitem>
-                  <listitem>
-                    <para><property>CONTAINS</property> − по любому вхождению.</para>
-                  </listitem>
-                </itemizedlist>
-              </listitem>
-              <listitem>
-                <para><link linkend="element_validator">validator</link></para>
-              </listitem>
-              <listitem>
-                <para><property>metaClass</property> − если не установлен атрибут <property>datasource</property> или <link linkend="attr_optionsDatasource">optionsDatasource</link>, задает тип сущности, с которой будет работать компонент.</para>
-              </listitem>
-              <listitem>
-                <para><property>actions</property> − необязательный элемент, определяющий набор действий (кнопок справа)</para>
-                <itemizedlist>
-                  <listitem>
-                    <para><property>action</property> − элемент, определяющий действие. Кроме описания произвольного действия возможно использование стандартных действий, определяемых перечислением <classname>PickerField.ActionType</classname>: <classname>lookup</classname>, <classname>clear</classname>, <classname>open</classname>.</para>
-                  </listitem>
-                </itemizedlist>
+                <para><parameter>cuba.gui.pickerShortcut.clear</parameter> − Clear Action</para>
               </listitem>
             </itemizedlist>
-            <para>Если при объявлении компонента никаких действий не задано, загрузчик XML определит для него действия lookup и open.</para>
-            <programlisting>&lt;lookupPickerField id=&quot;lookupPickerField1&quot; optionsDatasource=&quot;coloursDs&quot; width=&quot;250px&quot;&gt;
-    &lt;actions&gt;
-        &lt;action id=&quot;lookup&quot;/&gt;
-        &lt;action id=&quot;open&quot;/&gt;
-        &lt;action id=&quot;pickerAction1&quot; caption=&quot;&quot; icon=&quot;pickerfield/img/lookup-btn.png&quot; invoke=&quot;someActionMethod1&quot;/&gt;
-        &lt;action id=&quot;pickerAction2&quot; caption=&quot;&quot; icon=&quot;pickerfield/img/lookup-btn.png&quot; invoke=&quot;someActionMethod2&quot;/&gt;
-    &lt;/actions&gt;
-&lt;/lookupPickerField&gt;</programlisting>
+            <para>Атрибуты <classname>PickerField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_property">property</link>
+                    </entry><entry>
+                      <link linkend="attr_width">width</link>
+                    </entry></row>
+                  <row><entry>
+                      <link linkend="attr_captionProperty">captionProperty</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>required<entry>
+                      <link linkend="attr_required">required</link>
+                    </entry><entry/></row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_lookupScreen">lookupScreen</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_editable">editable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_metaclass">metaClass</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_gui_optionsGroup">
             <title>OptionsGroup</title>
-            <para>Переключатель, либо группа флажков.</para>
-            <para>XML-имя компонента: optionsGroup.</para>
-            <para>Атрибуты optionsGroup:</para>
+            <para>Компонент, который обеспечивает выбор из альтернатив, используя группу переключателей для выбора единственного значения из списка или используя группу флажков для выбора нескольких значений из списка.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_optionsGroup.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>optionsGroup</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_OptionsGroup_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса групп опций: для веб-приложений (класс <classname>WebOptionsGroup</classname>) и для десктоп-приложений (класс <classname>DesktopOptionsGroup</classname>). Оба этих класса реализуют интерфейс <interfacename>OptionsGroup</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>OptionsField</interfacename>. Класс <classname>WebOptionsGroup</classname> наследуется от класса <classname>WebAbstractOptionsField</classname>, класс <classname>DesktopOptionsGroup</classname> наследуется от класса <classname>DesktopAbstractOptionsField</classname>. Класс <classname>WebOptionsGroup</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Для создания группы переключателей или группы флажков необходимо задать описание в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/optionsGroup/optionsGroup.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибут <property id="attr_orientation">orientation</property> задает расположение элементов группы. По умолчанию элементы располагаются по вертикали. Значение <classname>&quot;horizontal&quot;</classname> служит для горизонтального расположения.</para>
+            <para>Для задания режима выбора значений служит атрибут <property id="attr_multiselect">multiselect</property>. Если <classname>&quot;multiselect=false&quot;</classname>, то компонент будет представлен как группа переключателей, иначе − как группа флажков. По умолчанию значение атрибута равно <classname>false</classname>.</para>
+            <para>Ниже представлен код компонента, для которого заданы <glossterm linkend="glossary_datasource_id">источник данных</glossterm> с помощью атрибута <link linkend="attr_datasource">datasource</link> и имя поля <glossterm linkend="glossary_entity">сущности</glossterm> с помощью атрибута <link linkend="attr_property">property</link>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/optionsGroup/optionsGroupDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибуты <classname>optionsGroup</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_orientation">orientation</link>
+                    </entry><entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry></row>
+                  <row><entry>
+                      <link linkend="attr_captionProperty">captionProperty</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>required<entry>
+                      <link linkend="attr_property">property</link>
+                    </entry><entry>
+                      <link linkend="attr_width">width</link>
+                    </entry></row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_required">required</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_multiselect">multiselect</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_editable">editable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>optionsGroup</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </section>
+          <section id="section_lookupField">
+            <title>LookupField</title>
+            <para>Компонент, реализующий раскрывающийся список. Раскрывающийся список  служит для выбора одного из множества
+доступных вариантов. В составе такого списка присутствует активизирующая его кнопка и поле редактирования. Раскрывающийся список реализует фильтрацию значений в реальном времени (по мере ввода значения пользователем) и постраничный вывод доступных значений.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_lookupField.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <parameter>lookupField</parameter>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_LookupField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса раскрывающегося списка: для веб-приложений (класс <classname>WebLookupField</classname>) и для десктоп-приложений (класс <classname>DesktopLookupField</classname>). Оба этих класса реализуют интерфейс <interfacename>LookupField</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>OptionsField</interfacename>. Класс <classname>WebLookupField</classname> наследуется от класса <classname>WebAbstractOptionsField</classname>, класс <classname>DesktopLookupField</classname> наследуется от класса <classname>DesktopAbstractOptionsField</classname>. Класс <classname>WebLookupField</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+            <para>Ниже представлено описание раскрывающегося списка, значения которого заданы с помощью установки <glossterm linkend="glossary_datasource_id">источника данных</glossterm> и имени атрибута <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/lookupField/lookupField.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>С помощью атрибута <property id="attr_filterMode">filterMode</property> можно задать тип фильтрации значений:</para>
             <itemizedlist>
               <listitem>
-                <para><link linkend="attr_id">id</link></para>
+                <para><classname>NO</classname> − нет фильтрации</para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
+                <para><classname>STARTS_WITH</classname> − по началу фразы</para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_optionsDatasource">optionsDatasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_captionProperty">captionProperty</link></para>
-              </listitem>
-              <listitem>
-                <para>multiselect − поддержка выбора нескольких значений. Если &quot;multiselect=false&quot;, то компонент будет представлен как radio-button, иначе - как группа checkbox.</para>
-              </listitem>
-              <listitem>
-                <para><link linkend="element_validator">validator</link></para>
-              </listitem>
-              <listitem>
-                <para>orientation − расположение элементов группы. По умолчанию распологаются по вертикали. Значение &quot;horizontal&quot; - для горизонтального расположения.</para>
+                <para><classname>CONTAINS</classname> − по любому вхождению</para>
               </listitem>
             </itemizedlist>
-            <para>Пример XML-дескриптора:</para>
-            <programlisting> &lt;optionsGroup id=&quot;docFields&quot; optionsDatasource=&quot;docFields&quot; captionProperty=&quot;name&quot;
-                              datasource=&quot;docType&quot;
-                              property=&quot;docFields&quot; multiselect=&quot;true&quot;/&gt;</programlisting>
+            <para>Атрибуты <classname>lookupField</classname>: </para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                    </entry><entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry></row>
+                  <row><entry>
+                      <link linkend="attr_captionProperty">captionProperty</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_filterMode">filterMode</link>
+                    </entry>required<entry>
+                      <link linkend="attr_property">property</link>
+                    </entry><entry>
+                      <link linkend="attr_width">width</link>
+                    </entry></row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_required">required</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_editable">editable</link>
+                    </entry>
+                    <entry>nullName</entry>
+                    <entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>lookupField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </section>
+          <section id="section_lookupPickerField">
+            <title>LookupPickerField</title>
+            <para>Раскрывающийся список с расширенной функциональностью (<classname>LookupPickerField</classname>) позволяет отображать экземпляр сущности в текстовом поле, выбирать экземпляр в раскрывающемся списке и выполнять действия нажатием на кнопки справа.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_lookupPickerField.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <parameter>lookupPickerField</parameter>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_LookupPickerField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса раскрывающегося списка c расширенной  функциональностью: для веб-приложений (класс <classname>WebLookupPickerField</classname>) и для десктоп-приложений (класс <classname>DesktopLookupPickerField</classname>). Оба этих класса реализуют интерфейс <interfacename>LookupPickerField</interfacename>, который, в свою очередь, наследуется от интерфейсов  <link linkend="section_lookupField">LookupField</link> и <link linkend="section_gui_pickerField">PickerField</link>. Класс <classname>WebLookupPickerField</classname> наследуется от класса <classname>WebLookupField</classname>, класс <classname>DesktopLookupPickerField</classname> наследуется от класса <classname>DesktopLookupField</classname>. </para>
+            <para>Ниже представлено описание раскрывающегося списка с расширенной функциональностью.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/lookupPickerField/lookupPickerField.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибуты <classname>lookupPickerField</classname>: </para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry><entry align="left">nullName</entry><entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry></row>
+                  <row><entry>
+                      <link linkend="attr_captionProperty">captionProperty</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_filterMode">filterMode</link>
+                    </entry>required<entry>
+                      <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                    </entry><entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry></row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_property">property</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_required">required</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_editable">editable</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_metaclass">metaClass</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>lookupField</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_action">actions</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_twinColumn">
             <title>TwinColumn</title>
-            <para>TwinColumn  представляет собой два списка: доступных и выбранных опций. Изменение выбранного значения производится путем переноса опций из одного списка в другой. Для каждой опции можно задать уникальный стиль отображения и пиктограмму.</para>
-            <para>XML-имя компонента: twinColumn.</para>
-            <para>Атрибуты twinColumn:</para>
-            <itemizedlist spacing="compact" wordsize="9">
-              <listitem>
-                <para><link linkend="attr_id">id</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem id="section_pickerField_2">
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_datasource">datasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_property">property</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_editable">editable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_required">required</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_requiredMessage">requiredMessage</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_optionsDatasource">optionsDatasource</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_captionProperty">captionProperty</link></para>
-              </listitem>
-              <listitem>
-                <para>nullName − идентификатор опции, выбор которой будет равносилен установке значения в null.</para>
-              </listitem>
-              <listitem>
-                <para>columns − количество колонок текста в списке.</para>
-              </listitem>
-              <listitem>
-                <para>rows − количество строк текста в спике.</para>
-              </listitem>
-              <listitem>
-                <para><link linkend="element_validator">validator</link></para>
-              </listitem>
-            </itemizedlist>
-            <para>Пример XML-дескриптора:</para>
-            <programlisting>&lt;twinColumn id=&quot;twinColGroups&quot; optionsDatasource=&quot;groups&quot; captionProperty=&quot;name&quot;
-                    expandable=&quot;false&quot; rows=&quot;10&quot; columns=&quot;15&quot;/&gt;</programlisting>
+            <para>Сдвоенный список (<classname>TwinColumn</classname>)  представляет собой компонент множественного выбора, имеющий  два находящихся рядом списка: доступных и выбранных опций. В левом списке содержатся доступные невыбранные значения, в правом списке содержатся выбранные значения. Пользователь может выбрать значения из левого списка и нажать на кнопку <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="img/gui_teinColumnRight.png"/>
+                </imageobject>
+              </inlinemediaobject>, переместив их таким образом в правый список. Значения могут быть отменены для выбора путем выделения их в правом списке и нажатия на кнопку <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="img/gui_teinColumnLeft.png"/>
+                </imageobject>
+              </inlinemediaobject>. Для каждого значения можно задать уникальный стиль отображения и пиктограмму.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="img/gui_teinColumn.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>twinColumn</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_TwinColumn_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Класс сдвоенного списка существует только для веб-приложений (класс <classname>WebTwinColumn</classname>). Класс реализует интерфейс <interfacename>TwinColumn</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>OptionsField</interfacename>, и интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link>. Класс <classname>WebTwinColumn</classname> наследуется от класса <classname>WebAbstractOptionsField</classname>.</para>
+            <para>Ниже представлено описание сдвоенного списка в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/twinColumn/twinColumnOptDs.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>В данном примере используется атрибут <property id="attr_columns_twin">columns</property> для задания количества колонок текста в списке и атрибут <property id="attr_rows_twin">rows</property> для задания количества строк текста в списке.</para>
+            <para>Атрибуты <classname>twinColumn</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_editable">editable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                    </entry><entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry></row>
+                  <row><entry>
+                      <link linkend="attr_captionProperty">captionProperty</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>required<entry>
+                      <link linkend="attr_property">property</link>
+                    </entry><entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry></row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_columns_twin">columns</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_required">required</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_requiredMessage">requiredMessage</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry>nullName</entry>
+                    <entry>
+                      <link linkend="attr_rows">rows</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>twinColumn</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_validator">validator</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
             <para>Для задания внешнего вида опций нужно реализовать интерфейс <interfacename>com.haulmont.cuba.gui.components.StyleProvider</interfacename> как показано в следующем примере:</para>
             <programlisting>TwinColumn twinColumn = getComponent(&quot;groups&quot;);
         twinColumn.setStyleProvider(new TwinColumn.StyleProvider() {
@@ -2257,88 +2817,224 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             }
         });</programlisting>
           </section>
-          <section>
-            <title>ProgressBar</title>
-            <para>ProgressBar − индикатор прогресса какой-то задачи. Может отображать конкретное значение прогресса, например, 30%, а может отображать неопределенное состояние (indeterminate).</para>
-            <para>XML-имя компонента: progressBar</para>
-            <para>Атрибуты progressBar:</para>
+          <section id="section_gui_tokenList">
+            <title>TokenList</title>
+            <para>Список маркеров (<classname>TokenList</classname>) представляет собой компонент, имеющий упрощенный вариант отображения и формирования списка <glossterm linkend="glossary_entity">сущностей</glossterm>.</para>
+            <para>Для выбора значений используется компонент, подобный <link linkend="section_lookupPickerField">LookupPickerField</link> </para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_tokenList.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>tokenList</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_TokenList_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса списка маркеров: для веб-приложений (класс <classname>WebTokenList</classname>) и для десктоп-приложений (класс <classname>DesktopTokenList</classname>). Оба этих класса реализуют интерфейс <interfacename>TokenList</interfacename>, который, в свою очередь, наследуется от интерфейсов  <interfacename>Field</interfacename>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>,
+        <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <interfacename>Component.Editable</interfacename>. Класс <classname>WebTokenList</classname> наследуется от класса <classname>WebAbstractField</classname>, класс <classname>DesktopTokenList</classname> наследуется от класса <classname>DesktopAbstractField</classname>.</para>
+            <para>Для создания списка маркеров необходимо задать описание в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tokenList/tokenList.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Атрибут <link linkend="attr_datasource">datasource</link> является обязательным для компонента  <classname>TokenList</classname>.</para>
+            </warning>
+            <para>С помощью атрибута <property id="attr_position">position</property> можно задавать позиционирование раскрывающегося списка. Атрибут может принимать два  значения:</para>
             <itemizedlist>
               <listitem>
-                <para><link linkend="attr_id">id</link></para>
+                <para><classname>TOP</classname></para>
               </listitem>
               <listitem>
-                <para><link linkend="attr_stylename">stylename</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem id="section_pickerField_3">
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_enable">enable</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_align">align</link></para>
-              </listitem>
-              <listitem>
-                <para>indeterminate − если true, то отображает неопределенное состояние</para>
+                <para><classname>BOTTOM</classname></para>
               </listitem>
             </itemizedlist>
-            <para>Значения прогресса задачи для <classname>ProgressBar</classname> следует передавать во <type>float</type> значениях в диапазоне от 0.0 до 1.0.</para>
-          </section>
-          <section id="section_upload">
-            <title>FileUploadField</title>
-            <para>Компонент загрузки файлов.</para>
-            <para>XML-имя компонента: upload.</para>
-            <para>Атрибуты компонента:</para>
+            <figure>
+              <title>Список маркеров со значением атрибута position=&quot;BOTTOM&quot;</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_tokenListBottom.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибут <property id="attr_inline">inline</property> задает отображение списка выбранных значений: вертикально или горизонтально. Значение <classname>true</classname> соответствует горизонтальному расположению, значение <classname>false</classname> − вертикальному.</para>
+            <figure>
+              <title>Список маркеров с горизонтальным расположением выбранных значений</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_tokenListInline.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Установка атрибута <property id="attr_simple">simple</property> в значение <classname>true</classname> позволяет сворачивать компонент, оставляя только кнопку добавления. При нажатии на кнопку добавления сразу показывается экран списка экземляров <glossterm linkend="glossary_entity">сущности</glossterm>, для которой задан <glossterm linkend="glossary_datasource_id">источник данных</glossterm>.</para>
+            <figure>
+              <title>Список маркеров со значением атрибута simple=&quot;true&quot;</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_tokenListSimple.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Элемент <classname>tokenList</classname> должен содержать следующие элементы:</para>
             <itemizedlist>
               <listitem>
-                <para><link linkend="attr_id">id</link></para>
+                <para id="element_lookup"><property>lookup</property> − описатель компонента выбора значений.</para>
+                <para>Атрибут <property id="attr_lookup">lookup</property> задает вид списка.</para>
+                <figure>
+                  <title/>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata align="center" fileref="img/gui_tokenListLookup.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </figure>
+                <para>Атрибут <property id="attr_lookupScreen">lookupScreen</property>  задает идентификатор экрана для выбора значений в режиме <link linkend="attr_lookup">lookup</link>.</para>
+                <para>С помощью атрибута <property id="attr_openType">openType</property> можно задать способ открытия окна списка экземпляров сущности:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para><classname>NEW_TAB</classname> − открытие экрана в новой вкладке</para>
+                  </listitem>
+                  <listitem>
+                    <para><classname>DIALOG</classname> − открытие экрана в диалоговом окне</para>
+                  </listitem>
+                  <listitem>
+                    <para><classname>NEW_WINDOW</classname> − открытие экрана в новом окне</para>
+                  </listitem>
+                  <listitem>
+                    <para><classname>THIS_TAB</classname> − открытие экрана в текущей вкладке</para>
+                  </listitem>
+                </itemizedlist>
               </listitem>
               <listitem>
-                <para><link linkend="attr_description">description</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_height">height</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_width">width</link></para>
-              </listitem>
-              <listitem id="section_pickerField_4">
-                <para><link linkend="attr_visible">visible</link></para>
-              </listitem>
-              <listitem>
-                <para><link linkend="attr_caption">caption</link></para>
+                <para id="element_button"><property>button</property> − описатель кнопки добавления значений</para>
               </listitem>
             </itemizedlist>
-            <para>Пример обработчика загрузки файла:</para>
-            <programlisting>FileUploadField uploadField;
-                    ...
-        uploadField.addListener(new FileUploadField.Listener() {
-            public void uploadStarted(Event event) {
-                //код обработки начала загрузки
-            }
-
-            public void uploadFinished(Event event) {
-                //код обработки окончания загрузки
-            }
-
-            public void uploadSucceeded(Event event) {
-                //код обработки успешной загрузки
-            }
-
-            public void uploadFailed(Event event) {
-                //код обработки ошибок загрузки
-            }
-
-            public void updateProgress(long readBytes, long contentLength) {
-                //отслеживание процесса загрузки, например тут можно организовать обновление состояния индикатора загрузки
-            }
-        });</programlisting>
+            <para>Ниже расположен пример <glossterm linkend="glossary_controller_id">контроллера</glossterm>, в котором задаются обработчики добавления нового значения и удаления значения:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tokenList/tokenListContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Атрибуты <classname>tokenList</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_editable">editable</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_inline">inline</link>
+                    </entry><entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry></row>
+                  <row><entry>
+                      <link linkend="attr_captionProperty">captionProperty</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>required<entry>
+                      <link linkend="attr_position">position</link>
+                    </entry><entry>
+                      <link linkend="attr_width">width</link>
+                    </entry></row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_datasource">datasource</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_simple">simple</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Элементы <classname>tokenList</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="1" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <tbody>
+                  <row>
+                    <entry align="left">
+                      <link linkend="element_tL_lookup">lookup</link>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <link linkend="element_tL_button">button</link>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Атрибуты <link linkend="element_lookup" id="element_tL_lookup">lookup</link>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_captionProperty">captionProperty</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_lookupScreen">lookupScreen</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                    </entry><entry/></row>
+                  <row><entry>
+                      <link linkend="attr_filterMode">filterMode</link>
+                    </entry><entry align="left">multiselect</entry>required<entry/><entry/></row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_lookup">lookup</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_openType">openType</link>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+            <para>Атрибуты <link linkend="element_button" id="element_tL_button">button</link>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable</row>
+                  <row><entry>
+                      <link linkend="attr_icon">icon</link>
+                    </entry>required</row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
           <section id="section_gui_table">
             <title>Table</title>
@@ -2577,9 +3273,223 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
     &lt;treechildren datasource=&quot;entities&quot; captionProperty=&quot;caption&quot;/&gt;
 &lt;/tree&gt;</programlisting>
           </section>
-          <section id="section_gui_fieldGroup">
-            <title>FieldGroup</title>
-            <para><classname>FieldGroup</classname> генерализует представление атрибутов одного или более <glossterm linkend="glossary_datasource_eng_id">Datasource</glossterm>.</para>
+          <section id="section_gui_progressBar">
+            <title>ProgressBar</title>
+            <para>Индикатор прогресса (<classname>ProgressBar</classname>) наглядно демонстрирует пользователю, на каком этапе выполнения находится некий процесс, так что пользователь сможет понять, как долго остается ждать его завершения. Индикатор выводится на
+экран в виде непрерывно меняющейся полосы. Может отображать конкретное значение прогресса, например, 30%, а может отображать неопределенное состояние.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_progressBar.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>progressBar</classname></para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_progressBar_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса индикатора прогресса: для веб-приложений (класс <classname>WebProgressBar</classname>) и для десктоп-приложений (класс <classname>DesktopProgressBar</classname>). Оба этих класса реализуют интерфейс <interfacename>ProgressBar</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Component.HasValue</interfacename>. Класс <classname>WebProgressBar</classname> наследуется от абстрактного класса <classname>WebAbstractField</classname>, класс <classname>DesktopProgressBar</classname> наследуется от абстрактного класса <classname>DesktopAbstractComponent</classname>.</para>
+            <para>Для создания индикатора необходимо в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> определить его описание:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/progressBar/progressBar.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <warning>
+              <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>ProgressBar</classname>.</para>
+            </warning>
+            <para>С помощью атрибута <property id="attr_indeterminate">indeterminate</property> можно задать отображение неопределенного состояния индикатора. Если значение атрибута равно <classname>true</classname>, то индикатор отображает неопределенное состояние. Значение атрибута по умолчанию равно <classname>true</classname>.</para>
+            <para>Значения прогресса задачи для индикатора прогресса следует передавать в  значениях типа <type>Float</type> в диапазоне от 0.0 до 1.0.</para>
+            <para>Атрибуты <classname>progressBar</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_align">align</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry><entry/></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_editable">editable</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_enable">enable</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_indeterminate">indeterminate</link>
+                    </entry>
+                    <entry>
+                      <link linkend="attr_width">width</link>
+                    </entry>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </section>
+          <section id="section_upload">
+            <title>FileUploadField</title>
+            <para>Компонент загрузки файлов (<classname>FileUploadField</classname>) позволяет пользователю загружать файлы на сервер. Компонент представляет собой кнопку, при нажатии на которую на экране отображается окно загрузки файла, содержащее список файлов некоторой директории. В списке можно выбрать только один файл для загрузки.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_upload.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>upload</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_FileUploadField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса компонентов загрузки файлов: для веб-приложений (класс <classname>WebFileUploadField</classname>) и для десктоп-приложений (класс <classname>DesktopFileUploadField</classname>). Оба этих класса реализуют интерфейс <interfacename>FileUploadField</interfacename>, который, в свою очередь, наследуется от интерфейсов  <link linkend="section_interface_component">Component</link>, <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>. Класс <classname>WebFileUploadField</classname> наследуется от абстрактного класса <classname>WebAbstractComponent</classname>, класс <classname>DesktopFileUploadField</classname> наследуется от абстрактного класса <classname>DesktopAbstractComponent</classname>.</para>
+            <para>Ниже расположен пример, содержащий обработчик загрузки файла. В этом обработчике написан программный код, обеспечивающий вывод на экран сообщения об успешной или не успешной загрузке файла, а также вывод названия файла в компоненте  надписи.</para>
+            <para>Для начала определим описание компонента в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/upload/upload.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Программный код <glossterm linkend="glossary_controller_id">контроллера</glossterm> выглядит следующим образом:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/upload/uploadContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_uploadRez.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>upload</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_width">width</link>
+                    </entry><entry/></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </section>
+          <section id="section_gui_fileMultiUploadField">
+            <title>FileMultiUploadField</title>
+            <para>Компонент для множественной загрузки файлов позволяет пользователю загружать файлы на сервер. Компонент представляет собой кнопку, при нажатии на которую на экране отображается окно загрузки файлов, содержащее список файлов некоторой директории. В списке можно выбрать сразу несколько файлов для загрузки.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_multipleUpload.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>XML-имя компонента: <classname>multiupload</classname>.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_FileMultiUploadField_dia.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Существует два класса компонентов множественной загрузки файлов: для веб-приложений (класс <classname>WebFileMultiUploadField</classname>) и для десктоп-приложений (класс <classname>DesktopFileMultiUploadField</classname>). Оба этих класса реализуют интерфейс <interfacename>FileMultiUploadField</interfacename>, который, в свою очередь, наследуется от интерфейсов  <link linkend="section_interface_component">Component</link>, <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>. Класс <classname>WebFileMultiUploadField</classname> наследуется от абстрактного класса <classname>WebAbstractComponent</classname>, класс <classname>DesktopFileMultiUploadField</classname> наследуется от абстрактного класса <classname>DesktopAbstractComponent</classname>.</para>
+            <para>Ниже расположен пример, содержащий обработчик загрузки файлов. В этом обработчике написан программный код, обеспечивающий вывод на экран сообщения об успешной или не успешной загрузке файлов, а также вывод названий файлов в <link linkend="section_textField">текстовое поле</link>.</para>
+            <para>Для начала определим описание компонента в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/multipleUpload/multipleUpload.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Программный код <glossterm linkend="glossary_controller_id">контроллера</glossterm> выглядит следующим образом:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/multipleUpload/multipleUploadContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_multipleUploadRez.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+            <para>Атрибуты <classname>multiupload</classname>:</para>
+            <informaltable frame="none" align="left" pgwide="0">
+              <tgroup colsep="1" cols="4" rowsep="1" align="left">
+                <colspec colname="c1"/>
+                <colspec colname="c2"/>
+                <colspec colname="c3"/>
+                <colspec colname="c4">c</colspec>
+                <tbody>
+                  <row><entry align="left">
+                      <link linkend="attr_caption">caption</link>
+                    </entry>editable<entry align="left">
+                      <link linkend="attr_id">id</link>
+                    </entry><entry align="left">
+                      <link linkend="attr_width">width</link>
+                    </entry><entry/></row>
+                  <row>
+                    <entry>
+                      <link linkend="attr_description">description</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_stylename">stylename</link>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry align="left">
+                      <link linkend="attr_height">height</link>
+                    </entry>
+                    <entry align="left">
+                      <link linkend="attr_visible">visible</link>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
           </section>
         </section>
         <section>
@@ -4180,6 +5090,9 @@ Instance - ваш SQL Server.</para>
   </chapter>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
+  <appendix>
+    <title/>
+  </appendix>
   <appendix>
     <title>Часто задаваемые вопросы</title>
     <para>TODO</para>

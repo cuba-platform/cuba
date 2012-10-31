@@ -1,0 +1,10 @@
+﻿@Inject
+protected PickerField pickerField1;
+
+public void pickerField1Enabled() {
+	pickerField1.setEnabled(true);
+}
+
+public void pickerField1Disabled() {
+	pickerField1.setEnabled(false);
+}

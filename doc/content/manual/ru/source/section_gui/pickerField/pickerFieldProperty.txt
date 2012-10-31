@@ -1,0 +1,2 @@
+﻿<pickerField id="pickerField2" datasource="carDs" property="colour"
+             caption="Picker Field Component with datasource and property"/>

@@ -1,0 +1,1 @@
+﻿<progressBar id="progressBar" width="100%" indeterminate="false" editable="true"/>
