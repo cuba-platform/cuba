@@ -669,8 +669,7 @@ CREATE INDEX SYS_SENDING_ATTACHMENT_MESSAGE_IDX
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
 values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer',
-'929729119f27328ae6220829e6b1262b8ee0aa72',
-'d216146f85597225',
+'929729119f27328ae6220829e6b1262b8ee0aa72:d216146f85597225',
 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C');
 
 ------------------------------------------------------------------------------------------------------------
