@@ -1,4 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter_quickStart">
   <title>Быстрый старт</title>
   <para>В качестве первого знакомства с платформой <trademark>CUBA</trademark> мы создадим простое приложение, называемое <application>Магазин</application>. Задача − демонстрация основных шагов по созданию  окон приложения, а также развертыванию приложения на сервере.</para>

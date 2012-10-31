@@ -1,5 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><book lang="ru" id="platform">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!-- This document was created with Syntext Serna Free. -->
+<book lang="ru" id="platform">
   <bookinfo>
     <copyright>
       <year>2012</year>
