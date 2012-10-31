@@ -137,12 +137,26 @@ configure(globalModule) {
     compileJava << {
         enhance.execute()
 
+        env = System.getenv()
+
         Date releaseDate = new Date()
         String timeStamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(releaseDate)
 
+        String releaseNumber = project.ext.artifactVersion
+        if (project.ext.isSnapshot) {
+            if (env.BUILD_VCS_NUMBER)
+                releaseNumber = releaseNumber + '.' + env.BUILD_VCS_NUMBER
+            releaseNumber = releaseNumber + '-SNAPSHOT'
+        }
+
         File releaseFile = new File("$buildDir/classes/main/com/haulmont/cuba/core/global/release.timestamp")
+        File releaseNumberFile = new File("$buildDir/classes/main/com/haulmont/cuba/core/global/release.number")
+
         releaseFile.delete()
         releaseFile.write(timeStamp)
+
+        releaseNumberFile.delete()
+        releaseNumberFile.write(releaseNumber)
     }
 }
 
