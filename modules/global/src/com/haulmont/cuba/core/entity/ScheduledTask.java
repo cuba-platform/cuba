@@ -19,16 +19,16 @@ import org.dom4j.Element;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Entity that stores an information about a scheduled task.
- * <p/>
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sys$ScheduledTask")
 @Table(name = "SYS_SCHEDULED_TASK")
@@ -71,9 +71,6 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     @Column(name = "USER_NAME")
     protected String userName;
 
-    @Column(name = "USER_PASSWORD")
-    protected String userPassword;
-
     @Column(name = "IS_SINGLETON")
     protected Boolean singleton;
 
@@ -113,38 +110,47 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     @Column(name = "METHOD_PARAMS")
     protected String methodParamsXml;
 
+    @Override
     public Date getUpdateTs() {
         return updateTs;
     }
 
+    @Override
     public void setUpdateTs(Date updateTs) {
         this.updateTs = updateTs;
     }
 
+    @Override
     public String getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
+    @Override
     public Boolean isDeleted() {
         return deleteTs != null;
     }
 
+    @Override
     public Date getDeleteTs() {
         return deleteTs;
     }
 
+    @Override
     public void setDeleteTs(Date deleteTs) {
         this.deleteTs = deleteTs;
     }
 
+    @Override
     public String getDeletedBy() {
         return deletedBy;
     }
 
+    @Override
     public void setDeletedBy(String deletedBy) {
         this.deletedBy = deletedBy;
     }
@@ -171,14 +177,6 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getUserPassword() {
-        return userPassword;
-    }
-
-    public void setUserPassword(String userPassword) {
-        this.userPassword = userPassword;
     }
 
     public Boolean getSingleton() {

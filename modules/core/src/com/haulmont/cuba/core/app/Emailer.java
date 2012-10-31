@@ -224,7 +224,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-                StringBuilder queryStr = new StringBuilder("update sys$SendingMessage sm set sm.status = :status, sm.updateTs=:updateTs, sm.updatedBy = :updatedBy");
+                StringBuilder queryStr = new StringBuilder(
+                        "update sys$SendingMessage sm set sm.status = :status, sm.updateTs=:updateTs, sm.updatedBy = :updatedBy");
                 if (increaseAttemptsMade)
                     queryStr.append(", sm.attemptsMade = sm.attemptsMade + 1 ");
                 if (status.equals(SendingStatus.SENT))
@@ -394,7 +395,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         }
     }
 
-    private SendingMessage storeMessage(String addr, String from, String caption, String body, EmailAttachment[] attachment, SendingStatus status) {
+    private SendingMessage storeMessage(String addr, String from, String caption, String body,
+                                        EmailAttachment[] attachment, SendingStatus status) {
         SendingMessage sendingMessage = createSendingMessage(addr, from, caption, body, attachment, null, null);
         if (status != null)
             sendingMessage.setStatus(status);
@@ -452,21 +454,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     @Override
     protected Credentials getCredentialsForLogin() {
-        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"), AppContext.getProperty(EmailerAPI.NAME + ".password"));
-    }
-
-    private EmailInfo getEmailInfo(SendingMessage sendingMessage) {
-        EmailAttachment[] attachments = getEmailAttachments(sendingMessage);
-        EmailInfo info = new EmailInfo(
-                sendingMessage.getAddress(),
-                sendingMessage.getCaption(),
-                sendingMessage.getFrom(),
-                null,
-                null,
-                sendingMessage.getContentText(),
-                attachments
-        );
-        return info;
+        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"));
     }
 
     private EmailAttachment[] getEmailAttachments(SendingMessage sendingMessage) {

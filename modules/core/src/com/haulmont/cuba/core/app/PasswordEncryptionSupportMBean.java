@@ -13,7 +13,7 @@ import org.springframework.jmx.export.annotation.*;
  * @version $Id$
  */
 @ManagedResource(description = "Generate hashes for passwords")
-public interface EncryptionSupportMBean {
+public interface PasswordEncryptionSupportMBean {
 
     @ManagedAttribute(description = "Default Hash method")
     String getPasswordHashMethod();

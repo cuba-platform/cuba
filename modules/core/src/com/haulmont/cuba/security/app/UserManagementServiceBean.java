@@ -53,7 +53,7 @@ public class UserManagementServiceBean implements UserManagementService {
     private Metadata metadata;
 
     @Inject
-    private Encryption encryption;
+    private PasswordEncryption passwordEncryption;
 
     @Inject
     private EmailerAPI emailerAPI;
@@ -192,8 +192,7 @@ public class UserManagementServiceBean implements UserManagementService {
         checkNotNull(userId, "Null userId");
         checkNotNull(newPasswordHash, "Null new password hash");
 
-        String salt;
-        String oldHash;
+        HashDescriptor oldPassword;
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -204,15 +203,14 @@ public class UserManagementServiceBean implements UserManagementService {
             if (user == null)
                 throw new RuntimeException("Unable to find user with id: " + userId);
 
-            oldHash = user.getPassword();
-            salt = user.getSalt();
+            oldPassword = HashDescriptor.parse(user.getPassword());
 
             tx.commit();
         } finally {
             tx.end();
         }
 
-        return StringUtils.equals(encryption.getHash(newPasswordHash, salt), oldHash);
+        return StringUtils.equals(passwordEncryption.getHash(newPasswordHash, oldPassword.getSalt()), oldPassword.getHash());
     }
 
     private EmailTemplate getResetPasswordTemplate(User user,
@@ -336,11 +334,10 @@ public class UserManagementServiceBean implements UserManagementService {
             for (User user : users) {
                 String password = null;
                 if (generatePassword) {
-                    password = encryption.generateRandomPassword();
+                    password = passwordEncryption.generateRandomPassword();
 
-                    HashDescriptor pwd = encryption.getPasswordHash(password);
-                    user.setPassword(pwd.getHash());
-                    user.setSalt(pwd.getSalt());
+                    HashDescriptor pwd = passwordEncryption.getPasswordHash(password);
+                    user.setPassword(pwd.toCredentialsString());
                 }
                 user.setChangePasswordAtNextLogon(true);
 

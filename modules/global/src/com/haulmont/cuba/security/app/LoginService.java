@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.core.entity.HashMethod;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -21,9 +20,8 @@ import java.util.UUID;
 /**
  * Service interface defining methods to login users to the middleware.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface LoginService
 {
@@ -42,7 +40,7 @@ public interface LoginService
     /**
      * Login using user name and trusted password
      * @param login login name
-     * @param password
+     * @param password Trusted password
      * @param locale client locale
      * @return created user session
      * @throws LoginException in case of unsuccessful login
@@ -56,6 +54,4 @@ public interface LoginService
     void ping();
 
     UserSession getSession(UUID sessionId);
-
-    HashMethod getPasswordEncryptionMethod();
 }

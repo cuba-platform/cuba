@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.Encryption;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginWorker;
@@ -18,7 +18,6 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,7 +38,7 @@ public class ManagementBean {
     private UserSessionManager userSessionManager;
 
     @Inject
-    protected Encryption encryption;
+    protected PasswordEncryption passwordEncryption;
 
     private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<>();
 
@@ -65,10 +64,8 @@ public class ManagementBean {
             // internal session doesn't exist or expired
             ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
             String name = credentialsForLogin.getUserName();
-            String password = credentialsForLogin.getPassword();
-            password = getPasswordFromPropertyValue(password);
 
-            session = loginWorker.loginSystem(name, password);
+            session = loginWorker.loginSystem(name);
             loginPerformed.set(true);
             sessionId = session.getId();
         } else {
@@ -98,17 +95,15 @@ public class ManagementBean {
             // no current thread session or it is expired
             ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
             String name = credentialsForLogin.getUserName();
-            String password = credentialsForLogin.getPassword();
-            password = getPasswordFromPropertyValue(password);
 
-            UserSession session = loginWorker.loginSystem(name, password);
+            UserSession session = loginWorker.loginSystem(name);
             AppContext.setSecurityContext(new SecurityContext(session));
             loginPerformed.set(true);
         }
     }
 
     protected Credentials getCredentialsForLogin() {
-        return new Credentials(AppContext.getProperty("cuba.jmxUserLogin"), AppContext.getProperty("cuba.jmxUserPassword"));
+        return new Credentials(AppContext.getProperty("cuba.jmxUserLogin"));
     }
 
     /**
@@ -130,21 +125,15 @@ public class ManagementBean {
         }
     }
 
-    private String getPasswordFromPropertyValue(String password) {
-        if (StringUtils.isNotEmpty(password)) {
-            if (password.startsWith("hash:"))
-                password = password.substring("hash:".length(), password.length());
-            else
-                password = encryption.getPlainHash(password);
-        }
-        return password;
-    }
-
     public class Credentials {
 
         private String userName;
 
         private String password;
+
+        public Credentials(String userName) {
+            this.userName = userName;
+        }
 
         public Credentials(String userName, String password) {
             this.userName = userName;

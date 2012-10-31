@@ -57,8 +57,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
 
     @Override
     protected Credentials getCredentialsForLogin() {
-        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"),
-                AppContext.getProperty(EmailerAPI.NAME + ".password"));
+        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"));
     }
 
     @Override

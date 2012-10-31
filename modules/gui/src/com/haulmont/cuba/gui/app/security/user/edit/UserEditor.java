@@ -82,7 +82,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected Metadata metadata;
 
     @Inject
-    protected Encryption encryption;
+    protected PasswordEncryption passwordEncryption;
 
     public interface Companion {
         void initPasswordField(TextField passwordField);
@@ -241,10 +241,9 @@ public class UserEditor extends AbstractEditor<User> {
                             return false;
                         }
                     } else {
-                        HashDescriptor hDesc = encryption.getPasswordHash(passw);
+                        HashDescriptor hDesc = passwordEncryption.getPasswordHash(passw);
 
-                        getItem().setPassword(hDesc.getHash());
-                        getItem().setSalt(hDesc.getSalt());
+                        getItem().setPassword(hDesc.toCredentialsString());
                         return true;
                     }
                 } else {

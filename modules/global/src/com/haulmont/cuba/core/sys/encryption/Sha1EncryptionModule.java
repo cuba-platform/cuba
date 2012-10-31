@@ -6,12 +6,14 @@
 
 package com.haulmont.cuba.core.sys.encryption;
 
+import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.core.global.PasswordHashDescriptor;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.ManagedBean;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
@@ -23,12 +25,12 @@ import java.security.spec.KeySpec;
  * @author artamonov
  * @version $Id$
  */
+@ManagedBean("cuba_Sha1EncryptionModule")
 public class Sha1EncryptionModule implements EncryptionModule {
 
     private static final String ALGORITHM = "PBKDF2WithHmacSHA1";
 
     private static final String RANDOMIZE_ALGORITHM = "SHA1PRNG";
-
     private static final int DERIVED_KEY_LENGTH_BITS = 160;
 
     private static final int SALT_LENGTH_BYTES = 8;
@@ -36,6 +38,11 @@ public class Sha1EncryptionModule implements EncryptionModule {
     private static final int ITERATIONS = 20000;
 
     private static final String STATIC_SALT = "bae5b072f23b2417";
+
+    @Override
+    public HashMethod getHashMethod() {
+        return HashMethod.SHA1;
+    }
 
     @Override
     public HashDescriptor getHash(String content) {
@@ -75,9 +82,10 @@ public class Sha1EncryptionModule implements EncryptionModule {
     }
 
     @Override
-    public boolean checkUserAccess(User user, String givenPassword) {
-        String hashedPassword = getHash(givenPassword, user.getSalt());
-        return StringUtils.equals(hashedPassword, user.getPassword());
+    public boolean checkPassword(User user, String givenPassword) {
+        HashDescriptor passwordParams = HashDescriptor.parse(user.getPassword());
+        String hashedPassword = getHash(givenPassword, passwordParams.getSalt());
+        return StringUtils.equals(hashedPassword, passwordParams.getHash());
     }
 
     private byte[] generateSalt() throws NoSuchAlgorithmException {
@@ -98,5 +106,25 @@ public class Sha1EncryptionModule implements EncryptionModule {
 
         byte[] encoded = keyFactory.generateSecret(keySpec).getEncoded();
         return new String(Hex.encodeHex(encoded));
+    }
+
+    private class PasswordParams {
+
+        private String passwordHash;
+
+        private String salt;
+
+        private PasswordParams(String passwordHash, String salt) {
+            this.passwordHash = passwordHash;
+            this.salt = salt;
+        }
+
+        public String getPasswordHash() {
+            return passwordHash;
+        }
+
+        public String getSalt() {
+            return salt;
+        }
     }
 }

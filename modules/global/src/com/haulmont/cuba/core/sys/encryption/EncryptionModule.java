@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.sys.encryption;
 
+import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.entity.User;
 
@@ -17,6 +18,8 @@ import com.haulmont.cuba.security.entity.User;
  */
 public interface EncryptionModule {
 
+    HashMethod getHashMethod();
+
     HashDescriptor getHash(String content);
 
     HashDescriptor getPasswordHash(String password);
@@ -25,5 +28,5 @@ public interface EncryptionModule {
 
     String getPlainHash(String content);
 
-    boolean checkUserAccess(User user, String givenPassword);
+    boolean checkPassword(User user, String givenPassword);
 }

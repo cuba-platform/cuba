@@ -6,65 +6,66 @@
 
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.entity.HashMethod;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.sys.AbstractEncryption;
+import com.haulmont.cuba.core.global.HashMethod;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
+import com.haulmont.cuba.core.sys.encryption.UnsupportedHashMethodException;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
-import javax.inject.Inject;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
+ * PasswordEncryptionSupport MBean implementation
+ *
  * @author artamonov
  * @version $Id$
  */
 @ManagedBean("cuba_EncryptionSupport")
-public class EncryptionSupport extends ManagementBean implements EncryptionSupportMBean {
+public class PasswordEncryptionSupport extends ManagementBean implements PasswordEncryptionSupportMBean {
 
     private static final String UNSUPPORTED_HASH_METHOD = "Unsupported Hash method";
 
-    @Inject
-    private Configuration configuration;
-
     @Override
     public String getPasswordHashMethod() {
-        return configuration.getConfig(ServerConfig.class).getPasswordEncryption().getId();
+        return passwordEncryption.getHashMethod().getId();
     }
 
     @Override
     public String getSupportedHashMethods() {
-        List<String> methods = new LinkedList<>();
-        for (HashMethod hashMethod : HashMethod.values())
-            methods.add(hashMethod.getId());
+        Map<String, EncryptionModule> encryptionModules = AppBeans.getAll(EncryptionModule.class);
+        Set<String> methods = new HashSet<>();
+        for (EncryptionModule module : encryptionModules.values())
+            methods.add(module.getHashMethod().getId());
+
         return StringUtils.join(methods, ", ");
     }
 
     @Override
     public String getRandomPassword() {
-        return encryption.generateRandomPassword();
+        return passwordEncryption.generateRandomPassword();
     }
 
     @Override
     public String getHash(String content) {
-        return encryption.getHash(content).toString();
+        return passwordEncryption.getHash(content).toString();
     }
 
     @Override
     public String getHash(String content, String salt) {
-        return encryption.getHash(content, salt);
+        return passwordEncryption.getHash(content, salt);
     }
 
     @Override
     public String getPlainHash(String content) {
-        return encryption.getPlainHash(content);
+        return passwordEncryption.getPlainHash(content);
     }
 
     @Override
     public String getPasswordHash(String password) {
-        return encryption.getPasswordHash(password).toString();
+        return passwordEncryption.getPasswordHash(password).getDescription();
     }
 
     @Override
@@ -72,9 +73,8 @@ public class EncryptionSupport extends ManagementBean implements EncryptionSuppo
         HashMethod hashMethod = HashMethod.fromId(method);
         if (hashMethod == null)
             return UNSUPPORTED_HASH_METHOD;
-        AbstractEncryption abstractEncryption = (AbstractEncryption) encryption;
-        EncryptionModule module = abstractEncryption.getModule(hashMethod);
-        return module.getHash(content).toString();
+        EncryptionModule module = getEncryptionModule(hashMethod);
+        return module.getHash(content).getDescription();
     }
 
     @Override
@@ -82,9 +82,8 @@ public class EncryptionSupport extends ManagementBean implements EncryptionSuppo
         HashMethod hashMethod = HashMethod.fromId(method);
         if (hashMethod == null)
             return UNSUPPORTED_HASH_METHOD;
-        AbstractEncryption abstractEncryption = (AbstractEncryption) encryption;
-        EncryptionModule module = abstractEncryption.getModule(hashMethod);
-        return module.getPasswordHash(password).toString();
+        EncryptionModule module = getEncryptionModule(hashMethod);
+        return module.getPasswordHash(password).getDescription();
     }
 
     @Override
@@ -92,8 +91,7 @@ public class EncryptionSupport extends ManagementBean implements EncryptionSuppo
         HashMethod hashMethod = HashMethod.fromId(method);
         if (hashMethod == null)
             return UNSUPPORTED_HASH_METHOD;
-        AbstractEncryption abstractEncryption = (AbstractEncryption) encryption;
-        EncryptionModule module = abstractEncryption.getModule(hashMethod);
+        EncryptionModule module = getEncryptionModule(hashMethod);
         return module.getHash(content, salt);
     }
 
@@ -102,8 +100,16 @@ public class EncryptionSupport extends ManagementBean implements EncryptionSuppo
         HashMethod hashMethod = HashMethod.fromId(method);
         if (hashMethod == null)
             return UNSUPPORTED_HASH_METHOD;
-        AbstractEncryption abstractEncryption = (AbstractEncryption) encryption;
-        EncryptionModule module = abstractEncryption.getModule(hashMethod);
+        EncryptionModule module = getEncryptionModule(hashMethod);
         return module.getPlainHash(content);
+    }
+
+    private EncryptionModule getEncryptionModule(HashMethod hashMethod) {
+        Map<String, EncryptionModule> encryptionModules = AppBeans.getAll(EncryptionModule.class);
+        for (EncryptionModule module : encryptionModules.values()) {
+            if (hashMethod == module.getHashMethod())
+                return module;
+        }
+        throw new UnsupportedHashMethodException();
     }
 }

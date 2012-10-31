@@ -6,17 +6,26 @@
 
 package com.haulmont.cuba.core.sys.encryption;
 
+import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.core.global.PasswordHashDescriptor;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.ManagedBean;
+
 /**
  * @author artamonov
  * @version $Id$
  */
+@ManagedBean("cuba_Md5EncryptionModule")
 public class Md5EncryptionModule implements EncryptionModule {
+
+    @Override
+    public HashMethod getHashMethod() {
+        return HashMethod.MD5;
+    }
 
     @Override
     public HashDescriptor getHash(String content) {
@@ -40,7 +49,7 @@ public class Md5EncryptionModule implements EncryptionModule {
     }
 
     @Override
-    public boolean checkUserAccess(User user, String givenPassword) {
+    public boolean checkPassword(User user, String givenPassword) {
         return StringUtils.equals(user.getPassword(), givenPassword);
     }
 }

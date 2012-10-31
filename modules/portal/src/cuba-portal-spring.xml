@@ -27,8 +27,11 @@
     <bean id="cuba_UserSession" factory-bean="cuba_UserSessionSource" factory-method="getUserSession"
           scope="prototype"/>
 
-    <bean id="cuba_Connection" class="com.haulmont.cuba.portal.sys.PortalConnection"
-          scope="prototype"/>
+    <bean id="cuba_Connection" class="com.haulmont.cuba.portal.sys.PortalConnection" scope="prototype"/>
+
+    <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
+        <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
+    </bean>
 
     <!-- MBeans registration -->
 

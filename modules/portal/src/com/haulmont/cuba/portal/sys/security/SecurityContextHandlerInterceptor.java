@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.portal.sys.security;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.portal.Connection;
@@ -43,7 +44,7 @@ public class SecurityContextHandlerInterceptor extends HandlerInterceptorAdapter
         HttpSession httpSession = request.getSession();
         Connection connection = (Connection) httpSession.getAttribute(Connection.NAME);
         if (connection == null || connection.getSession() == null || !connection.isConnected()) {
-            connection = AppContext.getBean(Connection.NAME);
+            connection = AppBeans.get(Connection.NAME);
             connection.login(request.getLocale(), request.getRemoteAddr(), request.getHeader("User-Agent"));
             httpSession.setAttribute(Connection.NAME, connection);
 

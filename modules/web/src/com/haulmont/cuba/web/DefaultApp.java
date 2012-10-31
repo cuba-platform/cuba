@@ -7,7 +7,6 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -188,9 +187,8 @@ public class DefaultApp extends App implements ConnectionListener {
     /**
      * Perform actions after success login
      */
-    private void afterLoggedIn() {
-        Configuration configuration = AppBeans.get(Configuration.class);
-        if (!configuration.getConfig(WebConfig.class).getUseActiveDirectory()) {
+    protected void afterLoggedIn() {
+        if (!webConfig.getUseActiveDirectory()) {
             final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
             // Change password on logon
             if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {

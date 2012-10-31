@@ -75,9 +75,8 @@ public class PermissionTest extends CubaTestCase {
             user.setName(USER_NAME);
             user.setLogin(USER_NAME);
 
-            HashDescriptor pwd = encryption.getPasswordHash(USER_PASSW);
-            user.setPassword(pwd.getHash());
-            user.setSalt(pwd.getSalt());
+            HashDescriptor pwd = passwordEncryption.getPasswordHash(USER_PASSW);
+            user.setPassword(pwd.toCredentialsString());
 
             user.setGroup(group);
             em.persist(user);
@@ -141,7 +140,7 @@ public class PermissionTest extends CubaTestCase {
     public void test() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_NAME, encryption.getPlainHash(USER_PASSW), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME, passwordEncryption.getPlainHash(USER_PASSW), Locale.getDefault());
         assertNotNull(userSession);
 
         boolean permitted = userSession.isPermitted(PermissionType.SCREEN, PERM_TARGET_SCREEN);

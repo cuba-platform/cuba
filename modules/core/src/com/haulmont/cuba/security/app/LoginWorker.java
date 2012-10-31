@@ -16,9 +16,15 @@ import com.haulmont.cuba.security.global.UserSession;
 /**
  * Interface to {@link com.haulmont.cuba.security.app.LoginWorkerBean}
  */
-public interface LoginWorker extends LoginService
-{
+public interface LoginWorker extends LoginService {
     String NAME = "cuba_LoginWorker";
 
-    UserSession loginSystem(String login, String password) throws LoginException;
+    /**
+     * Login for MBeans.
+     *
+     * @param login    user login
+     * @return User session
+     * @throws LoginException If used invalid credentials
+     */
+    UserSession loginSystem(String login) throws LoginException;
 }

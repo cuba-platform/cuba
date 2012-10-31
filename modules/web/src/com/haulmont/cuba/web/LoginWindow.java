@@ -64,7 +64,7 @@ public class LoginWindow extends Window implements Action.Handler {
 
     protected Messages messages;
     protected Configuration configuration;
-    protected Encryption encryption;
+    protected PasswordEncryption passwordEncryption;
 
     public LoginWindow(App app, Connection connection) {
         super();
@@ -72,7 +72,7 @@ public class LoginWindow extends Window implements Action.Handler {
 
         configuration = AppBeans.get(Configuration.NAME);
         messages = AppBeans.get(Messages.NAME);
-        encryption = AppBeans.get(Encryption.NAME);
+        passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
 
         globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
@@ -326,7 +326,7 @@ public class LoginWindow extends Window implements Action.Handler {
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
                 String value = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
-                String passwd = loginByRememberMe ? value : encryption.getPlainHash(value);
+                String passwd = loginByRememberMe ? value : passwordEncryption.getPlainHash(value);
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 login(login, passwd, locale);
@@ -403,7 +403,7 @@ public class LoginWindow extends Window implements Action.Handler {
                     }
 
                     app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(encodedLogin));
-                    app.addCookie(COOKIE_PASSWORD, encryption.getPlainHash(password));
+                    app.addCookie(COOKIE_PASSWORD, passwordEncryption.getPlainHash(password));
                 }
             } else {
                 app.removeCookie(COOKIE_REMEMBER_ME);

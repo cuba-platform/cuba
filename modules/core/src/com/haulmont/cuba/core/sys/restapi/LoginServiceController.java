@@ -7,7 +7,7 @@
 package com.haulmont.cuba.core.sys.restapi;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Encryption;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -78,9 +78,9 @@ public class LoginServiceController {
         }
 
         try {
-            Encryption encryption = AppBeans.get(Encryption.NAME);
+            PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
             LoginService svc = AppBeans.get(LoginService.NAME);
-            UserSession userSession = svc.login(username, encryption.getPlainHash(password), locale);
+            UserSession userSession = svc.login(username, passwordEncryption.getPlainHash(password), locale);
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());
@@ -101,9 +101,9 @@ public class LoginServiceController {
         Locale locale = StringUtils.isBlank(localeStr) ? new Locale("en") : new Locale(localeStr);
         try {
             LoginService svc = AppBeans.get(LoginService.NAME);
-            Encryption encryption = AppBeans.get(Encryption.NAME);
+            PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
 
-            UserSession userSession = svc.login(username, encryption.getPlainHash(password), locale);
+            UserSession userSession = svc.login(username, passwordEncryption.getPlainHash(password), locale);
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());

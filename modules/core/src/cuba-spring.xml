@@ -56,6 +56,10 @@
         <property name="userSessionSource" ref="cuba_UserSessionSource"/>
     </bean>
 
+    <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
+        <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
+    </bean>
+
     <!-- AOP setup -->
 
     <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">

@@ -19,11 +19,10 @@ import com.haulmont.cuba.desktop.sys.MenuBuilder;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -73,6 +72,8 @@ public class App implements ConnectionListener {
 
     protected Messages messages;
 
+    protected Configuration configuration;
+
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -104,11 +105,14 @@ public class App implements ConnectionListener {
 
             DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig(), args);
             contextLoader.load();
+
+            messages = AppBeans.get(Messages.class);
+            configuration = AppBeans.get(Configuration.class);
+
             initTheme();
             initLookAndFeelDefaults();
             initUI();
             initExceptionHandling();
-            messages = AppBeans.get(Messages.class);
         } catch (Throwable t) {
             log.error("Error initializing application", t);
             System.exit(-1);
@@ -182,7 +186,7 @@ public class App implements ConnectionListener {
     }
 
     protected void initTheme() throws Exception {
-        DesktopConfig config = ConfigProvider.getConfig(DesktopConfig.class);
+        DesktopConfig config = configuration.getConfig(DesktopConfig.class);
         String themeName = config.getTheme();
         theme = AppBeans.get(DesktopThemeLoader.class).loadTheme(themeName);
         theme.init();
@@ -257,14 +261,15 @@ public class App implements ConnectionListener {
 
         Locale loc = Locale.getDefault();
 
-        JMenu menu = new JMenu(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.file", loc));
+        JMenu menu = new JMenu(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.file", loc));
         menuBar.add(menu);
 
         JMenuItem item;
 
-        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.connect", loc));
+        item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.connect", loc));
         item.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         showLoginDialog();
                     }
@@ -272,9 +277,10 @@ public class App implements ConnectionListener {
         );
         menu.add(item);
 
-        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit", loc));
+        item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit", loc));
         item.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         exit();
                     }
@@ -302,12 +308,12 @@ public class App implements ConnectionListener {
     protected JComponent createMenuBar() {
         menuBar = new JMenuBar();
 
-        JMenu menu = new JMenu(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.file"));
+        JMenu menu = new JMenu(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.file"));
         menuBar.add(menu);
 
         JMenuItem item;
 
-        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.disconnect"));
+        item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.disconnect"));
         item.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -317,7 +323,7 @@ public class App implements ConnectionListener {
         );
         menu.add(item);
 
-        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit"));
+        item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit"));
         item.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -370,7 +376,7 @@ public class App implements ConnectionListener {
         String url = clusterInvocationSupport.getUrlList().isEmpty() ? "?" : clusterInvocationSupport.getUrlList().get(0);
 
         final JLabel connectionStateLab = new JLabel(
-                MessageProvider.formatMessage(AppConfig.getMessagesPack(), "statusBar.connected", getUserFriendlyConnectionUrl(url)));
+                messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.connected", getUserFriendlyConnectionUrl(url)));
 
         clusterInvocationSupport.addListener(
                 new ClusterInvocationSupport.Listener() {
@@ -378,7 +384,8 @@ public class App implements ConnectionListener {
                     public void urlListChanged(List<String> newUrlList) {
                         String url = newUrlList.isEmpty() ? "?" : newUrlList.get(0);
                         connectionStateLab.setText(
-                                MessageProvider.formatMessage(AppConfig.getMessagesPack(), "statusBar.connected", getUserFriendlyConnectionUrl(url)));
+                                messages.formatMessage(AppConfig.getMessagesPack(),
+                                        "statusBar.connected", getUserFriendlyConnectionUrl(url)));
                     }
                 }
         );
@@ -387,7 +394,7 @@ public class App implements ConnectionListener {
 
         JLabel userInfoLabel = new JLabel();
         UserSession session = connection.getSession();
-        String userInfo = MessageProvider.formatMessage(AppConfig.getMessagesPack(), "statusBar.user",
+        String userInfo = messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.user",
                 session.getUser().getName(), session.getUser().getLogin());
         userInfoLabel.setText(userInfo);
 
@@ -497,7 +504,7 @@ public class App implements ConnectionListener {
     /**
      * Perform actions after success login
      */
-    private void afterLoggedIn() {
+    protected void afterLoggedIn() {
         final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
             // Change password on logon
         if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
@@ -521,9 +528,9 @@ public class App implements ConnectionListener {
     }
 
     protected void initTimeZone() {
-        DesktopConfig desktopConfig = ConfigProvider.getConfig(DesktopConfig.class);
+        DesktopConfig desktopConfig = configuration.getConfig(DesktopConfig.class);
         if (desktopConfig.isUseServerTimeZone()) {
-            ServerInfoService serverInfoService = ServiceLocator.lookup(ServerInfoService.NAME);
+            ServerInfoService serverInfoService = AppBeans.get(ServerInfoService.NAME);
             TimeZone serverTimeZone = serverInfoService.getTimeZone();
             TimeZone.setDefault(serverTimeZone);
             log.info("Time zone set to " + serverTimeZone);

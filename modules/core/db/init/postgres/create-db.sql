@@ -106,7 +106,6 @@ create table SYS_SCHEDULED_TASK (
     METHOD_NAME varchar(50),
     METHOD_PARAMS varchar(1000),
     USER_NAME varchar(50),
-    USER_PASSWORD varchar(50),
     IS_SINGLETON boolean,
     IS_ACTIVE boolean,
     PERIOD integer,
@@ -216,8 +215,7 @@ create table SEC_USER (
     --
     LOGIN varchar(50) not null,
     LOGIN_LC varchar(50) not null,
-    PASSWORD varchar(40),
-    SALT varchar(16),
+    PASSWORD varchar(255),
     NAME varchar(255),
     FIRST_NAME varchar(255),
     LAST_NAME varchar(255),
@@ -755,16 +753,14 @@ volatile strict language c^
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', now(), 0, 'Company', null)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, SALT, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
 values ('60885987-1b61-4247-94c7-dff348347f93', now(), 0, 'admin', 'admin',
-'e2ee8ae9b2032aa615087de49bc36fd4c7bf911f',
-'a90a64e4ec8f0f4b',
+'e2ee8ae9b2032aa615087de49bc36fd4c7bf911f:a90a64e4ec8f0f4b',
 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C')^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, SALT, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
 values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer',
-'929729119f27328ae6220829e6b1262b8ee0aa72',
-'d216146f85597225',
+'929729119f27328ae6220829e6b1262b8ee0aa72:d216146f85597225',
 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C')^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)

@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.ScheduledTaskDefinedBy;
-import com.haulmont.cuba.core.global.Encryption;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -39,9 +39,6 @@ public class ScheduledTaskEditor extends AbstractEditor {
 
     @Inject
     protected LookupField definedByField;
-
-    @Inject
-    protected TextField userPasswordField;
 
     @Inject
     protected TextField classNameField;
@@ -71,13 +68,13 @@ public class ScheduledTaskEditor extends AbstractEditor {
     protected SchedulingService service;
 
     @Inject
-    protected Encryption encryption;
+    protected PasswordEncryption passwordEncryption;
 
     @Inject
     protected ComponentsFactory componentsFactory;
 
     //List holds an information about methods of selected bean
-    List<MethodInfo> availableMethods = new ArrayList<MethodInfo>();
+    List<MethodInfo> availableMethods = new ArrayList<>();
 
     @Override
     public void init(Map<String, Object> params) {
@@ -130,7 +127,7 @@ public class ScheduledTaskEditor extends AbstractEditor {
         });
 
         final Map<String, List<MethodInfo>> availableBeans = service.getAvailableBeans();
-        beanNameField.setOptionsList(new ArrayList<String>(availableBeans.keySet()));
+        beanNameField.setOptionsList(new ArrayList<>(availableBeans.keySet()));
         beanNameField.addListener(new ValueListener<LookupField>() {
             @Override
             public void valueChanged(LookupField source, String property, Object prevValue, Object value) {
@@ -140,7 +137,7 @@ public class ScheduledTaskEditor extends AbstractEditor {
                 else {
                     availableMethods = availableBeans.get(value);
 
-                    HashMap<String, Object> optionsMap = new HashMap<String, Object>();
+                    HashMap<String, Object> optionsMap = new HashMap<>();
                     for (MethodInfo availableMethod : availableMethods) {
                         optionsMap.put(availableMethod.getMethodSignature(), availableMethod);
                     }
@@ -166,14 +163,6 @@ public class ScheduledTaskEditor extends AbstractEditor {
         });
 
         userNameField.setOptionsList(service.getAvailableUsers());
-
-        userPasswordField.setValue("-----");
-        userPasswordField.addListener(new ValueListener<TextField>() {
-            @Override
-            public void valueChanged(TextField source, String property, Object prevValue, Object value) {
-                taskDs.getItem().setUserPassword(encryption.getPlainHash((String) value));
-            }
-        });
     }
 
     @Override

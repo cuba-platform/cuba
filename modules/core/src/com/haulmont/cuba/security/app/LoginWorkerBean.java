@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.entity.HashMethod;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -30,7 +29,6 @@ import java.util.UUID;
 
 /**
  * Class that encapsulates the middleware login/logout functionality.
- *
  * @see com.haulmont.cuba.security.app.LoginServiceBean
  *
  * @author krivopustov
@@ -50,7 +48,7 @@ public class LoginWorkerBean implements LoginWorker {
     private Configuration configuration;
 
     @Inject
-    private Encryption encryption;
+    private PasswordEncryption passwordEncryption;
 
     @Inject
     private UserSessionManager userSessionManager;
@@ -89,12 +87,12 @@ public class LoginWorkerBean implements LoginWorker {
         if (password == null) {
             throw new LoginException(getInvalidCredentialsMessage(login, locale));
         }
-        
+
         Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login, password, locale);
 
-            if (!encryption.checkUserAccess(user, password))
+            if (!passwordEncryption.checkPassword(user, password))
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
             if (user.getLanguage() != null &&
@@ -119,21 +117,15 @@ public class LoginWorkerBean implements LoginWorker {
     }
 
     private String getInvalidCredentialsMessage(String login, Locale locale) {
-        String message = messages.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale);
-        return String.format(message, login);
+        return messages.formatMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale, login);
     }
 
     @Override
-    public UserSession loginSystem(String login, String password) throws LoginException {
-        if (password == null) {
-            throw new LoginException(getInvalidCredentialsMessage(login, Locale.getDefault()));
-        }
-
+    public UserSession loginSystem(String login) throws LoginException {
         Transaction tx = persistence.createTransaction();
         try {
-            User user = loadUser(login, password, Locale.getDefault());
-            if (!encryption.checkUserAccess(user, password))
-                throw new LoginException(getInvalidCredentialsMessage(login, Locale.getDefault()));
+            String trustedPassword = configuration.getConfig(ServerConfig.class).getTrustedClientPassword();
+            User user = loadUser(login, trustedPassword, Locale.getDefault());
 
             UserSession session = userSessionManager.createSession(user, Locale.getDefault(), true);
             if (user.getDefaultSubstitutedUser() != null) {
@@ -232,10 +224,5 @@ public class LoginWorkerBean implements LoginWorker {
             else
                 throw e;
         }
-    }
-
-    @Override
-    public HashMethod getPasswordEncryptionMethod() {
-        return configuration.getConfig(ServerConfig.class).getPasswordEncryption();
     }
 }

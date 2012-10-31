@@ -24,6 +24,10 @@
         <constructor-arg index="0" ref="cuba_Configuration"/>
     </bean>
 
+    <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
+        <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
+    </bean>
+
     <!-- MBeans registration -->
 
     <bean id="cuba_web_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">

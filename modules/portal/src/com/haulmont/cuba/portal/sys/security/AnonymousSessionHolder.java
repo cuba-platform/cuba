@@ -7,7 +7,7 @@
 package com.haulmont.cuba.portal.sys.security;
 
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Encryption;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.config.PortalConfig;
@@ -40,14 +40,12 @@ public class AnonymousSessionHolder {
     protected Configuration configuration;
 
     @Inject
-    protected Encryption encryption;
+    protected PasswordEncryption passwordEncryption;
 
     @Inject
-    @SuppressWarnings({"SpringJavaAutowiringInspection"})
     protected LoginService loginService;
 
     @Inject
-    @SuppressWarnings({"SpringJavaAutowiringInspection"})
     protected UserSessionService userSessionService;
 
     private volatile UserSession anonymousSession;
@@ -70,19 +68,13 @@ public class AnonymousSessionHolder {
 
     private UserSession loginAsAnonymous() {
         PortalConfig config = configuration.getConfig(PortalConfig.class);
-        String login = config.getMiddlewareLogin();
-        String password = config.getMiddlewarePassword();
-
-        if (password.startsWith("hash:")) {
-            password = password.substring("hash:".length(), password.length());
-        } else {
-            password = encryption.getPlainHash(password);
-        }
+        String login = config.getTrustedClientLogin();
+        String password = config.getTrustedClientPassword();
 
         Locale defaulLocale = new Locale(config.getDefaultLocale());
         UserSession userSession;
         try {
-            userSession = loginService.login(login, password, defaulLocale);
+            userSession = loginService.loginTrusted(login, password, defaulLocale);
             // Set client info on middleware
             AppContext.setSecurityContext(new SecurityContext(userSession));
 

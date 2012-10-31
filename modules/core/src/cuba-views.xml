@@ -51,7 +51,6 @@
 
     <view class="com.haulmont.cuba.security.entity.User" name="user.changepassw">
         <property name="password"/>
-        <property name="salt"/>
         <property name="changePasswordAtNextLogon"/>
     </view>
 

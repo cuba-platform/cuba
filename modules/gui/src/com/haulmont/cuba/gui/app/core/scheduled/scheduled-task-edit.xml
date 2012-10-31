@@ -4,7 +4,7 @@
   ~ Use is subject to license terms.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/3.1/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledTaskEditor"
         messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
         datasource="taskDs"
@@ -26,8 +26,7 @@
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.definedBy"/>
                     <lookupField id="definedByField" datasource="taskDs" property="definedBy" width="300px"
                                  required="true"/>
-                    <groupBox id="methodParamsBox" rowspan="10" width="400px">
-                        <caption label="msg://methodParams"/>
+                    <groupBox id="methodParamsBox" rowspan="10" width="400px" caption="msg://methodParams">
                     </groupBox>
                 </row>
                 <row>
@@ -55,10 +54,6 @@
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userName"/>
                     <lookupField id="userNameField" datasource="taskDs" property="userName" width="300px"/>
-                </row>
-                <row>
-                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userPassword"/>
-                    <textField id="userPasswordField" width="300px" secret="true"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.singleton"/>

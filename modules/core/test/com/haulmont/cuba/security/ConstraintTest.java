@@ -68,9 +68,8 @@ public class ConstraintTest extends CubaTestCase {
             userId = user.getId();
             user.setLogin(USER_LOGIN);
 
-            HashDescriptor pwd = encryption.getPasswordHash(USER_PASSW);
-            user.setPassword(pwd.getHash());
-            user.setSalt(pwd.getSalt());
+            HashDescriptor pwd = passwordEncryption.getPasswordHash(USER_PASSW);
+            user.setPassword(pwd.toCredentialsString());
 
             user.setGroup(group);
             em.persist(user);
@@ -123,7 +122,7 @@ public class ConstraintTest extends CubaTestCase {
     public void test() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_LOGIN, encryption.getPlainHash(USER_PASSW), Locale.getDefault());
+        UserSession userSession = lw.login(USER_LOGIN, passwordEncryption.getPlainHash(USER_PASSW), Locale.getDefault());
         assertNotNull(userSession);
 
         List<String[]> constraints = userSession.getConstraints("sys$Server");

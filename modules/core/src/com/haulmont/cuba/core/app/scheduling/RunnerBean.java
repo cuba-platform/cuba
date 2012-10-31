@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
@@ -37,10 +36,9 @@ import java.util.concurrent.*;
 
 /**
  * Standard implementation of {@link Runner} interface used by {@link Scheduling} to run scheduled tasks.
- * <p/>
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(Runner.NAME)
 public class RunnerBean implements Runner {
@@ -58,9 +56,6 @@ public class RunnerBean implements Runner {
     private ServerInfoAPI serverInfo;
 
     @Inject
-    private ClusterManagerAPI clusterManager;
-
-    @Inject
     private Persistence persistence;
 
     @Inject
@@ -75,7 +70,7 @@ public class RunnerBean implements Runner {
     @Inject
     private Scripting scripting;
 
-    private Map<String, UUID> userSessionIds = new ConcurrentHashMap<String, UUID>();
+    private Map<String, UUID> userSessionIds = new ConcurrentHashMap<>();
 
     public RunnerBean() {
         executorService = Executors.newFixedThreadPool(MAX_THREADS, new ThreadFactory() {
@@ -123,10 +118,9 @@ public class RunnerBean implements Runner {
             UUID sessionId = userSessionIds.get(task.getUserName());
             userSession = sessionId == null ? null : userSessionManager.findSession(sessionId);
             if (userSession == null) {
-                userSession = loginWorker.loginSystem(task.getUserName(), task.getUserPassword());
+                userSession = loginWorker.loginSystem(task.getUserName());
                 userSessionIds.put(task.getUserName(), userSession.getId());
             }
-
         }
         AppContext.setSecurityContext(new SecurityContext(userSession));
     }
@@ -204,7 +198,9 @@ public class RunnerBean implements Runner {
                 } catch (InstantiationException | IllegalAccessException e) {
                     throw new RuntimeException(String.format("An error occurred while instantiating class %s.", task.getClassName()), e);
                 } catch (Exception e) {
-                    throw new RuntimeException(String.format("An error occurred while running method call() of class %s.", task.getClassName()), e);
+                    throw new RuntimeException(
+                            String.format("An error occurred while running method call() of class %s.",
+                            task.getClassName()), e);
                 }
             }
 
@@ -213,7 +209,9 @@ public class RunnerBean implements Runner {
             }
 
             default: {
-                throw new IllegalStateException(String.format("\"Defined by\" field has illegal value: %s. Task id: [%s].", task.getDefinedBy(), task.getId()));
+                throw new IllegalStateException(
+                        String.format("\"Defined by\" field has illegal value: %s. Task id: [%s].",
+                        task.getDefinedBy(), task.getId()));
             }
         }
     }

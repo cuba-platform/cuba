@@ -13,11 +13,6 @@ import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
-import com.haulmont.cuba.core.config.type.Factory;
-import com.haulmont.cuba.core.config.type.Stringify;
-import com.haulmont.cuba.core.entity.HashMethod;
-import com.haulmont.cuba.core.global.HashMethodStringify;
-import com.haulmont.cuba.core.global.HashMethodTypeFactory;
 
 /**
  * Configuration parameters interface used by the CORE layer.
@@ -44,12 +39,6 @@ public interface ServerConfig extends Config {
     @Property("cuba.trustedClientPassword")
     @DefaultString("")
     String getTrustedClientPassword();
-
-    @Property("cuba.passwordEncryption")
-    @Factory(factory = HashMethodTypeFactory.class)
-    @Stringify(stringify = HashMethodStringify.class)
-    @Default("sha1")
-    HashMethod getPasswordEncryption();
 
     @Property("cuba.security.resetPasswordTemplateBody")
     @Default("/com/haulmont/cuba/security/app/email/reset-password-body.gsp")

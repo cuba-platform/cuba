@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.portal.sys.security;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.security.PortalSession;
 import org.apache.commons.logging.Log;
@@ -30,15 +32,19 @@ public class PortalLogoutHandler extends SimpleUrlLogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
                                 Authentication authentication) throws IOException, ServletException {
         Connection connection = (Connection) request.getSession().getAttribute(Connection.NAME);
-
         try {
             if (connection != null) {
+                SecurityContext portalSecurityContext = new PortalSecurityContext(connection.getSession());
+                AppContext.setSecurityContext(portalSecurityContext);
+
                 PortalSession session = connection.getSession();
                 if (session != null && session.isAuthenticated())
                     connection.logout();
             }
         } catch (Exception e) {
             log.warn("Exception while logout", e);
+        } finally {
+            AppContext.setSecurityContext(null);
         }
 
         request.getSession().invalidate();

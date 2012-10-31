@@ -9,56 +9,65 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.security.entity.User;
 
 /**
- * Encryption support for hashing passwords and security
+ * Encryption support for hashing passwords and security</br>
+ * Used for hashing passwords and check passwords at user logon
  *
  * @author artamonov
  * @version $Id$
  */
-public interface Encryption {
+public interface PasswordEncryption {
 
-    String NAME = "cuba_Encryption";
+    String NAME = "cuba_PasswordEncryption";
 
+    /**
+     * @return Random password with Base64 symbols
+     */
     String generateRandomPassword();
 
     /**
-     * Hash string
+     * @return Using hash method
+     */
+    HashMethod getHashMethod();
+
+    /**
+     * Hash string.
      *
-     * @param content Content for hashing
+     * @param content content for hashing
      * @return Hash with additional params (such as salt)
      */
     HashDescriptor getHash(String content);
 
     /**
-     * Hash password
+     * Hash password.
      *
-     * @param password Content for hashing
+     * @param password content for hashing
      * @return Hash with additional params (such as salt)
      */
     HashDescriptor getPasswordHash(String password);
 
     /**
-     * Hash string
+     * Hash string.
      *
-     * @param content Content for hashing
-     * @param salt    Salt
+     * @param content content for hashing
+     * @param salt    salt
      * @return Hex string of hash
      */
     String getHash(String content, String salt);
 
     /**
-     * Hash string without salt
+     * Hash string without salt.
      *
-     * @param content Content for hashing
+     * @param content content for hashing
      * @return Hex string of hash
      */
     String getPlainHash(String content);
 
     /**
-     * Check credentials for user
+     * Check credentials for user.
      *
-     * @param user          User
-     * @param givenPassword Given password
+     * @param user          user
+     * @param givenPassword given password
      * @return True if access permitted and credentials are valid
      */
-    boolean checkUserAccess(User user, String givenPassword);
+    boolean checkPassword(User user, String givenPassword);
 }

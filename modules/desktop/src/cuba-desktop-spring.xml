@@ -24,6 +24,10 @@
 
     <bean id="cuba_UserSession" factory-bean="cuba_UserSessionSource" factory-method="getUserSession" scope="prototype"/>
 
+    <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
+        <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
+    </bean>
+
     <!-- Remote stubs -->
 
     <bean id="cuba_clusterInvocationSupport" class="com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport"

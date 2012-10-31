@@ -45,11 +45,8 @@ public class User extends StandardEntity {
     @Column(name = "LOGIN_LC", length = LOGIN_FIELD_LEN, nullable = false)
     protected String loginLowerCase;
 
-    @Column(name = "PASSWORD", length = 32)
+    @Column(name = "PASSWORD", length = 255)
     protected String password;
-
-    @Column(name = "SALT", length = 16)
-    protected String salt;
 
     @Column(name = "NAME", length = 100)
     protected String name = "";
@@ -240,14 +237,6 @@ public class User extends StandardEntity {
         }
         MessageFormat fmt = new MessageFormat(pattern);
         return StringUtils.trimToEmpty(fmt.format(new Object[]{login, name}));
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     public Boolean getChangePasswordAtNextLogon() {

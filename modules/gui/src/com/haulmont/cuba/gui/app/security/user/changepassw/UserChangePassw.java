@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.app.security.user.changepassw;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Encryption;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.TextField;
@@ -38,7 +38,7 @@ public class UserChangePassw extends AbstractEditor {
     protected Configuration configuration;
 
     @Inject
-    protected Encryption encryption;
+    protected PasswordEncryption passwordEncryption;
 
     @Inject
     protected UserManagementService userManagementService;
@@ -70,7 +70,7 @@ public class UserChangePassw extends AbstractEditor {
         if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
             showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
         } else if (userManagementService.checkEqualsOfNewAndOldPassword(
-                userDs.getItem().getId(), encryption.getPlainHash(passw))) {
+                userDs.getItem().getId(), passwordEncryption.getPlainHash(passw))) {
             // old password equals to new password
             showNotification(getMessage("oldPassword"), NotificationType.WARNING);
         } else if (ObjectUtils.equals(passw, confPassw)) {
@@ -93,10 +93,9 @@ public class UserChangePassw extends AbstractEditor {
     }
 
     private void assignPasswordToUser(String passw) {
-        HashDescriptor hDesc = encryption.getPasswordHash(passw);
+        HashDescriptor hDesc = passwordEncryption.getPasswordHash(passw);
 
-        userDs.getItem().setPassword(hDesc.getHash());
-        userDs.getItem().setSalt(hDesc.getSalt());
+        userDs.getItem().setPassword(hDesc.toCredentialsString());
         userDs.getItem().setChangePasswordAtNextLogon(false);
     }
 }

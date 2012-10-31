@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.portal.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -148,7 +149,7 @@ public class PortalConnection implements Connection {
     }
 
     void internalLogout() {
-        LoginService ls = AppContext.getBean(LoginService.NAME);
+        LoginService ls = AppBeans.get(LoginService.NAME);
         ls.logout();
 
         AppContext.setSecurityContext(null);
