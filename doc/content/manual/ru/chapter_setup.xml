@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter1_setup">
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter_setup">
   <title>Установка и настройка инструментария</title>
   <para>Для полноценной разработки приложений Вам потребуется  дополнительное программное обеспечение. При разработке платформы мы стремились сделать так, чтобы все сторонние программы, требуемые для работы, были свободно распространяемыми и кросс-платформенными. Весь набор программного обеспечения, требуемого для разработки,  совместим с операционной системой <application>Windows</application> и <application>Linux</application>. </para>
   <para>Данная глава дает практические инструкции по установке и настройке рекомендованного программного обеспечения:</para>

@@ -169,7 +169,7 @@
         <emphasis role="bold">Рабочий каталог</emphasis>
       </glossterm>
       <glossdef>
-        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter3_development">Создание и запуск проекта расширения </link>.</para>
+        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter_development">Создание и запуск проекта расширения </link>.</para>
       </glossdef>
     </glossentry>
   </glossdiv>

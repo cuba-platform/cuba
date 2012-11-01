@@ -54,11 +54,11 @@
     <section>
       <title>Структура руководства</title>
       <para>Данное Руководство состоит из следующих глав.</para>
-      <para><link linkend="chapter0_introduction">
+      <para><link linkend="chapter_introduction">
           <emphasis role="bold">Глава 1. Введение</emphasis>
         </link></para>
       <para>Во вводной главе приводятся  сведения о возможностях платформы <trademark>CUBA</trademark>.</para>
-      <para><link linkend="chapter1_setup">
+      <para><link linkend="chapter_setup">
           <emphasis role="bold">Глава 2. Установка и настройка инструментария</emphasis>
         </link></para>
       <para>В данной главе приводится список программного обеспечения, необходимого для создания бизнес-приложений на основе платформы <trademark>CUBA</trademark>. Приведены инструкции по установке и настройке инструментов.</para>
@@ -70,11 +70,11 @@
           <emphasis role="bold">Глава 4. Устройство платформы</emphasis>
         </link></para>
       <para>Данная глава содержит описание архитектуры платформы, компонентов пользовательского интерфейса, а также средств интеграции со сторонними приложениями.</para>
-      <para><link linkend="chapter3_development">
+      <para><link linkend="chapter_development">
           <emphasis role="bold">Глава 5. Разработка приложений</emphasis>
         </link></para>
       <para>Данная глава дает практические знания, требуемые для создания приложений на основе платформы.</para>
-      <para><link linkend="chapter4_deployment">
+      <para><link linkend="chapter_deployment">
           <emphasis role="bold">Глава 6. Развертывание приложений на основе платформы</emphasis>
         </link></para>
     </section>
@@ -206,12 +206,12 @@ encrypt = true </programlisting>
       <para>Если у Вас есть предложения по улучшению данного руководства, постарайтесь сформулировать их как можно точнее. Если Вы обнаружили ошибку, укажите, пожалуйста, номер главы и приведите небольшой участок окружающего текста для облегчения поиска. </para>
     </section>
   </preface>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
-   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
-   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_quick_start.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_introduction.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_setup.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_quick_start.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_framework.xml" encoding="UTF-8"/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
-   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_development.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_deployment.xml" encoding="UTF-8"/>
   <appendix>
     <title/>
   </appendix>

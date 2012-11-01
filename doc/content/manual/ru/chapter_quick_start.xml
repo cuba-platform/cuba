@@ -16,7 +16,7 @@
       <para>Развернуть приложение на веб-сервере</para>
     </listitem>
   </itemizedlist>
-  <para>На Вашей рабочей машине уже должно быть установлено и настроено необходимое программное обеспечение. Информация о том, как установить и настроить программное обеспечение, содержится в главе <xref linkend="chapter1_setup" xrefstyle="select: title"/>.</para>
+  <para>На Вашей рабочей машине уже должно быть установлено и настроено необходимое программное обеспечение. Информация о том, как установить и настроить программное обеспечение, содержится в главе <xref linkend="chapter_setup" xrefstyle="select: title"/>.</para>
   <para>Шаблон проекта, рассмотренного в главе Быстрый старт,  находится по адресу <ulink url="http://docs.haulmont.com/cuba/4.0/manual/shop">http://docs.haulmont.com/cuba/4.0/manual/shop</ulink></para>
   <section id="section_quick_start_data_model">
     <title>Описание предметной области</title>
