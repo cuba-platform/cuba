@@ -40,6 +40,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.ColumnControlButton;
+import org.jdesktop.swingx.table.TableColumnExt;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -675,7 +676,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     public List<Column> getNotCollapsedColumns() {
         List<Column> visibleColumns = new LinkedList<>();
         for (Column column : columnsOrder) {
-            if (!column.isCollapsed())
+            TableColumnExt columnExt = impl.getColumnExt(column);
+            if (columnExt != null && columnExt.isVisible())
                 visibleColumns.add(column);
         }
         return visibleColumns;
