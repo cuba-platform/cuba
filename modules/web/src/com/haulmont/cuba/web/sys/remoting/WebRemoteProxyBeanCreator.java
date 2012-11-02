@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -20,9 +20,8 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class WebRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
 
@@ -46,6 +45,7 @@ public class WebRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
                 log.debug("Configured proxy bean " + name + " of type " + serviceInterface);
             }
 
+            processSubstitutions(beanFactory);
         } else {
             super.postProcessBeanFactory(beanFactory);
         }

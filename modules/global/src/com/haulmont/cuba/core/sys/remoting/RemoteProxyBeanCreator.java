@@ -21,9 +21,8 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, ApplicationContextAware {
 
@@ -31,8 +30,11 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
 
     protected Map<String, String> services;
 
+    protected Map<String, String> substitutions;
+
     protected ClusterInvocationSupport support;
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     }
 
@@ -40,10 +42,15 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
         this.services = services;
     }
 
+    public void setSubstitutions(Map<String, String> substitutions) {
+        this.substitutions = substitutions;
+    }
+
     public void setClusterInvocationSupport(ClusterInvocationSupport clusterInvocationSupport) {
         this.support = clusterInvocationSupport;
     }
 
+    @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         log.info("Configuring remote proxy beans for " + support.getBaseUrl());
 
@@ -60,7 +67,29 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
             propertyValues.add("serviceUrl", serviceUrl);
             propertyValues.add("serviceInterface", serviceInterface);
             registry.registerBeanDefinition(name, definition);
+
             log.debug("Configured remote proxy bean " + name + " of type " + serviceInterface + ", bound to " + serviceUrl);
+        }
+
+        processSubstitutions(beanFactory);
+    }
+
+    protected void processSubstitutions(ConfigurableListableBeanFactory beanFactory) {
+        if (substitutions != null) {
+            BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+
+            for (Map.Entry<String, String> entry : substitutions.entrySet()) {
+                // replace bean with substitution bean
+                if (beanFactory.containsBean(entry.getKey())) {
+                    String beanName = entry.getKey();
+                    String beanClass = entry.getValue();
+
+                    BeanDefinition definition = new RootBeanDefinition(beanClass);
+                    MutablePropertyValues propertyValues = definition.getPropertyValues();
+                    propertyValues.add("substitutedBean", beanFactory.getBean(beanName));
+                    registry.registerBeanDefinition(beanName, definition);
+                }
+            }
         }
     }
 }

@@ -11,9 +11,8 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class HttpServiceExporter extends HttpInvokerServiceExporter implements BeanNameAware {
 
@@ -27,6 +26,7 @@ public class HttpServiceExporter extends HttpInvokerServiceExporter implements B
         super.setService(service);
     }
 
+    @Override
     public void setBeanName(String name) {
         Object service = getService();
         if (service == null)

@@ -17,9 +17,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class LocalServiceInvokerImpl implements LocalServiceInvoker {
 
@@ -32,6 +31,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
         this.target = target;
     }
 
+    @Override
     public LocalServiceInvocationResult invoke(LocalServiceInvocation invocation) {
         if (invocation == null)
             throw new IllegalArgumentException("Invocation is null");

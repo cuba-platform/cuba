@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
@@ -22,9 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RemotingServlet extends DispatcherServlet {
 
@@ -89,7 +89,7 @@ public class RemotingServlet extends DispatcherServlet {
     protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (!checkCompleted) {
             // Check correctness of some configuration parameters and log the warning if necesary
-            GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
+            GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
             StringBuilder sb = new StringBuilder();
             if (!request.getServerName().equals(config.getWebHostName())) {
                 sb.append("***** cuba.webHostName=").append(config.getWebHostName())

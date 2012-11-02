@@ -45,6 +45,7 @@ public class PortalRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
                 log.debug("Configured proxy bean " + name + " of type " + serviceInterface);
             }
 
+            processSubstitutions(beanFactory);
         } else {
             super.postProcessBeanFactory(beanFactory);
         }

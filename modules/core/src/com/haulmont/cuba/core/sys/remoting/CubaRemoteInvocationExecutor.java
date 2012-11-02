@@ -5,9 +5,9 @@
  */
 package com.haulmont.cuba.core.sys.remoting;
 
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
@@ -16,7 +16,6 @@ import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationExecutor;
 
@@ -24,9 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
@@ -36,17 +34,22 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     private ClusterInvocationSupport clusterInvocationSupport;
 
+    private Configuration configuration;
+
     public CubaRemoteInvocationExecutor() {
-        userSessionManager = Locator.lookup("cuba_UserSessionManager");
+        userSessionManager = AppBeans.get("cuba_UserSessionManager");
+        configuration = AppBeans.get(Configuration.NAME);
     }
 
-    public Object invoke(RemoteInvocation invocation, Object targetObject) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    @Override
+    public Object invoke(RemoteInvocation invocation, Object targetObject)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (invocation instanceof CubaRemoteInvocation) {
             UUID sessionId = ((CubaRemoteInvocation) invocation).getSessionId();
             if (sessionId != null) {
                 UserSession session = userSessionManager.findSession(sessionId);
                 if (session == null) {
-                    String sessionProviderUrl = ConfigProvider.getConfig(ServerConfig.class).getUserSessionProviderUrl();
+                    String sessionProviderUrl = configuration.getConfig(ServerConfig.class).getUserSessionProviderUrl();
                     if (StringUtils.isNotBlank(sessionProviderUrl)) {
                         log.debug("User session " + sessionId + " not found, trying to get it from " + sessionProviderUrl);
                         try {

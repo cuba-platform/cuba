@@ -25,9 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, ApplicationContextAware {
 
@@ -35,10 +34,12 @@ public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, Appl
 
     private ApplicationContext context;
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }
 
+    @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         log.info("Configuring remote services");
 
@@ -50,7 +51,7 @@ public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, Appl
             String serviceName = entry.getKey();
             Object service = entry.getValue();
 
-            List<String> intfNames = new ArrayList<String>();
+            List<String> intfNames = new ArrayList<>();
             List<Class> interfaces = ClassUtils.getAllInterfaces(service.getClass());
             for (Class intf : interfaces) {
                 if (intf.getName().endsWith("Service"))

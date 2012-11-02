@@ -13,9 +13,8 @@ import org.springframework.remoting.support.RemoteInvocationResult;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
 
