@@ -23,15 +23,15 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-public interface LoginService
-{
+public interface LoginService {
     String NAME = "cuba_LoginService";
 
     /**
      * Login using user name and password
-     * @param login login name
+     *
+     * @param login    login name
      * @param password encrypted password
-     * @param locale client locale
+     * @param locale   client locale
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
@@ -39,9 +39,10 @@ public interface LoginService
 
     /**
      * Login using user name and trusted password
-     * @param login login name
+     *
+     * @param login    login name
      * @param password Trusted password
-     * @param locale client locale
+     * @param locale   client locale
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
@@ -50,8 +51,6 @@ public interface LoginService
     void logout();
 
     UserSession substituteUser(User substitutedUser);
-
-    void ping();
 
     UserSession getSession(UUID sessionId);
 }

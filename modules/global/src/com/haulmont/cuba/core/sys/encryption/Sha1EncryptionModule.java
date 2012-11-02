@@ -6,9 +6,8 @@
 
 package com.haulmont.cuba.core.sys.encryption;
 
-import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.HashDescriptor;
-import com.haulmont.cuba.core.global.PasswordHashDescriptor;
+import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.UUID;
 
 /**
  * @author artamonov
@@ -46,21 +46,21 @@ public class Sha1EncryptionModule implements EncryptionModule {
 
     @Override
     public HashDescriptor getHash(String content) {
-        byte[] salt;
+        String salt;
         String result;
         try {
             salt = generateSalt();
-            result = apply(content, salt);
+            result = apply(content, salt.getBytes());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return new HashDescriptor(result, new String(Hex.encodeHex(salt)));
+        return new HashDescriptor(result, salt);
     }
 
     @Override
-    public HashDescriptor getPasswordHash(String password) {
+    public String getPasswordHash(UUID userId, String password) {
         String plainHash = getPlainHash(password);
-        return new PasswordHashDescriptor(getHash(plainHash), plainHash);
+        return getHash(plainHash, userId.toString());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Sha1EncryptionModule implements EncryptionModule {
             salt = STATIC_SALT;
         String result;
         try {
-            result = apply(content, Hex.decodeHex(salt.toCharArray()));
+            result = apply(content, salt.getBytes());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -83,16 +83,15 @@ public class Sha1EncryptionModule implements EncryptionModule {
 
     @Override
     public boolean checkPassword(User user, String givenPassword) {
-        HashDescriptor passwordParams = HashDescriptor.parse(user.getPassword());
-        String hashedPassword = getHash(givenPassword, passwordParams.getSalt());
-        return StringUtils.equals(hashedPassword, passwordParams.getHash());
+        String hashedPassword = getHash(givenPassword, user.getId().toString());
+        return StringUtils.equals(hashedPassword, user.getPassword());
     }
 
-    private byte[] generateSalt() throws NoSuchAlgorithmException {
+    private String generateSalt() throws NoSuchAlgorithmException {
         SecureRandom random = SecureRandom.getInstance(RANDOMIZE_ALGORITHM);
         byte[] salt = new byte[SALT_LENGTH_BYTES];
         random.nextBytes(salt);
-        return salt;
+        return new String(Hex.encodeHex(salt));
     }
 
     private KeySpec getKeySpec(String content, byte[] salt) {
@@ -106,25 +105,5 @@ public class Sha1EncryptionModule implements EncryptionModule {
 
         byte[] encoded = keyFactory.generateSecret(keySpec).getEncoded();
         return new String(Hex.encodeHex(encoded));
-    }
-
-    private class PasswordParams {
-
-        private String passwordHash;
-
-        private String salt;
-
-        private PasswordParams(String passwordHash, String salt) {
-            this.passwordHash = passwordHash;
-            this.salt = salt;
-        }
-
-        public String getPasswordHash() {
-            return passwordHash;
-        }
-
-        public String getSalt() {
-            return salt;
-        }
     }
 }

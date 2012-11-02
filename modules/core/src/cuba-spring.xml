@@ -109,10 +109,11 @@
                 <entry key="${cuba.webContextName}.cuba:service=ScriptingManager" value-ref="cuba_ScriptingManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=ServerInfo" value-ref="cuba_ServerInfo"/>
                 <entry key="${cuba.webContextName}.cuba:service=EmailManager" value-ref="cuba_EmailManager"/>
-                <entry key="${cuba.webContextName}.cuba:service=EncryptionSupport" value-ref="cuba_EncryptionSupport"/>
                 <entry key="${cuba.webContextName}.cuba:service=Scheduling" value-ref="cuba_Scheduling"/>
                 <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
                        value-ref="cuba_ObjectsCacheManager"/>
+                <entry key="${cuba.webContextName}.cuba:service=PasswordEncryptionSupport"
+                       value-ref="cuba_PasswordEncryptionSupport"/>
             </map>
         </property>
     </bean>

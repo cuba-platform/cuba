@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.sys.restapi;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,6 +37,9 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/login")
 public class LoginServiceController {
+
+    @Inject
+    private PasswordEncryption passwordEncryption;
 
     private static Log log = LogFactory.getLog(LoginServiceController.class);
     private static MimeType FORM_TYPE;
@@ -78,8 +82,7 @@ public class LoginServiceController {
         }
 
         try {
-            PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
-            LoginService svc = AppBeans.get(LoginService.NAME);
+            LoginWorker svc = AppBeans.get(LoginWorker.NAME);
             UserSession userSession = svc.login(username, passwordEncryption.getPlainHash(password), locale);
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
@@ -100,10 +103,9 @@ public class LoginServiceController {
         response.addHeader("Access-Control-Allow-Origin", "*");
         Locale locale = StringUtils.isBlank(localeStr) ? new Locale("en") : new Locale(localeStr);
         try {
-            LoginService svc = AppBeans.get(LoginService.NAME);
-            PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
+            LoginWorker svc = AppBeans.get(LoginWorker.NAME);
 
-            UserSession userSession = svc.login(username, passwordEncryption.getPlainHash(password), locale);
+            UserSession userSession = svc.login(username,  passwordEncryption.getPlainHash(password), locale);
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());

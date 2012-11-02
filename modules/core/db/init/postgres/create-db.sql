@@ -755,12 +755,11 @@ values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', now(), 0, 'Company', null)^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
 values ('60885987-1b61-4247-94c7-dff348347f93', now(), 0, 'admin', 'admin',
-'e2ee8ae9b2032aa615087de49bc36fd4c7bf911f:a90a64e4ec8f0f4b',
+'cc2229d1b8a052423d9e1c9ef0113b850086586a',
 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C')^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
-values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer',
-'929729119f27328ae6220829e6b1262b8ee0aa72:d216146f85597225',
+values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', null,
 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C')^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)

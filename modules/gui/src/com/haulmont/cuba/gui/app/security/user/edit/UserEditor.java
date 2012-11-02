@@ -222,7 +222,9 @@ public class UserEditor extends AbstractEditor<User> {
             }
         }
 
-        if (PersistenceHelper.isNew(getItem())) {
+        User user = getItem();
+
+        if (PersistenceHelper.isNew(user)) {
             String passw = passwField.getValue();
             String confPassw = confirmPasswField.getValue();
             if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
@@ -241,9 +243,9 @@ public class UserEditor extends AbstractEditor<User> {
                             return false;
                         }
                     } else {
-                        HashDescriptor hDesc = passwordEncryption.getPasswordHash(passw);
+                        String passwordHash = passwordEncryption.getHash(passw, user.getId().toString());
 
-                        getItem().setPassword(hDesc.toCredentialsString());
+                        user.setPassword(passwordHash);
                         return true;
                     }
                 } else {

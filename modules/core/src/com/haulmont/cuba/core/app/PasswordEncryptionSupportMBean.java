@@ -45,9 +45,10 @@ public interface PasswordEncryptionSupportMBean {
 
     @ManagedOperation(description = "Get hash and salt for password")
     @ManagedOperationParameters({
+            @ManagedOperationParameter(name = "userId", description = "User id"),
             @ManagedOperationParameter(name = "password", description = "Password for hash")
     })
-    String getPasswordHash(String password);
+    String getPasswordHash(String userId, String password);
 
     @ManagedOperation(description = "Get hash and salt with specified method")
     @ManagedOperationParameters({
@@ -58,10 +59,11 @@ public interface PasswordEncryptionSupportMBean {
 
     @ManagedOperation(description = "Get hash and salt for password")
     @ManagedOperationParameters({
+            @ManagedOperationParameter(name = "userId", description = "User id"),
             @ManagedOperationParameter(name = "password", description = "Password for hash"),
             @ManagedOperationParameter(name = "method", description = "Hash method")
     })
-    String getSpecificPasswordHash(String password, String method);
+    String getSpecificPasswordHash(String userId, String password, String method);
 
     @ManagedOperation(description = "Get hash with specified salt and method")
     @ManagedOperationParameters({

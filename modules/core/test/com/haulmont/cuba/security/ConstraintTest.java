@@ -5,9 +5,11 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.CubaTestCase;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.Group;
@@ -29,6 +31,7 @@ public class ConstraintTest extends CubaTestCase {
 
     private UUID constraintId, parentConstraintId, groupId, parentGroupId, userId;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -68,8 +71,8 @@ public class ConstraintTest extends CubaTestCase {
             userId = user.getId();
             user.setLogin(USER_LOGIN);
 
-            HashDescriptor pwd = passwordEncryption.getPasswordHash(USER_PASSW);
-            user.setPassword(pwd.toCredentialsString());
+            String pwd = passwordEncryption.getPasswordHash(userId, USER_PASSW);
+            user.setPassword(pwd);
 
             user.setGroup(group);
             em.persist(user);
@@ -80,6 +83,7 @@ public class ConstraintTest extends CubaTestCase {
         }
     }
 
+    @Override
     protected void tearDown() throws Exception {
         Transaction tx = persistence.createTransaction();
         try {
@@ -122,7 +126,7 @@ public class ConstraintTest extends CubaTestCase {
     public void test() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_LOGIN, passwordEncryption.getPlainHash(USER_PASSW), Locale.getDefault());
+        UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
         List<String[]> constraints = userSession.getConstraints("sys$Server");

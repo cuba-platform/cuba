@@ -8,7 +8,6 @@ package com.haulmont.cuba.gui.app.security.user.changepassw;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -93,9 +92,10 @@ public class UserChangePassw extends AbstractEditor {
     }
 
     private void assignPasswordToUser(String passw) {
-        HashDescriptor hDesc = passwordEncryption.getPasswordHash(passw);
+        User user = userDs.getItem();
+        String passwordHash = passwordEncryption.getPasswordHash(user.getId(), passw);
 
-        userDs.getItem().setPassword(hDesc.toCredentialsString());
-        userDs.getItem().setChangePasswordAtNextLogon(false);
+        user.setPassword(passwordHash);
+        user.setChangePasswordAtNextLogon(false);
     }
 }

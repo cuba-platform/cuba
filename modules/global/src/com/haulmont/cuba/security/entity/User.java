@@ -246,4 +246,9 @@ public class User extends StandardEntity {
     public void setChangePasswordAtNextLogon(Boolean changePasswordAtNextLogon) {
         this.changePasswordAtNextLogon = changePasswordAtNextLogon;
     }
+
+    @Transient
+    public String getSalt() {
+        return id != null ? id.toString() : "";
+    }
 }

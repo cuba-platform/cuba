@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Locale;
@@ -29,10 +30,10 @@ import java.util.UUID;
 
 /**
  * Class that encapsulates the middleware login/logout functionality.
- * @see com.haulmont.cuba.security.app.LoginServiceBean
  *
  * @author krivopustov
  * @version $Id$
+ * @see com.haulmont.cuba.security.app.LoginServiceBean
  */
 @ManagedBean(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker {
@@ -56,7 +57,8 @@ public class LoginWorkerBean implements LoginWorker {
     @Inject
     private UserSessionSource userSessionSource;
 
-    private User loadUser(String login, String password, Locale locale)
+    @Nullable
+    private User loadUser(String login)
             throws LoginException {
         if (login == null)
             throw new IllegalArgumentException("Login is null");
@@ -70,12 +72,7 @@ public class LoginWorkerBean implements LoginWorker {
         List list = q.getResultList();
         if (list.isEmpty()) {
             log.warn("Failed to authenticate: " + login);
-            if (password != null)
-                throw new LoginException(getInvalidCredentialsMessage(login, locale));
-            else
-                throw new LoginException(
-                        String.format(messages.getMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale),
-                                login));
+            return null;
         } else {
             User user = (User) list.get(0);
             return user;
@@ -84,13 +81,14 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
-        if (password == null) {
+        if (password == null)
             throw new LoginException(getInvalidCredentialsMessage(login, locale));
-        }
 
         Transaction tx = persistence.createTransaction();
         try {
-            User user = loadUser(login, password, locale);
+            User user = loadUser(login);
+            if (user == null)
+                throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
             if (!passwordEncryption.checkPassword(user, password))
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
@@ -124,8 +122,9 @@ public class LoginWorkerBean implements LoginWorker {
     public UserSession loginSystem(String login) throws LoginException {
         Transaction tx = persistence.createTransaction();
         try {
-            String trustedPassword = configuration.getConfig(ServerConfig.class).getTrustedClientPassword();
-            User user = loadUser(login, trustedPassword, Locale.getDefault());
+            User user = loadUser(login);
+            if (user == null)
+                throw new LoginException(getInvalidCredentialsMessage(login, Locale.getDefault()));
 
             UserSession session = userSessionManager.createSession(user, Locale.getDefault(), true);
             if (user.getDefaultSubstitutedUser() != null) {
@@ -151,7 +150,12 @@ public class LoginWorkerBean implements LoginWorker {
 
         Transaction tx = persistence.createTransaction();
         try {
-            User user = loadUser(login, null, locale);
+            User user = loadUser(login);
+
+            if (user == null)
+                throw new LoginException(
+                        messages.formatMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale, login));
+
             Locale userLocale = locale;
             if (!StringUtils.isBlank(user.getLanguage())) {
                 userLocale = new Locale(user.getLanguage());
@@ -207,10 +211,6 @@ public class LoginWorkerBean implements LoginWorker {
         } finally {
             tx.end();
         }
-    }
-
-    @Override
-    public void ping() {
     }
 
     @Override

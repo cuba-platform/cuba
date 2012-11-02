@@ -8,6 +8,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.security.entity.User;
 
+import java.util.UUID;
+
 /**
  * Encryption support for hashing passwords and security</br>
  * Used for hashing passwords and check passwords at user logon
@@ -40,10 +42,11 @@ public interface PasswordEncryption {
     /**
      * Hash password.
      *
+     * @param userId user id
      * @param password content for hashing
      * @return Hash with additional params (such as salt)
      */
-    HashDescriptor getPasswordHash(String password);
+    String getPasswordHash(UUID userId, String password);
 
     /**
      * Hash string.

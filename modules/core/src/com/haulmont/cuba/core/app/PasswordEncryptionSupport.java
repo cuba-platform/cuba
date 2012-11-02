@@ -16,6 +16,7 @@ import javax.annotation.ManagedBean;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * PasswordEncryptionSupport MBean implementation
@@ -23,7 +24,7 @@ import java.util.Set;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean("cuba_EncryptionSupport")
+@ManagedBean("cuba_PasswordEncryptionSupport")
 public class PasswordEncryptionSupport extends ManagementBean implements PasswordEncryptionSupportMBean {
 
     private static final String UNSUPPORTED_HASH_METHOD = "Unsupported Hash method";
@@ -64,8 +65,15 @@ public class PasswordEncryptionSupport extends ManagementBean implements Passwor
     }
 
     @Override
-    public String getPasswordHash(String password) {
-        return passwordEncryption.getPasswordHash(password).getDescription();
+    public String getPasswordHash(String userId, String password) {
+        UUID userUUID;
+        try {
+            userUUID = UUID.fromString(userId);
+        } catch (Exception e) {
+            return "Invalid user Id";
+        }
+
+        return passwordEncryption.getPasswordHash(userUUID, password);
     }
 
     @Override
@@ -74,16 +82,23 @@ public class PasswordEncryptionSupport extends ManagementBean implements Passwor
         if (hashMethod == null)
             return UNSUPPORTED_HASH_METHOD;
         EncryptionModule module = getEncryptionModule(hashMethod);
-        return module.getHash(content).getDescription();
+        return module.getHash(content).toString();
     }
 
     @Override
-    public String getSpecificPasswordHash(String password, String method) {
+    public String getSpecificPasswordHash(String userId, String password, String method) {
+        UUID userUUID;
+        try {
+            userUUID = UUID.fromString(userId);
+        } catch (Exception e) {
+            return "Invalid user Id";
+        }
+
         HashMethod hashMethod = HashMethod.fromId(method);
         if (hashMethod == null)
             return UNSUPPORTED_HASH_METHOD;
         EncryptionModule module = getEncryptionModule(hashMethod);
-        return module.getPasswordHash(password).getDescription();
+        return module.getPasswordHash(userUUID, password);
     }
 
     @Override

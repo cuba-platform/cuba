@@ -16,6 +16,7 @@ import org.apache.commons.codec.binary.Base64;
 import javax.annotation.ManagedBean;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.UUID;
 
 /**
  * @author artamonov
@@ -54,8 +55,8 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
     }
 
     @Override
-    public HashDescriptor getPasswordHash(String password) {
-        return encryptionModule.getPasswordHash(password);
+    public String getPasswordHash(UUID userId, String password) {
+        return encryptionModule.getPasswordHash(userId, password);
     }
 
     @Override

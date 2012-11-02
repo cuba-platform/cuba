@@ -5,9 +5,11 @@
  */
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.CubaTestCase;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
@@ -24,7 +26,6 @@ public class PermissionTest extends CubaTestCase {
 
     private static final String USER_NAME = "testUser";
     private static final String USER_PASSW = "testUser";
-    private static final String PROFILE_NAME = "testProfile";
     private static final String PERM_TARGET_SCREEN = "w:sys$Server.browse";
     private static final String PERM_TARGET_ATTR = "sys$Server:address";
 
@@ -75,8 +76,8 @@ public class PermissionTest extends CubaTestCase {
             user.setName(USER_NAME);
             user.setLogin(USER_NAME);
 
-            HashDescriptor pwd = passwordEncryption.getPasswordHash(USER_PASSW);
-            user.setPassword(pwd.toCredentialsString());
+            String pwd = passwordEncryption.getPasswordHash(userId, USER_PASSW);
+            user.setPassword(pwd);
 
             user.setGroup(group);
             em.persist(user);
@@ -140,7 +141,7 @@ public class PermissionTest extends CubaTestCase {
     public void test() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_NAME, passwordEncryption.getPlainHash(USER_PASSW), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
         boolean permitted = userSession.isPermitted(PermissionType.SCREEN, PERM_TARGET_SCREEN);

@@ -79,11 +79,6 @@ public class LoginServiceBean implements LoginService {
     }
 
     @Override
-    public void ping() {
-        log.debug("ping");
-    }
-
-    @Override
     public UserSession getSession(UUID sessionId) {
         return loginWorker.getSession(sessionId);
     }

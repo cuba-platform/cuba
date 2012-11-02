@@ -192,7 +192,8 @@ public class UserManagementServiceBean implements UserManagementService {
         checkNotNull(userId, "Null userId");
         checkNotNull(newPasswordHash, "Null new password hash");
 
-        HashDescriptor oldPassword;
+        String oldPassword;
+        String salt;
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -203,14 +204,15 @@ public class UserManagementServiceBean implements UserManagementService {
             if (user == null)
                 throw new RuntimeException("Unable to find user with id: " + userId);
 
-            oldPassword = HashDescriptor.parse(user.getPassword());
+            oldPassword = user.getPassword();
+            salt = user.getSalt();
 
             tx.commit();
         } finally {
             tx.end();
         }
 
-        return StringUtils.equals(passwordEncryption.getHash(newPasswordHash, oldPassword.getSalt()), oldPassword.getHash());
+        return StringUtils.equals(passwordEncryption.getHash(newPasswordHash, salt), oldPassword);
     }
 
     private EmailTemplate getResetPasswordTemplate(User user,
@@ -336,8 +338,8 @@ public class UserManagementServiceBean implements UserManagementService {
                 if (generatePassword) {
                     password = passwordEncryption.generateRandomPassword();
 
-                    HashDescriptor pwd = passwordEncryption.getPasswordHash(password);
-                    user.setPassword(pwd.toCredentialsString());
+                    String passwordHash = passwordEncryption.getHash(password, user.getSalt());
+                    user.setPassword(passwordHash);
                 }
                 user.setChangePasswordAtNextLogon(true);
 

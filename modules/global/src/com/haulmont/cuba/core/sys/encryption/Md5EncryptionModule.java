@@ -6,14 +6,14 @@
 
 package com.haulmont.cuba.core.sys.encryption;
 
-import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.HashDescriptor;
-import com.haulmont.cuba.core.global.PasswordHashDescriptor;
+import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
+import java.util.UUID;
 
 /**
  * @author artamonov
@@ -34,7 +34,7 @@ public class Md5EncryptionModule implements EncryptionModule {
 
     @Override
     public String getHash(String content, String salt) {
-        return DigestUtils.md5Hex(content);
+        return getPlainHash(content);
     }
 
     @Override
@@ -43,9 +43,8 @@ public class Md5EncryptionModule implements EncryptionModule {
     }
 
     @Override
-    public HashDescriptor getPasswordHash(String content) {
-        HashDescriptor hash = getHash(content);
-        return new PasswordHashDescriptor(hash, hash.getHash());
+    public String getPasswordHash(UUID userId, String password) {
+        return getPlainHash(password);
     }
 
     @Override

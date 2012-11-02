@@ -6,9 +6,11 @@
 
 package com.haulmont.cuba.core.sys.encryption;
 
-import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.HashDescriptor;
+import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.security.entity.User;
+
+import java.util.UUID;
 
 /**
  * Encryption algorithm
@@ -22,7 +24,7 @@ public interface EncryptionModule {
 
     HashDescriptor getHash(String content);
 
-    HashDescriptor getPasswordHash(String password);
+    String getPasswordHash(UUID userId, String password);
 
     String getHash(String content, String salt);
 
