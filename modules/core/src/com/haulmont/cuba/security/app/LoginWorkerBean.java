@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Class that encapsulates the middleware login/logout functionality.
@@ -45,7 +47,6 @@ public class LoginWorkerBean implements LoginWorker {
     @Inject
     private Messages messages;
 
-    @Inject
     private Configuration configuration;
 
     @Inject
@@ -57,9 +58,18 @@ public class LoginWorkerBean implements LoginWorker {
     @Inject
     private UserSessionSource userSessionSource;
 
+    private Pattern permittedIpMaskPattern;
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+
+        String permittedIpMask = configuration.getConfig(ServerConfig.class).getTrustedClientPermittedIpMask();
+        permittedIpMaskPattern = Pattern.compile(permittedIpMask);
+    }
+
     @Nullable
-    private User loadUser(String login)
-            throws LoginException {
+    private User loadUser(String login) throws LoginException {
         if (login == null)
             throw new IllegalArgumentException("Login is null");
 
@@ -144,6 +154,15 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
+        RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
+        if (remoteClientInfo != null) {
+            // reject request from not permitted client ip
+            if (!permittedIpMaskPattern.matcher(remoteClientInfo.getAddress()).find()) {
+                log.warn("Login trusted request from not permitted ip address: " + remoteClientInfo.getAddress());
+                return null;
+            }
+        }
+
         String trustedClientPassword = configuration.getConfig(ServerConfig.class).getTrustedClientPassword();
         if (StringUtils.isBlank(trustedClientPassword) || !trustedClientPassword.equals(password))
             throw new LoginException(getInvalidCredentialsMessage(login, locale));

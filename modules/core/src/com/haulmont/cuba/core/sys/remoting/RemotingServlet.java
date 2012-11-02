@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
@@ -29,6 +30,8 @@ import java.io.File;
 public class RemotingServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = 4142366570614871805L;
+
+    private Log log = LogFactory.getLog(getClass());
 
     public static final String SPRING_CONTEXT_CONFIG = "cuba.remotingSpringContextConfig";
 
@@ -109,12 +112,22 @@ public class RemotingServlet extends DispatcherServlet {
             if (sb.length() > 0) {
                 sb.insert(0, "\n*****\n");
                 sb.append("*****");
-                LogFactory.getLog(getClass()).warn(" Invalid configuration parameters that may cause problems:" +
+                log.warn(" Invalid configuration parameters that may cause problems:" +
                         sb.toString()
                 );
             }
             checkCompleted = true;
         }
+
+        RemoteClientInfo remoteClientInfo = new RemoteClientInfo();
+        remoteClientInfo.setAddress(request.getRemoteAddr());
+        remoteClientInfo.setHost(request.getRemoteHost());
+        remoteClientInfo.setPort(request.getRemotePort());
+
+        RemoteClientInfo.set(remoteClientInfo);
+
         super.doService(request, response);
+
+        RemoteClientInfo.clear();
     }
 }
