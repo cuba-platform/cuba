@@ -1,0 +1,9 @@
+﻿.v-table-row-budget-yellow,
+.v-table-row-budget-yellow.v-selected {
+    background-color: #edebbb;
+}
+
+.v-table .v-table-cell-content-budget-yellow,
+   .v-selected .v-table-cell-content-budget-yellow {
+        background-color: #edebbb;
+   }

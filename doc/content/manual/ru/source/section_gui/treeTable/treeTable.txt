@@ -1,0 +1,15 @@
+﻿<!--Определение источника данных-->
+<dsContext>
+	<hierarchicalDatasource id="sampleDs" class="com.haulmont.refapp.core.entity.SampleHierarchicalEntity" view="_local"
+                            hierarchyProperty="parent" refreshMode="NEVER"/>
+</dsContext>
+
+<!--Определение иерархической таблицы-->
+<treeTable id="treeTable" width="600px" height="400px">
+	<columns>
+		<column id="name"/>
+        <column id="active"/>
+        <column id="test" caption="Generated"/>
+    </columns>
+    <rows datasource="sampleDs"/>
+</treeTable>

@@ -1,0 +1,16 @@
+﻿<!--Определение источника данных-->
+<dsContext>
+	<hierarchicalDatasource id="sampleDs"
+                            class="com.haulmont.refapp.core.entity.SampleHierarchicalEntity"
+                            view="sample.browse"
+                            hierarchyProperty="parent"
+                            refreshMode="NEVER">
+    <query>
+		<![CDATA[select g from ref$SampleHierarchicalEntity g]]>
+    </query>
+    </hierarchicalDatasource>
+</dsContext>
+<!--Определение дерева-->
+<tree id="testTree" width="100%" height="100%" multiselect="true">
+	<treechildren datasource="sampleDs" captionProperty="name" hierarchyProperty="parent" />
+</tree>

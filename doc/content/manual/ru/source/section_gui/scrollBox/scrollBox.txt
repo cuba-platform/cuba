@@ -1,0 +1,10 @@
+﻿<scrollBox width="100%" height="100%" spacing="true" margin="true" orientation="vertical">
+	<button caption="Button 1"/>
+	<!--..-->
+    <button caption="Button 9"/>
+    <hbox spacing="true">
+		<button caption="Button 10"/>
+		<!--..-->
+        <button caption="Button 16"/>
+    </hbox>
+</scrollBox>

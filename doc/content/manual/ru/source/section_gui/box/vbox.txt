@@ -1,0 +1,10 @@
+﻿<vbox margin="true" spacing="true" width="100%">
+	<button caption="Vertical" width="${widthWithButton}"/>
+    <button caption="layout" width="${widthWithButton}"/>
+    <button caption="Vertical" width="${widthWithButton}"/>
+    <button caption="layout" width="${widthWithButton}"/>
+    <button caption="Vertical" width="${widthWithButton}"/>
+    <button caption="layout" width="${widthWithButton}"/>
+    <button caption="Vertical" width="${widthWithButton}"/>
+    <button caption="layout" width="${widthWithButton}"/>
+</vbox>

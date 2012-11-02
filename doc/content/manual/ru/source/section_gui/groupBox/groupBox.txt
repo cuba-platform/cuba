@@ -1,0 +1,11 @@
+﻿<groupBox spacing="true" caption="GroupBox"
+          orientation="vertical" collapsable="false" width="200" height="270">
+	<button caption="Button" width="${widthWithButton}"/>
+    <button caption="Button" width="${widthWithButton}"/>
+    <button caption="Button" width="${widthWithButton}"/>
+    <button caption="Button" width="${widthWithButton}"/>
+    <button caption="Button" width="${widthWithButton}"/>
+    <button caption="Button" width="${widthWithButton}"/>
+    <button caption="Button" width="${widthWithButton}"/>
+    <button caption="Button" width="${widthWithButton}"/>
+</groupBox>

@@ -1,0 +1,12 @@
+﻿testTable.addGeneratedColumn(
+	"number",
+    new Table.ColumnGenerator<TestEntity>() {
+		@Override
+        public Component generateCell(TestEntity entity) {
+			LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+			lookupField.setOptionsList(Arrays.asList(2, 4, 5));
+            lookupField.setWidth("100px");
+            return lookupField;
+         }
+    }
+);
