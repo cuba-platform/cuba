@@ -31,7 +31,7 @@
 
     <layout expand="split" spacing="true">
         <fieldGroup id="fieldGroup" width="100%" datasource="userDs" collapsable="false" border="visible">
-            <column flex="1" width="${width}">
+            <column flex="1" width="${width}" id="fieldGroupColumn1">
                 <field id="login" required="true" requiredMessage="msg://loginMsg"/>
                 <field id="passw" custom="true" caption="msg://password"/>
                 <field id="lastName"/>
@@ -44,7 +44,7 @@
                 <!-- hidden, todo rewrite broken permission lookups -->
                 <!--<field id="permissionsLookupField" caption="msg://permissions" custom="true" visible="false"/>-->
             </column>
-            <column flex="3" width="${width}">
+            <column flex="3" width="${width}" id="fieldGroupColumn2">
                 <field id="group" required="true" requiredMessage="msg://groupMsg"/>
                 <field id="confirmPassw" custom="true" caption="msg://confirmPassword"/>
                 <field id="firstName"/>
