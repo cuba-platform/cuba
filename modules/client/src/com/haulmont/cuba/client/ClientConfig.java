@@ -82,7 +82,7 @@ public interface ClientConfig extends Config {
      * If false, the filter will be applied automatically, refreshing the table immediately after the screen opening.
      */
     @Property("cuba.gui.genericFilterManualApplyRequired")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getGenericFilterManualApplyRequired();
 
     /**
