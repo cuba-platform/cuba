@@ -1,5 +1,0 @@
-<screen-config xmlns="http://www.haulmont.com/schema/cuba/gui/screen-config.xsd">
-
-    <!--<screen id="about" template="/com/haulmont/refapp/gui/app/about/about-window.xml"/>-->
-
-</screen-config>

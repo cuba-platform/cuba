@@ -1,31 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<!-- This document was created with Syntext Serna Free. --><chapter id="chapter_introduction" lang="ru">
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. -->
+<chapter id="chapter_introduction" lang="ru">
   <title>Введение</title>
   <section>
-    <title>Технические требования</title>
-    <para><emphasis role="bold">Минимальные аппаратные требования</emphasis>  для платформы <trademark>CUBA</trademark></para>
-    <itemizedlist>
-      <listitem>
-        <para>Процессор 32-разрядный двухъядерный </para>
-      </listitem>
-      <listitem>
-        <para>Оперативная память 4 ГБ</para>
-      </listitem>
-      <listitem>
-        <para>Место на жестком диске 5 ГБ</para>
-      </listitem>
-    </itemizedlist>
-    <para><emphasis role="bold">Программные требования </emphasis> для платформы <trademark>CUBA</trademark> − операционная система <application>Microsoft Windows</application> или <application>Unix</application> (<application>Linux</application>, <application>FreeBSD</application> и пр.).</para>
-  </section>
-  <section>
     <title>Основные возможности платформы</title>
-    <para>Платформа <trademark>CUBA</trademark>  развивается компанией <application>Haulmont</application> начиная с 2008 года и применяется в качестве основы всех создаваемых ею приложений – как тиражируемых продуктов, так и сделанных на заказ решений. Наиболее известным на рынке продуктом является система электронного документооборота <trademark>ТЕЗИС</trademark> (<ulink url="http://www.tezis-doc.ru/">http://www.tezis-doc.ru/</ulink>).</para>
+    <para>Платформа <trademark>CUBA</trademark> развивается компанией
+    <application>Haulmont</application> начиная с 2008 года и применяется в
+    качестве основы всех создаваемых ею приложений – как тиражируемых
+    продуктов, так и сделанных на заказ решений. Наиболее известным на российском рынке
+    продуктом является система электронного документооборота
+    <trademark>ТЕЗИС</trademark> (<ulink url="http://www.tezis-doc.ru/">http://www.tezis-doc.ru/</ulink>).</para>
     <para><emphasis role="bold">Ключевые особенности</emphasis></para>
     <itemizedlist>
       <listitem>
-        <para>Использование платформы <application>Java</application>, а, следовательно, возможность работы под управлением практически любых операционных систем на серверах и рабочих станциях</para>
+        <para>Использование платформы <application>Java</application>, а,
+        следовательно, возможность работы под управлением практически любых
+        операционных систем на серверах и рабочих станциях</para>
       </listitem>
       <listitem>
         <para>Полностью открытый исходный код</para>
@@ -34,61 +25,93 @@
         <para>Независимость от специфики СУБД</para>
       </listitem>
       <listitem>
-        <para>Создаваемые на базе платформы приложения легко могут быть развернуты в отказоустойчивой конфигурации</para>
+        <para>Создаваемые на базе платформы приложения легко могут быть
+        развернуты в отказоустойчивой конфигурации</para>
       </listitem>
       <listitem>
-        <para>Наличие эффективных средств разработки <link linkend="section_gui_framework">пользовательского интерфейса</link> с помощью только <application>Java</application> и <application>XML</application></para>
+        <para>Наличие эффективных средств разработки <link linkend="section_gui_framework">пользовательского интерфейса</link> с
+        помощью только <application>Java</application> и
+        <application>XML</application></para>
       </listitem>
       <listitem>
-        <para>Мощные средства разграничения прав доступа пользователей к информации с возможностью настройки в работающем приложении<footnote>
-            <para>Описание функциональности управления пользователями и их доступом к данным содержится в <productname>Руководстве подсистемы безопасности платформы <trademark>CUBA</trademark></productname></para>
+        <para>Мощные средства разграничения прав доступа пользователей к
+        информации с возможностью настройки в работающем приложении<footnote>
+            <para>Описание функциональности управления пользователями и их доступом к данным
+              содержится в руководстве <productname>Платформа CUBA. Подсистема безопасности</productname></para>
           </footnote></para>
       </listitem>
       <listitem>
-        <para>Встроенный механизм создания и генерации отчетов с выводом в форматы офисных документов и PDF<footnote>
-            <para>Информация о создании отчетов с помощью платформы находится в <productname>Руководстве по созданию отчетов</productname></para>
+        <para>Встроенный механизм создания и генерации отчетов с выводом в
+        форматы офисных документов и PDF<footnote>
+            <para>Информация о создании отчетов с помощью платформы содержится в руководстве
+                <productname>Платформа CUBA. Генератор отчетов</productname></para>
           </footnote></para>
       </listitem>
       <listitem>
-        <para>Механизм создания и выполнения <glossterm linkend="glossary_process_id">бизнес-процессов</glossterm> с интегрированным визуальным редактором процессов</para>
+        <para>Механизм создания и выполнения бизнес-процессов с интегрированным визуальным
+          редактором процессов<footnote>
+            <para>Описание механизма выполнения бизнес-процессов содержится в руководстве
+                <productname>Платформа CUBA. Подсистема Workflow</productname></para>
+          </footnote></para>
       </listitem>
       <listitem>
-        <para><link linkend="section_fts">Полнотекстовый поиск</link> по атрибутам <glossterm linkend="glossary_entity">сущностей</glossterm> и по содержимому загруженных файлов</para>
+        <para>Полнотекстовый поиск по атрибутам <glossterm linkend="glossary_entity">сущностей</glossterm> и по содержимому загруженных файлов<footnote>
+            <para>Описание механизма полнотекстового поиска содержится в руководстве
+                <productname>Платформа CUBA. Полнотекстовый поиск</productname></para>
+          </footnote></para>
       </listitem>
       <listitem>
-        <para>Возможность <link linkend="section_charts">отображения диаграмм</link>, в том числе, диаграммы Ганта</para>
+        <para>Возможность отображения диаграмм, в том числе, диаграммы Ганта<footnote>
+            <para>Описание механизма отображения диаграмм содержится в руководстве
+                <productname>Платформа CUBA. Отображение диаграмм</productname></para>
+          </footnote></para>
       </listitem>
       <listitem>
-        <para>Встроенный <link linkend="section_restapi">REST API</link> с передачей данных в форматах XML или JSON для быстрой интеграции со сторонними приложениями</para>
+        <para>Встроенный <link linkend="section_restapi">REST API</link> с
+        передачей данных в форматах XML или JSON для быстрой интеграции со
+        сторонними приложениями</para>
       </listitem>
       <listitem>
-        <para><link linkend="section_extending_funct">Механизм создания расширений функциональности</link>, позволяющий адаптировать тиражируемые продукты для конкретных заказчиков, не затрудняя при этом обновления версий продуктов</para>
+        <para><link linkend="section_extending_funct">Механизм создания расширений функциональности</link>, позволяющий адаптировать
+        тиражируемые продукты для конкретных заказчиков, не затрудняя при этом
+        обновления версий продуктов</para>
       </listitem>
     </itemizedlist>
     <para><emphasis role="bold">Преимущества использования платформы <trademark>CUBA</trademark></emphasis></para>
     <itemizedlist>
       <listitem>
-        <para>Система, строящаяся на платформе, приобретает эффективную архитектуру, опробованную на множестве приложений, созданных компанией <application>Haulmont</application> и другими разработчиками</para>
+        <para>Система, строящаяся на платформе, приобретает эффективную
+        архитектуру, опробованную на множестве приложений, созданных компанией
+        <application>Haulmont</application> и другими разработчиками</para>
       </listitem>
       <listitem>
-        <para>Декларативный подход к созданию пользовательского интерфейса имеет следующие преимущества:<itemizedlist>
+        <para>Декларативный подход к созданию пользовательского интерфейса
+        имеет следующие преимущества:<itemizedlist>
             <listitem>
-              <para>абстрагирует разработчика от сложностей разнородных технологий (HTML/JavaScript, Swing, и т.п.)</para>
+              <para>абстрагирует разработчика от сложностей разнородных
+              технологий (HTML/JavaScript, Swing, и т.п.)</para>
             </listitem>
             <listitem>
-              <para>четко разделяет визуальное расположение и логику инициализации и реакции на события, облегчая понимание и изменение кода</para>
+              <para>четко разделяет визуальное расположение и логику
+              инициализации и реакции на события, облегчая понимание и
+              изменение кода</para>
             </listitem>
           </itemizedlist></para>
       </listitem>
       <listitem>
-        <para>Созданные таким образом экраны одинаково работоспособны в обоих типах клиентов, поддерживаемых платформой: веб и десктоп, что позволяет с минимумом усилий создавать системы, использующие преимущества веб-интерфейса и/или настольных приложений</para>
+        <para>Созданные таким образом экраны одинаково работоспособны в обоих
+        типах клиентов, поддерживаемых платформой: веб и десктоп, что
+        позволяет с минимумом усилий создавать системы, использующие
+        преимущества веб-интерфейса и/или настольных приложений</para>
       </listitem>
       <listitem>
-        <para>Платформой предоставляется готовая функциональность на следующих уровнях:<itemizedlist>
+        <para>Платформой предоставляется готовая функциональность на следующих
+        уровнях:<itemizedlist>
             <listitem>
               <para>Системный уровень<itemizedlist>
                   <listitem>
-                    <para>Инфраструктура и средства организации бизнес-логики на <link linkend="section_middleware_id">среднем слое</link></para>
+                    <para>Инфраструктура и средства организации бизнес-логики
+                    на <link linkend="section_middleware_id">среднем слое</link></para>
                   </listitem>
                   <listitem>
                     <para><link linkend="section_gui_framework">Библиотека визуальных компонентов</link> и <link linkend="section_client_id">инфраструктура клиентов</link></para>
@@ -97,13 +120,16 @@
                     <para>Средства работы с <glossterm linkend="glossary_conf_parameter_id">параметрами конфигурации</glossterm> и <glossterm linkend="glossary_localized_folders_id">локализованными сообщениями</glossterm></para>
                   </listitem>
                   <listitem>
-                    <para>Средства выполнения <link linkend="section_backgroundtasks">фоновых задач</link> пользовательского интерфейса</para>
+                    <para>Средства выполнения <link linkend="section_backgroundtasks">фоновых задач</link>
+                    пользовательского интерфейса</para>
                   </listitem>
                   <listitem>
                     <para>Механизмы запуска на среднем слое <link linkend="section_scheduled_tasks">задач по расписанию</link></para>
                   </listitem>
                   <listitem>
-                    <para>Возможность применения <link linkend="section_runtime_properties">динамических атрибутов</link>, позволяющих задавать новые атрибуты <glossterm linkend="glossary_entity">сущностей</glossterm> на этапе настройки и эксплуатации системы</para>
+                    <para>Возможность применения <link linkend="section_runtime_properties">динамических атрибутов</link>, позволяющих задавать новые атрибуты
+                    <glossterm linkend="glossary_entity">сущностей</glossterm>
+                    на этапе настройки и эксплуатации системы</para>
                   </listitem>
                 </itemizedlist></para>
             </listitem>
@@ -119,13 +145,15 @@
                     <para>Подсистема работы с бизнес-процессами</para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="section_fts">Полнотекстовый поиск</link></para>
+                    <para>Полнотекстовый
+                    поиск</para>
                   </listitem>
                   <listitem>
                     <para>Механизм надежной асинхронной рассылки email</para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="section_audit">Средства ведения журнала аудита</link> изменений <glossterm linkend="glossary_entity">сущностей</glossterm> и сохранения версий</para>
+                    <para><link linkend="section_audit">Средства ведения журнала аудита</link> изменений <glossterm linkend="glossary_entity">сущностей</glossterm> и
+                    сохранения версий</para>
                   </listitem>
                   <listitem>
                     <para>Средства организации <link linkend="section_objects_cache">кэшей данных</link></para>
@@ -135,30 +163,57 @@
             <listitem>
               <para>Уровень развертывания<itemizedlist>
                   <listitem>
-                    <para>Возможность работы в отказоустойчивой конфигурации</para>
+                    <para>Возможность работы в отказоустойчивой
+                    конфигурации</para>
                   </listitem>
                   <listitem>
                     <para>Готовые средства <link linkend="section_restapi">интеграции со сторонними приложениями</link></para>
                   </listitem>
                   <listitem>
-                    <para>Возможность независимого создания <link linkend="section_extending_funct">расширений</link> основного продукта для адаптации под конкретного заказчика</para>
+                    <para>Возможность независимого создания <link linkend="section_extending_funct">расширений</link>
+                    основного продукта для адаптации под конкретного
+                    заказчика</para>
                   </listitem>
                 </itemizedlist></para>
             </listitem>
           </itemizedlist></para>
       </listitem>
       <listitem>
-        <para>Функциональность платформы позволяет значительно сократить сроки разработки и удешевить проект</para>
+        <para>Функциональность платформы позволяет значительно сократить сроки
+        разработки и удешевить проект</para>
       </listitem>
       <listitem>
-        <para>Для создания веб-клиента приложения на основе <trademark>CUBA</trademark>  не обязательно хорошее знание классических веб-технологий: HTML, CSS, JavaScript</para>
+        <para>Для создания веб-клиента приложения на основе
+        <trademark>CUBA</trademark> не обязательно хорошее знание классических
+        веб-технологий: HTML, CSS, JavaScript</para>
       </listitem>
     </itemizedlist>
   </section>
   <section>
-    <title>
-      <acronym>Использование сторонних библиотек</acronym>
-    </title>
-    <para>TODO</para>
+    <title>Технические требования</title>
+    <para><emphasis role="bold">Минимальные аппаратные требования</emphasis>
+    для ведения разработки на платформе <trademark>CUBA</trademark></para>
+    <itemizedlist>
+      <listitem>
+        <para>Оперативная память 4 ГБ</para>
+      </listitem>
+      <listitem>
+        <para>Место на жестком диске 5 ГБ</para>
+      </listitem>
+    </itemizedlist>
+    <para><emphasis role="bold">Программные требования </emphasis><itemizedlist>
+        <listitem>
+          <para>операционная система
+    <application>Microsoft Windows</application>,
+    <application>Linux</application> или <application>Mac OS X</application></para>
+        </listitem>
+        <listitem>
+          <para>Java SE Development Kit 7+</para>
+        </listitem>
+      </itemizedlist></para>
+  </section>
+  <section>
+    <title>Использование стороннего ПО</title>
+    <para>Информация о используемом стороннем программном обеспечении находится в файле <filename>cuba-credits.xml</filename> модуля <structname>core</structname>.</para>
   </section>
 </chapter>

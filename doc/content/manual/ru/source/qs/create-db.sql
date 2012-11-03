@@ -18,7 +18,7 @@ create table SHOP_BUYER (
     primary key (ID)
 )^
 create table SHOP_DISCOUNT (
-    ID uuid not null,			          --Первичный ключ
+    ID uuid not null,			  --Первичный ключ
     CREATE_TS timestamp,          --Когда создано (системное поле)
     CREATED_BY varchar(50),       --Кем  создано (системное поле)
     VERSION integer,              --Версия (системное поле)

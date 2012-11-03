@@ -1,27 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter_quickStart">
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><chapter id="chapter_quickStart" lang="ru">
   <title>Быстрый старт</title>
-  <para>В качестве первого знакомства с платформой <trademark>CUBA</trademark> мы создадим простое приложение, называемое <application>Магазин</application>. Задача − демонстрация основных шагов по созданию  окон приложения, а также развертыванию приложения на сервере.</para>
-  <para>Для создания нашего простого приложения необходимо выполнить  следующие шаги:</para>
-  <itemizedlist>
+  <para>В качестве первого знакомства с платформой <trademark>CUBA</trademark> мы создадим простое приложение, называемое <application>Магазин</application>. Задача − демонстрация основных шагов по созданию модели данных и пользовательского интерфейса, а также по развертыванию приложения на сервере.</para>
+  <para>На Вашей рабочей машине уже должно быть установлено и настроено необходимое программное обеспечение. Информация о том, как установить и настроить программное обеспечение, содержится в разделе   <xref xrefstyle="" linkend="chapter_setup"/>.</para>
+  <para>Основные задачи, стоящие при разработке нашего приложения:</para>
+  <orderedlist>
     <listitem>
-      <para>Создать новый проект</para>
+      <para>Разработка модели данных, которая заключается в создании сущностей предметной области и соответствующих таблиц базы данных.</para>
     </listitem>
     <listitem>
-      <para>Написать исходный код</para>
+      <para>Разработка экранов пользовательского интерфейса, позволяющих создавать, просматривать, обновлять и удалять сущности модели данных.</para>
     </listitem>
-    <listitem>
-      <para>Развернуть приложение на веб-сервере</para>
-    </listitem>
-  </itemizedlist>
-  <para>На Вашей рабочей машине уже должно быть установлено и настроено необходимое программное обеспечение. Информация о том, как установить и настроить программное обеспечение, содержится в главе <xref linkend="chapter_setup" xrefstyle="select: title"/>.</para>
-  <para>Шаблон проекта, рассмотренного в главе Быстрый старт,  находится по адресу <ulink url="http://docs.haulmont.com/cuba/4.0/manual/shop">http://docs.haulmont.com/cuba/4.0/manual/shop</ulink></para>
+  </orderedlist>
   <section id="section_quick_start_data_model">
     <title>Описание предметной области</title>
-    <para>Наше первое приложение предназначено для ведения сведений о покупателях и скидках. </para>
-    <para>Покупатель имеет характеристики:</para>
+    <para>Наше  приложение предназначено для ведения сведений о покупателях и скидках. </para>
+    <para>Покупатель имеет следующие характеристики:</para>
     <itemizedlist>
       <listitem>
         <para>Имя</para>
@@ -42,7 +37,7 @@
         <para>Адрес доставки</para>
       </listitem>
     </itemizedlist>
-    <para>Скидки должны отображаться и редактироваться в окне редактирования покупателя. Скидка характеризуется:</para>
+    <para>Скидка характеризуется:</para>
     <itemizedlist>
       <listitem>
         <para>Минимальным количеством товара</para>
@@ -57,289 +52,246 @@
         <para>Датой окончания скидки</para>
       </listitem>
     </itemizedlist>
-    <para>Создать приложение, содержащее следующее:</para>
+    <para>Необходимо создать приложение, содержащее:</para>
     <itemizedlist>
       <listitem>
         <para>Окно списка покупателей;</para>
       </listitem>
       <listitem>
-        <para>Окно редактирования сведений о покупателе, содержащее скидки данного покупателя с возможностью их создания, удаления и редактирования.</para>
+        <para>Окно редактирования сведений о покупателе, содержащее также скидки данного покупателя с возможностью их создания, удаления и редактирования.</para>
       </listitem>
     </itemizedlist>
   </section>
   <section>
-    <title>Создание и настройка проекта приложения</title>
-    <orderedlist>
-      <listitem>
-        <para>Создайте рабочую папку для проекта, например, <filename>c:/work/shop_project/shop</filename>.</para>
+    <title>Создание приложения в CUBA Studio</title>
+    <para>TODO</para>
+  </section>
+  <section>
+    <title>Создание приложения вручную</title>
+    <section>
+      <title>Настройка проекта приложения</title>
+      <orderedlist>
+        <listitem>
+          <para>Создайте рабочую папку для проекта, например, <filename>c:/work/shop</filename>.</para>
+          <warning>
+            <para>Путь не должен содержать пробелов!</para>
+          </warning>
+        </listitem>
+        <listitem>
+          <para>Загрузите архив с шаблоном проекта <ulink url="http://docs.haulmont.com/cuba/4.0/samples/shop.zip">http://docs.haulmont.com/cuba/4.0/samples/shop.zip</ulink> и распакуйте содержимое архива в рабочий каталог таким образом, чтобы в каталоге <filename>c:/work/shop</filename> появился подкаталог <filename>modules</filename> и файлы <filename>build.gradle</filename> и <filename>settings.gradle</filename></para>
+        </listitem>
+        <listitem>
+          <para>Запустите командную строку в рабочем каталоге <filename>c:/work/shop</filename>.</para>
+        </listitem>
+        <listitem>
+          <para>Собираем проект. В командной строке введите команду</para>
+          <para><prompt>gradle assemble</prompt></para>
+          <para>На этом этапе будут загружены все необходимые библиотеки и в каталогах модулей в подкаталогах <filename>build</filename> будут собраны артефакты проекта. </para>
+        </listitem>
+        <listitem>
+          <para>Чтобы работать с проектом в <application>IntelliJ IDEA</application>, запускаем команду, с помощью которой создаются проектные файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
+          <para><prompt>gradle idea</prompt></para>
+        </listitem>
+        <listitem>
+          <para>Устанавливаем сервер приложений <application>Apache Tomcat</application>:</para>
+          <para><prompt>gradle setupTomcat</prompt></para>
+          <para>Сервер <application>Tomcat</application> будет установлен в подкаталоге <filename>build</filename> рабочего каталога. Расположение сервера определяется переменной <varname>ext.tomcatDir</varname> скрипта сборки <filename>build.gradle</filename>. </para>
+        </listitem>
+        <listitem>
+          <para>Разворачиваем собранные артефакты и библиотеки проекта в <application>Tomcat</application>:</para>
+          <para><prompt>gradle deploy</prompt></para>
+        </listitem>
+        <listitem>
+          <para>Создаем базу данных на локальном сервере PostgreSQL:</para>
+          <para><prompt>gradle createDb</prompt></para>
+          <para>Имя базы данных определяется параметром <varname>dbName</varname> задачи <varname>createDb</varname> скрипта <filename>build.gradle</filename>, в нашем случае <database>shop</database>.</para>
+        </listitem>
+        <listitem>
+          <para>Запускаем сервер:</para>
+          <para><prompt>gradle start</prompt></para>
+        </listitem>
+        <listitem>
+          <para>Для просмотра приложения в веб-браузере введите в адресную строку <ulink url="http://localhost:8080/app">http://localhost:8080/app</ulink></para>
+          <para>Логин и пароль пользователя − admin / admin.</para>
+        </listitem>
+      </orderedlist>
+      <para>Запущенное приложение содержит два главных пункта меню (<guimenu>Администрирование</guimenu> и <guimenu>Помощь</guimenu>), функциональность подсистемы безопасности и администрирования системы.</para>
+      <figure>
+        <title>Главное окно приложения. Главное меню</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/quick_start_app1.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </section>
+    <section>
+      <title>Создание исходного кода приложения</title>
+      <para>Откройте проектный файл <filename>shop.ipr</filename> в IntelliJ IDEA. Вы увидите структуру проекта, аналогичную описанной в <xref linkend="section_structure_folders_files"/></para>
+      <section>
+        <title>Создание таблиц базы данных</title>
+        <para>Откройте файл <filename>db/init/postgres/create-db.sql</filename> модуля <structname>core</structname> и добавьте в него следующий код для создания таблиц <database>Покупатель</database> и <database>Скидка</database>:</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/create-db.sql" parse="text" encoding="UTF-8"/></programlisting>
+        <para>SQL-команды разделяются знаком «^». Это дает возможность задания сложных команд, содержащих внутри себя знаки «;».</para>
+        <para>Системные поля являются обязательными.</para>
+        <para>Остановите сервер приложения командой</para>
+        <para> <prompt>gradle stop</prompt></para>
+        <para>Затем пересоздайте локальную базу данных <database>shop</database> командой </para>
+        <para><prompt>gradle createDb</prompt></para>
+        <para>При этом старая база данных с данным именем удаляется, создается новая, и на ней выполняется скрипт <filename>create-db.sql</filename>.</para>
+      </section>
+      <section>
+        <title>Создание сущностей</title>
+        <para>Создайте пакет <package>com.haulmont.shop.entity</package> в модуле <structname>global</structname>.</para>
+        <para>В данном пакете создайте класс <glossterm linkend="glossary_entity">сущности</glossterm> <classname>Покупатель (Buyer)</classname>,  представленный в листинге:</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer.java" parse="text" encoding="UTF-8"/></programlisting>
+        <tip>
+          <title>Совет</title>
+          <para>Для автоматической генерации <firstterm>методов доступа</firstterm> (get/set) можно воспользоваться сочетанием клавиш <keycombo>
+              <keycap>Alt</keycap>
+              <keycap>Ins</keycap>
+            </keycombo>, затем в меню выбрать <guimenu>Getter and Setter</guimenu>. В отобразившемся окне выберите требуемые поля и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
+        </tip>
         <warning>
-          <para>Путь не должен содержать пробелов!</para>
+          <para>Методы доступа не должны содержать никакой логики, кроме чтения/установки атрибутов данной или связанных с ней сущностей.</para>
         </warning>
-      </listitem>
-      <listitem>
-        <para>Создайте в этой папке файл <filename>build.gradle</filename> следующего содержания:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/build.gradle" parse="text"/></programlisting>
+        <para id="text_registration_entity">После создания класса зарегистрируйте его в файле <filename>shop-persistence.xml</filename> модуля <structname>global</structname>:</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/registerBuyer.xml" parse="text" encoding="UTF-8"/></programlisting>
+        <para>Для <glossterm linkend="glossary_localized_folders_id">локализации</glossterm> имен сущностей и атрибутов создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в том же пакете, что и классы.</para>
+        <para>В этих файлах определяются строки с ключом <parameter>имя_сущности</parameter> для имени сущности и <parameter>имя_сущности.имя_атрибута</parameter> для имен атрибутов. Эти названия будут использованы при отображении списка экземпляров  и в окне редактирования сущности.</para>
         <caution>
           <title>Подсказка</title>
-          <para>Создайте системные переменные  <code>HAULMONT_REPOSITORY_USER</code> и <code>HAULMONT_REPOSITORY_PASSWORD</code>.</para>
+          <para>Все исходные файлы, в том числе <filename>*.properties</filename>, должны иметь кодировку <code>UTF-8</code>, поэтому в начале работы необходимо настроить кодировку <code>UTF-8</code> в среде <application>IntelliJ IDEA</application>. Для этого зайдите в <guimenu>File−&gt;Settings−&gt;Project Settings−&gt;File Encodings</guimenu>. В выпадающем списке <guilabel>Default encoding for properties files</guilabel> выберите <code>UTF-8</code>. Если не установлен флажок <guilabel>Autodetect UTF-encoded files</guilabel>, то установите его.</para>
+        </caution>
+        <para>Например, для русской локализации сущности <classname>Покупатель (Buyer)</classname> перевод будет следующим:</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/messagesBuyer.properties" parse="text" encoding="UTF-8"/></programlisting>
+        <para>Далее создадим <glossterm linkend="glossary_entity">сущность</glossterm> <classname>Скидка (Discount)</classname>. Класс сущности представлен в листинге ниже:</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Discount.java" parse="text" encoding="UTF-8"/></programlisting>
+        <para>Не забудьте <link linkend="text_registration_entity">зарегистрировать</link> сущность и задать <glossterm linkend="glossary_localized_folders_id">локализованные</glossterm> значения для полей.</para>
+        <section>
+          <title>Определение отношений между сущностями</title>
+          <para>В каждом <firstterm>отношении</firstterm> участвуют две <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
+          <para>Сущность <classname>Скидка (Discount)</classname> ссылается на сущность <classname>Покупатель (Buyer)</classname>. Данное отношение имеет связь <literal>&quot;многие-к-одному&quot; (ManyToOne)</literal>.</para>
+          <para>Рассмотрим создание данного отношения. Для этого перейдите к классу сущности <classname>Скидка (Discount)</classname> и добавьте туда следующий атрибут и методы доступа для него:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer_link.txt" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Аннотацией <literal>@ManyToOne</literal> определяется отношение, в котором ссылаемая сущность имеет мощность 1. Атрибут <parameter>fetch = FetchType.LAZY</parameter> означает, что <application>OpenJPA</application> отложит загрузку поля до тех пор, пока не понадобится доступ к этому полю.</para>
+          <para>Внешние ключи обозначаются аннотацией <literal>@JoinColumn</literal>. Атрибут <parameter>name</parameter> определяет внешний ключ для таблицы, с которой связан класс <classname>Скидка (Discount)</classname>.</para>
+          <para>Так как связь между сущностями <classname>Скидка (Discount)</classname> и <classname>Покупатель (Buyer)</classname> является двунаправленной, необходимо сделать также ссылку на сущность <classname>Скидка (Discount)</classname> в сущности <classname>Покупатель (Buyer)</classname>.</para>
+          <para>Атрибут <parameter>mappedBy = &quot;buyer&quot;</parameter> содержит имя поля в связанной сущности, которое является полем для связи в двунаправленном отношении.</para>
+          <para>Аннотация <literal>@Composition</literal> устанавливает в метаданных тип ссылочного атрибута (как правило, коллекции). Используется для организации сохранения элементов коллекции совместно с основной сущностью.</para>
+          <para>Кроме поддержки различных ограничений на уровне баз данных, <link linkend="text_openJPA">JPA</link> позволяет определять ограничения для отношений. В классе <classname>Покупатель (Buyer)</classname> показан каскадный эффект удаления сущности (с помощью аннотации <literal>@OnDelete(DeletePolicy.CASCADE)</literal>). Если покупатель будет удален, то удалятся и связанные с ним скидки.</para>
+        </section>
+      </section>
+      <section>
+        <title>Создание графического интерфейса пользователя приложения</title>
+        <para>Файлы, относящиеся к экранам, необходимо создавать в пакете <package>com.haulmont.shop.gui.ui модуля gui.</package></para>
+        <para>Любой экран должен определяться <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптором</glossterm>, описывающим  <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение <link linkend="section_gui_framework">визуальных компонентов</link> экрана. У экрана может быть <glossterm linkend="glossary_controller_id">контроллер</glossterm> − класс, содержащий логику инициализации и обработки событий экрана.</para>
+        <section>
+          <title>Создание экранов просмотра сущностей</title>
+          <para>Рассмотрим создание окна списка покупателей как типичного экрана приложения.</para>
+          <para>В окне будут отображаться список покупателей в виде таблицы и панель с кнопками, обеспечивающими основные операции (создание, редактирование, удаление).</para>
+          <para>В первую очередь создайте пакет <package>com.haulmont.shop.gui.ui.buyer</package> в модуле <structname>gui</structname>, где мы будем создавать файлы, относящиеся к экранам сущности <classname>Покупатель (Buyer)</classname>. Для создания окна списка покупателей создайте  <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> списка сущностей <filename>buyer-browse.xml</filename> </para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/buyer-browse.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>В элементе <parameter>dsContext</parameter> добавлен один компонент <glossterm linkend="glossary_datasource_id">источника данных</glossterm><parameter> collectionDatasource</parameter>, который выбирает сущности <classname>Покупатель (Buyer)</classname> с помощью <glossterm linkend="glossary_jpql">JPQL</glossterm> запроса <code>select b from shop$Buyer b</code> с <glossterm linkend="glossary_view_ru_id">представлением</glossterm> <parameter>view=&quot;_local&quot;</parameter>.</para>
+          <para>Рассмотрим элементы дескриптора более подробно.</para>
+          <para>Компонент <glossterm linkend="glossary_filter_id">Generic Filter</glossterm> (XML-имя компонента − <parameter>filter</parameter>) служит для отображения произвольного фильтра.</para>
+          <para>Компонент <glossterm linkend="glossary_table_id">Table</glossterm> (XML-имя компонента − <parameter>table</parameter>) служит для отображения данных в виде таблицы.</para>
+          <para>Элемент <parameter>column</parameter> задает опции для колонки таблицы. Обязательно содержит атрибут <parameter>id</parameter>, в котором задается название атрибута сущности, выводимого в колонке. Название берется из пакета <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
+          <para>Для отображения количества строк таблицы используется элемент <parameter>rowsCount</parameter>.</para>
+          <para>Над таблицей находится панель, содержащая кнопки для управления данными в этой таблице. XML-имя такой панели − <parameter>buttonsPanel</parameter>.</para>
+          <para>Размещение перечисленных выше компонентов задается с помощью контейнера <classname>BoxLayout</classname>. Существует три типа этого контейнера, определяемых именем XML-элемента. В нашем дескрипторе используется <parameter>vbox</parameter>, в результате чего элементы расположены вертикально.</para>
+          <para><glossterm linkend="glossary_xml_descriptor_id">Дескрипторы</glossterm> экранов имеют идентификаторы, по которым удобно вызывать экраны из меню или из программного кода. Идентификаторы назначаются в файле <filename>shop-screens.xml</filename> модуля <structname>gui</structname>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/screens_buyer-browse.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Чтобы добавить экран в меню, измените файл <filename>shop-web-menu.xml</filename> модуля <structname>web</structname> следующим образом:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/menu.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Для того чтобы ссылки отображались в меню корректно, создайте файлы <glossterm linkend="glossary_main_localized_folder_id">главного пакета сообщений</glossterm> <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете <package>com.haulmont.shop</package> модуля <structname>web</structname>, прописав в них названия пункта меню на английском и русском языках соответственно.</para>
+          <programlisting>menu-config.shop=Магазин
+menu-config.shop$Buyer.browse=Покупатели</programlisting>
+          <para>Посмотрим, как созданный нами экран выглядит в системе. Для этого пересоберите проект и зайдите в систему. Откройте пункт меню <guimenu>Магазин</guimenu> −&gt; <guimenu>Покупатели</guimenu>.</para>
           <figure>
-            <title>Задание системных переменных</title>
+            <title>Окно списка покупателей</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/setSystemVar.png" contentwidth="80%"/>
+                <imagedata align="center" fileref="img/interface_17.png"/>
               </imageobject>
             </mediaobject>
           </figure>
-          <para><code>HAULMONT_REPOSITORY_USER</code>: external
-</para>
-          <para><code>HAULMONT_REPOSITORY_PASSWORD</code>: aiva33n8</para>
-        </caution>
-      </listitem>
-      <listitem>
-        <para>Создайте в этой папке файл <filename>settings.gradle</filename> следующего содержания:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/settings.gradle" parse="text" encoding="UTF-8"/></programlisting>
-      </listitem>
-      <listitem>
-        <para>Затем создайте структуру проекта, описанную в главе <xref linkend="section_structure_folders_files" xrefstyle="select: title"/>. Содержание конфигурационных файлов содержится в  приложении <xref linkend="appendix_shop_conf_files" xrefstyle="select: labelnumber title"/></para>
-      </listitem>
-      <listitem>
-        <para>В классе <classname>App</classname> напишите следующее:</para>
-        <programlisting language="java"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/conf_files_shop/web/App.java" parse="text" encoding="UTF-8"/></programlisting>
-      </listitem>
-      <listitem>
-        <para>Далее создайте пустую базу данных с названием <database>shop</database>. Для этого откройте <application>pgAdmin</application>: зайдите в меню <guimenu>Пуск</guimenu>, далее − <application>PostgreSQL 9.1</application>, далее выберите <application>pgAdmin III</application>. В отобразившемся окне нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 9.1 (localhost:5432)</guilabel> и в отобразившемся контекстном меню выберите <guilabel>Подключение</guilabel>. Далее нажмите правой клавишей мыши на <guilabel>Базы данных</guilabel> и в отобразившемся контекстном меню выберите <guilabel>Новая база данных</guilabel>. На экране отобразится окно, представленное на рисунке:</para>
-        <figure>
-          <title>Главное окно pgAdmin. Создание новой базы данных</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/qs_1.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>В качестве имени укажите <database>shop</database>. Далее нажмите кнопку <guibutton>ОК</guibutton>. Новая база данных создана.</para>
-      </listitem>
-      <listitem>
-        <para>Запустите командную строку в каталоге <filename>c:/work/shop_project/shop</filename>.</para>
-      </listitem>
-      <listitem>
-        <para>Собираем проект. На этом этапе будут загружены все необходимые библиотеки и в каталогах модулей в подкаталогах <filename>build</filename> будут собраны артефакты проекта. В командной строке введите команду</para>
-        <para><prompt>gradle assemble</prompt></para>
-      </listitem>
-      <listitem>
-        <para>Устанавливаем сервер приложений <application>Tomcat</application>:</para>
-        <para><prompt>gradle setupTomcat</prompt></para>
-      </listitem>
-      <listitem>
-        <para>Разворачиваем артефакты и библиотеки проекта в <application>Tomcat</application>:</para>
-        <para><prompt>gradle deploy</prompt></para>
-      </listitem>
-      <listitem>
-        <para>Откройте файл <filename>shop-app.properties</filename> модуля <structname>core</structname> и добавьте туда следующую строку:</para>
-        <para><prompt>cuba.automaticDatabaseUpdate=true</prompt></para>
-        <para>После этого автоматическое обновление будет произведено при старте сервера.</para>
-      </listitem>
-      <listitem>
-        <para>Запускаем сервер:</para>
-        <para><prompt>gradle start</prompt></para>
-      </listitem>
-      <listitem>
-        <para>Чтобы работать с проектом в <application>IntelliJ IDEA</application>, запускаем команду, с помощью которой собираются проектные файлы <filename>*.ipr</filename>, <filename>*.iml</filename>.</para>
-        <para><prompt>gradle idea</prompt></para>
-      </listitem>
-      <listitem>
-        <para>Для просмотра приложения в веб-браузере введите в адресную строку <ulink url="http://localhost:8080/app">http://localhost:8080/app</ulink></para>
-        <para>Логин и пароль пользователя − admin/admin.</para>
-      </listitem>
-    </orderedlist>
-    <para>Запущенное приложение содержит два главных пункта меню ( <guimenu>Администрирование</guimenu> и <guimenu>Помощь</guimenu>), функциональность подсистемы безопасности, а также некоторый вспомогательный функционал.</para>
-    <figure>
-      <title>Главное окно приложения. Главное меню</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/quick_start_app1.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </section>
-  <section>
-    <title>Создание исходного кода приложения</title>
-    <para>Основные задачи, стоящие при разработке нашего приложения:</para>
-    <orderedlist>
-      <listitem>
-        <para>Разработка модели данных.</para>
-      </listitem>
-      <listitem>
-        <para>Разработка окон, позволяющих создавать, просматривать, обновлять и удалять сущности модели данных.</para>
-      </listitem>
-    </orderedlist>
-    <para>Разработка модели данных заключается в создании таблиц базы данных и сущностей предметной области.</para>
-    <section>
-      <title>Создание таблиц базы данных</title>
-      <para>Названия таблиц, относящихся к разрабатываемому приложению, условимся предварять префиксом SHOP. Создадим таблицу <database>Покупатель</database> и таблицу <database>Скидка</database>. Скрипт создания таблиц будет выглядеть следующим образом:</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/create-db.sql" parse="text" encoding="UTF-8"/></programlisting>
-      <para>SQL-команды разделяются знаком «^». Это дает возможность задания сложных команд, содержащих внутри себя знаки «;».</para>
-      <para>Системные поля являются обязательными.</para>
-      <para>Так как создаваемый справочник добавляется к уже существующей базе данных, необходимо воспользоваться <link linkend="section_database_update">механизмом автоматического обновления БД</link>. Для этого создайте скрипт обновления в папке <filename>db\update\postgres\01\</filename> модуля core вида «<filename>номер папки-порядок выполнения-название.sql</filename>». Также данный скрипт необходимо добавить в файл <filename>db\init\postgres\create-db.sql</filename> модуля <structname>core</structname>. Таким образом, в файле <filename>db\init\postgres\create-db.sql</filename> модуля <structname>core</structname> будет храниться последняя структура БД.</para>
-      <para>Для того чтобы запустить скрипт на выполнение, запустите командную строку в <glossterm linkend="glossary_work_folder_id">рабочем каталоге</glossterm>; в командной строке введите команду</para>
-      <para><prompt>gradle restart</prompt></para>
-    </section>
-    <section>
-      <title>Создание сущностей</title>
-      <para>Предметная область моделируется в системе с помощью взаимосвязанных классов <glossterm linkend="glossary_entity">сущностей</glossterm>. Все <firstterm>персистентные</firstterm> (хранящиеся в БД) сущности должны находиться в пакете <package>com.haulmont.shop.core.entity</package> модуля <structname>global</structname>.</para>
-      <para>Классы сущности должны быть унаследованы от класса <classname>com.haulmont.cuba.core.entity.StandardEntity</classname>, который содержит в себе все системные поля. Создадим сущность <classname>Покупатель (Buyer)</classname>, класс которой представлен в листинге.</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer.java" parse="text" encoding="UTF-8"/></programlisting>
-      <tip>
-        <title>Совет</title>
-        <para>Для автоматической генерации <firstterm>методов доступа</firstterm> (get/set) можно воспользоваться сочетанием клавиш <keycombo>
-            <keycap>Alt</keycap>
-            <keycap>Ins</keycap>
-          </keycombo>, затем в меню выбрать <guimenu>Getter and Setter</guimenu>. В отобразившемся окне выберите требуемые поля и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
-      </tip>
-      <warning>
-        <para>Методы доступа не должны содержать никакой логики, кроме чтения/установки атрибутов данной или связанных с ней сущностей.</para>
-      </warning>
-      <para>Классы сущностей должны быть соответствующим образом <glossterm linkend="glossary_annotation">проаннотированы</glossterm>.</para>
-      <para>Аннотация <literal>@Entity</literal> определяет, что класс является сущностным классом. В аргументе <parameter>name</parameter> задается название сущности.</para>
-      <para>Для формирования текстового имени объекта и отображении его в графическом интерфейсе пользователя используется аннотация <literal>@NamePattern</literal> на классе сущности.</para>
-      <para>Аннотация <literal>@Table</literal> указывает название таблицы, в которую будут отображены объекты сущностного класса.</para>
-      <para>Перед каждым полем должна быть аннотация <literal>@Column</literal> с различными аргументами.</para>
-      <para>Более подробно об аннотациях можно прочитать в документации по <application>OpenJPA</application> <ulink url="http://openjpa.apache.org">http://openjpa.apache.org</ulink></para>
-      <para id="text_registration_entity">После создания класса <firstterm>зарегистрируйте</firstterm> его в файле <filename>shop-persistence.xml</filename>:</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/registerBuyer.xml" parse="text" encoding="UTF-8"/></programlisting>
-      <para>Для <glossterm linkend="glossary_localized_folders_id">локализации</glossterm> названий свойств сущностей создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в том же пакете, что и классы.</para>
-      <para>В этих файлах определяются строки с ключом <parameter>имя_сущности</parameter> для имени сущности и <parameter>имя_сущности.имя_атрибута</parameter> для имен атрибутов. Эти названия будут использованы при отображении списка экземпляров сущности и в окне редактирования сущности.</para>
-      <caution>
-        <title>Подсказка</title>
-        <para>Все исходные файлы, в том числе <filename>*.properties</filename>, должны иметь кодировку <code>UTF-8</code>, поэтому в начале работы необходимо настроить кодировку <code>UTF-8</code> в среде <application>IntelliJ IDEA</application>. Для этого зайдите в <guimenu>File−&gt;Settings−&gt;Project Settings−&gt;File Encodings</guimenu>. В выпадающем списке <guilabel>Default encoding for properties files</guilabel> выберите <code>UTF-8</code>. Если не установлен флажок <guilabel>Autodetect UTF-encoded files</guilabel>, то установите его.</para>
-      </caution>
-      <para>Например, для русской локализации сущности <classname>Покупатель (Buyer)</classname> перевод будет следующим:</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/messagesBuyer.properties" parse="text" encoding="UTF-8"/></programlisting>
-      <para>Далее создадим <glossterm linkend="glossary_entity">сущность</glossterm> <classname>Скидка (Discount)</classname>. Класс сущности представлен в листинге ниже:</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Discount.java" parse="text" encoding="UTF-8"/></programlisting>
-      <para>Не забудьте <link linkend="text_registration_entity">зарегистрировать</link> сущность и задать <glossterm linkend="glossary_localized_folders_id">локализованные</glossterm> значения для полей.</para>
-      <section>
-        <title>Определение отношений между сущностями</title>
-        <para>В каждом <firstterm>отношении</firstterm> участвуют две <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
-        <para>Сущность <classname>Скидка (Discount)</classname> ссылается на сущность <classname>Покупатель (Buyer)</classname>. Данное отношение имеет связь <literal>&quot;многие-к-одному&quot; (ManyToOne)</literal>.</para>
-        <para>Рассмотрим создание данного отношения. Для этого перейдите к классу сущности <classname>Скидка (Discount)</classname> и добавьте туда следующий атрибут и методы доступа для него:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer_link.txt" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Аннотацией <literal>@ManyToOne</literal> определяется отношение, в котором ссылаемая сущность имеет мощность 1. Атрибут <parameter>fetch = FetchType.LAZY</parameter> означает, что <application>OpenJPA</application> отложит загрузку поля до тех пор, пока не понадобится доступ к этому полю.</para>
-        <para>Внешние ключи обозначаются аннотацией <literal>@JoinColumn</literal>. Атрибут <parameter>name</parameter> определяет внешний ключ для таблицы, с которой связан класс <classname>Скидка (Discount)</classname>.</para>
-        <para>Так как связь между сущностями <classname>Скидка (Discount)</classname> и <classname>Покупатель (Buyer)</classname> является двунаправленной, необходимо сделать также ссылку на сущность <classname>Скидка (Discount)</classname> в сущности <classname>Покупатель (Buyer)</classname>.</para>
-        <para>Атрибут <parameter>mappedBy = &quot;buyer&quot;</parameter> содержит имя поля в связанной сущности, которое является полем для связи в двунаправленном отношении.</para>
-        <para>Аннотация <literal>@Composition</literal> устанавливает в метаданных тип ссылочного атрибута (как правило, коллекции). Используется для организации сохранения элементов коллекции совместно с основной сущностью.</para>
-        <para>Кроме поддержки различных ограничений на уровне баз данных, <link linkend="text_openJPA">JPA</link> позволяет определять ограничения для отношений. В классе <classname>Покупатель (Buyer)</classname> показан каскадный эффект удаления сущности (с помощью аннотации <literal>@OnDelete(DeletePolicy.CASCADE)</literal>). Если покупатель будет удален, то удалятся и связанные с ним скидки.</para>
-      </section>
-    </section>
-    <section>
-      <title>Создание графического интерфейса пользователя приложения</title>
-      <para>Файлы, относящиеся к экранам, необходимо создавать в пакете <package>com.haulmont.shop.gui.ui модуля gui.</package></para>
-      <para>Любой экран должен определяться <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптором</glossterm>, описывающим  <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение <link linkend="section_gui_framework">визуальных компонентов</link> экрана. У экрана может быть <glossterm linkend="glossary_controller_id">контроллер</glossterm> − класс, содержащий логику инициализации и обработки событий экрана.</para>
-      <section>
-        <title>Создание экранов просмотра сущностей</title>
-        <para>Рассмотрим создание окна списка покупателей как типичного экрана приложения.</para>
-        <para>В окне будут отображаться список покупателей в виде таблицы и панель с кнопками, обеспечивающими основные операции (создание, редактирование, удаление).</para>
-        <para>В первую очередь создайте пакет <package>com.haulmont.shop.gui.ui.buyer</package> в модуле <structname>gui</structname>, где мы будем создавать файлы, относящиеся к экранам сущности <classname>Покупатель (Buyer)</classname>. Для создания окна списка покупателей создайте  <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> списка сущностей <filename>buyer-browse.xml</filename> </para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/buyer-browse.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>В элементе <parameter>dsContext</parameter> добавлен один компонент <glossterm linkend="glossary_datasource_id">источника данных</glossterm><parameter> collectionDatasource</parameter>, который выбирает сущности <classname>Покупатель (Buyer)</classname> с помощью <glossterm linkend="glossary_jpql">JPQL</glossterm> запроса <code>select b from shop$Buyer b</code> с <glossterm linkend="glossary_view_ru_id">представлением</glossterm> <parameter>view=&quot;_local&quot;</parameter>.</para>
-        <para>Рассмотрим элементы дескриптора более подробно.</para>
-        <para>Компонент <glossterm linkend="glossary_filter_id">Generic Filter</glossterm> (XML-имя компонента − <parameter>filter</parameter>) служит для отображения произвольного фильтра.</para>
-        <para>Компонент <glossterm linkend="glossary_table_id">Table</glossterm> (XML-имя компонента − <parameter>table</parameter>) служит для отображения данных в виде таблицы.</para>
-        <para>Элемент <parameter>column</parameter> задает опции для колонки таблицы. Обязательно содержит атрибут <parameter>id</parameter>, в котором задается название атрибута сущности, выводимого в колонке. Название берется из пакета <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
-        <para>Для отображения количества строк таблицы используется элемент <parameter>rowsCount</parameter>.</para>
-        <para>Над таблицей находится панель, содержащая кнопки для управления данными в этой таблице. XML-имя такой панели − <parameter>buttonsPanel</parameter>.</para>
-        <para>Размещение перечисленных выше компонентов задается с помощью контейнера <classname>BoxLayout</classname>. Существует три типа этого контейнера, определяемых именем XML-элемента. В нашем дескрипторе используется <parameter>vbox</parameter>, в результате чего элементы расположены вертикально.</para>
-        <para><glossterm linkend="glossary_xml_descriptor_id">Дескрипторы</glossterm> экранов имеют идентификаторы, по которым удобно вызывать экраны из меню или из программного кода. Идентификаторы назначаются в файле <filename>shop-screens.xml</filename> модуля <structname>gui</structname>.</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/screens_buyer-browse.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Чтобы добавить экран в меню, измените файл <filename>shop-web-menu.xml</filename> модуля <structname>web</structname> следующим образом:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/menu.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Для того чтобы ссылки отображались в меню корректно, создайте файлы <glossterm linkend="glossary_main_localized_folder_id">главного пакета сообщений</glossterm> <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете <package>com.haulmont.shop</package> модуля <structname>web</structname>, прописав в них названия пункта меню на английском и русском языках соответственно.</para>
-        <programlisting>menu-config.shop=Магазин
-menu-config.shop$Buyer.browse=Покупатели</programlisting>
-        <para>Посмотрим, как созданный нами экран выглядит в системе. Для этого пересоберите проект и зайдите в систему. Откройте пункт меню <guimenu>Магазин</guimenu> −&gt; <guimenu>Покупатели</guimenu>.</para>
-        <figure>
-          <title>Окно списка покупателей</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/interface_17.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>Можно убедиться, что данный экран содержит следующие элементы:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Панель с фильтром</para>
-          </listitem>
-          <listitem>
-            <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Обновить</guibutton>, <guibutton>Excel</guibutton> и с полем, отображающим число записей в таблице.</para>
-          </listitem>
-          <listitem>
-            <para>Таблицу с колонками <guilabel>Имя</guilabel>, <guilabel>Фамилия</guilabel>, <guilabel>Дата рождения</guilabel>, <guilabel>Электронная почта</guilabel>, <guilabel>Мобильный телефон</guilabel> и <guilabel>Адрес доставки</guilabel>.</para>
-          </listitem>
-        </itemizedlist>
-      </section>
-      <section>
-        <title>Создание экранов редактирования сущностей</title>
-        <para>Рассмотрим создание экрана редактирования скидки как типичного экрана редактирования сущности системы.</para>
-        <para>Создайте <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> <filename>discount-edit.xml</filename></para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/discount-edit.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>В экран редактирования будет передаваться одна сущность либо на создание, либо на изменение, и проставляться в <glossterm linkend="glossary_datasource_eng_id">datasource</glossterm>. Поэтому вместо <parameter>collectionDatasource</parameter> объявлен <parameter>datasource</parameter>.</para>
-        <para>Для отображения набора атрибутов редактируемой или создаваемой сущности используется компонент FieldGroup (XML-имя компонента − <parameter>fieldGroup</parameter>).</para>
-        <para>Данный компонент содержит в себе четыре элемента <parameter>field</parameter>:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/discounts_fields.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана редактирования должен содержать фрейм с кнопками подтверждения или отказа операции над сущностью. Есть два стандартных варианта такого фрейма:</para>
-        <itemizedlist>
-          <listitem>
-            <para><classname>editWindowActions</classname>  − фрейм с двумя кнопками: <guibutton>OK</guibutton>, <guibutton>Cancel</guibutton>. При нажатии на кнопку <guibutton>OK</guibutton> происходит фиксация операции, и окно закрывается.</para>
-          </listitem>
-          <listitem>
-            <para><classname>extendedEditWindowActions</classname> − фрейм с тремя кнопками: <guibutton>OK</guibutton>, <guibutton>OK&amp;Close</guibutton>, <guibutton>Cancel</guibutton>. В этом фрейме есть возможность подтвердить операцию, не закрывая окна.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Зарегистрируйте экран в файле <filename>shop-screens.xml</filename> модуля <structname>gui</structname>, чтобы его можно было открывать из меню, других окон или из программного кода.</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/screens_discount.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Для корректного отображения названия редактируемой сущности нужно добавить <glossterm linkend="glossary_localized_folders_id">локализованное название</glossterm> сущности в файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете <package>com.haulmont.shop.gui.ui.discount</package>. Например, для русской локализации в файл будет добавлена следующая строка:</para>
-        <programlisting>editorCaption=Скидка</programlisting>
-        <para>Для сущности <classname>Скидка (Discount)</classname> не нужно создавать XML-дескриптор экрана просмотра сущностей. Таблица, содержащая экземпляры сущности <classname>Скидка (Discount)</classname>, будет располагаться в экране редактирования сущности <classname>Покупатель (Buyer)</classname>.</para>
-        <para>Рассмотрим более подробно создание экрана редактирования профиля покупателя.</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/buyer-edit.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Особого внимания заслуживает элемент для инициализации <glossterm linkend="glossary_datasource_id">источников данных</glossterm>. Внутри источника данных существуют вложенные источники данных. Вложенные источники нужны для работы с экземплярами связанных сущностей, загруженных вместе с основной. Описание вложенного источника всегда содержит атрибут <parameter>property</parameter>, указывающий на атрибут основной сущности.</para>
-        <para>Кроме элемента <parameter>fieldGroup</parameter> в экране редактирования есть контейнер <code>&lt;vbox id=&quot;discountBox&quot;&gt;</code>, содержащий таблицу со скидками, относящимися к редактируемому покупателю.</para>
-        <para>Далее определим <glossterm linkend="glossary_view_ru_id">представление</glossterm> <code>view=&quot;buyerEdit&quot;</code> в файле <filename>shop-views.xml </filename>модуля <structname>core</structname>.</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/view.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Посмотрим, как выглядит созданный нами экран в приложении. Для этого зайдите в пункт меню <guimenu>Магазин</guimenu> −&gt; <guimenu>Покупатели</guimenu> и нажмите на кнопку <guibutton>Создать</guibutton>. После этого отобразится экран, представленный на рисунке ниже.</para>
-        <figure>
-          <title>Окно редактирования сведений о покупателе</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/create_browser_5.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </section>
-      <section>
-        <title>Добавление неперсистентного поля</title>
-        <para>В профиль покупателя добавим поле <guilabel>Полное имя</guilabel>. Значение поля храниться в базе данных не будет, а будет формироваться из имени и фамилии покупателя и отображаться в системе.</para>
-        <para>В первую очередь перейдите к классу сущности <classname>Покупатель (Buyer)</classname> и внесите в код класса описание нового поля:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer_notPers.java" parse="text" encoding="UTF-8"/></programlisting>
-        <para>С помощью <glossterm linkend="glossary_annotation">аннотации</glossterm> <literal>@Transient</literal> объявляем поле неперсистентным (то есть не сохраняемым в базе данных). Аннотация <literal>@MetaProperty</literal> используется для добавления поля в <link linkend="section_metadata_framework">метаданные</link>.</para>
-        <para>Добавим методы доступа:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer_getter.java" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Не забудьте добавить <glossterm linkend="glossary_localized_folders_id">локализованное название</glossterm> для нового поля.</para>
-        <para>Далее перейдем к <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптору</glossterm> экрана редактирования покупателя <filename>buyer-edit.xml</filename>. В него следует внести изменения:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/buyer-edit_.xml" parse="text" encoding="UTF-8"/></programlisting>
-        <para>В атрибуте <parameter>class</parameter> указан <glossterm linkend="glossary_controller_id">контроллер</glossterm> экрана, создание которого описано ниже.</para>
-        <para>Класс <glossterm linkend="glossary_controller_id">контроллера</glossterm> экрана необходимо создать в том пакете, где был создан <glossterm linkend="glossary_xml_descriptor_id">дескриптор</glossterm> и файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>. Класс контроллера для редактирования сущности должен быть унаследован от базового класс контроллеров экрана редактирования  <classname>com.haulmont.cuba.gui.components.AbstractEditor</classname>, который реализует интерфейс <interface>Window.Editor</interface>.</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/BuyerEditor.java" parse="text" encoding="UTF-8"/></programlisting>
-        <para>Рекомендуется параметризовать  <classname>AbstractEditor</classname> типом редактируемой сущности (<classname>AbstractEditor&lt;Buyer&gt;</classname>).</para>
-        <para>Обратите внимание, в классе контроллера был использован механизм <glossterm linkend="glossary_injection_id">внедрения зависимости</glossterm> (англ. Dependency injection) для получения ссылок на используемые объекты.</para>
-        <programlisting>@Inject
+          <para>Можно убедиться, что данный экран содержит следующие элементы:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Панель с фильтром</para>
+            </listitem>
+            <listitem>
+              <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Обновить</guibutton>, <guibutton>Excel</guibutton> и с полем, отображающим число записей в таблице.</para>
+            </listitem>
+            <listitem>
+              <para>Таблицу с колонками <guilabel>Имя</guilabel>, <guilabel>Фамилия</guilabel>, <guilabel>Дата рождения</guilabel>, <guilabel>Электронная почта</guilabel>, <guilabel>Мобильный телефон</guilabel> и <guilabel>Адрес доставки</guilabel>.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section>
+          <title>Создание экранов редактирования сущностей</title>
+          <para>Рассмотрим создание экрана редактирования скидки как типичного экрана редактирования сущности системы.</para>
+          <para>Создайте <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> <filename>discount-edit.xml</filename></para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/discount-edit.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>В экран редактирования будет передаваться одна сущность либо на создание, либо на изменение, и проставляться в <glossterm linkend="glossary_datasource_eng_id">datasource</glossterm>. Поэтому вместо <parameter>collectionDatasource</parameter> объявлен <parameter>datasource</parameter>.</para>
+          <para>Для отображения набора атрибутов редактируемой или создаваемой сущности используется компонент FieldGroup (XML-имя компонента − <parameter>fieldGroup</parameter>).</para>
+          <para>Данный компонент содержит в себе четыре элемента <parameter>field</parameter>:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/discounts_fields.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана редактирования должен содержать фрейм с кнопками подтверждения или отказа операции над сущностью. Есть два стандартных варианта такого фрейма:</para>
+          <itemizedlist>
+            <listitem>
+              <para><classname>editWindowActions</classname>  − фрейм с двумя кнопками: <guibutton>OK</guibutton>, <guibutton>Cancel</guibutton>. При нажатии на кнопку <guibutton>OK</guibutton> происходит фиксация операции, и окно закрывается.</para>
+            </listitem>
+            <listitem>
+              <para><classname>extendedEditWindowActions</classname> − фрейм с тремя кнопками: <guibutton>OK</guibutton>, <guibutton>OK&amp;Close</guibutton>, <guibutton>Cancel</guibutton>. В этом фрейме есть возможность подтвердить операцию, не закрывая окна.</para>
+            </listitem>
+          </itemizedlist>
+          <para>Зарегистрируйте экран в файле <filename>shop-screens.xml</filename> модуля <structname>gui</structname>, чтобы его можно было открывать из меню, других окон или из программного кода.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/screens_discount.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Для корректного отображения названия редактируемой сущности нужно добавить <glossterm linkend="glossary_localized_folders_id">локализованное название</glossterm> сущности в файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете <package>com.haulmont.shop.gui.ui.discount</package>. Например, для русской локализации в файл будет добавлена следующая строка:</para>
+          <programlisting>editorCaption=Скидка</programlisting>
+          <para>Для сущности <classname>Скидка (Discount)</classname> не нужно создавать XML-дескриптор экрана просмотра сущностей. Таблица, содержащая экземпляры сущности <classname>Скидка (Discount)</classname>, будет располагаться в экране редактирования сущности <classname>Покупатель (Buyer)</classname>.</para>
+          <para>Рассмотрим более подробно создание экрана редактирования профиля покупателя.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/buyer-edit.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Особого внимания заслуживает элемент для инициализации <glossterm linkend="glossary_datasource_id">источников данных</glossterm>. Внутри источника данных существуют вложенные источники данных. Вложенные источники нужны для работы с экземплярами связанных сущностей, загруженных вместе с основной. Описание вложенного источника всегда содержит атрибут <parameter>property</parameter>, указывающий на атрибут основной сущности.</para>
+          <para>Кроме элемента <parameter>fieldGroup</parameter> в экране редактирования есть контейнер <code>&lt;vbox id=&quot;discountBox&quot;&gt;</code>, содержащий таблицу со скидками, относящимися к редактируемому покупателю.</para>
+          <para>Далее определим <glossterm linkend="glossary_view_ru_id">представление</glossterm> <code>view=&quot;buyerEdit&quot;</code> в файле <filename>shop-views.xml </filename>модуля <structname>core</structname>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/view.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Посмотрим, как выглядит созданный нами экран в приложении. Для этого зайдите в пункт меню <guimenu>Магазин</guimenu> −&gt; <guimenu>Покупатели</guimenu> и нажмите на кнопку <guibutton>Создать</guibutton>. После этого отобразится экран, представленный на рисунке ниже.</para>
+          <figure>
+            <title>Окно редактирования сведений о покупателе</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/create_browser_5.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+        </section>
+        <section>
+          <title>Добавление неперсистентного поля</title>
+          <para>В профиль покупателя добавим поле <guilabel>Полное имя</guilabel>. Значение поля храниться в базе данных не будет, а будет формироваться из имени и фамилии покупателя и отображаться в системе.</para>
+          <para>В первую очередь перейдите к классу сущности <classname>Покупатель (Buyer)</classname> и внесите в код класса описание нового поля:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer_notPers.java" parse="text" encoding="UTF-8"/></programlisting>
+          <para>С помощью <glossterm linkend="glossary_annotation">аннотации</glossterm> <literal>@Transient</literal> объявляем поле неперсистентным (то есть не сохраняемым в базе данных). Аннотация <literal>@MetaProperty</literal> используется для добавления поля в <link linkend="section_metadata_framework">метаданные</link>.</para>
+          <para>Добавим методы доступа:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Buyer_getter.java" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Не забудьте добавить <glossterm linkend="glossary_localized_folders_id">локализованное название</glossterm> для нового поля.</para>
+          <para>Далее перейдем к <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптору</glossterm> экрана редактирования покупателя <filename>buyer-edit.xml</filename>. В него следует внести изменения:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/buyer-edit_.xml" parse="text" encoding="UTF-8"/></programlisting>
+          <para>В атрибуте <parameter>class</parameter> указан <glossterm linkend="glossary_controller_id">контроллер</glossterm> экрана, создание которого описано ниже.</para>
+          <para>Класс <glossterm linkend="glossary_controller_id">контроллера</glossterm> экрана необходимо создать в том пакете, где был создан <glossterm linkend="glossary_xml_descriptor_id">дескриптор</glossterm> и файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>. Класс контроллера для редактирования сущности должен быть унаследован от базового класс контроллеров экрана редактирования  <classname>com.haulmont.cuba.gui.components.AbstractEditor</classname>, который реализует интерфейс <interface>Window.Editor</interface>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/BuyerEditor.java" parse="text" encoding="UTF-8"/></programlisting>
+          <para>Рекомендуется параметризовать  <classname>AbstractEditor</classname> типом редактируемой сущности (<classname>AbstractEditor&lt;Buyer&gt;</classname>).</para>
+          <para>Обратите внимание, в классе контроллера был использован механизм <glossterm linkend="glossary_injection_id">внедрения зависимости</glossterm> (англ. Dependency injection) для получения ссылок на используемые объекты.</para>
+          <programlisting>@Inject
 private Datasource&lt;Buyer&gt; buyerDs;
 @Inject
 private FieldGroup personalFieldGroup;</programlisting>
-        <para>Согласно этому механизму в текущем экране будет произведен поиск <glossterm linkend="glossary_datasource_id">источника данных</glossterm> с соответствующим именем.</para>
-        <para>В контроллере был переопределен метод <methodname>initItem</methodname>. В этом методе был добавлен слушатель для источника данных, который следит за изменением значений полей <guilabel>Имя</guilabel> и <guilabel>Фамилия</guilabel> и формирует значения поля <guilabel>Полное имя</guilabel>.</para>
-        <para>Пересоберите проект, далее откройте окно редактирования сведений о покупателе и убедитесь в том, что значение поля <guilabel>Полное имя</guilabel> формируется автоматически при вводе имени и фамилии покупателя.</para>
+          <para>Согласно этому механизму в текущем экране будет произведен поиск <glossterm linkend="glossary_datasource_id">источника данных</glossterm> с соответствующим именем.</para>
+          <para>В контроллере был переопределен метод <methodname>initItem</methodname>. В этом методе был добавлен слушатель для источника данных, который следит за изменением значений полей <guilabel>Имя</guilabel> и <guilabel>Фамилия</guilabel> и формирует значения поля <guilabel>Полное имя</guilabel>.</para>
+          <para>Пересоберите проект, далее откройте окно редактирования сведений о покупателе и убедитесь в том, что значение поля <guilabel>Полное имя</guilabel> формируется автоматически при вводе имени и фамилии покупателя.</para>
+        </section>
       </section>
     </section>
   </section>

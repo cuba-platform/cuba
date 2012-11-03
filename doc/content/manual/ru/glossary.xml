@@ -1,41 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE glossary PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE glossary PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><glossary id="glossary_id">
   <title>Основные определения и понятия</title>
   <glossdiv>
-    <title>А</title>
-    <glossentry id="glossary_annotation">
-      <glossterm>
-        <emphasis role="bold">Аннотация</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Специальная форма синтетических метаданных, которая может быть добавлена в исходный код. Аннотация выполняет следующие функции:</para>
-        <itemizedlist>
-          <listitem>
-            <para>дает необходимую информацию для компилятора;</para>
-          </listitem>
-          <listitem>
-            <para>дает информацию различным инструментам для генерации другого кода, конфигураций и т.д.;</para>
-          </listitem>
-          <listitem>
-            <para>может использоваться во время работы кода.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Более подробная информация представлена на сайте <application>Oracle</application>:  <ulink url="http://docs.oracle.com/javase/6/docs/technotes/guides/language/annotations.html">http://docs.oracle.com/javase/6/docs/technotes/guides/language/annotations.html</ulink></para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv>
     <title>Б</title>
-    <glossentry id="glossary_process_id">
-      <glossterm>
-        <emphasis role="bold">Бизнес-процесс</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Структурированный набор действий, охватывающий различные сущности предприятия и подчиненный определенной цели. Бизнес-процесс всегда имеет начальную и завершающую стадию, а также алгоритм действий. </para>
-      </glossdef>
-    </glossentry>
     <glossentry id="glossary_browser_id">
       <glossterm>
         <emphasis role="bold">Браузер</emphasis>
@@ -53,7 +21,8 @@
       </glossterm>
       <acronym>англ. Dependency Injection</acronym>
       <glossdef>
-        <para>Механизм для получения ссылок на используемые объекты. Для получения более подробной информации обратитесь к статье <application>Википедии</application> <ulink url="http://ru.wikipedia.org/wiki/%D0%92%D0%BD%D0%B5%D0%B4%D1%80%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B7%D0%B0%D0%B2%D0%B8%D1%81%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B8">http://ru.wikipedia.org/wiki/Внедрение_зависимости</ulink></para>
+        <para>Известно также как принцип Inversion Of Control (IoC). Механизм для получения ссылок на используемые объекты, при котором объект только декларирует, от каких объектов он зависит, а <glossterm linkend="glossary_conteiner_id">контейнер</glossterm> создает нужные объекты и инжектирует в зависимый объект. </para>
+        <para>См. <ulink url="http://ru.wikipedia.org/wiki/%D0%92%D0%BD%D0%B5%D0%B4%D1%80%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B7%D0%B0%D0%B2%D0%B8%D1%81%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B8">http://ru.wikipedia.org/wiki/Внедрение_зависимости</ulink></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -64,26 +33,7 @@
         <emphasis role="bold">Главный пакет сообщений</emphasis>
       </glossterm>
       <glossdef>
-        <para><glossterm linkend="glossary_localized_folders_id">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса. Располагается в пакете <package>com.haulmont.ext.web</package> модуля <structname>web</structname>.</para>
-      </glossdef>
-    </glossentry>
-    <glossentry id="glossary_app_boundary_id">
-      <glossterm>
-        <emphasis role="bold">Границы приложения</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Формируют область определения приложения. Границы приложения определяются посредством <link linkend="section_services_id">сервисов</link>.</para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv>
-    <title>Д</title>
-    <glossentry id="glossary_descriptor_fts_id">
-      <glossterm>
-        <emphasis role="bold">Дескриптор FTS</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Дескриптор <glossterm linkend="section_fts">FTS</glossterm> представляет собой XML файл, содержащий настройки механизма полнотекстового поиска. Подробное описание механизма полнотекстового поиска содержится в главе <xref linkend="section_fts" xreflabel="select: labelnumber title"/></para>
+        <para><glossterm linkend="glossary_localized_folders_id">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -94,8 +44,8 @@
         <emphasis role="bold">Источник данных</emphasis>
       </glossterm>
       <glossdef>
-        <para>Предназначен для реализации связанных с данными компонентов.</para>
-        <para>Для получения более подробной информации смотрите главу <xref linkend="section_datasource" xrefstyle="select: labelnumber title"/></para>
+        <para>Источники данных (datasources) - невизуальные элементы экрана, обеспечивающие работу связанных с данными (data-aware) визуальных компонентов.</para>
+        <para>См. <xref xrefstyle="" linkend="section_datasource"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -103,10 +53,11 @@
     <title>К</title>
     <glossentry id="glossary_conteiner_id">
       <glossterm>
-        <emphasis role="bold">Контейнер Spring</emphasis>
+        <emphasis role="bold">Контейнер</emphasis>
       </glossterm>
       <glossdef>
-        <para>Структура, которая содержит в себе и управляет жизненным циклом и конфигурацией программных объектов. В контейнере <application>Spring</application> можно определить порядок создания программных объектов, их конфигурацию, и то, как они взаимодействуют друг с другом. Более подробная информация о контейнере <application>Spring</application> содержится в документации к фреймворку <application>Spring</application> (<ulink url="http://www.springsource.org/">http://www.springsource.org/</ulink>).</para>
+        <para>Контейнер   управляет жизненным циклом и конфигурацией программных объектов. Является базовым компонентом технологии Dependency Injection (или Inversion of Control). </para>
+        <para>Для получения более подробной информации см.  <xref linkend="section_additional_info"/> </para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_controller_id">
@@ -114,8 +65,8 @@
         <emphasis role="bold">Контроллер экрана</emphasis>
       </glossterm>
       <glossdef>
-        <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>, с помощью различных событий. </para>
-        <para>Подробная информация о контроллерах экрана содержится в главе <xref linkend="section_controller" xrefstyle="select: labelnumber title"/></para>
+        <para><classname>Java</classname>  класс, содержащий логику инициализации и обработки событий экрана. Связан с <glossterm linkend="glossary_xml_descriptor_id" arch="">XML-дескриптором</glossterm> экрана.</para>
+        <para>См. <xref xrefstyle="" linkend="section_controller"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -126,30 +77,8 @@
         <emphasis role="bold">Пакет локализованных сообщений</emphasis>
       </glossterm>
       <glossdef>
-        <para>Содержит файлы локализованных сообщений  для задания названий сущностей, атрибутов сущностей, папок, заголовков закладок и так далее. </para>
-        <para>Для получения подробных сведений смотрите главу <xref linkend="section_localization" xrefstyle="select: labelnumber title"/></para>
-      </glossdef>
-    </glossentry>
-    <glossentry id="glossary_search_folders_id">
-      <glossterm>
-        <emphasis role="bold">Папки поиска</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Папки данной категории могут быть созданы и настроены пользователем (за
-исключением подкатегории &quot;Системные&quot;). Подкатегория &quot;Системные&quot; содержит
-предустановленные папки поиска, которые доступны всем
-пользователям системы.</para>
-        <para>Подробная информация о папках поиска содержится в главе <xref linkend="section_appFolders" xrefstyle="select: labelnumber title"/></para>
-      </glossdef>
-    </glossentry>
-    <glossentry id="glossary_app_folders_id">
-      <glossterm>
-        <emphasis role="bold">Папки приложения</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Папки данной категории содержат задачи, по которым требуются
-действия пользователя.</para>
-        <para>Подробная информация о папках приложения содержится в главе <xref linkend="section_appFolders" xrefstyle="select: labelnumber title"/></para>
+        <para>Набор файлов, содержащих локализованные сообщения пользовательского интерфейса: заголовки полей и кнопок, названия сущностей и их  атрибутов, содержимое диалогов  и так далее. </para>
+        <para>См. <xref xrefstyle="" linkend="section_localization"/></para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_view_ru_id">
@@ -157,8 +86,8 @@
         <emphasis role="bold">Представление</emphasis>
       </glossterm>
       <glossdef>
-        <para>Механизм представлений обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
-        <para>Подробная информация о механизме представлений содержится в главе <xref linkend="section_views_id" xrefstyle="select: labelnumber title"/></para>
+        <para>Механизм представлений (views) обеспечивает извлечение из базы данных и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
+        <para>См. <xref xrefstyle="" linkend="section_views_id"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -169,7 +98,8 @@
         <emphasis role="bold">Рабочий каталог</emphasis>
       </glossterm>
       <glossdef>
-        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter_development">Создание и запуск проекта расширения </link>.</para>
+        <para>Локальный каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог содержит скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IDE</application>.</para>
+        <para>См. <xref linkend="chapter_development"/> </para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -177,18 +107,10 @@
     <title>С</title>
     <glossentry id="glossary_entity">
       <glossterm>
-        <emphasis role="bold">Сущность, сущностный класс</emphasis>
+        <emphasis role="bold">Сущность</emphasis>
       </glossterm>
       <glossdef>
-        <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущности (entity class) – это простой класс <application>Java</application>, как правило, соответствующий таблице в базе данных. Помогает выполнять бизнес требования к необходимым объектам в приложении. Сущностные классы имеют следующие особенности:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Класс сущности должен быть унаследован от класса <classname>com.haulmont.cuba.core.entity.StandardEntity</classname>, который содержит в себе все системные поля.</para>
-          </listitem>
-          <listitem>
-            <para>Класс сущности должен быть аннотирован с помощью аннотации <literal>@Entity</literal></para>
-          </listitem>
-        </itemizedlist>
+        <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущности (entity class) – это созданный по определенным правилам Java- класс, как правило, соответствующий таблице в базе данных.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -202,13 +124,15 @@
         <para>Приложение, основанное на платформе, физически состоит из нескольких уровней (tiers):</para>
         <itemizedlist>
           <listitem>
-            <para id="text_middleware_id"><structfield>Middleware</structfield>. Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>.</para>
+            <para id="text_middleware_id"><structfield>Middleware</structfield>. Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>
+                <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>
+              </application>.</para>
           </listitem>
           <listitem>
-            <para id="text_webclient_id"><structfield>Web Client</structfield>. Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
+            <para id="text_webclient_id"><structfield>Web Client</structfield>. Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
           </listitem>
           <listitem>
-            <para id="text_portal_id"><structfield>Web Portal</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
+            <para id="text_portal_id"><structfield>Web Portal</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
           </listitem>
           <listitem>
             <para id="text_desktop_id"><structfield>Desktop Client</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>.</para>
@@ -232,18 +156,7 @@
         <emphasis role="bold">ButtonsPanel</emphasis>
       </glossterm>
       <glossdef>
-        <para>Унифицирует использование и размещение кнопок для управления данными в таблице.</para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv>
-    <title>C</title>
-    <glossentry id="glossary_conf_parameter_id">
-      <glossterm>
-        <emphasis role="bold">Configuration Parameters</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Подсистема работы с конфигурационными параметрами позволяет сохранять/извлекать пары имя-значение с помощью стандартных Java-интерфейсов. При этом хранилищем параметров может быть база данных, системные свойства Java и <glossterm linkend="glossary_app_properties_id">свойства приложения</glossterm>, задаваемые в файлах <filename>*-app.properties</filename>.</para>
+        <para>Визуальный компонент, предназначенный для унифицикации использования и размещения кнопок управления данными в таблице.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -260,16 +173,18 @@
         <emphasis role="bold">DateField</emphasis>
       </glossterm>
       <glossdef>
-        <para>Поле для редактирования даты и времени.</para>
+        <para>Визуальный компонент - поле для редактирования даты и времени.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
   <glossdiv>
     <title>E</title>
     <glossentry id="glossary_eagerFetching">
-      <glossterm>Eager Fetching</glossterm>
+      <glossterm>
+        <emphasis role="bold">Eager Fetching</emphasis>
+      </glossterm>
       <glossdef>
-        <para>Возможность эффективно загружать данные подклассов и связанных объектов одновременно с основной запрашиваемой сущностью .</para>
+        <para>Энергичная загрузка - загрузка данных подклассов и связанных объектов одновременно с основной запрашиваемой сущностью.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_entityManager_id">
@@ -277,7 +192,8 @@
         <emphasis role="bold">EntityManager</emphasis>
       </glossterm>
       <glossdef>
-        <para>Служит для извлечения <glossterm linkend="glossary_entity">сущностей</glossterm> из БД и сохранения их в БД. Может быть получен только в слое <glossterm linkend="glossary_middleware_id">middleware</glossterm> с помощью <classname>PersistenceProvider</classname>. Для получения более подробной информации обратитесь к главе <link linkend="text_entityManager">ORM</link>.</para>
+        <para>Программный компонент среднего слоя, служащий для извлечения <glossterm linkend="glossary_entity">сущностей</glossterm> из БД и сохранения их в БД.</para>
+        <para>См. <xref linkend="text_entityManager"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -296,7 +212,7 @@
         <emphasis role="bold">Generic Filter</emphasis>
       </glossterm>
       <glossdef>
-        <para>Служит для создания и применения  произвольных фильтров для <interfacename>CollectionDatasources</interfacename> во время работы приложения.</para>
+        <para>Визуальный компонент, служащий для создания и применения  произвольных фильтров для <glossterm linkend="glossary_datasource_id">источников данных</glossterm>  во время работы приложения.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_gridlayout_id">
@@ -312,7 +228,7 @@
         <emphasis role="bold">GridLayout</emphasis>
       </glossterm>
       <glossdef>
-        <para>Контейнер, располагающий компоненты по сетке.</para>
+        <para>Визуальный компонент - контейнер, располагающий компоненты по сетке.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_groupbox_id">
@@ -320,7 +236,7 @@
         <emphasis role="bold">GroupBox</emphasis>
       </glossterm>
       <glossdef>
-        <para>Контейнер, позволяющий выделить рамкой группу объектов, задать им общий заголовок и описание. Кроме того, он умеет сворачивать свое содержимое.</para>
+        <para>Визуальный компонент - контейнер, позволяющий выделить рамкой группу объектов, задать им общий заголовок и описание. Кроме того, умеет сворачивать свое содержимое.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -331,7 +247,8 @@
         <emphasis role="bold">Interceptor</emphasis>
       </glossterm>
       <glossdef>
-        <para>Специальный класс, который может перехватывать вызов методов заданного класса.</para>
+        <para>Элемент AOP (Aspect Oriented Programming), позволяющий изменить или расширить обычный вызов метода объекта.</para>
+        <para>См. <ulink url="http://en.wikipedia.org/wiki/Interceptor_pattern">http://en.wikipedia.org/wiki/Interceptor_pattern</ulink></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -342,7 +259,7 @@
         <emphasis role="bold">Java EE Web Profile</emphasis>
       </glossterm>
       <glossdef>
-        <para> Java EE  Web Profile является упрощенным профилем Java EE, который содержит подмножество полной платформы Java EE. Профиль Java EE  Web Profile разработан для веб-приложений, для которых не требуются расширенные технологии Java EE.</para>
+        <para>Упрощенный профиль Java Entreprise Edition, разработанный для веб-приложений, для которых не требуются такие технологии как EJB, JTA и т.д.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_jmx_id">
@@ -350,7 +267,8 @@
         <emphasis role="bold">JMX</emphasis>
       </glossterm>
       <glossdef>
-        <para>Java Management Extensions (JMX) − это Java-технология, которая предоставляет инструменты для управления  приложениями, объектами системы, устройствами. JMX определяет стандарт для написания JMX-компонентов − <link linkend="section_MBean_id">MBeans</link>. Более подробную информацию о технологии JMX вы сможете найти на сайте Oracle: <ulink url="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html">http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html</ulink></para>
+        <para>Java Management Extensions − технология, которая предоставляет инструменты для управления  приложениями, объектами системы, устройствами. Определяет стандарт для написания JMX-компонентов − <link linkend="section_MBean_id">MBeans</link>. </para>
+        <para>Более подробную информацию можно найти по адресу: <ulink url="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html">http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html</ulink></para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_jpql">
@@ -358,7 +276,8 @@
         <emphasis role="bold">JPQL</emphasis>
       </glossterm>
       <glossdef>
-        <para>Платформо-независимый объектно-ориентированный язык запросов, определенный как часть спецификации <application>Java Persistence API</application>. Подробнее о <application>JPQL</application> можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink></para>
+        <para>Платформо-независимый объектно-ориентированный язык запросов, определенный как часть спецификации <application>Java Persistence API</application>. </para>
+        <para>Более подробную информацию можно найти по адресу:  <ulink url="http://openjpa.apache.org/builds/2.2.0/apache-openjpa/docs/jpa_langref.html">http://openjpa.apache.org/builds/2.2.0/apache-openjpa/docs/jpa_langref.html</ulink></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -369,7 +288,7 @@
         <emphasis role="bold">LookupField</emphasis>
       </glossterm>
       <glossdef>
-        <para>Компонент, реализующий выпадающий список. Он реализует фильтрацию значений в реальном времени (по мере ввода имени опции пользователем) и постраничный вывод доступных опций.</para>
+        <para>Визуальный компонент -  выпадающий список. Реализует фильтрацию значений в реальном времени (по мере ввода имени опции пользователем) и постраничный вывод данных.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -380,7 +299,7 @@
         <emphasis role="bold">Managed Beans</emphasis>
       </glossterm>
       <glossdef>
-        <para>Внутренние компоненты <glossterm linkend="glossary_middleware_id">middleware</glossterm>, содержащие бизнес-логику приложения. Опционально могут иметь JMX интерфейс для управления во время работы приложения. В этом случае они должны быть созданы по правилам реализации MBeans.</para>
+        <para>Программные компоненты <glossterm linkend="glossary_middleware_id">middleware</glossterm>, содержащие бизнес-логику приложения. </para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_MBean_id">
@@ -388,8 +307,8 @@
         <emphasis role="bold">MBeans</emphasis>
       </glossterm>
       <glossdef>
-        <para>Программные компоненты, реализующие бизнес-логику и имеющие JMX-интерфейс. Как правило, имеют внутреннее состояние (например, кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.
-MBean является расширенным вариантом <glossterm linkend="glossary_managedBean_id">Managed Bean</glossterm>.</para>
+        <para><glossterm linkend="glossary_managedBean_id">Managed Beans</glossterm>, имеющие <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс. Как правило, имеют внутреннее состояние (например, кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.
+</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_middleware_id">
@@ -397,7 +316,7 @@ MBean является расширенным вариантом <glossterm link
         <emphasis role="bold">Middleware</emphasis>
       </glossterm>
       <glossdef>
-        <para>Средний слой приложения, содержит бизнес-логику и предоставляет общий интерфейс для верхних слоев приложения.</para>
+        <para>Средний слой - <glossterm linkend="glossary_app_tiers">уровень</glossterm>  приложения, содержащий бизнес-логику и предоставляющий общий интерфейс для верхних (клиентских) уровней приложения.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_middleware_services_id">
@@ -418,7 +337,7 @@ MBean является расширенным вариантом <glossterm link
         <emphasis role="bold">POJO</emphasis>
       </glossterm>
       <glossdef>
-        <para>Plain Old Java Object (POJO) − «простой Java-объект в старом стиле», простой Java-объект, не унаследованный от какого-то специфического объекта и не реализующий никаких служебных интерфейсов сверх тех, которые нужны для бизнес-модели. Термин придуман Мартином Фаулером (<ulink url="http://www.martinfowler.com/bliki/POJO.html">http://www.martinfowler.com/bliki/POJO.html</ulink>).</para>
+        <para>Plain Old Java Object − «простой Java-объект в старом стиле» -  Java-объект, не унаследованный ни от какого специфического класса и не реализующий никаких служебных интерфейсов сверх тех, которые нужны для описания бизнес-модели. </para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_pickerfield_id">
@@ -426,18 +345,7 @@ MBean является расширенным вариантом <glossterm link
         <emphasis role="bold">PickerField</emphasis>
       </glossterm>
       <glossdef>
-        <para><parameter>PickerField</parameter> позволяет отображать экземпляр <glossterm linkend="glossary_entity">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа.</para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv>
-    <title>S</title>
-    <glossentry id="glossary_swing">
-      <glossterm>
-        <emphasis role="bold">Swing</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Библиотека для создания графического интерфейса для программ на языке <application>Java</application>. <application>Swing</application> был разработан компанией <orgname>Sun Microsystems</orgname>. Он содержит ряд графических компонентов, таких как кнопки, поля ввода, таблицы и т. д. На веб-сайте <ulink url="http://www.oracle.com/index.html">http://www.oracle.com/index.html</ulink> содержатся более подробные сведения о библиотеке <application>Swing</application>.</para>
+        <para>Визуальный компонент, позволяющий отображать экземпляр <glossterm linkend="glossary_entity">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа от поля.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -448,7 +356,7 @@ MBean является расширенным вариантом <glossterm link
         <emphasis role="bold">Table</emphasis>
       </glossterm>
       <glossdef>
-        <para>Служит для отображения данных в табличном виде.</para>
+        <para>Визуальный компонент, служащий для отображения данных в табличном виде.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_tabsheet_id">
@@ -456,20 +364,12 @@ MBean является расширенным вариантом <glossterm link
         <emphasis role="bold"> Tabsheet</emphasis>
       </glossterm>
       <glossdef>
-        <para>Контейнер, содержащий закладки (<parameter>tabs</parameter>).</para>
+        <para>Визуальный компонент - контейнер с вкладками.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
   <glossdiv lang="ru">
     <title>V</title>
-    <glossentry id="glossary_vaadin">
-      <glossterm>
-        <emphasis role="bold">Vaadin</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Открытый набор библиотек для создания веб-приложений. В отличие от библиотек на <application>Javascript</application> и специфических плагинов для браузеров, <application>Vaadin</application> предлагает сервер-ориентированную архитектуру, базирующуюся на <application>Java Enterprise Edition</application>.  Для отображения элементов пользовательского интерфейса и взаимодействия с сервером на стороне клиента <application>Vaadin</application> использует <application>Google Web Toolkit</application>. Более подробная информация о фреймворке Vaadin содержится на сайте <ulink url="https://vaadin.com/home">https://vaadin.com/home</ulink></para>
-      </glossdef>
-    </glossentry>
     <glossentry id="glossary_view_eng_id">
       <glossterm>
         <emphasis role="bold">View</emphasis>
@@ -484,7 +384,7 @@ MBean является расширенным вариантом <glossterm link
         <emphasis role="bold">XML-дескриптор</emphasis>
       </glossterm>
       <glossdef>
-        <para>Описывает <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение визуальных компонентов экрана.</para>
+        <para>Файл в формате XML, содержащий описание <glossterm linkend="glossary_datasource_id">источников данных</glossterm> и расположения визуальных компонентов экрана.</para>
       </glossdef>
     </glossentry>
   </glossdiv>

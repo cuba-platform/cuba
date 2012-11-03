@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
-    <persistence-unit name="shop" transaction-type="RESOURCE_LOCAL">
-
-        <!--<class>com.haulmont.refapp.core.entity.Address</class>-->
-
-    </persistence-unit>
-</persistence>

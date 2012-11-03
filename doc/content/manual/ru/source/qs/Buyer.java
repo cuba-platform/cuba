@@ -1,48 +1,48 @@
-package com.haulmont.shop.core.entity;
+package com.haulmont.shop.entity;
 
-//аннотируем класс как сущность предметной области
-@Entity(name = "shop$Buyer")
+import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
-//помечаем, что данный класс связан с таблицей в БД
-@Table(name = "SHOP_BUYER")
+import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
 
-//формируем текстовое имя объекта
-@NamePattern("%s|fullName")
 
+@Entity(name = "shop$Buyer")        // класс является сущностью с именем shop$Buyer
+@Table(name = "SHOP_BUYER")         // класс связан с таблицей SHOP_BUYER
+@NamePattern("%s|fullName")         // формируем текстовое имя объекта
 public class Buyer extends StandardEntity {
+    // базовый класс StandardEntity обеспечивает стандартные свойства сущности
 
-    //помечаем атрибут firstName, что он связан с колонкой SHOP_BUYER.FIRST_NAME базы данных
-    @Column(name = "FIRST_NAME")
+    @Column(name = "FIRST_NAME")    // атрибут связан с колонкой SHOP_BUYER.FIRST_NAME
     private String firstName;
 
-    //помечаем атрибут surName, что он связан с колонкой SHOP_BUYER.SURNAME базы данных
-    @Column(name = "SURNAME")
+    @Column(name = "SURNAME")       // атрибут связан с колонкой SHOP_BUYER.SURNAME
     private String surName;
 
-    //помечаем атрибут birthday, что он связан с колонкой SHOP_BUYER.BIRTHDAY базы данных
-    //колонка хранит только дату, без времени
-    @Temporal(TemporalType.DATE)
-    @Column(name = "BIRTHDAY")
+    @Column(name = "BIRTHDAY")      // атрибут связан с колонкой SHOP_BUYER.BIRTHDAY
+    @Temporal(TemporalType.DATE)    // колонка хранит только дату, без времени
     private Date birthday;
 
-    //помечаем атрибут email, что он связан с колонкой SHOP_BUYER.EMAIL базы данных
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL")         // атрибут связан с колонкой SHOP_BUYER.EMAIL
     private String email;
 
-    //помечаем атрибут phone, что он связан с колонкой SHOP_BUYER.PHONE базы данных
-    @Column(name = "PHONE")
+    @Column(name = "PHONE")         // атрибут связан с колонкой SHOP_BUYER.PHONE
     private String phone;
 
-    //помечаем атрибут deliveryAddress, что он связан с колонкой SHOP_BUYER.DELIVERY_ADDRESS базы данных
-    @Column(name = "DELIVERY_ADDRESS")
+    @Column(name = "DELIVERY_ADDRESS")  // атрибут связан с колонкой SHOP_BUYER.DELIVERY_ADDRESS
     private String deliveryAddress;
 
-    @OneToMany(mappedBy = "buyer")
-    @Composition
-    @OnDelete(DeletePolicy.CASCADE)
+    @OneToMany(mappedBy = "buyer")      // связь с БД через атрибут Discount.buyer
+    @Composition                        // коллекция скидок является композитным атрибутом, т.е.
+                                        // существует только вместе с экземпляром покупателя
+    @OnDelete(DeletePolicy.CASCADE)     // при удалении покупателя будут удалены все его скидки
     private List<Discount> discounts;
 
-    //методы доступа:
+    // методы доступа:
 
 	public List<Discount> getDiscounts() {
         return discounts;
