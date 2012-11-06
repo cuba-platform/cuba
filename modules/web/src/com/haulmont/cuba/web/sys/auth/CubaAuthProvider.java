@@ -10,6 +10,7 @@ import com.haulmont.cuba.security.global.LoginException;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Locale;
 
 /**
@@ -35,4 +36,10 @@ public interface CubaAuthProvider extends Filter {
      * @return True if auth needed
      */
     boolean needAuth(ServletRequest request);
+
+    /**
+     * @param session HTTP sesstion
+     * @return True if session supported by auth mechanism
+     */
+    boolean authSupported(HttpSession session);
 }

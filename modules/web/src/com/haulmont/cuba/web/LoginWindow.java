@@ -272,8 +272,10 @@ public class LoginWindow extends Window implements Action.Handler {
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             loginField.setValue(app.getUser() == null ? "" : ((Principal) app.getUser()).getName());
             passwordField.setValue("");
-        } else {
 
+            if (!ActiveDirectoryHelper.activeDirectorySupportedBySession())
+                initRememberMe(app);
+        } else {
             String defaultUser = webConfig.getLoginDialogDefaultUser();
             if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser))
                 loginField.setValue(defaultUser);

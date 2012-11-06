@@ -6,10 +6,7 @@
 
 package com.haulmont.cuba.web.sys.auth;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.WebConfig;
@@ -22,7 +19,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.inject.Inject;
 import javax.servlet.*;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
@@ -47,24 +46,30 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
         }
     }
 
-    private static Map<String, DomainInfo> domains = new HashMap<String, DomainInfo>();
+    private static Map<String, DomainInfo> domains = new HashMap<>();
 
     private static String defaultDomain;
 
     private Log log = LogFactory.getLog(getClass());
+
+    @Inject
+    private Configuration configuration;
+
+    @Inject
+    private Messages messages;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
         initDomains();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
 
         properties.put("jespa.bindstr", getBindStr());
         properties.put("jespa.service.acctname", getAcctName());
         properties.put("jespa.service.password", getAcctPassword());
         properties.put("jespa.account.canonicalForm", "3");
-        properties.put("jespa.log.path", ConfigProvider.getConfig(GlobalConfig.class).getLogDir() + "/jespa.log");
+        properties.put("jespa.log.path", configuration.getConfig(GlobalConfig.class).getLogDir() + "/jespa.log");
 
         fillFromSystemProperties(properties);
 
@@ -102,7 +107,7 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
             int slashPos = login.indexOf('\\');
             if (slashPos <= 0) {
                 throw new LoginException(
-                        MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
+                        messages.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
                         login
                 );
             }
@@ -114,12 +119,12 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
         DomainInfo domainInfo = domains.get(domain);
         if (domainInfo == null) {
             throw new LoginException(
-                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownDomain", loc),
+                    messages.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownDomain", loc),
                     domain
             );
         }
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("bindstr", domainInfo.bindStr);
         params.put("service.acctname", domainInfo.acctName);
         params.put("service.password", domainInfo.acctPassword);
@@ -132,7 +137,7 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
             provider.authenticate(credential);
         } catch (SecurityProviderException e) {
             throw new LoginException(
-                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.authenticationError", loc),
+                    messages.getMessage(ActiveDirectoryHelper.class, "activeDirectory.authenticationError", loc),
                     e.getMessage()
             );
         }
@@ -143,8 +148,13 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
         return true;
     }
 
+    @Override
+    public boolean authSupported(HttpSession session) {
+        return true;
+    }
+
     private void initDomains() {
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
         String domainsStr = webConfig.getActiveDirectoryDomains();
         if (!StringUtils.isBlank(domainsStr)) {

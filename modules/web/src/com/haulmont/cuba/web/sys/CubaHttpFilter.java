@@ -2,16 +2,11 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.12.2008 17:00:30
- *
- * $Id$
  */
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.auth.CubaAuthProvider;
@@ -30,10 +25,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CubaHttpFilter implements Filter {
     private static Log log = LogFactory.getLog(CubaHttpFilter.class);
 
-    private List<String> bypassUrls = new ArrayList<String>();
+    private List<String> bypassUrls = new ArrayList<>();
     private CubaAuthProvider activeDirectoryFilter;
 
     @Override
@@ -46,7 +45,7 @@ public class CubaHttpFilter implements Filter {
                 throw new ServletException(e);
             }
             // Fill bypassUrls
-            String urls = ConfigProvider.getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
+            String urls = AppBeans.get(Configuration.class).getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
             String[] strings = urls.split("[, ]");
             for (String string : strings) {
                 if (StringUtils.isNotBlank(string))
@@ -135,5 +134,7 @@ public class CubaHttpFilter implements Filter {
 
     @Override
     public void destroy() {
+        if (activeDirectoryFilter != null)
+            activeDirectoryFilter.destroy();
     }
 }

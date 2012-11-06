@@ -7,8 +7,8 @@
 package com.haulmont.cuba.web.sys.auth;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import org.apache.commons.codec.binary.Base64;
@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ietf.jgss.*;
 
+import javax.inject.Inject;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginContext;
@@ -40,9 +41,15 @@ public class KerberosAuthProvider implements CubaAuthProvider {
 
     private Log log = LogFactory.getLog(KerberosAuthProvider.class);
 
+    @Inject
+    private Configuration configuration;
+
+    @Inject
+    private Messages messages;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
         // Setup system properties
         System.setProperty("sun.security.krb5.debug", Boolean.toString(webConfig.getActiveDirectoryDebug()));
         System.setProperty("sun.security.jgss.debug", Boolean.toString(webConfig.getActiveDirectoryDebug()));
@@ -216,7 +223,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * @throws LoginException Kerberos login exception
      */
     private LoginContext loginAsServicePrincipal() throws LoginException {
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
         LoginContext loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosLoginModule()),
                 new CallbackHandler() {
                     @Override
@@ -262,7 +269,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
     @Override
     public void authenticate(String login, String password, Locale loc)
             throws com.haulmont.cuba.security.global.LoginException {
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
         DomainAliasesResolver aliasesResolver = AppBeans.get(DomainAliasesResolver.NAME);
 
         // Convert domain name to kerberos form "user@DOMAIN"
@@ -277,7 +284,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
             int atSignPos = login.indexOf("@");
             if (atSignPos <= 0) {
                 throw new com.haulmont.cuba.security.global.LoginException(
-                        MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
+                        messages.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
                         login
                 );
             }
@@ -307,7 +314,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
             log.debug("Fail Login: " + login, e);
 
             throw new com.haulmont.cuba.security.global.LoginException(
-                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.authenticationError", loc),
+                    messages.getMessage(ActiveDirectoryHelper.class, "activeDirectory.authenticationError", loc),
                     e.getMessage());
         }
     }
@@ -315,6 +322,12 @@ public class KerberosAuthProvider implements CubaAuthProvider {
     @Override
     public boolean needAuth(ServletRequest request) {
         return false;
+    }
+
+    @Override
+    public boolean authSupported(HttpSession session) {
+        final Object principal = session.getAttribute(KERBEROS_PRINCIPAL_KEY);
+        return principal instanceof KerberosPrincipal;
     }
 
     private String getRemoteComputerPlace(ServletRequest request) {
