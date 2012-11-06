@@ -243,7 +243,7 @@ public class UserEditor extends AbstractEditor<User> {
                             return false;
                         }
                     } else {
-                        String passwordHash = passwordEncryption.getHash(passw, user.getId().toString());
+                        String passwordHash = passwordEncryption.getPasswordHash(user.getId(), passw);
 
                         user.setPassword(passwordHash);
                         return true;
