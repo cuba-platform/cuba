@@ -7,12 +7,10 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.auth.CubaAuthProvider;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -29,11 +27,7 @@ public class ActiveDirectoryHelper {
      * @return True if HTTP session support AD auth
      */
     public static boolean activeDirectorySupportedBySession() {
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = attr.getRequest();
-        if (request == null)
-            return false;
-        HttpSession session = request.getSession();
+        HttpSession session = App.getInstance().getHttpSession();
         return session != null && getAuthProvider().authSupported(session);
     }
 
