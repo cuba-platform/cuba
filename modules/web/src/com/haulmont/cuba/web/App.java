@@ -142,6 +142,9 @@ public abstract class App extends Application
 
     @Override
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
+
+        ActiveDirectoryHelper.startCurrentSession(request.getSession());
+
         this.response = response;
         cookies.updateCookies(request);
 
@@ -168,6 +171,8 @@ public abstract class App extends Application
     @Override
     public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         testModeRequest = false;
+
+        ActiveDirectoryHelper.endCurrentSession();
     }
 
     public static Application.SystemMessages getSystemMessages() {
