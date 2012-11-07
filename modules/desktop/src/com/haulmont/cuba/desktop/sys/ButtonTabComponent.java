@@ -164,6 +164,10 @@ public class ButtonTabComponent extends JPanel {
         }
     }
 
+    public JLabel getTitleLabel() {
+        return titleLabel;
+    }
+
     private class TabButton extends JButton implements ActionListener {
         public TabButton() {
             int size = 17;

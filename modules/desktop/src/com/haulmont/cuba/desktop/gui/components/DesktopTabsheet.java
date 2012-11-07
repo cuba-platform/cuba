@@ -464,7 +464,7 @@ public class DesktopTabsheet
         @Override
         public void setCaptionStyleName(String styleName) {
             ButtonTabComponent buttonTabComponent = getButtonTabComponent();
-            App.getInstance().getTheme().applyStyle(buttonTabComponent, styleName);
+            App.getInstance().getTheme().applyStyle(buttonTabComponent.getTitleLabel(), styleName);
         }
 
         public ButtonTabComponent getButtonTabComponent() {
