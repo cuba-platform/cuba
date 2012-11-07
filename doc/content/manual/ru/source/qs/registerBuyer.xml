@@ -1,3 +1,0 @@
-﻿<persistence-unit name="shop" transaction-type="RESOURCE_LOCAL">
-    <class>com.haulmont.shop.core.entity.Buyer</class>
-</persistence-unit>

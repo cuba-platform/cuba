@@ -1,11 +1,19 @@
-﻿@Entity(name = "shop$Discount")
+﻿package com.haulmont.shop.entity;
+
+import com.haulmont.cuba.core.entity.StandardEntity;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
+
+@Entity(name = "shop$Discount")
 @Table(name = "SHOP_DISCOUNT")
 public class Discount extends StandardEntity {
 
     @Column(name = "MIN_QUANTITY")
     private Integer minQuantity;
 
-    @Column(name = "PRICE", length = 15)
+    @Column(name = "PRICE", nullable = false)
     private BigDecimal price;
 
     @Temporal(TemporalType.DATE)
@@ -19,7 +27,6 @@ public class Discount extends StandardEntity {
     public Integer getMinQuantity() {
         return minQuantity;
     }
-
     public void setMinQuantity(Integer minQuantity) {
         this.minQuantity = minQuantity;
     }
@@ -27,7 +34,6 @@ public class Discount extends StandardEntity {
     public BigDecimal getPrice() {
         return price;
     }
-
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
@@ -35,7 +41,6 @@ public class Discount extends StandardEntity {
     public Date getFromDate() {
         return fromDate;
     }
-
     public void setFromDate(Date fromDate) {
         this.fromDate = fromDate;
     }
@@ -43,7 +48,6 @@ public class Discount extends StandardEntity {
     public Date getTillDate() {
         return tillDate;
     }
-
     public void setTillDate(Date tillDate) {
         this.tillDate = tillDate;
     }

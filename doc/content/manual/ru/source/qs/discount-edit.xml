@@ -1,21 +1,19 @@
-<window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         class="com.haulmont.cuba.gui.components.AbstractEditor"
         caption="msg://editorCaption"
         datasource="discountDs"
-        messagesPack="com.haulmont.shop.gui.ui.discount">
+        messagesPack="com.haulmont.shop.gui.discount">
 
     <dsContext>
         <datasource id="discountDs"
-                    class="com.haulmont.shop.core.entity.Discount"
+                    class="com.haulmont.shop.entity.Discount"
                     view="_local">
         </datasource>
     </dsContext>
-    <layout expand="windowActions">
 
+    <layout expand="windowActions">
         <fieldGroup id="fieldGroup"
-                    datasource="discountDs"
-                    stylename="edit-area">
+                    datasource="discountDs">
             <column width="250px">
                 <field id="minQuantity"/>
                 <field id="price"/>
@@ -23,7 +21,6 @@
                 <field id="tillDate"/>
             </column>
         </fieldGroup>
-
         <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

@@ -2,3 +2,10 @@
 @Composition
 @OnDelete(DeletePolicy.CASCADE)
 private List<Discount> discounts;
+
+public List<Discount> getDiscounts() {
+    return discounts;
+}
+public void setDiscounts(List<Discount> discounts) {
+    this.discounts = discounts;
+}

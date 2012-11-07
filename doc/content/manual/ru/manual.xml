@@ -26,10 +26,7 @@
             <para>XML</para>
           </listitem>
           <listitem>
-            <para>Relational Databases (SQL, DDL)</para>
-          </listitem>
-          <listitem>
-            <para>Java Persistence API</para>
+            <para>Реляционные базы данных (SQL, DDL)</para>
           </listitem>
         </itemizedlist></para>
       <para>Для глубокого понимания принципов работы платформы полезным является знакомство со  следующими технологиями и фреймворками:</para>
@@ -38,16 +35,16 @@
           <para>SpringFramework (<ulink url="http://www.springsource.org">http://www.springsource.org</ulink>)</para>
         </listitem>
         <listitem>
+          <para>Java Persistence API, Apache OpenJPA  (<ulink url="http://openjpa.apache.org">http://openjpa.apache.org</ulink>)</para>
+        </listitem>
+        <listitem>
           <para>Vaadin Framework (<ulink url="https://vaadin.com">https://vaadin.com</ulink>)</para>
         </listitem>
         <listitem>
-          <para>Apache OpenJPA  (<ulink url="http://openjpa.apache.org">http://openjpa.apache.org</ulink>)</para>
+          <para>HTML / CSS / JavaScript</para>
         </listitem>
         <listitem>
-          <para>Java Servlets (<ulink url="http://www.oracle.com/technetwork/java/javaee/servlet">http://www.oracle.com/technetwork/java/javaee/servlet</ulink>)</para>
-        </listitem>
-        <listitem>
-          <para>HTML/CSS/JavaScript</para>
+          <para>Java Servlets</para>
         </listitem>
         <listitem>
           <para>Java Swing</para>

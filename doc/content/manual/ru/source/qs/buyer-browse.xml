@@ -1,13 +1,10 @@
-<window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        messagesPack="com.haulmont.shop.gui.ui.buyer"
-        caption="msg://browserCaption"
-        lookupComponent="buyersTable"
-        >
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        messagesPack="com.haulmont.shop.gui.buyer"
+        caption="msg://browserCaption">
 
     <dsContext>
         <collectionDatasource id="buyersDs"
-                              class="com.haulmont.shop.core.entity.Buyer"
+                              class="com.haulmont.shop.entity.Buyer"
                               view="_local">
             <query>
                 select b from shop$Buyer b
@@ -15,47 +12,40 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox id="table-panel"
-              expand="buyersTable"
-              spacing="true"
-              height="100%">
+    <layout spacing="true" expand="buyersTable">
+        <groupBox id="filterBox" collapsable="false">
+            <filter id="genericBuyersFilter"
+                    datasource="buyersDs">
+                <properties include=".*"/>
+            </filter>
+        </groupBox>
 
-            <groupBox id="filterBox" collapsable="false" stylename="edit-area">
-                <filter id="genericBuyersFilter"
-                        datasource="buyersDs">
-                    <properties include=".*"
-                                exclude=""/>
-                </filter>
-            </groupBox>
-
-            <table id="buyersTable"
-                   editable="false" width="100%">
-                <actions>
-                    <action id="create"/>
-                    <action id="edit"/>
-                    <action id="remove"/>
-                    <action id="refresh"/>
-                    <action id="excel"/>
-                </actions>
-                <buttonsPanel>
-                    <button action="buyersTable.create"/>
-                    <button action="buyersTable.edit"/>
-                    <button action="buyersTable.remove"/>
-                    <button action="buyersTable.excel"/>
-                    <button action="buyersTable.refresh"/>
-                </buttonsPanel>
-                <rowsCount/>
-                <columns>
-                    <column id="firstName"/>
-					<column id="surName"/>
-                    <column id="birthday"/>
-                    <column id="email"/>
-                    <column id="phone"/>
-                    <column id="deliveryAddress"/>
-                </columns>
-                <rows datasource="buyersDs"/>
-            </table>
-        </vbox>
+        <table id="buyersTable"
+               editable="false" width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+                <action id="refresh"/>
+                <action id="excel"/>
+            </actions>
+            <buttonsPanel>
+                <button action="buyersTable.create"/>
+                <button action="buyersTable.edit"/>
+                <button action="buyersTable.remove"/>
+                <button action="buyersTable.excel"/>
+                <button action="buyersTable.refresh"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="firstName"/>
+                <column id="surName"/>
+                <column id="birthday"/>
+                <column id="email"/>
+                <column id="phone"/>
+                <column id="deliveryAddress"/>
+            </columns>
+            <rows datasource="buyersDs"/>
+        </table>
     </layout>
 </window>
