@@ -100,6 +100,9 @@ public class PropertyDatasourceImpl<T extends Entity>
             ViewProperty property = masterDs.getView().getProperty(metaProperty.getName());
             if (property == null)
                 return null;
+            if (property.getView() == null)
+                throw new IllegalStateException("Invalid view definition: " + masterDs.getView()
+                        + ". Property '" + property + "' must have a view");
             view = metadata.getViewRepository().findView(getMetaClass(), property.getView().getName());
             //anonymous (nameless) view
             if (view == null)
