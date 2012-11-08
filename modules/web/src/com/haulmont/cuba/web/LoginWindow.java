@@ -86,8 +86,11 @@ public class LoginWindow extends Window implements Action.Handler {
         localesSelect = new NativeSelect();
         okButton = new Button();
 
-        if (!ActiveDirectoryHelper.useActiveDirectory() && app.isCookiesEnabled()) {
-            rememberMe = new CheckBox();
+        if (app.isCookiesEnabled()) {
+            if (!ActiveDirectoryHelper.useActiveDirectory() ||
+                    !ActiveDirectoryHelper.activeDirectorySupportedBySession()) {
+                rememberMe = new CheckBox();
+            }
         }
 
         initUI(app);
