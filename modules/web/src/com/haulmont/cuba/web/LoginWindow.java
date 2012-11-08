@@ -17,10 +17,14 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -43,6 +47,9 @@ public class LoginWindow extends Window implements Action.Handler {
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
+
+    // must be 8 symbols
+    private static final String PASSWORD_KEY = "25tuThUw";
 
     private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
 
@@ -324,8 +331,11 @@ public class LoginWindow extends Window implements Action.Handler {
             if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
-                ActiveDirectoryHelper.getAuthProvider().authenticate(login, (String) passwordField.getValue(), loc);
+                String password = (String) passwordField.getValue();
+                if (loginByRememberMe && StringUtils.isNotEmpty(password))
+                    password = decryptPassword(password);
 
+                ActiveDirectoryHelper.getAuthProvider().authenticate(login, password, loc);
                 login = convertLoginString(login);
 
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
@@ -408,7 +418,12 @@ public class LoginWindow extends Window implements Action.Handler {
                     }
 
                     app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(encodedLogin));
-                    app.addCookie(COOKIE_PASSWORD, passwordEncryption.getPlainHash(password));
+                    if (!ActiveDirectoryHelper.useActiveDirectory())
+                        app.addCookie(COOKIE_PASSWORD, passwordEncryption.getPlainHash(password));
+                    else {
+                        if (StringUtils.isNotEmpty(password))
+                            app.addCookie(COOKIE_PASSWORD, encryptPassword(password));
+                    }
                 }
             } else {
                 app.removeCookie(COOKIE_REMEMBER_ME);
@@ -416,6 +431,35 @@ public class LoginWindow extends Window implements Action.Handler {
                 app.removeCookie(COOKIE_PASSWORD);
             }
         }
+    }
+
+    protected String encryptPassword(String password) {
+        SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
+        IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());
+        String result;
+        try {
+            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+            result = new String(Hex.encodeHex(cipher.doFinal(password.getBytes())));
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+        return result;
+    }
+
+    // if decrypt password is impossible returns encrypted password
+    protected String decryptPassword(String password) {
+        SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
+        IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());
+        String result;
+        try {
+            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
+            result = new String(cipher.doFinal(Hex.decodeHex(password.toCharArray())));
+        } catch (Exception e) {
+            return password;
+        }
+        return result;
     }
 
     protected Locale getUserLocale() {
