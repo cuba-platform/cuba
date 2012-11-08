@@ -402,11 +402,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public void updateItem(T item) {
+        // this method must not change the "modified" state by contract
+        boolean saveModified = modified;
         for (T t : __getCollection()) {
             if (t.equals(item)) {
                 InstanceUtils.copy(item, t);
             }
         }
+        modified = saveModified;
         forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
