@@ -49,6 +49,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     private static Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
+    protected boolean listenersSuspended;
+    protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
 
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -90,14 +92,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                     }
                 }
 
-                forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
             public void stateChanged(Datasource<Entity> ds, State prevState, State state) {
                 for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                     dsListener.stateChanged(CollectionPropertyDatasourceImpl.this, prevState, state);
                 }
-                forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
@@ -106,7 +108,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
                     reattachListeners((Collection) prevValue, (Collection) value);
 
-                    forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+                    fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
                 }
             }
 
@@ -194,7 +196,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void refresh() {
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public int size() {
@@ -259,7 +261,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             modified(item);
         }
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     /**
@@ -319,7 +321,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
 
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
     }
 
@@ -336,7 +338,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         // detach listener only after setting value to the link property
         detachListener(item);
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public synchronized void includeItem(T item) throws UnsupportedOperationException {
@@ -354,7 +356,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         // attach listener only after setting value to the link property
         attachListener(item);
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     public synchronized void clear() throws UnsupportedOperationException {
@@ -376,7 +378,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             // detach listener only after setting value to the link property
             detachListener(item);
 
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
     }
 
@@ -398,7 +400,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
         }
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public void updateItem(T item) {
@@ -410,7 +412,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             }
         }
         modified = saveModified;
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public synchronized void replaceItem(T item) {
@@ -430,7 +432,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (sortInfos != null)
             doSort();
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public synchronized boolean containsItem(K itemId) {
@@ -527,12 +529,28 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         clearCommitLists();
     }
 
-    protected void forceCollectionChanged(CollectionDatasourceListener.Operation operation) {
+    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation) {
+        if (listenersSuspended) {
+            lastCollectionChangeOperation = operation;
+            return;
+        }
         for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             if (dsListener instanceof CollectionDatasourceListener) {
                 ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);
             }
         }
+    }
+
+    @Override
+    public void suspendListeners() {
+        listenersSuspended = true;
+    }
+
+    @Override
+    public void resumeListeners() {
+        listenersSuspended = false;
+        fireCollectionChanged(lastCollectionChangeOperation);
+        lastCollectionChangeOperation = null;
     }
 
     public boolean isSoftDeletion() {

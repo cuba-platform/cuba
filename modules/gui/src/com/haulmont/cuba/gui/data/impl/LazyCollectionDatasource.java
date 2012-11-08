@@ -97,7 +97,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
 
         modified = true;
-        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
@@ -111,7 +111,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
         deleted(item);
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public synchronized void excludeItem(T item) throws UnsupportedOperationException {
@@ -123,7 +123,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (size != null && size > 0)
             size--;
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public synchronized void includeItem(T item) throws UnsupportedOperationException {
@@ -135,7 +135,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (size != null && size > 0)
             size++;
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     public synchronized void clear() throws UnsupportedOperationException {
@@ -152,7 +152,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             if (size != null && size > 0)
                 size--;
 
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
     }
 
@@ -179,7 +179,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
             attachListener(item);
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
     }
 
@@ -235,7 +235,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             if (sortInfos != null && sortInfos.length > 0 && isCompletelyLoaded())
                 sortInMemory();
 
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
 
             checkDataLoadError();
         } finally {
@@ -471,10 +471,10 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    protected void forceCollectionChanged(CollectionDatasourceListener.Operation operation) {
+    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation) {
         disableLoad = true;
         try {
-            super.forceCollectionChanged(operation);
+            super.fireCollectionChanged(operation);
         } finally {
             disableLoad = false;
         }

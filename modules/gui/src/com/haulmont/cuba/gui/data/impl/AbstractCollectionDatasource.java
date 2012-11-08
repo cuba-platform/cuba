@@ -38,20 +38,20 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
-        extends
-        DatasourceImpl<T>
-        implements
-        CollectionDatasource<T, K> {
+        extends DatasourceImpl<T> implements CollectionDatasource<T, K> {
+
     protected String query;
     protected QueryFilter filter;
     protected int maxResults;
     protected ParameterInfo[] queryParameters;
     protected boolean softDeletion;
     protected ComponentValueListener componentValueListener;
-    private boolean refreshOnComponentValueChange;
+    protected boolean refreshOnComponentValueChange;
     protected Sortable.SortInfo<MetaPropertyPath>[] sortInfos;
     protected Map<String, Object> savedParameters;
     protected Throwable dataLoadError;
+    protected boolean listenersSuspended;
+    protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
 
     private static Log log = LogFactory.getLog(AbstractCollectionDatasource.class);
 
@@ -322,7 +322,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return query;
     }
 
-    protected void forceCollectionChanged(CollectionDatasourceListener.Operation operation) {
+    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation) {
+        if (listenersSuspended) {
+            lastCollectionChangeOperation = operation;
+            return;
+        }
         for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             if (dsListener instanceof CollectionDatasourceListener) {
                 ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);
@@ -364,6 +368,18 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
 
         return templateParams;
+    }
+
+    @Override
+    public void suspendListeners() {
+        listenersSuspended = true;
+    }
+
+    @Override
+    public void resumeListeners() {
+        listenersSuspended = false;
+        fireCollectionChanged(lastCollectionChangeOperation);
+        lastCollectionChangeOperation = null;
     }
 
     @Override

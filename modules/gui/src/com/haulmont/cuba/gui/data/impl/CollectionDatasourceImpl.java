@@ -157,7 +157,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             suspended = false;
             refreshOnResumeRequired = false;
 
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
 
             inRefresh = false;
             return;
@@ -192,7 +192,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             suspended = false;
             refreshOnResumeRequired = false;
 
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
 
             checkDataLoadError();
         } finally {
@@ -326,7 +326,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         modified = true;
-        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     @Override
@@ -345,7 +345,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             setItem(null);
         }
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     @Override
@@ -355,7 +355,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         data.put(item.getId(), item);
         attachListener(item);
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     @Override
@@ -369,7 +369,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             this.item = null;
         }
 
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     @Override
@@ -383,7 +383,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             T item = (T) obj;
             detachListener(item);
             if (state == State.VALID)
-                forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+                fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
     }
 
@@ -419,7 +419,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
             attachListener(item);
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
 
         if (this.item != null && this.item.equals(item)) {

@@ -84,6 +84,34 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /** Updates item in the collection if it is already there. Does not affect the "modified" state */
     void updateItem(T item);
 
+    /**
+     * Suspend invocation of <code>collectionChanged</code> method of registered {@link CollectionDatasourceListener}s.
+     * It makes sense in case of massive updates of the datasource by {@link #addItem(com.haulmont.cuba.core.entity.Entity)}
+     * or similar methods.
+     * After that, <code>collectionChanged</code> will be invoked once on {@link #resumeListeners()} call.
+     * <p/>Usage example:
+     * <pre>
+     * ds.suspendListeners();
+       try {
+           for (Object item : items) {
+               ds.addItem(item);
+           }
+       } finally {
+           ds.resumeListeners();
+       }
+     * </pre>
+     */
+    void suspendListeners();
+
+    /**
+     * Resume invocation of <code>collectionChanged</code> method of registered {@link CollectionDatasourceListener}s
+     * after calling {@link #suspendListeners()}.
+     * It will call <code>collectionChanged</code> just once, doesn't matter how many updates were issued
+     * since the previous {@link #suspendListeners()} call.
+     * <p/>This method should be called in <code>finally</code> section.
+     */
+    void resumeListeners();
+
     /** True if this datasource supports soft deletion functionality. Corresponds to EntityManager.setSoftDeletion(boolean) */
     boolean isSoftDeletion();
 

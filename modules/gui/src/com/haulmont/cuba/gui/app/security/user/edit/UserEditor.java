@@ -274,21 +274,26 @@ public class UserEditor extends AbstractEditor<User> {
         @Override
         public void actionPerform(Component component) {
             Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
-            openLookup("sec$Role.browse", new Lookup.Handler() {
+            Lookup roleLookupWindow = openLookup("sec$Role.browse", new Lookup.Handler() {
                 @Override
                 public void handleLookup(Collection items) {
                     Collection<String> existingRoleNames = getExistingRoleNames();
-                    for (Object item : items) {
-                        Role role = (Role) item;
-                        if (existingRoleNames.contains(role.getName())) continue;
+                    rolesDs.suspendListeners();
+                    try {
+                        for (Object item : items) {
+                            Role role = (Role) item;
+                            if (existingRoleNames.contains(role.getName())) continue;
 
-                        final MetaClass metaClass = rolesDs.getMetaClass();
-                        UserRole userRole = dataService.newInstance(metaClass);
-                        userRole.setRole(role);
-                        userRole.setUser(userDs.getItem());
+                            final MetaClass metaClass = rolesDs.getMetaClass();
+                            UserRole userRole = dataService.newInstance(metaClass);
+                            userRole.setRole(role);
+                            userRole.setUser(userDs.getItem());
 
-                        rolesDs.addItem(userRole);
-                        existingRoleNames.add(role.getName());
+                            rolesDs.addItem(userRole);
+                            existingRoleNames.add(role.getName());
+                        }
+                    } finally {
+                        rolesDs.resumeListeners();
                     }
                 }
 
@@ -305,6 +310,11 @@ public class UserEditor extends AbstractEditor<User> {
                 }
 
             }, WindowManager.OpenType.THIS_TAB, lookupParams);
+
+            Component lookupComponent = roleLookupWindow.getLookupComponent();
+            if (lookupComponent instanceof Table) {
+                ((Table) lookupComponent).setMultiSelect(true);
+            }
         }
     }
 
