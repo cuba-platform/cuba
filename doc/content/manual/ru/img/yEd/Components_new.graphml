@@ -473,10 +473,10 @@
     <node id="n28">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode3">
-          <y:Geometry height="30.0" width="132.0" x="110.14999999999986" y="30.0"/>
+          <y:Geometry height="30.0" width="148.0" x="110.14999999999986" y="30.0"/>
           <y:Fill color="#FF9900" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="127.404296875" x="2.2978515625" y="5.6494140625">DatasourceComponent<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="127.404296875" x="10.2978515625" y="5.6494140625">DatasourceComponent<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -813,7 +813,7 @@
     <edge id="e27" source="n28" target="n0">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="33.850000000000136" sy="2.0" tx="-19.0" ty="0.0">
+          <y:Path sx="25.850000000000136" sy="2.0" tx="-19.0" ty="0.0">
             <y:Point x="210.0" y="-75.0"/>
           </y:Path>
           <y:LineStyle color="#FF9900" type="line" width="4.0"/>
@@ -825,7 +825,7 @@
     <edge id="e28" source="n4" target="n28">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-15.726351351351354" sy="4.75" tx="47.773648648648646" ty="0.0">
+          <y:Path sx="-15.726351351351354" sy="4.75" tx="38.12364864864878" ty="-14.9921875">
             <y:Point x="222.27364864864865" y="109.75"/>
           </y:Path>
           <y:LineStyle color="#FF9900" type="line" width="4.0"/>
@@ -837,9 +837,9 @@
     <edge id="e29" source="n25" target="n28">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-19.0" sy="2.0" tx="47.61392425102531" ty="0.0">
+          <y:Path sx="-19.0" sy="2.0" tx="49.963924251025446" ty="14.9609375">
             <y:Point x="330.0" y="-43.04411026314841"/>
-            <y:Point x="222.1139242510253" y="-43.04411026314841"/>
+            <y:Point x="234.1139242510253" y="-43.04411026314841"/>
           </y:Path>
           <y:LineStyle color="#FF9900" type="line" width="4.0"/>
           <y:Arrows source="none" target="white_delta"/>

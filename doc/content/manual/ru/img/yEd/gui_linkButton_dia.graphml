@@ -49,7 +49,7 @@
     <node id="n2">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode3">
-          <y:Geometry height="30.0" width="120.0" x="220.5" y="326.0"/>
+          <y:Geometry height="30.0" width="120.0" x="220.5" y="290.0"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="85.380859375" x="17.3095703125" y="5.6494140625">WebLinkButton<y:LabelModel>
@@ -65,7 +65,7 @@
     <node id="n3">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode3">
-          <y:Geometry height="30.0" width="128.0" x="370.5" y="326.0"/>
+          <y:Geometry height="30.0" width="128.0" x="370.5" y="290.0"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="104.728515625" x="11.6357421875" y="5.6494140625">DesktopLinkButton<y:LabelModel>

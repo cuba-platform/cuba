@@ -777,7 +777,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
     <section>
       <title>Библиотека визуальных компонентов</title>
       <para><link linkend="section_gui_components">Компоненты</link></para>
-      <para><link linkend="section_gui_layouts">Расположение компонентов внутри контейнера</link></para>
+      <para><link linkend="section_gui_layouts">Контейнеры</link></para>
       <section id="section_gui_components">
         <title>Компоненты</title>
         <figure>
@@ -789,130 +789,269 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           </mediaobject>
         </figure>
         <para><classname>Component</classname> − предок всех визуальных компонентов. Он содержит базовые атрибуты, позволяющие идентифицировать компонент и располагать его на экране.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/Button.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_button">Button</link></para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/PopupButton.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_popupButton">PopupButton</link></para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/LinkButton.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_linkButton">LinkButton</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/gui_label.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_label">Label</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/gui_textField.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_textField">TextField</link> </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/TextArea.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_gui_textArea">TextArea</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/DateField.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_dateField">DateField</link> </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/TimeField.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_timeField">TimeField</link> </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/CheckBox.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_checkBox">CheckBox</link> </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/PickerField.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_pickerField">PickerField</link> </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/OptionsGroup.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_gui_optionsGroup">OptionsGroup</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/LookupField.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_lookupField">LookupField</link> </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/LookupPickerField.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_lookupPickerField">LookupPickerField</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/TwinColumn.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_twinColumn">TwinColumn</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/Upload.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_upload">FileUploadField</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/Table.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_gui_table">Table</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/Tree.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_gui_treetable">TreeTable</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/GroupTable.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_gui_groupTable">GroupTable</link>  </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/Tree.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_gui_tree">Tree</link> </para>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="img/FieldGroup.png"/>
-          </imageobject>
-        </mediaobject>
-        <para><link linkend="section_gui_fieldGroup">FieldGroup</link>  </para>
-        <para>TokenList</para>
+        <informaltable frame="topbot" pgwide="0">
+          <tgroup cols="2" colsep="1">
+            <colspec colnum="1" colname="c0" colwidth="1*"/>
+            <colspec colnum="2" colname="c1" colwidth="3*"/>
+            <tbody>
+              <row>
+                <entry>
+                  <link linkend="section_button">Button</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/Button.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry align="justify">
+                  <link linkend="section_popupButton">PopupButton</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/PopupButton.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_linkButton">LinkButton</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/LinkButton.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_label">Label</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_label.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_textField">TextField</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_textField.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_textArea">TextArea</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_textArea.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_dateField">DateField</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_dateField.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_timeField">TimeField</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_timeField1.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_checkBox">CheckBox</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/CheckBox.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_pickerField">PickerField</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/PickerField.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_optionsGroup">OptionsGroup</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/OptionsGroup.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_lookupField">LookupField</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/LookupField.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_lookupPickerField">LookupPickerField</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/LookupPickerField.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_twinColumn">TwinColumn</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/TwinColumn.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_upload">FileUploadField</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/Upload.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_table">Table</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_table.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_treetable">TreeTable</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_treeTable.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_groupTable">GroupTable</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/GroupTable.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_tree">Tree</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/Tree.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_fieldGroup">FieldGroup</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_fieldGroup.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="section_gui_tokenList">TokenList</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_tokenList.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
         <section id="section_label">
           <title>Label</title>
-          <para>Надпись (<classname>Label</classname>) − текстовый компонент, отображающий  статический текст либо значения атрибута <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
+          <para>Надпись (<classname>Label</classname>) − текстовый компонент, отображающий  статический текст либо значение атрибута <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
           <para>XML-имя компонента: <classname>label</classname></para>
           <figure>
             <title/>
@@ -922,8 +1061,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса компонента <classname>Label</classname>: для веб-приложений (класс <classname>WebLabel</classname>) и для десктоп-приложений (класс <classname>DesktopLabel</classname>). Оба этих класса реализуют интерфейс <interfacename>Label</interfacename>, который, в свою очередь, наследуется от интерфейсов
-        <link linkend="section_interface_DatasourceComponent">DatasourceComponent</link> и  <link linkend="section_interface_hasFormatter">Component.HasFormatter.</link> <classname>WebLabel</classname> реализует к тому же интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+          <para>Существует два класса компонента <classname>Label</classname>: для веб-приложений  и для десктоп-приложений. </para>
           <figure>
             <title>Типы надписей</title>
             <mediaobject>
@@ -1003,7 +1141,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         </section>
         <section id="section_button">
           <title>Button</title>
-          <para>Кнопка (<classname>Button</classname>) −  компонент пользовательского интерфейса, содержащий  текст или пиктограмму (или и то и другое). Кнопка обеспечивает выполнение некоторых действий при нажатии на нее пользователем.</para>
+          <para>Кнопка (<classname>Button</classname>) −  компонент,  обеспечивающий  выполнение некоторых действий при нажатии на нее пользователем.</para>
           <para>XML-имя компонента: <classname>button</classname></para>
           <figure>
             <title/>
@@ -1013,8 +1151,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса кнопок: для веб-приложений (класс <classname id="class_WebButton">WebButton</classname>) и для десктоп-приложений (класс <classname id="class_DesktopButton">DesktopButton</classname>). Оба этих класса реализуют интерфейс <interfacename>Button</interfacename>, который, в свою очередь, наследуется от интерфейсов <link linkend="section_interface_component">Component</link>, <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>,
-        <link linkend="section_interface_actionOwner">Component.ActionOwner</link>, <link linkend="section_interface_hasIcon">Component.HasIcon.</link> <classname>WebButton</classname> реализует к тому же интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+          <para>Классы кнопок существуют как для веб-приложений, так и для десктоп-приложений.</para>
           <para>Кнопка может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
           <figure>
             <title>Типы кнопок</title>
@@ -1028,10 +1165,12 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/textButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Для создания кнопки с пиктограммой:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/iconButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Атрибут <link linkend="attr_icon">icon</link> указывает на местоположение пиктограммы. Подробную информацию о том, где следует располагать файлы пиктограмм, Вы можете прочитать в <xref linkend="section_gui_themes_creation"/></para>
           <para>Для создания кнопки с пользовательским стилем необходимо указать атрибут <property>stylename</property>, а также задать стиль компонента в файле CSS.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/userButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Определение стиля:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/cssButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Подробную информацию о том, как создавать пользовательский стиль, Вы можете прочитать в <xref linkend="section_gui_themes_creation"/></para>
           <para>Основная функция кнопки −  выполнить некоторое действие при нажатии на нее. Определить метод <glossterm linkend="glossary_controller_id">контроллера</glossterm>, который будет вызываться при нажатии на кнопку, можно с помощью атрибута <property id="attr_invoke">invoke</property>. Значением атрубута должно быть    имя  метода контроллера, вызываемого в ответ на событие нажатия кнопки. Метод должен:</para>
           <itemizedlist>
             <listitem>
@@ -1044,13 +1183,18 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <para>Не иметь аргументов или иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки.</para>
             </listitem>
           </itemizedlist>
-          <para>В качестве примера показано описание кнопки, вызывающей метод <methodname>blockButton:</methodname></para>
+          <para>В качестве примера показано описание кнопки, вызывающей метод <methodname>lockButton:</methodname></para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/invokeButton.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана необходимо определить метод <methodname>blockButton</methodname>:</para>
+          <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана необходимо определить метод <methodname>lockButton</methodname>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/methodButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибут <property>invoke</property> игнорируется, если для кнопки задан атрибут <property>action</property>. Атрибут <property id="attr_action">action</property> содержит имя <link linkend="section_gui_action">Action</link>, соответствующего данной кнопке.</para>
           <para>Пример кнопки с атрибутом <property>action</property>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/actionButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para><link linkend="section_gui_action">Action</link> для кнопки можно создавать программно, в <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана.</para>
+          <para>В качестве примера создадим кнопку, имеющую в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> только атрибут <link linkend="attr_id">id</link>:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/withoutActionButton.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>В контроллере  в методе <methodname>init()</methodname> экрана определим действие и название для кнопки.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/withoutActionButtonContr.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибуты <classname>button</classname>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
@@ -1110,8 +1254,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса кнопок: для веб-приложений (класс <classname>WebPopupButton</classname>) и для десктоп-приложений (класс <classname>DesktopPopupButton</classname>). Оба этих класса реализуют интерфейс <interfacename>PopupButton</interfacename>, который, в свою очередь, наследуется от интерфейсов  <link linkend="section_interface_hasCaption">Component.HasCaption</link>, <link linkend="section_interface_belongToFrame">Component.BelongToFrame</link>,
-        <link linkend="section_interface_actionsHolder">Component.ActionsHolder</link>, <link linkend="section_interface_hasIcon">Component.HasIcon.</link></para>
+          <para>Существует два класса кнопок: для веб-приложений  и для десктоп-приложений.</para>
           <para>Кнопка с выпадающим списоком действий может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
           <figure>
             <title>Типы кнопок</title>
@@ -1200,7 +1343,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса кнопок-ссылок: для веб-приложений (класс <classname>WebLinkButton</classname>) и для десктоп-приложений (класс <classname>DesktopLinkButton</classname>). Оба этих класса реализуют интерфейс <interfacename>LinkButton</interfacename>, который, в свою очередь, наследуется от интерфейса  <link linkend="section_button">Button</link>. Класс <classname>WebLinkButton</classname> наследуется от класса <link linkend="class_WebButton">WebButton</link>, класс <classname>DesktopLinkButton</classname> наследуется от класса <link linkend="class_DesktopButton">DesktopButton</link>.</para>
+          <para>Существует два класса кнопок-ссылок: для веб-приложений  и для десктоп-приложений.</para>
           <para>Кнопка-ссылка  может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
           <figure>
             <title>Типы кнопок-ссылок</title>
@@ -1269,7 +1412,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <section id="section_textField">
           <title>TextField</title>
           <para>Поле для редактирования текста.</para>
-          <para>XML-имя компонента: <classname>textField</classname></para>
+          <para>XML-имя компонента: <sgmltag>textField</sgmltag></para>
           <figure>
             <title/>
             <mediaobject>
@@ -1278,13 +1421,10 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса текстовых полей: для веб-приложений (класс <classname>WebTextField</classname>) и для десктоп-приложений (класс <classname>DesktopTextField</classname>). Оба этих класса реализуют интерфейс <interfacename>TextField</interfacename>, который, в свою очередь, наследуется от интерфейсов  <interfacename>Field</interfacename> и <link linkend="section_interface_hasFormatter">Component.HasFormatter</link>. Класс <classname>WebTextField</classname> наследуется от класса <classname>WebAbstractTextField</classname>, класс <classname>DesktopTextField</classname> наследуется от класса <classname>DesktopAbstractField</classname>. Класс <classname>WebTextField</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
-          <para>Текстовое поле служит для обеспечения возможности получить текстовую информацию от пользователя.</para>
+          <para>Классы текстовых полей существуют как для веб-приложений, так  и для десктоп-приложений.</para>
+          <para>Текстовое поле служит для обеспечения возможности получить текстовую информацию от пользователя, а также для отображения атрибутов <glossterm linkend="glossary_entity">сущности</glossterm>.</para>
           <para>Для создания простого текстового поля достаточно в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> написать следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textField.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <warning>
-            <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>TextField</classname>.</para>
-          </warning>
           <para>На рисунке ниже показан вид простого текстового поля.</para>
           <figure>
             <title/>
@@ -1294,17 +1434,17 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Текстовому полю можно задавать количество строк и столбцов текста с помощью атрибутов <property id="attr_cols">cols</property> и <property id="attr_rows">rows</property>.</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldColsRows.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Для создания текстового поля, связанного с данными, необходимо использовать атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
           <figure>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_textFieldColsRows.png"/>
+                <imagedata align="center" fileref="img/gui_textField_data.png"/>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Вы можете связять текстовое поле с типом данных с помощью атрибута <property id="attr_datatype">datatype</property>. Атрибут используется  для форматирования значения поля в том случае, если поле не связано с данными (то есть не указан источник данных и название атрибута). Значением атрибута <property>datatype</property> является имя типа данных из списка:</para>
+          <para>Если поле не связано с источником данных (то есть не указан источник данных и название атрибута), можно связать текстовое поле  с типом данных с помощью атрибута <property id="attr_datatype_1">datatype</property>. Атрибут используется  для форматирования значения поля. Значением атрибута <property>datatype</property> является имя типа данных из списка:</para>
           <itemizedlist>
             <listitem>
               <para><property>boolean</property></para>
@@ -1345,16 +1485,17 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Текстовое поле можно связать с <glossterm linkend="glossary_datasource_id">источником данных</glossterm> и атрибутом <glossterm linkend="glossary_entity">сущности</glossterm>. Для этого используются атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>.</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Текстовому полю можно задавать количество строк и столбцов текста с помощью атрибутов <property id="attr_cols">cols</property> и <property id="attr_rows">rows</property>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldColsRows.txt" encoding="UTF-8" parse="text"/></programlisting>
           <figure>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_textField_data.png"/>
+                <imagedata align="center" fileref="img/gui_textFieldColsRows.png"/>
               </imageobject>
             </mediaobject>
           </figure>
+          <para>Вы можете связять текстовое поле с типом данных с помощью атрибута <property id="attr_datatype">datatype</property>. Атрибут используется  для форматирования значения поля в том случае, если поле не связано с данными (то есть не указан источник данных и название атрибута). Значением атрибута <property>datatype</property> является имя типа данных из списка:</para>
           <para>Для текстового компонента можно ограничить максимальную длину вводимого текста с помощью атрибута <property id="attr_maxLength">maxLength</property>. Значение атрибута устанавливается по умолчанию на основании длины строкового атрибута <glossterm linkend="glossary_entity">сущности</glossterm>, если этот параметр указан в <glossterm linkend="glossary_annotation">аннотации</glossterm> сущности. Значение &quot;-1&quot; означает отсутствие ограничения.</para>
           <para>Ниже показан пример, ограничивающий длину вводимого текста в 10 символов.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldMaxLength.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -1373,9 +1514,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="section_button">кнопку</link>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldTrimContr.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибут <property id="attr_secret">secret</property> позволяет преобразовать текстовое поле в  поле, которое не показывает символы, введенные пользователем. Вместо этого поле отображает эхо-символы, отличные от введенных. </para>
-          <warning>
-            <para>Текстовое поле с атрибутом <property>secret=&quot;true&quot;</property>  скрывает введенные данные только в визуальном представлении. При получении значения поля с помощью метода доступа это значение представляется в текстовой форме.</para>
-          </warning>
+          <para>Текстовое поле с атрибутом <property>secret=&quot;true&quot;</property>  скрывает введенные данные только в визуальном представлении. При получении значения поля с помощью метода доступа это значение представляется в текстовой форме.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldSecret.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>В <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="section_button">кнопку</link>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldSecretContr.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -1479,7 +1618,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <section id="section_gui_textArea">
           <title>TextArea</title>
           <para>Текстовая область (<classname>TextArea</classname>) − многострочное текстовое поле для редактирования текста. Содержит элементы управления для форматирования текста.</para>
-          <para>XML-имя компонента: <classname>textArea</classname></para>
+          <para>XML-имя компонента: <sgmltag>textArea</sgmltag></para>
           <figure>
             <title/>
             <mediaobject>
@@ -1488,7 +1627,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Класс текстовой области существует только для веб-приложений (класс <classname>WebTextArea</classname>). Класс реализует интерфейс <interfacename>TextArea</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebTextArea</classname> наследуется от класса <classname>WebAbstractField</classname>. Класс <classname>WebTextArea</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+          <para>Класс текстовой области существует только для веб-приложений.</para>
           <para>К тексту, вводимому в компоненте <classname>TextArea</classname>, можно применять средства для форматирования: изменять начертание шрифта, его размер, гарнитуру − с помощью элементов управления, расположенных в верхней части компонента.</para>
           <figure>
             <title/>
@@ -1583,7 +1722,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             </mediaobject>
           </figure>
           <para>Дата и время по умолчанию отображаются в формате, соответствующем выбранной локали.</para>
-          <para>XML-имя компонента: <classname>dateField</classname>.</para>
+          <para>XML-имя компонента: <sgmltag>dateField</sgmltag>.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -1592,12 +1731,9 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса полей для ввода даты и времени: для веб-приложений (класс <classname>WebDateField</classname>) и для десктоп-приложений (класс <classname>DesktopDateField</classname>). Оба этих класса реализуют интерфейс <interfacename>DateField</interfacename>, который, в свою очередь, наследуется от интерфейса  <interfacename>Field</interfacename>. Класс <classname>WebDateField</classname> наследуется от абстрактного класса <classname>WebAbstractComponent</classname>, класс <classname>DesktopDateField</classname> наследуется от абстрактного класса <classname>DesktopAbstractField</classname>. Класс <classname>WebDateField</classname> реализует интерфейс <link linkend="section_interface_wrapper">Component.Wrapper.</link></para>
+          <para>Существует два класса полей для ввода даты и времени: для веб-приложений  и для десктоп-приложений.</para>
           <para>Для создания простого поля для ввода даты необходимо определить его в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateField.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <warning>
-            <para>Атрибут <link linkend="attr_id">id</link> является обязательным для компонента  <classname>DateField</classname>.</para>
-          </warning>
           <para>Возможно изменить формат представления даты и времени с помощью атрибута  <property id="attr_dateFormat">dateFormat</property> по правилам  SimpleDateFormat (<ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html</ulink>). Значением атрибута может быть либо строка формата, либо ключ в <glossterm linkend="glossary_app_folders_id">пакете сообщений</glossterm> (если строка начинается с msg://)</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateFieldFormat.txt" encoding="UTF-8" parse="text"/></programlisting>
           <figure>
@@ -3549,7 +3685,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         </section>
         <section id="section_buttonsPanel">
           <title>ButtonsPanel</title>
-          <para>Унифицирует использование и размещение кнопок для управления данными в таблице.</para>
+          <para>Компонент, унифицирующий использование и размещение кнопок для управления данными в таблице.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -3559,6 +3695,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <classname>buttonsPanel</classname>.</para>
+          <para>Для создания панели с кнопками нужно определить ее описание в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>.</para>
           <para>Атрибуты <classname>buttonsPanel</classname>:</para>
           <itemizedlist>
             <listitem>
@@ -3885,7 +4022,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="img/gui_tabsheet.png" align="center"/>
+                <imagedata align="center" fileref="img/gui_tabsheet.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -4117,6 +4254,9 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         </section>
         <section id="section_gui_presentation">
           <title>Presentation </title>
+        </section>
+        <section id="section_gui_themes_creation">
+          <title>Создание темы приложения</title>
         </section>
       </section>
       <section>
@@ -4434,45 +4574,6 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             </listitem>
           </varlistentry>
         </variablelist>
-      </section>
-      <section>
-        <title>Интерфейсы</title>
-        <section id="section_interface_component">
-          <title>Component</title>
-          <para>Root of the GenericUI components hierarchy</para>
-        </section>
-        <section id="section_interface_DatasourceComponent">
-          <title>DatasourceComponent</title>
-          <para>Базовый интерфейс компонентов, предназначенных для работы с данными одного экземпляра сущности. Имеет методы для установки <glossterm linkend="glossary_datasource_id">источника данных</glossterm> и указания атрибута <glossterm linkend="glossary_entity">сущности</glossterm>, из которого брать значение.</para>
-        </section>
-        <section id="section_interface_wrapper">
-          <title>Component.Wrapper</title>
-          <para>Component delegating work to some &quot;wrapped&quot; client-specific implementation</para>
-        </section>
-        <section id="section_interface_hasCaption">
-          <title>Component.HasCaption</title>
-          <para>Object having a caption</para>
-        </section>
-        <section id="section_interface_hasFormatter">
-          <title>Component.HasFormatter</title>
-          <para>Object having a formatter</para>
-        </section>
-        <section id="section_interface_belongToFrame">
-          <title>Component.BelongToFrame</title>
-          <para>Component belonging to a frame</para>
-        </section>
-        <section id="section_interface_actionOwner">
-          <title>Component.ActionOwner</title>
-          <para>Component supporting an action</para>
-        </section>
-        <section id="section_interface_hasIcon">
-          <title>Component.HasIcon</title>
-          <para>Component having an icon</para>
-        </section>
-        <section id="section_interface_actionsHolder">
-          <title>Component.ActionsHolder</title>
-          <para>Component containing  Actions</para>
-        </section>
       </section>
     </section>
     <section id="section_datasource">

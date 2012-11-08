@@ -1,2 +1,2 @@
-﻿<button id="disabledButton" invoke="blockButton" caption="msg://block"
-        description="Blocks the button"/>
+﻿<button id="disabledButton" invoke="lockButton" caption="msg://lock"
+        description="Locks the button"/>

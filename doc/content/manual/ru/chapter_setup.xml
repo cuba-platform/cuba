@@ -69,7 +69,7 @@
     </orderedlist>
     <para>После установки убедимся в работоспособности сервера базы данных. Для этого запустите программу <application>pgAdmin</application> через меню <guimenu>Пуск</guimenu> /   <guimenu>PostgreSQL 9.1</guimenu> /   <guisubmenu>pgAdmin III</guisubmenu>. На экране отобразится  окно, представленное на рисунке:</para>
     <figure>
-      <title>Установка PostgreSQL. Шаг 13</title>
+      <title>Установка PostgreSQL</title>
       <mediaobject>
         <imageobject>
           <imagedata align="center" fileref="img/ch1_db_1.png"/>
@@ -85,7 +85,7 @@
         </imageobject>
       </mediaobject>
     </figure>
-    <para>В этом окне в качестве имени роли укажите <userinput role="italic">root</userinput>. Далее перейдите на вкладку <guilabel>Определение</guilabel>. </para>
+    <para>В этом окне в качестве имени роли укажите <userinput role="italic">cuba</userinput>. Далее перейдите на вкладку <guilabel>Определение</guilabel>. </para>
     <figure>
       <title>Настройка PostgreSQL. Создание роли входа</title>
       <mediaobject>
@@ -94,10 +94,8 @@
         </imageobject>
       </mediaobject>
     </figure>
-    <para>В полях <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль <userinput>root</userinput>. Далее перейдите на вкладку <guilabel>Привилегии роли</guilabel>. </para>
+    <para>В полях <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль <userinput>cuba</userinput>. Далее перейдите на вкладку <guilabel>Привилегии роли</guilabel> . </para>
     <para>Установите флажок <guilabel>Суперпользователь</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
-    <para>Установка и настройка базы данных завершена.</para>
-    <para>Следует отметить, что имя и пароль пользователя БД выбраны исключительно для целей настоящего руководства, и при реальной эксплуатации приложений могут быть любыми другими. Права суперпользователя требуются только на момент первичного создания базы данных и в дальнейшем могут быть отозваны.</para>
     <figure>
       <title>Настройка PostgreSQL. Создание роли входа</title>
       <mediaobject>
@@ -106,6 +104,8 @@
         </imageobject>
       </mediaobject>
     </figure>
+    <para>Установка и настройка базы данных завершена.</para>
+    <para>Следует отметить, что имя и пароль пользователя БД выбраны исключительно для целей настоящего руководства, и при реальной эксплуатации приложений могут быть любыми другими. Права суперпользователя требуются только на момент первичного создания базы данных и в дальнейшем могут быть отозваны.</para>
   </section>
   <section>
     <title>Установка Java SE 7</title>

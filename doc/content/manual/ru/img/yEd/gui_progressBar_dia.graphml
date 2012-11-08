@@ -15,13 +15,12 @@
   <graph edgedefault="directed" id="G">
     <data key="d7"/>
     <node id="n0">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="96.0" x="522.0" y="345.0"/>
+          <y:Geometry height="30.0" width="126.6747553790774" x="506.6626223104613" y="345.0"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="70.69140625" x="12.654296875" y="5.6494140625">ProgressBar<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="70.69140625" x="27.991674564538698" y="5.6494140625">ProgressBar<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -32,13 +31,12 @@
       </data>
     </node>
     <node id="n1">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="119.0" x="428.22906765103403" y="446.0"/>
+          <y:Geometry height="30.0" width="126.67475537907745" x="433.8252446209226" y="417.0"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="114.712890625" x="2.1435546875" y="5.6494140625">DesktopProgressBar<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="114.712890625" x="5.980932377038755" y="5.6494140625">DesktopProgressBar<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -49,13 +47,12 @@
       </data>
     </node>
     <node id="n2">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="246.80346712008395" x="260.58071483891166" y="345.0"/>
-          <y:Fill color="#CCFFFF" transparent="false"/>
+          <y:Geometry height="30.0" width="126.6747553790774" x="582.6626223104613" y="417.0"/>
+          <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="240.783203125" x="3.0101319975419756" y="5.6494140625">DesktopAbstractComponent&lt;JProgressBar&gt;<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="88.0234375" x="19.325658939538698" y="5.6494140625">WebPickerField<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -66,47 +63,12 @@
       </data>
     </node>
     <node id="n3">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="119.0" x="600.5" y="446.0"/>
-          <y:Fill color="#99CCFF" transparent="false"/>
-          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="88.0234375" x="15.48828125" y="5.6494140625">WebPickerField<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n4">
-      <data key="d5"/>
-      <data key="d6">
-        <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="216.57789757238356" x="632.6158180410043" y="345.0"/>
-          <y:Fill color="#CCFFFF" transparent="false"/>
-          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="206.7578125" x="4.910042536191781" y="5.6494140625">WebAbstractField&lt;ProgressIndicator&gt;<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n5">
-      <data key="d5"/>
-      <data key="d6">
-        <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="135.6715061112974" x="502.1642469443513" y="265.0"/>
+          <y:Geometry height="30.0" width="126.67475537907745" x="506.6626223104613" y="273.0"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="121.404296875" x="7.133604618148638" y="5.6494140625">Component.HasValue<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="66.0390625" x="30.317846439538698" y="5.6494140625">Component<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -116,60 +78,27 @@
         </y:GenericNode>
       </data>
     </node>
-    <edge id="e0" source="n1" target="n2">
-      <data key="d9"/>
+    <edge id="e0" source="n1" target="n0">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-7.729067651034029" sy="0.0" tx="95.6452778200159" ty="0.0">
-            <y:Point x="480.0" y="410.5"/>
-            <y:Point x="479.62772621896954" y="410.5"/>
-          </y:Path>
-          <y:LineStyle color="#999999" type="line" width="4.0"/>
-          <y:Arrows source="none" target="white_delta"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e1" source="n3" target="n4">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="19.32054530693722" sy="-11.0" tx="-61.58422152025889" ty="0.0"/>
-          <y:LineStyle color="#999999" type="line" width="4.0"/>
-          <y:Arrows source="none" target="white_delta"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e2" source="n1" target="n0">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="40.787075316748314" sy="0.0" tx="-15.131270830696053" ty="0.0">
-            <y:Point x="528.5161429677823" y="410.5"/>
-            <y:Point x="554.868729169304" y="410.5"/>
-          </y:Path>
+          <y:Path sx="37.871231532736715" sy="-0.5" tx="-34.96614615680198" ty="0.0"/>
           <y:LineStyle color="#999999" type="dashed" width="2.0"/>
           <y:Arrows source="none" target="plain"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e3" source="n3" target="n0">
-      <data key="d9"/>
+    <edge id="e1" source="n2" target="n0">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-40.87974005857757" sy="0.0" tx="20.212675847698165" ty="0.0">
-            <y:Point x="619.1202599414224" y="410.5"/>
-            <y:Point x="590.2126758476982" y="410.5"/>
-          </y:Path>
+          <y:Path sx="-46.0" sy="0.0" tx="30.0" ty="0.0"/>
           <y:LineStyle color="#999999" type="dashed" width="2.0"/>
           <y:Arrows source="none" target="plain"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e4" source="n0" target="n5">
+    <edge id="e2" source="n0" target="n3">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>

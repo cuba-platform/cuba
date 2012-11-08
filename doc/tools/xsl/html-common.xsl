@@ -10,10 +10,10 @@
     <xsl:import href="html/highlight.xsl"/>
 	<xsl:param name="use.id.as.filename">1</xsl:param>
     <xsl:param name="use.extensions">1</xsl:param>
-    <xsl:param name="toc.section.depth">2</xsl:param>
+    <xsl:param name="toc.section.depth">3</xsl:param>
     <xsl:param name="section.autolabel">1</xsl:param>
-    <xsl:param name="section.label.includes.component.label">2</xsl:param>
-	<xsl:param name="section.autolabel.max.depth">2</xsl:param>
+    <xsl:param name="section.label.includes.component.label">3</xsl:param>
+	<xsl:param name="section.autolabel.max.depth">3</xsl:param>
 	<xsl:param name="simplesect.autolabel">0</xsl:param>
     <xsl:param name="css.decoration">0</xsl:param>
     <!--<xsl:param name="highlight.source" select="1"/>-->

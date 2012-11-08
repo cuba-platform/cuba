@@ -33,10 +33,10 @@
     <node id="n1">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="160.46652143179733" x="616.4188812574113" y="425.0"/>
+          <y:Geometry height="30.0" width="153.4192851610884" x="553.2903574194559" y="415.0"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="53.34765625" x="53.55943259089872" y="5.6494140625">WebTree<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="53.34765625" x="50.03581445554414" y="5.6494140625">WebTree<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -49,23 +49,7 @@
     <node id="n2">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="341.75384558409905" x="601.4188812574113" y="345.0"/>
-          <y:Fill color="#CCFFFF" transparent="false"/>
-          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="310.814453125" x="15.469696229549527" y="5.6494140625">WebAbstractList&lt;com.haulmont.cuba.web.toolkit.ui.Tree&gt;<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n3">
-      <data key="d6">
-        <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="129.07640799822025" x="457.342473259191" y="270.0"/>
+          <y:Geometry height="30.0" width="129.07640799822025" x="457.342473259191" y="275.0"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="84.712890625" x="22.181758686610124" y="5.6494140625">ListComponent<y:LabelModel>
@@ -78,13 +62,29 @@
         </y:GenericNode>
       </data>
     </node>
+    <node id="n3">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNode2">
+          <y:Geometry height="30.0" width="153.4192851610884" x="343.2903574194558" y="415.0"/>
+          <y:Fill color="#99CCFF" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="72.6953125" x="40.3619863305442" y="5.6494140625">DesktopTree<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
     <node id="n4">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="160.46652143179733" x="251.63361940760774" y="425.0"/>
-          <y:Fill color="#99CCFF" transparent="false"/>
+          <y:Geometry height="30.0" width="153.4192851610884" x="343.2903574194558" y="210.0"/>
+          <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="72.6953125" x="43.885604465898666" y="5.6494140625">DesktopTree<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="66.0390625" x="43.6901113305442" y="5.6494140625">Component<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -97,26 +97,10 @@
     <node id="n5">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="279.753845584099" x="162.58862767509206" y="345.0"/>
-          <y:Fill color="#CCFFFF" transparent="false"/>
-          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="273.466796875" x="3.1435243545494984" y="5.6494140625">DesktopAbstractActionsHolderComponent&lt;JTree&gt;<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n6">
-      <data key="d6">
-        <y:GenericNode configuration="ShinyPlateNode2">
-          <y:Geometry height="30.0" width="138.47229102458016" x="804.7004358169302" y="425.0"/>
+          <y:Geometry height="30.0" width="153.4192851610884" x="553.2903574194559" y="210.0"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="115.38671875" x="11.542786137290022" y="5.6494140625">Component.Wrapper<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="144.07421875" x="4.672533205544141" y="5.6494140625">Component.ActionsHolder<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -126,30 +110,7 @@
         </y:GenericNode>
       </data>
     </node>
-    <edge id="e0" source="n1" target="n2">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="-11.0" tx="-71.27187294484044" ty="8.0">
-            <y:Point x="696.6521419733099" y="398.5"/>
-            <y:Point x="701.0239311046204" y="398.5"/>
-          </y:Path>
-          <y:LineStyle color="#999999" type="line" width="4.0"/>
-          <y:Arrows source="none" target="white_delta"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e1" source="n4" target="n5">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="-1.8668801235064052" sy="0.0" tx="27.534449532858446" ty="0.0"/>
-          <y:LineStyle color="#999999" type="line" width="4.0"/>
-          <y:Arrows source="none" target="white_delta"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e2" source="n0" target="n3">
+    <edge id="e0" source="n0" target="n2">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-15.0" tx="0.0" ty="0.0"/>
@@ -159,12 +120,11 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e3" source="n4" target="n0">
-      <data key="d9"/>
+    <edge id="e1" source="n3" target="n0">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="20.633119876493595" sy="0.0" tx="-31.005677258301148" ty="-5.0">
-            <y:Point x="490.875" y="440.0"/>
+          <y:Path sx="19.726971544280183" sy="0.0" tx="-11.880677258301148" ty="-5.0">
+            <y:Point x="510.0" y="430.0"/>
           </y:Path>
           <y:LineStyle color="#999999" type="dashed" width="2.0"/>
           <y:Arrows source="none" target="plain"/>
@@ -172,12 +132,11 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e4" source="n1" target="n0">
-      <data key="d9"/>
+    <edge id="e2" source="n1" target="n0">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-61.5" sy="0.0" tx="31.744322741698852" ty="0.0">
-            <y:Point x="553.625" y="440.0"/>
+          <y:Path sx="-58.79909375001434" sy="0.0" tx="18.119322741698852" ty="0.0">
+            <y:Point x="540.0" y="430.0"/>
           </y:Path>
           <y:LineStyle color="#999999" type="dashed" width="2.0"/>
           <y:Arrows source="none" target="plain"/>
@@ -185,13 +144,28 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e5" source="n1" target="n6">
+    <edge id="e3" source="n2" target="n5">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#999999" type="dashed" width="2.0"/>
-          <y:Arrows source="none" target="plain"/>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="630.0" y="290.0"/>
+          </y:Path>
+          <y:LineStyle color="#999999" type="line" width="4.0"/>
+          <y:Arrows source="none" target="white_delta"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e4" source="n2" target="n4">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="420.0" y="290.0"/>
+          </y:Path>
+          <y:LineStyle color="#999999" type="line" width="4.0"/>
+          <y:Arrows source="none" target="white_delta"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
