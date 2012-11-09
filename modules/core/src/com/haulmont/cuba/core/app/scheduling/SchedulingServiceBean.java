@@ -75,7 +75,7 @@ public class SchedulingServiceBean implements SchedulingService {
     }
 
     protected List<MethodInfo> getAvailableMethods(String beanName) {
-        ArrayList<MethodInfo> methods = new ArrayList<MethodInfo>();
+        List<MethodInfo> methods = new ArrayList<MethodInfo>();
         Object bean = AppBeans.get(beanName);
 
         try {
@@ -110,7 +110,7 @@ public class SchedulingServiceBean implements SchedulingService {
         return methods;
     }
 
-    private void addMethod(ArrayList<MethodInfo> methods, MethodInfo methodInfo) {
+    private void addMethod(List<MethodInfo> methods, MethodInfo methodInfo) {
         for (MethodInfo mi : methods) {
             if (mi.definitionEquals(methodInfo))
                 return;
