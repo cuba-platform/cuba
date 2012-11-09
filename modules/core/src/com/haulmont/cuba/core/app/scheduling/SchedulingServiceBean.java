@@ -76,7 +76,7 @@ public class SchedulingServiceBean implements SchedulingService {
 
     protected List<MethodInfo> getAvailableMethods(String beanName) {
         ArrayList<MethodInfo> methods = new ArrayList<MethodInfo>();
-        Object bean = AppContext.getBean(beanName);
+        Object bean = AppBeans.get(beanName);
 
         try {
             List<Class> classes = ClassUtils.getAllInterfaces(bean.getClass());
@@ -90,7 +90,7 @@ public class SchedulingServiceBean implements SchedulingService {
                         Method targetClassMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
                         List<MethodParameterInfo> methodParameters = getMethodParameters(targetClassMethod);
                         MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
-                        methods.add(methodInfo);
+                        addMethod(methods, methodInfo);
                     }
                 }
 
@@ -99,7 +99,7 @@ public class SchedulingServiceBean implements SchedulingService {
                         if (!method.getDeclaringClass().equals(Object.class) && isMethodAvailable(method)) {
                             List<MethodParameterInfo> methodParameters = getMethodParameters(method);
                             MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
-                            methods.add(methodInfo);
+                            addMethod(methods, methodInfo);
                         }
                     }
                 }
@@ -108,6 +108,14 @@ public class SchedulingServiceBean implements SchedulingService {
             log.debug(t.getMessage());
         }
         return methods;
+    }
+
+    private void addMethod(ArrayList<MethodInfo> methods, MethodInfo methodInfo) {
+        for (MethodInfo mi : methods) {
+            if (mi.definitionEquals(methodInfo))
+                return;
+        }
+        methods.add(methodInfo);
     }
 
     @Override

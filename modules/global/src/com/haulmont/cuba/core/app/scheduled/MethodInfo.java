@@ -74,7 +74,7 @@ public class MethodInfo implements Serializable {
     }
 
     public boolean definitionEquals(MethodInfo methodInfo) {
-        if (this.name.equals(methodInfo.getName()))
+        if (!this.name.equals(methodInfo.getName()))
             return false;
         if (this.getParameters().size() != methodInfo.getParameters().size())
             return false;

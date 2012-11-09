@@ -12,6 +12,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -313,13 +314,16 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     public List<MethodParameterInfo> getMethodParameters() {
         ArrayList<MethodParameterInfo> result = new ArrayList<MethodParameterInfo>();
-        Document doc = Dom4j.readDocument(getMethodParamsXml());
-        List<Element> elements = Dom4j.elements(doc.getRootElement(), "param");
-        for (Element paramEl : elements) {
-            Class<?> type = ReflectionHelper.getClass(paramEl.attributeValue("type"));
-            String name = paramEl.attributeValue("name");
-            Object value = paramEl.getText();
-            result.add(new MethodParameterInfo(type, name, value));
+        String xml = getMethodParamsXml();
+        if (!StringUtils.isBlank(xml)) {
+            Document doc = Dom4j.readDocument(xml);
+            List<Element> elements = Dom4j.elements(doc.getRootElement(), "param");
+            for (Element paramEl : elements) {
+                Class<?> type = ReflectionHelper.getClass(paramEl.attributeValue("type"));
+                String name = paramEl.attributeValue("name");
+                Object value = paramEl.getText();
+                result.add(new MethodParameterInfo(type, name, value));
+            }
         }
         return result;
     }
