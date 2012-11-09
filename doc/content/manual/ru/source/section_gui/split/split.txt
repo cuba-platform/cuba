@@ -4,17 +4,17 @@
 			<vbox margin="true" spacing="true">
 				<button caption="Button 1"/>
 				<!--..-->
-                <button caption="Button 6"/>
-            </vbox>
-            <vbox margin="true" spacing="true">
+				<button caption="Button 6"/>
+			</vbox>
+			<vbox margin="true" spacing="true">
 				<button caption="Button 7"/>
-                <button caption="Button 12"/>
-            </vbox>
-        </split>
-        <hbox spacing="true">
+				<button caption="Button 12"/>
+			</vbox>
+		</split>
+		<hbox spacing="true">
 			<button caption="Button 10"/>
 			<!--..-->
-            <button caption="Button 16"/>
-        </hbox>
-    </split>
+			<button caption="Button 16"/>
+		</hbox>
+	</split>
 </layout>

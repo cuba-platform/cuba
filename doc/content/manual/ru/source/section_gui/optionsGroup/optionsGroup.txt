@@ -1,1 +1,7 @@
-﻿<optionsGroup id="optionsGroup3" orientation="horizontal" description="msg://descr1"/>
+﻿@Override
+public void init(Map<String, Object> params) {
+	List<String> optionsList = new ArrayList<String>();
+    optionsList.add(getMessage("option1"));
+    optionsList.add(getMessage("option2"));
+    optionsGroup3.setOptionsList(optionsList);
+}

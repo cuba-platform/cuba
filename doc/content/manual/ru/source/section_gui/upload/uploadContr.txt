@@ -9,7 +9,10 @@
     @Inject
     private Label fileName;
 
-    private FileDescriptor fd;
+    @Inject
+    private FileUploading fileUploading;//класс,реализующий управление файлами в хранилище
+	
+	private FileDescriptor fd;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -17,47 +20,44 @@
 
         uploadField.addListener(new FileUploadField.Listener() {
             public void uploadStarted(Event event) {
-				//код обработки начала загрузки
+                //код обработки начала загрузки
                 uploadField.setEnabled(false);
             }
 
             public void uploadFinished(Event event) {
-			//код обработки окончания загрузки
+                //код обработки окончания загрузки
                 uploadField.setEnabled(true);
             }
 
             public void uploadSucceeded(Event event) {
-				//код обработки успешной загрузки
-                fd = new FileDescriptor();
-                fd.setName(uploadField.getFileName());
+                //код обработки успешной загрузки
+                fd = new FileDescriptor();//создание дескриптора  файла
+                fd.setName(uploadField.getFileName());//установка названия загружаемого файла в дескриптор
 
-                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+                //создание объекта файла
                 File file = fileUploading.getFile(uploadField.getFileId());
-                fd.setSize((int) file.length());
 
+                fd.setSize((int) file.length());
                 fd.setCreateDate(timeSource.currentTimestamp());
-                saveFile();
-                showNotification(getMessage("File") + " "+uploadField.getFileName() + " " + getMessage("success"), NotificationType.HUMANIZED);
+                try {
+                    //запись файла в хранилище файлов
+                    fileUploading.putFileIntoStorage(uploadField.getFileId(), fd);
+                } catch (FileStorageException e) {
+                    throw new RuntimeException(e);
+                }
+                showNotification(getMessage("File") + " " + uploadField.getFileName() + " " + getMessage("success"), NotificationType.HUMANIZED);
                 fileName.setValue(uploadField.getFileName());
             }
 
             public void uploadFailed(Event event) {
-				//код обработки ошибок загрузки
+                //код обработки ошибок загрузки
                 showNotification("uploadUnsuccess", NotificationType.HUMANIZED);
             }
 
             public void updateProgress(long readBytes, long contentLength) {
-				//отслеживание процесса загрузки, например тут можно организовать обновление состояния индикатора загрузки
+                //отслеживание процесса загрузки, например тут можно
+                //организовать обновление состояния индикатора загрузки
             }
         });
-    }
-
-    private void saveFile() {
-        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-        try {
-            fileUploading.putFileIntoStorage(uploadField.getFileId(), fd);
-        } catch (FileStorageException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

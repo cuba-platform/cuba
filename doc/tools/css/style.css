@@ -8,19 +8,19 @@ html {
 }
 
 body {
-    margin-top: 2cm;
-    margin-bottom: 2cm;
-    margin-left: 2cm;
-    margin-right: 2cm;
     padding: 0;
     background-color: white;
-    line-height: 150%;
-	font-size: 12pt;
+	margin:0 auto;
+    font-size:12px;
+    max-width:100em;
+    padding:0em 2em;
+    line-height:150%;
+    text-align:justify;
 }
 
 body, td, div {
     font-family: 'Arial', 'Verdana', sans-serif;
-    font-size: 12pt;
+    font-size: 12px;
     color: #000000;
 }
 
@@ -42,27 +42,37 @@ p {
 
 h1, h2, h3, h4, h5 {
     color: #0b6ec7;
-    line-height: 150%;
+    line-height: 130%;
     font-weight: bold;
     font-family: 'Arial', 'Verdana', sans-serif;
     /* ensure paragraphs remain close to their parent heading */
-    margin-bottom: 0.2em;
+    margin-top:0em;
 }
 
 h1 {
-	font-size: 40pt;
+	/*font-size: 40pt;*/
+	line-height:1.2em;
+    font-size:2em;
+    padding:1.5em;
 }
 
 h2 {
-	font-size: 18pt;
+	/*font-size: 18pt;*/
+	font-size:1.6em;
 }
 
 h3 {
-	font-size: 16pt;
+	font-size:1.3em;
+    padding-top:0em;
+    padding-bottom:0em;
+	/*font-size: 16pt;*/
 }
 
 h4 {
-	font-size: 14pt;
+	font-size:1.1em;
+    padding-top:0em;
+    padding-bottom:0em;
+	/*font-size: 14pt;*/
 }
 
 h5 {
@@ -311,7 +321,7 @@ pre {
 
 .informaltable table {
     border-collapse: collapse;
-    font-size: 11pt;
+    font-size: 12px;
     min-width: 50%;
     /*border: solid #2250bd 1px;
 	border: solid rgb(0,149,182) 1px;*/
@@ -319,17 +329,22 @@ pre {
 }
 
 .informaltable table td {
-    vertical-align: text-top;
     padding-left: 0.8em;
     padding-right: 0.8em;
     padding-top: 0.3em;
     padding-bottom: 0.3em;
-	font-size: 11pt;
+	font-size: 12px;
 }
+
+.informaltable th {
+    padding:.3em .5em;
+}
+
+.informaltable td {padding:.15em .5em;}
 
 .informaltable table thead td {
     font-weight: bold;
-	font-size: 11pt;
+	font-size: 12px;
     /*border-bottom: solid #686868 2px;*/
     background-color: #ffffff;
 }
@@ -373,7 +388,7 @@ div.informaltable {
     margin-top: 0;
     margin-bottom: 0.6em;
 	font-family: 'Arial', 'Verdana', sans-serif;
-	font-size: 10pt;
+	font-size: 12px;
     color: #000000;
 }
 
@@ -404,7 +419,7 @@ div.informaltable {
 	margin-left: 2em;
 	padding-left: 1.2em;
 	page-break-inside: auto ;
-    font-size: 80%;
+    font-size: 90%;
 	white-space: pre-wrap;
     /*overflow-x: auto;*/
 }
@@ -571,6 +586,57 @@ div.orderedlist li {
   margin-top: 1em;
 }
 
+/* Lists */
+
+ol li, ul li {
+    padding-left:.2em;
+    padding-bottom:.5em;
+    margin:0em;
+}
+
+ul {
+    padding-left:1.6em;
+    list-style-type:circle;
+}
+
+ul ul {
+    list-style-type:circle;
+}
+
+dt {
+    font-weight:bold;
+    margin-bottom:0em;
+    padding-bottom:0em;
+}
+
+dd {
+    margin:0em;
+    margin-left:2em;
+    padding-top:0em;
+}
+
+li p:first-child, dd p:first-child {
+    padding:0em;
+    margin-top:.3em;
+}
+
+.variablelist, .itemizedlist, .orderedlist {margin-top:.6em;}
+
+ul li p:first-child {margin:0em;}
+
+table .footnote {margin:1em .5em;}
+
+li p:first-child {
+    margin:0em !important;
+    padding:0em !important;
+}
+
+div.chapter, div.section {padding-top:2em;}
+
+ul li p:last-child {
+    margin-bottom:0em;
+    padding-bottom:0em;
+}
 
 
 

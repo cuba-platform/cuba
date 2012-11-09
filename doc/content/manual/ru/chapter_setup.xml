@@ -27,7 +27,7 @@
     <title>Установка PostgreSQL 9.1</title>
     <para>Сайт компании-разработчика: <ulink url="http://www.postgresql.org/">http://www.postgresql.org/</ulink></para>
     <para>Дистрибутив: <ulink url="http://www.enterprisedb.com/products-services-training/pgdownload#windows">http://www.enterprisedb.com/products-services-training/pgdownload #windows</ulink></para>
-    <orderedlist>
+    <orderedlist spacing="compact">
       <listitem>
         <para>Скачайте соответствующий установочный пакет.</para>
       </listitem>

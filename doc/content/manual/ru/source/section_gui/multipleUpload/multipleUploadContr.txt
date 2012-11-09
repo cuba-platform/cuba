@@ -1,9 +1,6 @@
 ﻿public class UploadSample extends AbstractWindow {
 
     @Inject
-    private FileUploadField uploadField;
-
-    @Inject
     private TimeSource timeSource;
 
     @Inject
@@ -11,34 +8,36 @@
 
     @Inject
     private FileMultiUploadField uploadTemplateAttachment;
+	
+	@Inject
+    private FileUploading fileUploading;//класс,реализующий управление файлами в хранилище
 
     private FileDescriptor fd;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        initAttachmentUpload();
-    }
 
-    private void initAttachmentUpload() {
         uploadTemplateAttachment.addListener(new FileMultiUploadField.UploadListener() {
             @Override
             public void queueUploadComplete() {
-                FileUploadingAPI fileUploadingAPI = AppBeans.get(FileUploadingAPI.NAME);
+                //код обработки успешной загрузки
                 textFieldInfo.setValue("");
                 String val = "";
+                //загрузка мапы идентификаторов файлов и названий имен файлов
                 Map<UUID, String> uploadMap = uploadTemplateAttachment.getUploadsMap();
                 for (UUID fileId : uploadMap.keySet()) {
-                    long length = fileUploadingAPI.getFile(fileId).length();
-
+                    long length = fileUploading.getFile(fileId).length();
+                    //создание дескриптора файла
                     FileDescriptor fd = new FileDescriptor();
+                    //установка значений в дескриптор из мапы
                     fd.setName(uploadMap.get(fileId));
                     fd.setExtension(fd.getFileExt());
                     fd.setSize((int) length);
                     fd.setCreateDate(timeSource.currentTimestamp());
-
+                    //запись файла в хранилище файлов
                     try {
-                        fileUploadingAPI.putFileIntoStorage(fileId, fd);
+                        fileUploading.putFileIntoStorage(fileId, fd);
                         val = val + fd.getName() + "\n";
                     } catch (FileStorageException e) {
                         new RuntimeException(e);

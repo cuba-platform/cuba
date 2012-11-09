@@ -1,10 +1,9 @@
-﻿<!--Определение источника данных-->
-<dsContext>
+﻿<dsContext>
 	<collectionDatasource id="sampleDs" class="com.haulmont.refapp.core.entity.sample.TestEntity" view="_local"
                           refreshMode="NEVER">
     </collectionDatasource>
 </dsContext>
-<!--Определение таблицы-->
+<!--...-->
 <table id="testTable" height="150" width="100%">
 	<columns>
 		<column id="name"/>
