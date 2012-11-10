@@ -4129,15 +4129,14 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <warning>
             <para>В случае <parameter>visible=false</parameter> вложенные компоненты вообще не создаются, поэтому будьте осторожны при обращении к ним из контроллера.</para>
           </warning>
-          <example>
-            <title>Пример</title>
-            <programlisting>&lt;tab id=&quot;mainTab&quot; caption=&quot;msg://mainTab&quot;&gt;
-&lt;accessControl data=&quot;workflow.client.web.ui.card.CardAccessData&quot; param=&quot;accessData&quot;&gt;
-&lt;editable property=&quot;notStarted&quot;/&gt;
+            <para>
+                <programlisting>&lt;tab id=&quot;mainTab&quot; caption=&quot;msg://mainTab&quot;&gt;
+            &lt;accessControl data=&quot;workflow.client.web.ui.card.CardAccessData&quot; param=&quot;accessData&quot;&gt;
+            &lt;editable property=&quot;notStarted&quot;/&gt;
 
-&lt;vbox margin=&quot;true&quot; expand=&quot;attachmentsPane&quot;&gt;
+            &lt;vbox margin=&quot;true&quot; expand=&quot;attachmentsPane&quot;&gt;
                 ...</programlisting>
-          </example>
+            </para>
           <section>
             <title>Объект AccessData</title>
             <para>В связи с тем, что одни и те же параметры доступа могут многократно потребоваться в разных частях экрана и в коде контроллера, компонент <classname>accessControl</classname> может быть связан с объектом Java|Groovy, вычисляющим и хранящим эти параметры. Т.о. дорогостоящая инициализация параметра доступа производится только один раз, и затем доступна на протяжении жизни экрана.</para>
@@ -4155,10 +4154,9 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <programlisting>AbstractWfAccessData accessData = getContext().getParamValue(&quot;accessData&quot;);</programlisting>
             <para>При создании класса <classname>AccessData</classname> следует иметь в виду, что в параметры экрана-редактора всегда передается параметр <parameter>param$item</parameter>, содержащий текущий редактируемый экземпляр сущности. Однако этот экземпляр загружен по view вызывающего экрана, а не по view редактора.</para>
             <para>Свойства <classname>AccessData</classname>, на которые можно ссылаться из компонента <classname>accessControl</classname>, должны быть реализованы по стандарту JavaBeans: методами с сигнатурой boolean <methodname>getXxx()</methodname></para>
-            <example>
-              <title>Пример реализации AccessData</title>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/CardAccessData.java" encoding="UTF-8" parse="text"/></programlisting>
-            </example>
+            <para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/CardAccessData.java" encoding="UTF-8" parse="text"/></programlisting>
+            </para>
           </section>
         </section>
         <section id="section_gui_action">
@@ -4251,10 +4249,9 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             </listitem>
           </itemizedlist>
           <para>Логика применения форматирования к аггрегированному значению следующая: если в элементе <classname>aggregation</classname> указан <parameter>formatter</parameter>, то применяется он; иначе применяется <parameter>formatter</parameter> соответствующего аггрегированному значению <parameter>datatype</parameter>.</para>
-          <example>
-            <title>Пример использования</title>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/aggregation/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
-          </example>
+          <para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/aggregation/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
+          </para>
         </section>
         <section id="section_gui_presentation">
           <title>Presentation </title>

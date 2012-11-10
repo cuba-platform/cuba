@@ -330,6 +330,17 @@
       </glossdef>
     </glossentry>
   </glossdiv>
+  <glossdiv>
+    <title>O</title>
+    <glossentry id="glossary_optimistic_locking">
+      <glossterm>
+        <emphasis role="bold">Optimistic locking</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
   <glossdiv lang="ru">
     <title>P</title>
     <glossentry id="glossary_pojo_id">
@@ -346,6 +357,17 @@
       </glossterm>
       <glossdef>
         <para>Визуальный компонент, позволяющий отображать экземпляр <glossterm linkend="glossary_entity">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа от поля.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>S</title>
+    <glossentry id="glossary_soft_deletion">
+      <glossterm>
+        <emphasis role="bold">Soft deletion</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>TODO</para>
       </glossdef>
     </glossentry>
   </glossdiv>

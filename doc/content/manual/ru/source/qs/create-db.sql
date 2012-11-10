@@ -1,4 +1,4 @@
-create table SHOP_BUYER (
+create table SALES_CUSTOMER (
     -- system fields
     ID uuid not null ,             
     CREATE_TS timestamp,          
@@ -10,14 +10,11 @@ create table SHOP_BUYER (
     DELETED_BY varchar(50),       
     -- app fields
     NAME varchar(100),            
-    BIRTHDAY timestamp,           
     EMAIL varchar(100),           
-    PHONE varchar(100),           
-    DELIVERY_ADDRESS varchar(255),
     -- 
     primary key (ID)
 )^
-create table SHOP_DISCOUNT (
+create table SALES_ORDER (
     -- system fields
     ID uuid not null,			  
     CREATE_TS timestamp,          
@@ -28,13 +25,11 @@ create table SHOP_DISCOUNT (
     DELETE_TS timestamp,          
     DELETED_BY varchar(50),       
     -- app fields
-    BUYER_ID uuid,                
-    MIN_QUANTITY integer,         
-    PRICE numeric(19,2),          
-    FROM_DATE timestamp,          
-    TILL_DATE timestamp,          
+    CUSTOMER_ID uuid,                
+    DATE timestamp,          
+    AMOUNT numeric(19,2),          
     --
     primary key (ID),
-    constraint REF_DISCOUNT_BUYER foreign key (BUYER_ID)
-        references SHOP_BUYER(ID)
+    constraint FK_SALES_ORDER_CUSTOMER foreign key (CUSTOMER_ID)
+        references SALES_CUSTOMER(ID)
 )^

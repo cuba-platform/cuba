@@ -6,19 +6,19 @@
   <para>Данная глава дает практические инструкции по установке и настройке рекомендованного программного обеспечения:</para>
   <itemizedlist>
     <listitem>
-      <para><application>Java SE 7 SDK.</application></para>
+      <para><application>Java SE 7 SDK</application></para>
     </listitem>
     <listitem>
-      <para><application>Gradle 1.0</application>. <ulink url="http://www.gradle.org/">Gradle</ulink> − инструмент автоматизации сборки с открытым исходным кодом.</para>
+      <para><application>Gradle 1.0</application> − инструмент автоматизации сборки</para>
     </listitem>
     <listitem>
-      <para><application>PostgreSQL 9.1</application>. <ulink url="http://www.postgresql.org">PostgreSQL</ulink>− реляционная система управления базами данных. PostgreSQL поставляется под лицензией BSD, что обеспечивает максимальную открытость и доступность.</para>
+      <para><application>PostgreSQL 9.1</application> − реляционная система управления базами данных </para>
     </listitem>
     <listitem>
-      <para><application>IntelliJ IDEA 11 Community Edition</application>. <ulink url="http://www.jetbrains.com/idea/">IntelliJ IDEA</ulink> − интегрированная среда разработки для Java компании <orgname>JetBrains</orgname>. IntelliJ IDEA Community Edition является свободно распространяемой версией с открытым исходным кодом.</para>
+      <para><application>IntelliJ IDEA 11 Community Edition</application>  − интегрированная среда разработки для Java</para>
     </listitem>
   </itemizedlist>
-  <para>Веб-интерфейс приложений, создаваемых на основе платформы, поддерживает все популярные современные браузеры, в том числе <application>Google Chrome</application>, <application>Mozilla Firefox</application>, <application>Safari</application>,  <application>Internet Explorer</application> 7+.</para>
+  <para>Веб-интерфейс приложений, создаваемых на основе платформы, поддерживает все популярные современные браузеры, в том числе <application>Google Chrome</application>, <application>Mozilla Firefox</application>, <application>Safari</application>,  <application>Internet Explorer 7+</application>.</para>
   <warning>
     <title>Внимание</title>
     <para>Инструкции по установке приведены для операционной системы <application>Windows 7</application>.</para>

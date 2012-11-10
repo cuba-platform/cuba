@@ -32,13 +32,13 @@
       <para>Для глубокого понимания принципов работы платформы полезным является знакомство со  следующими технологиями и фреймворками:</para>
       <itemizedlist>
         <listitem>
-          <para>SpringFramework (<ulink url="http://www.springsource.org">http://www.springsource.org</ulink>)</para>
+          <para>Spring Framework</para>
         </listitem>
         <listitem>
-          <para>Java Persistence API, Apache OpenJPA  (<ulink url="http://openjpa.apache.org">http://openjpa.apache.org</ulink>)</para>
+          <para>Java Persistence API, Apache OpenJPA</para>
         </listitem>
         <listitem>
-          <para>Vaadin Framework (<ulink url="https://vaadin.com">https://vaadin.com</ulink>)</para>
+          <para>Vaadin Framework</para>
         </listitem>
         <listitem>
           <para>HTML / CSS / JavaScript</para>
@@ -57,7 +57,7 @@
       <para><link linkend="chapter_introduction">
           <emphasis role="bold">Глава 1. Введение</emphasis>
         </link></para>
-      <para>Во вводной главе приводятся  сведения о возможностях платформы <trademark>CUBA</trademark>.</para>
+      <para>Во вводной главе приводятся  сведения о назначении и возможностях платформы <trademark>CUBA</trademark>.</para>
       <para><link linkend="chapter_setup">
           <emphasis role="bold">Глава 2. Установка и настройка инструментария</emphasis>
         </link></para>
@@ -79,50 +79,10 @@
         </link></para>
       <para>В данной главе содержится информация о развертывании приложений в различной конфигурации.</para>
     </section>
-    <section>
-      <title>Соглашения, принятые в документе</title>
-      <para>Для привлечения внимания к определенной информации в данном Руководстве используется выделение текста различными шрифтами, стилями и размером.</para>
-      <formalpara>
-        <title>Переменные среды, команды, имена объектов Java, тексты ошибок, имена файлов, пакетов</title>
-        <para>Обозначены в руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Элементы интерфейса</title>
-        <para>Пункты меню, названия окон, папок, закладок выделяются в тексте <guimenu>полужирным текстом</guimenu>. Кнопки выглядят следующим образом: <guibutton>Кнопка</guibutton></para>
-      </formalpara>
-      <formalpara>
-        <title>Имена приложений, объекты базы данных, названия внешних документов</title>
-        <para>Обозначаются в тексте руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Параметры и свойства</title>
-        <para><parameter>Параметры</parameter> и <property>свойства</property> также выделяются в тексте руководства.</para>
-      </formalpara>
-      <formalpara>
-        <title>Роль пользователя</title>
-        <para>Роль пользователя выделяется в тексте следующим образом: <authorinitials>Администратор</authorinitials>.</para>
-      </formalpara>
-      <para>Листинг исходного кода, а также содержимое файлов визуально отделяются от окружающего текста следующим образом:</para>
-      <programlisting>[appdefaults]
-autologin = true
-forward = true
-forwardable = true
-encrypt = true </programlisting>
-      <para>В тексте руководства будут встречаться сообщения,  используемые для привлечения внимания к информации. <tip>
-          <title>Совет</title>
-          <para>Это сообщение, содержащее информацию о способах упрощения работы.</para>
-        </tip><caution>
-          <title>Подсказка</title>
-          <para>Это дополнительная информация к задаче или проблеме, позволяющая найти правильное решение.</para>
-        </caution><warning>
-          <title>Внимание</title>
-          <para>Данные сообщения  акцентируют внимание на вещах, которые легко упустить из виду.</para>
-        </warning></para>
-    </section>
     <section id="section_additional_info">
       <title>Дополнительные материалы</title>
       <para>Настоящее Руководство, а также другая документация по платформе <trademark>CUBA</trademark>, доступны по адресу <ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink></para>
-      <para>Ниже приведен список источников дополнительной информации по <application>Spring Framework</application>,<application>OpenJPA</application>, <application>Vaadin</application>: </para>
+      <para>Ниже приведен список источников дополнительной информации по <application>Spring Framework</application>, <application>OpenJPA</application>, <application>Vaadin</application>: </para>
       <para><itemizedlist>
           <listitem>
             <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference</ulink></para>
@@ -137,8 +97,7 @@ encrypt = true </programlisting>
     </section>
     <section>
       <title>Обратная связь</title>
-      <para>Если  у Вас имеются предложения по улучшению данного руководства, пожалуйста, обратитесь в службу поддержки по электронной почте <email>cuba@haulmont.com</email>. В теме письма укажите</para>
-      <para><code>PlatformDocumentation</code></para>
+      <para>Если  у Вас имеются предложения по улучшению данного руководства, пожалуйста, обратитесь в службу поддержки по электронной почте <email>cuba@haulmont.com</email>. В теме письма укажите тег <code>[Documentation]</code>.</para>
       <para>Если Вы обнаружили ошибку, укажите, пожалуйста, номер главы и приведите небольшой участок окружающего текста для облегчения поиска. </para>
     </section>
   </preface>
@@ -148,9 +107,6 @@ encrypt = true </programlisting>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_framework.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_development.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_deployment.xml" encoding="UTF-8"/>
-  <appendix>
-    <title/>
-  </appendix>
   <appendix>
     <title>Часто задаваемые вопросы</title>
     <para>TODO</para>

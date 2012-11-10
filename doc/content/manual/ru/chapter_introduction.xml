@@ -36,33 +36,32 @@
       <listitem>
         <para>Мощные средства разграничения прав доступа пользователей к
         информации с возможностью настройки в работающем приложении<footnote>
-            <para>Описание функциональности управления пользователями и их доступом к данным
-              содержится в руководстве <productname>Платформа CUBA. Подсистема безопасности</productname></para>
+            <para>См. руководство <productname>Платформа CUBA. Подсистема безопасности</productname></para>
           </footnote></para>
       </listitem>
       <listitem>
         <para>Встроенный механизм создания и генерации отчетов с выводом в
         форматы офисных документов и PDF<footnote>
-            <para>Информация о создании отчетов с помощью платформы содержится в руководстве
+            <para>См. руководство
                 <productname>Платформа CUBA. Генератор отчетов</productname></para>
           </footnote></para>
       </listitem>
       <listitem>
         <para>Механизм создания и выполнения бизнес-процессов с интегрированным визуальным
           редактором процессов<footnote>
-            <para>Описание механизма выполнения бизнес-процессов содержится в руководстве
+            <para>См. руководство
                 <productname>Платформа CUBA. Подсистема Workflow</productname></para>
           </footnote></para>
       </listitem>
       <listitem>
         <para>Полнотекстовый поиск по атрибутам <glossterm linkend="glossary_entity">сущностей</glossterm> и по содержимому загруженных файлов<footnote>
-            <para>Описание механизма полнотекстового поиска содержится в руководстве
+            <para>См. руководство
                 <productname>Платформа CUBA. Полнотекстовый поиск</productname></para>
           </footnote></para>
       </listitem>
       <listitem>
         <para>Возможность отображения диаграмм, в том числе, диаграммы Ганта<footnote>
-            <para>Описание механизма отображения диаграмм содержится в руководстве
+            <para>См.  руководство
                 <productname>Платформа CUBA. Отображение диаграмм</productname></para>
           </footnote></para>
       </listitem>
@@ -211,9 +210,5 @@
           <para>Java SE Development Kit 7+</para>
         </listitem>
       </itemizedlist></para>
-  </section>
-  <section>
-    <title>Использование стороннего ПО</title>
-    <para>Информация о используемом стороннем программном обеспечении находится в файле <filename>cuba-credits.xml</filename> модуля <structname>core</structname>.</para>
   </section>
 </chapter>
