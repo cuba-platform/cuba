@@ -221,7 +221,9 @@ public class DatePickerDocument extends PlainDocument {
                     if (result.length() == 1) {
                         result.deleteCharAt(0);
                         shift--;
-                    } else result.insert(i + shift, placeHolder);
+                    } else {
+                        result.setCharAt(i + shift, placeHolder);
+                    }
                 }
             } else if ((mask.charAt(i + offset) != placeHolder) && (Character.isDigit(text.charAt(i)))) {
                 int digit = Integer.parseInt(text.substring(i, i + 1));
