@@ -17,7 +17,7 @@ import java.util.Map;
 @ManagedBean(ComponentsFactory.NAME)
 public class WebComponentsFactory implements ComponentsFactory {
 
-    private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<? extends Component>>();
+    private static Map<String, Class<? extends Component>> classes = new HashMap<>();
 
     static {
         classes.put(Window.NAME, WebWindow.class);
@@ -49,8 +49,10 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(DateField.NAME, WebDateField.class);
         classes.put(TimeField.NAME, WebTimeField.class);
         classes.put(LookupField.NAME, WebLookupField.class);
+        classes.put(SearchField.NAME, WebSearchField.class);
         classes.put(PickerField.NAME, WebPickerField.class);
         classes.put(LookupPickerField.NAME, WebLookupPickerField.class);
+        classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
         classes.put(OptionsGroup.NAME, WebOptionsGroup.class);
         classes.put(FileUploadField.NAME, WebFileUploadField.class);
         classes.put(FileMultiUploadField.NAME, WebFileMultiUploadField.class);

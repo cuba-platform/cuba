@@ -29,6 +29,7 @@ import com.vaadin.terminal.gwt.client.Focusable;
 
 import java.util.*;
 
+@SuppressWarnings({"deprecation", "JavaDoc", "WhileLoopReplaceableByForEach", "Convert2Diamond", "UnusedDeclaration"})
 public class VFilterSelect extends Composite implements Paintable, Field,
         KeyDownHandler, KeyUpHandler, ClickHandler, FocusHandler, BlurHandler,
         Focusable, ContainerResizedListener, HasFocusHandlers {
@@ -53,13 +54,17 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
 
         public String getDisplayString() {
-            final StringBuffer sb = new StringBuffer();
+            final StringBuilder sb = new StringBuilder();
             if (iconUri != null) {
                 sb.append("<img src=\"");
                 sb.append(iconUri);
                 sb.append("\" alt=\"\" class=\"v-icon\" />");
             }
-            sb.append("<span" + getDescriptionSnippet() + ">" + Util.escapeHTML(caption) + "</span>");
+            sb.append("<span")
+                    .append(getDescriptionSnippet())
+                    .append(">")
+                    .append(Util.escapeHTML(caption))
+                    .append("</span>");
             return sb.toString();
         }
 
@@ -89,7 +94,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         private static final String Z_INDEX = "30000";
 
-        private final SuggestionMenu menu;
+        protected final SuggestionMenu menu;
 
         private final Element up = DOM.createDiv();
         private final Element down = DOM.createDiv();
@@ -109,7 +114,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             super(true, false, true);
             menu = new SuggestionMenu();
             setWidget(menu);
-            setStyleName(CLASSNAME + "-suggestpopup");
+            setStyleName(getBaseStyleName() + "-suggestpopup");
             DOM.setStyleAttribute(getElement(), "zIndex", Z_INDEX);
 
             final Element root = getContainerElement();
@@ -121,7 +126,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             DOM.insertChild(root, up, 0);
             DOM.appendChild(root, down);
             DOM.appendChild(root, status);
-            DOM.setElementProperty(status, "className", CLASSNAME + "-status");
+            DOM.setElementProperty(status, "className", getBaseStyleName() + "-status");
 
             addCloseHandler(this);
         }
@@ -141,15 +146,15 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             setPopupPosition(x, topPosition);
 
             final int first = currentPage * pageLength
-                    + (nullSelectionAllowed && currentPage > 0 ? 0 : 1);
+                    + (showNullItem() && currentPage > 0 ? 0 : 1);
             final int last = first + currentSuggestions.size() - 1;
             final int matches = totalSuggestions
-                    - (nullSelectionAllowed ? 1 : 0);
+                    - (showNullItem() ? 1 : 0);
             if (last > 0) {
                 // nullsel not counted, as requested by user
                 DOM.setInnerText(status, (matches == 0 ? 0 : first)
                         + "-"
-                        + ("".equals(lastFilter) && nullSelectionAllowed
+                        + ("".equals(lastFilter) && showNullItem()
                                 && currentPage == 0 ? last - 1 : last) + "/"
                         + matches);
             } else {
@@ -157,11 +162,14 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             }
             // We don't need to show arrows or statusbar if there is only one
             // page
+            VConsole.log("Matches: " + matches + " PL:" + pageLength);
             if (matches <= pageLength) {
                 setPagingEnabled(false);
             } else {
                 setPagingEnabled(true);
             }
+            VConsole.log("Paging prev: " + (first > 1));
+            VConsole.log("Paging next: " + (last > matches));
             setPrevButtonActive(first > 1);
             setNextButtonActive(last < matches);
 
@@ -177,11 +185,11 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         private void setNextButtonActive(boolean b) {
             if (b) {
                 DOM.sinkEvents(down, Event.ONCLICK);
-                DOM.setElementProperty(down, "className", CLASSNAME
+                DOM.setElementProperty(down, "className", getBaseStyleName()
                         + "-nextpage");
             } else {
                 DOM.sinkEvents(down, 0);
-                DOM.setElementProperty(down, "className", CLASSNAME
+                DOM.setElementProperty(down, "className", getBaseStyleName()
                         + "-nextpage-off");
             }
         }
@@ -190,11 +198,11 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             if (b) {
                 DOM.sinkEvents(up, Event.ONCLICK);
                 DOM
-                        .setElementProperty(up, "className", CLASSNAME
+                        .setElementProperty(up, "className", getBaseStyleName()
                                 + "-prevpage");
             } else {
                 DOM.sinkEvents(up, 0);
-                DOM.setElementProperty(up, "className", CLASSNAME
+                DOM.setElementProperty(up, "className", getBaseStyleName()
                         + "-prevpage-off");
             }
 
@@ -204,7 +212,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             final MenuItem cur = menu.getSelectedItem();
             final int index = 1 + menu.getItems().indexOf(cur);
             if (menu.getItems().size() > index) {
-                final MenuItem newSelectedItem = (MenuItem) menu.getItems()
+                final MenuItem newSelectedItem = menu.getItems()
                         .get(index);
                 menu.selectItem(newSelectedItem);
                 tb.setText(newSelectedItem.getText());
@@ -222,7 +230,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             final MenuItem cur = menu.getSelectedItem();
             final int index = -1 + menu.getItems().indexOf(cur);
             if (index > -1) {
-                final MenuItem newSelectedItem = (MenuItem) menu.getItems()
+                final MenuItem newSelectedItem = menu.getItems()
                         .get(index);
                 menu.selectItem(newSelectedItem);
                 tb.setText(newSelectedItem.getText());
@@ -235,7 +243,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                     filterOptions(currentPage - 1, lastFilter);
                 }
             } else {
-                final MenuItem newSelectedItem = (MenuItem) menu.getItems()
+                final MenuItem newSelectedItem = menu.getItems()
                         .get(menu.getItems().size() - 1);
                 menu.selectItem(newSelectedItem);
                 tb.setText(newSelectedItem.getText());
@@ -382,22 +390,20 @@ public class VFilterSelect extends Composite implements Paintable, Field,
          */
         public void updateStyleNames(UIDL uidl) {
             if (uidl.hasAttribute("style")) {
-                setStyleName(CLASSNAME + "-suggestpopup");
-                final String[] styles = uidl.getStringAttribute("style").split(
-                        " ");
-                for (int i = 0; i < styles.length; i++) {
-                    addStyleDependentName(styles[i]);
+                setStyleName(getBaseStyleName() + "-suggestpopup");
+                final String[] styles = uidl.getStringAttribute("style").split(" ");
+                for (String style : styles) {
+                    addStyleDependentName(style);
                 }
             }
         }
-
     }
 
     public class SuggestionMenu extends MenuBar {
 
         SuggestionMenu() {
             super(true);
-            setStyleName(CLASSNAME + "-suggestmenu");
+            setStyleName(getBaseStyleName() + "-suggestmenu");
         }
 
         /**
@@ -412,8 +418,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             }
         }
 
-        public void setSuggestions(
-                Collection<FilterSelectSuggestion> suggestions) {
+        public void setSuggestions(Collection<FilterSelectSuggestion> suggestions) {
             clearItems();
             final Iterator<FilterSelectSuggestion> it = suggestions.iterator();
             while (it.hasNext()) {
@@ -449,6 +454,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 }
                 // null is not visible on pages != 0, and not visible when
                 // filtering: handle separately
+
                 client.updateVariable(paintableId, "filter", "", false);
                 client.updateVariable(paintableId, "page", 0, false);
                 client.updateVariable(paintableId, "selected", new String[] {},
@@ -473,7 +479,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             int p = getItems().size();
             if (p > 0) {
                 for (int i = 0; i < p; i++) {
-                    final MenuItem potentialExactMatch = (MenuItem) getItems().get(i);
+                    final MenuItem potentialExactMatch = getItems().get(i);
                     if (potentialExactMatch.getText().equals(enteredItemValue)) {
                         selectItem(potentialExactMatch);
                         doItemAction(potentialExactMatch, true);
@@ -535,15 +541,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
-    private class PopupOpener extends FlowPanel implements HasClickHandlers {
-        @Override
-        public void onBrowserEvent(Event event) {
-            super.onBrowserEvent(event);
-            /*if (client != null) {
-                client.handleTooltipEvent(event, VFilterSelect.this);
-            }*/
-        }
-
+    public class PopupOpener extends FlowPanel implements HasClickHandlers {
         public HandlerRegistration addClickHandler(ClickHandler handler) {
             return addDomHandler(handler, ClickEvent.getType());
         }
@@ -565,55 +563,43 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     private Integer tabindex = null;
 
-    private final TextBox tb = new TextBox() {
-        @Override
-        public void onBrowserEvent(Event event) {
-            super.onBrowserEvent(event);
-            if (client != null) {
-                //client.handleTooltipEvent(event, VFilterSelect.this);
-            }
+    protected final TextBox tb = new TextBox();
 
-            final int type = DOM.eventGetType(event);
-            if (type == Event.ONKEYDOWN && shortcutHandler != null) {
-                shortcutHandler.handleKeyboardEvent(event);
-            }
-        }
-    };
+    protected final SuggestionPopup suggestionPopup = new SuggestionPopup();
 
-    private final SuggestionPopup suggestionPopup = new SuggestionPopup();
+    protected final PopupOpener popupOpener = new PopupOpener();
 
-    private final PopupOpener popupOpener = new PopupOpener();
+    protected final Image selectedItemIcon = new Image();
 
-    private final Image selectedItemIcon = new Image();
+    protected ApplicationConnection client;
 
-    private ApplicationConnection client;
+    protected String paintableId;
 
-    private String paintableId;
+    protected int currentPage;
 
-    private int currentPage;
+    protected final List<FilterSelectSuggestion> currentSuggestions = new ArrayList<FilterSelectSuggestion>();
 
-    private final Collection<FilterSelectSuggestion> currentSuggestions = new ArrayList<FilterSelectSuggestion>();
+    protected boolean immediate;
 
-    private boolean immediate;
+    protected String selectedOptionKey;
 
-    private String selectedOptionKey;
+    protected boolean filtering = false;
+    protected boolean selecting = false;
+    protected boolean tabPressed = false;
+    protected boolean initDone = false;
 
-    private boolean filtering = false;
-    private boolean selecting = false;
-    private boolean tabPressed = false;
-    private boolean initDone = false;
+    protected String lastFilter = "";
+    protected int lastIndex = -1; // last selected index when using arrows
 
-    private String lastFilter = "";
-    private int lastIndex = -1; // last selected index when using arrows
+    protected FilterSelectSuggestion currentSuggestion;
 
-    private FilterSelectSuggestion currentSuggestion;
-
-    private int totalMatches;
+    protected int totalMatches;
     private boolean allowNewItem;
-    private boolean nullSelectionAllowed;
+    protected boolean nullSelectionAllowed;
     private boolean nullSelectItem;
-    private boolean enabled;
-    private boolean readonly;
+
+    protected boolean enabled;
+    protected boolean readonly;
 
     // shown in unfocused empty field, disappears on focus (e.g "Search here")
     private static final String CLASSNAME_PROMPT = "prompt";
@@ -624,9 +610,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     // Set true when popupopened has been clicked. Cleared on each UIDL-update.
     // This handles the special case where are not filtering yet and the
     // selected value has changed on the server-side. See #2119
-    private boolean popupOpenerClicked;
-    private String width = null;
-    private int suggestionPopupMinWidth = -1;
+    protected boolean popupOpenerClicked;
+    protected String width = null;
+    protected int suggestionPopupMinWidth = -1;
     /*
      * Stores the last new item string to avoid double submissions. Cleared on
      * uidl updates
@@ -651,7 +637,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         panel.add(popupOpener);
         popupOpener.add(tb);
         initWidget(panel);
-        setStyleName(CLASSNAME);
+        setStyleName(getBaseStyleName());
         tb.addKeyDownHandler(this);
         tb.addKeyUpHandler(this);
         tb.addKeyPressHandler(new KeyPressHandler(){
@@ -664,12 +650,20 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
             }
         });
-        tb.setStyleName(CLASSNAME + "-input");
+        tb.setStyleName(getBaseStyleName() + "-input");
         tb.addFocusHandler(this);
         tb.addBlurHandler(this);
-        popupOpener.setStyleName(CLASSNAME + "-wrap");
+        popupOpener.setStyleName(getBaseStyleName() + "-wrap");
         popupOpener.addClickHandler(this);
         suggestionPopup.sinkEvents(Event.ONMOUSEWHEEL);
+    }
+
+    protected String getBaseStyleName() {
+        return CLASSNAME;
+    }
+
+    protected boolean showNullItem() {
+        return nullSelectionAllowed;
     }
 
     public HandlerRegistration addFocusHandler(FocusHandler handler) {
@@ -677,11 +671,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     public boolean hasNextPage() {
-        if (totalMatches > (currentPage + 1) * pageLength) {
-            return true;
-        } else {
-            return false;
-        }
+        return totalMatches > (currentPage + 1) * pageLength;
     }
 
     public boolean hasPrevPage() {
@@ -695,8 +685,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     public void filterOptions(int page, String filter) {
         if (filter.equals(lastFilter) && currentPage == page) {
             if (!suggestionPopup.isAttached()) {
-                suggestionPopup.showSuggestions(currentSuggestions,
-                        currentPage, totalMatches);
+                applyNewSuggestions();
             }
             return;
         }
@@ -711,6 +700,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
 
         filtering = true;
+
         client.updateVariable(paintableId, "filter", filter, false);
         client.updateVariable(paintableId, "page", page, true);
         lastFilter = filter;
@@ -788,6 +778,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             final FilterSelectSuggestion suggestion = new FilterSelectSuggestion(
                     optionUidl);
             currentSuggestions.add(suggestion);
+
             if (optionUidl.hasAttribute("selected")) {
                 if (!filtering || popupOpenerClicked) {
                     setPromptingOff(suggestion.getReplacementString());
@@ -822,8 +813,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         if (filtering
                 && lastFilter.toLowerCase().equals(
                         uidl.getStringVariable("filter"))) {
-            suggestionPopup.showSuggestions(currentSuggestions, currentPage,
-                    totalMatches);
+            applyNewSuggestions();
             filtering = false;
             if (!popupOpenerClicked && lastIndex != -1) {
                 // we're paging w/ arrows
@@ -843,8 +833,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                     suggestionPopup.menu.selectItem(activeMenuItem);
                 } else {
                     // going down, select first item
-                    activeMenuItem = (MenuItem) suggestionPopup.menu.getItems()
-                            .get(0);
+                    activeMenuItem = suggestionPopup.menu.getItems().get(0);
                     suggestionPopup.menu.selectItem(activeMenuItem);
                 }
 
@@ -888,6 +877,10 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         initDone = true;
     }
 
+    protected void applyNewSuggestions() {
+        suggestionPopup.showSuggestions(currentSuggestions, currentPage, totalMatches);
+    }
+
     private void setPromptingOn() {
         if (!prompting) {
             prompting = true;
@@ -908,6 +901,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         selecting = false;
 
         currentSuggestion = suggestion;
+
         String newKey;
         if (suggestion.key.equals("")) {
             // "nullselection"
@@ -934,7 +928,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     private void setSelectedItemIcon(String iconUri) {
-        if (iconUri == null || iconUri == "") {
+        if (iconUri == null || "".equals(iconUri)) {
             panel.remove(selectedItemIcon);
             updateRootWidth();
         } else {
@@ -964,7 +958,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
-    private void inputFieldKeyDown(KeyDownEvent event) {
+    protected void inputFieldKeyDown(KeyDownEvent event) {
         switch (event.getNativeKeyCode()) {
         case KeyCodes.KEY_DOWN:
         case KeyCodes.KEY_UP:
@@ -993,7 +987,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
-    private void popupKeyDown(KeyDownEvent event) {
+    protected void popupKeyDown(KeyDownEvent event) {
         switch (event.getNativeKeyCode()) {
         case KeyCodes.KEY_DOWN:
             suggestionPopup.selectNextItem();
@@ -1066,7 +1060,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
-    private boolean reset() {
+    protected boolean reset() {
         boolean changed = true;
         if (currentSuggestion != null) {
             String text = currentSuggestion.getReplacementString();
@@ -1159,7 +1153,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         updateFocused();
     }
 
-    private void updateFocused() {
+    protected void updateFocused() {
         if (focused && enabled && !readonly) {
             addStyleDependentName("focus");
 
@@ -1265,7 +1259,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         Util.setHeightExcludingPaddingAndBorder(tb, height, 2);
     }
 
-    private void updateRootWidth() {
+    protected void updateRootWidth() {
         tb.setWidth("");
         if (width == null) {
             if (suggestionPopupMinWidth > -1) {

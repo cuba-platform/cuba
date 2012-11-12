@@ -34,10 +34,10 @@ public class FilterSelect extends Select implements Action.Container {
 
     private Object itemDescriptionPropertyId;
 
-    private int fetched;
+    protected int fetched;
 
-    private static Log log = LogFactory.getLog(FilterSelect.class);
-    private boolean isFirstChange = true;
+    protected static Log log = LogFactory.getLog(FilterSelect.class);
+    protected boolean isFirstChange = true;
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
@@ -272,7 +272,7 @@ public class FilterSelect extends Select implements Action.Container {
     }
 
     @Override
-    public void changeVariables(Object source, Map variables) {
+    public void changeVariables(Object source, Map<String, Object> variables) {
         boolean valueAssigned = false;
 
         // Selection change

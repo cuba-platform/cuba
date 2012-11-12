@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -10,8 +10,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
@@ -21,15 +21,15 @@ import com.vaadin.ui.Component;
 import java.util.Collection;
 
 /**
- * @author krivopustov
+ * @author artamonov
  * @version $Id$
  */
-public class WebLookupPickerField
-        extends WebLookupField
-        implements LookupPickerField {
+public class WebSearchPickerField
+        extends WebSearchField
+        implements SearchPickerField {
     private WebPickerField pickerField;
 
-    public WebLookupPickerField() {
+    public WebSearchPickerField() {
         super();
         final Component selectComponent = component;
         Picker picker = new Picker(this, component) {
@@ -63,21 +63,21 @@ public class WebLookupPickerField
     }
 
     @Override
-    public LookupAction addLookupAction() {
+    public PickerField.LookupAction addLookupAction() {
         LookupAction action = new LookupAction(this);
         addAction(action);
         return action;
     }
 
     @Override
-    public ClearAction addClearAction() {
+    public PickerField.ClearAction addClearAction() {
         ClearAction action = new ClearAction(this);
         addAction(action);
         return action;
     }
 
     @Override
-    public OpenAction addOpenAction() {
+    public PickerField.OpenAction addOpenAction() {
         OpenAction action = new OpenAction(this);
         addAction(action);
         return action;

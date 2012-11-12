@@ -510,6 +510,15 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- SearchField-->
+    <xs:complexType name="searchFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="lookupFieldComponent">
+                <xs:attribute name="minSearchStringLength" type="xs:integer" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- PickerField -->
     <xs:complexType name="pickerFieldComponent">
         <xs:complexContent>
@@ -540,6 +549,14 @@
                 <xs:attribute name="filterMode" type="filterMode" use="optional"/>
                 <xs:attribute name="nullName" type="xs:string" use="optional"/>
                 <xs:attribute name="metaClass" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="searchPickerFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="lookupPickerFieldComponent">
+                <xs:attribute name="minSearchStringLength" type="xs:integer" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1298,8 +1315,10 @@
                 <xs:element name="timeField" type="timeFieldComponent"/>
 
                 <xs:element name="lookupField" type="lookupFieldComponent"/>
+                <xs:element name="searchField" type="searchFieldComponent"/>
                 <xs:element name="pickerField" type="pickerFieldComponent"/>
                 <xs:element name="lookupPickerField" type="lookupPickerFieldComponent"/>
+                <xs:element name="searchPickerField" type="searchPickerFieldComponent"/>
 
                 <xs:element name="optionsGroup" type="optionsGroupComponent"/>
                 <xs:element name="progressBar" type="progressBarComponent"/>

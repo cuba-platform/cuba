@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.ProgressBar;
+import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
 import java.util.HashMap;
@@ -67,6 +68,7 @@ public class LayoutLoaderConfig {
         config.register("lookupField", LookupFieldLoader.class);
         config.register("pickerField", PickerFieldLoader.class);
         config.register("lookupPickerField", LookupPickerFieldLoader.class);
+        config.register("searchPickerField", SearchPickerFieldLoader.class);
         config.register("optionsGroup", OptionsGroupLoader.class);
         config.register("upload", FileUploadFieldLoader.class);
         config.register("multiupload", FileUploadFieldLoader.class);
@@ -90,6 +92,7 @@ public class LayoutLoaderConfig {
         config.register("widgetsTree", WidgetsTreeLoader.class);
         config.register("twinColumn", TwinColumnLoader.class);
         config.register(ProgressBar.NAME, ProgressBarLoader.class);
+        config.register(SearchField.NAME, SearchFieldLoader.class);
 
         config.register("scriptHost", ScriptHostLoader.class);
     }

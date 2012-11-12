@@ -33,36 +33,8 @@ public class WebLookupField
     private NewOptionHandler newOptionHandler;
 
     public WebLookupField() {
-        this.component = new FilterSelect() {
+        createComponent();
 
-            @Override
-            public void setPropertyDataSource(Property newDataSource) {
-                if (newDataSource == null) {
-                    super.setPropertyDataSource(null);
-                } else {
-                    super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource) {
-                        @Override
-                        public Object getValue() {
-                            final Object o = itemProperty.getValue();
-                            return getKeyFromValue(o);
-                        }
-
-                        @Override
-                        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-                            if (!optionsInitialization) {
-                                Object v = getValueFromKey(newValue);
-                                if (v == null && !items.containsId(v)) {
-                                    Object valueKey = WebLookupField.super.getValue();
-                                    if (newValue == valueKey)
-                                        v = getValueFromDs();
-                                }
-                                itemProperty.setValue(v);
-                            }
-                        }
-                    });
-                }
-            }
-        };
         attachListener(component);
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
@@ -84,7 +56,41 @@ public class WebLookupField
         });
     }
 
-    private Object getValueFromDs() {
+    protected void createComponent() {
+        this.component = new FilterSelect() {
+            @Override
+            public void setPropertyDataSource(Property newDataSource) {
+                if (newDataSource == null) {
+                    super.setPropertyDataSource(null);
+                } else {
+                    super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource) {
+                        @Override
+                        public Object getValue() {
+                            final Object o = itemProperty.getValue();
+                            return getKeyFromValue(o);
+                        }
+
+                        @Override
+                        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                            if (!optionsInitialization) {
+                                Object v = getValueFromKey(newValue);
+                                if (newValue != null) {
+                                    if (v == null && !items.containsId(v)) {
+                                        Object valueKey = WebLookupField.super.getValue();
+                                        if (newValue == valueKey)
+                                            v = getValueFromDs();
+                                    }
+                                }
+                                itemProperty.setValue(v);
+                            }
+                        }
+                    });
+                }
+            }
+        };
+    }
+
+    protected Object getValueFromDs() {
         Object value;
         Entity containingEntity = this.datasource.getItem();
         if (this.metaPropertyPath != null)
@@ -240,7 +246,7 @@ public class WebLookupField
         component.disablePaging();
     }
 
-    private abstract class LookupPropertyAdapter extends PropertyAdapter {
+    protected abstract class LookupPropertyAdapter extends PropertyAdapter {
         public LookupPropertyAdapter(Property itemProperty) {
             super(itemProperty);
         }
@@ -251,7 +257,7 @@ public class WebLookupField
     }
 
     // Shows LookupFiled value even if it is not present in options list
-    private class DsWrapper extends CollectionDsWrapper implements com.vaadin.data.Container.Ordered {
+    protected class DsWrapper extends CollectionDsWrapper implements com.vaadin.data.Container.Ordered {
 
         private Object previousValue = null;
 
