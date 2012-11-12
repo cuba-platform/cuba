@@ -211,6 +211,7 @@ public class JmxControlServiceBean implements JmxControlService {
 
             opList.add(o);
         }
+        Collections.sort(opList, new OperationComparator());
         mbean.setOperations(opList);
     }
 
@@ -324,4 +325,13 @@ public class JmxControlServiceBean implements JmxControlService {
         }
     }
 
+    /* Sorts operations alphabetically by name */
+    private class OperationComparator implements Comparator<ManagedBeanOperation> {
+        @Override
+        public int compare(ManagedBeanOperation o1, ManagedBeanOperation o2) {
+            return o1 != null && o1.getName() != null
+                    ? o1.getName().compareTo(o2.getName())
+                    : (o2 != null && o2.getName() != null ? 1 : 0);
+        }
+    }
 }
