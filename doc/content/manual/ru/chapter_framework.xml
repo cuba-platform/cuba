@@ -682,8 +682,8 @@
     <formalpara>
       <title>Принадлежность уровням</title>
       <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
-      <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>).</para>
-      <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
+      <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>). </para>
+       <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
           <listitem>
             <para>Из документации</para>
           </listitem>
@@ -750,7 +750,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <para>Значение пишется после знака равно (=)</para>
           </listitem>
           <listitem>
-            <para>Значение <emphasis role="bold">никогда</emphasis> не берется к кавычки &quot;&quot; или &apos;&apos;</para>
+            <para>Значение <emphasis role="bold">никогда</emphasis> не берется в кавычки &quot;&quot; или &apos;&apos;</para>
           </listitem>
           <listitem>
             <para>Файловые пути записываются либо в UNIX виде (/opt/haulmont/), либо в Windows виде (c:\\haulmont\\)</para>
@@ -1073,7 +1073,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <para>Для того чтобы создать компонент надписи, создайте в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/label.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибут <property id="attr_value">value</property> предназначен для отображения текста надписи. Обычно значение атрибута задается с помощью ключа <glossterm linkend="glossary_localized_folders_id">пакета сообщений</glossterm>.</para>
-          <para>Текст, содержащийся в атрибуте <property>value</property>, будет перенесен на следующую строку, если по длине он превысит значение атрибута <link linkend="attr_width">width</link>. Поэтому если Вам нужно использовать многострочную надпись, укажите требуемое значение атрибута <link linkend="attr_width">width</link> (применимо только для веб-приложений). Если текст надписи слишком длинный, и значение атрибута <link linkend="attr_width">width</link> неопределено, то текст будет урезан.</para>
+          <para>Текст, содержащийся в атрибуте <property>value</property>, будет перенесен на следующую строку, если по длине он превысит значение атрибута <link linkend="attr_width">width</link>. Поэтому если Вам нужно использовать многострочную надпись, укажите требуемое значение атрибута <link linkend="attr_width">width</link> (применимо только для веб-приложений). Если текст надписи слишком длинный, и значение атрибута <link linkend="attr_width">width</link> не определено, то текст будет урезан.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -1171,7 +1171,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <para>Определение стиля:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/cssButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Подробную информацию о том, как создавать пользовательский стиль, Вы можете прочитать в <xref linkend="section_gui_themes_creation"/></para>
-          <para>Основная функция кнопки −  выполнить некоторое действие при нажатии на нее. Определить метод <glossterm linkend="glossary_controller_id">контроллера</glossterm>, который будет вызываться при нажатии на кнопку, можно с помощью атрибута <property id="attr_invoke">invoke</property>. Значением атрубута должно быть    имя  метода контроллера, вызываемого в ответ на событие нажатия кнопки. Метод должен:</para>
+          <para>Основная функция кнопки −  выполнить некоторое действие при нажатии на нее. Определить метод <glossterm linkend="glossary_controller_id">контроллера</glossterm>, который будет вызываться при нажатии на кнопку, можно с помощью атрибута <property id="attr_invoke">invoke</property>. Значением атрибута должно быть    имя  метода контроллера, вызываемого в ответ на событие нажатия кнопки. Метод должен:</para>
           <itemizedlist>
             <listitem>
               <para>Быть <classname>public</classname></para>
@@ -1255,7 +1255,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             </mediaobject>
           </figure>
           <para>Существует два класса кнопок: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Кнопка с выпадающим списоком действий может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
+          <para>Кнопка с выпадающим списком действий может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
           <figure>
             <title>Типы кнопок</title>
             <mediaobject>
@@ -1474,7 +1474,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <para><property>uuid</property></para>
             </listitem>
           </itemizedlist>
-          <para>В качестве примера рассмотрим текстовое поле, связянное с типом данных <type>Integer</type>. </para>
+          <para>В качестве примера рассмотрим текстовое поле, связанное с типом данных <type>Integer</type>. </para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldInt.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>При переходе из  текстового поля, в котором введено  значение, не  являющееся типом данных <type>Integer</type>, приложение выдаст сообщение об ошибке и очистит текстовое поле.</para>
           <figure>
@@ -1495,7 +1495,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Вы можете связять текстовое поле с типом данных с помощью атрибута <property id="attr_datatype">datatype</property>. Атрибут используется  для форматирования значения поля в том случае, если поле не связано с данными (то есть не указан источник данных и название атрибута). Значением атрибута <property>datatype</property> является имя типа данных из списка:</para>
+          <para>Вы можете связать текстовое поле с типом данных с помощью атрибута <property id="attr_datatype">datatype</property>. Атрибут используется  для форматирования значения поля в том случае, если поле не связано с данными (то есть не указан источник данных и название атрибута). Значением атрибута <property>datatype</property> является имя типа данных из списка:</para>
           <para>Для текстового компонента можно ограничить максимальную длину вводимого текста с помощью атрибута <property id="attr_maxLength">maxLength</property>. Значение атрибута устанавливается по умолчанию на основании длины строкового атрибута <glossterm linkend="glossary_entity">сущности</glossterm>, если этот параметр указан в <glossterm linkend="glossary_annotation">аннотации</glossterm> сущности. Значение &quot;-1&quot; означает отсутствие ограничения.</para>
           <para>Ниже показан пример, ограничивающий длину вводимого текста в 10 символов.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldMaxLength.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -1981,7 +1981,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <para id="attr_field"><property>field</property> − элемент, содержащий описание выводимого поля. Может содержать описание формата выводимого значения (<link linkend="element_formatter">formatter</link>) и описание валидаторов, применяемых к соответствующему полю (<link linkend="element_validator">validator</link>). Рассмотрим более подробно некоторые атрибуты элемента <property>field</property>. </para>
           <itemizedlist>
             <listitem>
-              <para><link linkend="attr_id" id="attr_field_id">id</link> − обязательный атрибут, идетификатор поля. Имеет физический смысл: в случае, если задан <glossterm linkend="glossary_datasource_id">источник данных</glossterm>, то идентификатором поля должно быть имя атрибута, иначе − просто идентификатор поля.</para>
+              <para><link linkend="attr_id" id="attr_field_id">id</link> − обязательный атрибут, идентификатор поля. Имеет физический смысл: в случае, если задан <glossterm linkend="glossary_datasource_id">источник данных</glossterm>, то идентификатором поля должно быть имя атрибута, иначе − просто идентификатор поля.</para>
             </listitem>
             <listitem>
               <para><link linkend="attr_caption" id="attr_field_caption">caption</link> − необязательный атрибут, содержащий заголовок поля.</para>
@@ -1996,11 +1996,11 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <para><link linkend="attr_datasource" id="attr_field_datasource">datasource</link> − необязательный атрибут, содержит имя <glossterm linkend="glossary_datasource_id">источника данных</glossterm> для конкретного поля.</para>
             </listitem>
             <listitem>
-              <para>Есть возможность самостоятельно задать представление поля с помощью атрибута <property id="attr_custom">custom</property>. Значение атрибута в этом случае должно быть равно  <classname>true</classname>. Представление пользовательского поля необходимо определить в контроллере экрана. Компонент представления должен реализовывать интерфес <interfacename>Field</interfacename>. Ниже представлен пример представления пользовательского поля:</para>
+              <para>Есть возможность самостоятельно задать представление поля с помощью атрибута <property id="attr_custom">custom</property>. Значение атрибута в этом случае должно быть равно  <classname>true</classname>. Представление пользовательского поля необходимо определить в контроллере экрана. Компонент представления должен реализовывать интерфейс <interfacename>Field</interfacename>. Ниже представлен пример представления пользовательского поля:</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/fieldGroup/fieldGroupCustom.txt" encoding="UTF-8" parse="text"/></programlisting>
             </listitem>
             <listitem>
-              <para><link linkend="attr_width" id="attr_field_width">width</link> − небязательный атрибут, содержит ширину поля (без учета заголовка)</para>
+              <para><link linkend="attr_width" id="attr_field_width">width</link> − необязательный атрибут, содержит ширину поля (без учета заголовка)</para>
             </listitem>
             <listitem>
               <para>Если значение атрибута <property id="attr_field_rows">rows</property> больше 1, то в ячейке будет компонент <link linkend="section_gui_textArea">TextArea</link>.</para>
@@ -2279,7 +2279,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Ниже показано описание <classname>PickerField</classname>, имеющего проивольные действия.</para>
+          <para>Ниже показано описание <classname>PickerField</classname>, имеющего произвольные действия.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldUserActions.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Действия необходимо определить в <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldUserActionsContr.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -2884,7 +2884,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Установка атрибута <property id="attr_simple">simple</property> в значение <classname>true</classname> позволяет сворачивать компонент, оставляя только кнопку добавления. При нажатии на кнопку добавления сразу показывается экран списка экземляров <glossterm linkend="glossary_entity">сущности</glossterm>, для которой задан <glossterm linkend="glossary_datasource_id">источник данных</glossterm>.</para>
+          <para>Установка атрибута <property id="attr_simple">simple</property> в значение <classname>true</classname> позволяет сворачивать компонент, оставляя только кнопку добавления. При нажатии на кнопку добавления сразу показывается экран списка экземпляров <glossterm linkend="glossary_entity">сущности</glossterm>, для которой задан <glossterm linkend="glossary_datasource_id">источник данных</glossterm>.</para>
           <figure>
             <title>Список маркеров со значением атрибута simple=&quot;true&quot;</title>
             <mediaobject>
@@ -3057,7 +3057,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <warning>
             <para>Обязательными для таблицы являются элементы <link linkend="element_table_columns">columns</link> и  <link linkend="element_table_rows">rows</link>.</para>
           </warning>
-          <para>Атрибут <sgmltag id="attr_presentations">presentations</sgmltag> управляет механизмом <link linkend="section_gui_presentation">представлений</link>.Значение по умолчанию равно <literal>false</literal>. Когда значение атрибута равно <literal>true</literal>, то в верхнем правом углу таблицы появляется значок <inlinemediaobject>
+          <para>Атрибут <sgmltag id="attr_presentations">presentations</sgmltag> управляет механизмом <link linkend="section_gui_presentation">представлений</link>. Значение по умолчанию равно <literal>false</literal>. Когда значение атрибута равно <literal>true</literal>, то в верхнем правом углу таблицы появляется значок <inlinemediaobject>
               <imageobject>
                 <imagedata fileref="img/gui_presentation.png"/>
               </imageobject>
@@ -3108,7 +3108,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <para><link linkend="attr_editable" id="attr_table_column_editable">editable</link> − необязательный атрибут, разрешает/запрещает редактирование данного атрибута в редактируемой таблице.</para>
             </listitem>
           </itemizedlist>
-          <para>Для таблицы можно задать стиль отображения ячеек таблицы. Для этого в <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана нужно задать для талицы <classname>StyleProvider</classname> реализовав интерфейс <interfacename>com.haulmont.cuba.gui.components.StyleProvider.</interfacename></para>
+          <para>Для таблицы можно задать стиль отображения ячеек таблицы. Для этого в <glossterm linkend="glossary_controller_id">контроллере</glossterm> экрана нужно задать для таблицы <classname>StyleProvider</classname> реализовав интерфейс <interfacename>com.haulmont.cuba.gui.components.StyleProvider.</interfacename></para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableStyle.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Далее нужно определить в теме приложения стили для строк и столбцов (подробную информацию о том, как создать тему приложения, смотрите <xref linkend="section_gui_themes_creation"/>):</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableStylecss.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -3296,7 +3296,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             </mediaobject>
           </figure>
           <para>Существует два класса иерархичных таблиц: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Для того чтобы создать иерахическую таблицу, необходимо в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> задать иерархический <glossterm linkend="glossary_datasource_id">источник данных</glossterm> и определить описание таблицы:</para>
+          <para>Для того чтобы создать иерархическую таблицу, необходимо в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> задать иерархический <glossterm linkend="glossary_datasource_id">источник данных</glossterm> и определить описание таблицы:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/treeTable/treeTable.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
             <para>Обязательными для иерархической таблицы являются элементы <link linkend="element_table_columns">columns</link> и  <link linkend="element_table_rows">rows</link>.</para>
@@ -3308,7 +3308,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <imageobject>
                 <imagedata fileref="img/gui_groupTableIcon.png"/>
               </imageobject>
-            </inlinemediaobject>. Сгрупированные значения можно разворачивать и сворачивать с помощью знаков <inlinemediaobject>
+            </inlinemediaobject>. Сгруппированные значения можно разворачивать и сворачивать с помощью знаков <inlinemediaobject>
               <imageobject>
                 <imagedata fileref="img/gui_groupBox_plus.png"/>
               </imageobject>
@@ -3792,7 +3792,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
                     <link linkend="attr_id">id</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_stylename">styleNamedth</link>
+                    <link linkend="attr_stylename">styleName</link>
                   </entry>
                 </row>
                 <row>
@@ -3852,7 +3852,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         </section>
         <section id="section_gui_scrollBox">
           <title>ScrollBoxLayout</title>
-          <para><classname>ScrollBoxLayout</classname> − контейнер, которые позволяет прокручивать свое содержимое.</para>
+          <para><classname>ScrollBoxLayout</classname> − контейнер, который позволяет прокручивать свое содержимое.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -3917,7 +3917,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <para>XML-имя компонента: <sgmltag>split</sgmltag>.</para>
           <para>Для создания панели с разделителем нужно определить ее описание в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/split/split.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>При создании панели с разделителем нужно указать ориентацию разделителия с помощью атрибута <sgmltag id="attr_layout_orientation">orientation</sgmltag>. По умолчанию значение атрибута равно <literal>vertical</literal>.</para>
+          <para>При создании панели с разделителем нужно указать ориентацию разделителя с помощью атрибута <sgmltag id="attr_layout_orientation">orientation</sgmltag>. По умолчанию значение атрибута равно <literal>vertical</literal>.</para>
           <para id="attr_layout_pos"><sgmltag>pos</sgmltag> − необязательный атрибут, определяет процентное соотношение областей. Например, <code>pos=&quot;30%&quot;</code> означает соотношение областей 30/70. По умолчанию соотношение областей составляет 50/50.</para>
           <warning>
             <para>Обязательными вложенными элементами являются два контейнера или компонента.</para>
@@ -4021,7 +4021,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         </section>
         <section id="section_gui_tabsheet">
           <title>Tabsheet</title>
-          <para>Контейнер, содержащий вкладки (<sgmltag>tabs</sgmltag>).</para>
+          <para>Панель с вкладками (<interfacename>Tabsheet</interfacename>) позволяет выводить на экран вкладки (<sgmltag>tabs</sgmltag>) − панели, имеющие название. При нажатии пользователем на названии вкладки <interfacename>Tabsheet</interfacename> выводит на экран соответствующие выбранной вкладке элементы пользовательского интерфейса.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -4031,90 +4031,135 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>tabsheet</sgmltag>.</para>
+          <para>Для создания панели с вкладками нужно определить ее описание в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tabsheet/tabsheet.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Как видно, компонент <sgmltag>tabsheet</sgmltag> состоит из элементов <sgmltag>tab</sgmltag>.</para>
+          <para>Элемент <sgmltag>tab</sgmltag> может содержать как другой <link linkend="section_gui_layouts">контейнер</link>, так и <link linkend="section_gui_components">компонент</link>.</para>
+          <para>Атрибут <link linkend="attr_id" id="attr_tabsheet_id">id</link> является идентификатором вкладки. Следует отметить, что вкладка не является компонентом, и данный идентификатор используется только в рамках <interfacename>Tabsheet</interfacename>.</para>
+          <para>Атрибут <sgmltag id="attr_tabsheet_lazy">lazy</sgmltag> задает отложенную загрузку содержимого вкладки. При открытии экрана <sgmltag>lazy</sgmltag>-вкладки не загружают свое содержимое, что приводит к созданию меньшего количества компонентов в памяти и, как следствие, к меньшему количеству запросов к БД. Компоненты вкладки загружаются только в тот момент, когда пользователь выбирает данную вкладку. Значение по умолчанию равно <literal>false</literal>. Если компоненты <sgmltag>lazy</sgmltag>-вкладки требуют инициализации, проводить ее нужно не напрямую в методе <code>init()</code> <glossterm linkend="glossary_controller_id">контроллера</glossterm>, а в слушателе на переключение вкладок <classname>Tabsheet.TabChangeListener.</classname></para>
+          <para>В десктоп-приложении есть возможность открывать вкладки в новом окне. Для этого нужно атрибуту <sgmltag id="attr_detachable">detachable</sgmltag> присвоить значение <literal>true</literal>.</para>
+          <figure>
+            <title>Вид отделяемой вкладки</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_tabsheetDetachable.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
           <para>Атрибуты <sgmltag>tabsheet</sgmltag>:</para>
-          <itemizedlist>
-            <listitem>
-              <para><link linkend="attr_id">id</link></para>
-            </listitem>
-            <listitem>
-              <para><link linkend="attr_stylename">stylename</link></para>
-            </listitem>
-            <listitem>
-              <para><link linkend="attr_height">height</link></para>
-            </listitem>
-            <listitem>
-              <para><link linkend="attr_width">width</link></para>
-            </listitem>
-            <listitem>
-              <para><link linkend="attr_visible">visi</link>ble</para>
-            </listitem>
-          </itemizedlist>
-          <para><parameter>tabsheet</parameter> должен содержать элементы <parameter>tab</parameter>, определяющие содержимое закладок. Каждый элемент <parameter>tab</parameter> может содержать следующие атрибуты:</para>
-          <itemizedlist>
-            <listitem>
-              <para><property>id</property> − идентификатор закладки. Следует отметить, что закладка не является компонентом, и данный идентификатор используется только в рамках <parameter>Tabsheet</parameter>.</para>
-            </listitem>
-            <listitem>
-              <para><property>caption</property> − заголовок закладки. Атрибут должен содержать ключ сообщения в <glossterm linkend="glossary_localized_folders_id">локализованном пакете сообщений</glossterm>.</para>
-            </listitem>
-            <listitem>
-              <para><property>enable</property>. Это состояние закладки. Может иметь значение <property>true</property> (доступна) или <property>false</property> (недоступна). По умолчанию <property>enable = &quot;true&quot;</property>.</para>
-            </listitem>
-            <listitem>
-              <para><property>lazy</property>. Задает отложенную загрузку содержимого закладки. Может иметь значение <property>true</property> или <property>false</property>. При отображении экрана lazy-закладки не загружают свое содержимого, что приводит к созданию меньшего количества компонентов в памяти и  к меньшему количеству запросов к БД. Компоненты закладки загружаются только в тот момент, когда пользователь выбирает данную закладку.
-Если компоненты lazy-закладки требуют инициализации, проводить ее нужно не напрямую в методе <methodname>init()</methodname> <glossterm linkend="glossary_controller_id">контроллера</glossterm>, а в слушателе на переключение закладок <classname>Tabsheet.TabChangeListener</classname>.</para>
-            </listitem>
-          </itemizedlist>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="attr_height">height</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="attr_visible">visible</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="attr_id">id</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="attr_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="attr_stylename">stylename</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Атрибуты элемента  <sgmltag>tab</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="attr_caption">caption</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="attr_expand">expand</link>
+                  </entry><entry>
+                    <link>margin</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="attr_detachable">detachable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="attr_tabsheet_id">id</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_spacing">spacing</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="attr_enable">enable</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_tabsheet_lazy">lazy</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
         </section>
         <section id="section_gui_frame">
           <title>IFrame</title>
           <para>Фреймы предназначены для декомпозиции и многократного использования частей экранов.</para>
-          <para>Фрейм включается в экран с помощью элемента iframe.</para>
-          <para>Атрибуты:</para>
+          <para>Фрейм включается в экран с помощью элемента <sgmltag>iframe</sgmltag>.</para>
+          <para>Для включения фрейма в экран необходимо в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm> определить его описание:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/iframe/iframe.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Атрибут <sgmltag id="attr_frame_src">src</sgmltag> − путь к <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптору</glossterm> фрейма. </para>
+          <para>Если фрейм зарегистрирован в файле <filename>screens.xml</filename>, то можно указать идентификатор фрейма в атрибуте <sgmltag id="attr_frame_screen">screen</sgmltag>.</para>
+          <warning>
+            <para>Обязательно должен быть указан один из атрибутов: <link linkend="attr_frame_src">src</link> или <link linkend="attr_frame_screen">screen</link>.</para>
+          </warning>
+          <para>Дескриптор фрейма идентичен <glossterm linkend="glossary_xml_descriptor_id">xml-дескриптору</glossterm> экрана и может содержать собственный <sgmltag>metadataContext</sgmltag>, <sgmltag>dsContext</sgmltag>, <sgmltag>messagesPack</sgmltag>. Кроме того, фрейм может иметь собственный <glossterm linkend="glossary_controller_id">контроллер</glossterm>.</para>
+          <para>Правила взаимодействия экрана и вложенного в него фрейма:</para>
           <itemizedlist>
             <listitem>
-              <para><link linkend="attr_id">id</link></para>
+              <para>Из экрана обращаться к компонентам фрейма можно через точку: <code>frame_id.component_id</code></para>
             </listitem>
             <listitem>
-              <para><link linkend="attr_stylename">stylename</link></para>
+              <para>Из контроллера фрейма получить компонент экрана  можно обычным вызовом <code>getComponent(component_id)</code>, но только в том случае, если компонент с таким именем не объявлен в самом фрейме. То есть компоненты фрейма маскируют компоненты экрана.</para>
             </listitem>
             <listitem>
-              <para><link linkend="attr_visible">visible</link></para>
+              <para>Из фрейма получить <glossterm linkend="glossary_datasource_id">источник данных</glossterm> экрана можно простым вызовом <code>getDsContext().get(ds_id)</code> либо в запросе <code>ds$ds_id</code>, но только в том случае, если источник данных с таким именем не объявлен в самом фрейме (аналогично компонентам).</para>
             </listitem>
             <listitem>
-              <para><link linkend="attr_height">height</link></para>
-            </listitem>
-            <listitem>
-              <para><link linkend="attr_width">width</link></para>
-            </listitem>
-            <listitem>
-              <para><link linkend="attr_align">align</link></para>
-            </listitem>
-            <listitem>
-              <para>src - путь к XML-дескриптору фрейма</para>
-            </listitem>
-            <listitem>
-              <para>src - путь к XML-дескриптору фрейма</para>
+              <para>Из экрана получить источник данных фрейма можно только через итерацию по <code>getDsContext().getChildren()</code></para>
             </listitem>
           </itemizedlist>
-          <para>Обязательно должен быть указан один из атрибутов src или screen.</para>
-          <para>Дескриптор фрейма идентичен описателю окна и может содержать собственный metadataContext, dsContext, messagesPack. Кроме того, фрейм может иметь собственный контроллер.</para>
-          <para>Правила взаимодействия окна и вложенного в него фрейма:</para>
-          <itemizedlist>
-            <listitem>
-              <para>из окна обращаться к компонентам фрейма можно через точку: frame_id.component_id</para>
-            </listitem>
-            <listitem>
-              <para>из контроллера фрейма получить компонент окна можно обычным вызовом getComponent(component_id), но только в том случае, если компонент с таким именем не объявлен в самом фрейме. Т.е. компоненты фрейма маскируют компоненты окна.</para>
-            </listitem>
-            <listitem>
-              <para>из фрейма получить датасорс окна можно простым вызовом getDsContext().get(ds_id) либо в запросе ds$ds_id , но только в том случае, если датасорс с таким именем не объявлен в самом фрейме (аналогично компонентам).</para>
-            </listitem>
-            <listitem>
-              <para>из окна получить датасорс фрейма можно только через итерацию по getDsContext().getChildren()</para>
-            </listitem>
-          </itemizedlist>
-          <para>При коммите окна вызывается также коммит измененных датасорсов фрейма.</para>
+          <para>При коммите экрана вызывается также коммит измененных источников  данных фрейма.</para>
+          <para>Атрибуты <sgmltag>iframe</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="attr_align">align</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="attr_frame_screen">screen</link>
+                  </entry><entry>
+                    <link linkend="attr_visible">visible</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="attr_height">height</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="attr_frame_src">src</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="attr_id">id</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_stylename">stylename</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
         </section>
       </section>
       <section>
@@ -4129,7 +4174,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <warning>
             <para>В случае <parameter>visible=false</parameter> вложенные компоненты вообще не создаются, поэтому будьте осторожны при обращении к ним из контроллера.</para>
           </warning>
-            <para>
+          <para>
                 <programlisting>&lt;tab id=&quot;mainTab&quot; caption=&quot;msg://mainTab&quot;&gt;
             &lt;accessControl data=&quot;workflow.client.web.ui.card.CardAccessData&quot; param=&quot;accessData&quot;&gt;
             &lt;editable property=&quot;notStarted&quot;/&gt;
@@ -4140,7 +4185,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           <section>
             <title>Объект AccessData</title>
             <para>В связи с тем, что одни и те же параметры доступа могут многократно потребоваться в разных частях экрана и в коде контроллера, компонент <classname>accessControl</classname> может быть связан с объектом Java|Groovy, вычисляющим и хранящим эти параметры. Т.о. дорогостоящая инициализация параметра доступа производится только один раз, и затем доступна на протяжении жизни экрана.</para>
-            <para>Для связи компонента с данными доступа создайте класс, унаследованный от <classname>AbstractAccessData</classname> и задайте следующие атрибуты компонента <classname>accessControl</classname>:</para>
+            <para>Для связи компонента с данными доступа создайте класс, унаследованный от <classname>AbstractAccessData</classname>, и задайте следующие атрибуты компонента <classname>accessControl</classname>:</para>
             <itemizedlist>
               <listitem>
                 <para><emphasis role="bold">data</emphasis> − имя класса <classname>AccessData</classname></para>
@@ -4204,16 +4249,16 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
           </section>
           <section>
             <title>Стандартные действия</title>
-            <para>Для наследников ListComponent (это Table и Tree) существут набор стандартных действий, определяемых перечислением ListActionType. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
+            <para>Для наследников ListComponent (это Table и Tree) существует набор стандартных действий, определяемых перечислением ListActionType. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Для компонентов PickerField и LookupPickerField существут набор стандартных действий, определяемых перечислением PickerField.ActionType. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
+            <para>Для компонентов PickerField и LookupPickerField существует набор стандартных действий, определяемых перечислением PickerField.ActionType. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example6.txt" encoding="UTF-8" parse="text"/></programlisting>
           </section>
           <section>
             <title>Программное создание и управление действиями</title>
             <para>Базовым классом реализации действий является <classname>AbstractAction</classname>. Пример использования:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example7.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>При выполнении метода <methodname>addAction()</methodname> реализация <classname>ActionsHolder</classname> проверяет, нет ли уже в нем действия с таким же идентификатором. Если есть, то имеющееся действие будет заменено на новое переданное. Поэтому можно безопасно например декларировать стандартное действие в дескрипторе экрана, а затем в контроллере создать новое с переопределенными методами, и добавить в <classname>ActionsHolder</classname>.</para>
+            <para>При выполнении метода <methodname>addAction()</methodname> реализация <classname>ActionsHolder</classname> проверяет, нет ли уже в нем действия с таким же идентификатором. Если есть, то имеющееся действие будет заменено на новое переданное. Поэтому можно безопасно, например, декларировать стандартное действие в дескрипторе экрана, а затем в контроллере создать новое с переопределенными методами, и добавить в <classname>ActionsHolder</classname>.</para>
             <para>Кроме создания наследников <classname>AbstractAction</classname> или стандартных действий, возможно конфигурирование декларативно созданных действий путем получения их в контроллере и установки атрибутов. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example8.txt" encoding="UTF-8" parse="text"/></programlisting>
             <para>При этом во всех визуальных компонентах, связанных с данным действием, значение соответствующего атрибута также изменится.</para>
@@ -4221,11 +4266,11 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         </section>
         <section id="section_gui_aggregation">
           <title>Aggregation</title>
-          <para>Механизм задания аггрегаций для колонок в Table.</para>
+          <para>Механизм задания агрегаций для колонок в Table.</para>
           <itemizedlist>
             <title>Атрибуты aggregation</title>
             <listitem>
-              <para>type −  функция аггрегирования:</para>
+              <para>type −  функция агрегирования:</para>
               <itemizedlist>
                 <listitem>
                   <para>SUM − сумма</para>
@@ -4245,10 +4290,10 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               </itemizedlist>
             </listitem>
             <listitem>
-              <para>formatter − задает формат вывода аггрегированного значения.</para>
+              <para>formatter − задает формат вывода агрегированного значения.</para>
             </listitem>
           </itemizedlist>
-          <para>Логика применения форматирования к аггрегированному значению следующая: если в элементе <classname>aggregation</classname> указан <parameter>formatter</parameter>, то применяется он; иначе применяется <parameter>formatter</parameter> соответствующего аггрегированному значению <parameter>datatype</parameter>.</para>
+          <para>Логика применения форматирования к агрегированному значению следующая: если в элементе <classname>aggregation</classname> указан <parameter>formatter</parameter>, то применяется он; иначе применяется <parameter>formatter</parameter> соответствующего агрегированному значению <parameter>datatype</parameter>.</para>
           <para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/aggregation/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
           </para>
@@ -4304,7 +4349,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <listitem>
               <para>XML-атрибут, устанавливающий заголовок для визуального компонента.</para>
               <para>Значением атрибута должна быть либо собственно строка сообщения, либо ключ в пакете сообщений. В случае ключа значение должно начинаться с префикса msg://</para>
-              <para>Спсобы задания ключа:</para>
+              <para>Способы задания ключа:</para>
               <itemizedlist>
                 <listitem>
                   <para>Короткий ключ − при этом сообщение ищется в пакете, заданном для данного экрана:</para>
@@ -4366,7 +4411,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <term>editable</term>
             <listitem>
               <para>XML-атрибут, указывающий на возможность редактирования содержимого (не путать с <link linkend="attr_enable">enable</link>).</para>
-              <para>Возможные значения - true, false. По умолчанию true.</para>
+              <para>Возможные значения − true, false. По умолчанию true.</para>
             </listitem>
             <listitem>На возможность редактирования содержимого для компонента, связанного с данными (наследника DatasourceComponent или List), влияет также Security. Если по данным security данный компонент должен быть недоступен для редактирования, значение атрибута editable не принимается во внимание.</listitem>
           </varlistentry>
@@ -4393,7 +4438,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <listitem>
               <para>Атрибут, устанавливающий высоту компонента.</para>
               <para>Может быть задана в пикселях либо в процентах от высоты вышестоящего контейнера. Например: 100px, 100%, 50. Если единица измерения не указана, подразумевается высота в пикселях.</para>
-              <para>Простановка значения в % означает, что компонент по высоте займет соотвествующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
+              <para>Простановка значения в % означает, что компонент по высоте займет соответствующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="attr_icon">
@@ -4422,10 +4467,10 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
               <para>Может иметь 2 вида значений:</para>
               <itemizedlist>
                 <listitem>
-                  <para>margin=&quot;true&quot; - установить отступ со всех сторон сразу</para>
+                  <para>margin=&quot;true&quot; − установить отступ со всех сторон сразу</para>
                 </listitem>
                 <listitem>
-                  <para>margin=&quot;true;false;true;false;&quot; - установить отступ только сверху и снизу (формат значения &quot;сверху,справа,снизу,слева&quot;)</para>
+                  <para>margin=&quot;true;false;true;false;&quot; −  установить отступ только сверху и снизу (формат значения &quot;сверху,справа,снизу,слева&quot;)</para>
                 </listitem>
               </itemizedlist>
               <para>По умолчанию отступы отсутствуют.</para>
@@ -4451,7 +4496,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <term>required</term>
             <listitem>
               <para>XML-атрибут визуального компонента, реализующего интерфейс Field. Указывает, что в данное поле обязательно должно быть введено значение.</para>
-              <para>Возможные значения атрибута - true, false. По умолчанию false.</para>
+              <para>Возможные значения атрибута − true, false. По умолчанию false.</para>
               <para>Совместно с required может использоваться атрибут requiredMessage.</para>
             </listitem>
           </varlistentry>
@@ -4466,7 +4511,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <term>spacing</term>
             <listitem>
               <para>Атрибут spacing устанавливает наличие отступов между компонентами внутри контейнера.</para>
-              <para>Возможные значения - true, false.</para>
+              <para>Возможные значения − true, false.</para>
               <para>По умолчанию отступы отсутствуют.</para>
             </listitem>
           </varlistentry>
@@ -4481,14 +4526,14 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <term>visible</term>
             <listitem>
               <para>Атрибут   либо элемент видимости компонента.</para>
-              <para>Возможные значения − true, false, либо выражение Groovy с boolean-результатом. Если выражение длинное, имеет смысл использовать не атрибут, а элемент visible внутри текущего компонента - эффект тот же. Если контейнер невидим, не видны и все его компоненты. По умолчанию все компоненты видимы.</para>
+              <para>Возможные значения − true, false, либо выражение Groovy с boolean-результатом. Если выражение длинное, имеет смысл использовать не атрибут, а элемент visible внутри текущего компонента − эффект тот же. Если контейнер невидим, не видны и все его компоненты. По умолчанию все компоненты видимы.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="attr_width">
             <term>width</term>
             <listitem>
               <para>Атрибут, устанавливающий ширину компонента.</para>
-              <para>Значение может быть задано в пикселях или в процентах от ширины вышестоящего контейнера. Например: 100px, 100%, 50. Если единица измерения не указана, подразумевается ширина в пикселях. Простановка значения в % означает, что компонент по ширине займет соотвествующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
+              <para>Значение может быть задано в пикселях или в процентах от ширины вышестоящего контейнера. Например: 100px, 100%, 50. Если единица измерения не указана, подразумевается ширина в пикселях. Простановка значения в % означает, что компонент по ширине займет соответствующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
             </listitem>
           </varlistentry>
         </variablelist>
@@ -4537,7 +4582,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
                 </listitem>
               </itemizedlist>
               <para>В выражение или скрипт Groovy будет передана одна переменная value, содержащая значение, введенное в визуальном компоненте.</para>
-              <para>Выражение или скрипт должны вернуть boolean значение: true - valid, false - not valid.</para>
+              <para>Выражение или скрипт должны вернуть boolean значение: true − valid, false − not valid.</para>
               <para>CUBA уже содержит несколько реализаций наиболее часто используемых валидаторов (см. пакет <package>com.haulmont.cuba.gui.components.validators</package>), которые можно применять в своих проектах:</para>
               <itemizedlist>
                 <listitem>
@@ -4676,7 +4721,7 @@ actions.Edit=Edit
       <para><emphasis role="bold">Использование</emphasis></para>
       <orderedlist>
         <listitem>
-          <para>Задача описывается как наследник абстрактного класса <classname>BackgroundTask</classname>. Для нее необходимо задать окно, которому принадлежит задача и описать главный метод <methodname>run()</methodname>.</para>
+          <para>Задача описывается как наследник абстрактного класса <classname>BackgroundTask</classname>. Для нее необходимо задать окно, которому принадлежит задача, и описать главный метод <methodname>run()</methodname>.</para>
         </listitem>
         <listitem>
           <para>Создается объект управления задачей − <classname>BackgroundTaskHandler</classname>. Для этого задачу необходимо передать классу <classname>BackgroundWorker</classname>.</para>
@@ -4778,7 +4823,7 @@ taskHandler.execute();</programlisting>
     &lt;task:scheduled ref=&quot;cuba_BackgroundWorker_WatchDog&quot; method=&quot;cleanupTasks&quot; fixed-delay=&quot;2000&quot;/&gt;
 &lt;/task:scheduled-tasks&gt; </programlisting>
       <para><emphasis role="bold">Настройки</emphasis></para>
-      <para>Для Web слоя в WebConfig настраивается частота проверки изменений на стороне клиента (браузера): <parameter>cuba.backgroundWorker.uiCheckInterval</parameter> ( По умолчанию 2000 мс )</para>
+      <para>Для Web слоя в WebConfig настраивается частота проверки изменений на стороне клиента (браузера): <parameter>cuba.backgroundWorker.uiCheckInterval</parameter> (По умолчанию 2000 мс)</para>
     </section>
     <section>
       <title>Создание экранов</title>
@@ -5116,7 +5161,7 @@ taskHandler.execute();</programlisting>
         <para>Создать методы доступа к параметру (getXXX/setXXX). Возможный тип параметра обсуждается ниже.</para>
       </listitem>
       <listitem>
-        <para>Добавить интерфейсу аннотацию <literal>@Prefix</literal> для указания префикса имен входящих в интрефейс параметров</para>
+        <para>Добавить интерфейсу аннотацию <literal>@Prefix</literal> для указания префикса имен входящих в интерфейс параметров</para>
       </listitem>
       <listitem>
         <para>Добавить интерфейсу и/или параметру аннотацию <literal>@Source</literal> для указания источника (места хранения) параметров</para>
@@ -5130,22 +5175,22 @@ taskHandler.execute();</programlisting>
     <para>Стандартный UI для доступа к параметрам, хранящимся в базе данных, предоставляет МБин haulmont.cuba:service=ConfigStorage. Он содержит следующие методы:</para>
     <itemizedlist>
       <listitem>
-        <para>setProperty(p1, p2) - установить параметр с именем p1 в значение p2</para>
+        <para>setProperty(p1, p2) − установить параметр с именем p1 в значение p2</para>
       </listitem>
       <listitem>
-        <para>getProperty(p1) - показать параметр с именем p1</para>
+        <para>getProperty(p1) − показать параметр с именем p1</para>
       </listitem>
       <listitem>
-        <para>removeProperty(p1) - удалить параметр с именем p1</para>
+        <para>removeProperty(p1) − удалить параметр с именем p1</para>
       </listitem>
       <listitem>
-        <para>printProperties(p1) - показать все параметры с фильтром на имя p1 по правилам SQL like</para>
+        <para>printProperties(p1) − показать все параметры с фильтром на имя p1 по правилам SQL like</para>
       </listitem>
       <listitem>
-        <para>printProperties - показать все параметры</para>
+        <para>printProperties − показать все параметры</para>
       </listitem>
       <listitem>
-        <para>loadSystemProperties - загрузить в System.properties параметры из файла conf/system.properties</para>
+        <para>loadSystemProperties − загрузить в System.properties параметры из файла conf/system.properties</para>
       </listitem>
     </itemizedlist>
     <para><emphasis role="bold">Возможности</emphasis></para>
@@ -5184,7 +5229,7 @@ taskHandler.execute();</programlisting>
     <para>Аннотация <literal>@Source</literal> может быть задана как на весь интерфейс, так и на отдельный параметр. В первом случае она определяет источник всех параметров данного интерфейса. Во втором случае она переопределяет источник для данного параметра, если он отличен от указанного для интерфейса.</para>
     <para><emphasis role="bold">Типы параметров</emphasis></para>
     <para>Без дополнительных усилий параметр может быть любого простого типа либо его объектного аналога (String, int, Integer, etc.) либо сущностью, реализующей интерфейс Entity.</para>
-    <para>Для произвольного типа необходимо реализовать классы TypeStringify и TypeFactory для пребразования значения в строку и из нее, и указать эти классы для параметра с помощью аннотаций @Stringify и @Factory.</para>
+    <para>Для произвольного типа необходимо реализовать классы TypeStringify и TypeFactory для преобразования значения в строку и из нее, и указать эти классы для параметра с помощью аннотаций @Stringify и @Factory.</para>
     <para>Рассмотрим этот процесс на примере типа UUID.</para>
     <itemizedlist>
       <listitem>
@@ -5192,15 +5237,15 @@ taskHandler.execute();</programlisting>
         <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example3.txt" encoding="UTF-8" parse="text"/></programlisting>
       </listitem>
       <listitem>
-        <para>TypeStringify создавать не нужно, т.к. по умолчанию будет использован Object.toString() - в данном случае он нам подходит.</para>
+        <para>TypeStringify создавать не нужно, т.к. по умолчанию будет использован Object.toString() − в данном случае он нам подходит.</para>
       </listitem>
       <listitem>
         <para>Аннотируем параметр:</para>
         <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example4.txt" encoding="UTF-8" parse="text"/></programlisting>
       </listitem>
     </itemizedlist>
-    <para><emphasis role="bold">Значения по-умолчанию</emphasis></para>
-    <para>Для параметров могут быть заданы значения по-умолчанию. Эти значения будут возвращаться если данный параметр не задан (не существует в БД или в app.properties).</para>
+    <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
+    <para>Для параметров могут быть заданы значения по умолчанию. Эти значения будут возвращаться, если данный параметр не задан (не существует в БД или в app.properties).</para>
     <para>Дефолтное значение может быть задано в виде строки с помощью аннотации @com.haulmont.cuba.core.config.defaults.Default, либо в виде конкретного типа с помощью других аннотаций пакета com.haulmont.cuba.core.config.defaults.</para>
     <para>Для сущностей дефолтное значение задается в виде имя_сущности-id-имя_представления, например</para>
     <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -5253,7 +5298,7 @@ taskHandler.execute();</programlisting>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_mssql.xml" encoding="UTF-8" parse="text"/></programlisting>
           <para>В настройках MS SQL надо включить возможность логина для пользователя sa и задать для него пароль из context.xml. Это можно сделать из MS SQL Management Studio, в окне Object Explorer.
 
-Instance - ваш SQL Server.</para>
+Instance − ваш SQL Server.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Включить сетевую аутентификацию:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance1_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>

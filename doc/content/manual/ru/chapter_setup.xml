@@ -94,7 +94,7 @@
         </imageobject>
       </mediaobject>
     </figure>
-    <para>В полях <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль <userinput>cuba</userinput>. Далее перейдите на вкладку <guilabel>Привилегии роли</guilabel> . </para>
+    <para>В полях <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль <userinput>cuba</userinput>. Далее перейдите на вкладку <guilabel>Привилегии роли</guilabel>. </para>
     <para>Установите флажок <guilabel>Суперпользователь</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
     <figure>
       <title>Настройка PostgreSQL. Создание роли входа</title>

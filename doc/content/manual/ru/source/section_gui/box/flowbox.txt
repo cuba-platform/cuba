@@ -1,10 +1,10 @@
 ﻿<flowbox margin="true" spacing="true" >
 	<button caption="Flow" width="${widthWithButton}"/>
-    <button caption="layout" width="${widthWithButton}"/>
-    <button caption="Flow" width="${widthWithButton}"/>
-    <button caption="layout" width="${widthWithButton}"/>
-    <button caption="Flow" width="${widthWithButton}"/>
-    <button caption="layout" width="${widthWithButton}"/>
-    <button caption="Flow" width="${widthWithButton}"/>
-    <button caption="layout" width="${widthWithButton}"/>
+	<button caption="layout" width="${widthWithButton}"/>
+	<button caption="Flow" width="${widthWithButton}"/>
+	<button caption="layout" width="${widthWithButton}"/>
+	<button caption="Flow" width="${widthWithButton}"/>
+	<button caption="layout" width="${widthWithButton}"/>
+	<button caption="Flow" width="${widthWithButton}"/>
+	<button caption="layout" width="${widthWithButton}"/>
 </flowbox>

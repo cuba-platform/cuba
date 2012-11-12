@@ -1,0 +1,29 @@
+﻿<tabsheet>
+   <tab id="gridTab" caption="GridTab" margin="true" spacing="true" detachable="true">
+      <grid spacing="true" margin="true" >
+         <columns>
+            <column flex="1"/>
+            <column flex="1"/>
+            <column flex="1"/>
+            <column flex="1"/>
+         </columns>
+         <rows>
+            <row>
+               <label value="msg://name1"/>
+               <textField id="name1" width="100px"/>
+               <label value="msg://name2"/>
+               <textField id="name2" width="100px"/>
+            </row>
+            <row>
+               <label value="msg://name3"/>
+               <textField id="name3" width="100px"/>
+               <label value="msg://name4"/>
+               <textField id="name4" width="100px"/>
+            </row>
+         </rows>
+      </grid>
+   </tab>
+   <tab id="scrollTab" caption="ButtonTab" margin="true" spacing="true" lazy="true" detachable="false">
+      <button caption="Vertical" width="170"/>
+   </tab>
+</tabsheet>

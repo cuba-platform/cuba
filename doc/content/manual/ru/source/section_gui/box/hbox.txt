@@ -1,10 +1,10 @@
-﻿<hbox margin="true" spacing="true" >
+﻿<hbox margin="true" spacing="true">
 	<button caption="Horizontal" width="${widthWithButtonH}"/>
-    <button caption="layout" width="${widthWithButtonH}"/>
-    <button caption="Horizontal" width="${widthWithButtonH}"/>
-    <button caption="layout" width="${widthWithButtonH}"/>
-    <button caption="Horizontal" width="${widthWithButtonH}"/>
-    <button caption="layout" width="${widthWithButtonH}"/>
-    <button caption="Horizontal" width="${widthWithButtonH}"/>
-    <button caption="layout" width="${widthWithButtonH}"/>
+	<button caption="layout" width="${widthWithButtonH}"/>
+	<button caption="Horizontal" width="${widthWithButtonH}"/>
+	<button caption="layout" width="${widthWithButtonH}"/>
+	<button caption="Horizontal" width="${widthWithButtonH}"/>
+	<button caption="layout" width="${widthWithButtonH}"/>
+	<button caption="Horizontal" width="${widthWithButtonH}"/>
+	<button caption="layout" width="${widthWithButtonH}"/>
 </hbox>

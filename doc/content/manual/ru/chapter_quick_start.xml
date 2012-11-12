@@ -152,18 +152,18 @@
       <para>Класс <classname>Customer</classname> унаследован от <classname>StandardEntity</classname>, обеспечивающего стандартную функциональность сущностей: первичный ключ, <glossterm linkend="glossary_optimistic_locking">оптимистическое блокирование</glossterm>, аудит создания и изменения экземпляра, поддержку <glossterm linkend="glossary_soft_deletion">мягкого удаления</glossterm>.</para>
       <para>Рассмотрим аннотации, использованные в классе сущности: <itemizedlist>
           <listitem>
-            <para><interfacename>@javax.persistence.Entity</interfacename> - объявляет класс сущностью модели данных с именем <literal>sales$Customer</literal> (параметр <literal>name</literal>). Имя сущности обязательно должно начинаться с префикса, отделенного знаком <literal>$</literal>. Желательно использовать в качестве префикса короткое имя проекта для формирования отдельного пространства имен.</para>
+            <para><interfacename>@javax.persistence.Entity</interfacename> − объявляет класс сущностью модели данных с именем <literal>sales$Customer</literal> (параметр <literal>name</literal>). Имя сущности обязательно должно начинаться с префикса, отделенного знаком <literal>$</literal>. Желательно использовать в качестве префикса короткое имя проекта для формирования отдельного пространства имен.</para>
           </listitem>
           <listitem>
-            <para><interfacename>@javax.persistence.Table</interfacename> - связывает сущность с таблицей <database>
+            <para><interfacename>@javax.persistence.Table</interfacename> − связывает сущность с таблицей <database>
                 <database>SALES_CUSTOMER</database>
               </database> базы данных </para>
           </listitem>
           <listitem>
-            <para><interfacename>@com.haulmont.chile.core.annotations.NamePattern</interfacename> - задает способ формирования имени экземпляра сущности. В данном случае именем экземпляра будет содержимое атрибута <literal>name</literal>. Имя экземпляра обычно требуется для отображения ссылочных атрибутов в пользовательском интерфейсе. </para>
+            <para><interfacename>@com.haulmont.chile.core.annotations.NamePattern</interfacename> − задает способ формирования имени экземпляра сущности. В данном случае именем экземпляра будет содержимое атрибута <literal>name</literal>. Имя экземпляра обычно требуется для отображения ссылочных атрибутов в пользовательском интерфейсе. </para>
           </listitem>
           <listitem>
-            <para><interfacename>@javax.persistence.Column</interfacename> - связывает атрибут сущности с колонкой таблицы. Параметр <code>nullable = false</code> делает атрибут сущности обязательным к заполнению. Параметр <code>length</code> задает максимальную длину тесктового атрибута, по умолчанию <literal>255</literal>.</para>
+            <para><interfacename>@javax.persistence.Column</interfacename> − связывает атрибут сущности с колонкой таблицы. Параметр <code>nullable = false</code> делает атрибут сущности обязательным к заполнению. Параметр <code>length</code> задает максимальную длину текстового атрибута, по умолчанию <literal>255</literal>.</para>
           </listitem>
         </itemizedlist></para>
       <para id="text_registration_entity">После создания класса зарегистрируйте его в файле <filename>sales-persistence.xml</filename> модуля <structname>global</structname> в элементе <sgmltag>persistence-unit</sgmltag>:<programlisting>&lt;class&gt;com.haulmont.sales.entity.Customer&lt;/class&gt;</programlisting></para>
@@ -184,13 +184,13 @@ Customer.email=Email</programlisting></para>
       <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Order.java" parse="text" encoding="UTF-8"/></programlisting>
       <para>Рассмотрим аннотации, использованные в классе сущности: <itemizedlist>
           <listitem>
-            <para><interfacename>@javax.persistence.ManyToOne</interfacename> - определяет атрибут ссылочного типа с отношением <literal>many-to-one</literal>, т.е. в нашем случае несколько заказов для одного покупателя. Параметр <code>fetch = FetchType.LAZY</code> означает, что загрузка сущности <classname>Customer</classname> не обязательно будет производиться одновременно с сущностью <classname>Order</classname>.</para>
+            <para><interfacename>@javax.persistence.ManyToOne</interfacename> − определяет атрибут ссылочного типа с отношением <literal>many-to-one</literal>, т.е. в нашем случае несколько заказов для одного покупателя. Параметр <code>fetch = FetchType.LAZY</code> означает, что загрузка сущности <classname>Customer</classname> не обязательно будет производиться одновременно с сущностью <classname>Order</classname>.</para>
           </listitem>
           <listitem>
-            <para><interfacename>@javax.persistence.JoinColumn</interfacename> - определяет, каким образом сущности связаны на уровне таблиц базы данных. Параметр <code>name</code> определяет поле таблицы <database>SALES_ORDER</database>, которое ссылается на первичный ключ таблицы <database>SALES_CUSTOMER</database>.</para>
+            <para><interfacename>@javax.persistence.JoinColumn</interfacename> −  определяет, каким образом сущности связаны на уровне таблиц базы данных. Параметр <code>name</code> определяет поле таблицы <database>SALES_ORDER</database>, которое ссылается на первичный ключ таблицы <database>SALES_CUSTOMER</database>.</para>
           </listitem>
           <listitem>
-            <para><interfacename>@javax.persistence.Temporal</interfacename> - для атрибута типа дата/время определяет возможное содержимое: дата+время, только дата, только время.</para>
+            <para><interfacename>@javax.persistence.Temporal</interfacename> − для атрибута типа дата/время определяет возможное содержимое: дата+время, только дата, только время.</para>
           </listitem>
         </itemizedlist></para>
       <para>Создайте локализованные названия для сущности <classname>Заказ</classname>:</para>
@@ -252,7 +252,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
       </section>
       <section id="section_qs_buyer_edit_1">
         <title>Экран редактирования Покупателя</title>
-        <para>На данном этапе рассмотрим создание экрана просмотра и редактирования <classname>Покупателя</classname> в простейшем варианте - без списка  <classname>Заказов</classname>.</para>
+        <para>На данном этапе рассмотрим создание экрана просмотра и редактирования <classname>Покупателя</classname> в простейшем варианте −  без списка  <classname>Заказов</classname>.</para>
         <para>Создайте в пакете <code>com.haulmont.sales.gui.customer</code> файл <filename>customer-edit.xml</filename> следующего содержания: <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/customer-edit-1.xml" parse="text" encoding="UTF-8"/></programlisting></para>
         <para>Здесь в корневом элементе указан атрибут <sgmltag>class</sgmltag>, определяющий класс контроллера экрана. В данном случае необходима только базовая логика работы с редактируемой сущностью, поэтому используется стандартный <classname>AbstractEditor</classname>.</para>
         <para>Атрибут <sgmltag>datasource</sgmltag> корневого элемента определяет имя <glossterm linkend="glossary_datasource_id">источника данных</glossterm>, в который будет передан экземпляр редактируемой сущности из вызывающего экран кода.</para>
@@ -262,14 +262,14 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>В элементе <sgmltag>dsContext</sgmltag> добавлен один  <glossterm linkend="glossary_datasource_id">источник данных</glossterm> <sgmltag>datasource</sgmltag>, в который будет передан экземпляр редактируемой сущности из вызывающего экран кода. </para>
         <para>Элемент <sgmltag>layout</sgmltag>  в данном случае содержит два вложенных элемента: <itemizedlist>
             <listitem>
-              <para><sgmltag>fieldGroup</sgmltag> - группа полей, связанная с источником данных, предназначеная для отображения и редактирования значений атрибутов сущности</para>
+              <para><sgmltag>fieldGroup</sgmltag> − группа полей, связанная с источником данных, предназначенная для отображения и редактирования значений атрибутов сущности</para>
             </listitem>
             <listitem>
-              <para><sgmltag>iframe</sgmltag> - фрейм типа <literal>editWindowActions</literal> (атрибут <sgmltag>screen</sgmltag>) с кнопками стандартных действий редактора - <guibutton>OK</guibutton>, <guibutton>Cancel</guibutton></para>
+              <para><sgmltag>iframe</sgmltag> −  фрейм типа <literal>editWindowActions</literal> (атрибут <sgmltag>screen</sgmltag>) с кнопками стандартных действий редактора −  <guibutton>OK</guibutton>, <guibutton>Cancel</guibutton></para>
             </listitem>
           </itemizedlist></para>
         <para>Атрибуты <sgmltag>id</sgmltag> элементов <sgmltag>field</sgmltag> группы полей соответствуют именам редактируемых атрибутов сущности.</para>
-        <para>Атрибут <sgmltag>expand</sgmltag> элемента <sgmltag>layout</sgmltag> нужен для того, чтобы растянуть фрейм на все свободное пространство по вертикали, тогда кнопки окажутся прижатым вверх к группе полей.</para>
+        <para>Атрибут <sgmltag>expand</sgmltag> элемента <sgmltag>layout</sgmltag> нужен для того, чтобы растянуть фрейм на все свободное пространство по вертикали, тогда кнопки окажутся прижатыми вверх к группе полей.</para>
         <para>Зададим идентификатор экрана в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-edit.xml&quot;/&gt;</programlisting></para>
         <para>Для правильной работы стандартных действий <literal>create</literal> и <literal>edit</literal> таблицы в экране списка необходимо, чтобы идентификатор экрана редактирования соответствовал виду <literal>{entity_name}.edit</literal></para>
         <para>Попробуем добавить и отредактировать <classname>Покупателя</classname>  в работающем приложении. Для этого пересоберите проект </para>
@@ -298,7 +298,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para><filename>messages_ru.properties</filename> <programlisting>browserCaption=Заказы</programlisting></para>
         <para>Далее зарегистрируйте экран в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname>: <programlisting>&lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/haulmont/sales/gui/order/order-browse.xml&quot;/&gt;</programlisting></para>
         <para>и добавьте соответствующий пункт меню в файл <filename>sales-web-menu.xml</filename> модуля <structname>web</structname>: <programlisting>&lt;item id=&quot;sales$Order.lookup&quot;/&gt;</programlisting></para>
-        <para>Локализованные названия нового пункта меню  добавьте в <glossterm linkend="glossary_main_localized_folder_id">главный пакет сообщений</glossterm> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.haulmont.sales.web</code>:</para>
+        <para>Локализованные названия нового пункта меню  добавьте в <glossterm linkend="glossary_main_localized_folder_id">главный пакет сообщений</glossterm> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.haulmont.sales.web</code>):</para>
         <para>    <filename>messages.properties</filename></para>
         <programlisting>menu-config.sales$Order.lookup=Orders</programlisting>
         <para>    <filename>messages_ru.properties</filename></para>
@@ -364,7 +364,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         order by o.date
     &lt;/query&gt;
 &lt;/collectionDatasource&gt;</programlisting></para>
-        <para>Здесь запрос содержит условие отбора Заказов с параметром <literal>ds$customerDs</literal>. Значением параметра с именем вида <literal>ds${datasource_name}</literal> будет идентификатор сущности, установленной в данный момент в источнике данных <literal>datasource_name</literal>, в данном случае - идентификатор редактируемого Покупателя.</para>
+        <para>Здесь запрос содержит условие отбора Заказов с параметром <literal>ds$customerDs</literal>. Значением параметра с именем вида <literal>ds${datasource_name}</literal> будет идентификатор сущности, установленной в данный момент в источнике данных <literal>datasource_name</literal>, в данном случае − идентификатор редактируемого Покупателя.</para>
         <para>Добавьте в <sgmltag>layout</sgmltag> между элементами <sgmltag>fieldGroup</sgmltag> и <sgmltag>iframe</sgmltag> следующее: <programlisting>&lt;label value=&quot;msg://orders&quot;/&gt;
 &lt;table id=&quot;ordersTable&quot; width=&quot;100%&quot;&gt;
     &lt;columns&gt;
@@ -373,8 +373,8 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
     &lt;/columns&gt;
     &lt;rows datasource=&quot;ordersDs&quot;/&gt;
 &lt;/table&gt;</programlisting></para>
-        <para>Здесь <sgmltag>label</sgmltag> - надпись со значением из пакета локализованных сообщений, <sgmltag>table</sgmltag> - таблица, связанная с новым источником данных <literal>ordersDs</literal>.</para>
-        <para>Для того, чтобы таблица заняла все доступное пространство экрана, укажите ее идентификатор в атрибуте <sgmltag>expand</sgmltag> элемента <sgmltag>layout</sgmltag>.</para>
+        <para>Здесь <sgmltag>label</sgmltag> − надпись со значением из пакета локализованных сообщений, <sgmltag>table</sgmltag> − таблица, связанная с новым источником данных <literal>ordersDs</literal>.</para>
+        <para>Для того чтобы таблица заняла все доступное пространство экрана, укажите ее идентификатор в атрибуте <sgmltag>expand</sgmltag> элемента <sgmltag>layout</sgmltag>.</para>
         <para>Добавьте в файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.haulmont.sales.gui.order</code>  локализацию надписи: </para>
         <para><filename>messages.properties</filename> <programlisting>orders=Orders</programlisting></para>
         <para><filename>messages_ru.properties</filename> <programlisting>orders=Заказы</programlisting></para>

@@ -44,7 +44,7 @@
         <emphasis role="bold">Источник данных</emphasis>
       </glossterm>
       <glossdef>
-        <para>Источники данных (datasources) - невизуальные элементы экрана, обеспечивающие работу связанных с данными (data-aware) визуальных компонентов.</para>
+        <para>Источники данных (datasources) − невизуальные элементы экрана, обеспечивающие работу связанных с данными (data-aware) визуальных компонентов.</para>
         <para>См. <xref xrefstyle="" linkend="section_datasource"/></para>
       </glossdef>
     </glossentry>
@@ -110,7 +110,7 @@
         <emphasis role="bold">Сущность</emphasis>
       </glossterm>
       <glossdef>
-        <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущности (entity class) – это созданный по определенным правилам Java- класс, как правило, соответствующий таблице в базе данных.</para>
+        <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущности (entity class) – это созданный по определенным правилам Java-класс, как правило, соответствующий таблице в базе данных.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -173,7 +173,7 @@
         <emphasis role="bold">DateField</emphasis>
       </glossterm>
       <glossdef>
-        <para>Визуальный компонент - поле для редактирования даты и времени.</para>
+        <para>Визуальный компонент − поле для редактирования даты и времени.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -184,7 +184,7 @@
         <emphasis role="bold">Eager Fetching</emphasis>
       </glossterm>
       <glossdef>
-        <para>Энергичная загрузка - загрузка данных подклассов и связанных объектов одновременно с основной запрашиваемой сущностью.</para>
+        <para>Энергичная загрузка − загрузка данных подклассов и связанных объектов одновременно с основной запрашиваемой сущностью.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_entityManager_id">
@@ -228,7 +228,7 @@
         <emphasis role="bold">GridLayout</emphasis>
       </glossterm>
       <glossdef>
-        <para>Визуальный компонент - контейнер, располагающий компоненты по сетке.</para>
+        <para>Визуальный компонент − контейнер, располагающий компоненты по сетке.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_groupbox_id">
@@ -236,7 +236,7 @@
         <emphasis role="bold">GroupBox</emphasis>
       </glossterm>
       <glossdef>
-        <para>Визуальный компонент - контейнер, позволяющий выделить рамкой группу объектов, задать им общий заголовок и описание. Кроме того, умеет сворачивать свое содержимое.</para>
+        <para>Визуальный компонент − контейнер, позволяющий выделить рамкой группу объектов, задать им общий заголовок и описание. Кроме того, умеет сворачивать свое содержимое.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -259,7 +259,7 @@
         <emphasis role="bold">Java EE Web Profile</emphasis>
       </glossterm>
       <glossdef>
-        <para>Упрощенный профиль Java Entreprise Edition, разработанный для веб-приложений, для которых не требуются такие технологии как EJB, JTA и т.д.</para>
+        <para>Упрощенный профиль Java Enterprise Edition, разработанный для веб-приложений, для которых не требуются такие технологии как EJB, JTA и т.д.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_jmx_id">
@@ -288,7 +288,7 @@
         <emphasis role="bold">LookupField</emphasis>
       </glossterm>
       <glossdef>
-        <para>Визуальный компонент -  выпадающий список. Реализует фильтрацию значений в реальном времени (по мере ввода имени опции пользователем) и постраничный вывод данных.</para>
+        <para>Визуальный компонент −  выпадающий список. Реализует фильтрацию значений в реальном времени (по мере ввода имени опции пользователем) и постраничный вывод данных.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -316,7 +316,7 @@
         <emphasis role="bold">Middleware</emphasis>
       </glossterm>
       <glossdef>
-        <para>Средний слой - <glossterm linkend="glossary_app_tiers">уровень</glossterm>  приложения, содержащий бизнес-логику и предоставляющий общий интерфейс для верхних (клиентских) уровней приложения.</para>
+        <para>Средний слой −  <glossterm linkend="glossary_app_tiers">уровень</glossterm>  приложения, содержащий бизнес-логику и предоставляющий общий интерфейс для верхних (клиентских) уровней приложения.</para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_middleware_services_id">
@@ -348,7 +348,7 @@
         <emphasis role="bold">POJO</emphasis>
       </glossterm>
       <glossdef>
-        <para>Plain Old Java Object − «простой Java-объект в старом стиле» -  Java-объект, не унаследованный ни от какого специфического класса и не реализующий никаких служебных интерфейсов сверх тех, которые нужны для описания бизнес-модели. </para>
+        <para>Plain Old Java Object − «простой Java-объект в старом стиле» −  Java-объект, не унаследованный ни от какого специфического класса и не реализующий никаких служебных интерфейсов сверх тех, которые нужны для описания бизнес-модели. </para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_pickerfield_id">
@@ -386,7 +386,7 @@
         <emphasis role="bold"> Tabsheet</emphasis>
       </glossterm>
       <glossdef>
-        <para>Визуальный компонент - контейнер с вкладками.</para>
+        <para>Визуальный компонент − контейнер с вкладками.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
