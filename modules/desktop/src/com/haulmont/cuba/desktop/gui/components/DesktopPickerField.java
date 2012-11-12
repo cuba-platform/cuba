@@ -338,9 +338,18 @@ public class DesktopPickerField
         if (!editable && impl.getEditor() instanceof JTextComponent) {
             JTextComponent editor = (JTextComponent) impl.getEditor();
             editor.setEditable(editable);
-            editor.setFocusable(editable);
         }
         updateMissingValueState();
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        if (impl.getEditor() instanceof JTextComponent) {
+            JTextComponent editor = (JTextComponent) impl.getEditor();
+            editor.setFocusable(enabled);
+        }
     }
 
     @Override
