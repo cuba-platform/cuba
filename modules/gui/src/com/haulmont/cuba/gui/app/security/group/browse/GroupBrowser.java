@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.app.security.group.browse;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -16,8 +17,10 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,6 +61,12 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected Tabsheet tabsheet;
+
+    @Inject
+    protected UserSession userSession;
+
+    @Inject
+    protected Metadata metadata;
 
     private boolean constraintsTabInitialized, attributesTabInitialized;
 
@@ -114,6 +123,12 @@ public class GroupBrowser extends AbstractWindow {
                         }
                     }, WindowManager.OpenType.DIALOG);
                 }
+            }
+
+            @Override
+            public void setEnabled(boolean enabled) {
+                super.setEnabled(enabled && userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
+                        EntityOp.UPDATE));
             }
         });
 

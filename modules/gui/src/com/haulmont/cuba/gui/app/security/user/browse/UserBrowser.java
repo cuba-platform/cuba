@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -19,6 +20,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -71,6 +73,15 @@ public class UserBrowser extends AbstractLookup {
         Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiselect"));
         if (multiSelect != null)
             usersTable.setMultiSelect(multiSelect);
+
+        boolean hasPermissionsToCreateUsers =
+                userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
+                        EntityOp.CREATE);
+
+        Action copy = usersTable.getAction("copy");
+        if (copy != null) {
+            copy.setEnabled(hasPermissionsToCreateUsers);
+        }
     }
 
     @SuppressWarnings("unused")

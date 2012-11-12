@@ -40,7 +40,7 @@
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
-                <action id="copy" caption="msg://copy" icon="icons/copy.png" trackSelection="true" invoke="copy"/>
+                <action id="copy" caption="msg://copy" icon="icons/copy.png" invoke="copy"/>
                 <action id="remove"/>
                 <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
                         trackSelection="true" invoke="copySettings"/>
