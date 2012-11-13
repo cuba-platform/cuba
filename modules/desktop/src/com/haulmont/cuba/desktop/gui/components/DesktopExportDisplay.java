@@ -41,8 +41,6 @@ import java.io.InputStream;
 @SuppressWarnings({"UnusedDeclaration"})
 public class DesktopExportDisplay implements ExportDisplay {
 
-    private final JFileChooser fileChooser = new JFileChooser();
-
     private IFrame frame;
 
     private Messages messages;
@@ -99,6 +97,7 @@ public class DesktopExportDisplay implements ExportDisplay {
     }
 
     private void saveFileAction(String fileName, JFrame frame, ExportDataProvider dataProvider) {
+        JFileChooser fileChooser = new JFileChooser();
         fileChooser.setSelectedFile(new File(fileName));
         if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
