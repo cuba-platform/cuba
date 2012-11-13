@@ -56,6 +56,7 @@ public abstract class AbstractMessages implements Messages {
 
     protected Map<String, String> strCache = new ConcurrentHashMap<>();
 
+    // Using ConcurrentHashMap instead of synchronized Set for better parallelism
     protected Map<String, String> notFoundCache = new ConcurrentHashMap<>();
 
     protected abstract Locale getUserLocale();
@@ -178,49 +179,51 @@ public abstract class AbstractMessages implements Messages {
         if (key == null)
             throw new IllegalArgumentException("Message key is null");
 
-        String notFoundKey = makeCacheKey(packs, key, locale, false);
-        String notFoundValue = notFoundCache.get(notFoundKey);
-        if (notFoundValue != null)
-            return notFoundValue;
+        String cacheKey = makeCacheKey(packs, key, locale, false);
 
-        String msg = searchMessage(packs, key, locale, false);
+        String msg = strCache.get(cacheKey);
         if (msg != null)
             return msg;
 
-        notFoundCache.put(notFoundKey, key);
+        String notFound = notFoundCache.get(cacheKey);
+        if (notFound != null)
+            return notFound;
+
+        msg = searchMessage(packs, key, locale, false);
+        if (msg != null) {
+            cache(cacheKey, msg);
+            return msg;
+        }
+
+        notFoundCache.put(cacheKey, key);
         return key;
     }
 
     private String searchMessage(String packs, String key, Locale locale, boolean defaultLocale) {
-        List<String> processedPacks = new ArrayList<>();
         StrTokenizer tokenizer = new StrTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
         for (String pack : list) {
-            String msg = searchFiles(pack, key, locale, defaultLocale);
+            String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
+
+            String msg = strCache.get(cacheKey);
+            if (msg != null)
+                return msg;
+
+            msg = searchFiles(pack, key, locale, defaultLocale);
             if (msg == null) {
                 msg = searchClasspath(pack, key, locale, defaultLocale);
             }
             if (msg == null && !defaultLocale) {
                 msg = searchRemotely(pack, key, locale);
                 if (msg != null) {
-                    String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
                     cache(cacheKey, msg);
                 }
             }
 
-            if (msg != null) {
-                if (!processedPacks.isEmpty()) {
-                    for (String p : processedPacks) {
-                        String cacheKey = makeCacheKey(p, key, locale, defaultLocale);
-                        cache(cacheKey, msg);
-                    }
-                }
+            if (msg != null)
                 return msg;
-            }
-
-            processedPacks.add(pack);
         }
         if (!defaultLocale)
             return searchMessage(packs, key, locale, true);
@@ -390,8 +393,11 @@ public abstract class AbstractMessages implements Messages {
             Properties properties = new Properties();
             properties.load(reader);
             for (String k : properties.stringPropertyNames()) {
-                if (!k.equals("@include"))
+                if (!k.equals("@include")) {
                     cache(makeCacheKey(pack, k, locale, defaultLocale), properties.getProperty(k));
+                    if (defaultLocale)
+                        cache(makeCacheKey(pack, k, locale, false), properties.getProperty(k));
+                }
             }
 
             // process includes after to support overriding
@@ -399,8 +405,11 @@ public abstract class AbstractMessages implements Messages {
             processIncludes(includes, locale, defaultLocale, properties);
             for (Properties includedProperties : includes) {
                 for (String k : includedProperties.stringPropertyNames()) {
-                    if (!k.equals("@include"))
+                    if (!k.equals("@include")) {
                         cache(makeCacheKey(pack, k, locale, defaultLocale), includedProperties.getProperty(k));
+                        if (defaultLocale)
+                            cache(makeCacheKey(pack, k, locale, false), includedProperties.getProperty(k));
+                    }
                 }
             }
         } catch (IOException e) {
