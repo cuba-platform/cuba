@@ -162,14 +162,14 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             }
             // We don't need to show arrows or statusbar if there is only one
             // page
-            VConsole.log("Matches: " + matches + " PL:" + pageLength);
+//            VConsole.log("Matches: " + matches + " PL:" + pageLength);
             if (matches <= pageLength) {
                 setPagingEnabled(false);
             } else {
                 setPagingEnabled(true);
             }
-            VConsole.log("Paging prev: " + (first > 1));
-            VConsole.log("Paging next: " + (last > matches));
+//            VConsole.log("Paging prev: " + (first > 1));
+//            VConsole.log("Paging next: " + (last > matches));
             setPrevButtonActive(first > 1);
             setNextButtonActive(last < matches);
 
