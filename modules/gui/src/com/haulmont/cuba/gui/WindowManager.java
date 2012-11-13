@@ -153,6 +153,8 @@ public abstract class WindowManager {
 
         window.setWindowManager(this);
 
+        loadDescriptorWatch.stop();
+
         final Window windowWrapper = wrapByCustomClass(window, element, params);
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
@@ -160,8 +162,6 @@ public abstract class WindowManager {
         if (AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTestMode()) {
             initDebugIds(window);
         }
-
-        loadDescriptorWatch.stop();
 
         StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
@@ -673,12 +673,19 @@ public abstract class WindowManager {
             if (wrappingWindow instanceof AbstractWindow) {
                 Element companionsElem = element.element("companions");
                 if (companionsElem != null) {
+                    StopWatch companionStopWatch = new Log4JStopWatch(window.getId() + "#" +
+                            UIPerformanceLogger.LifeCycle.COMPANION,
+                            Logger.getLogger(UIPerformanceLogger.class));
+                    companionStopWatch.start();
+
                     initCompanion(companionsElem, (AbstractWindow) wrappingWindow);
+
+                    companionStopWatch.stop();
                 }
             }
 
             StopWatch injectStopWatch = new Log4JStopWatch(window.getId() + "#" +
-                    UIPerformanceLogger.LifeCycle.INIT,
+                    UIPerformanceLogger.LifeCycle.INJECTION,
                     Logger.getLogger(UIPerformanceLogger.class));
             injectStopWatch.start();
 
@@ -699,16 +706,6 @@ public abstract class WindowManager {
             }
 
             initStopWatch.stop();
-
-            StopWatch uiPermissionsWatch = new Log4JStopWatch(wrappingWindow.getId() + "#" +
-                    UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
-                    Logger.getLogger(UIPerformanceLogger.class));
-            uiPermissionsWatch.start();
-
-            // apply ui permissions
-            WindowCreationHelper.applyUiPermissions(wrappingWindow);
-
-            uiPermissionsWatch.stop();
 
             return wrappingWindow;
         } else {
