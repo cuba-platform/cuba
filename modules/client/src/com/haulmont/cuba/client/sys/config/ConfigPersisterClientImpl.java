@@ -72,7 +72,10 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 AppContext.setProperty(name, value);
                 break;
             case DATABASE:
-                cache.put(name, value);
+                if (value != null)
+                    cache.put(name, value);
+                else
+                    cache.remove(name);
                 getConfigStorage().setDbProperty(name, value);
                 break;
             default:
