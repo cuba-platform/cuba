@@ -35,36 +35,22 @@
         <para>Запустите мастер установки.</para>
       </listitem>
       <listitem>
-        <para>В первом окне  нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
+        <para>В окне <guilabel>Installation Directory</guilabel> предоставляется возможность сменить каталог установки программы.</para>
       </listitem>
       <listitem>
-        <para>В следующем окне <guilabel>Installation Directory</guilabel> предоставляется возможность сменить каталог установки программы, нажав на кнопку <inlinemediaobject>
-            <imageobject>
-              <imagedata fileref="img/postgres9_2_0.png"/>
-            </imageobject>
-          </inlinemediaobject>  и выбрав новый путь. Нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
+        <para>В  окне <guilabel>Data Directory</guilabel> предоставляется возможность сменить каталог для хранения данных.</para>
       </listitem>
       <listitem>
-        <para>В следующем окне <guilabel>Data Directory</guilabel> предоставляется возможность сменить каталог для хранения данных, нажав на кнопку <inlinemediaobject>
-            <imageobject>
-              <imagedata fileref="img/postgres9_2_0.png"/>
-            </imageobject>
-          </inlinemediaobject>  и выбрав новый путь. Нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
+        <para>В  окне <guilabel>Password</guilabel> в поля <guilabel>Password</guilabel> и <guilabel>Retype password</guilabel> введите новый пароль для пользователя <database>postgres</database>.</para>
       </listitem>
       <listitem>
-        <para>В следующем окне <guilabel>Password</guilabel> в поля <guilabel>Password</guilabel> и <guilabel>Retype password</guilabel> введите новый пароль для пользователя <filename>postgres</filename>. Нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
+        <para>В  окне <guilabel>Port</guilabel> предлагается ввести номер порта сервера. Оставьте порт по умолчанию.</para>
       </listitem>
       <listitem>
-        <para>В следующем окне <guilabel>Port</guilabel> предлагается ввести номер порта сервера. Оставьте порт по умолчанию и нажмите на кнопку <guibutton>Next&gt;</guibutton>.</para>
+        <para>В  окне <guilabel>Advanced Options</guilabel> выберите из списка локаль <code>Russian, Russia</code>.</para>
       </listitem>
       <listitem>
-        <para>В следующем окне <guilabel>Advanced Options</guilabel> выберите из списка локаль <code>Russian, Russia</code>  и нажмите на кнопку  <guibutton>Next&gt;</guibutton>.</para>
-      </listitem>
-      <listitem>
-        <para>В следующем окне <guilabel>Ready to Install</guilabel> после нажатия на кнопку <guibutton>Next&gt;</guibutton> будет произведена установка <application>PostgreSQL</application> на Ваш компьютер.</para>
-      </listitem>
-      <listitem>
-        <para>После завершения установки нажмите на кнопку <guibutton>Finish</guibutton>.</para>
+        <para>В окне <guilabel>Ready to Install</guilabel> после нажатия на кнопку <guibutton>Next&gt;</guibutton> будет произведена установка <application>PostgreSQL</application> на Ваш компьютер.</para>
       </listitem>
     </orderedlist>
     <para>После установки убедимся в работоспособности сервера базы данных. Для этого запустите программу <application>pgAdmin</application> через меню <guimenu>Пуск</guimenu> /   <guimenu>PostgreSQL 9.1</guimenu> /   <guisubmenu>pgAdmin III</guisubmenu>. На экране отобразится  окно, представленное на рисунке:</para>
@@ -76,6 +62,7 @@
         </imageobject>
       </mediaobject>
     </figure>
+    <para>Подключитесь к серверу, используя пароль пользователя <database>postgres</database>, заданный на этапе инсталляции.</para>
     <para>Создадим нового пользователя. Для этого в контекстном меню элемента <guilabel>PostgreSQL Database Server 9.1 (localhost:5432)</guilabel> выберите <guimenuitem>Подключение</guimenuitem>. Далее в контекстном меню элемента  <guilabel>Роли входа</guilabel> выберите <guimenuitem>Новая роль</guimenuitem>. На экране отобразится окно, представленное на рисунке:</para>
     <figure>
       <title>Настройка PostgreSQL. Создание роли входа</title>
@@ -116,26 +103,14 @@
         <para>Скачайте последнюю версию <application>JDK 7</application>, например, <filename>jdk-7u5-windows-x64.exe.</filename></para>
       </listitem>
       <listitem>
-        <para>Запустите файл <filename>jdk-7u5-windows-x64.exe</filename>.</para>
-      </listitem>
-      <listitem>
-        <para>В первом окне нажмите на кнопку <guibutton>Next</guibutton>.</para>
-      </listitem>
-      <listitem>
-        <para>В следующем окне Вы можете выбрать дополнительные компоненты и сменить каталог установки программы, нажав на кнопку <guibutton>Change</guibutton> и выбрав новый путь. Нажмите на кнопку <guibutton>Next</guibutton>.</para>
-      </listitem>
-      <listitem>
-        <para>В следующем окне нажмите на кнопку <guibutton>Next</guibutton>.</para>
-      </listitem>
-      <listitem>
-        <para>В следующем окне отображается информация об успешном завершении установки. Нажмите на кнопку <guibutton>Continue</guibutton>.</para>
+        <para>Запустите файл <filename>jdk-7u5-windows-x64.exe</filename> и установите все компоненты следуя инструкциям программы-устновщика.</para>
       </listitem>
       <listitem id="path_setting">
-        <para>Теперь создайте переменную среды <envar>JAVA_HOME</envar>. В качестве значения переменной окружения <envar>JAVA_HOME</envar> установите путь до каталога установки  <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.7.0_05</filename>.</para>
+        <para>Создайте переменную среды <envar>JAVA_HOME</envar>. В качестве значения переменной окружения <envar>JAVA_HOME</envar> установите путь к  каталогу установки  <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.7.0_05</filename>.</para>
         <caution>
           <title>Подсказка</title>
           <para>Как установить или изменить переменную среды?</para>
-          <para>В пункте меню <guimenu>Пуск</guimenu> выберите <guimenuitem>Панель управления</guimenuitem>, далее в элементах панели управления выберите элемент <guisubmenu>Система</guisubmenu>. На панели слева найдите ссылку на <guisubmenu>Дополнительные параметры системы</guisubmenu> и нажмите на нее. В отобразившемся окне <guilabel>Свойства системы</guilabel> перейдите на вкладку <guilabel>Дополнительно</guilabel> и нажмите на кнопку <guibutton>Переменные среды</guibutton>.</para>
+          <para>В пункте меню <guimenu>Пуск</guimenu> выберите <guimenuitem>Панель управления</guimenuitem>, далее в элементах панели управления выберите элемент <guisubmenu>Система</guisubmenu>. На панели слева выберите ссылку на <guisubmenu>Дополнительные параметры системы</guisubmenu>. В отобразившемся окне <guilabel>Свойства системы</guilabel> перейдите на вкладку <guilabel>Дополнительно</guilabel> и нажмите на кнопку <guibutton>Переменные среды</guibutton>.</para>
           <para>Чтобы создать новую переменную среды, нажмите на кнопку <guibutton>Создать</guibutton> в панели <guilabel>Системные переменные</guilabel>.</para>
           <figure>
             <title>Окно управления переменными среды</title>

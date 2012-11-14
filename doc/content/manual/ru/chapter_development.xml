@@ -1,11 +1,137 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter_development">
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><chapter id="chapter_development" lang="ru">
   <title>Разработка приложений</title>
+  <section id="section_structure_folders_files">
+    <title>Файловая структура проекта</title>
+    <para>Рассмотрим структуру классов и других файлов в проекте.</para>
+    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
+    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <firstterm id="text_modules">модулей</firstterm> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. Модуль – это элемент проекта, в котором хранится программный код.</para>
+    <itemizedlist>
+      <listitem>
+        <para><structname>global</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>core</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>gui</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>client</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>web</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>web-portal</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>desktop</structname></para>
+      </listitem>
+    </itemizedlist>
+    <para>Модуль <structname>global</structname> определяет компоненты, доступные как <link linkend="section_middleware_id">среднему слою (Middleware)</link>, так и <link linkend="section_client_id">клиентскому коду</link>.</para>
+    <itemizedlist>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="section_services_id">сервисов</link> <link linkend="section_middleware_id"> среднего слоя (Middleware)</link>. </para>
+      </listitem>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="glossary_entity">сущностей</glossterm> и <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-persistence.xml</filename>  регистрируются новые классы сущностей.</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-metadata.xml</filename>  может быть задано <link linkend="section_extending_funct">замещение</link> стандартных сущностей новыми.</para>
+      </listitem>
+    </itemizedlist>
+    <figure>
+      <title>Структура каталогов и файлов проекта</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata contentwidth="55%" align="center" fileref="img/ch2_structure.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Модуль <structname>core</structname> определяет компоненты <link linkend="section_middleware_id">среднего слоя (Middleware)</link> системы.</para>
+    <itemizedlist>
+      <listitem>
+        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и <link linkend="section_database_update">изменения</link> базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
+      </listitem>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации <link linkend="section_services_id">сервисов (Services)</link><link linkend="section_middleware_id"> среднего слоя (Middleware)</link>, а также другие компоненты бизнес-логики приложения.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-app.properties</filename> содержит <glossterm linkend="glossary_conf_parameter_id">конфигурационные параметры</glossterm> среднего слоя:</para>
+        <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_spring">Spring</link>-фреймворка;</para>
+        <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_additionally_ORM">ORM</link>;</para>
+        <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <link linkend="section_views_id">представлений</link>;</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком <link linkend="text_additionally_spring">Spring</link> компонентов, а также зарегистрировать создаваемые <glossterm linkend="glossary_jmx_id">JMX</glossterm>-компоненты.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-views.xml</filename> содержит описание <link linkend="section_views_id">представлений</link>. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения <link linkend="section_middleware_id">среднего слоя (Middleware)</link>. Среди прочего содержит список <glossterm linkend="glossary_app_properties_id">конфигурационных файлов</glossterm> <filename>*-app.properties</filename>, используемых данным приложением.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="section_gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="glossary_controller_id">контроллеров</glossterm>, <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
+    <itemizedlist>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-screens.xml</filename> регистрируются экраны приложения.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Модуль <structname>web</structname> определяет компоненты веб-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или <glossterm>компаньоны</glossterm> и файлы конфигурации.</para>
+    <itemizedlist>
+      <listitem>
+        <para>Класс  <classname>com.haulmont.shop.App.java</classname> определяет главное окно приложения.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры веб-клиента:</para>
+        <para><parameter>cuba.windowConfig</parameter> − в этом свойстве указывается набор файлов конфигурации экранов приложения;</para>
+        <para><parameter>cuba.menuConfig</parameter> содержит список файлов, описывающих меню приложения;</para>
+        <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <glossterm linkend="glossary_localized_folders_id">пакетов сообщений</glossterm>, формирующих <glossterm linkend="glossary_main_localized_folder_id">главный пакет</glossterm>, используемый главным меню и другими общими компонентами системы;</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-web-menu.xml</filename> содержит описание пунктов главного меню приложения.</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-web-screens.xml</filename> регистрируются экраны приложения.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
   <section>
-    <title>Создание и настройка рабочей среды</title>
-    <para>Ссылка на главу с установкой и настройкой инструментария</para>
+    <title>Описание скриптов сборки</title>
+    <para>TODO</para>
+  </section>
+  <section>
+    <title>Описание конфигурационных файлов</title>
+    <variablelist>
+      <varlistentry id="text_context_xml">
+        <term>context.xml</term>
+        <listitem>
+          <para>В данном конфигурационном файле задается <link linkend="section_dbms_types">тип используемой СУБД</link>, а также использование <classname>PersistenceManager</classname>.</para>
+          <para>Пример файла <filename>context.xml</filename> для приложения <link linkend="section_quick_start_data_model">Магазин</link>:</para>
+          <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context.xml" encoding="UTF-8" parse="text"/></programlisting>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="text_web_xml_core">
+        <term>web.xml</term>
+        <listitem>
+          <para>Файл <filename>web.xml</filename> модуля <structname>core</structname> приложения <link linkend="section_quick_start_data_model">Магазин</link>:</para>
+          <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/web.xml" encoding="UTF-8" parse="text"/></programlisting>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <para>TODO</para>
   </section>
   <section>
     <title>Создание проекта</title>
@@ -22,8 +148,8 @@
     <para>Максимальная длина строки − 120 символов. Максимальная длина метода − 50 строк.</para>
     <para>Правила использования прописных букв в идентификаторах:
 </para>
-    <informaltable frame="all" align="center" pgwide="0">
-      <tgroup colsep="1" cols="3" rowsep="1" align="center">
+    <informaltable frame="all" pgwide="0" align="center">
+      <tgroup cols="3" colsep="1" rowsep="1" align="center">
         <colspec colname="c1"/>
         <colspec colname="c2"/>
         <colspec colname="c3"/>
@@ -36,7 +162,7 @@
         </thead>
         <tbody>
           <row>
-            <entry role="left" align="center" namest="c1" nameend="c3">
+            <entry namest="c1" nameend="c3" align="center" role="left">
               <emphasis role="bold">Java и Groovy классы </emphasis>
             </entry>
           </row>
@@ -46,9 +172,9 @@
             <entry align="left"><classname>Buyer</classname>, <classname>Unit</classname>, <classname>EditRoleAction</classname>, <classname>RuntimeException</classname>, <classname>Editor</classname></entry>
           </row>
           <row>
-            <entry role="left" align="left">Название класса контроллера</entry>
-            <entry role="special" align="left">UpperCamelCase, контроллеры экранов со списком сущностей − <classname>&lt;ИмяКлассаСущности&gt;Browser</classname>, контроллеры экранов редактирования − <classname>&lt;ИмяКлассаСущности&gt;Editor</classname></entry>
-            <entry role="right" align="left">
+            <entry align="left" role="left">Название класса контроллера</entry>
+            <entry align="left" role="special">UpperCamelCase, контроллеры экранов со списком сущностей − <classname>&lt;ИмяКлассаСущности&gt;Browser</classname>, контроллеры экранов редактирования − <classname>&lt;ИмяКлассаСущности&gt;Editor</classname></entry>
+            <entry align="left" role="right">
               <classname>BuyerBrowser</classname>
             </entry>
           </row>
@@ -60,19 +186,19 @@
             </entry>
           </row>
           <row>
-            <entry role="left" align="left">Метод, переменная</entry>
-            <entry role="special" align="left">lowerCamelCase</entry>
-            <entry role="right" align="left"><classname>setItem</classname>, <classname>discountsTable</classname></entry>
+            <entry align="left" role="left">Метод, переменная</entry>
+            <entry align="left" role="special">lowerCamelCase</entry>
+            <entry align="left" role="right"><classname>setItem</classname>, <classname>discountsTable</classname></entry>
           </row>
           <row>
-            <entry align="center" namest="c1" nameend="c3">
+            <entry namest="c1" nameend="c3" align="center">
               <emphasis role="bold">XML-дескрипторы</emphasis>
             </entry>
           </row>
           <row>
-            <entry role="left" align="left">Идентификатор компонента, имена параметров в запросах</entry>
-            <entry role="special" align="left">lowerCamelCase, только буквы и цифры</entry>
-            <entry role="right" align="left"><classname>attributesTable</classname>, <classname>component$relevantTo</classname></entry>
+            <entry align="left" role="left">Идентификатор компонента, имена параметров в запросах</entry>
+            <entry align="left" role="special">lowerCamelCase, только буквы и цифры</entry>
+            <entry align="left" role="right"><classname>attributesTable</classname>, <classname>component$relevantTo</classname></entry>
           </row>
           <row>
             <entry align="left">Идентификатор источника данных</entry>
@@ -89,7 +215,7 @@
             </entry>
           </row>
           <row>
-            <entry role="left" align="center" namest="c1" nameend="c3">
+            <entry namest="c1" nameend="c3" align="center" role="left">
               <emphasis role="bold">Объекты базы данных</emphasis>
             </entry>
           </row>
@@ -101,9 +227,9 @@
             </entry>
           </row>
           <row>
-            <entry role="left" align="left">Идентификаторы</entry>
-            <entry role="special" align="left">UPPERCASE. Слова в названии разделяются подчеркиванием. В именах таблиц используется либо единственное число, либо множественное, но не оба сразу. Рекомендуем использовать единственное число.</entry>
-            <entry role="right" align="left">
+            <entry align="left" role="left">Идентификаторы</entry>
+            <entry align="left" role="special">UPPERCASE. Слова в названии разделяются подчеркиванием. В именах таблиц используется либо единственное число, либо множественное, но не оба сразу. Рекомендуем использовать единственное число.</entry>
+            <entry align="left" role="right">
               <classname>SYS_FTS_QUEUE</classname>
             </entry>
           </row>
@@ -112,143 +238,15 @@
     </informaltable>
   </section>
   <section>
-    <title>Рекомендации по программированию</title>
-    <section>
-      <title>Использование правил оформления Java-кода</title>
-      <para>В платформе CUBA при форматировании кода следует придерживаться стандартных правил Java-кодирования, кроме этого необходимо соблюдать дополнительно ещё несколько правил:</para>
-      <para>TODO</para>
-    </section>
-  </section>
-  <section>
     <title>Отладка и тестирование</title>
     <para>TODO</para>
   </section>
-  <section>
-    <title>Резервное копирование базы данных</title>
-    <para>Для резервного копирования базы данных и приложения необходимо:</para>
-    <orderedlist>
-      <listitem>
-        <para>Создать каталог для резервного копирования</para>
-      </listitem>
-      <listitem>
-        <para>Создать  скрипт в созданном каталоге</para>
-        <itemizedlist>
-          <listitem>
-            <para>Для <application>Windows</application> − <filename>backup.bat</filename></para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_development/applicationBackup/backup.bat" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-          <listitem>
-            <para>Для <application>Linux</application> − <filename>backup.sh</filename></para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_development/applicationBackup/backup.sh" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-        </itemizedlist>
-      </listitem>
-      <listitem>
-        <para>Настроить параметры в скрипте (см. таблицу ниже) в соответствии с Вашей системой</para>
-      </listitem>
-      <listitem>
-        <para>Создать файл с паролем</para>
-        <itemizedlist>
-          <listitem>
-            <para>Для <application>Windows</application> в файле <filename>%APPDATA%\postgresql\pgpass.conf </filename>(<filename>%APPDATA%</filename> − это Application Data пользователя <application>Windows</application>, под которым будет выполняться копирование) должна быть запись вида <parameter>host:port:databasename:user:password</parameter> (например, <parameter>localhost:5432:docflow:root:root</parameter>)</para>
-          </listitem>
-          <listitem>
-            <para>Для <application>Linux</application> нужно создать файл <filename>.pgpass</filename> в домашней директории пользователя, под которым будет выполняться копирование (например <filename>/root</filename>) c содержимым, описанным выше, и запретить просмотр и редактирование другим пользователям командой <prompt>chmod 600 .pgpass</prompt></para>
-          </listitem>
-        </itemizedlist>
-      </listitem>
-      <listitem>
-        <para>Сделать скрипт автоисполняемым в зависимости от системы</para>
-      </listitem>
-    </orderedlist>
-    <informaltable frame="all" align="center" pgwide="0">
-      <tgroup colsep="1" cols="3" rowsep="1" align="center">
-        <colspec colname="c1"/>
-        <colspec colname="c2"/>
-        <colspec colname="c3"/>
-        <thead wordsize="16">
-          <row>
-            <entry colname="Имя атрибута" role="bord">Параметр</entry>
-            <entry colname="Тип атрибута" role="caption">Описание</entry>
-            <entry colname="Тип атрибута" role="caption">Значение</entry>
-          </row>
-        </thead>
-        <tbody>
-          <row>
-            <entry role="left" align="center">PG_DIR</entry>
-            <entry role="special">Путь к папке <filename>bin</filename>, где установлен <application>PostgreSQL</application></entry>
-            <entry role="right"><filename>C:\Program Files\PostgreSQL\8.3\bin</filename> (пример)</entry>
-          </row>
-          <row>
-            <entry align="left">TOMCAT_DIR</entry>
-            <entry align="left">Каталог приложения</entry>
-            <entry align="left"><filename>D:\work\thesis2\tomcat</filename> (пример)</entry>
-          </row>
-          <row>
-            <entry role="left" align="left">BACKUP_DIR</entry>
-            <entry role="special" align="left">Каталог для резервного копирования, который был создан в п.1</entry>
-            <entry role="right" align="left"><filename>D:\backup</filename> (пример)</entry>
-          </row>
-          <row>
-            <entry align="left">PG_HOST</entry>
-            <entry align="left">IP адрес подключения к копируемой базе данных</entry>
-            <entry align="left">localhost (по умолчанию)</entry>
-          </row>
-          <row>
-            <entry role="left" align="left">PG_PORT</entry>
-            <entry role="special" align="left">Порт подключения к копируемой базе данных</entry>
-            <entry role="right" align="left">5432 (по умолчанию)</entry>
-          </row>
-          <row>
-            <entry align="center">DB_NAME</entry>
-            <entry>Имя копируемой базы данных</entry>
-            <entry>docflow (пример)</entry>
-          </row>
-          <row>
-            <entry role="left" align="left">PG_USER</entry>
-            <entry role="special" align="left">Пользователь базы данных, под которым выполняется копирование</entry>
-            <entry role="right" align="left">root (по умолчанию)</entry>
-          </row>
-        </tbody>
-      </tgroup>
-    </informaltable>
-    <para>В результате резервного копирования каталог, созданный в п.1, будет иметь следующий вид:</para>
-    <itemizedlist>
-      <listitem>
-        <para><filename>backup</filename></para>
-        <itemizedlist>
-          <listitem>
-            <para><filename>2010_09_22</filename> − каталог, созданный скриптом</para>
-            <itemizedlist>
-              <listitem>
-                <para><filename>tomcat</filename> − копия приложения</para>
-              </listitem>
-              <listitem>
-                <para><filename>docflow_2010_09_22.dump</filename> − копия базы данных</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-          <listitem>
-            <para>...</para>
-          </listitem>
-          <listitem>
-            <para><filename>2010_09_28</filename></para>
-            <itemizedlist>
-              <listitem>
-                <para><filename>tomcat</filename></para>
-              </listitem>
-              <listitem>
-                <para><filename>docflow_2010_10_28.dump</filename></para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </itemizedlist>
-      </listitem>
-    </itemizedlist>
-    <para>При повторном выполнении скрипта будет создана новая копия базы данных, а в копии приложения будут обновлены файлы.</para>
+  <section id="section_restapi">
+    <title>Интеграция со сторонними приложениями</title>
+    <para>TODO</para>
   </section>
   <section>
-    <title>Пошаговые практические руководства</title>
+    <title>Практические руководства</title>
     <section id="section_services_realization">
       <title>Правила создания сервисов</title>
       <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена реализаций на <classname>...ServiceBean</classname>.</para>

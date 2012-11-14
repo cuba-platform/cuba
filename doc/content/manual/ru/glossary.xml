@@ -19,7 +19,7 @@
       <glossterm>
         <emphasis role="bold">Внедрение зависимости</emphasis>
       </glossterm>
-      <acronym>англ. Dependency Injection</acronym>
+      <acronym>Dependency Injection</acronym>
       <glossdef>
         <para>Известно также как принцип Inversion Of Control (IoC). Механизм для получения ссылок на используемые объекты, при котором объект только декларирует, от каких объектов он зависит, а <glossterm linkend="glossary_conteiner_id">контейнер</glossterm> создает нужные объекты и инжектирует в зависимый объект. </para>
         <para>См. <ulink url="http://ru.wikipedia.org/wiki/%D0%92%D0%BD%D0%B5%D0%B4%D1%80%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B7%D0%B0%D0%B2%D0%B8%D1%81%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B8">http://ru.wikipedia.org/wiki/Внедрение_зависимости</ulink></para>
@@ -121,23 +121,7 @@
         <emphasis role="bold">Application Tiers</emphasis>
       </glossterm>
       <glossdef>
-        <para>Приложение, основанное на платформе, физически состоит из нескольких уровней (tiers):</para>
-        <itemizedlist>
-          <listitem>
-            <para id="text_middleware_id"><structfield>Middleware</structfield>. Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>
-                <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>
-              </application>.</para>
-          </listitem>
-          <listitem>
-            <para id="text_webclient_id"><structfield>Web Client</structfield>. Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
-          </listitem>
-          <listitem>
-            <para id="text_portal_id"><structfield>Web Portal</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
-          </listitem>
-          <listitem>
-            <para id="text_desktop_id"><structfield>Desktop Client</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>.</para>
-          </listitem>
-        </itemizedlist>
+        <para>См. <xref linkend="section_app_tiers"/></para>
       </glossdef>
     </glossentry>
     <glossentry id="glossary_app_properties_id">
