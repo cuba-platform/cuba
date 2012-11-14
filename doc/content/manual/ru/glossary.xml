@@ -3,6 +3,17 @@
 <!-- This document was created with Syntext Serna Free. --><glossary id="glossary_id">
   <title>Основные определения и понятия</title>
   <glossdiv>
+    <title>А</title>
+    <glossentry id="glossary_artifact">
+      <glossterm>
+        <emphasis role="bold">Артефакт</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>В контексте данного руководства под артефактом понимается файл (обычно JAR или ZIP), содержащий исполняемый  или другой код, получившийся в результате сборки проекта. Артефакт имеет соответствующее некоторым правилам имя и версию, и может хранится в <glossterm linkend="glossary_artifact_repository">репозитории</glossterm> артефактов.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
     <title>Б</title>
     <glossentry id="glossary_browser_id">
       <glossterm>
@@ -100,6 +111,14 @@
       <glossdef>
         <para>Локальный каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог содержит скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IDE</application>.</para>
         <para>См. <xref linkend="chapter_development"/> </para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="glossary_artifact_repository">
+      <glossterm>
+        <emphasis role="bold">Репозиторий артефактов</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Сервер, осуществляющий хранение <glossterm linkend="glossary_artifact">артефактов</glossterm> в определенной структуре. В процессе сборки некоторого проекта из репозитория загружаются артефакты, от которых зависит данный проект.</para>
       </glossdef>
     </glossentry>
   </glossdiv>

@@ -13,25 +13,25 @@
         <varlistentry>
           <term>Middleware</term>
           <listitem>
-            <para>Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>.</para>
+            <para>Средний слой, содержащий основную бизнес-логику приложения и выполняющий обращения к базе данных. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>. См. <xref linkend="section_middleware"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>Web Client</term>
           <listitem>
-            <para>Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
+            <para>Основной клиентский уровень, содержащий  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация <link linkend="section_gui_framework">пользовательского интерфейса</link> основана на фреймворке <application>Vaadin</application>. См. <xref linkend="section_client"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>Desktop Client</term>
           <listitem>
-            <para>Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>.</para>
+            <para>Дополнительный клиентский уровень, содержащий  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>. См. <xref linkend="section_client"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>Web Portal</term>
           <listitem>
-            <para>Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
+            <para>Дополнительный клиентский уровень, содержащий интерфейс для внешних пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>. См. <xref linkend="section_portal"/></para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -43,102 +43,105 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para>Физически CUBA-приложение всегда состоит как минимум из двух частей:</para>
+      <para>CUBA-приложение всегда состоит как минимум из двух частей:</para>
       <itemizedlist>
         <listitem>
-          <para>Веб-приложения <link linkend="section_middleware_id">среднего слоя (Middleware)</link></para>
+          <para>Веб-приложения среднего слоя (Middleware)</para>
         </listitem>
         <listitem>
           <para>Веб-приложения веб-клиента (Web Client)</para>
         </listitem>
       </itemizedlist>
-      <para>Оба этих веб-приложения  могут быть развернуты на любом веб-сервере <application>Java</application>. По умолчанию используется <application>Apache Tomcat</application>. </para>
-      <para>Веб и десктоп клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым экраном. Следует отметить, что при развертывании в простейшем случае среднего слоя и веб-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
+      <para>Опционально приложение может содержать десктопный клиент и один или несколько порталов.</para>
+      <para>Все клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым экраном. Следует отметить, что при развертывании в простейшем случае среднего слоя и веб-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
     </section>
     <section>
       <title>Модули приложения</title>
-      <para>TODO</para>
+      <para>Модуль - наименьшая структурная единица CUBA-приложения. Представляет собой один модуль проекта приложения и соответствующий ему JAR файл.</para>
+      <para>Стандартные модули: <itemizedlist>
+          <listitem>
+            <para><structname>global</structname> - включает в себя классы сущностей, интерфейсы сервисов и другие общие для всех уровней классы. Используется на всех <link linkend="section_app_tiers">уровнях приложения</link>.</para>
+          </listitem>
+          <listitem>
+            <para><structname>core</structname> - реализация сервисов и всех остальных компонентов среднего слоя. Используется только на уровне Middleware.</para>
+          </listitem>
+          <listitem>
+            <para><structname>gui</structname> - общие компоненты <link linkend="section_gui_framework">универсального пользовательского интерфейса</link>. Используется  на уровнях Web Client и Desktop Client.</para>
+          </listitem>
+          <listitem>
+            <para><structname>web</structname> - реализация универсального пользовательского интерфейса на <application>Vaadin</application>, а также другие специфичные для веб-клиента классы. Используется на уровне Web Client.</para>
+          </listitem>
+          <listitem>
+            <para><structname>desktop</structname> - опциональный модуль - реализация универсального пользовательского интерфейса на <application>Java Swing</application>, а также другие специфичные для десктоп-клиента классы. Используется на уровне Desktop Client.</para>
+          </listitem>
+          <listitem>
+            <para><structname>portal</structname> - опциональный модуль - реализация веб-портала на <application>Spring MVC</application>.</para>
+          </listitem>
+        </itemizedlist>  </para>
+      <figure>
+        <title>Модули приложения</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/AppModules.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
     </section>
     <section>
       <title>Базовые проекты</title>
-      <para id="text_module_id_1">Функционально проект приложения содержит зависимости от <firstterm>проектов</firstterm>, входящих в состав платформы. Проект − это структурная единица, содержащая программный код. Каждый проект имеет определенное предназначение. Диаграмма зависимостей проектов платформы изображена на рисунке.</para>
+      <para id="text_module_id_1">Функциональность платформы разделена на несколько так называемых <firstterm>базовых проектов</firstterm>: <itemizedlist>
+          <listitem>
+            <para><structname>cuba</structname> - основной базовый проект, содержит всю функциональность, описанную в данном руководстве, плюс подсистему безопасности (управление пользователями и их доступом к данным)</para>
+          </listitem>
+          <listitem>
+            <para><structname>reports</structname> - подсистема генерации отчетов</para>
+          </listitem>
+          <listitem>
+            <para><structname>workflow</structname> - подсистема управления потоками работ со встроенным визуальным редактором бизнес-процессов</para>
+          </listitem>
+          <listitem>
+            <para><structname>fts</structname> - подсистема полнотекстового поиска</para>
+          </listitem>
+          <listitem>
+            <para><structname>charts</structname> - подсистема вывода диаграмм</para>
+          </listitem>
+          <listitem>
+            <para><structname>ccpayments</structname> - подсистема работы с кредитными картами</para>
+          </listitem>
+          <listitem>
+            <para><structname>bpmn</structname> - механизм исполнения бизнес-процессов по стандарту <application>BPMN 2.0</application></para>
+          </listitem>
+        </itemizedlist></para>
+      <para id="text_module_id_2">Создаваемое на основе платформы приложение может включать в себя функциональность базовых проектов путем объявления зависимостей от их <glossterm linkend="glossary_artifact"> артефактов</glossterm>. Зависимость от артефактов <structname>cuba</structname> является обязательной. Опциональные базовые проекты в свою очередь также зависят от <structname>cuba</structname>, и в принципе могут содержать зависимости между собой.</para>
       <figure>
-        <title>Диаграмма зависимостей проектов платформы</title>
+        <title>Зависимости между проектами</title>
         <mediaobject>
           <imageobject>
-            <imagedata align="center" fileref="img/projectStructure.png"/>
+            <imagedata align="center" fileref="img/BaseProjects.png"/>
           </imageobject>
         </mediaobject>
       </figure>
       <para>Сплошными линиями изображены обязательные зависимости, пунктирными − опциональные.</para>
-      <para>Рассмотрим проекты платформы более подробно.</para>
-      <para><emphasis role="bold">Проект cuba</emphasis></para>
-      <para>Это базовый проект, обязательная часть любого приложения.  Содержит функциональность для работы с базой данных, набор <link linkend="section_services_id">сервисов (Services)</link> <link linkend="section_middleware_id">среднего слоя (Middleware)</link>, <link linkend="section_gui_framework">фреймворк графического интерфейса пользователя (Generic User Interface Framework)</link>, функциональность управления пользователями и их доступом к данным <footnote>
-          <para>Описание функциональности управления пользователями и их доступом к данным содержится в <productname>Руководстве подсистемы безопасности платформы <trademark>CUBA</trademark></productname></para>
-        </footnote>. Данный проект может быть собран как полноценное независимое приложение.</para>
-      <para><emphasis role="bold">Проект workflow</emphasis></para>
-      <para>Опциональный проект для работы с <glossterm linkend="glossary_process_id">бизнес-процессами</glossterm>.</para>
-      <para><emphasis role="bold">Проект fts</emphasis></para>
-      <para>Опциональный проект  <link linkend="section_fts">полнотекстового поиска</link>.</para>
-      <para><emphasis role="bold">Проект charts</emphasis></para>
-      <para>Опциональный проект для <link linkend="section_charts">отображения диаграмм</link> в веб-клиенте.</para>
-      <para><emphasis role="bold">Проект ccpayments</emphasis></para>
-      <para>Опциональный проект для <link linkend="section_ccpayments">приема платежей по картам</link>.</para>
-      <para><emphasis role="bold">Проект reports</emphasis></para>
-      <para>Опциональный проект подсистемы генерации отчетов<footnote>
-          <para>Информация о создании отчетов с помощью платформы находится в <productname>Руководстве по созданию отчетов</productname></para>
-        </footnote>.</para>
+    </section>
+    <section>
+      <title>Состав приложения</title>
+      <para>Вышеописанные архитектурные принципы напрямую отражаются на составе собранного приложения. Рассмотрим его на примере приложения простого <application>sales</application>, которое имеет 2 уровня - Middleware и Web Client; и включает в себя функциональность базовых проектов <structname>cuba</structname> и <structname>reports</structname>.</para>
+      <figure>
+        <title>Состав приложения</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/SampleAppArtifacts.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
     </section>
   </section>
   <section>
     <title>Общие компоненты</title>
     <para>TODO</para>
-    <section id="section_infrastructure_interfaces_id">
-      <title>Интерфейсы инфраструктуры</title>
-      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Некоторые из этих интерфейсов расположены в модуле <structname>global</structname> и могут быть использованы как из <link linkend="section_middleware_id">среднего слоя (Middleware)</link>, так и из любого клиентского кода, другие доступны только коду среднего слоя.</para>
-      <para>Интерфейсы инфраструктуры реализуются управляемыми компонентами <link linkend="text_springFramework">Spring</link>, поэтому зависимости от интерфейсов могут быть <glossterm linkend="glossary_injection_id">внедрены</glossterm> в любые другие управляемые компоненты (<link linkend="section_managed_beans_id">управляемые бины (Managed Beans)</link>, <link linkend="section_services_id">сервисы среднего слоя (MiddlewareServices)</link>, <glossterm linkend="glossary_controller_id">контроллеры</glossterm> экранов (Screen Controllers)).</para>
-      <para>Все интерфейсы инфраструктуры имеют соответствующие &quot;статические фасады&quot;, которые называются <firstterm>провайдерами</firstterm>, и могут быть использованы в неуправляемых компонентах (<glossterm linkend="glossary_pojo_id">POJO</glossterm>, вспомогательных классах и так далее).</para>
-      <para><emphasis role="bold">Глобальные интерфейсы инфраструктуры</emphasis></para>
-      <simpara><emphasis role="bold">TimeSource</emphasis>. Обеспечивает получение текущего времени. Применение <classname>new Date()</classname> и т.п. запрещено. Статический фасад − <classname>TimeProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">UuidSource</emphasis>. Обеспечивает получение значений <classname>UUID</classname>, в том числе для идентификаторов сущностей. Статический фасад − <classname>UuidProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">UserSessionSource</emphasis>. Обеспечивает получение объекта сессии текущего пользователя. Статический фасад − <classname>UserSessionProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">Security</emphasis>. Содержит методы проверки прав текущего пользователя. Не имеет соответствующего статического фасада. При необходимости в статическом контексте можно получить через <classname>UserSessionProvider</classname> объект пользовательской сессии и вызвать соответствующие методы у него.</simpara>
-      <simpara><emphasis role="bold">Metadata</emphasis>. Обеспечивает доступ к сессии <link linkend="section_metadata_framework">метаданных</link> и ViewRepository. Статический фасад − <classname>MetadataProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">Messages</emphasis>. Интерфейс <interface>Messages</interface> обеспечивает получение локализованных строк сообщений. Статический фасад − <classname>MessageProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">Configuration</emphasis>. Является фасадом к фреймворку работы с конфигурационными параметрами. Статический фасад − <classname>ConfigProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">Resources</emphasis>. Обеспечивает загрузку ресурсов из конфигурационного каталога приложения или из <code>classpath</code>, а также по явно указанному URL.</simpara>
-      <simpara><emphasis role="bold">Scripting</emphasis>. Интерфейс <interface>Scripting</interface> обеспечивает возможность динамической компиляции и выполнения прикладного кода на Groovy и Java. Статический фасад − <interface>ScriptingProvider</interface>.</simpara>
-      <para><emphasis role="bold">Интерфейсы инфраструктуры среднего слоя</emphasis></para>
-      <simpara><emphasis role="bold">Persistence</emphasis>. Обеспечивает доступ к интерфейсам <interface>Transaction</interface>, <interface>EntityManager</interface>, и некоторые сервисные функции, относящиеся к хранению данных. Статический фасад − <classname>PersistenceProvider</classname>.</simpara>
-      <section id="section_scripting">
-        <title>Scripting</title>
-        <para><interfacename>Scripting</interfacename> − глобальный интерфейс инфраструктуры, решающий следующие задачи:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Выполнение выражений и скриптов Groovy</para>
-          </listitem>
-          <listitem>
-            <para>Компиляция и загрузка классов Groovy</para>
-          </listitem>
-          <listitem>
-            <para>Компиляция и загрузка классов Java, поставляемых в исходниках в каталоге конфигурации приложения conf</para>
-          </listitem>
-          <listitem>
-            <para>Загрузка ресурсов из каталога конфигурации приложения conf или из classpath.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Общий принцип действия таков: если запрашиваемый класс или ресурс имеется в каталоге conf, будет использован он, в противном случае будет произведен поиск по данному пути в classpath. Это дает возможность в production или в процессе разработки динамически подменять и дополнять приложение нужными классами и ресурсами.</para>
-        <para><emphasis role="bold">Выполнение выражений (evaluate)</emphasis></para>
-        <para><emphasis role="bold">Выполнение скриптов</emphasis><itemizedlist>
-            <listitem>
-              <para>При инициализации приложения могут быть заданы классы для импорта, автоматически добавляемые всем выражениям.</para>
-            </listitem>
-            <listitem>
-              <para>Скомпилированные выражения сохраняются в кэше, что значительно ускоряет повторное выполнение.</para>
-            </listitem>
-          </itemizedlist></para>
-        <para>Запуск скриптов выполняется методом runGroovyScript(). Имя скрипта должно содержать путь с корнем в conf (каталог конфигурации приложения).</para>
-      </section>
+    <section>
+      <title>Описание модели данных</title>
+      <para>TODO</para>
     </section>
     <section id="section_metadata_framework">
       <title>Metadata Framework</title>
@@ -295,8 +298,191 @@
      &lt;property name=&quot;group&quot; view=&quot;_local&quot;/&gt;
 &lt;/view&gt;</programlisting>
     </section>
+    <section id="section_infrastructure_interfaces_id">
+      <title>Интерфейсы инфраструктуры</title>
+      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Некоторые из этих интерфейсов расположены в модуле <structname>global</structname> и могут быть использованы как из <link linkend="section_middleware_id">среднего слоя (Middleware)</link>, так и из любого клиентского кода, другие доступны только коду среднего слоя.</para>
+      <para>Интерфейсы инфраструктуры реализуются управляемыми компонентами <link linkend="text_springFramework">Spring</link>, поэтому зависимости от интерфейсов могут быть <glossterm linkend="glossary_injection_id">внедрены</glossterm> в любые другие управляемые компоненты (<link linkend="section_managed_beans_id">управляемые бины (Managed Beans)</link>, <link linkend="section_services_id">сервисы среднего слоя (MiddlewareServices)</link>, <glossterm linkend="glossary_controller_id">контроллеры</glossterm> экранов (Screen Controllers)).</para>
+      <para>Все интерфейсы инфраструктуры имеют соответствующие &quot;статические фасады&quot;, которые называются <firstterm>провайдерами</firstterm>, и могут быть использованы в неуправляемых компонентах (<glossterm linkend="glossary_pojo_id">POJO</glossterm>, вспомогательных классах и так далее).</para>
+      <para><emphasis role="bold">Глобальные интерфейсы инфраструктуры</emphasis></para>
+      <simpara><emphasis role="bold">TimeSource</emphasis>. Обеспечивает получение текущего времени. Применение <classname>new Date()</classname> и т.п. запрещено. Статический фасад − <classname>TimeProvider</classname>.</simpara>
+      <simpara><emphasis role="bold">UuidSource</emphasis>. Обеспечивает получение значений <classname>UUID</classname>, в том числе для идентификаторов сущностей. Статический фасад − <classname>UuidProvider</classname>.</simpara>
+      <simpara><emphasis role="bold">UserSessionSource</emphasis>. Обеспечивает получение объекта сессии текущего пользователя. Статический фасад − <classname>UserSessionProvider</classname>.</simpara>
+      <simpara><emphasis role="bold">Security</emphasis>. Содержит методы проверки прав текущего пользователя. Не имеет соответствующего статического фасада. При необходимости в статическом контексте можно получить через <classname>UserSessionProvider</classname> объект пользовательской сессии и вызвать соответствующие методы у него.</simpara>
+      <simpara><emphasis role="bold">Metadata</emphasis>. Обеспечивает доступ к сессии <link linkend="section_metadata_framework">метаданных</link> и ViewRepository. Статический фасад − <classname>MetadataProvider</classname>.</simpara>
+      <simpara><emphasis role="bold">Messages</emphasis>. Интерфейс <interface>Messages</interface> обеспечивает получение локализованных строк сообщений. Статический фасад − <classname>MessageProvider</classname>.</simpara>
+      <simpara><emphasis role="bold">Configuration</emphasis>. Является фасадом к фреймворку работы с конфигурационными параметрами. Статический фасад − <classname>ConfigProvider</classname>.</simpara>
+      <simpara><emphasis role="bold">Resources</emphasis>. Обеспечивает загрузку ресурсов из конфигурационного каталога приложения или из <code>classpath</code>, а также по явно указанному URL.</simpara>
+      <simpara><emphasis role="bold">Scripting</emphasis>. Интерфейс <interface>Scripting</interface> обеспечивает возможность динамической компиляции и выполнения прикладного кода на Groovy и Java. Статический фасад − <interface>ScriptingProvider</interface>.</simpara>
+      <para><emphasis role="bold">Интерфейсы инфраструктуры среднего слоя</emphasis></para>
+      <simpara><emphasis role="bold">Persistence</emphasis>. Обеспечивает доступ к интерфейсам <interface>Transaction</interface>, <interface>EntityManager</interface>, и некоторые сервисные функции, относящиеся к хранению данных. Статический фасад − <classname>PersistenceProvider</classname>.</simpara>
+      <section id="section_scripting">
+        <title>Scripting</title>
+        <para><interfacename>Scripting</interfacename> − глобальный интерфейс инфраструктуры, решающий следующие задачи:</para>
+        <itemizedlist>
+          <listitem>
+            <para>Выполнение выражений и скриптов Groovy</para>
+          </listitem>
+          <listitem>
+            <para>Компиляция и загрузка классов Groovy</para>
+          </listitem>
+          <listitem>
+            <para>Компиляция и загрузка классов Java, поставляемых в исходниках в каталоге конфигурации приложения conf</para>
+          </listitem>
+          <listitem>
+            <para>Загрузка ресурсов из каталога конфигурации приложения conf или из classpath.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Общий принцип действия таков: если запрашиваемый класс или ресурс имеется в каталоге conf, будет использован он, в противном случае будет произведен поиск по данному пути в classpath. Это дает возможность в production или в процессе разработки динамически подменять и дополнять приложение нужными классами и ресурсами.</para>
+        <para><emphasis role="bold">Выполнение выражений (evaluate)</emphasis></para>
+        <para><emphasis role="bold">Выполнение скриптов</emphasis><itemizedlist>
+            <listitem>
+              <para>При инициализации приложения могут быть заданы классы для импорта, автоматически добавляемые всем выражениям.</para>
+            </listitem>
+            <listitem>
+              <para>Скомпилированные выражения сохраняются в кэше, что значительно ускоряет повторное выполнение.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Запуск скриптов выполняется методом runGroovyScript(). Имя скрипта должно содержать путь с корнем в conf (каталог конфигурации приложения).</para>
+      </section>
+    </section>
+    <section>
+      <title>Свойства приложения</title>
+      <para wordsize="20"><emphasis role="bold">Основные понятия</emphasis></para>
+      <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
+      <para>По назначению свойства приложения можно классифицировать следующим образом:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Конфигурационные параметры: определяют наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса. Например: <parameter>cuba.springContextConfig</parameter>, <parameter>cuba.web.useLightHeader</parameter>.</para>
+        </listitem>
+        <listitem>
+          <para>Параметры развертывания: различные URL для соединения <glossterm linkend="glossary_app_tiers">уровней</glossterm> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType,</parameter> <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
+        </listitem>
+        <listitem>
+          <para>Параметры времени выполнения: активность аудита, параметры отсылки email и т.д. Например, <parameter>cuba.security.EntityLog.enabled</parameter>, <parameter>cuba.email.smtpHost</parameter>.</para>
+        </listitem>
+      </itemizedlist>
+      <para><emphasis role="bold">Работа со свойствами приложения</emphasis></para>
+      <formalpara>
+        <title>Программный доступ к свойствам</title>
+        <para>Основной способ доступа к свойствам приложения из программного кода − использование Java-интерфейсов механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm>. Кроме того, все свойства конфигурации и развертывания доступны через методы класса <classname>com.haulmont.cuba.core.sys.AppContext</classname>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Принадлежность уровням</title>
+        <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
+        <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>). </para>
+        <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
+            <listitem>
+              <para>Из документации</para>
+            </listitem>
+            <listitem>
+              <para>Проследив использование свойства в коде приложения</para>
+            </listitem>
+            <listitem>
+              <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><structname>global</structname> − свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm></para>
+                </listitem>
+                <listitem>
+                  <para><structname>core</structname> − <glossterm>Middleware</glossterm></para>
+                </listitem>
+                <listitem>
+                  <para><structname>client</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
+                </listitem>
+                <listitem>
+                  <para><structname>web</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm></para>
+                </listitem>
+                <listitem>
+                  <para><structname>web-portal</structname> − <glossterm linkend="text_portal_id">Web Portal</glossterm></para>
+                </listitem>
+                <listitem>
+                  <para><structname>desktop</structname> − <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </itemizedlist></para>
+      </formalpara>
+      <formalpara>
+        <title>JMX-интерфейс</title>
+        <para>Некоторые <glossterm linkend="glossary_app_tiers">уровни приложения</glossterm> определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm> имеется JMX-интерфейс <classname>ConfigStorageMBean</classname> с именем <classname>app-core.cuba:service=ConfigStorage</classname>, а на уровне <glossterm linkend="text_webclient_id">Web Client</glossterm> − <classname>ConfigurationMBean</classname> с именем <classname>app.cuba:service=Configuration</classname>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="glossary_saving_properties">хранения</link> этих категорий свойств.</para>
+      </formalpara>
+      <para id="glossary_saving_properties_1"><emphasis role="bold">Хранение значений свойств</emphasis></para>
+      <formalpara id="text_properties_files_1">
+        <title>Файлы свойств</title>
+        <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый <glossterm linkend="glossary_app_tiers">уровень приложения</glossterm> имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
+      </formalpara>
+      <itemizedlist>
+        <listitem>
+          <para>Для уровней, являющихся веб-приложениями (<glossterm linkend="text_middleware_id">Middleware</glossterm>, <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
+        </listitem>
+        <listitem>
+          <para>Для уровня <glossterm linkend="text_desktop_id">Desktop Client</glossterm> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>.</para>
+        </listitem>
+      </itemizedlist>
+      <para>Например, набор файлов свойств уровня <glossterm linkend="text_middleware_id">Middleware</glossterm> проекта <application>shop</application> − <filename>web.xml</filename> − выглядит следующим образом:</para>
+      <programlisting>classpath:cuba-app.properties
+classpath:shop-app.properties
+file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
+      <para>Здесь префикс <classname>classpath:</classname> означает, что данный файл нужно искать в Java classpath, префикс <classname>file:</classname> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <classname>catalina.home</classname> − путь к корню <application>Tomcat</application>.</para>
+      <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
+      <para id="glossary_local_properties_1">Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Подробнее об этом файле можно узнать в определении <link linkend="glossary_local_properties">Local Application Properties</link>.</para>
+      <para id="glossary_local_properties_2"><emphasis role="bold">Синтаксис</emphasis></para>
+      <para><warning>
+          <para>Обратите внимание на синтаксис ключей и значений в *.properties файлах.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Ключ состоит из латинских букв и цифр, разделенных точкой</para>
+            </listitem>
+            <listitem>
+              <para>Значение пишется после знака равно (=)</para>
+            </listitem>
+            <listitem>
+              <para>Значение <emphasis role="bold">никогда</emphasis> не берется в кавычки &quot;&quot; или &apos;&apos;</para>
+            </listitem>
+            <listitem>
+              <para>Файловые пути записываются либо в UNIX виде (/opt/haulmont/), либо в Windows виде (c:\\haulmont\\)</para>
+            </listitem>
+            <listitem>
+              <para>Для различных спецсимволов используются коды (\n \t \r). \  является зарезервированным символом, для вставки в значение экранируется сам собой (\\).
+Подробнее: <ulink url="http://docs.oracle.com/javase/tutorial/java/data/characters.html">http://docs.oracle.com/javase/tutorial/java/data/characters.html</ulink></para>
+            </listitem>
+            <listitem>
+              <para>В значениях могут присутствовать спецсимволы (пробелы, табуляции).     Внимательно проверяйте значения, скопированные в файл из других программ</para>
+            </listitem>
+          </itemizedlist>
+        </warning></para>
+      <formalpara>
+        <title>Таблица базы данных</title>
+        <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
+      </formalpara>
+      <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
+      <para>Если обращение к свойству производится через Java-интерфейс механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm> и если значение свойства не задано в месте его хранения (файлы <filename>*-app.properties</filename> или БД), то будет возвращено значение по умолчанию, если оно задано в аннотации соответствующего метода Java-интерфейса.</para>
+      <para>Подробное описание свойств подсистемы безопасности содержится в <link linkend="appendix_security_properties">Приложении А</link>.</para>
+    </section>
+    <section id="section_localization">
+      <title>Локализация сообщений</title>
+      <para>Содержит файлы локализованных сообщений  для задания названий сущностей, атрибутов сущностей, папок, заголовков закладок и так далее. Правила создания файлов локализованных сообщений:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Файл по умолчанию имеет имя <filename>messages.properties</filename>, для конкретного языка − <filename>messages_ru.properties</filename> и т.д. При отсутствии файла конкретного языка или при отсутствии искомого ключа в файле конкретного языка будет использовано сообщение из файла по умолчанию.</para>
+        </listitem>
+        <listitem>
+          <para>Кодировка <code>UTF-8</code>.</para>
+        </listitem>
+        <listitem>
+          <para>Можно включать другие файлы сообщений с помощью ключа <literal>@include</literal>. При этом если некоторый ключ встречается и во включаемом файле, и в текущем, будет использовано сообщение из текущего (переопределение). Пример включения файла:<programlisting>@include=com.haulmont.cuba.web
+
+actions.Create=Create
+actions.Edit=Edit
+...</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Полным именем пакета сообщений считается имя Java-пакета, содержащего языковые файлы. Например, именем пакета сообщений, расположенного в <filename>/com/haulmont/cuba/web/app/ui/security/user/messages.properties</filename> является строка <package>com.haulmont.cuba.web.app.ui.security.user</package></para>
+        </listitem>
+      </itemizedlist>
+    </section>
   </section>
-  <section id="section_middleware_id">
+  <section id="section_middleware">
     <title>Компоненты среднего слоя</title>
     <para>На следующем рисунке приведены основные компоненты среднего слоя CUBA-приложения.</para>
     <figure>
@@ -318,7 +504,7 @@
     <para><link linkend="section_metadata_framework">Metadata Framework</link> позволяет создавать описание предметной области в терминах классов, атрибутов и отношений между классами. Метаданные (модель данных) существенно упрощают создание универсальных механизмов работы с данными. Исходной информацией для построения модели являются аннотированные классы сущностей.</para>
     <para><link linkend="section_infrastructure_interfaces_id">Global Infrastructure Interfaces</link> (интерфейсы инфраструктуры) предоставляют доступ к общей часто используемой функциональности. Реализованы в платформе аналогично <link linkend="section_managed_beans_id">Managed Beans</link>.
 
-Все интерфейсы инфраструктуры имеют соответствующие <firstterm>статические фасады</firstterm> − классы со статическими методами, позволяющие иметь доступ к нужной функциональности из статического контекста (при невозможности использовать <link>dependency injection</link>). Статические фасады имеют имена, заканчивающиеся на <classname>*Provider</classname>.</para>
+Все интерфейсы инфраструктуры имеют соответствующие <firstterm>статические фасады</firstterm> − классы со статическими методами, позволяющие иметь доступ к нужной функциональности из статического контекста (при невозможности использовать <link linkend="section_middleware">dependency injection</link>). Статические фасады имеют имена, заканчивающиеся на <classname>*Provider</classname>.</para>
     <para><link linkend="text_additionally_spring">Spring Framework</link> − основа среднего слоя. Используются следующие возможности <link linkend="text_additionally_spring">Spring</link> Framework: </para>
     <itemizedlist>
       <listitem>
@@ -334,10 +520,10 @@
         <para>Remoting − доступ к сервисам среднего слоя по протоколу HTTP</para>
       </listitem>
       <listitem>
-        <para>Реализация веб-сервисов и <link>REST API</link></para>
+        <para>Реализация веб-сервисов и <link linkend="section_additional_info">REST API</link></para>
       </listitem>
     </itemizedlist>
-    <para><link linkend="text_additionally_JPA">OpenJPA Framework</link> − реализация <link linkend="text_additionally_ORM">ORM</link> по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке <link>JPQL</link>.</para>
+    <para><link linkend="text_additionally_JPA">OpenJPA Framework</link> − реализация <link linkend="text_additionally_ORM">ORM</link> по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке <link linkend="section_middleware">JPQL</link>.</para>
     <section id="section_services_id">
       <title>Services</title>
       <para>Сервисы представляют собой слой  компонентов, формирующих <glossterm linkend="glossary_app_boundary_id">границу приложения</glossterm>. Сервисы определяют множество операций, предоставляемых ими для интерфейсных клиентских слоев кода. Сервисы инкапсулируют бизнес-логику приложения, управляют транзакциями и координируют реакции на действия.</para>
@@ -545,8 +731,44 @@
       <para>При использовании ORM доменные объекты ведут себя принципиально по-разному внутри и вне транзакции</para>
       <para>Рекомендации по управлению транзакциями содержатся в главе <xref xrefstyle="select: labelnumber title" linkend="section_transactions_realization"/></para>
     </section>
+    <section id="section_dbms_types">
+      <title>Поддерживаемые СУБД</title>
+      <para>Тип используемой СУБД определяется <glossterm linkend="glossary_app_properties_id">параметром</glossterm> <link linkend="section_middleware_id">среднего слоя</link> <parameter>cuba.dbmsType</parameter> и настройкой источника данных в <application>Tomcat</application>.</para>
+      <variablelist>
+        <varlistentry>
+          <term>PostgreSQL</term>
+          <listitem>
+            <para>Поддерживается всеми проектами платформы: CUBA, Workflow, FTS, Charts, CCPayments, RefApp.</para>
+            <para><emphasis role="bold">Настройка</emphasis></para>
+            <para>Параметр среднего слоя:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_postgres.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Источник данных в <link linkend="text_context_xml">context.xml</link>:</para>
+            <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_postgres.xml" encoding="UTF-8" parse="text"/></programlisting>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Microsoft SQL Server</term>
+          <listitem>
+            <para>Поддерживается проектами: CUBA, Workflow, FTS, RefApp.</para>
+            <para><emphasis role="bold">Настройка</emphasis></para>
+            <para>Параметр среднего слоя:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Источник данных в <link linkend="text_context_xml">context.xml</link>:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_mssql.xml" encoding="UTF-8" parse="text"/></programlisting>
+            <para>В настройках MS SQL надо включить возможность логина для пользователя sa и задать для него пароль из context.xml. Это можно сделать из MS SQL Management Studio, в окне Object Explorer.
+
+Instance − ваш SQL Server.</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Включить сетевую аутентификацию:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance1_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
+            <para>Разрешить доступ по TCP/IP можно из Sql Server Configuration Manager</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance2_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
   </section>
-  <section id="section_client_id">
+  <section id="section_client">
     <title>Компоненты клиента</title>
     <figure>
       <title/>
@@ -558,141 +780,9 @@
     </figure>
     <para>TODO</para>
   </section>
-  <section>
-    <title>Свойства приложения</title>
-    <para wordsize="20"><emphasis role="bold">Основные понятия</emphasis></para>
-    <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
-    <para>По назначению свойства приложения можно классифицировать следующим образом:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Конфигурационные параметры: определяют наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса. Например: <parameter>cuba.springContextConfig</parameter>, <parameter>cuba.web.useLightHeader</parameter>.</para>
-      </listitem>
-      <listitem>
-        <para>Параметры развертывания: различные URL для соединения <glossterm linkend="glossary_app_tiers">уровней</glossterm> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType,</parameter> <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
-      </listitem>
-      <listitem>
-        <para>Параметры времени выполнения: активность аудита, параметры отсылки email и т.д. Например, <parameter>cuba.security.EntityLog.enabled</parameter>, <parameter>cuba.email.smtpHost</parameter>.</para>
-      </listitem>
-    </itemizedlist>
-    <para><emphasis role="bold">Работа со свойствами приложения</emphasis></para>
-    <formalpara>
-      <title>Программный доступ к свойствам</title>
-      <para>Основной способ доступа к свойствам приложения из программного кода − использование Java-интерфейсов механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm>. Кроме того, все свойства конфигурации и развертывания доступны через методы класса <classname>com.haulmont.cuba.core.sys.AppContext</classname>.</para>
-    </formalpara>
-    <formalpara>
-      <title>Принадлежность уровням</title>
-      <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
-      <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>). </para>
-      <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
-          <listitem>
-            <para>Из документации</para>
-          </listitem>
-          <listitem>
-            <para>Проследив использование свойства в коде приложения</para>
-          </listitem>
-          <listitem>
-            <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>:</para>
-            <itemizedlist>
-              <listitem>
-                <para><structname>global</structname> − свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm></para>
-              </listitem>
-              <listitem>
-                <para><structname>core</structname> − <glossterm>Middleware</glossterm></para>
-              </listitem>
-              <listitem>
-                <para><structname>client</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
-              </listitem>
-              <listitem>
-                <para><structname>web</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm></para>
-              </listitem>
-              <listitem>
-                <para><structname>web-portal</structname> − <glossterm linkend="text_portal_id">Web Portal</glossterm></para>
-              </listitem>
-              <listitem>
-                <para><structname>desktop</structname> − <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </itemizedlist></para>
-    </formalpara>
-    <formalpara>
-      <title>JMX-интерфейс</title>
-      <para>Некоторые <glossterm linkend="glossary_app_tiers">уровни приложения</glossterm> определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm> имеется JMX-интерфейс <classname>ConfigStorageMBean</classname> с именем <classname>app-core.cuba:service=ConfigStorage</classname>, а на уровне <glossterm linkend="text_webclient_id">Web Client</glossterm> − <classname>ConfigurationMBean</classname> с именем <classname>app.cuba:service=Configuration</classname>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="glossary_saving_properties">хранения</link> этих категорий свойств.</para>
-    </formalpara>
-    <para id="glossary_saving_properties_1"><emphasis role="bold">Хранение значений свойств</emphasis></para>
-    <formalpara id="text_properties_files_1">
-      <title>Файлы свойств</title>
-      <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый <glossterm linkend="glossary_app_tiers">уровень приложения</glossterm> имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
-    </formalpara>
-    <itemizedlist>
-      <listitem>
-        <para>Для уровней, являющихся веб-приложениями (<glossterm linkend="text_middleware_id">Middleware</glossterm>, <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
-      </listitem>
-      <listitem>
-        <para>Для уровня <glossterm linkend="text_desktop_id">Desktop Client</glossterm> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>.</para>
-      </listitem>
-    </itemizedlist>
-    <para>Например, набор файлов свойств уровня <glossterm linkend="text_middleware_id">Middleware</glossterm> проекта <application>shop</application> − <filename>web.xml</filename> − выглядит следующим образом:</para>
-    <programlisting>classpath:cuba-app.properties
-classpath:shop-app.properties
-file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
-    <para>Здесь префикс <classname>classpath:</classname> означает, что данный файл нужно искать в Java classpath, префикс <classname>file:</classname> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <classname>catalina.home</classname> − путь к корню <application>Tomcat</application>.</para>
-    <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
-    <para id="glossary_local_properties_1">Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Подробнее об этом файле можно узнать в определении <link linkend="glossary_local_properties">Local Application Properties</link>.</para>
-    <para id="glossary_local_properties_2"><emphasis role="bold">Синтаксис</emphasis></para>
-    <para><warning>
-        <para>Обратите внимание на синтаксис ключей и значений в *.properties файлах.</para>
-        <itemizedlist>
-          <listitem>
-            <para>Ключ состоит из латинских букв и цифр, разделенных точкой</para>
-          </listitem>
-          <listitem>
-            <para>Значение пишется после знака равно (=)</para>
-          </listitem>
-          <listitem>
-            <para>Значение <emphasis role="bold">никогда</emphasis> не берется в кавычки &quot;&quot; или &apos;&apos;</para>
-          </listitem>
-          <listitem>
-            <para>Файловые пути записываются либо в UNIX виде (/opt/haulmont/), либо в Windows виде (c:\\haulmont\\)</para>
-          </listitem>
-          <listitem>
-            <para>Для различных спецсимволов используются коды (\n \t \r). \  является зарезервированным символом, для вставки в значение экранируется сам собой (\\).
-Подробнее: <ulink url="http://docs.oracle.com/javase/tutorial/java/data/characters.html">http://docs.oracle.com/javase/tutorial/java/data/characters.html</ulink></para>
-          </listitem>
-          <listitem>
-            <para>В значениях могут присутствовать спецсимволы (пробелы, табуляции).     Внимательно проверяйте значения, скопированные в файл из других программ</para>
-          </listitem>
-        </itemizedlist>
-      </warning></para>
-    <formalpara>
-      <title>Таблица базы данных</title>
-      <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
-    </formalpara>
-    <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
-    <para>Если обращение к свойству производится через Java-интерфейс механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm> и если значение свойства не задано в месте его хранения (файлы <filename>*-app.properties</filename> или БД), то будет возвращено значение по умолчанию, если оно задано в аннотации соответствующего метода Java-интерфейса.</para>
-    <para>Подробное описание свойств подсистемы безопасности содержится в <link linkend="appendix_security_properties">Приложении А</link>.</para>
-  </section>
-  <section id="section_localization">
-    <title>Локализация сообщений</title>
-    <para>Содержит файлы локализованных сообщений  для задания названий сущностей, атрибутов сущностей, папок, заголовков закладок и так далее. Правила создания файлов локализованных сообщений:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Файл по умолчанию имеет имя <filename>messages.properties</filename>, для конкретного языка − <filename>messages_ru.properties</filename> и т.д. При отсутствии файла конкретного языка или при отсутствии искомого ключа в файле конкретного языка будет использовано сообщение из файла по умолчанию.</para>
-      </listitem>
-      <listitem>
-        <para>Кодировка <code>UTF-8</code>.</para>
-      </listitem>
-      <listitem>
-        <para>Можно включать другие файлы сообщений с помощью ключа <literal>@include</literal>. При этом если некоторый ключ встречается и во включаемом файле, и в текущем, будет использовано сообщение из текущего (переопределение). Пример включения файла:<programlisting>@include=com.haulmont.cuba.web
-
-actions.Create=Create
-actions.Edit=Edit
-...</programlisting></para>
-      </listitem>
-      <listitem>
-        <para>Полным именем пакета сообщений считается имя Java-пакета, содержащего языковые файлы. Например, именем пакета сообщений, расположенного в <filename>/com/haulmont/cuba/web/app/ui/security/user/messages.properties</filename> является строка <package>com.haulmont.cuba.web.app.ui.security.user</package></para>
-      </listitem>
-    </itemizedlist>
+  <section id="section_portal">
+    <title>Компоненты портала</title>
+    <para>TODO</para>
   </section>
   <section id="section_gui_framework">
     <title>Универсальный пользовательский интерфейс</title>
@@ -4871,45 +4961,9 @@ taskHandler.execute();</programlisting>
       <para>TODO</para>
     </section>
   </section>
-  <section id="section_dbms_types">
-    <title>Поддерживаемые СУБД</title>
-    <para>Тип используемой СУБД определяется <glossterm linkend="glossary_app_properties_id">параметром</glossterm> <link linkend="section_middleware_id">среднего слоя</link> <parameter>cuba.dbmsType</parameter> и настройкой источника данных в <application>Tomcat</application>.</para>
-    <variablelist>
-      <varlistentry>
-        <term>PostgreSQL</term>
-        <listitem>
-          <para>Поддерживается всеми проектами платформы: CUBA, Workflow, FTS, Charts, CCPayments, RefApp.</para>
-          <para><emphasis role="bold">Настройка</emphasis></para>
-          <para>Параметр среднего слоя:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_postgres.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Источник данных в <link linkend="text_context_xml">context.xml</link>:</para>
-          <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_postgres.xml" encoding="UTF-8" parse="text"/></programlisting>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Microsoft SQL Server</term>
-        <listitem>
-          <para>Поддерживается проектами: CUBA, Workflow, FTS, RefApp.</para>
-          <para><emphasis role="bold">Настройка</emphasis></para>
-          <para>Параметр среднего слоя:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Источник данных в <link linkend="text_context_xml">context.xml</link>:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_mssql.xml" encoding="UTF-8" parse="text"/></programlisting>
-          <para>В настройках MS SQL надо включить возможность логина для пользователя sa и задать для него пароль из context.xml. Это можно сделать из MS SQL Management Studio, в окне Object Explorer.
-
-Instance − ваш SQL Server.</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Включить сетевую аутентификацию:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance1_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Разрешить доступ по TCP/IP можно из Sql Server Configuration Manager</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance2_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </section>
   <section>
     <title>Механизмы платформы</title>
-    <section>
+    <section id="section_config_params">
       <title>Работа с конфигурационными параметрами</title>
       <para>Подсистема работы с конфигурационными параметрами позволяет сохранять/извлекать пары имя-значение с помощью стандартных Java-интерфейсов. При этом хранилищем параметров может быть база данных, системные свойства Java, и свойства приложения, задаваемые в файлах app.properties.</para>
       <para>Рекомендуется использовать только для хранения системных настроек, доступных администратору системы. Для хранения настроек пользователя лучше создавать отдельную сущность для их хранения и использовать стандартный эдитор для редактирования.</para>
@@ -5017,7 +5071,7 @@ Instance − ваш SQL Server.</para>
       <title>Автоматическое обновление базы данных</title>
       <para>TODO</para>
     </section>
-    <section>
+    <section id="section_email_sending">
       <title>Отсылка email</title>
       <para>TODO</para>
     </section>
@@ -5033,11 +5087,11 @@ Instance − ваш SQL Server.</para>
       <title>Аудит изменений сущностей</title>
       <para>TODO</para>
     </section>
-    <section>
+    <section id="section_entity_snapshots">
       <title>Снимки сущностей</title>
       <para>TODO</para>
     </section>
-    <section>
+    <section id="section_rest_api">
       <title>REST API</title>
       <para>TODO</para>
     </section>
@@ -5108,7 +5162,7 @@ Instance − ваш SQL Server.</para>
     </section>
   </section>
   <section id="section_extending_funct">
-    <title>Расширение функциональности платформы</title>
+    <title>Расширение функциональности </title>
     <para>TODO</para>
   </section>
 </chapter>

@@ -35,38 +35,28 @@
       </listitem>
       <listitem>
         <para>Мощные средства разграничения прав доступа пользователей к
-        информации с возможностью настройки в работающем приложении<footnote>
-            <para>См. руководство <productname>Платформа CUBA. Подсистема безопасности</productname></para>
-          </footnote></para>
+        информации с возможностью настройки в работающем приложении (см. руководство <productname>Платформа CUBA. Подсистема безопасности</productname>)</para>
       </listitem>
       <listitem>
         <para>Встроенный механизм создания и генерации отчетов с выводом в
-        форматы офисных документов и PDF<footnote>
-            <para>См. руководство
-                <productname>Платформа CUBA. Генератор отчетов</productname></para>
-          </footnote></para>
+        форматы офисных документов и PDF (см. руководство
+                <productname>Платформа CUBA. Генератор отчетов</productname>)</para>
       </listitem>
       <listitem>
         <para>Механизм создания и выполнения бизнес-процессов с интегрированным визуальным
-          редактором процессов<footnote>
-            <para>См. руководство
-                <productname>Платформа CUBA. Подсистема Workflow</productname></para>
-          </footnote></para>
+          редактором процессов (см. руководство
+                <productname>Платформа CUBA. Подсистема Workflow</productname>)</para>
       </listitem>
       <listitem>
-        <para>Полнотекстовый поиск по атрибутам <glossterm linkend="glossary_entity">сущностей</glossterm> и по содержимому загруженных файлов<footnote>
-            <para>См. руководство
-                <productname>Платформа CUBA. Полнотекстовый поиск</productname></para>
-          </footnote></para>
+        <para>Полнотекстовый поиск по атрибутам <glossterm linkend="glossary_entity">сущностей</glossterm> и по содержимому загруженных файлов (см. руководство
+                <productname>Платформа CUBA. Полнотекстовый поиск</productname>)</para>
       </listitem>
       <listitem>
-        <para>Возможность отображения диаграмм, в том числе, диаграммы Ганта<footnote>
-            <para>См.  руководство
-                <productname>Платформа CUBA. Отображение диаграмм</productname></para>
-          </footnote></para>
+        <para>Возможность отображения диаграмм, в том числе, диаграммы Ганта (см.  руководство
+                <productname>Платформа CUBA. Отображение диаграмм</productname>)</para>
       </listitem>
       <listitem>
-        <para>Встроенный <link linkend="section_restapi">REST API</link> с
+        <para>Встроенный <link linkend="section_rest_api">REST API</link> с
         передачей данных в форматах XML или JSON для быстрой интеграции со
         сторонними приложениями</para>
       </listitem>
@@ -110,13 +100,13 @@
               <para>Системный уровень<itemizedlist>
                   <listitem>
                     <para>Инфраструктура и средства организации бизнес-логики
-                    на <link linkend="section_middleware_id">среднем слое</link></para>
+                    на <link linkend="section_middleware">среднем слое</link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="section_gui_framework">Библиотека визуальных компонентов</link> и <link linkend="section_client_id">инфраструктура клиентов</link></para>
+                    <para><link linkend="section_gui_framework">Библиотека визуальных компонентов</link> и <link linkend="section_client">инфраструктура клиентского уровня</link></para>
                   </listitem>
                   <listitem>
-                    <para>Средства работы с <glossterm linkend="glossary_conf_parameter_id">параметрами конфигурации</glossterm> и <glossterm linkend="glossary_localized_folders_id">локализованными сообщениями</glossterm></para>
+                    <para>Средства работы с <link linkend="section_config_params">параметрами конфигурации</link> и <link linkend="section_localization">локализованными сообщениями</link></para>
                   </listitem>
                   <listitem>
                     <para>Средства выполнения <link linkend="section_backgroundtasks">фоновых задач</link>
@@ -148,11 +138,11 @@
                     поиск</para>
                   </listitem>
                   <listitem>
-                    <para>Механизм надежной асинхронной рассылки email</para>
+                    <para>Механизм надежной асинхронной <link linkend="section_email_sending">рассылки email</link></para>
                   </listitem>
                   <listitem>
                     <para><link linkend="section_audit">Средства ведения журнала аудита</link> изменений <glossterm linkend="glossary_entity">сущностей</glossterm> и
-                    сохранения версий</para>
+<link linkend="section_entity_snapshots"> сохранения версий</link></para>
                   </listitem>
                   <listitem>
                     <para>Средства организации <link linkend="section_objects_cache">кэшей данных</link></para>
@@ -166,7 +156,7 @@
                     конфигурации</para>
                   </listitem>
                   <listitem>
-                    <para>Готовые средства <link linkend="section_restapi">интеграции со сторонними приложениями</link></para>
+                    <para>Готовые средства <link linkend="section_rest_api">интеграции со сторонними приложениями</link></para>
                   </listitem>
                   <listitem>
                     <para>Возможность независимого создания <link linkend="section_extending_funct">расширений</link>
@@ -190,7 +180,7 @@
   </section>
   <section>
     <title>Технические требования</title>
-    <para><emphasis role="bold">Минимальные аппаратные требования</emphasis>
+    <para><emphasis role="bold">Минимальные требования</emphasis>
     для ведения разработки на платформе <trademark>CUBA</trademark></para>
     <itemizedlist>
       <listitem>
@@ -199,16 +189,11 @@
       <listitem>
         <para>Место на жестком диске 5 ГБ</para>
       </listitem>
-    </itemizedlist>
-    <para><emphasis role="bold">Программные требования </emphasis><itemizedlist>
-        <listitem>
-          <para>операционная система
+      <listitem>
+        <para>операционная система
     <application>Microsoft Windows</application>,
     <application>Linux</application> или <application>Mac OS X</application></para>
-        </listitem>
-        <listitem>
-          <para>Java SE Development Kit 7+</para>
-        </listitem>
-      </itemizedlist></para>
+      </listitem>
+    </itemizedlist>
   </section>
 </chapter>
