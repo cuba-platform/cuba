@@ -19,7 +19,7 @@ import com.haulmont.cuba.gui.data.Datasource;
  */
 public class ItemTrackingAction extends AbstractAction implements CollectionDatasourceListener {
 
-    private boolean enabledFlag = true;
+    protected boolean enabledFlag = true;
 
     protected ItemTrackingAction(String id) {
         super(id);
@@ -51,7 +51,7 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
 
     @Override
     public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
+        super.setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
     }
 
     @Override

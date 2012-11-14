@@ -18,6 +18,8 @@ import com.haulmont.cuba.gui.data.Datasource;
  */
 public class DeclarativeTrackingAction extends DeclarativeAction implements CollectionDatasourceListener {
 
+    protected boolean enabledFlag = true;
+
     public DeclarativeTrackingAction(String id, String caption, String icon, String enable,
                                      String visible, String methodName, Component.ActionsHolder holder) {
         super(id, caption, icon, enable, visible, methodName, holder);
@@ -29,15 +31,26 @@ public class DeclarativeTrackingAction extends DeclarativeAction implements Coll
 
     @Override
     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-        setEnabled(item != null);
+        super.setEnabled(item != null);
     }
 
     @Override
     public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
+        super.setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
     }
 
     @Override
     public void valueChanged(Object source, String property, Object prevValue, Object value) {
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabledFlag = enabled;
+        super.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabledFlag && super.isEnabled();
     }
 }
