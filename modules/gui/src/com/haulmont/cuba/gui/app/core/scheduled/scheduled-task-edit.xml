@@ -88,6 +88,11 @@
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.logFinish"/>
                     <checkBox id="logFinishField" datasource="taskDs" property="logFinish"/>
                 </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.description"/>
+                    <textField id="description" datasource="taskDs" property="description"
+                               width="500px" rows="3" colspan="1"/>
+                </row>
             </rows>
         </grid>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>

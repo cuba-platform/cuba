@@ -118,6 +118,7 @@ create table SYS_SCHEDULED_TASK (
     LOG_FINISH tinyint,
     LAST_START_TIME datetime,
     LAST_START_SERVER varchar(50),
+    DESCRIPTION varchar(1000),
     --
     primary key (ID)
 )^

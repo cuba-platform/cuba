@@ -123,6 +123,7 @@ create table SYS_SCHEDULED_TASK (
     LOG_FINISH smallint,
     LAST_START_TIME timestamp,
     LAST_START_SERVER varchar(50),
+    DESCRIPTION varchar(1000),
 
     primary key (ID),
     constraint UNIQ_SYS_SCHEDULED_TASK_BEAN_METHOD unique (BEAN_NAME, METHOD_NAME)

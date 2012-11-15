@@ -111,6 +111,9 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     @Column(name = "METHOD_PARAMS")
     protected String methodParamsXml;
 
+    @Column(name = "DESCRIPTION", length = 1000)
+    protected String description;
+
     @Override
     public Date getUpdateTs() {
         return updateTs;
@@ -312,6 +315,14 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
         this.methodParamsXml = methodParamsXml;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public List<MethodParameterInfo> getMethodParameters() {
         ArrayList<MethodParameterInfo> result = new ArrayList<MethodParameterInfo>();
         String xml = getMethodParamsXml();
@@ -359,5 +370,25 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
                 ", period=" + period +
                 (startDate != null ? ", startDate=" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(startDate) : "") +
                 '}';
+    }
+
+    @MetaProperty
+    public String getMethodParametersString() {
+        StringBuilder sb = new StringBuilder();
+
+        int count = 0;
+        List<MethodParameterInfo> parameters = getMethodParameters();
+        for (MethodParameterInfo param : parameters) {
+            sb.append(param.getType().getSimpleName())
+                    .append(" ")
+                    .append(param.getName())
+                    .append(" = ")
+                    .append(param.getValue());
+
+            if (++count != parameters.size())
+                sb.append(", ");
+        }
+
+        return sb.toString();
     }
 }

@@ -29,6 +29,7 @@
                 <button action="tasksTable.remove" icon="icons/remove.png"/>
                 <button action="tasksTable.executions"/>
             </buttonsPanel>
+            <rowsCount/>
             <columns>
                 <column id="active"/>
                 <column id="beanName"/>
@@ -44,6 +45,8 @@
                 <column id="permittedServers"/>
                 <column id="logStart"/>
                 <column id="logFinish"/>
+                <column id="methodParametersString"/>
+                <column id="description"/>
             </columns>
             <rows datasource="tasksDs"/>
         </table>

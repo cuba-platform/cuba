@@ -118,6 +118,7 @@ create table SYS_SCHEDULED_TASK (
     LOG_FINISH boolean,
     LAST_START_TIME timestamp with time zone,
     LAST_START_SERVER varchar(50),
+    DESCRIPTION varchar(1000),
     --
     primary key (ID)
 )^
