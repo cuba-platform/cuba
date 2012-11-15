@@ -84,7 +84,7 @@ public class SchedulingServiceBean implements SchedulingService {
                 if (aClass.getName().startsWith("org.springframework."))
                     continue;
 
-                Class<?> targetClass = bean instanceof TargetClassAware ? ((TargetClassAware) bean).getTargetClass() : aClass;
+                Class<?> targetClass = bean instanceof TargetClassAware ? ((TargetClassAware) bean).getTargetClass() : bean.getClass();
                 for (Method method : aClass.getMethods()) {
                     if (isMethodAvailable(method)) {
                         Method targetClassMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
