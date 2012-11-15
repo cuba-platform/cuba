@@ -9,6 +9,9 @@ package com.vaadin.terminal.gwt.client.ui;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 /**
@@ -24,6 +27,8 @@ public class VSearchSelect extends VFilterSelect {
     private static final String INPUT_STATE = "edit-filter";
 
     private boolean preventFilterAfterSelect = false;
+
+    private boolean keyboardNavigation = false;
 
     public VSearchSelect() {
     }
@@ -70,6 +75,21 @@ public class VSearchSelect extends VFilterSelect {
     }
 
     @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        super.updateFromUIDL(uidl, client);
+
+        if (currentSuggestion != null) {
+            debug("SEARCH| Current: '" + currentSuggestion.getReplacementString() + "'");
+        } else
+            debug("SEARCH| Cast!");
+
+        if (selectedOptionKey == null)
+            currentSuggestion = null;
+
+        updateEditState();
+    }
+
+    @Override
     protected void applyNewSuggestions() {
         debug("SEARCH| Matches: " + totalMatches);
         if (totalMatches == 1) {
@@ -82,19 +102,23 @@ public class VSearchSelect extends VFilterSelect {
                 if (!("".equals(lastFilter))) {
                     debug("SEARCH| show currentSuggestions=" + currentSuggestions.size() + " page: " + currentPage);
                     suggestionPopup.showSuggestions(currentSuggestions, currentPage, totalMatches);
-                    suggestionPopup.menu.selectItem(null);
-                    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                        @Override
-                        public void execute() {
-                            suggestionPopup.selectNextItem();
-                        }
-                    });
+                    if (!keyboardNavigation) {
+                        suggestionPopup.menu.selectItem(null);
+                        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                            @Override
+                            public void execute() {
+                                suggestionPopup.selectNextItem();
+                            }
+                        });
+                    }
                 } else if (nullSelectionAllowed) {
                     suggestionPopup.menu.doSelectedItemAction();
                 }
             } else
                 suggestionPopup.hide();
         }
+
+        keyboardNavigation = false;
 
         updateEditState();
     }
@@ -142,10 +166,14 @@ public class VSearchSelect extends VFilterSelect {
                      removeStyleDependentName(INPUT_STATE);
                  } else
                      addStyleDependentName(INPUT_STATE);
-             } else if ("".equals(tb.getText()))
-                 removeStyleDependentName(INPUT_STATE);
-             else
-                 addStyleDependentName(INPUT_STATE);
+             } else {
+                 if ("".equals(tb.getText()))
+                     removeStyleDependentName(INPUT_STATE);
+                 else
+                     addStyleDependentName(INPUT_STATE);
+
+                 debug("SEARCH| Current: null");
+             }
          }
     }
 
@@ -153,10 +181,12 @@ public class VSearchSelect extends VFilterSelect {
     protected void popupKeyDown(KeyDownEvent event) {
         switch (event.getNativeKeyCode()) {
             case KeyCodes.KEY_DOWN:
+                keyboardNavigation = true;
                 suggestionPopup.selectNextItem();
                 DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
                 break;
             case KeyCodes.KEY_UP:
+                keyboardNavigation = true;
                 suggestionPopup.selectPrevItem();
                 DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
                 break;
@@ -172,11 +202,11 @@ public class VSearchSelect extends VFilterSelect {
                     filterOptions(currentPage - 1, lastFilter);
                 }
                 break;
-//            case KeyCodes.KEY_TAB:
-//                if (suggestionPopup.isAttached()) {
-//                    tabPressed = true;
+            case KeyCodes.KEY_TAB:
+                if (suggestionPopup.isAttached()) {
+                    tabPressed = true;
 //                    filterOptions(currentPage);
-//                }
+                }
             // onBlur() takes care of the rest
 //                break;
             case KeyCodes.KEY_ENTER:
