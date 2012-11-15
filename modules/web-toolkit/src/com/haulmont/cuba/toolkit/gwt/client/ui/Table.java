@@ -13,6 +13,7 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -1416,6 +1417,10 @@ public abstract class Table
         }
 
         public void setText(String headerText) {
+            headerText = SafeHtmlUtils.htmlEscape(headerText != null ? headerText : "")
+                    .replaceAll("\n", "<br/>")
+                    .replaceAll("\t", "&#09;")
+                    .replaceAll(" ", "&nbsp;");
             DOM.setInnerHTML(captionContainer, headerText);
         }
 
