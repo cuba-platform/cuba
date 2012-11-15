@@ -274,12 +274,20 @@
         <para>Более подробную информацию можно найти по адресу: <ulink url="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html">http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html</ulink></para>
       </glossdef>
     </glossentry>
+    <glossentry id="jpa_glossary">
+      <glossterm>
+        <emphasis role="bold">JPA</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Java Persistence API - стандартная спецификация технологии объектно-реляционного отображения (ORM). В платформе <productname>CUBA</productname> используется фреймворк <application>Apache OpenJPA</application>, реализующий эту спецификацию.</para>
+      </glossdef>
+    </glossentry>
     <glossentry id="glossary_jpql">
       <glossterm>
         <emphasis role="bold">JPQL</emphasis>
       </glossterm>
       <glossdef>
-        <para>Платформо-независимый объектно-ориентированный язык запросов, определенный как часть спецификации <application>Java Persistence API</application>. </para>
+        <para>Платформо-независимый объектно-ориентированный язык запросов, определенный как часть спецификации <glossterm linkend="jpa_glossary">JPA</glossterm>. </para>
         <para>Более подробную информацию можно найти по адресу:  <ulink url="http://openjpa.apache.org/builds/2.2.0/apache-openjpa/docs/jpa_langref.html">http://openjpa.apache.org/builds/2.2.0/apache-openjpa/docs/jpa_langref.html</ulink></para>
       </glossdef>
     </glossentry>
@@ -341,6 +349,7 @@
       </glossterm>
       <glossdef>
         <para>TODO</para>
+        <para>См. также <ulink url="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">http://en.wikipedia.org/wiki/Optimistic_concurrency_control</ulink></para>
       </glossdef>
     </glossentry>
   </glossdiv>

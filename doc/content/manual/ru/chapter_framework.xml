@@ -5,7 +5,7 @@
   <para>Данная глава содержит подробное описание архитектуры, компонентов и механизмов платформы CUBA.</para>
   <section>
     <title>Архитектура</title>
-    <para>В данной главе рассмотрена архитектура приложений на основе платформы.</para>
+    <para>В данной главе рассмотрена архитектура CUBA-приложений в различных разрезах: по уровням, по модулям, и по используемым базовым проектам.</para>
     <section id="section_app_tiers">
       <title>Уровни приложения</title>
       <para>Приложение, основанное на платформе, состоит из нескольких <firstterm>уровней</firstterm> (tiers):</para>
@@ -46,16 +46,16 @@
       <para>CUBA-приложение всегда состоит как минимум из двух частей:</para>
       <itemizedlist>
         <listitem>
-          <para>Веб-приложения среднего слоя (Middleware)</para>
+          <para>Веб-приложения среднего слоя (<structname>Middleware</structname>)</para>
         </listitem>
         <listitem>
-          <para>Веб-приложения веб-клиента (Web Client)</para>
+          <para>Веб-приложения веб-клиента (<structname>Web Client</structname>)</para>
         </listitem>
       </itemizedlist>
       <para>Опционально приложение может содержать десктопный клиент и один или несколько порталов.</para>
       <para>Все клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым экраном. Следует отметить, что при развертывании в простейшем случае среднего слоя и веб-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
     </section>
-    <section>
+    <section id="section_app_modules">
       <title>Модули приложения</title>
       <para>Модуль - наименьшая структурная единица CUBA-приложения. Представляет собой один модуль проекта приложения и соответствующий ему JAR файл.</para>
       <para>Стандартные модули: <itemizedlist>
@@ -63,16 +63,16 @@
             <para><structname>global</structname> - включает в себя классы сущностей, интерфейсы сервисов и другие общие для всех уровней классы. Используется на всех <link linkend="section_app_tiers">уровнях приложения</link>.</para>
           </listitem>
           <listitem>
-            <para><structname>core</structname> - реализация сервисов и всех остальных компонентов среднего слоя. Используется только на уровне Middleware.</para>
+            <para><structname>core</structname> - реализация сервисов и всех остальных компонентов среднего слоя. Используется только на уровне <structname>Middleware</structname>.</para>
           </listitem>
           <listitem>
-            <para><structname>gui</structname> - общие компоненты <link linkend="section_gui_framework">универсального пользовательского интерфейса</link>. Используется  на уровнях Web Client и Desktop Client.</para>
+            <para><structname>gui</structname> - общие компоненты <link linkend="section_gui_framework">универсального пользовательского интерфейса</link>. Используется  на уровнях <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           </listitem>
           <listitem>
-            <para><structname>web</structname> - реализация универсального пользовательского интерфейса на <application>Vaadin</application>, а также другие специфичные для веб-клиента классы. Используется на уровне Web Client.</para>
+            <para><structname>web</structname> - реализация универсального пользовательского интерфейса на <application>Vaadin</application>, а также другие специфичные для веб-клиента классы. Используется на уровне <structname>Web Client</structname>.</para>
           </listitem>
           <listitem>
-            <para><structname>desktop</structname> - опциональный модуль - реализация универсального пользовательского интерфейса на <application>Java Swing</application>, а также другие специфичные для десктоп-клиента классы. Используется на уровне Desktop Client.</para>
+            <para><structname>desktop</structname> - опциональный модуль - реализация универсального пользовательского интерфейса на <application>Java Swing</application>, а также другие специфичные для десктоп-клиента классы. Используется на уровне <structname>Desktop Client</structname>.</para>
           </listitem>
           <listitem>
             <para><structname>portal</structname> - опциональный модуль - реализация веб-портала на <application>Spring MVC</application>.</para>
@@ -87,7 +87,7 @@
         </mediaobject>
       </figure>
     </section>
-    <section>
+    <section id="section_base_projects">
       <title>Базовые проекты</title>
       <para id="text_module_id_1">Функциональность платформы разделена на несколько так называемых <firstterm>базовых проектов</firstterm>: <itemizedlist>
           <listitem>
@@ -125,23 +125,116 @@
     </section>
     <section>
       <title>Состав приложения</title>
-      <para>Вышеописанные архитектурные принципы напрямую отражаются на составе собранного приложения. Рассмотрим его на примере приложения простого <application>sales</application>, которое имеет 2 уровня - Middleware и Web Client; и включает в себя функциональность базовых проектов <structname>cuba</structname> и <structname>reports</structname>.</para>
+      <para>Вышеописанные архитектурные принципы напрямую отражаются на составе собранного приложения. Рассмотрим его на примере простого приложения  <application>sales</application>, которое имеет 2 уровня - <structname>Middleware</structname> и <structname>Web Client</structname>; и включает в себя функциональность базовых проектов <structname>cuba</structname> и <structname>reports</structname>.</para>
       <figure>
-        <title>Состав приложения</title>
+        <title>Состав простого приложения</title>
         <mediaobject>
           <imageobject>
             <imagedata align="center" fileref="img/SampleAppArtifacts.png"/>
           </imageobject>
         </mediaobject>
       </figure>
+      <para>На рисунке изображено содержимое некоторых каталогов сервера <application>Tomcat</application> с развернутым в нем приложением <application>sales</application>. </para>
+      <para><link linkend="section_app_tiers">Уровень</link><structname> Middleware</structname> реализован веб-приложением <filename>app-core</filename>, уровень <structname>Web Client</structname> - веб-приложением <filename>app</filename>. Исполняемый код веб-приложений содержится в каталогах <filename>WEB-INF/lib</filename> в наборе JAR-файлов. Каждый JAR представляет собой результат сборки (<glossterm linkend="glossary_artifact">артефакт</glossterm>) одного из <link linkend="section_app_modules">модулей</link> приложения или <link linkend="section_base_projects">базового проекта</link>.</para>
+      <para>Например, состав JAR-файлов веб-приложения среднего слоя <filename>app-core</filename> определяется тем, что уровень <structname>Middleware</structname> состоит из модулей <structname>global</structname> и <structname>core</structname>, и приложение использует базовые проекты <structname>cuba</structname> и <structname>reports</structname> (в данном случае версии 4.0.0). </para>
     </section>
   </section>
   <section>
     <title>Общие компоненты</title>
-    <para>TODO</para>
+    <para>В данной главе рассмотрены компоненты платформы, общие для всех <link linkend="section_app_tiers">уровней</link> приложения.</para>
     <section>
-      <title>Описание модели данных</title>
-      <para>TODO</para>
+      <title>Модель данных</title>
+      <para>Предметная область моделируется в системе с помощью взаимосвязанных классов Java, называемых классами сущностей или просто сущностями. </para>
+      <para>Сущности подразделяются на две категории:<itemizedlist>
+          <listitem>
+            <para>персистентные - экземпляры таких сущностей хранятся в таблицах базы данных</para>
+          </listitem>
+          <listitem>
+            <para>неперсистентные - экземпляры существуют только в оперативной памяти</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Класс сущности должен удовлетворять следующим требованиям: <itemizedlist>
+          <listitem>
+            <para>наследоваться от одного из базовых классов, предоставляемых платформой (см. ниже)</para>
+          </listitem>
+          <listitem>
+            <para>иметь набор полей и методов доступа, соответствующих атрибутам сущностей</para>
+          </listitem>
+          <listitem>
+            <para>атрибуты должны быть определенным образом аннотированы для работы <glossterm linkend="jpa_glossary">JPA</glossterm> (в случае персистентной сущности) и <link linkend="section_metadata_framework">фреймворка метаданных</link> </para>
+          </listitem>
+        </itemizedlist></para>
+      <figure>
+        <title>Базовые классы сущностей</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/EntityClasses.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>Рассмотрим базовые классы и интерфейсы сущностей более подробно. <itemizedlist>
+          <listitem>
+            <para><interfacename>Instance</interfacename> - декларирует базовые методы работы с объектами предметной области: <itemizedlist>
+                <listitem>
+                  <para>получение ссылки на мета-класс объекта</para>
+                </listitem>
+                <listitem>
+                  <para>генерация имени экземпляра</para>
+                </listitem>
+                <listitem>
+                  <para>чтение/установка значений атрибутов по имени</para>
+                </listitem>
+                <listitem>
+                  <para>добавление слушателей, получающих уведомления об изменениях атрибутов</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para><interfacename>Entity</interfacename> - дополняет <interfacename>Instance</interfacename> понятием идентификатора сущности, причем <interfacename>Entity</interfacename> не определяет тип идентификатора, оставляя эту возможность наследникам</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractInstance</classname> - реализует логику работы со слушателями изменения атрибутов</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractNotPersistentEntity</classname> - базовый класс неперсистентных сущностей с идентификаторами типа <classname>UUID</classname>.</para>
+          </listitem>
+          <listitem>
+            <para><interfacename>BaseEntity</interfacename> - декларирует присущие всем персистентным сущностям методы работы с информацией о том, кто и когда создал экземпляр сущности в базе данных </para>
+          </listitem>
+          <listitem>
+            <para><classname>BaseUuidEntity</classname> - реализует <interfacename>BaseEntity</interfacename> с типом идентификатора <classname>UUID</classname> и поддержкой <glossterm linkend="jpa_glossary">JPA</glossterm></para>
+          </listitem>
+          <listitem>
+            <para><interfacename>Versioned</interfacename> - интерфейс сущностей, поддерживающих <glossterm linkend="glossary_optimistic_locking">оптимистичную блокировку</glossterm></para>
+          </listitem>
+          <listitem>
+            <para><interfacename>Updatable</interfacename> - интерфейс сущностей, для которых требуется сохранять информацию о том, кто и когда изменял экземпляр в последний раз</para>
+          </listitem>
+          <listitem>
+            <para><interfacename>SoftDelete</interfacename> - интерфейс сущностей, поддерживающих <link linkend="soft_delete_section">мягкое удаление</link></para>
+          </listitem>
+          <listitem>
+            <para><classname>StandardEntity</classname> - наиболее часто используемый базовый класс персистентных сущностей, реализующий вышеперечисленные интерфейсы</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>При создании классов сущностей рекомендуется придерживаться следующих правил:<itemizedlist>
+          <listitem>
+            <para>если сущность не хранится в БД - наследуйте ее от <classname>AbstractNotPersistentEntity</classname></para>
+          </listitem>
+          <listitem>
+            <para>если сущность только создается в БД, никогда не изменяется, и мягкое удаление не требуется - наследуйте ее от <classname>BaseUuidEntity</classname></para>
+          </listitem>
+          <listitem>
+            <para>если сущность ведет себя стандартным образом - изменяется в БД, требует оптимистичной блокировки и мягкого удаления - наследуйте ее от <classname>StandardEntity</classname></para>
+          </listitem>
+          <listitem>
+            <para>в противном случае наследуйте сущность от <classname>BaseUuidEntity</classname> и реализуйте в классе тот набор интерфейсов <interfacename>Versioned</interfacename>, <interfacename>Updatable</interfacename>, <interfacename>SoftDelete</interfacename>, который требуется</para>
+          </listitem>
+        </itemizedlist></para>
+      <section id="soft_delete_section">
+        <title>Мягкое удаление</title>
+        <para>TODO</para>
+      </section>
     </section>
     <section id="section_metadata_framework">
       <title>Metadata Framework</title>
@@ -5081,6 +5174,10 @@ taskHandler.execute();</programlisting>
     </section>
     <section id="section_runtime_properties">
       <title>Динамические атрибуты</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Пессимистичная блокировка</title>
       <para>TODO</para>
     </section>
     <section id="section_audit">
