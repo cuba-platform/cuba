@@ -280,6 +280,7 @@ a {
 
 .figure img {
     width: 100%;
+	image-rendering: initial;
 }
 
 .caution.para {
