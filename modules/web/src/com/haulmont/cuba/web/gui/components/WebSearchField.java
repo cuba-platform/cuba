@@ -97,8 +97,10 @@ public class WebSearchField
                         setValue(optionsDatasource.getItem(id));
                     }
 
-                    if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 0)
-                        searchNotifications.notFoundSuggestions(newFilter);
+                    if (searchNotifications != null) {
+                        if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 0)
+                            searchNotifications.notFoundSuggestions(newFilter);
+                    }
                 } else {
                     if (optionsDatasource.getState() == Datasource.State.VALID)
                         optionsDatasource.clear();
