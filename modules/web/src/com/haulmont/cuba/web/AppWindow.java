@@ -650,7 +650,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
     }
 
-    private void addUserSelect(HorizontalLayout parentLayout) {
+    protected void addUserSelect(HorizontalLayout parentLayout) {
 
         if (webConfig.getUseLightHeader()) {
             substUserSelect = new FilterSelect();
