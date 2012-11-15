@@ -235,11 +235,11 @@ public class App implements ConnectionListener {
                 recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
                     @Override
                     public void run() {
-                        stopApp();
+                        forceExit();
                     }
                 });
             } else {
-                stopApp();
+                forceExit();
             }
         } catch (RemoteAccessException exception) {
             String text = messages.getMainMessage("connectException.message");
@@ -249,7 +249,7 @@ public class App implements ConnectionListener {
                     new Action[]{new DialogAction(DialogAction.Type.OK) {
                         @Override
                         public void actionPerform(Component component) {
-                            stopApp();
+                            forceExit();
                         }
                     }});
         } catch (Throwable e) {
@@ -257,14 +257,17 @@ public class App implements ConnectionListener {
             String caption = messages.getMainMessage("exceptionDialog.caption");
             String text = messages.getMainMessage("unexpectedCloseException.message");
             JOptionPane.showMessageDialog(mainFrame, text, caption, JOptionPane.ERROR_MESSAGE);
-            stopApp();
+            forceExit();
         }
     }
 
-    protected void stopApp() {
-        createMainWindowProperties().save();
-        AppContext.stopContext();
-        System.exit(0);
+    protected void forceExit() {
+        try {
+            createMainWindowProperties().save();
+            AppContext.stopContext();
+        } finally {
+            System.exit(0);
+        }
     }
 
     protected Container createStartContentPane() {
