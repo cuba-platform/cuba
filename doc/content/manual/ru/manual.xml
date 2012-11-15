@@ -79,7 +79,7 @@
         </link></para>
       <para>В данной главе содержится информация о развертывании приложений в различной конфигурации.</para>
     </section>
-    <section id="section_additional_info">
+    <section id="additional_info_section">
       <title>Дополнительные материалы</title>
       <para>Настоящее Руководство, а также другая документация по платформе <trademark>CUBA</trademark>, доступны по адресу <ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink></para>
       <para>Ниже приведен список источников дополнительной информации по <application>Spring Framework</application>, <application>OpenJPA</application>, <application>Vaadin</application>: </para>
@@ -128,13 +128,13 @@
     <itemizedlist>
       <listitem>
         <para id="property_available_locales"><parameter>cuba.availableLocales</parameter>. Список поддерживаемых языков интерфейса. Формат свойства: <code>&lt;Название языка&gt;|&lt;Языковой код&gt;</code>. Значения разных языков между собой разделяются точкой с запятой. Пример: <programlisting>cuba.availableLocales=French|fr;English|en</programlisting></para>
-        <para><code>&lt;Название языка&gt;</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. <code>&lt;Языковой код</code>&gt; − это суффикс для формирования <glossterm linkend="glossary_localized_folders_id">файлов локализации</glossterm>. Например, <filename>messages_fr.properties.</filename></para>
+        <para><code>&lt;Название языка&gt;</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. <code>&lt;Языковой код</code>&gt; − это суффикс для формирования <glossterm linkend="message_pack_glossentry">файлов локализации</glossterm>. Например, <filename>messages_fr.properties.</filename></para>
         <para>Следует иметь в виду, что язык, который указан первым в списке языков  свойства <parameter>cuba.availableLocales</parameter>, будет отображаться первым в списке доступных языков в том случае, если среди языков данного свойства не будет найден текущий язык системы. В противном случае первым будет отображаться язык системы. </para>
         <para>Если для языка,  указанного в свойстве, отсутствует файл для его локализации, то по умолчанию берется локализация из файла без суффикса − <filename>messages.properties</filename>.</para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.availableLocales=English|en;Russian|ru</parameter></para>
         <para>Интерфейс: <classname>GlobalConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
+        <para>Уровень: свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm>.</para>
       </listitem>
       <listitem id="parameter_locale_visible">
         <para><parameter>cuba.web.localeSelectVisible</parameter>. Включает или отключает возможность пользователя выбирать язык
@@ -142,12 +142,12 @@
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.web.localeSelectVisible=true</parameter></para>
         <para>Интерфейс: <classname>GlobalConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
+        <para>Уровень: свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm>.</para>
       </listitem>
       <listitem>
         <para><parameter>cuba.trustedClientPassword</parameter>. Пароль, используемый методом <methodname>LoginService.loginTrusted()</methodname>. Доверенный клиент может зайти в систему, не вводя пользовательский пароль. Это свойство используется при интеграции с <application>Active Directory</application>.</para>
         <para>Интерфейсы: <classname>GlobalConfig</classname>, <classname>ServerConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
+        <para>Уровень: свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm>.</para>
       </listitem>
       <listitem id="property_sessionExpirTime">
         <para><parameter>cuba.userSessionExpirationTimeoutSec</parameter> задает  таймаут неактивности сессии пользователя

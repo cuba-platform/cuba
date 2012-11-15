@@ -7,13 +7,13 @@
   <para>Основные задачи, стоящие при разработке нашего приложения:</para>
   <orderedlist>
     <listitem>
-      <para>Разработка модели данных, которая заключается в создании <glossterm linkend="glossary_entity">сущностей</glossterm> предметной области и соответствующих таблиц базы данных.</para>
+      <para>Разработка модели данных, которая заключается в создании <glossterm linkend="entity_glossentry">сущностей</glossterm> предметной области и соответствующих таблиц базы данных.</para>
     </listitem>
     <listitem>
       <para>Разработка экранов пользовательского интерфейса, позволяющих создавать, просматривать, обновлять и удалять сущности модели данных.</para>
     </listitem>
   </orderedlist>
-  <section id="section_quick_start_data_model">
+  <section id="quick_start_section">
     <title>Описание задачи</title>
     <para>Приложение предназначено для ведения сведений о покупателях и их заказах. </para>
     <para>Покупатель имеет следующие характеристики:</para>
@@ -120,7 +120,7 @@
           </figure>
         </listitem>
         <listitem>
-          <para><para>Откройте проектный файл <filename>sales.ipr</filename> в IntelliJ IDEA. Вы увидите структуру проекта, аналогичную описанной в <xref linkend="section_structure_folders_files"/></para></para>
+          <para>Откройте проектный файл <filename>sales.ipr</filename> в IntelliJ IDEA. Вы увидите структуру проекта, аналогичную описанной в <xref linkend="project_file_structure_section"/></para>
         </listitem>
       </orderedlist>
     </section>
@@ -140,7 +140,7 @@
     <section>
       <title>Создание сущностей</title>
       <para>Создайте пакет <code>com.haulmont.sales.entity</code> в модуле <structname>global</structname>.</para>
-      <para>В данном пакете создайте класс <glossterm linkend="glossary_entity">сущности</glossterm> <classname>Покупатель (Customer)</classname>,  представленный в листинге:</para>
+      <para>В данном пакете создайте класс <glossterm linkend="entity_glossentry">сущности</glossterm> <classname>Покупатель (Customer)</classname>,  представленный в листинге:</para>
       <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Customer.java" parse="text" encoding="UTF-8"/></programlisting>
       <tip>
         <title>Совет</title>
@@ -149,7 +149,7 @@
             <keycap>Ins</keycap>
           </keycombo>, затем в меню выбрать <guimenu>Getter and Setter</guimenu>. В отобразившемся окне выберите требуемые поля и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
       </tip>
-      <para>Класс <classname>Customer</classname> унаследован от <classname>StandardEntity</classname>, обеспечивающего стандартную функциональность сущностей: первичный ключ, <glossterm linkend="glossary_optimistic_locking">оптимистическое блокирование</glossterm>, аудит создания и изменения экземпляра, поддержку <glossterm linkend="glossary_soft_deletion">мягкого удаления</glossterm>.</para>
+      <para>Класс <classname>Customer</classname> унаследован от <classname>StandardEntity</classname>, обеспечивающего стандартную функциональность сущностей: первичный ключ, <glossterm linkend="optimistic_locking_glossentry">оптимистическое блокирование</glossterm>, аудит создания и изменения экземпляра, поддержку <glossterm linkend="soft_deletion_glossentry">мягкого удаления</glossterm>.</para>
       <para>Рассмотрим аннотации, использованные в классе сущности: <itemizedlist>
           <listitem>
             <para><interfacename>@javax.persistence.Entity</interfacename> − объявляет класс сущностью модели данных с именем <literal>sales$Customer</literal> (параметр <literal>name</literal>). Имя сущности обязательно должно начинаться с префикса, отделенного знаком <literal>$</literal>. Желательно использовать в качестве префикса короткое имя проекта для формирования отдельного пространства имен.</para>
@@ -167,7 +167,7 @@
           </listitem>
         </itemizedlist></para>
       <para id="text_registration_entity">После создания класса зарегистрируйте его в файле <filename>sales-persistence.xml</filename> модуля <structname>global</structname> в элементе <sgmltag>persistence-unit</sgmltag>:<programlisting>&lt;class&gt;com.haulmont.sales.entity.Customer&lt;/class&gt;</programlisting></para>
-      <para>Для <glossterm linkend="glossary_localized_folders_id">локализации</glossterm> имен сущностей и атрибутов создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в том же пакете, что и классы.</para>
+      <para>Для <glossterm linkend="message_pack_glossentry">локализации</glossterm> имен сущностей и атрибутов создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в том же пакете, что и классы.</para>
       <para>В этих файлах определяются строки с ключом <literal>класс_сущности</literal> для названия сущности и <literal>класс_сущности.атрибут</literal> для названий атрибутов. Эти названия будут использованы при отображении списка экземпляров  и в окне редактирования сущности.</para>
       <caution>
         <title>Подсказка</title>
@@ -208,30 +208,30 @@ Order.amount=Сумма</programlisting></para>
       <title>Создание пользовательского интерфейса приложения</title>
       <para>Для ограничения списка поддерживаемых языков интерфейса откройте файл <filename>sales-web-app.properties</filename> модуля <structname>web</structname> и добавьте в него следующее значение:<programlisting>cuba.availableLocales=English|en;Russian|ru</programlisting></para>
       <para>Файлы, относящиеся к экранам, будем создавать в пакете <code>com.haulmont.sales.gui</code> модуля gui.</para>
-      <para>Любой экран  определяется <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптором</glossterm>, описывающим  <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение <link linkend="section_gui_framework">визуальных компонентов</link> экрана. У экрана также может быть <glossterm linkend="glossary_controller_id">контроллер</glossterm> − Java-класс, содержащий логику инициализации и обработки событий экрана.</para>
-      <section id="section_qs_customer_browse">
+      <para>Любой экран  определяется <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескриптором</glossterm>, описывающим  <glossterm linkend="datasource_glossentry">источники данных</glossterm> и расположение <link linkend="gui_framework_section">визуальных компонентов</link> экрана. У экрана также может быть <glossterm linkend="screen_controller_glossentry">контроллер</glossterm> − Java-класс, содержащий логику инициализации и обработки событий экрана.</para>
+      <section id="qs_customer_browse_section">
         <title>Экран списка Покупателей</title>
         <para>В данном экране будет отображаться список покупателей в виде таблицы, фильтр и панель с кнопками, обеспечивающими основные операции с записями (создание, редактирование, удаление).</para>
-        <para>Создайте пакет <code>com.haulmont.sales.gui.customer</code> в модуле <structname>gui</structname>, где будут находиться файлы, относящиеся к пользовательскому интерфейсу  сущности <classname>Покупатель</classname>. Создайте  <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана списка покупателей <filename>customer-browse.xml</filename>: </para>
+        <para>Создайте пакет <code>com.haulmont.sales.gui.customer</code> в модуле <structname>gui</structname>, где будут находиться файлы, относящиеся к пользовательскому интерфейсу  сущности <classname>Покупатель</classname>. Создайте  <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескриптор</glossterm> экрана списка покупателей <filename>customer-browse.xml</filename>: </para>
         <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/customer-browse.xml" parse="text" encoding="UTF-8"/></programlisting>
         <para>Рассмотрим элементы дескриптора более подробно.</para>
-        <para>Атрибут <sgmltag>caption</sgmltag> корневого элемента  задает заголовок экрана. В нашем случае он содержит значение, начинающееся с префикса <code>msg://</code>, что означает ключ в <glossterm linkend="glossary_localized_folders_id">пакете локализованных сообщений</glossterm>. Пакет задан атрибутом <sgmltag>messagesPack</sgmltag> этого же элемента. Таким образом, чтобы задать заголовок экрана на английском и русском языках, нужно создать файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename>  в указанном пакете, и добавить в них соответствующие пары ключ-значение: </para>
+        <para>Атрибут <sgmltag>caption</sgmltag> корневого элемента  задает заголовок экрана. В нашем случае он содержит значение, начинающееся с префикса <code>msg://</code>, что означает ключ в <glossterm linkend="message_pack_glossentry">пакете локализованных сообщений</glossterm>. Пакет задан атрибутом <sgmltag>messagesPack</sgmltag> этого же элемента. Таким образом, чтобы задать заголовок экрана на английском и русском языках, нужно создать файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename>  в указанном пакете, и добавить в них соответствующие пары ключ-значение: </para>
         <para><filename>messages.properties</filename> <programlisting>browserCaption=Customers</programlisting></para>
         <para><filename>messages_ru.properties</filename> <programlisting>browserCaption=Покупатели</programlisting></para>
-        <para>В элементе <sgmltag>dsContext</sgmltag> добавлен один  <glossterm linkend="glossary_datasource_id">источник данных</glossterm> <sgmltag>collectionDatasource</sgmltag>, который выбирает сущности <classname>Покупатель</classname> с помощью <glossterm linkend="glossary_jpql">JPQL</glossterm> запроса <programlisting>select c from sales$Customer c order by c.name</programlisting> с <glossterm linkend="glossary_view_ru_id">представлением</glossterm> <code>view=&quot;_local&quot;</code>.</para>
+        <para>В элементе <sgmltag>dsContext</sgmltag> добавлен один  <glossterm linkend="datasource_glossentry">источник данных</glossterm> <sgmltag>collectionDatasource</sgmltag>, который выбирает сущности <classname>Покупатель</classname> с помощью <glossterm linkend="jpql_glossentry">JPQL</glossterm> запроса <programlisting>select c from sales$Customer c order by c.name</programlisting> с <glossterm linkend="view_glossentry">представлением</glossterm> <code>view=&quot;_local&quot;</code>.</para>
         <para>Содержимое элемента <sgmltag>layout</sgmltag> определяет визуальную компоновку экрана. Вложенные компоненты отображаются вертикально сверху вниз.</para>
-        <para>Компонент <glossterm linkend="glossary_filter_id">Generic Filter</glossterm> (элемент <sgmltag>filter</sgmltag>) служит для отображения  фильтра данных, настраиваемого пользователем.</para>
-        <para>Компонент <glossterm linkend="glossary_table_id">Table</glossterm> (элемент  <sgmltag>table</sgmltag>) служит для отображения данных в виде таблицы.</para>
-        <para>Элемент <sgmltag>column</sgmltag> задает параметры отображения одной колонки таблицы. Обязательно содержит атрибут <sgmltag>id</sgmltag>, который определяет, данные какого атрибута сущности выводятся в данной колонке. Заголовком колонки по умолчанию будет название атрибута сущности, заданное в пакете <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
+        <para>Компонент Generic Filter (элемент <sgmltag>filter</sgmltag>) служит для отображения  фильтра данных, настраиваемого пользователем.</para>
+        <para>Компонент Table (элемент  <sgmltag>table</sgmltag>) служит для отображения данных в виде таблицы.</para>
+        <para>Элемент <sgmltag>column</sgmltag> задает параметры отображения одной колонки таблицы. Обязательно содержит атрибут <sgmltag>id</sgmltag>, который определяет, данные какого атрибута сущности выводятся в данной колонке. Заголовком колонки по умолчанию будет название атрибута сущности, заданное в пакете <glossterm linkend="message_pack_glossentry">локализованных сообщений</glossterm>.</para>
         <para>Элемент <sgmltag>rowsCount</sgmltag> позволяет организовать постраничный вывод данных таблицы и отобразить общее количество строк.</para>
         <para>Элемент <sgmltag>actions</sgmltag> задает набор контекстных действий с таблицей. В нашем случае все указанные действия являются стандартными (что определяется именем действия в атрибуте <sgmltag>id</sgmltag> элемента <sgmltag>action</sgmltag>), и не требуют дополнительного кодирования. Задание некоторого действия для таблицы приводит к появлению соответствующего пункта контекстного меню таблицы.</para>
         <para>Над таблицей находится панель (элемент <sgmltag>buttonsPanel</sgmltag>), содержащая кнопки для управления данными в этой таблице. Кнопки связаны с действиями (<sgmltag>actions</sgmltag>) таблицы, и в данном случае дублируют пункты контекстного меню.</para>
-        <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана должен иметь идентификатор, по которому его можно вызвать  из меню или из программного кода. Идентификатор в нашем случае назначается в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-browse.xml&quot;/&gt;</programlisting></para>
+        <para><glossterm linkend="screen_xml_descriptor_glossentry">XML-дескриптор</glossterm> экрана должен иметь идентификатор, по которому его можно вызвать  из меню или из программного кода. Идентификатор в нашем случае назначается в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-browse.xml&quot;/&gt;</programlisting></para>
         <para>Идентификатор <literal> sales$Customer.lookup</literal> удовлетворяет соглашению, по которому экраны списков сущностей должны иметь вид <literal>{entity_name}.lookup</literal>. Данное соглашение облегчает настройку визуальных компонентов, работающих со ссылочными атрибутами сущностей.</para>
         <para>Чтобы вызывать экран из главного меню приложения, добавьте в файл <filename>sales-web-menu.xml</filename> модуля <structname>web</structname> следующий элемент:<programlisting>&lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
     &lt;item id=&quot;sales$Customer.lookup&quot;/&gt;
 &lt;/menu&gt;</programlisting></para>
-        <para>Для того, чтобы пункт меню содержал локализованное имя экрана, добавьте в <glossterm linkend="glossary_main_localized_folder_id">главный пакет сообщений</glossterm> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.haulmont.sales.web</code> следующие строки:</para>
+        <para>Для того, чтобы пункт меню содержал локализованное имя экрана, добавьте в <glossterm linkend="main_message_pack_glossentry">главный пакет сообщений</glossterm> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.haulmont.sales.web</code> следующие строки:</para>
         <para>    <filename>messages.properties</filename></para>
         <programlisting>menu-config.sales=Sales
 menu-config.sales$Customer.lookup=Customers</programlisting>
@@ -250,16 +250,16 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           </mediaobject>
         </figure>
       </section>
-      <section id="section_qs_buyer_edit_1">
+      <section>
         <title>Экран редактирования Покупателя</title>
         <para>На данном этапе рассмотрим создание экрана просмотра и редактирования <classname>Покупателя</classname> в простейшем варианте −  без списка  <classname>Заказов</classname>.</para>
         <para>Создайте в пакете <code>com.haulmont.sales.gui.customer</code> файл <filename>customer-edit.xml</filename> следующего содержания: <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/customer-edit-1.xml" parse="text" encoding="UTF-8"/></programlisting></para>
         <para>Здесь в корневом элементе указан атрибут <sgmltag>class</sgmltag>, определяющий класс контроллера экрана. В данном случае необходима только базовая логика работы с редактируемой сущностью, поэтому используется стандартный <classname>AbstractEditor</classname>.</para>
-        <para>Атрибут <sgmltag>datasource</sgmltag> корневого элемента определяет имя <glossterm linkend="glossary_datasource_id">источника данных</glossterm>, в который будет передан экземпляр редактируемой сущности из вызывающего экран кода.</para>
+        <para>Атрибут <sgmltag>datasource</sgmltag> корневого элемента определяет имя <glossterm linkend="datasource_glossentry">источника данных</glossterm>, в который будет передан экземпляр редактируемой сущности из вызывающего экран кода.</para>
         <para>Атрибут <sgmltag>focusComponent</sgmltag> задает имя компонента, которому будет передан фокус ввода при открытии экрана.</para>
         <para>Атрибут <sgmltag>caption</sgmltag> корневого элемента  задает заголовок экрана. Добавим в существующие файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename>  пакета <code>com.haulmont.sales.gui.customer</code> пары ключ-значение:  </para>
-        <para><para><filename>messages.properties</filename> <programlisting>editorCaption=Customer</programlisting></para><filename>messages_ru.properties</filename> <programlisting>editorCaption=Покупатель</programlisting></para>
-        <para>В элементе <sgmltag>dsContext</sgmltag> добавлен один  <glossterm linkend="glossary_datasource_id">источник данных</glossterm> <sgmltag>datasource</sgmltag>, в который будет передан экземпляр редактируемой сущности из вызывающего экран кода. </para>
+        <para><filename>messages.properties</filename> <programlisting>editorCaption=Customer</programlisting><filename>messages_ru.properties</filename> <programlisting>editorCaption=Покупатель</programlisting></para>
+        <para>В элементе <sgmltag>dsContext</sgmltag> добавлен один  <glossterm linkend="datasource_glossentry">источник данных</glossterm> <sgmltag>datasource</sgmltag>, в который будет передан экземпляр редактируемой сущности из вызывающего экран кода. </para>
         <para>Элемент <sgmltag>layout</sgmltag>  в данном случае содержит два вложенных элемента: <itemizedlist>
             <listitem>
               <para><sgmltag>fieldGroup</sgmltag> − группа полей, связанная с источником данных, предназначенная для отображения и редактирования значений атрибутов сущности</para>
@@ -287,7 +287,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
       <section>
         <title>Экран списка Заказов</title>
         <para>Создайте пакет <code>com.haulmont.sales.gui.order</code> и в нем файл <filename>order-browse.xml</filename> следующего содержания:<programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/order-browse.xml" parse="text" encoding="UTF-8"/></programlisting></para>
-        <para>Данный экран аналогичен описанному в <xref linkend="section_qs_customer_browse"/> и имеет следующую особенность: так как среди прочих отображается ссылочный атрибут <code>Order.customer</code>, требуется определить представление сущности <classname>Order</classname>, включающее этот атрибут (стандартные представления <literal>_local</literal> и <literal>_minimal</literal> не включают ссылочных атрибутов).</para>
+        <para>Данный экран аналогичен описанному в <xref linkend="qs_customer_browse_section"/> и имеет следующую особенность: так как среди прочих отображается ссылочный атрибут <code>Order.customer</code>, требуется определить представление сущности <classname>Order</classname>, включающее этот атрибут (стандартные представления <literal>_local</literal> и <literal>_minimal</literal> не включают ссылочных атрибутов).</para>
         <para>Определите представление <literal>orderWithCustomer</literal> в файле <filename>sales-views.xml</filename> модуля <structname>core</structname>: <programlisting>&lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
       name=&quot;orderWithCustomer&quot;
       extends=&quot;_local&quot;&gt;
@@ -298,7 +298,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para><filename>messages_ru.properties</filename> <programlisting>browserCaption=Заказы</programlisting></para>
         <para>Далее зарегистрируйте экран в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname>: <programlisting>&lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/haulmont/sales/gui/order/order-browse.xml&quot;/&gt;</programlisting></para>
         <para>и добавьте соответствующий пункт меню в файл <filename>sales-web-menu.xml</filename> модуля <structname>web</structname>: <programlisting>&lt;item id=&quot;sales$Order.lookup&quot;/&gt;</programlisting></para>
-        <para>Локализованные названия нового пункта меню  добавьте в <glossterm linkend="glossary_main_localized_folder_id">главный пакет сообщений</glossterm> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.haulmont.sales.web</code>):</para>
+        <para>Локализованные названия нового пункта меню  добавьте в <glossterm linkend="main_message_pack_glossentry">главный пакет сообщений</glossterm> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.haulmont.sales.web</code>):</para>
         <para>    <filename>messages.properties</filename></para>
         <programlisting>menu-config.sales$Order.lookup=Orders</programlisting>
         <para>    <filename>messages_ru.properties</filename></para>
