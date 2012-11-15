@@ -9,7 +9,7 @@
     <xsl:import href="html-common.xsl"/>	
 	<xsl:param name="section.autolabel">1</xsl:param>
     <xsl:param name="section.label.includes.component.label">3</xsl:param>
-	<xsl:param name="section.autolabel.max.depth">2</xsl:param> 
+	<xsl:param name="section.autolabel.max.depth">3</xsl:param> 
 	<xsl:param name="formal.title.placement">figure after</xsl:param>
 	<xsl:param name="autotoc.label.separator">. </xsl:param>
 	

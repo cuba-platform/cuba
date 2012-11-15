@@ -8,19 +8,17 @@ html {
 }
 
 body {
-    padding: 0;
     background-color: white;
+    line-height: 130%;
+	font-size: 14px;
 	margin:0 auto;
-    font-size:12px;
     max-width:100em;
     padding:0em 2em;
-    line-height:150%;
-    text-align:justify;
 }
 
 body, td, div {
     font-family: 'Arial', 'Verdana', sans-serif;
-    font-size: 12px;
+    font-size: 14px;
     color: #000000;
 }
 
@@ -50,14 +48,12 @@ h1, h2, h3, h4, h5 {
 }
 
 h1 {
-	/*font-size: 40pt;*/
 	line-height:1.2em;
     font-size:2em;
     padding:1.5em;
 }
 
 h2 {
-	/*font-size: 18pt;*/
 	font-size:1.6em;
 }
 
@@ -65,14 +61,12 @@ h3 {
 	font-size:1.3em;
     padding-top:0em;
     padding-bottom:0em;
-	/*font-size: 16pt;*/
 }
 
 h4 {
 	font-size:1.1em;
     padding-top:0em;
     padding-bottom:0em;
-	/*font-size: 14pt;*/
 }
 
 h5 {
@@ -95,8 +89,8 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited {
  */
 
 .book > .titlepage {
-    margin-top: 2.2em;
-    margin-bottom: 2em;
+    margin-top: 1.2em;
+    margin-bottom: 1em;
 }
 
 .book .titlepage div.title {
@@ -106,7 +100,7 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited {
     margin-right: -1.8em;
     padding-left: 1.8em;
     padding-right: 1.8em;
-    margin-bottom: 2.2em;
+    margin-bottom: 0.2em;
 }
 
 .titlepage h1.title {
@@ -176,7 +170,7 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited {
 }
 
 .chapter > .titlepage {
-    margin-bottom: 4em;
+    margin-bottom: 1em;
 }
 
 .appendix > .titlepage h1 {
@@ -321,7 +315,7 @@ pre {
 
 .informaltable table {
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 14px;
     min-width: 50%;
     /*border: solid #2250bd 1px;
 	border: solid rgb(0,149,182) 1px;*/
@@ -333,7 +327,7 @@ pre {
     padding-right: 0.8em;
     padding-top: 0.3em;
     padding-bottom: 0.3em;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 .informaltable th {
@@ -344,7 +338,7 @@ pre {
 
 .informaltable table thead td {
     font-weight: bold;
-	font-size: 12px;
+	font-size:  14px;
     /*border-bottom: solid #686868 2px;*/
     background-color: #ffffff;
 }
@@ -388,7 +382,7 @@ div.informaltable {
     margin-top: 0;
     margin-bottom: 0.6em;
 	font-family: 'Arial', 'Verdana', sans-serif;
-	font-size: 12px;
+	font-size: 13px;
     color: #000000;
 }
 
@@ -419,7 +413,7 @@ div.informaltable {
 	margin-left: 2em;
 	padding-left: 1.2em;
 	page-break-inside: auto ;
-    font-size: 90%;
+    font-size: 80%;
 	white-space: pre-wrap;
     /*overflow-x: auto;*/
 }
@@ -445,7 +439,7 @@ div.informaltable {
 
 .tip .figure .title, .warning .figure .title, .caution .figure .title {
     color: #000000;
-	font-size: 10pt;
+	font-size: 13px;
 }
 
 .warning {
@@ -495,7 +489,7 @@ div.informaltable {
     white-space: nowrap;
 }
 
-.literal{
+.literal, .structname{
 	font-family: 'Courier New', Courier, monospace;
 }
 
@@ -555,7 +549,7 @@ div.informaltable {
 
 .toc dl, .list-of-examples dl {
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: 1em;
 }
 
 .book .toc > dl > dt {
@@ -570,7 +564,7 @@ div.informaltable {
  * Single page html
  */
 .book .chapter {
-    margin-top: 4em;
+    margin-top: 2em;
 }
 
 /*.itemizedlist ul
@@ -579,18 +573,18 @@ div.informaltable {
 }*/
 
 div.orderedlist {
-  margin-top: 3em;
+  margin-top: .6em;
 }
 
 div.orderedlist li {
-  margin-top: 1em;
+  margin-top: .6em;
 }
 
 /* Lists */
 
 ol li, ul li {
     padding-left:.2em;
-    padding-bottom:.5em;
+    padding-bottom:.4em;
     margin:0em;
 }
 
@@ -617,10 +611,10 @@ dd {
 
 li p:first-child, dd p:first-child {
     padding:0em;
-    margin-top:.3em;
+    margin-top:0em;
 }
 
-.variablelist, .itemizedlist, .orderedlist {margin-top:.6em;}
+.variablelist, .itemizedlist, .orderedlist {margin-top:0em;}
 
 ul li p:first-child {margin:0em;}
 
@@ -631,17 +625,9 @@ li p:first-child {
     padding:0em !important;
 }
 
-div.chapter, div.section {padding-top:2em;}
+div.chapter, div.section {padding-top:1em;}
 
 ul li p:last-child {
     margin-bottom:0em;
     padding-bottom:0em;
 }
-
-
-
-
-
-
-
-
