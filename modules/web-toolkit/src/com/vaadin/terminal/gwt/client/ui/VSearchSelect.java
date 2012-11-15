@@ -114,6 +114,20 @@ public class VSearchSelect extends VFilterSelect {
     }
 
     @Override
+    protected void handleSelectionOnBlur() {
+        if (tabPressed) {
+            tabPressed = false;
+            suggestionPopup.menu.doSelectedItemAction();
+            suggestionPopup.hide();
+        } else if (!suggestionPopup.isAttached()
+                || suggestionPopup.isJustClosed()) {
+            if (currentSuggestion == null ||
+                    !currentSuggestion.getReplacementString().equals(tb.getText()))
+                suggestionPopup.menu.doSelectedItemAction();
+        }
+    }
+
+    @Override
     public void onBlur(BlurEvent event) {
         super.onBlur(event);
 

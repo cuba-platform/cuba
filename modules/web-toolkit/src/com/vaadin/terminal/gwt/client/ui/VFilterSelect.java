@@ -881,6 +881,17 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         suggestionPopup.showSuggestions(currentSuggestions, currentPage, totalMatches);
     }
 
+    protected void handleSelectionOnBlur() {
+        if (tabPressed) {
+            tabPressed = false;
+            suggestionPopup.menu.doSelectedItemAction();
+            suggestionPopup.hide();
+        } else if (!suggestionPopup.isAttached()
+                || suggestionPopup.isJustClosed()) {
+            suggestionPopup.menu.doSelectedItemAction();
+        }
+    }
+
     private void setPromptingOn() {
         if (!prompting) {
             prompting = true;
@@ -1208,14 +1219,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         focused = false;
         if (!readonly) {
             // much of the TAB handling takes place here
-            if (tabPressed) {
-                tabPressed = false;
-                suggestionPopup.menu.doSelectedItemAction();
-                suggestionPopup.hide();
-            } else if (!suggestionPopup.isAttached()
-                    || suggestionPopup.isJustClosed()) {
-                suggestionPopup.menu.doSelectedItemAction();
-            }
+            handleSelectionOnBlur();
             if (selectedOptionKey == null) {
                 setPromptingOn();
             }
