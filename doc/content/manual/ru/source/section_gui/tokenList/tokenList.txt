@@ -1,5 +1,5 @@
-﻿<tokenList datasource="usersDs" id="tokenList" position="TOP" inline="false" width="300" height="150px"
-           simple="false" editable="true" description="Test">
-	<lookup optionsDatasource="usersssDs" lookupScreen="sec$User.browse" lookup="true"/>
-    <button caption="msg://Добавить"/>
+﻿<tokenList datasource="usersDs" id="tokenList" position="TOP" inline="false" width="300" 
+           height="150px" simple="false" editable="true" description="Test">
+   <lookup optionsDatasource="usersssDs" lookupScreen="sec$User.browse" lookup="true"/>
+   <button caption="msg://Добавить"/>
 </tokenList>

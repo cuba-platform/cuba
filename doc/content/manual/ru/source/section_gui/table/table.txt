@@ -1,14 +1,14 @@
 ﻿<dsContext>
-	<collectionDatasource id="sampleDs" class="com.haulmont.refapp.core.entity.sample.TestEntity" view="_local"
-                          refreshMode="NEVER">
-    </collectionDatasource>
+   <collectionDatasource id="sampleDs" class="com.haulmont.refapp.core.entity.sample.TestEntity" 
+                         view="_local" refreshMode="NEVER">
+   </collectionDatasource>
 </dsContext>
 <!--...-->
 <table id="testTable" height="150" width="100%">
-	<columns>
-		<column id="name"/>
-		<column id="date"/>
-		<column id="unit"/>
-	</columns>
-	<rows datasource="sampleDs"/>
+   <columns>
+      <column id="name"/>
+	  <column id="date"/>
+	  <column id="unit"/>
+   </columns>
+   <rows datasource="sampleDs"/>
 </table>

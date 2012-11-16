@@ -1,17 +1,14 @@
-﻿<!--Описание источника данных-->
-<dsContext>
-	<datasource id="testDs"
-                class="com.haulmont.refapp.core.entity.sample.TestEntity"
-                view="_local"/>
-</dsContext>
-	
+﻿<dsContext>
+   <datasource id="testDs" class="com.haulmont.refapp.core.entity.sample.TestEntity" 
+               view="_local"/>
+</dsContext>	
 <fieldGroup id="fieldGroup1" datasource="testDs">
-	<column width="250px">
-		<field id="name" required="true" description="Test description">
-			<validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"/>
-        </field>
-        <field id="date"/>
-        <field id="unit"/>
-        <field id="units" custom="true" caption="Пользовательское поле"/>
+    <column width="250px">
+	    <field id="name" required="true" description="Test description">
+		    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"/>
+	    </field>
+	    <field id="date"/>
+	    <field id="unit"/>
+	    <field id="units" custom="true" caption="Пользовательское поле"/>
     </column>
 </fieldGroup>

@@ -28,7 +28,7 @@ div {
 }
 
 a {
-    color: blue;
+    color: #000000;
 }
 
 p {
@@ -162,6 +162,23 @@ div.chapter, div.section {
 }
 
 /*
+ * Links
+ */
+ 
+.link {
+	font-style: italic;
+}
+
+.ulink
+{
+	color: blue;
+}
+
+.glossterm {
+	font-style: italic;
+}
+
+/*
  * Lists
  */
 
@@ -227,6 +244,11 @@ ul li p:last-child {
 }
 
 li p:first-child {
+    margin:0em !important;
+    padding:0em !important;
+}
+
+li p:last-child {
     margin:0em !important;
     padding:0em !important;
 }
@@ -448,10 +470,12 @@ td.right { background-color: rgb(157,197,232);
 			
 div.table  {
    text-align: center;
+   margin-bottom: 1em;
 }
 
 div.informaltable {
-  text-align: center
+  text-align: center;
+  margin-bottom: 1em;
 }
 
 .table {

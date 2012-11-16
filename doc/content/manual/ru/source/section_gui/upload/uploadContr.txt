@@ -1,5 +1,4 @@
 ﻿public class UploadSample extends AbstractWindow {
-
     @Inject
     private FileUploadField uploadField;
 

@@ -77,25 +77,26 @@
         </listitem>
         <listitem>
           <para>Собираем проект. В командной строке введите команду</para>
-          <para><prompt>gradle assemble</prompt></para>
+          <prompt>gradle assemble</prompt>
           <para>На этом этапе будут загружены все необходимые библиотеки и в каталогах модулей в подкаталогах <filename>build</filename> будут собраны артефакты проекта. </para>
         </listitem>
         <listitem>
           <para>Чтобы работать с проектом в <application>IntelliJ IDEA</application>, запускаем команду, с помощью которой создаются проектные файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
-          <para><prompt>gradle idea</prompt></para>
+          <prompt>gradle idea</prompt>
         </listitem>
         <listitem>
           <para>Устанавливаем сервер приложений <application>Apache Tomcat</application>:</para>
-          <para><prompt>gradle setupTomcat</prompt></para>
+          <prompt>gradle setupTomcat</prompt>
           <para>Сервер <application>Tomcat</application> будет установлен в подкаталоге <filename>build</filename> рабочего каталога. Расположение сервера определяется переменной <varname>ext.tomcatDir</varname> скрипта сборки <filename>build.gradle</filename>. </para>
         </listitem>
         <listitem>
           <para>Разворачиваем собранные артефакты и библиотеки проекта в <application>Tomcat</application>:</para>
-          <para><prompt>gradle deploy</prompt></para>
+          <prompt>gradle deploy</prompt>
+          <para/>
         </listitem>
         <listitem>
           <para>Создаем базу данных на локальном сервере PostgreSQL:</para>
-          <para><prompt>gradle createDb</prompt></para>
+          <prompt>gradle createDb</prompt>
           <para>Имя базы данных определяется параметром <varname>dbName</varname> задачи <varname>createDb</varname> скрипта <filename>build.gradle</filename>, в нашем случае <database>
               <database>
                 <database>sales</database>
@@ -104,7 +105,7 @@
         </listitem>
         <listitem>
           <para>Запускаем сервер:</para>
-          <para><prompt>gradle start</prompt></para>
+          <prompt>gradle start</prompt>
         </listitem>
         <listitem>
           <para>Для просмотра приложения в веб-браузере введите в адресную строку <ulink url="http://localhost:8080/app">http://localhost:8080/app</ulink></para>
@@ -126,7 +127,7 @@
     </section>
     <section>
       <title>Создание таблиц базы данных</title>
-      <para>Откройте файл <filename>db/init/postgres/create-db.sql</filename> модуля <structname>core</structname> и добавьте в него следующий код для создания таблиц <classname>Покупатель</classname> и <classname>Скидка</classname>:</para>
+      <para>Откройте файл <filename>db/init/postgres/create-db.sql</filename> модуля <structname>core</structname> и добавьте в него следующий код для создания таблиц <classname>Покупатель</classname> и <classname>Заказ</classname>:</para>
       <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/create-db.sql" parse="text" encoding="UTF-8"/></programlisting>
       <para>SQL-команды разделяются знаком «^», это дает возможность задания сложных команд, содержащих внутри себя знаки «;». Системные поля являются обязательными.</para>
       <para>Остановите сервер приложения командой</para>
