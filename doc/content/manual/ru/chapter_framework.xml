@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <chapter id="chapter_framework" lang="ru">
   <title>Устройство платформы</title>
   <para>Данная глава содержит подробное описание архитектуры, компонентов и механизмов платформы CUBA.</para>
@@ -1230,6 +1230,30 @@ Instance − ваш SQL Server.</para>
                   <mediaobject>
                     <imageobject>
                       <imagedata fileref="img/LookupPickerField.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry align="left">
+                  <link linkend="SearchField_section">SearchField</link>
+                </entry>
+                <entry align="left">
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_searchField.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry align="left">
+                  <link linkend="SearchPickerField_section">SearchPickerField</link>
+                </entry>
+                <entry align="left">
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_searchPickerField.png"/>
                     </imageobject>
                   </mediaobject>
                 </entry>
@@ -2985,7 +3009,7 @@ Instance − ваш SQL Server.</para>
                 </row>
               </tbody></tgroup>
           </informaltable>
-          <para>Элементы <sgmltag>lookupField</sgmltag>:</para>
+          <para>Элементы <sgmltag>lookupPickerField</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="1" colsep="1" rowsep="1" align="left">
               <colspec colname="c1"/>
@@ -2998,6 +3022,212 @@ Instance − ваш SQL Server.</para>
                 <row>
                   <entry>
                     <link linkend="attr_action">actions</link>
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </section>
+        <section id="SearchField_section">
+          <title>SearchField</title>
+          <para>Поле поиска (<interfacename>SearchField</interfacename>) служит для поиска значения по заранее определенному условию. Для работы с полем достаточно ввести хотя бы один символ и нажать клавишу <keycap>Enter</keycap>. Если будут найдены несколько совпадений, значения будут отображены  в виде списка. </para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_searchFieldOverlap.png" contentwidth="190"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>XML-имя компонента: <sgmltag>searchField</sgmltag>.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_SearchField_dia.png" contentwidth="180"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Класс поля поиска существует только для веб-приложений.</para>
+          <para>Для компонента <sgmltag>searchField</sgmltag> необходимо предварительно создать <glossterm linkend="datasource_glossentry">источник данных</glossterm>, предназначенный для работы с коллекцией <glossterm linkend="entity_glossentry">сущностей</glossterm>, и задать в нем запрос, содержащий условия поиска. Например:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchFieldDs.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>При описании компонента в <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескрипторе</glossterm> используйте атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link>. </para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchField.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Значение атрибута <sgmltag id="minSearchStringLength_attr">minSearchStringLength</sgmltag> − это минимальное количество символов, необходимых для поиска значения.</para>
+          <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана можно указать содержание нотификаций, которые будут выводиться на экран в двух случаях:</para>
+          <itemizedlist>
+            <listitem>
+              <para>если количество введенных символов меньше значения атрибута <link linkend="minSearchStringLength_attr">minSearchStringLength</link></para>
+            </listitem>
+            <listitem>
+              <para>если не найдено совпадений существующих в источнике данных значений и введенных символов.</para>
+            </listitem>
+          </itemizedlist>
+          <para>Пример задания нотификаций в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchFieldContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Атрибуты <sgmltag>searchField</sgmltag>: </para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="attr_caption">caption</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="attr_enable">enable</link>
+                  </entry><entry align="left">nullName</entry><entry>
+                    <link linkend="attr_stylename">stylename</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="attr_captionProperty">captionProperty</link>
+                  </entry><entry align="left">
+                    <link linkend="attr_filterMode">filterMode</link>
+                  </entry>required<entry>
+                    <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                  </entry><entry>
+                    <link linkend="attr_visible">visible</link>
+                  </entry></row>
+                <row>
+                  <entry align="left">
+                    <link linkend="attr_datasource">datasource</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="attr_height">height</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="attr_description">description</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="attr_id">id</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_required">required</link>
+                  </entry>
+                  <entry/>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="attr_editable">editable</link>
+                  </entry>
+                  <entry>
+                    <link linkend="minSearchStringLength_attr">minSearchStringLength</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_requiredMessage">requiredMessage</link>
+                  </entry>
+                  <entry/>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+        </section>
+        <section id="SearchPickerField_section">
+          <title>SearchPickerField</title>
+          <para>Поле поиска с расширенной функциональностью (<interfacename>SearchPickerField</interfacename>) отличается от простого <link linkend="SearchField_section">поля поиска</link> тем, что содержит дополнительные кнопки справа. С помощью кнопок можно открывать экземпляр выбранной в поле <glossterm linkend="entity_glossentry">сущности</glossterm>, удалять экземпляр или выбирать экземпляр из экрана списка сущностей.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_searchPickerFieldOverlap.png" contentwidth="308" contentdepth="96"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>XML-имя компонента: <sgmltag>searchPickerField</sgmltag>.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_SearchPickerField_dia.png" contentwidth="90%"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Класса поля поиска c расширенной функциональностью существует только для веб-приложений.</para>
+          <para>Ниже представлено описание поля поиска с расширенной функциональностью в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchPickerField/searchPickerField.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Если при объявлении компонента никаких <link linkend="Action_section">действий</link> не задано,  загрузчик XML определит для него действия <literal>lookup</literal> и <literal>open</literal>.</para>
+          <para>Стандартные действия определяются перечислением <code>PickerField.ActionType</code>: <literal>lookup</literal>, <literal>clear</literal>, <literal>open</literal>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchPickerField/searchPickerFieldActions.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_searchPickerFieldAllActions.png" contentwidth="257" contentdepth="97"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Атрибуты <sgmltag>searchPickerField</sgmltag>: </para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="attr_caption">caption</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="attr_enable">enable</link>
+                  </entry><entry align="left">
+                    <link linkend="minSearchStringLength_attr">minSearchStringLength</link>
+                  </entry><entry>
+                    <link linkend="attr_requiredMessage">requiredMessage</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="attr_captionProperty">captionProperty</link>
+                  </entry><entry align="left">
+                    <link linkend="attr_filterMode">filterMode</link>
+                  </entry>required<entry>nullName</entry><entry>
+                    <link linkend="attr_stylename">stylename</link>
+                  </entry></row>
+                <row>
+                  <entry align="left">
+                    <link linkend="attr_datasource">datasource</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="attr_height">height</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_visible">visible</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="attr_description">description</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="attr_id">id</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="attr_editable">editable</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_metaclass">metaClass</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_required">required</link>
+                  </entry>
+                  <entry/>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Элементы <sgmltag>searchPickerField</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="1" colsep="1" rowsep="1" align="left">
+              <colspec colname="c1"/>
+              <tbody>
+                <row>
+                  <entry>
+                    <link linkend="Action_section">actions</link>
                   </entry>
                 </row>
               </tbody>
@@ -3343,7 +3573,7 @@ Instance − ваш SQL Server.</para>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_Table_dia.png" contentwidth="90%"/>
+                <imagedata contentwidth="90%" align="center" fileref="img/gui_Table_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -3587,7 +3817,7 @@ Instance − ваш SQL Server.</para>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_TreeTable_dia.png" contentwidth="90%"/>
+                <imagedata contentwidth="90%" align="center" fileref="img/gui_TreeTable_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>

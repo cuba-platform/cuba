@@ -1,0 +1,14 @@
+﻿<dsContext>
+   <datasource id="carDs" class="com.haulmont.refapp.core.entity.Car" view="carEdit"/>
+   <collectionDatasource id="coloursDs" class="com.haulmont.refapp.core.entity.Colour" view="_local">
+      <query>
+         <![CDATA[
+               select c from ref$Colour c where c.name like :(?i)custom$searchString
+         ]]>
+       </query>
+   </collectionDatasource>
+</dsContext>
+<!--..-->
+<searchPickerField id="searchField" optionsDatasource="coloursDs"
+                   datasource="carDs" property="colour"
+                   minSearchStringLength="2"/>
