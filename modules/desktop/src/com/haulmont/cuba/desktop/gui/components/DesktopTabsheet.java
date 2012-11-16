@@ -99,12 +99,13 @@ public class DesktopTabsheet
         JComponent comp = DesktopComponentsHelper.getComposition(component);
 
         impl.addTab("", comp);
+        int tabIndex = impl.indexOfComponent(comp);
         tabContents.put(comp, tab);
-        setTabComponent(tab);
+        setTabComponent(tab, tabIndex);
         return tab;
     }
 
-    private void setTabComponent(final TabImpl tab) {
+    private void setTabComponent(final TabImpl tab, int componentIndex) {
         ButtonTabComponent.CloseListener closeListener = new ButtonTabComponent.CloseListener(){
             @Override
             public void onTabClose(int tabIndex) {
@@ -125,7 +126,7 @@ public class DesktopTabsheet
 
         ButtonTabComponent btnTabComponent = new ButtonTabComponent(impl, false, false, closeListener, detachListener);
         tab.setButtonTabComponent(btnTabComponent);
-        impl.setTabComponentAt(tab.getTabIndex(), btnTabComponent);
+        impl.setTabComponentAt(componentIndex, btnTabComponent);
     }
 
     @Override
@@ -140,9 +141,10 @@ public class DesktopTabsheet
         final JComponent comp = DesktopComponentsHelper.getComposition(tabContent);
 
         impl.addTab("", comp);
+        int tabIndex = impl.indexOfComponent(comp);
         tabContents.put(comp, tab);
 
-        setTabComponent(tab);
+        setTabComponent(tab, tabIndex);
         lazyTabs.add(new LazyTabInfo(tab, tabContent, descriptor, loader));
 
         if (!initLazyTabListenerAdded) {
@@ -264,6 +266,9 @@ public class DesktopTabsheet
         if (lti == null) // already initialized
             return;
 
+        if (!lti.getTab().isEnabled())
+            return;
+
         lazyTabs.remove(lti);
 
         Component comp;
@@ -314,6 +319,7 @@ public class DesktopTabsheet
 
     private void updateTabVisibility(TabImpl tab) {
         // find insert/remove index by visibility of existing tabs
+        int currentIndex = tab.getTabIndex();
         int idx = 0;
         for (TabImpl t : tabs) {
             if (t.equals(tab))
@@ -323,10 +329,16 @@ public class DesktopTabsheet
         }
 
         JComponent comp = DesktopComponentsHelper.getComposition(tab.getComponent());
-        if (tab.isVisible()) {
-            impl.insertTab(tab.getCaption(), null, comp, null, idx);
-        } else {
-            impl.removeTabAt(idx);
+        if (currentIndex >= 0 || tab.isVisible()) {
+            if (tab.isVisible()) {
+                impl.insertTab(tab.getCaption(), null, comp, null, idx);
+                impl.setTabComponentAt(idx, tab.getButtonTabComponent());
+            } else {
+                impl.removeTabAt(idx);
+            }
+        } else { //tab is detached
+            DetachedFrame detachedFrame = (DetachedFrame) SwingUtilities.getWindowAncestor(comp);
+            detachedFrame.dispose();
         }
         // if we just detach component, it will return isVisible() == true
         if (!tab.isVisible())
@@ -395,7 +407,18 @@ public class DesktopTabsheet
         @Override
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
-            DesktopTabsheet.this.impl.setEnabledAt(getTabIndex(), enabled);
+            buttonTabComponent.setEnabled(enabled);
+            int tabIndex = getTabIndex();
+
+            if (tabIndex >= 0) {
+                impl.setEnabledAt(getTabIndex(), enabled);
+                impl.setComponentAt(tabIndex, enabled ? DesktopComponentsHelper.getComposition(component) : null);
+                if (impl.getSelectedIndex() == tabIndex && isLazy() && enabled) {
+                    initLazyTab(DesktopComponentsHelper.getComposition(component));
+                }
+            } else {
+                component.setVisible(enabled);
+            }
         }
 
         @Override
@@ -451,9 +474,8 @@ public class DesktopTabsheet
             return component;
         }
 
-        private int getTabIndex() {
-            JComponent jComponent = DesktopComponentsHelper.getComposition(component);
-            return DesktopTabsheet.this.impl.indexOfComponent(jComponent);
+        public int getTabIndex() {
+            return DesktopTabsheet.this.impl.indexOfTabComponent(buttonTabComponent);
         }
 
         @Override
@@ -512,21 +534,25 @@ public class DesktopTabsheet
     }
 
     protected void detachTab(final int tabIndex) {
-        final ButtonTabComponent tabComponent = (ButtonTabComponent) impl.getTabComponentAt(tabIndex);
-        final String caption = tabComponent.getCaption();
-        final JFrame frame = new DetachedFrame(tabComponent.getCaption(),impl);
-
-        frame.setLocationRelativeTo(DesktopComponentsHelper.getTopLevelFrame(this));
         final JComponent tabContent = (JComponent) impl.getComponentAt(tabIndex);
-        for(TabImpl tab : tabs) {
+        TabImpl tabAtIndex = null;
+        for (TabImpl tab : tabs) {
             if (DesktopComponentsHelper.getComposition(tab.getComponent()) == tabContent) {
+                tabAtIndex = tab;
                 if (tab.isLazy() && !tab.isLazyInitialized()) {
                     initLazyTab(tabContent);
                 }
                 break;
             }
+
         }
+        final TabImpl tabToDetach = tabAtIndex;
+        final ButtonTabComponent tabComponent = tabToDetach.getButtonTabComponent();
+        final JFrame frame = new DetachedFrame(tabComponent.getCaption(), impl);
+
+        frame.setLocationRelativeTo(DesktopComponentsHelper.getTopLevelFrame(this));
         impl.remove(tabContent);
+        updateTabsEnabledState();
         frame.setSize(impl.getSize());
         frame.add(tabContent);
 
@@ -535,7 +561,7 @@ public class DesktopTabsheet
             public void hierarchyChanged(HierarchyEvent e) {
                 if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) == HierarchyEvent.DISPLAYABILITY_CHANGED
                         && !impl.isDisplayable()) {
-                    attachTab(frame, tabComponent, tabContent, caption);
+                    attachTab(frame, tabToDetach);
                     impl.removeHierarchyListener(this);
                 }
             }
@@ -544,7 +570,7 @@ public class DesktopTabsheet
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                attachTab(frame, tabComponent, tabContent, caption);
+                attachTab(frame, tabToDetach);
                 impl.removeHierarchyListener(listener);
             }
         });
@@ -553,10 +579,12 @@ public class DesktopTabsheet
         frame.setVisible(true);
     }
 
-    private void attachTab(JFrame frame, ButtonTabComponent tabComponent, java.awt.Component tabContent,
-                           String caption) {
+    private void attachTab(JFrame frame, TabImpl tab) {
         int tabIndex = 0;
         int attachedBeforeCount = 0;
+        JComponent tabContent = DesktopComponentsHelper.getComposition(tab.getComponent());
+        String caption = tab.getCaption();
+        ButtonTabComponent tabComponent = tab.getButtonTabComponent();
         for (Map.Entry<JComponent, TabImpl> entry : tabContents.entrySet()) {
             if (entry.getKey() == tabContent) {
                 tabIndex = attachedBeforeCount;
@@ -565,11 +593,25 @@ public class DesktopTabsheet
                 attachedBeforeCount++;
             }
         }
+
         impl.add(tabContent, tabIndex);
+        if (!tab.isEnabled()) {
+            impl.setComponentAt(tabIndex, null);
+        }
         impl.setTitleAt(tabIndex, caption);
         impl.setTabComponentAt(tabIndex, tabComponent);
+        updateTabsEnabledState();
         tabComponent.revalidate();
         tabComponent.repaint();
         frame.dispose();
+    }
+
+    private void updateTabsEnabledState() {
+        for (TabImpl tab : tabs) {
+            int tabIndex = tab.getTabIndex();
+            if (tabIndex >= 0) {
+                impl.setEnabledAt(tab.getTabIndex(), tab.isEnabled());
+            }
+        }
     }
 }

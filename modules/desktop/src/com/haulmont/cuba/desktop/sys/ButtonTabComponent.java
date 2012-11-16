@@ -168,6 +168,13 @@ public class ButtonTabComponent extends JPanel {
         return titleLabel;
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        detachButton.setEnabled(enabled);
+        tabButton.setEnabled(enabled);
+    }
+
     private class TabButton extends JButton implements ActionListener {
         public TabButton() {
             int size = 17;
@@ -214,7 +221,7 @@ public class ButtonTabComponent extends JPanel {
         protected void doPaintContent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             //shift the image for pressed buttons
-            if (getModel().isPressed()) {
+            if (isEnabled() && getModel().isPressed()) {
                 g2.translate(1, 1);
             }
             g2.setStroke(new BasicStroke(2));
@@ -248,7 +255,7 @@ public class ButtonTabComponent extends JPanel {
         protected void doPaintContent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             //shift the image for pressed buttons
-            if (getModel().isPressed()) {
+            if (isEnabled() && getModel().isPressed()) {
                 g2.translate(1, 1);
             }
             g2.setStroke(new BasicStroke(1));
@@ -269,7 +276,7 @@ public class ButtonTabComponent extends JPanel {
     private final static MouseListener buttonMouseListener = new MouseAdapter() {
         public void mouseEntered(MouseEvent e) {
             Component component = e.getComponent();
-            if (component instanceof AbstractButton) {
+            if (component instanceof AbstractButton && component.isEnabled()) {
                 AbstractButton button = (AbstractButton) component;
                 button.setBorderPainted(true);
             }
