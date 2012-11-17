@@ -113,6 +113,9 @@ public class ExceptionFilter extends Filter implements UnrecognizedElementHandle
     }
 
     private int checkThrowable(Throwable exception) {
+        if (exception == null) {
+            return NEUTRAL;
+        }
         String message = exception.getMessage();
         String className = exception.getClass().getName();
         for (Pattern pattern : excluded.get(GLOBAL)) {
