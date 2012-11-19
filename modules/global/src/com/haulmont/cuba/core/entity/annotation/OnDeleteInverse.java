@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 23.01.2009 13:05:45
- *
- * $Id$
  */
 package com.haulmont.cuba.core.entity.annotation;
 
@@ -22,6 +17,9 @@ import java.lang.annotation.ElementType;
  * <b>Taken into account by persistence when "linked" entity (which is referenced by the marked field)
  * is deleted.</b><br>
  * See also {@link DeletePolicy}
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})

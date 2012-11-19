@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 11.05.2010 18:41:38
- *
- * $Id$
  */
 package com.haulmont.cuba.core.entity.annotation;
 
@@ -17,6 +12,9 @@ import java.lang.annotation.Target;
 
 /**
  * Explains how to get localized value of an attribute
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})

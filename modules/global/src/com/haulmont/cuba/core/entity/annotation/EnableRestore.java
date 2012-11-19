@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -17,9 +17,8 @@ import java.lang.annotation.Target;
  *
  * <p>Can be overridden in <code>*-metadata.xml</code> file.</p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

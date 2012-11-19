@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 17.12.2008 11:00:54
- *
- * $Id$
  */
 package com.haulmont.cuba.core.entity.annotation;
 
@@ -17,6 +12,9 @@ import java.lang.annotation.Target;
 
 /**
  * Defines classes of entity lifecycle listeners
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
