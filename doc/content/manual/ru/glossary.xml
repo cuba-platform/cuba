@@ -15,6 +15,14 @@
   </glossdiv>
   <glossdiv>
     <title>Б</title>
+    <glossentry id="browser_glossentry_1">
+      <glossterm>
+        <emphasis role="bold">БД</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Реляционная база данных</para>
+      </glossdef>
+    </glossentry>
     <glossentry id="browser_glossentry">
       <glossterm>
         <emphasis role="bold">Браузер сущностей</emphasis>
@@ -77,7 +85,7 @@
       </glossterm>
       <glossdef>
         <para><classname>Java</classname>  класс, содержащий логику инициализации и обработки событий экрана. Связан с <glossterm linkend="screen_xml_descriptor_glossentry" arch="">XML-дескриптором</glossterm> экрана.</para>
-        <para>См. <xref xrefstyle="" linkend="controller_section"/></para>
+        <para>См. <xref xrefstyle="" linkend="screen_controller_section"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -90,6 +98,15 @@
       <glossdef>
         <para>Набор файлов, содержащих локализованные сообщения пользовательского интерфейса: заголовки полей и кнопок, названия сущностей и их  атрибутов, содержимое диалогов  и так далее. </para>
         <para>См. <xref xrefstyle="" linkend="localization_section"/></para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="message_pack_glossentry_1">
+      <glossterm>
+        <emphasis role="bold">Персистентный контекст</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Набор экземпляров сущностей, загруженных из базы данных или только что созданных. Персистентный контекст является кэшем данных в рамках текущей транзакции. При коммите транзакции все изменения сущностей в персистентном контексте сохраняются в БД. </para>
+        <para>См. <xref xrefstyle="" linkend="EntityManager_section"/></para>
       </glossdef>
     </glossentry>
     <glossentry id="view_glossentry">
@@ -129,7 +146,7 @@
         <emphasis role="bold">Сущность</emphasis>
       </glossterm>
       <glossdef>
-        <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущности (entity class) – это созданный по определенным правилам Java-класс, как правило, соответствующий таблице в базе данных.</para>
+        <para>Основной элемент модели данных, см. <xref linkend="data_model_section"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -176,8 +193,8 @@
         <emphasis role="bold">EntityManager</emphasis>
       </glossterm>
       <glossdef>
-        <para>Программный компонент среднего слоя, служащий для извлечения <glossterm linkend="entity_glossentry">сущностей</glossterm> из БД и сохранения их в БД.</para>
-        <para>См. <xref linkend="text_entityManager"/></para>
+        <para>Программный компонент среднего слоя, служащий для работы с персистентными <link linkend="data_model_section">сущностями</link>.</para>
+        <para>См. <xref linkend="EntityManager_section"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -217,7 +234,7 @@
         <emphasis role="bold">JPA</emphasis>
       </glossterm>
       <glossdef>
-        <para>Java Persistence API - стандартная спецификация технологии объектно-реляционного отображения (ORM). В платформе <productname>CUBA</productname> используется фреймворк <application>Apache OpenJPA</application>, реализующий эту спецификацию.</para>
+        <para>Java Persistence API - стандартная спецификация технологии объектно-реляционного отображения (<link linkend="orm_section">ORM</link>). В платформе <productname>CUBA</productname> используется фреймворк <application>Apache OpenJPA</application>, реализующий эту спецификацию.</para>
       </glossdef>
     </glossentry>
     <glossentry id="jpql_glossentry">
@@ -277,6 +294,15 @@
         <para>См. также <ulink url="http://en.wikipedia.org/wiki/Optimistic_concurrency_control">http://en.wikipedia.org/wiki/Optimistic_concurrency_control</ulink></para>
       </glossdef>
     </glossentry>
+    <glossentry id="orm_glossentry">
+      <glossterm>
+        <emphasis role="bold">ORM</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Object-Relational Mapping - объектно-реляционное отображение - технология связывания таблиц реляционной базы данных с объектами языка программирования. </para>
+        <para>См. <xref linkend="orm_section"/></para>
+      </glossdef>
+    </glossentry>
   </glossdiv>
   <glossdiv lang="ru">
     <title>P</title>
@@ -285,7 +311,7 @@
         <emphasis role="bold">POJO</emphasis>
       </glossterm>
       <glossdef>
-        <para>Plain Old Java Object − «простой Java-объект в старом стиле» −  Java-объект, не унаследованный ни от какого специфического класса и не реализующий никаких служебных интерфейсов сверх тех, которые нужны для описания бизнес-модели. </para>
+        <para>Plain Old Java Object − «простой Java-объект в старом стиле» −  Java-объект, не унаследованный ни от какого специфического класса и не реализующий никаких служебных интерфейсов сверх тех, которые нужны для описания бизнес-логики. </para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -311,12 +337,13 @@
   </glossdiv>
   <glossdiv lang="ru">
     <title>X</title>
-    <glossentry id="screen_xml_descriptor_glossentry">
+    <glossentry id="screen_xml_glossentry">
       <glossterm>
         <emphasis role="bold">XML-дескриптор</emphasis>
       </glossterm>
       <glossdef>
         <para>Файл в формате XML, содержащий описание <glossterm linkend="datasource_glossentry">источников данных</glossterm> и расположения визуальных компонентов экрана.</para>
+        <para>См. <xref linkend="screen_xml_section"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>

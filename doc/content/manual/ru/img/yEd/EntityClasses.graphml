@@ -18,7 +18,7 @@
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="147.0" width="128.0" x="271.125" y="-699.6666666666666"/>
+          <y:Geometry height="147.0" width="128.0" x="305.1488095238095" y="-703.4166666666666"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="66.59423828125" x="30.702880859375" y="3.0">Instance<y:LabelModel>
@@ -45,7 +45,7 @@ addListener</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="66.0" width="100.0" x="194.1797619047619" y="-517.6666666666666"/>
+          <y:Geometry height="66.0" width="100.0" x="142.3595238095238" y="-521.4166666666666"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="78.14697265625" x="10.926513671875" y="3.0">Entity&lt;T&gt;<y:LabelModel>
@@ -66,7 +66,7 @@ addListener</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="79.0" width="100.0" x="78.6797619047619" y="-416.66666666666663"/>
+          <y:Geometry height="79.0" width="100.0" x="15.0" y="-416.66666666666663"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="82.72998046875" x="8.635009765625" y="3.0">BaseEntity<y:LabelModel>
@@ -88,7 +88,7 @@ getCreatedBy</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="112.0" width="189.4375" x="145.00029761904761" y="-302.66666666666663"/>
+          <y:Geometry height="112.0" width="189.4375" x="160.35982142857142" y="-302.66666666666663"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="116.302734375" x="36.5673828125" y="25.96875">BaseUuidEntity<y:LabelModel>
@@ -111,7 +111,7 @@ createdBy</y:AttributeLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="140.66666666666663" width="189.4375" x="232.35982142857142" y="-140.66666666666663"/>
+          <y:Geometry height="140.66666666666663" width="189.4375" x="247.71934523809523" y="-140.66666666666663"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="114.8935546875" x="37.27197265625" y="25.96875">StandardEntity<y:LabelModel>
@@ -136,7 +136,7 @@ deletedBy</y:AttributeLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="66.0" width="100.0" x="15.0" y="-279.66666666666663"/>
+          <y:Geometry height="66.0" width="100.0" x="30.359523809523807" y="-279.66666666666663"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="77.79150390625" x="11.104248046875" y="3.0">Versioned<y:LabelModel>
@@ -157,7 +157,7 @@ deletedBy</y:AttributeLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="79.0" width="100.0" x="364.43809523809523" y="-286.16666666666663"/>
+          <y:Geometry height="79.0" width="100.0" x="379.79761904761904" y="-286.16666666666663"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="79.50537109375" x="10.247314453125" y="3.0">Updatable<y:LabelModel>
@@ -179,7 +179,7 @@ getUpdatedBy</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="91.83333333333331" width="100.0" x="494.43809523809523" y="-292.58333333333326"/>
+          <y:Geometry height="91.83333333333331" width="100.0" x="509.79761904761904" y="-292.58333333333326"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="82.076171875" x="8.9619140625" y="3.0">SoftDelete<y:LabelModel>
@@ -203,7 +203,7 @@ getDeletedBy</y:MethodLabel>
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="34.0" width="242.0" x="208.6797619047619" y="-394.16666666666663"/>
+          <y:Geometry height="34.0" width="242.0" x="364.43809523809523" y="-394.16666666666663"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="211.13037109375" x="15.434814453125" y="3.0">AbstractNotPersistentEntity<y:LabelModel>
@@ -225,7 +225,7 @@ getDeletedBy</y:MethodLabel>
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="66.0" width="158.4375" x="346.8514880952381" y="-517.6666666666666"/>
+          <y:Geometry height="66.0" width="158.4375" x="466.71934523809523" y="-521.4166666666666"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="129.01708984375" x="14.710205078125" y="3.0">AbstractInstance<y:LabelModel>
@@ -242,13 +242,35 @@ getDeletedBy</y:MethodLabel>
         </y:UMLClassNode>
       </data>
     </node>
+    <node id="n10">
+      <data key="d4"/>
+      <data key="d5"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="56.5" width="189.4375" x="145.00029761904761" y="-405.41666666666663"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="138.00537109375" x="25.716064453125" y="25.96875">EmbeddableEntity<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-0.03703090122767855" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="JPA mapped superclass" use3DEffect="true">
+            <y:AttributeLabel/>
+            <y:MethodLabel/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
     <edge id="e0" source="n1" target="n0">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-33.0" tx="-32.0" ty="73.5">
-            <y:Point x="244.1797619047619" y="-532.6666666666666"/>
-            <y:Point x="303.125" y="-532.6666666666666"/>
+            <y:Point x="192.3595238095238" y="-536.4166666666666"/>
+            <y:Point x="337.1488095238095" y="-536.4166666666666"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -260,9 +282,9 @@ getDeletedBy</y:MethodLabel>
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="-39.5" tx="-25.0" ty="33.0">
-            <y:Point x="128.6797619047619" y="-431.66666666666663"/>
-            <y:Point x="219.1797619047619" y="-431.66666666666663"/>
+          <y:Path sx="0.0" sy="-39.5" tx="-33.33333333333333" ty="33.0">
+            <y:Point x="65.0" y="-431.66666666666663"/>
+            <y:Point x="159.0261904761905" y="-431.66666666666663"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -275,8 +297,8 @@ getDeletedBy</y:MethodLabel>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-47.359375" sy="-56.0" tx="0.0" ty="39.5">
-            <y:Point x="192.35967261904761" y="-317.66666666666663"/>
-            <y:Point x="128.6797619047619" y="-317.66666666666663"/>
+            <y:Point x="207.71919642857142" y="-317.66666666666663"/>
+            <y:Point x="65.0" y="-317.66666666666663"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -289,8 +311,8 @@ getDeletedBy</y:MethodLabel>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-23.6796875" sy="-70.33333333333331" tx="0.0" ty="56.0">
-            <y:Point x="303.3988839285714" y="-170.66666666666663"/>
-            <y:Point x="239.71904761904761" y="-170.66666666666663"/>
+            <y:Point x="318.75840773809523" y="-170.66666666666663"/>
+            <y:Point x="255.07857142857142" y="-170.66666666666663"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -303,8 +325,8 @@ getDeletedBy</y:MethodLabel>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-71.0390625" sy="-70.33333333333331" tx="0.0" ty="33.0">
-            <y:Point x="256.0395089285714" y="-155.66666666666663"/>
-            <y:Point x="65.0" y="-155.66666666666663"/>
+            <y:Point x="271.39903273809523" y="-155.66666666666663"/>
+            <y:Point x="80.35952380952381" y="-155.66666666666663"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -317,8 +339,8 @@ getDeletedBy</y:MethodLabel>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="23.6796875" sy="-70.33333333333331" tx="0.0" ty="39.5">
-            <y:Point x="350.7582589285714" y="-170.66666666666663"/>
-            <y:Point x="414.43809523809523" y="-170.66666666666663"/>
+            <y:Point x="366.11778273809523" y="-170.66666666666663"/>
+            <y:Point x="429.79761904761904" y="-170.66666666666663"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -331,8 +353,8 @@ getDeletedBy</y:MethodLabel>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="71.0390625" sy="-70.33333333333331" tx="0.0" ty="45.91666666666666">
-            <y:Point x="398.1176339285714" y="-155.66666666666663"/>
-            <y:Point x="544.4380952380952" y="-155.66666666666663"/>
+            <y:Point x="413.47715773809523" y="-155.66666666666663"/>
+            <y:Point x="559.797619047619" y="-155.66666666666663"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -344,7 +366,10 @@ getDeletedBy</y:MethodLabel>
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-60.5" sy="-17.0" tx="25.0" ty="33.0"/>
+          <y:Path sx="-60.5" sy="-17.0" tx="33.33333333333333" ty="33.0">
+            <y:Point x="424.93809523809523" y="-420.41666666666663"/>
+            <y:Point x="225.69285714285712" y="-420.41666666666663"/>
+          </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
           <y:BendStyle smoothed="false"/>
@@ -355,10 +380,7 @@ getDeletedBy</y:MethodLabel>
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="60.5" sy="-17.0" tx="-39.609375" ty="33.0">
-            <y:Point x="390.1797619047619" y="-409.16666666666663"/>
-            <y:Point x="386.4608630952381" y="-409.16666666666663"/>
-          </y:Path>
+          <y:Path sx="60.5" sy="-17.0" tx="0.0" ty="33.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
           <y:BendStyle smoothed="false"/>
@@ -370,8 +392,8 @@ getDeletedBy</y:MethodLabel>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-33.0" tx="32.0" ty="73.5">
-            <y:Point x="426.0702380952381" y="-532.6666666666666"/>
-            <y:Point x="367.125" y="-532.6666666666666"/>
+            <y:Point x="545.9380952380952" y="-536.4166666666666"/>
+            <y:Point x="401.1488095238095" y="-536.4166666666666"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
@@ -383,10 +405,48 @@ getDeletedBy</y:MethodLabel>
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="47.359375" sy="-56.0" tx="39.609375" ty="33.0">
-            <y:Point x="287.0784226190476" y="-317.66666666666663"/>
-            <y:Point x="465.6797619047619" y="-317.66666666666663"/>
+          <y:Path sx="47.359375" sy="-56.0" tx="52.8125" ty="33.0">
+            <y:Point x="302.4379464285714" y="-317.66666666666663"/>
+            <y:Point x="621.4380952380952" y="-317.66666666666663"/>
+            <y:Point x="621.4380952380952" y="-409.16666666666663"/>
+            <y:Point x="598.7505952380952" y="-409.16666666666663"/>
           </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="white_delta"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e11" source="n10" target="n1">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-47.359375" sy="-28.25" tx="0.0" ty="33.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="white_delta"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e12" source="n10" target="n9">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="47.359375" sy="-28.25" tx="-52.8125" ty="33.0">
+            <y:Point x="287.0784226190476" y="-435.41666666666663"/>
+            <y:Point x="493.12559523809523" y="-435.41666666666663"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="white_delta"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e13" source="n7" target="n6">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
           <y:BendStyle smoothed="false"/>

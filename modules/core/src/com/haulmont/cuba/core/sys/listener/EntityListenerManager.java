@@ -193,6 +193,7 @@ public class EntityListenerManager
          List<String> listeners = new ArrayList<String>();
 
         List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
+        Collections.reverse(superclasses);
         for (Class superclass : superclasses) {
             Set<String> set = dynamicListeners.get(superclass);
             if (set != null) {

@@ -142,7 +142,7 @@
   <section>
     <title>Общие компоненты</title>
     <para>В данной главе рассмотрены компоненты платформы, общие для всех <link linkend="app_tiers_section">уровней</link> приложения.</para>
-    <section>
+    <section id="data_model_section">
       <title>Модель данных</title>
       <para>Предметная область моделируется в системе с помощью взаимосвязанных классов Java, называемых классами сущностей или просто сущностями. </para>
       <para>Сущности подразделяются на две категории:<itemizedlist>
@@ -153,6 +153,8 @@
             <para>неперсистентные – экземпляры существуют только в оперативной памяти</para>
           </listitem>
         </itemizedlist></para>
+      <para>Сущности характеризуются своими атрибутами. Атрибут соответствует полю класса и паре методов доступа (get / set) к полю. Чтобы атрибут был  неизменяемым (read only), достаточно не создавать метод set. </para>
+      <para>Персистентные сущности могут включать в себя атрибуты, не хранящиеся в БД. В случае неперсистентного атрибута можно не создавать поле класса, ограничившись методами доступа.</para>
       <para>Класс сущности должен удовлетворять следующим требованиям: <itemizedlist>
           <listitem>
             <para>наследоваться от одного из базовых классов, предоставляемых платформой (см. ниже)</para>
@@ -161,7 +163,51 @@
             <para>иметь набор полей и методов доступа, соответствующих атрибутам сущностей</para>
           </listitem>
           <listitem>
-            <para>атрибуты должны быть определенным образом аннотированы для работы <glossterm linkend="jpa_glossentry">JPA</glossterm> (в случае персистентной сущности) и <link linkend="metadata_framework_section">фреймворка метаданных</link> </para>
+            <para>класс и его поля (или методы доступа при отсутствии для атрибута соответствующего поля)  должны быть определенным образом <link linkend="entity_annotations_section">аннотированы</link> для работы <glossterm linkend="jpa_glossentry">JPA</glossterm> (в случае персистентной сущности) и <link linkend="metadata_framework_section">фреймворка метаданных</link> </para>
+          </listitem>
+          <listitem>
+            <para>для поддержки возможного <link linkend="extension_section">расширения</link> сущностей поля класса необходимо объявлять с модификатором <code>protected</code>, а не <code>private</code></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Поддерживаются следующие типы атрибутов сущностей:<itemizedlist>
+          <listitem>
+            <para><classname>java.lang.String</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.lang.Boolean</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.lang.Integer</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.lang.Long</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.lang.Double</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.math.BigDecimal</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.util.Date</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.sql.Date</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.sql.Time</classname></para>
+          </listitem>
+          <listitem>
+            <para><classname>java.util.UUID</classname></para>
+          </listitem>
+          <listitem>
+            <para><code>byte[]</code></para>
+          </listitem>
+          <listitem>
+            <para><code>enum</code></para>
+          </listitem>
+          <listitem>
+            <para>сущность</para>
           </listitem>
         </itemizedlist></para>
       <figure>
@@ -202,7 +248,7 @@
             <para><interfacename>BaseEntity</interfacename> – декларирует присущие всем персистентным сущностям методы работы с информацией о том, кто и когда создал экземпляр сущности в базе данных </para>
           </listitem>
           <listitem>
-            <para><classname>BaseUuidEntity</classname> – реализует <interfacename>BaseEntity</interfacename> с типом идентификатора <classname>UUID</classname> и поддержкой <glossterm linkend="jpa_glossentry">JPA</glossterm></para>
+            <para><classname>BaseUuidEntity</classname> - реализует <interfacename>BaseEntity</interfacename> с типом идентификатора <classname>UUID</classname> и поддержкой <glossterm linkend="jpa_glossentry">JPA</glossterm></para>
           </listitem>
           <listitem>
             <para><interfacename>Versioned</interfacename> – интерфейс сущностей, поддерживающих <glossterm linkend="optimistic_locking_glossentry">оптимистичную блокировку</glossterm></para>
@@ -217,12 +263,15 @@
             <para><classname>StandardEntity</classname> – наиболее часто используемый базовый класс персистентных сущностей, реализующий вышеперечисленные интерфейсы</para>
           </listitem>
         </itemizedlist></para>
-      <para>При создании классов сущностей рекомендуется придерживаться следующих правил:<itemizedlist>
+      <para>При создании классов сущностей рекомендуется выбирать базовый класс по следующим правилам:<itemizedlist>
           <listitem>
             <para>если сущность не хранится в БД, наследуйте ее от <classname>AbstractNotPersistentEntity</classname></para>
           </listitem>
           <listitem>
-            <para>если сущность только создается в БД, никогда не изменяется, и мягкое удаление не требуется, наследуйте ее от <classname>BaseUuidEntity</classname></para>
+            <para>если сущность встраиваемая - наследуйте ее от <classname>EmbeddableEntity</classname></para>
+          </listitem>
+          <listitem>
+            <para>если сущность только создается в БД, никогда не изменяется, и мягкое удаление не требуется - наследуйте ее от <classname>BaseUuidEntity</classname></para>
           </listitem>
           <listitem>
             <para>если сущность ведет себя стандартным образом: изменяется в БД, требует оптимистичной блокировки и мягкого удаления   − наследуйте ее от <classname>StandardEntity</classname></para>
@@ -231,9 +280,765 @@
             <para>в противном случае наследуйте сущность от <classname>BaseUuidEntity</classname> и реализуйте в классе тот набор интерфейсов <interfacename>Versioned</interfacename>, <interfacename>Updatable</interfacename>, <interfacename>SoftDelete</interfacename>, который требуется</para>
           </listitem>
         </itemizedlist></para>
+      <section id="entity_annotations_section">
+        <title>Аннотации сущностей</title>
+        <para>В данном разделе описаны все поддерживаемые платформой аннотации классов и атрибутов сущностей. </para>
+        <para>Аннотации пакета <code>javax.persistence</code> обеспечивают работу <glossterm linkend="jpa_glossentry">JPA</glossterm>, аннотации пакетов <code>com.haulmont.*</code> предназначены для управления <link linkend="metadata_framework_section">метаданными</link> и другими механизмами платформы. Если указано только простое имя класса, подразумевается что это класс платформы, расположенный в одном  из пакетов <code>com.haulmont.*</code></para>
+        <section>
+          <title>Аннотации класса</title>
+          <variablelist>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Entity.html">@javax.persistence.Entity</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Объявляет класс сущностью модели данных. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя сущности, обязательно должно начинаться с префикса, отделенного знаком <literal>$</literal>. Желательно использовать в качестве префикса короткое имя проекта для формирования отдельного пространства имен. </para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@Entity(name = &quot;sales$Customer&quot;)</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/MappedSuperclass.html">@javax.persistence.MappedSuperclass</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет, что данный класс является предком некоторых сущностей, и его атрибуты должны быть использованы в составе сущностей-наследников. Такой класс не сопоставляется никакой отдельной таблице БД.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@<ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Table.html">javax.persistence.Table</ulink></interfacename>
+              </term>
+              <listitem>
+                <para>Определяет таблицу базы данных для данной сущности. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя таблицы</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@Table(name = &quot;SALES_CUSTOMER&quot;)</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="embeddable_annotation">
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Embeddable.html">@javax.persistence.Embeddable</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет встраиваемую сущность, экземпляры которой хранятся вместе с владеющей сущностью в той же таблице. </para>
+                <para>Для задания имени сущности тебуется применение аннотации <link linkend="metaclass_annotation">
+                    <interfacename>@MetaClass</interfacename>
+                  </link>.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Inheritance.html">@javax.persistence.Inheritance</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет стратегию наследования для иерархии классов сущностей. Данная аннотация должна быть помещена на корневом классе иерархии. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>strategy</code> - стратегия, по умолчанию <code>SINGLE_TABLE</code></para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@<ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/DiscriminatorColumn.html">javax.persistence.DiscriminatorColumn</ulink></interfacename>
+              </term>
+              <listitem>
+                <para>Используется для определения колонки БД, отвечающей за различение типов сущностей в случае стратегий наследования <code>SINGLE_TABLE</code> и <code>JOINED</code>. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя колонки-дискриминатора</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>discriminatorType</code> - тип данных колонки-дискриминатора</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@DiscriminatorColumn(name = &quot;TYPE&quot;, discriminatorType = DiscriminatorType.INTEGER)</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/DiscriminatorValue.html">@javax.persistence.DiscriminatorValue</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет значение колонки-дискриминатора для данной сущности. Эта аннотация должна быть помещена на конкретном классе сущности. </para>
+                <para>Пример:<programlisting>@DiscriminatorValue(&quot;0&quot;)</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/PrimaryKeyJoinColumn.html">@javax.persistence.PrimaryKeyJoinColumn</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Используется в случае стратегии наследования <code>JOINED</code> для указания колонки внешнего ключа данной сущности, ссылающегося на первичный ключ сущности-предка.  </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя колонки внешнего ключа данной сущности</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>referencedColumnName</code> - имя колонки первичного ключа сущности предка</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@PrimaryKeyJoinColumn(name = &quot;CARD_ID&quot;, referencedColumnName = &quot;ID&quot;)</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@NamePattern</interfacename>
+              </term>
+              <listitem>
+                <para>Определяет способ получения имени экземпляра, возвращаемого методом <code>Instance.getInstanceName()</code>.</para>
+                <para>Значением аннотации должна быть строка вида <literal>{0}|{1}</literal>, где <itemizedlist>
+                    <listitem>
+                      <para><literal>{0}</literal> - строка форматирования по правилам  <code>String.format()</code>, или имя метода данного объекта с префиксом <literal>#</literal>. Метод должен возвращать <classname>String</classname> и не иметь параметров.</para>
+                    </listitem>
+                    <listitem>
+                      <para><literal>{1}</literal> - разделенный запятыми список имен полей класса, соответствующий формату <literal>{0}</literal>. В случае использования в <literal>{0}</literal> метода список полей все равно необходим, так как по нему формируется <glossterm linkend="view_glossentry">представление</glossterm> <literal>_minimal</literal>.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Примеры:<programlisting>@NamePattern(&quot;%s|name&quot;)</programlisting><programlisting>@NamePattern(&quot;#getCaption|login,name&quot;)</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="Listeners_annot">
+              <term>
+                <interfacename>@Listeners</interfacename>
+              </term>
+              <listitem>
+                <para>Определяет список слушателей, предназначенных для реакции на события жизненного цикла экземпляров сущности на <link linkend="app_tiers_section">уровне</link><structname> Middleware</structname>. </para>
+                <para>Значением аннотации должна быть строка или массив строк с именами классов слушателей - см. <xref linkend="entity_listeners_section"/></para>
+                <para>Строки используются здесь вместо ссылок на классы потому, что классы слушателей находятся только на уровне <structname>Middleware</structname> и не доступны клиентскому коду, в то время как классы самих сущностей используются на всех уровнях.</para>
+                <para>Примеры:<programlisting>@Listeners(&quot;com.haulmont.cuba.security.listener.UserEntityListener&quot;)</programlisting><programlisting>@Listeners({&quot;com.abc.sales.entity.FooListener&quot;,&quot;com.abc.sales.entity.BarListener&quot;})</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="metaclass_annotation">
+              <term>
+                <interfacename>@MetaClass</interfacename>
+              </term>
+              <listitem>
+                <para>Используется для объявления неперсистентной или <link linkend="embeddable_annotation">встраиваемой</link> сущности (т.е. когда аннотация <interfacename>@javax.persistence.Entity</interfacename> не применима)  </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя сущности, обязательно должно начинаться с префикса, отделенного знаком <literal>$</literal>. Желательно использовать в качестве префикса короткое имя проекта для формирования отдельного пространства имен.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@MetaClass(name = &quot;sys$LockInfo&quot;)</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@SystemLevel</interfacename>
+              </term>
+              <listitem>
+                <para>Указывает, что данная сущность является системной и не должна быть доступна для выбора пользователем в различных списках сущностей, например как тип параметра универсального фильтра или тип <link linkend="runtime_properties_section">динамического атрибута</link>.  </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@EnableRestore</interfacename>
+              </term>
+              <listitem>
+                <para>Указывает, что экземпляры данной сущности доступны для восстановления после <link linkend="soft_delete_section">мягкого удаления</link> в специальном экране <literal>core$Entity.restore</literal>. </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@TrackEditScreenHistory</interfacename>
+              </term>
+              <listitem>
+                <para>Указывает, что для данной сущности будет запоминаться история открытия экранов редактирования (<literal>{имя_сущности}.edit</literal>) с возможностью отображения в специальном экране <literal>sec$ScreenHistory.browse</literal>.  </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@Extends</interfacename>
+              </term>
+              <listitem>
+                <para>Указывает, что  данная сущность является расширением и должна повсеместно использоваться вместо базовой. См. <xref linkend="extension_section"/>  </para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+        <section>
+          <title>Аннотации атрибутов</title>
+          <para>Аннотации атрибутов устанавливаются на соответствующие поля класса, за одним исключением: если требуется объявить неизменяемый (read only) неперсистентный атрибут <literal>foo</literal>, то достаточно создать метод доступа <code>getFoo()</code> и поместить на этот метод аннотацию <interfacename>@MetaProperty</interfacename>.</para>
+          <variablelist>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Transient.html">@javax.persistence.Transient</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Указывает, что данное поле не хранится в БД, т.е. является неперсистентным. </para>
+                <para>Поля поддерживаемых <glossterm linkend="jpa_glossentry">JPA</glossterm> типов (см. <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html">http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html</ulink>) <emphasis>по умолчанию являются персистентными</emphasis>, поэтому аннотация <interfacename>@Transient</interfacename> обязательна для объявления неперсистентного атрибута такого типа. </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@org.apache.openjpa.persistence.Persistent</interfacename>
+              </term>
+              <listitem>
+                <para>Указывает, что данное поле хранится в БД, т.е. является персистентным.</para>
+                <para>Данная аннотация требуется только для нестандартного для <glossterm linkend="jpa_glossentry">JPA</glossterm> типа поля, платформа на данный момент поддерживает  один такой тип - <classname>java.util.UUID</classname>. Таким образом, <interfacename>@Persistent</interfacename> требуется только в одном случае - при объявлении персистентного поля типа <classname>UUID</classname>.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Column.html">@javax.persistence.Column</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет колонку БД, в которой будут храниться значения данного атрибута. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя колонки</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>length</code> - (необязательный параметр, по умолчанию <literal>255</literal>) - длина колонки. Используется также при формировании <link linkend="metadata_framework_section">метаданных</link> и в конечном счете может ограничивать максимальныю длину вводимого текста в визуальных компонентах, работающих с данным атрибутом.</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>nullable</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>nullable = false</code> <glossterm linkend="jpa_glossentry">JPA</glossterm> контролирует наличие значения поля при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/ManyToOne.html">@javax.persistence.ManyToOne</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет атрибут-ссылку на сущность с типом ассоциации много-к-одному. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>fetch</code> - (по умолчанию <code>EAGER</code>) параметр, определяющий, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать ассоциированную сущность. Данный параметр всегда должен быть установлен в значение <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>optional</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>optional = false</code> <glossterm linkend="jpa_glossentry">JPA</glossterm> контролирует наличие ссылки при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Например, несколько экземпляров <classname>Order</classname> (заказов) ссылаются на один экземпляр <classname>Customer</classname> (покупателя), в этом случае класс <classname>Order</classname> должен содержать следующее объявление:<programlisting>@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;CUSTOMER_ID&quot;)
+protected Customer customer;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/OneToMany.html">@javax.persistence.OneToMany</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет атрибут-коллекцию ссылок на сущность с типом ассоциации один-ко-многим. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>mappedBy</code> - поле связанной сущности, определяющее ассоциацию </para>
+                    </listitem>
+                    <listitem>
+                      <para><code>targetEntity</code> - тип связанной сущности. Необязательный параметр, если коллекция объявлена с использованием <application>Java generics</application>. </para>
+                    </listitem>
+                    <listitem>
+                      <para><code>fetch</code> - (необязательный параметр, по умолчанию <code>LAZY</code>) - определяет, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать коллекцию связанных сущностей. Необходимо всегда оставлять значение по умолчанию <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>cascade</code> - (необязательный параметр, по умолчанию <code>{}</code>) - каскадирование операций определяет, какие операции над сущностью должны быть применены к ассоциированным сущностям. Каскадирование на данном уровне не рекомендуется использовать.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Например, несколько экземпляров <classname>Item</classname> (пунктов заказа) ссылаются на один экземпляр <classname>Order</classname> (заказ) с помощью <interfacename>@ManyToOne</interfacename> поля <code>Item.order</code>, в этом случае класс <classname>Order</classname> может содержать коллекцию экземпляров <classname>Item</classname>:<programlisting>@OneToMany(mappedBy = &quot;order&quot;)
+protected Set&lt;Item&gt; items;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/OneToOne.html">@javax.persistence.OneToOne</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет атрибут-ссылку на сущность с типом ассоциации один-к-одному. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>fetch</code> - (по умолчанию <code>EAGER</code>) параметр, определяющий, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать ассоциированную сущность. Данный параметр всегда должен быть установлен в значение <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>mappedBy</code> - поле связанной сущности, определяющее ассоциацию. Требуется устанавливать только на ведомой стороне ассоциации. </para>
+                    </listitem>
+                    <listitem>
+                      <para><code>optional</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>optional = false</code> <glossterm linkend="jpa_glossentry">JPA</glossterm> контролирует наличие ссылки при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример ведущей стороны ассоциации, класс <classname>Driver</classname>:<programlisting>@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;CALLSIGN_ID&quot;)
+protected DriverCallsign callsign;</programlisting></para>
+                <para>Пример ведомой стороны ассоциации, класс <classname>DriverCallsign</classname>:<programlisting>@OneToOne(fetch = FetchType.LAZY, mappedBy = &quot;callsign&quot;)
+protected Driver driver;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/ManyToMany.html">@javax.persistence.ManyToMany</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет атрибут-коллекцию ссылок на сущность с типом ассоциации много-ко-многим.</para>
+                <para>Ассоциация много-ко-многим всегда имеет ведущую сторону и может иметь обратную сторону - ведомую. На ведущей строне указывается дополнительная аннотация <interfacename>@JoinTable</interfacename>, на ведомой стороне - параметр <code>mappedBy</code>.</para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>mappedBy</code> - поле связанной сущности, определяющее ассоциацию с ведущей стороны. Необходимо указывать только на ведомой стороне.</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>targetEntity</code> - тип связанной сущности. Необязательный параметр, если коллекция объявлена с использованием <application>Java generics</application>. </para>
+                    </listitem>
+                    <listitem>
+                      <para><code>fetch</code> - (необязательный параметр, по умолчанию <code>LAZY</code>) - определяет, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать коллекцию связанных сущностей. Необходимо всегда оставлять значение по умолчанию <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>TODO</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/JoinColumn.html">@javax.persistence.JoinColumn</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Используется для указания колонки БД, определяющей ассоциацию между сущностями.  </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя колонки</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;CUSTOMER_ID&quot;)
+protected Customer customer;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/JoinTable.html">@javax.persistence.JoinTable</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Используется для указания таблицы связи на ведущей стороне <interfacename>@ManyToMany</interfacename> ассоциации. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>name</code> - имя таблицы связи</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>joinColumns</code> - элемент <interfacename>@JoinColumn</interfacename>, определяющий колонку таблицы связей, соответствующую первичному ключу ведущей стороны ассоциации (т.е. содержащей аннотацию <interfacename>@JoinTable</interfacename>)</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>inverseJoinColumns</code> - элемент <interfacename>@JoinColumn</interfacename>, определяющий колонку таблицы связей, соответствующую первичному ключу ведомой стороны ассоциации</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример атрибута <code>customers</code> класса <classname>Group</classname>, являющегося ведущей стороной ассоциации:<programlisting>@ManyToMany
+@JoinTable(name = &quot;SALES_CUSTOMER_GROUP_LINK&quot;,
+    joinColumns = @JoinColumn(name = &quot;GROUP_ID&quot;),
+    inverseJoinColumns = @JoinColumn(name = &quot;CUSTOMER_ID&quot;))
+protected Set&lt;Customer&gt; customers;</programlisting></para>
+                <para>Пример атрибута <code>groups</code> класса <classname>Customer</classname>, являющегося ведомой стороной этой же ассоциации:<programlisting>@ManyToMany(mappedBy = &quot;customers&quot;)
+protected Set&lt;Group&gt; groups;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/OrderBy.html">@javax.persistence.OrderBy</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет порядок элементов в атрибуте-коллекции на момент извлечения из базы данных. Данную аннотацию необходимо задавать для упорядоченных коллекций, таких как <interfacename>List</interfacename> или <classname>LinkedHashSet</classname> для получения предсказуемого порядка следования элементов.</para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>value</code> - строка, определяющая порядок, в формате:<programlisting>orderby_list::= orderby_item [,orderby_item]*
+orderby_item::= property_or_field_name [ASC | DESC]</programlisting></para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@OneToMany(mappedBy = &quot;user&quot;)
+@OrderBy(&quot;createTs&quot;)
+protected List&lt;UserRole&gt; userRoles;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Embedded.html">@javax.persistence.Embedded</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Определяет атрибут типа встраиваемой сущности, в свою очередь аннотированной <interfacename>@Embeddable</interfacename>. </para>
+                <para>Пример:<programlisting>@Embedded
+protected Address address;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Temporal.html">@javax.persistence.Temporal</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Для атрибута типа <classname>java.util.Date</classname> уточняет тип хранимого значения: дата, время или дата+время. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>value</code> - тип хранимого значения: <code>DATE</code>, <code>TIME</code>, <code> TIMESTAMP</code></para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример:<programlisting>@Column(name = &quot;START_DATE&quot;)
+@Temporal(TemporalType.DATE)
+protected Date startDate;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Version.html">@javax.persistence.Version</ulink>
+                </interfacename>
+              </term>
+              <listitem>
+                <para>Указывает, что данное поле хранит версию для поддержки <glossterm linkend="optimistic_locking_glossentry">оптимистичной блокировки</glossterm> сущностей. </para>
+                <para>Применение такого поля необходимо при реализации классом сущности интерфейса <interfacename>Versioned</interfacename> (базовый класс <classname>StandardEntity</classname> уже содержит такое поле).</para>
+                <para>Пример:<programlisting>@Version
+@Column(name = &quot;VERSION&quot;)
+private Integer version;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@MetaProperty</interfacename>
+              </term>
+              <listitem>
+                <para>Определяет неперсистентный атрибут сущности. Данная аннотация может быть установлена как на поле класса, так и на метод доступа, в случае отсутствия соответствующего атрибуту поля.</para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>mandatory</code> - (необязательный параметр, по умолчанию <code>false</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>mandatory = true</code> визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример использования для поля:<programlisting>@Transient
+@MetaProperty
+protected String token;</programlisting></para>
+                <para>Пример использования для метода:<programlisting>@MetaProperty
+public String getLocValue() {
+    if (!StringUtils.isBlank(messagesPack)) {
+        return AppBeans.get(Messsages.class).getMessage(messagesPack, value);
+    } else {
+        return value;
+    }
+}</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="OnDelete_annot">
+              <term>
+                <interfacename>@OnDelete</interfacename>
+              </term>
+              <listitem>
+                <para>Определяет политику обработки связи в случае мягкого удаления сущности, содержащей данный атрибут. См. <xref linkend="soft_delete_section"/></para>
+                <para>Пример:<programlisting>@OneToMany(mappedBy = &quot;group&quot;)
+@OnDelete(DeletePolicy.CASCADE)
+private Set&lt;Constraint&gt; constraints;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="OnDeleteInverse_annot">
+              <term>
+                <interfacename>@OnDeleteInverse</interfacename>
+              </term>
+              <listitem>
+                <para>Определяет политику обработки связи в случае мягкого удаления сущности с обратной стороны ассоциации. См. <xref linkend="soft_delete_section"/> </para>
+                <para>Пример:<programlisting>@ManyToOne
+@JoinColumn(name = &quot;DRIVER_ID&quot;)
+@OnDeleteInverse(DeletePolicy.DENY)
+private Driver driver;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@Composition</interfacename>
+              </term>
+              <listitem>
+                <para>Указывает на то, что связь является композицией - более тесным вариантом ассоциации. Это означает, что связанная сущность имеет смысл только как часть владеющей сущности, т.е. создается и удаляется вместе с ней. </para>
+                <para>Например список пунктов в заказе (класс <classname>Order</classname> содержит коллекцию экземпляров <classname>Item</classname>):<programlisting>@OneToMany(mappedBy = &quot;order&quot;)
+@Composition
+protected List&lt;Item&gt; items;</programlisting></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <interfacename>@LocalizedValue</interfacename>
+              </term>
+              <listitem>
+                <para>Служит для описания способа получения локализованного значения некоторого изменяющегося атрибута, которое возвращает метод <code>MessageTools.getLocValue()</code>. </para>
+                <para>Параметры:<itemizedlist>
+                    <listitem>
+                      <para><code>messagePack</code> - явное указание пакета, из которого будет взято локализованное сообщение, например <code>com.haulmont.cuba.core.entity</code></para>
+                    </listitem>
+                    <listitem>
+                      <para><code>messagePackExpr</code> - выражение в терминах пути к атрибуту, хранящему имя пакета, из которого будет взято локализованное сообщение, например <code>proc.messagesPack</code>. Путь начинается с атрибута текущей сущности. </para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Пример аннотации, означающей, что локализованное значение атрибута <code>state</code> будет взято из пакета, имя которого хранится в атрибуте <code>messagesPack</code> связанной сущности <code>proc</code>:<programlisting>@Column(name = &quot;STATE&quot;)
+@LocalizedValue(messagePackExpr = &quot;proc.messagesPack&quot;)
+protected String state;
+
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;PROC_ID&quot;)
+protected Proc proc;</programlisting></para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+      </section>
       <section id="soft_delete_section">
         <title>Мягкое удаление</title>
-        <para>TODO</para>
+        <para>Платформа <productname>CUBA</productname> поддерживает режим &quot;мягкого удаления&quot; данных - когда вместо удаления записей из базы данных они только помечаются определенным образом и становятся недоступными для обычного использования. В дальнейшем такие записи можно либо совсем удалить из БД с помощью отдельной регламентной процедуры, либо восстановить.</para>
+        <para>Механизм мягкого удаления является &quot;прозрачным&quot; для прикладного программиста - достаточно убедиться что класс сущности реализует интерфейс <interfacename>SoftDelete</interfacename>, и платформа сама нужным образом будет  модифицировать запросы и операции с данными.</para>
+        <para>Режим мягкого удаления имеет следующие преимущества:<itemizedlist>
+            <listitem>
+              <para>значительно снижается риск потери данных вследствие неверных действий пользователей</para>
+            </listitem>
+            <listitem>
+              <para>позволяет быстро сделать некоторые  записи недоступными, даже если на них имеются ссылки. </para>
+              <para>Возьмем для примера  модель данных Заказы - Покупатели. Допустим, на некоторого покупателя оформлено несколько заказов, однако нам нужно сделать его недоступным для  дальнейшей работы. Традиционным &quot;жестким&quot; удалением сделать это невозможно, так как для удаления покупателя нам нужно либо удалить все его заказы, либо обнулить в этих заказах ссылки на него (т.е. потерять информацию). При мягком удалении покупателя он становится недоступным для поиска и изменения, однако при просмотре заказов пользователь видит на экране название покупателя, так как при загрузке связей признак удаления намеренно игнорируется.</para>
+              <para>Описанное поведение является стандартным, но может быть модифицировано с помощью <link linkend="delete_policy_section">политики обработки связей</link> при удалении.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Отрицательной стороной мягкого удаления является увеличение объема базы данных и потенциальная необходимость дополнительных процедур ее очистки.</para>
+        <section>
+          <title>Использование</title>
+          <para>Для того, чтобы экземпляры сущности удалялись мягко, класс сущности должен реализовывать интерфейс <interfacename>SoftDelete</interfacename>,  а соответствующая таблица БД должна содержать колонки: <itemizedlist>
+              <listitem>
+                <para><database>DELETE_TS</database> - когда удалена запись</para>
+              </listitem>
+              <listitem>
+                <para><database>DELETED_BY</database> - логин пользователя, который удалил запись</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Поведение системы по умолчанию - сущности, реализующие <interfacename>SoftDelete</interfacename>, удаляются мягко, удаленные сущности не возвращаются запросами и поиском по идентификатору. При необходимости такое поведение можно динамически отключить следующими способами:<itemizedlist>
+              <listitem>
+                <para>для текущего экземпляра <glossterm linkend="EntityManager_glossentry">EntityManager</glossterm> - вызовом <code>setSoftDeletion(false)</code></para>
+              </listitem>
+              <listitem>
+                <para>при запросе данных через <interfacename>
+                    <link linkend="DataService_section">DataService</link>
+                  </interfacename> или <interfacename>
+                    <link linkend="DataWorker_section">DataWorker</link>
+                  </interfacename> - вызовом у передаваемого объекта <classname>LoadContext</classname> метода <code>setSoftDeletion(false)</code></para>
+              </listitem>
+              <listitem>
+                <para>на уровне <link linkend="datasources_section">источников данных</link> - используя метод <code>CollectionDatasource.setSoftDeletion(false)</code> или атрибут <literal>softDeletion=&quot;false&quot;</literal> элемента <sgmltag>collectionDatasource</sgmltag> в <link linkend="screen_xml_section">XML-дескрипторе</link> экрана.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>В режиме мягкого удаления платформа автоматически отфильтровывает  удаленные экземпляры при загрузке по идентификатору и по <glossterm linkend="jpql_glossentry">JPQL-запросу</glossterm>, а также удаленные элементы связанных сущностей в атрибутах-коллекциях. Однако связанные сущности в единичных атрибутах загружаются независимо от того, удален связанный экземпляр или нет.</para>
+        </section>
+        <section id="delete_policy_section">
+          <title>Политика обработки связей</title>
+          <para>Платформа предоставляет средство обработки связей при удалении сущностей, во многом аналогичное правилам <database>ON DELETE</database> внешних ключей в базе данных. Это средство работает на <link linkend="app_tiers_section">уровне</link><structname> Middleware</structname> и использует аннотации <link linkend="OnDelete_annot">@OnDelete</link>, <link linkend="OnDeleteInverse_annot">@OnDeleteInverse</link> атрибутов сущности.</para>
+          <para>Аннотация <interfacename>@OnDelete</interfacename> обрабатывается при удалении той сущности, в которой она встретилась, а не той, на которую указывает аннотированный атрибут (в этом отличие от каскадных удалений на уровне БД).
+</para>
+          <para>
+Аннотация <interfacename>@OnDeleteInverse</interfacename> обрабатывается при удалении той сущности, на которую указывает аннотированный атрибут, (т.е. аналогично каскадному удалению на уровне внешних ключей в БД). Эта аннотация полезна при отсутствии в удаляемом объекте атрибута, который нужно проверять при удалении. При этом, как правило, в проверяемом объекте существует ссылка на удаляемый, на этот атрибут и устанавливается аннотация <interfacename>@OnDeleteInverse</interfacename>. </para>
+          <para>Значением аннотации может быть: <itemizedlist>
+              <listitem>
+                <para><code>DeletePolicy.DENY</code> - запретить удаление сущности, если аннотированный атрибут не <code>null</code> или не пустая коллекция </para>
+              </listitem>
+              <listitem>
+                <para><code>DeletePolicy.CASCADE</code> - каскадно удалить аннотированный атрибут </para>
+              </listitem>
+              <listitem>
+                <para><code>DeletePolicy.UNLINK</code> - разорвать связь с аннотированным атрибутом. Разрыв связи имеет смысл указывать только на ведущей стороне ассоциации - той, которая в  классе сущности аннотирована <interfacename>@JoinColumn</interfacename>. </para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Примеры: <orderedlist>
+              <listitem>
+                <para>Запрет удаления при наличии ссылки: при попытке удаления экземпляра <classname>Customer</classname>, на который ссылается хотя бы один <classname>Order</classname>, будет выброшено исключение <classname>DeletePolicyException</classname>.</para>
+                <para><filename>Order.java</filename><programlisting>@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;CUSTOMER_ID&quot;)
+@OnDeleteInverse(DeletePolicy.DENY)
+protected Customer customer;</programlisting></para>
+                <para><filename>Customer.java</filename><programlisting>@OneToMany(mappedBy = &quot;customer&quot;)
+protected List&lt;Order&gt; orders;</programlisting></para>
+              </listitem>
+              <listitem>
+                <para>Каскадное удаление элементов коллекции: при удалении экземпляра <classname>Role</classname> все экземпляры <classname>Permission</classname> также будут удалены.</para>
+                <para><filename>Role.java</filename><programlisting>@OneToMany(mappedBy = &quot;role&quot;)
+@OnDelete(DeletePolicy.CASCADE)
+protected Set&lt;Permission&gt; permissions;</programlisting></para>
+                <para><filename>Permission.java</filename><programlisting>@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;ROLE_ID&quot;)
+protected Role role;</programlisting></para>
+              </listitem>
+              <listitem>
+                <para>Разрыв связи с элементами коллекции: удаление экземпляра <classname>Role</classname> приведет к установке в <code>null</code> ссылок со стороны всех входивших в коллекцию экземпляров <classname>Permission</classname>.</para>
+                <para><filename>Role.java</filename><programlisting>@OneToMany(mappedBy = &quot;role&quot;)
+@OnDelete(DeletePolicy.UNLINK)
+protected Set&lt;Permission&gt; permissions;</programlisting></para>
+                <para><filename>Permission.java</filename><programlisting>@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;ROLE_ID&quot;)
+protected Role role;</programlisting></para>
+              </listitem>
+            </orderedlist></para>
+          <para>Особенности реализации:<orderedlist>
+              <listitem>
+                <para>Нужно быть  осторожным при использовании <interfacename>@OnDeleteInverse</interfacename> с политиками <code>CASCADE</code> и <code>UNLINK</code>, так как при этом происходит извлечение из БД на сервер приложения всех экземпляров ссылающихся объектов, изменение и затем сохранение. </para>
+                <para>Например, в случае ассоциации <classname>Customer</classname> - <classname>Job</classname> и большого количества работ для одного заказчика, если поставить на атрибут <code>Job.customer</code> политику <code>@OnDeleteInverse(CASCADE)</code>, то при удалении экземпляра заказчика будет предпринята попытка извлечь и изменить все его работы. Это может привести  к перегрузке сервера приложения и  БД.</para>
+                <para>С другой стороны, использование <code>@OnDeleteInverse(DENY)</code> безопасно, так как при этом производится только подсчет количества ссылающихся объектов, и если оно больше <literal>0</literal>, выбрасывается исключение. Поэтому <code>@OnDeleteInverse(DENY)</code> для атрибута <code>Job.customer</code> вполне допустимо. </para>
+              </listitem>
+              <listitem>
+                <para>Политика обработки связей реализуется   с помощью <link linkend="entity_listeners_section">Entity Listeners</link>, то есть при сохранении данных в БД  на <link linkend="app_tiers_section">уровне</link> Middleware.</para>
+              </listitem>
+            </orderedlist> </para>
+        </section>
+        <section>
+          <title>Ограничение уникальности на уровне БД</title>
+          <para>В режиме мягкого удаления для ограничения уникальности некоторого значения необходимо обеспечить существование единственной неудаленной записи с этим значением, и произвольного количества удаленных записей с этим же значением.</para>
+          <para>Реализуется данная логика путем, специфичным для используемого сервера базы данных:<itemizedlist>
+              <listitem>
+                <para>Если сервер БД поддерживает частичные (partial) индексы (например <application>PostgreSQL</application>), то ограничение уникальности можно создать следующим образом:<programlisting>create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN_LC) where DELETE_TS is null</programlisting></para>
+              </listitem>
+              <listitem>
+                <para>Если сервер БД не поддерживает частичные индексы (например <application>Microsoft SQL Server 2005</application>), то в уникальный индекс можно включить поле <database>DELETE_TS</database>:<programlisting>create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN_LC, DELETE_TS)</programlisting></para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
+      </section>
+      <section id="entity_listeners_section">
+        <title>Entity Listeners</title>
+        <para><firstterm>Entity Listeners</firstterm> предназначены для реакции на события жизненного цикла экземпляров сущностей на <link linkend="app_tiers_section">уровне</link><structname> Middleware</structname>.</para>
+        <para>Слушатель представляет собой класс, реализующий один или несколько интерфейсов пакета <code>com.haulmont.cuba.core.listener</code>. Слушатель будет реагировать на события  типов, соответствующих реализуемым интерфейсам.</para>
+        <variablelist>
+          <varlistentry>
+            <term>
+              <interfacename>BeforeDetachEntityListener</interfacename>
+            </term>
+            <listitem>
+              <para>Метод <code>onBeforeDetach()</code> вызывается  перед отделением объекта от <interfacename>
+                  <link linkend="EntityManager_section">EntityManager</link>
+                </interfacename> при коммите транзакции.</para>
+              <para>Данный слушатель можно использовать например для заполнения неперсистентных атрибутов сущности перед отправкой ее на клиентский уровень.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>BeforeInsertEntityListener</interfacename>
+            </term>
+            <listitem>
+              <para>Метод <code>onBeforeInsert()</code> вызывается перед выполнением вставки записи в БД. В данном методе возможны любые операции с текущим <interfacename>
+                  <link linkend="EntityManager_section">EntityManager</link>
+                </interfacename>.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>AfterInsertEntityListener</interfacename>
+            </term>
+            <listitem>
+              <para>Метод <code>onAfterInsert()</code> вызывается после выполнения вставки записи в БД, но до коммита транзакции. В данном методе нельзя модифицировать текущий персистентный контекст, однако можно производить изменения в БД с помощью <link linkend="QueryRunner_section">
+                  <interfacename>QueryRunner</interfacename>
+                </link>.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>BeforeUpdateEntityListener</interfacename>
+            </term>
+            <listitem>
+              <para>Метод <code>onBeforeUpdate()</code> вызывается перед изменением записи в БД. В данном методе возможны любые операции с текущим <interfacename>
+                  <link linkend="EntityManager_section">EntityManager</link>
+                </interfacename>.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>AfterUpdateEntityListener</interfacename>
+            </term>
+            <listitem>
+              <para>Метод <code>onAfterUpdate()</code> вызывается после изменения записи в БД, но до коммита транзакции. В данном методе нельзя модифицировать текущий персистентный контекст, однако можно производить изменения в БД с помощью <link linkend="QueryRunner_section">
+                  <interfacename>QueryRunner</interfacename>
+                </link>.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>BeforeDeleteEntityListener</interfacename>
+            </term>
+            <listitem>
+              <para>Метод <code>onBeforeDelete()</code> вызывается перед удалением записи из БД (или в случае <link linkend="soft_delete_section">мягкого удаления</link> - перед изменением записи). В данном методе возможны любые операции с текущим <interfacename>
+                  <link linkend="EntityManager_section">EntityManager</link>
+                </interfacename>.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>AfterDeleteEntityListener</interfacename>
+            </term>
+            <listitem>
+              <para>Метод <code>onAfterDelete()</code> вызывается после удаления записи из БД (или в случае <link linkend="soft_delete_section">мягкого удаления</link> - после изменения записи), но до коммита транзакции. В данном методе нельзя модифицировать текущий персистентный контекст, однако можно производить изменения в БД с помощью <link linkend="QueryRunner_section">
+                  <interfacename>QueryRunner</interfacename>
+                </link>.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+        <para>Entity Listener  может быть задан 2-мя способами: <itemizedlist>
+            <listitem>
+              <para>Статически - имена классов слушателей указываются в аннотации <link linkend="Listeners_annot">
+                  <interfacename>@Listeners</interfacename>
+                </link> на классе сущности</para>
+            </listitem>
+            <listitem>
+              <para>Динамически - класс сущности и слушателя передаются в метод <code>addListener()</code> бина <interfacename>EntityListenerManager</interfacename>, например: <programlisting>@ManagedBean
+public class MyBean implements AppContext.Listener {
+
+    @Inject
+    private EntityListenerManager entityListenerManager;
+
+    public ClusterManager() {
+        AppContext.addListener(this);
+    }
+
+    @Override
+    public void applicationStarted() {
+        entityListenerManager.addListener(User.class, MyUserListener.class);
+    }
+
+    @Override
+    public void applicationStopped() {
+    }
+}</programlisting></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Для всех экземпляров некоторого класса сущности создается и кэшируется <emphasis>один</emphasis> экземпляр слушателя определенного типа, поэтому слушатель <emphasis>не должен иметь состояния</emphasis>.</para>
+        <para>Если для сущности объявлены несколько слушателей одного типа (например аннотациями класса сущности и его предков, плюс динамически), то их вызов будет выполняться в следующем порядке:<orderedlist>
+            <listitem>
+              <para>Для каждого предка начиная с самого дальнего вызываются его динамически добавленные слушатели, затем статически назначенные.</para>
+            </listitem>
+            <listitem>
+              <para>После всех предков вызываются  динамически добавленные слушатели  данного класса, затем статически назначенные.</para>
+            </listitem>
+          </orderedlist></para>
       </section>
     </section>
     <section id="metadata_framework_section">
@@ -574,6 +1379,10 @@ actions.Edit=Edit
         </listitem>
       </itemizedlist>
     </section>
+    <section>
+      <title>Аутентификация и авторизация пользователей</title>
+      <para>TODO</para>
+    </section>
   </section>
   <section id="middleware_section">
     <title>Компоненты среднего слоя</title>
@@ -645,12 +1454,20 @@ actions.Edit=Edit
         </mediaobject>
       </figure>
       <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <classname>ServiceInterceptor.aroundInvoke()</classname>.</para>
+      <section id="DataService_section">
+        <title>DataService</title>
+        <para>TODO</para>
+      </section>
     </section>
     <section id="managed_beans_section">
       <title>Managed Beans</title>
       <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами <link linkend="text_injection_IoC">Inversion of Control</link>. <glossterm linkend="container_glossentry">Контейнером</glossterm> для бинов служит Spring Framework.</para>
       <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть всегда используется один экземпляр данного класса. Соответственно, если создаваемый Вами бин содержит изменяемые данные в полях (имеет состояние), то необходимо синхронизировать обращение к таким данным.</para>
       <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>.</para>
+      <section id="DataWorker_section">
+        <title>DataWorker</title>
+        <para>TODO</para>
+      </section>
     </section>
     <section id="mbeans_section">
       <title>JMX Beans</title>
@@ -668,139 +1485,128 @@ actions.Edit=Edit
       <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="interceptor_glossentry">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью <link linkend="text_springAOP">Spring AOP</link>), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <classname>ClassLoader</classname>.</para>
     </section>
     <section id="orm_section">
-      <title>ORM</title>
-      <para>ORM (англ. <firstterm>Object-relational mapping</firstterm>, рус. <firstterm>Объектно-реляционное отображение</firstterm>) − технология программирования, которая связывает базы данных с концепциями объектно-ориентированных языков программирования, создавая «виртуальную объектную базу данных» (<ulink url="http://ru.wikipedia.org/wiki/ORM">http://ru.wikipedia.org/wiki/ORM</ulink>). </para>
-      <variablelist>
-        <varlistentry>
-          <term>Преимущества</term>
-          <listitem>
-            <itemizedlist>
-              <listitem>
-                <para>Позволяет работать с  данными реляционной СУБД, манипулируя простыми объектами Java (<glossterm linkend="pojo_glossentry">POJO</glossterm>)</para>
-              </listitem>
-              <listitem>
-                <para>Упрощает программирование, избавляя от рутины написания тривиальных SQL-запросов</para>
-              </listitem>
-              <listitem>
-                <para>Упрощает программирование, позволяя извлекать и сохранять целые графы объектов одной командой</para>
-              </listitem>
-              <listitem>
-                <para>Обеспечивает легкое портирование приложения на различные СУБД</para>
-              </listitem>
-              <listitem>
-                <para>Использует лаконичный язык запросов <glossterm linkend="jpql_glossentry">JPQL</glossterm></para>
-              </listitem>
-              <listitem>
-                <para>Оптимизирует количество выполняемых SQL-запросов на команды insert и update</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>Недостатки</term>
-          <listitem>
-            <itemizedlist>
-              <listitem>
-                <para>Требует понимания особенностей работы с ORM</para>
-              </listitem>
-              <listitem>
-                <para>Не позволяет напрямую оптимизировать SQL или использовать особенности СУБД, что приводит к снижению производительности</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>Реализация</term>
-          <listitem>
-            <itemizedlist>
-              <listitem>
-                <para>JPA – Java Persistence API</para>
-              </listitem>
-              <listitem>
-                <para><link linkend="text_openJPA">OpenJPA</link> – фреймворк, реализующий JPA.  На данный момент в платформе используется версия 2.x.</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-      <variablelist>
-        <title>ORM – основные понятия</title>
-        <varlistentry>
-          <term>Entity</term>
-          <listitem>
-            <para>Аннотированный <glossterm linkend="pojo_glossentry">POJO</glossterm>. Обычно соответствует таблице СУБД.</para>
-          </listitem>
-        </varlistentry>
-        <varlistentry id="text_entityManager">
-          <term>EntityManager</term>
-          <listitem>
-            <para>Интерфейс для управления <glossterm linkend="entity_glossentry">сущностями</glossterm>.
+      <title>Слой ORM</title>
+      <section>
+        <title>Общие сведения</title>
+        <para>Object-Relational Mapping - объектно-реляционное отображение - технология связывания таблиц реляционной базы данных с объектами языка программирования. </para>
+        <variablelist>
+          <varlistentry>
+            <term>Преимущества</term>
+            <listitem>
+              <itemizedlist>
+                <listitem>
+                  <para>Позволяет работать с  данными реляционной СУБД, манипулируя простыми объектами Java (<glossterm linkend="pojo_glossentry">POJO</glossterm>)</para>
+                </listitem>
+                <listitem>
+                  <para>Упрощает программирование, избавляя от рутины написания тривиальных SQL-запросов</para>
+                </listitem>
+                <listitem>
+                  <para>Упрощает программирование, позволяя извлекать и сохранять целые графы объектов одной командой</para>
+                </listitem>
+                <listitem>
+                  <para>Обеспечивает легкое портирование приложения на различные СУБД</para>
+                </listitem>
+                <listitem>
+                  <para>Использует лаконичный язык запросов <glossterm linkend="jpql_glossentry">JPQL</glossterm></para>
+                </listitem>
+                <listitem>
+                  <para>Оптимизирует количество выполняемых SQL-запросов на команды insert и update</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>Недостатки</term>
+            <listitem>
+              <itemizedlist>
+                <listitem>
+                  <para>Требует понимания особенностей работы с ORM</para>
+                </listitem>
+                <listitem>
+                  <para>Не позволяет напрямую оптимизировать SQL или использовать особенности СУБД, что приводит к снижению производительности</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>Реализация</term>
+            <listitem>
+              <itemizedlist>
+                <listitem>
+                  <para>JPA – Java Persistence API</para>
+                </listitem>
+                <listitem>
+                  <para><link linkend="text_openJPA">OpenJPA</link> – фреймворк, реализующий JPA.  На данный момент в платформе используется версия 2.x.</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+      <section id="EntityManager_section">
+        <title>EntityManager</title>
+        <para>EntityManager - основной интерфейс ORM, служит для управления персистентными <link linkend="data_model_section">сущностями</link>.
 Его можно получить с помощью   вызова метода  <classname>PersistenceProvider.getEntityManager()</classname>.
 Экземпляр <classname>EntityManager</classname> всегда привязан к одной <link linkend="transactions_section">транзакции</link>. Более того, все вызовы <classname>PersistenceProvider.getEntityManager()</classname> в рамках одной транзакции возвращают один и тот же экземпляр <classname>EntityManager</classname>. После завершения транзакции обращения к данному экземпляру невозможны.
 Экземпляр <classname>EntityManager</classname> содержит в себе &quot;персистентный контекст&quot; – набор экземпляров сущностей, загруженных из БД или только что созданных. Персистентный контекст является кэшем данных в рамках данной транзакции.
 <classname>EntityManager</classname> автоматически сбрасывает в БД все изменения, сделанные в своем персистентном контексте, в момент коммита транзакции, либо явным вызовом метода  <classname>flush()</classname>.</para>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>Enhancing</term>
-          <listitem>
-            <para>Модификация байт-кода классов сущностей для обеспечения возможности работы ORM.
-Производится в момент сборки проекта.</para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-      <variablelist>
-        <title>ORM – жизненный цикл сущности</title>
-        <varlistentry>
-          <term>New</term>
-          <listitem>
-            <para>Только что созданный экземпляр, например: <classname>Car car = new Car()</classname>;
+      </section>
+      <section>
+        <title>Состояния сущности</title>
+        <para><variablelist>
+            <varlistentry>
+              <term>New</term>
+              <listitem>
+                <para>Только что созданный экземпляр, например: <classname>Car car = new Car()</classname>;
 может быть передан в <methodname>EntityManager.persist()</methodname> для сохранения в БД. При этом переходит в состояние <firstterm>Managed</firstterm></para>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>Managed</term>
-          <listitem>
-            <para>Загруженный из БД или новый, переданный в <methodname>EntityManager.persist()</methodname>, экземпляр;
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Managed</term>
+              <listitem>
+                <para>Загруженный из БД или новый, переданный в <methodname>EntityManager.persist()</methodname>, экземпляр;
 принадлежит некоторому экземпляру <classname>EntityManager</classname>, другими словами, находится в его персистентном контексте;
 любые изменения  экземпляра в состоянии <firstterm>Managed</firstterm> будут сохранены в БД в случае коммита транзакции, к которой принадлежит данный <classname>EntityManager</classname></para>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>Detached</term>
-          <listitem>
-            <para>Экземпляр, загруженный из БД и отсоединенный от своего персистентного контекста (вследствие закрытия транзакции или сериализации);
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Detached</term>
+              <listitem>
+                <para>Экземпляр, загруженный из БД и отсоединенный от своего персистентного контекста (вследствие закрытия транзакции или сериализации);
 изменения, вносимые в <firstterm>Detached</firstterm> экземпляр, запоминаются в самом этом экземпляре (с помощью полей, добавленных с помощью Enhancing);
 изменения в <firstterm>Detached</firstterm> экземпляре будут сохранены в БД, только если он будет снова переведен в состояние <firstterm>Managed</firstterm> путем передачи в метод <methodname>EntityManager.merge()</methodname>; <methodname>EntityManager.merge()</methodname> выполняет следующее – загружает из БД экземпляр с тем же идентификатором, переносит в него состояние переданного <firstterm>Detached</firstterm> экземпляра и возвращает загруженный <firstterm>Managed</firstterm> экземпляр. Далее надо работать именно с возвращенным <firstterm>Managed</firstterm> экземпляром!</para>
-          </listitem>
-        </varlistentry>
-      </variablelist>
-      <itemizedlist>
-        <title>ORM – загрузка по требованию</title>
-        <listitem>
-          <para>Позволяет загружать связанные сущности по требованию, т.е. только в момент первого обращения к их свойствам</para>
-        </listitem>
-        <listitem>
-          <para>Работает только для экземпляра в состоянии <firstterm>Managed</firstterm>, то есть внутри транзакции, загрузившей данный экземпляр</para>
-        </listitem>
-        <listitem>
-          <para>Загрузка по требованию (lazy loading)  в сумме порождает больше запросов к БД, чем <glossterm linkend="eager_fetching_glossentry">энергичная загрузка (Eager Fetching)</glossterm>, однако нагрузка при этом растянута во времени</para>
-          <itemizedlist>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </section>
+      <section>
+        <title>Загрузка по требованию</title>
+        <para><itemizedlist>
             <listitem>
-              <para>Например, при извлечении списка N экземпляров сущности A, содержащих ссылку на экземпляр сущности B, в случае загрузки по требованию будет выполнено N+1 запросов к БД.</para>
+              <para>Позволяет загружать связанные сущности по требованию, т.е. только в момент первого обращения к их свойствам</para>
             </listitem>
             <listitem>
-              <para>Для минимизации времени отклика и снижения нагрузки необходимо стремиться к меньшему количеству обращений к БД. Для этого  в платформе  используется механизм <glossterm linkend="view_glossentry">представлений</glossterm>, с помощью которого в вышеописанном случае ORM сформирует один  запрос к БД с объединением таблиц.</para>
+              <para>Работает только для экземпляра в состоянии <firstterm>Managed</firstterm>, то есть внутри транзакции, загрузившей данный экземпляр</para>
             </listitem>
             <listitem>
-              <para>Если A содержит коллекцию B, в случае энергичной загрузки  ORM сформирует SQL запрос, возвращающий произведение строк A и B. </para>
+              <para>Загрузка по требованию (lazy loading)  в сумме порождает больше запросов к БД, чем <glossterm linkend="eager_fetching_glossentry">энергичная загрузка (Eager Fetching)</glossterm>, однако нагрузка при этом растянута во времени</para>
+              <itemizedlist>
+                <listitem>
+                  <para>Например, при извлечении списка N экземпляров сущности A, содержащих ссылку на экземпляр сущности B, в случае загрузки по требованию будет выполнено N+1 запросов к БД.</para>
+                </listitem>
+                <listitem>
+                  <para>Для минимизации времени отклика и снижения нагрузки необходимо стремиться к меньшему количеству обращений к БД. Для этого  в платформе  используется механизм <glossterm linkend="view_glossentry">представлений</glossterm>, с помощью которого в вышеописанном случае ORM сформирует один  запрос к БД с объединением таблиц.</para>
+                </listitem>
+                <listitem>
+                  <para>Если A содержит коллекцию B, в случае энергичной загрузки  ORM сформирует SQL запрос, возвращающий произведение строк A и B. </para>
+                </listitem>
+                <listitem>
+                  <para>Иногда загрузка по требованию с точки зрения производительности предпочтительнее, чем энергичная загрузка. Например, когда работает асинхронный процесс, выполняющий некоторую бизнес-логику, общее время выполнения некритично и желательно распределить во времени  нагрузку на БД.</para>
+                </listitem>
+              </itemizedlist>
             </listitem>
-            <listitem>
-              <para>Иногда загрузка по требованию с точки зрения производительности предпочтительнее, чем энергичная загрузка. Например, когда работает асинхронный процесс, выполняющий некоторую бизнес-логику, общее время выполнения некритично и желательно распределить во времени  нагрузку на БД.</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-      </itemizedlist>
+          </itemizedlist></para>
+      </section>
       <section>
         <title>Макросы в JPQL</title>
         <para>TODO</para>
@@ -878,7 +1684,7 @@ Instance − ваш SQL Server.</para>
     <title>Универсальный пользовательский интерфейс</title>
     <section>
       <title>Экраны</title>
-      <section id="controller_section">
+      <section id="screen_controller_section">
         <title>Контроллер экрана</title>
         <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>, с помощью различных событий. Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
         <itemizedlist>
@@ -970,7 +1776,7 @@ Instance − ваш SQL Server.</para>
           </figure>
         </section>
       </section>
-      <section>
+      <section id="screen_xml_section">
         <title>XML-дескриптор</title>
         <para>Описывает <glossterm linkend="datasource_glossentry">источники данных</glossterm> и расположение визуальных компонентов экрана.</para>
         <para>XML-дескриптор содержит следующие элементы:</para>
@@ -3035,7 +3841,7 @@ Instance − ваш SQL Server.</para>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_searchFieldOverlap.png" contentwidth="190"/>
+                <imagedata contentwidth="190" align="center" fileref="img/gui_searchFieldOverlap.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -3044,7 +3850,7 @@ Instance − ваш SQL Server.</para>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_SearchField_dia.png" contentwidth="180"/>
+                <imagedata contentwidth="180" align="center" fileref="img/gui_SearchField_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -3132,7 +3938,7 @@ Instance − ваш SQL Server.</para>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_searchPickerFieldOverlap.png" contentwidth="308" contentdepth="96"/>
+                <imagedata contentwidth="308" contentdepth="96" align="center" fileref="img/gui_searchPickerFieldOverlap.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -3141,7 +3947,7 @@ Instance − ваш SQL Server.</para>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_SearchPickerField_dia.png" contentwidth="90%"/>
+                <imagedata contentwidth="90%" align="center" fileref="img/gui_SearchPickerField_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -3155,7 +3961,7 @@ Instance − ваш SQL Server.</para>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/gui_searchPickerFieldAllActions.png" contentwidth="257" contentdepth="97"/>
+                <imagedata contentwidth="257" contentdepth="97" align="center" fileref="img/gui_searchPickerFieldAllActions.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -5441,7 +6247,7 @@ taskHandler.execute();</programlisting>
       <title>Организация кэшей данных</title>
       <para>TODO</para>
     </section>
-    <section>
+    <section id="QueryRunner_section">
       <title>Выполнение SQL с помощью QueryRunner</title>
       <para>TODO</para>
     </section>

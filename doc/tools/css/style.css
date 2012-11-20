@@ -31,15 +31,10 @@ a {
     color: #000000;
 }
 
-em {
-    font-style: normal;
-}
-
-
 p {
    margin-top: 0;
    margin-bottom: 1em;
-   text-align: justify; /* Выравнивание по ширине */
+   text-align: justify; /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ */
 }
 
 h1, h2, h3, h4, h5, h6{
@@ -57,23 +52,23 @@ h1 {
 }
 
 h2 {
-	font-size:1.6em;
+	font-size:1.8em;
 }
 
 h3 {
-	font-size:1.3em;
+	font-size:1.6em;
     padding-top:0em;
     padding-bottom:0em;
 }
 
 h4 {
-	font-size:1.1em;
+	font-size:1.4em;
     padding-top:0em;
     padding-bottom:0em;
 }
 
 h5 {
-	font-size: 1.1em;
+	font-size: 1.2em;
 	padding-top:0em;
     padding-bottom:0em;
 }
@@ -177,13 +172,12 @@ div.chapter, div.section {
 	
 }
 
-.ulink
-{
+.ulink {
 	/*color: blue;*/
 }
 
 .glossterm {
-	/*font-style: italic;*/
+	font-style: normal;
 }
 
 /*
@@ -342,7 +336,7 @@ pre {
 	margin-left: 4.3em;
 	padding-left: 1.2em;
 	page-break-inside: auto ;
-    font-size: 80%;
+    font-size: 90%;
 	white-space: pre-wrap;
 }
 
