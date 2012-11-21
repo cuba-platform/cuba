@@ -115,6 +115,24 @@
   <section>
     <title>Описание конфигурационных файлов</title>
     <variablelist>
+      <varlistentry id="datatypes.xml">
+        <term>datatypes.xml</term>
+        <listitem>
+          <para>TODO</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term id="persistence.xml">persistence.xml</term>
+        <listitem>
+          <para>TODO</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="metadata.xml">
+        <term>metadata.xml</term>
+        <listitem>
+          <para>TODO</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="text_context_xml">
         <term>context.xml</term>
         <listitem>

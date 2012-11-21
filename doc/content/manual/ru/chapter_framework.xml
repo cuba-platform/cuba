@@ -1043,135 +1043,365 @@ public class MyBean implements AppContext.Listener {
     </section>
     <section id="metadata_framework_section">
       <title>Metadata Framework</title>
-      <para>Metadata Framework позволяет создавать описание предметной области в терминах метаданных.</para>
+      <para>Для эффективной работы с <link linkend="data_model_section">моделью данных</link> в CUBA-приложениях используется фреймворк метаданных, который:</para>
+      <itemizedlist>
+        <listitem>
+          <para>предоставляет удобный интерфейс для получения информации о <glossterm linkend="entity_glossentry">сущностях</glossterm>, их атрибутах и отношениях между сущностями; а также для навигации по ссылкам</para>
+        </listitem>
+        <listitem>
+          <para>служит специализированной и более удобной в использовании альтернативой <application>Java Reflection API</application></para>
+        </listitem>
+        <listitem>
+          <para>регламентирует допустимые типы данных и отношений между сущностями</para>
+        </listitem>
+        <listitem>
+          <para>позволяет создавать универсальные механизмы работы с данными</para>
+        </listitem>
+      </itemizedlist>
       <figure>
-        <title>Структура метаданных</title>
+        <title>Интерфейсы фреймворка метаданных</title>
         <mediaobject>
           <imageobject>
-            <imagedata contentwidth="80%" align="center" fileref="img/Metadata Framework.png"/>
+            <imagedata contentwidth="80%" align="center" fileref="img/MetadataFramework.png"/>
           </imageobject>
         </mediaobject>
       </figure>
-      <itemizedlist>
-        <title>Назначение метаданных</title>
-        <listitem>
-          <para>Предоставляют удобный интерфейс для получения информации о <glossterm linkend="entity_glossentry">сущностях</glossterm>, атрибутах и отношениях между сущностями; для навигации по ссылкам</para>
-        </listitem>
-        <listitem>
-          <para>Служат более удобной в использовании и более функциональной альтернативой <application>Java Reflection</application></para>
-        </listitem>
-        <listitem>
-          <para>Регламентируют допустимые типы данных и отношений между сущностями</para>
-        </listitem>
-        <listitem>
-          <para>Позволяют создавать универсальные механизмы работы с данными</para>
-        </listitem>
-      </itemizedlist>
-      <para>Основными объектами метаданных являются <classname>MetaClass</classname> и <classname>MetaProperty</classname>.</para>
+      <para>Рассмотрим основные интерфейсы метаданных.</para>
       <variablelist>
         <varlistentry>
-          <term>MetaClass</term>
+          <term>
+            <interfacename>Session</interfacename>
+          </term>
           <listitem>
-            <para><classname>MetaClass</classname> описывает класс сущности. Он имеет уникальное имя и методы для получения списка атрибутов, а также классов предков и наследников.</para>
-            <para><classname>MetaClass</classname> всегда ассоциирован с Java-классом, которого он представляет.</para>
+            <para>Точка входа в фреймворк метаданных. Позволяет получать экземпляры <interfacename>MetaClass</interfacename> по имени и по соответствующему классу Java. Обратите внимание на различие методов <code>getClass()</code> и <code>getClassNN()</code> - первые могут возвращать <code>null</code>, вторые нет (NonNull).</para>
+            <para>Объект <interfacename>Session</interfacename> может быть получен через интерфейс инфраструктуры <interfacename>
+                <link linkend="Metadata">Metadata</link>
+              </interfacename>.</para>
+            <para>Пример:<programlisting>@Inject
+protected Metadata metadata;
+...
+Session session = metadata.getSession();
+MetaClass metaClass1 = session.getClassNN(&quot;sec$User&quot;);
+MetaClass metaClass2 = session.getClassNN(User.class);
+assert metaClass1 == metaClass2;</programlisting></para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>
+            <interfacename>MetaModel</interfacename>
+          </term>
+          <listitem>
+            <para>Редко используемый интерфейс, служит для группировки мета-классов. </para>
+            <para>Группировка осуществляется по первым  трем частям имени пакета Java класса сущности. Например, мета-класс сущности <classname>com.abc.sales.entity.Customer</classname> принадлежит мета-модели с именем <code>com.abc.sales</code></para>
+          </listitem>
+        </varlistentry>
+        <varlistentry id="MetaClass">
+          <term>
+            <interfacename>MetaClass</interfacename>
+          </term>
+          <listitem>
+            <para>Интерфейс метаданных класса сущности. <classname>MetaClass</classname> всегда ассоциирован с классом Java, которого он представляет.</para>
+            <para>Основные методы:</para>
             <itemizedlist>
               <listitem>
-                <para><property>name</property> – имя, по соглашению первой частью имени до знака <code>$</code> является <code>namespace</code>, например, <classname>sec$User</classname></para>
+                <para><code>getName()</code> – имя сущности, по соглашению первой частью имени до знака <code>$</code> является код пространства имен, например, <classname>sales$Customer</classname></para>
               </listitem>
               <listitem>
-                <para><property>properties</property> – список объектов <classname>MetaProperty</classname>, описывающих атрибуты объекта</para>
+                <para><code>getProperties()</code> – список мета-свойств (<interfacename>MetaProperty</interfacename>)</para>
               </listitem>
               <listitem>
-                <para><property>javaClass</property> – класс сущности, которой соответствует данный <classname>MetaClass</classname></para>
+                <para><code>getProperty()</code>, <code>getPropertyNN()</code> - получение мета-свойства по имени. Первый метод в случае отсутствия атрибута с указанным именем возвращает <code>null</code>, второй выбрасывает исключение.</para>
+                <para>Пример:<programlisting>MetaClass userClass = session.getClassNN(User.class);
+MetaProperty groupProperty = userClass.getPropertyNN(&quot;group&quot;);</programlisting></para>
               </listitem>
               <listitem>
-                <para><property>annotations</property> – коллекция аннотаций. Аннотация представляет собой произвольный именованный объект, который добавляется в <classname>MetaClass</classname> на этапе развертывания метаданных. Например, с помощью аннотаций в метаданных хранится длина строковых полей.</para>
+                <para><code>getPropertyPath()</code> - позволяет перемещаться по ссылкам. Данный метод принимает строковый параметр - путь из имен атрибутов, разделенных точкой. Возвращаемый объект <classname>MetaPropertyPath</classname> позволяет обратиться к искомому (последнему в пути) атрибуту вызовом <code>getMetaProperty()</code>. </para>
+                <para>Пример:<programlisting>MetaClass userClass = session.getClassNN(User.class);
+MetaProperty groupNameProp = userClass.getPropertyPath(&quot;group.name&quot;).getMetaProperty();
+assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</programlisting></para>
+              </listitem>
+              <listitem>
+                <para><code>getJavaClass()</code> – класс сущности, которому соответствует данный <classname>MetaClass</classname></para>
+              </listitem>
+              <listitem>
+                <para><code>getAnnotations()</code> – коллекция <link linkend="meta_annotations_section">мета-аннотаций</link> </para>
               </listitem>
             </itemizedlist>
           </listitem>
         </varlistentry>
         <varlistentry>
-          <term>MetaProperty</term>
+          <term>
+            <interfacename>MetaProperty</interfacename>
+          </term>
           <listitem>
-            <para><classname>MetaProperty</classname> описывает атрибут сущности. Атрибут принадлежит мета-классу, который может быть получен методом <methodname>getDomain()</methodname>.</para>
-            <para>Атрибут может быть следующих типов (метод <methodname>getType()</methodname>):</para>
+            <para>Интерфейс метаданных атрибута сущности. </para>
+            <para>Основные методы:</para>
             <itemizedlist>
               <listitem>
-                <para>простой тип: <type>DATATYPE</type></para>
+                <para><code>getName()</code> – имя свойства, соответствует имени атрибута сущности</para>
               </listitem>
               <listitem>
-                <para>перечисление: <type>ENUM</type></para>
+                <para><code>getDomain()</code> – мета-класс, которому принадлежит данное свойство</para>
+              </listitem>
+              <listitem id="MetaProperty.getType">
+                <para><code>getType() </code>– тип свойства:<itemizedlist>
+                    <listitem>
+                      <para>простой тип: <code>DATATYPE</code></para>
+                    </listitem>
+                    <listitem>
+                      <para>перечисление: <code>ENUM</code></para>
+                    </listitem>
+                    <listitem>
+                      <para>ссылочный тип двух видов:</para>
+                      <itemizedlist>
+                        <listitem>
+                          <para><code>ASSOCIATION</code> − простая ссылка на другую сущность. Например, отношение заказа и покупателя − ассоциация.</para>
+                        </listitem>
+                        <listitem>
+                          <para><code>COMPOSITION</code> − ссылка на сущность, которая не имеет самостоятельного значения без владеющей сущности. <code>COMPOSITION</code> можно считать &quot;более тесным&quot; отношением, чем <code>ASSOCIATION</code>. Например, отношение заказа и пункта этого заказа − <code>COMPOSITION</code>, т.к. пункт не может существовать без заказа, которому он принадлежит.</para>
+                        </listitem>
+                      </itemizedlist>
+                      <para>Вид ссылочного атрибута <code>ASSOCIATION</code> или <code>COMPOSITION</code> влияет на режим редактирования сущности: в первом случае сохранение связанной сущности в базу данных происходит независимо, а во втором − связанная сущность сохраняется в БД только вместе с владеющей сущностью.</para>
+                    </listitem>
+                  </itemizedlist></para>
               </listitem>
               <listitem>
-                <para>ссылочный тип двух видов:</para>
-                <itemizedlist>
-                  <listitem>
-                    <para><type>ASSOCIATION</type> − простая ссылка на другой объект. Например, отношение инвойса и контрагента − ассоциация.</para>
-                  </listitem>
-                  <listitem>
-                    <para><type>AGGREGATION</type> − ссылка на объект, который не имеет самостоятельного значения. <type>AGGREGATION</type> можно считать &quot;более тесным&quot; отношением, чем <type>ASSOCIATION</type>. Например, отношение инвойса и строки спецификации этого инвойса − <type>AGGREGATION</type>, т.к. строка спецификации не имеет смысла без самого инвойса.</para>
-                  </listitem>
-                </itemizedlist>
-              </listitem>
-            </itemizedlist>
-            <para>Вид ссылочного атрибута <type>ASSOCIATION</type> или <type>AGGREGATION</type> влияет на режим редактирования сущности: в первом случае коммит связанной сущности происходит независимо, а во втором − связанная сущность коммитится в БД только вместе с основной сущностью.</para>
-            <itemizedlist>
-              <listitem>
-                <para>name – имя свойства, соответствует имени атрибута сущности</para>
+                <para><code>getRange()</code> –  интерфейс <interfacename>Range</interfacename>, детально описывающий тип данного атрибута</para>
               </listitem>
               <listitem>
-                <para>domain – MetaClass, которому принадлежит данное свойство</para>
+                <para><code>isMandatory()</code> – признак обязательности атрибута. Используется, например, визуальными компонентами для сигнализации пользователю о необходимости ввода значения.</para>
               </listitem>
               <listitem>
-                <para>type – тип свойства: DATATYPE, ENUM, ASSOCIATION, AGGREGATION</para>
+                <para><code>isReadOnly()</code> – признак неизменности атрибута</para>
               </listitem>
               <listitem>
-                <para>range – интерфейс к свойствам MetaProperty</para>
+                <para><code>getInverse()</code> – для ссылочного атрибута возвращает мета-свойство с обратной стороны ассоциации, если таковое имеется</para>
               </listitem>
               <listitem>
-                <para>mandatory – true если атрибут сущности должен быть не null</para>
+                <para><code>getAnnotatedElement()</code> – поле (<classname>java.lang.reflect.Field</classname>) или метод (<classname>java.lang.reflect.Method</classname>), соответствующие данному атрибуту сущности</para>
               </listitem>
               <listitem>
-                <para>readOnly – true если атрибут нельзя изменять</para>
+                <para><code>getJavaType()</code> – класс Java данного атрибута сущности. Это либо тип поля класса, либо тип возвращаемого значения метода.</para>
               </listitem>
               <listitem>
-                <para>inverse – ссылка на обратную сторону ассоциации между сущностями</para>
-              </listitem>
-              <listitem>
-                <para>annotatedElement – Field или Method, соответствующие данному атрибуту сущности</para>
-              </listitem>
-              <listitem>
-                <para>javaType – java-класс атрибута сущности</para>
-              </listitem>
-              <listitem>
-                <para>declaringClass – java-класс, декларирующий данный атрибут (содержащий данный annotatedElement)</para>
+                <para><code>getDeclaringClass()</code> – класс Java, содержащий данный атрибут</para>
               </listitem>
             </itemizedlist>
           </listitem>
         </varlistentry>
         <varlistentry>
-          <term>Range</term>
+          <term>
+            <interfacename>Range</interfacename>
+          </term>
           <listitem>
+            <para>Интерфейс, детально описывающий тип атрибута сущности.</para>
+            <para>Основные методы:</para>
             <itemizedlist>
               <listitem>
-                <para>isDatatype – true если MetaProperty.type == DATATYPE</para>
+                <para><code>isDatatype()</code> – возвращает <code>true</code> для атрибута простого  <link linkend="MetaProperty.getType">типа</link></para>
               </listitem>
               <listitem>
-                <para>isEnum – true если MetaProperty.type == DATATYPE</para>
+                <para><code>asDatatype()</code> - возвращает <link linkend="Datatype_section">
+                    <interfacename>Datatype</interfacename>
+                  </link> для атрибута простого <link linkend="MetaProperty.getType">типа</link></para>
               </listitem>
               <listitem>
-                <para>isClass – true если MetaProperty.type == ASSOCIATION or AGGREGATION</para>
+                <para><code>isEnum()</code> – возвращает <code>true</code> для атрибута <link linkend="MetaProperty.getType">типа</link> перечисления</para>
               </listitem>
               <listitem>
-                <para>ordered – true если свойство представляет собой упорядоченную коллекцию (List)</para>
+                <para><code>asEnumeration()</code> - возвращает <link linkend="Datatype_section">
+                    <interfacename>Enumeration</interfacename>
+                  </link> для атрибута  <link linkend="MetaProperty.getType">типа</link> перечисления</para>
               </listitem>
               <listitem>
-                <para>cardinality – вид отношения, если свойство isClass: ONE_TO_ONE, MANY_TO_ONE, ONE_TO_MANY, MANY_TO_MANY</para>
+                <para><code>isClass()</code> – возвращает <code>true</code> для ссылочного атрибута <link linkend="MetaProperty.getType"> типа</link>  <code>ASSOCIATION</code> или <code>COMPOSITION</code></para>
+              </listitem>
+              <listitem>
+                <para><code>asClass()</code> - возвращает <link linkend="MetaClass">мета-класс</link> ассоциированной сущности для ссылочного атрибута</para>
+              </listitem>
+              <listitem>
+                <para><code>isOrdered()</code> – возвращает <code>true</code>  если атрибут представляет собой упорядоченную коллекцию (например <interfacename>List</interfacename>)</para>
+              </listitem>
+              <listitem>
+                <para><code>getCardinality()</code> – вид отношения для ссылочного атрибута: <code>ONE_TO_ONE</code>, <code>MANY_TO_ONE</code>, <code>ONE_TO_MANY</code>, <code>MANY_TO_MANY</code></para>
               </listitem>
             </itemizedlist>
           </listitem>
         </varlistentry>
       </variablelist>
+      <section>
+        <title>Формирование метаданных</title>
+        <para>Основной источник формирования структуры метаданных - <link linkend="entity_annotations_section">аннотированные</link> классы сущностей. </para>
+        <para>Класс сущности отражается в метаданные в следующих случаях: <itemizedlist>
+            <listitem>
+              <para>Класс персистентной сущности аннотирован <interfacename>@Entity</interfacename>, <interfacename>@Embeddable</interfacename>, <interfacename>@MappedSuperclass</interfacename> и зарегистрирован в файле <filename>
+                  <link linkend="persistence.xml">persistence.xml</link>
+                </filename></para>
+            </listitem>
+            <listitem>
+              <para>Класс неперсистентной сущности аннотирован <interfacename>@MetaClass</interfacename> и зарегистрирован в файле <filename>
+                  <link linkend="metadata.xml">metadata.xml</link>
+                </filename></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Атрибут сущности отражается в метаданных, если: <itemizedlist>
+            <listitem>
+              <para>поле класса аннотировано <interfacename>@Column</interfacename>, <interfacename>@OneToOne</interfacename>, <interfacename>@OneToMany</interfacename>, <interfacename>@ManyToOne</interfacename>, <interfacename>@ManyToMany</interfacename>, <interfacename>@Embedded</interfacename></para>
+            </listitem>
+            <listitem>
+              <para>поле класса или метод доступа на чтение (getter) аннотирован <interfacename>@MetaProperty</interfacename></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Параметры мета-класса и мета-свойств формируются на основе параметров перечисленных <link linkend="entity_annotations_section">аннотаций</link>, а также типов полей и методов класса. Кроме того, если у атрибута отсутствует метод доступа на запись (setter), атрибут становится неизменяемым (read only). </para>
+        <warning>
+          <title>Внимание</title>
+          <para>Текущая реализация сборки метаданных имеет следующие ограничения:<itemizedlist>
+              <listitem>
+                <para>Классы сущностей должны размещаться в пакетах, имеющих не менее 3-х уровней иерархии, например <code>com.abc.sales</code>, <code>com.abc.sales.entity</code></para>
+              </listitem>
+              <listitem>
+                <para>Персистентные сущности не могут ссылаться на неперсистентные. Обратное возможно, т.е. неперсистентная сущность может иметь атрибут типа некоторой персистентной сущности.</para>
+              </listitem>
+            </itemizedlist> </para>
+        </warning>
+      </section>
+      <section>
+        <title id="Datatype_section">Datatype</title>
+        <para>Интерфейс <interfacename>Datatype</interfacename> описывает тип данных, допустимый для  атрибута сущности, не являющегося ассоциацией. Каждый экземпляр реализации <interfacename>Datatype</interfacename> соответствует одному классу Java, для работы с которым он предназначен.</para>
+        <para>Все экземпляры зарегистрированы в репозитории - классе <classname>Datatypes</classname>, который выполняет загрузку и инициализацию классов реализации <interfacename>Datatype</interfacename> следующим образом:<itemizedlist>
+            <listitem>
+              <para>в корне <literal>CLASSPATH</literal> ищется файл <filename>
+                  <link linkend="datatypes.xml">datatypes.xml</link>
+                </filename>, и если он найден, репозиторий <classname>Datatypes</classname> инициализируется из него</para>
+            </listitem>
+            <listitem>
+              <para>в противном случае инициализация <classname>Datatypes</classname> производится из файла <filename>/com/haulmont/chile/core/datatypes/<link linkend="datatypes.xml">datatypes.xml</link></filename></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Экземпляр <interfacename>Datatype</interfacename> может быть получен двумя способами:<itemizedlist>
+            <listitem>
+              <para>из мета-свойства типа <code>
+                  <link linkend="MetaProperty.getType">DATATYPE</link>
+                </code>, вызовом <code>getRange().asDatatype()</code></para>
+            </listitem>
+            <listitem>
+              <para>статическим методом <code>Datatypes.get()</code>, передавая в него имя реализации <interfacename>Datatype</interfacename> или класс Java, для которого он создан.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Основные методы интерфейса <interfacename>Datatype</interfacename>:<itemizedlist>
+            <listitem>
+              <para><code>getName()</code> - возвращает уникальное имя данной реализации</para>
+            </listitem>
+            <listitem>
+              <para><code>format()</code> - преобразовывает переданное значение в строку</para>
+            </listitem>
+            <listitem>
+              <para><code>parse()</code> - преобразовывает строку в значение нужного типа </para>
+            </listitem>
+          </itemizedlist></para>
+        <para><interfacename>Datatype</interfacename> определяет два набора методов для форматирования/парсинга: с учетом локали и без учета локали. Преобразование с учетом локали используется повсеместно в пользовательском интерфейсе, преобразование без учета локали используется в системных механизмах, например для сериализации в <link linkend="rest_api_section">REST API</link>. </para>
+        <para>Форматы для преобразований без учета локали задаются в вышеупомянутом файле <filename>
+            <link linkend="datatypes.xml">datatypes.xml</link>
+          </filename>.</para>
+        <para>Форматы для преобразований с учетом локали задаются в <glossterm linkend="main_message_pack_glossentry">главных пакетах локализованных сообщений</glossterm>, в  строках со следующими ключами:<itemizedlist>
+            <listitem>
+              <para><literal>numberDecimalSeparator</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>numberGroupingSeparator</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>integerFormat</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>doubleFormat</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>dateTimeFormat</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>dateFormat</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>timeFormat</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>trueString</literal></para>
+            </listitem>
+            <listitem>
+              <para><literal>falseString</literal></para>
+            </listitem>
+          </itemizedlist>Все перечисленные форматы по умолчанию заданы в <glossterm linkend="main_message_pack_glossentry">главных пакетах локализованных сообщений</glossterm> <link linkend="base_projects_section">базового проекта</link> <structname>cuba</structname>, и могут быть переопределены в аналогичных файлах проекта приложения.</para>
+        <section>
+          <title>Пример форматирования даты в UI</title>
+          <para>Рассмотрим отображение атрибута <code>Order.date</code> в таблице браузера заказов.</para>
+          <para>order-browse.xml<programlisting>&lt;table id=&quot;ordersTable&quot;&gt;
+    ...
+    &lt;columns&gt;
+        &lt;column id=&quot;date&quot;/&gt;
+        ...</programlisting></para>
+          <para>Атрибут <code>date</code>  в классе <classname>Order</classname> определен с типом &quot;дата&quot;:<programlisting>@Column(name = &quot;DATE&quot;, nullable = false)
+@Temporal(TemporalType.DATE)
+private Date date;</programlisting></para>
+          <para>Если текущий пользователь зарегистрирован c русской локалью, то из <glossterm linkend="main_message_pack_glossentry">главного пакета</glossterm> локализованных сообщений клиентского <link linkend="app_tiers_glossentry">уровня</link>, из файла <filename>messages_ru.properties</filename> извлекается строка:<programlisting>dateFormat=dd.MM.yyyy</programlisting></para>
+          <para>Результат: дата &quot;6 августа 2012 года&quot; конвертируется в строку &quot;06.08.2012&quot; для отображения в ячейке таблицы.</para>
+        </section>
+        <section>
+          <title>Примеры форматирования дат и чисел в коде приложения</title>
+          <itemizedlist>
+            <listitem>
+              <para>Пример форматирования даты<programlisting>@Inject
+protected UserSessionSource userSessionSource;
+...
+Date date = ...;
+String dateStr = Datatypes.get(Date.class).format(date, userSessionSource.getLocale());</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Пример форматирования числового значения с повышенной точностью  (5 знаков после запятой) на <link linkend="app_tiers_section">уровне</link> <structname>Web Client</structname></para>
+              <para><filename>/com/abc/sales/web/messages_ru.properties</filename><programlisting>coordinateFormat = #,##0.00000</programlisting></para>
+              <para><filename>SomeClass.java</filename><programlisting>@Inject
+protected Messages messages;
+@Inject
+protected UserSessionSource userSessionSource;
+...
+String coordinateFormat = messages.getMainMessage(&quot;coordinateFormat&quot;);
+FormatStrings formatStrings = Datatypes.getFormatStrings(userSessionSource.getLocale());
+NumberFormat format = new DecimalFormat(coordinateFormat, formatStrings.getFormatSymbols());
+
+String formattedValue = format.format(value);</programlisting></para>
+            </listitem>
+          </itemizedlist>
+        </section>
+      </section>
+      <section id="meta_annotations_section">
+        <title>Мета-аннотации</title>
+        <para>Мета-аннотации сущностей - набор пар ключ/значение, содержащих дополнительную информацию о сущностей.</para>
+        <para>Обращение к мета-аннотациям  производится с помощью метода <link linkend="MetaClass">мета-класса</link> <code>getAnnotations()</code>.</para>
+        <para>Источниками мета-аннотаций сущности являются:<itemizedlist>
+            <listitem>
+              <para><link linkend="entity_annotations_section">Аннотации</link>  <interfacename>@OnDelete</interfacename>, <interfacename>@OnDeleteInverse</interfacename>, <interfacename>@Extends</interfacename>. При этом в мета-аннотациях создаются служебные объекты связей между сущностями. </para>
+            </listitem>
+            <listitem>
+              <para><link linkend="entity_annotations_section">Аннотации</link>  <interfacename>@SystemLevel</interfacename>, <interfacename>@EnableRestore</interfacename>, <interfacename>@TrackEditScreenHistory</interfacename>. При этом создаются  мета-аннотации с ключами, соответствующими полному имени класса Java аннотации. </para>
+            </listitem>
+            <listitem>
+              <para>Опционально: на уровне прикладного проекта могут быть определены свои аннотации для сущностей, и в <link linkend="extension_section">переопределенном</link> методе <code>MetadataImpl.initMetaAnnotations()</code> отображены в соответствующие мета-аннотации. </para>
+            </listitem>
+            <listitem>
+              <para>Опционально: в файлах <filename>
+                  <link linkend="metadata.xml">metadata.xml</link>
+                </filename> также могут быть определены мета-аннотации сущностей. Если мета-аннотация в XML имеет то же имя, что и мета-аннотация, созданная по Java аннотации класса сущности, первая переопределит значение второй. </para>
+              <para>Пример определения мета-аннотаций в <filename>
+                  <link linkend="metadata.xml">metadata.xml</link>
+                </filename>:<programlisting>&lt;annotations&gt;
+    &lt;entity class=&quot;com.haulmont.cuba.security.entity.User&quot;&gt;
+        &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory&quot; value=&quot;false&quot;/&gt;
+        &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.EnableRestore&quot; value=&quot;true&quot;/&gt;
+    &lt;/entity&gt;
+&lt;/annotations&gt;</programlisting></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
     </section>
     <section id="views_section">
       <title>Представления</title>
@@ -1206,13 +1436,15 @@ public class MyBean implements AppContext.Listener {
       <simpara><emphasis role="bold">UuidSource</emphasis>. Обеспечивает получение значений <classname>UUID</classname>, в том числе для идентификаторов сущностей. Статический фасад − <classname>UuidProvider</classname>.</simpara>
       <simpara><emphasis role="bold">UserSessionSource</emphasis>. Обеспечивает получение объекта сессии текущего пользователя. Статический фасад − <classname>UserSessionProvider</classname>.</simpara>
       <simpara><emphasis role="bold">Security</emphasis>. Содержит методы проверки прав текущего пользователя. Не имеет соответствующего статического фасада. При необходимости в статическом контексте можно получить через <classname>UserSessionProvider</classname> объект пользовательской сессии и вызвать соответствующие методы у него.</simpara>
-      <simpara><emphasis role="bold">Metadata</emphasis>. Обеспечивает доступ к сессии <link linkend="metadata_framework_section">метаданных</link> и ViewRepository. Статический фасад − <classname>MetadataProvider</classname>.</simpara>
       <simpara><emphasis role="bold">Messages</emphasis>. Интерфейс <interface>Messages</interface> обеспечивает получение локализованных строк сообщений. Статический фасад − <classname>MessageProvider</classname>.</simpara>
       <simpara><emphasis role="bold">Configuration</emphasis>. Является фасадом к фреймворку работы с конфигурационными параметрами. Статический фасад − <classname>ConfigProvider</classname>.</simpara>
       <simpara><emphasis role="bold">Resources</emphasis>. Обеспечивает загрузку ресурсов из конфигурационного каталога приложения или из <code>classpath</code>, а также по явно указанному URL.</simpara>
-      <simpara><emphasis role="bold">Scripting</emphasis>. Интерфейс <interface>Scripting</interface> обеспечивает возможность динамической компиляции и выполнения прикладного кода на Groovy и Java. Статический фасад − <interface>ScriptingProvider</interface>.</simpara>
       <para><emphasis role="bold">Интерфейсы инфраструктуры среднего слоя</emphasis></para>
       <simpara><emphasis role="bold">Persistence</emphasis>. Обеспечивает доступ к интерфейсам <interface>Transaction</interface>, <interface>EntityManager</interface>, и некоторые сервисные функции, относящиеся к хранению данных. Статический фасад − <classname>PersistenceProvider</classname>.</simpara>
+      <section id="Metadata">
+        <title>Metadata</title>
+        <para>Обеспечивает доступ к сессии <link linkend="metadata_framework_section">метаданных</link> и ViewRepository.</para>
+      </section>
       <section id="scripting_section">
         <title>Scripting</title>
         <para><interfacename>Scripting</interfacename> − глобальный интерфейс инфраструктуры, решающий следующие задачи:</para>
@@ -1454,20 +1686,12 @@ actions.Edit=Edit
         </mediaobject>
       </figure>
       <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <classname>ServiceInterceptor.aroundInvoke()</classname>.</para>
-      <section id="DataService_section">
-        <title>DataService</title>
-        <para>TODO</para>
-      </section>
     </section>
     <section id="managed_beans_section">
       <title>Managed Beans</title>
       <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами <link linkend="text_injection_IoC">Inversion of Control</link>. <glossterm linkend="container_glossentry">Контейнером</glossterm> для бинов служит Spring Framework.</para>
       <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть всегда используется один экземпляр данного класса. Соответственно, если создаваемый Вами бин содержит изменяемые данные в полях (имеет состояние), то необходимо синхронизировать обращение к таким данным.</para>
       <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>.</para>
-      <section id="DataWorker_section">
-        <title>DataWorker</title>
-        <para>TODO</para>
-      </section>
     </section>
     <section id="mbeans_section">
       <title>JMX Beans</title>
@@ -1626,6 +1850,10 @@ actions.Edit=Edit
       <para>Управление транзакциями является частью бизнес-логики.
 При использовании ORM изменения в БД производятся при коммите транзакции, который в случае декларативного управления происходит за рамками прикладного кода (в интерцепторах контейнера), что крайне неудобно при отладке приложения.</para>
       <para>При использовании ORM доменные объекты ведут себя принципиально по-разному внутри и вне транзакции</para>
+    </section>
+    <section id="DataService_section">
+      <title>DataService и DataWorker</title>
+      <para>TODO</para>
     </section>
     <section id="dbms_types_section">
       <title>Поддерживаемые СУБД</title>
@@ -6225,6 +6453,10 @@ taskHandler.execute();</programlisting>
     </section>
     <section>
       <title>Пессимистичная блокировка</title>
+      <para>TODO</para>
+    </section>
+    <section>
+      <title>Статистика сущностей</title>
       <para>TODO</para>
     </section>
     <section id="audit_section">
