@@ -1,0 +1,3 @@
+﻿<task:scheduled-tasks scheduler="scheduler">
+    <task:scheduled ref="cuba_QueryResultsManager" method="deleteForInactiveSessions" fixed-rate="600000"/>
+</task:scheduled-tasks>

@@ -1,0 +1,3 @@
+﻿<filter id="carsFilter2" datasource="carsDs" applyTo="carsTable" useMaxResults="true">
+   <property name="model" paramWhere="m.manufacturer = 'Audi'"/>
+</filter>

@@ -1,0 +1,13 @@
+﻿<vbox spacing="true" margin="true">
+   <filter id="carsFilter" datasource="carsDs" applyTo="carsTable"/>
+</vbox>
+<groupTable id="carsTable" presentations="true" width="100%">
+   <rowsCount/>
+   <columns>
+      <column id="vin"/>
+      <column id="model"/>
+      <column id="model.numberOfSeats"/>
+      <column id="colour"/>
+   </columns>
+   <rows datasource="carsDs"/>
+</groupTable>

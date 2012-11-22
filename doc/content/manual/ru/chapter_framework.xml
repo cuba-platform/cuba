@@ -2388,6 +2388,18 @@ Instance − ваш SQL Server.</para>
                   </mediaobject>
                 </entry>
               </row>
+              <row>
+                <entry align="left">
+                  <link linkend="GenericFilter_section">GenericFilter</link>
+                </entry>
+                <entry align="left">
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_filter_mini.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </entry>
+              </row>
             </tbody>
           </tgroup>
         </informaltable>
@@ -5173,6 +5185,395 @@ Instance − ваш SQL Server.</para>
               </tbody></tgroup>
           </informaltable>
         </section>
+        <section id="GenericFilter_section">
+          <title>Generic Filter</title>
+          <para>Универсальный фильтр (<interfacename>Filter</interfacename>) − компонент для организации поиска данных, предназначен для отбора информации, отображаемой в таблице экземпляров <glossterm linkend="entity_glossentry">сущностей</glossterm>.</para>
+          <para>Типичный фильтр имеет следующий вид:</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_filter_descr.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Для того чтобы создать фильтр, нажмите на кнопку <guibutton>Фильтр</guibutton> и выберите значение <guilabel>Создать</guilabel>. На экране отобразится  панель редактора фильтра.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_filter_editor.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>В поле <guilabel>Имя</guilabel> следует ввести имя фильтра, это имя будет отображаться в списке доступных для текущего экрана фильтров.</para>
+          <para>В таблице содержатся условия фильтра. Условия можно менять местами с помощью кнопок <inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="img/gui_filter_cond_down.png"/>
+              </imageobject>
+            </inlinemediaobject>/<inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="img/gui_filter_cond_up.png"/>
+              </imageobject>
+            </inlinemediaobject>. Созданные условия можно удалять с помощью кнопки <inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="img/gui_filter_remove.png"/>
+              </imageobject>
+            </inlinemediaobject></para>
+          <para>С помощью флажков можно сделать выбранное в таблице условие скрытым для пользователя (колонка <guilabel>Скрытый</guilabel>) или обязательным для заполнения (колонка <guilabel>Обязательный</guilabel>). В колонке <guilabel>Операция</guilabel> следует для <emphasis role="bold">каждого</emphasis> условия выбрать операцию из списка доступных операций.</para>
+          <para>Фильтр можно сделать <firstterm>глобальным</firstterm> (то есть доступным для всех пользователей) с помощью установки флажка <guilabel>Общий для всех пользователей</guilabel>, или установить текущий фильтр в качестве фильтра по умолчанию с помощью установки флажка <guilabel>По умолчанию</guilabel>.</para>
+          <para>Чтобы добавить новое условие, следует нажать кнопку <guibutton>Добавить условие</guibutton> в редакторе фильтра. На экране отобразится окно выбора условий. </para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_filter_conditions.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Условия разделяются по группам условий. Группа <guilabel>Атрибуты</guilabel> − это те условия, которые перечислены в элементах <sgmltag>properties</sgmltag> и  <sgmltag>property</sgmltag> компонента фильтра. Группа <guilabel>Специальные условия</guilabel> − это пользовательские условия, заданные в элементе <sgmltag>custom</sgmltag>. Группы <guilabel>Группы</guilabel>, <guilabel>Динамический атрибут...</guilabel> и <guilabel>Создать новое...</guilabel> доступны для выбора всегда.</para>
+          <para/>
+          <para>XML-имя компонента: <sgmltag>filter</sgmltag>.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata contentwidth="80%" align="center" fileref="img/gui_filter_dia.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Существует два класса компонентов фильтра: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент фильтра имеет следующие атрибуты, перечисленные ниже.</para>
+          <para><sgmltag id="applyTo_attr">applyTo</sgmltag> − необязательный атрибут, содержит <link linkend="attr_id">идентификатор</link> компонента, с которым связан фильтр. Используется в случае, когда необходимо иметь доступ к <link linkend="table_presentations_section">представлениям</link> связного компонента. Например, сохраняя фильтр как <link linkend="search_folder_section">папку поиска</link> или как <link linkend="application_folder_section">папку приложения</link>, можно указать, какое представление будет применятся при просмотре этой папки.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_filter_apply_to.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para><sgmltag id="useMaxResults_attr">useMaxResults</sgmltag> − необязательный атрибут, при указании значения <literal>false</literal> фильтр не будет отображать флажок <guilabel>Показывать N строк</guilabel>. По умолчанию флажок отображается, если есть специфическое разрешение <property>cuba.gui.filter.maxResults</property> (подробнее о специфических разрешениях смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink>)). Если атрибут <sgmltag>useMaxResults</sgmltag> не указан или значение атрибута равно <literal>true</literal>, а разрешение <property>cuba.gui.filter.maxResults</property> запрещено, фильтр будет принудительно отбирать только первые N строк без возможности пользователя отключить это. Число N определяется параметрами <literal>FetchUI</literal>, <literal>DefaultFetchUI</literal>, задаваемыми в <classname>PersistenceManager</classname>.</para>
+          <figure>
+            <title>Вид фильтра со значением атрибута <code>useMaxResults=&quot;true&quot;</code>, запретом специфического разрешения <property>cuba.gui.filter.maxResults</property> и параметром <code>DefaultFetchUI=2</code></title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_filter_useMaxRezult.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para><sgmltag id="manualApplyRequired_attr">manualApplyRequired</sgmltag> − необязательный атрибут. Определяет, как будет   применяться фильтр. Если значение атрибута равно <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. Если значение атрибута равно true, то фильтр будет применяться только после нажатия на кнопку <guibutton>Применить</guibutton>. Данный атрибут имеет приоритет над общесистемным <link linkend="app_properties_glossentry">свойством</link>  <property>cuba.gui.genericFilterManualApplyRequired</property>.</para>
+          <para>Если значение атрибута <sgmltag id="required_filter_attr">required</sgmltag> равно <literal>true</literal>, то  в списке фильтров значение <literal>&lt;без фильтрации&gt;</literal> не отображается, и должен быть выбран один из доступных фильтров. Если для экрана не установлен фильтр по умолчанию, то в списке выбора фильтра автоматически устанавливается первый созданный фильтр.</para>
+          <para>Если значение атрибута <sgmltag id="editable_filter_attr">editable</sgmltag> равно <literal>false</literal>, то кнопка <guibutton>Фильтр</guibutton> скрывается.</para>
+          <para>Компонент  <sgmltag>filter</sgmltag> может содержать следующие элементы:</para>
+          <variablelist>
+            <varlistentry>
+              <term>
+                <sgmltag>properties</sgmltag>
+              </term>
+              <listitem>
+                <para>Элемент, определяющий набор атрибутов <glossterm linkend="entity_glossentry">сущности</glossterm>, заданной <glossterm linkend="datasource_glossentry">источником данных</glossterm>. В качестве названий атрибутов используются <glossterm linkend="localization_section">локализованные имена атрибутов сущностей</glossterm>. Атрибуты:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para><sgmltag id="include_filter_attr">include</sgmltag> − обязательный атрибут, содержит регулярное выражение для включения атрибутов сущности. Атрибуты-коллекции не включаются независимо от данного регулярного выражения.</para>
+                    <para>Чтобы включить все атрибуты сущности, используйте значение атрибута <literal>.*</literal> </para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="exclude_filter_attr">exclude</sgmltag> − необязательный атрибут, содержит регулярное выражение для исключения атрибутов сущности из предварительно включенных с помощью <link linkend="include_filter_attr">include</link>.</para>
+                    <para>Чтобы исключить несколько атрибутов, перечислите их в значении атрибута <link linkend="exclude_filter_attr">exclude</link>, разделяя символом <literal>|</literal></para>
+                  </listitem>
+                </itemizedlist>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_properties.txt" encoding="UTF-8" parse="text"/></programlisting>
+                <figure>
+                  <title/>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata align="center" fileref="img/gui_filter_properties.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </figure>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <sgmltag>property</sgmltag>
+              </term>
+              <listitem>
+                <para>Элемент, определяющий один атрибут сущности. Атрибуты:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para><sgmltag id="name_filter_property_attr">name</sgmltag> − имя атрибута сущности. Может быть путем (через &quot;.&quot;) по графу <glossterm linkend="entity_glossentry">сущностей</glossterm>.</para>
+                    <warning>
+                      <para>Если в качестве имени атрибута указан путь по графу сущностей, обязательно указание значения для атрибута <link linkend="caption_filter_attr">caption</link>.</para>
+                    </warning>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="caption_filter_attr">caption</sgmltag> −  атрибут для задания локализованного названия имени параметра</para>
+                    <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_property_caption.txt" encoding="UTF-8" parse="text"/></programlisting>
+                    <figure>
+                      <title/>
+                      <mediaobject>
+                        <imageobject>
+                          <imagedata align="center" fileref="img/gui_filter_property_caption.png"/>
+                        </imageobject>
+                      </mediaobject>
+                    </figure>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="paramWhere_filter_attr">paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-<glossterm linkend="entity_glossentry">сущности</glossterm>. </para>
+                    <para>Например, можно ограничить список предлагаемых пользователю  моделей автомобилей только моделями марки <literal>Audi</literal>.</para>
+                    <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_paramWhere.txt" encoding="UTF-8" parse="text"/></programlisting>
+                    <figure>
+                      <title/>
+                      <mediaobject>
+                        <imageobject>
+                          <imagedata align="center" fileref="img/gui_filter_paramWhere.png"/>
+                        </imageobject>
+                      </mediaobject>
+                    </figure>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="paramView_filter_attr">paramView</sgmltag> − необязательный атрибут для задания <glossterm linkend="view_glossentry">представления</glossterm>, с которым будут загружаться список значений параметра-<glossterm linkend="entity_glossentry">сущности</glossterm>. Например, <literal>_local</literal>.</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <sgmltag>custom</sgmltag>
+              </term>
+              <listitem>
+                <para>Элемент, определяющий произвольное условие. Содержимым элемента должно быть выражение на <glossterm linkend="jpql_glossentry">JPQL</glossterm> (возможно использование JPQL Macros), которое будет добавлено в условие <code>where</code> результирующего запроса. Параметр (если он есть) обозначается символом <literal>?</literal>. </para>
+                <para>Пример фильтра с произвольными условиями:</para>
+                <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_custom.txt" encoding="UTF-8" parse="text"/></programlisting>
+                <para>Созданные произвольные условия попадают в раздел <guilabel>Специальные условия</guilabel> в редакторе условий.</para>
+                <figure>
+                  <title/>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata align="center" fileref="img/gui_filter_custom.png"/>
+                    </imageobject>
+                  </mediaobject>
+                </figure>
+                <para>Атрибуты элемента <sgmltag>custom</sgmltag>:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para><sgmltag id="name_filter_custom_attr">name</sgmltag> − имя условия</para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="caption_filter_custom_attr">caption</sgmltag> − <link linkend="localization_section">локализованное</link> название условия</para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="paramClass_filter_attr">paramClass</sgmltag> или <sgmltag>class</sgmltag> − класс параметра условия</para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="inExpr_filter_attr">inExpr</sgmltag> − значение должно быть равно <literal>true</literal>, если выражение <glossterm linkend="jpql_glossentry">JPQL</glossterm> содержит условие <code>in (?)</code></para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag id="join_filter_attr">join</sgmltag> − необязательный атрибут для задания строки, которая будет добавлена в секцию <literal>join</literal> запроса.</para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag>paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-сущности.</para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag>paramView</sgmltag> − необязательный атрибут для задания <glossterm linkend="view_glossentry">представления</glossterm>, с которым будут загружаться список значений параметра-<glossterm linkend="entity_glossentry">сущности</glossterm>. Например,  <literal>_local</literal>.</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <para>Атрибут <sgmltag>paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-сущности. Содержит условие в формате <glossterm linkend="jpql_glossentry">JPQL</glossterm> без слова <literal>where</literal>. Алиас сущности можно задавать любым.
+
+Можно использовать параметры экрана, атрибуты сессии, а также <link linkend="component_filter_name_caution">компоненты</link> экрана, в том числе отображающие другие параметры.</para>
+          <caution id="component_filter_name_caution">
+            <title>Подсказка</title>
+            <para>Как узнать имя компонента, отображающего параметр?</para>
+            <para>Для этого нужно в редакторе фильтра правой кнопкой мыши вызвать контекстное меню в строке таблицы условий и выбрать в нем значение <guilabel>Показать имя компонента</guilabel>. После этого на экране отобразится окно, содержащее имя компонента.</para>
+            <figure>
+              <title/>
+              <mediaobject>
+                <imageobject>
+                  <imagedata align="center" fileref="img/gui_filter_component_name.png"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+          </caution>
+          <para><emphasis role="bold">Права пользователей</emphasis></para>
+          <itemizedlist>
+            <listitem>
+              <para>Для создания/изменения/удаления глобальных фильтров пользователь должен иметь разрешение <property>cuba.gui.filter.global</property> </para>
+            </listitem>
+            <listitem>
+              <para>Для создания/изменения новых условий пользователь должен иметь разрешение <property>cuba.gui.filter.customConditions</property></para>
+            </listitem>
+            <listitem>
+              <para>Для возможности изменять значение флажка <guilabel>Show first N rows</guilabel> пользователь должен иметь разрешение <property>cuba.gui.filter.maxResults</property></para>
+            </listitem>
+          </itemizedlist>
+          <para>Информацию о том, как настраивать  специфические разрешения, смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink>)</para>
+          <para><emphasis role="bold">Общесистемные параметры</emphasis></para>
+          <para>В системе предусмотрены следующие <glossterm linkend="app_properties_glossentry">параметры</glossterm>, влияющие на поведение фильтров:</para>
+          <itemizedlist>
+            <listitem>
+              <para><property>cuba.gui.genericFilterManualApplyRequired</property>  − означает, что фильтр будет применяться только после нажатия пользователем соответствующей кнопки <guibutton>Применить</guibutton>. Значение по умолчанию равно <literal>true</literal>. Если выставлено значение <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. При открытии  экрана списка с помощью <link linkend="application_folder_section">папки приложения</link> или <link linkend="search_folder_section">папки поиска</link> значение <property>cuba.gui.genericFilterManualApplyRequired</property> не учитывается. По умолчанию в этом случае  в экране поиска фильтр будет применяться. Фильтр не применится, если значение атрибута <code>applyDefault</code> у папки явно установлено в <literal>false</literal>.</para>
+            </listitem>
+            <listitem>
+              <para><property>cuba.gui.genericFilterChecking</property> − означает, что перед применением фильтра будет выполняться проверка его условий. Если фильтр не имеет ни одного заданного условия, то применяться он не будет. Значение по умолчанию равно <literal>true</literal>. Если значение равно  <literal>false</literal>, то проверка не производится.</para>
+            </listitem>
+            <listitem>
+              <para><property>cuba.gui.genericFilterTreeConditionSelect</property> − включает выбор условий в древовидной структуре с возможностью обхода свойств связанных сущностей. Значение по умолчанию равно <literal>true</literal>. В случае задания значения <literal>false</literal> выбор условий осуществляется в плоском выпадающем списке из описателей условий, заданных в дескрипторе экрана.</para>
+            </listitem>
+            <listitem>
+              <para><property>cuba.allowQueryFromSelected</property> служит для включения механизма  <link linkend="sequential_filter_para">последовательного наложения фильтров</link>. Значение по умолчанию равно <literal>true</literal>.</para>
+            </listitem>
+          </itemizedlist>
+          <para><emphasis role="bold">Параметры вызова экрана</emphasis></para>
+          <para>Существует возможность указать при вызове экрана, какой фильтр и с какими параметрами применить. Фильтр должен быть заранее создан в базе данных  и иметь заполненное поле <database>code</database>.</para>
+          <para>Для указания кода фильтра в экран следует передать параметр с именем, равным <link linkend="attr_id">идентификатору</link> компонента фильтра в экране. Значение параметра − код фильтра, который нужно применить.</para>
+          <para>Для установки значений параметров фильтра нужно передать параметры с именами, равными <link linkend="component_filter_name_caution">именам параметров</link>, и значения в виде строк.</para>
+          <para>Пример установки фильтра из главного меню:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_from_menu.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Следует отметить, что фильтр с установленным полем <database>code</database> обладает особыми свойствами:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Его не могут редактировать пользователи</para>
+            </listitem>
+            <listitem>
+              <para>Название такого фильтра локализуется − в <glossterm linkend="main_message_pack_glossentry">главном пакете сообщений</glossterm> приложения должна быть строка с ключом, равным коду фильтра.</para>
+            </listitem>
+          </itemizedlist>
+          <para id="sequential_filter_para"><emphasis role="bold">Последовательное наложение фильтров</emphasis></para>
+          <para>При включенном <glossterm linkend="app_properties_glossentry">параметре</glossterm> <property>cuba.allowQueryFromSelected</property> в пользовательском интерфейсе компонента можно закреплять последний примененный фильтр и текущие результаты фильтрации. После этого можно выбрать другой фильтр или параметры и применить их на уже выбранных записях.</para>
+          <para>Данный подход позволяет решить две проблемы:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Декомпозировать сложные фильтры.</para>
+            </listitem>
+            <listitem>
+              <para>Применять фильтры на записи, отобранные с помощью папок <link linkend="application_folder_section">приложения</link> или <link linkend="search_folder_section">поиска</link>.</para>
+            </listitem>
+          </itemizedlist>
+          <para>Чтобы применить этот механизм в пользовательском интерфейсе, выберите и примените один из фильтров. Затем нажмите на кнопку <inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="img/gui_filter_add.png"/>
+              </imageobject>
+            </inlinemediaobject>. Фильтр закрепится в нижней части панели фильтра. Далее можно применить к выбранным записям другой фильтр. Так последовательно можно накладывать друг на друга любое количество фильтров. Также фильтры можно удалять последовательно с помощью кнопки <inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="img/gui_filter_remove.png"/>
+              </imageobject>
+            </inlinemediaobject></para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_filter_sequential.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Механизм последовательного наложения фильтров работает следующим образом:</para>
+          <itemizedlist>
+            <listitem>
+              <para>При наличии закрепленных фильтров результаты предыдущего запроса (точнее только <link linkend="attr_id">идентификаторы</link> отобранных <glossterm linkend="entity_glossentry">сущностей</glossterm>) помещаются в таблицу <database>SYS_QUERY_RESULT</database>. Данная таблица содержит колонки, отделяющие результаты запросов для различных пользователей по идентификатору сессии и ключу серии запросов.</para>
+            </listitem>
+            <listitem>
+              <para>К запросу текущего применяемого фильтра добавляется объединение с таблицей <database>SYS_QUERY_RESULT</database>, что ограничивает результаты текущего фильтра предыдущими отобранными записями.</para>
+            </listitem>
+          </itemizedlist>
+          <para>Таблицу <database>SYS_QUERY_RESULT</database> необходимо периодически чистить от ненужных результатов запросов, оставленных завершенными пользовательскими сессиями. Для этого предназначен метод <code>deleteForInactiveSessions</code> бина <classname>QueryResultsManagerAPI</classname>. В прикладном проекте с включенным параметром <property>cuba.allowQueryFromSelected</property> необходимо вызывать этот метод либо из <link linkend="scheduled_tasks_section">назначенных заданий</link>, либо из стандартного <link linkend="scheduled_tasks_section">планировщика</link> <application>Spring</application>, например:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_scheduler.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Атрибуты <sgmltag>filter</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="applyTo_attr">applyTo</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="attr_id">id</link>
+                  </entry><entry align="left">
+                    <link linkend="attr_stylename">stylename</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="attr_datasource">datasource</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="manualApplyRequired_attr">manualApplyRequired</link>
+                  </entry>
+                  <entry>
+                    <link linkend="useMaxResults_attr">useMaxResults</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="editable_filter_attr">editable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="required_filter_attr">required</link>
+                  </entry>
+                  <entry>
+                    <link linkend="attr_visible">visible</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Атрибуты элемента <sgmltag>properties</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="1" colsep="1" rowsep="1" align="left"><colspec colname="c1"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="include_filter_attr">include</link>
+                  </entry>editable</row>
+                <row>
+                  <entry>
+                    <link linkend="exclude_filter_attr">exclude</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Атрибуты элемента <sgmltag>property</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="caption_filter_attr">caption</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="paramView_filter_attr">paramView</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="name_filter_property_attr">name</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="paramWhere_filter_attr">paramWhere</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Атрибуты элемента <sgmltag>custom</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="caption_filter_custom_attr">caption</link>
+                  </entry>editable<entry align="left">operatorType</entry><entry align="left">
+                    <link linkend="paramWhere_filter_attr">paramWhere</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="join_filter_attr">join</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="paramClass_filter_attr">paramClass</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="name_filter_custom_attr">name</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="paramView_filter_attr">paramView</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+        </section>
       </section>
       <section id="gui_layouts_section">
         <title>Контейнеры</title>
@@ -6527,6 +6928,12 @@ taskHandler.execute();</programlisting>
           <para>периодически обновляются по таймеру.</para>
         </listitem>
       </itemizedlist>
+      <section id="search_folder_section">
+        <title>Папки поиска</title>
+      </section>
+      <section id="application_folder_section">
+        <title>Папки приложения</title>
+      </section>
     </section>
     <section>
       <title>Инспектор сущностей</title>

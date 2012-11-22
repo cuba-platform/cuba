@@ -1,0 +1,16 @@
+﻿<filter id="carsFilter" datasource="carsDs" applyTo="carsTable" useMaxResults="true" required="true">
+   <properties include=".*" exclude="category"/>
+   <custom name="vin" paramClass="java.lang.String" caption="msg://vin">
+      c.vin like ?
+   </custom>
+   <custom name="colour" paramClass="com.haulmont.refapp.core.entity.Colour" caption="msg://colour" inExpr="true">
+      (c.colour.id in (?))
+   </custom>
+   <custom name="repair" paramClass="java.lang.String" caption="msg://repair"
+           join="join c.repairs cr">
+      cr.description = ?
+   </custom>
+   <custom name="updateTs" caption="msg://updateTs">
+      @between(c.updateTs,now-1, now+1, day)
+   </custom>
+</filter>
