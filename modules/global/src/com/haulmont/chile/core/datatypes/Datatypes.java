@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.datatypes;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +26,9 @@ import javax.ejb.Local;
  * <p>
  * Automatically loads datatype definitions from the file <code>datatypes.xml</code> in the root of classpath. If no
  * such file found, configures datatypes from <code>/com/haulmont/chile/core/datatypes/datatypes.xml</code>
+ *
+ * @author abramov
+ * @version $Id$
  */
 public class Datatypes {
 

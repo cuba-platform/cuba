@@ -55,6 +55,7 @@ public interface MetaClass extends MetadataObject<MetaClass> {
      * @param propertyPath dot-separated string
      * @return MetaPropertyPath instance, or null if the input parameter doesn't represent a valid path.
      */
+    @Nullable
     MetaPropertyPath getPropertyPath(String propertyPath);
 
     /**

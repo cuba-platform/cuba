@@ -259,9 +259,9 @@ public class ViewRepository {
             }
 
             final List<Element> propertyElements = propElem.elements("property");
-            boolean extenedView = !propertyElements.isEmpty();
+            boolean inlineView = !propertyElements.isEmpty();
 
-            if (refViewName != null && !extenedView) {
+            if (refViewName != null && !inlineView) {
 
                 if (!range.isClass())
                     throw new IllegalStateException(
@@ -289,7 +289,7 @@ public class ViewRepository {
                         );
                 }
             }
-            if (range.isClass() && refView == null && extenedView) {
+            if (range.isClass() && refView == null && inlineView) {
                 // try to import anonymous views
                 String ancestorViewName = propElem.attributeValue("view");
                 if (ancestorViewName == null) {
@@ -308,7 +308,7 @@ public class ViewRepository {
 
     private MetaClass getMetaClass(Element propElem, Range range) {
         MetaClass refMetaClass;
-        String refEntityName = propElem.attributeValue("entity");
+        String refEntityName = propElem.attributeValue("entity"); // this attribute is deprecated
         if (refEntityName == null) {
             refMetaClass = range.asClass();
         } else {

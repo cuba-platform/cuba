@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.datatypes;
 
 import java.sql.ResultSet;
@@ -7,7 +13,10 @@ import java.text.ParseException;
 import java.util.Locale;
 
 /**
- * Represents a data type of entity property
+ * Represents a data type of entity property.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public interface Datatype<T> {
 

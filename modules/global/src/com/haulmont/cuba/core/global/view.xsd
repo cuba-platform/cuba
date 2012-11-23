@@ -34,7 +34,6 @@
         </xs:sequence>
         <xs:attribute name="name"/>
         <xs:attribute name="view"/>
-        <xs:attribute name="entity"/>
         <xs:attribute name="lazy" type="xs:boolean"/>
     </xs:complexType>
 
