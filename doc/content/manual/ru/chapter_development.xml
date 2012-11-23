@@ -113,45 +113,6 @@
     <para>TODO</para>
   </section>
   <section>
-    <title>Описание конфигурационных файлов</title>
-    <variablelist>
-      <varlistentry id="datatypes.xml">
-        <term>datatypes.xml</term>
-        <listitem>
-          <para>TODO</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term id="persistence.xml">persistence.xml</term>
-        <listitem>
-          <para>TODO</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry id="metadata.xml">
-        <term>metadata.xml</term>
-        <listitem>
-          <para>TODO</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry id="text_context_xml">
-        <term>context.xml</term>
-        <listitem>
-          <para>В данном конфигурационном файле задается <link linkend="dbms_types_section">тип используемой СУБД</link>, а также использование <classname>PersistenceManager</classname>.</para>
-          <para>Пример файла <filename>context.xml</filename> для приложения Магазин:</para>
-          <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context.xml" encoding="UTF-8" parse="text"/></programlisting>
-        </listitem>
-      </varlistentry>
-      <varlistentry id="text_web_xml_core">
-        <term>web.xml</term>
-        <listitem>
-          <para>Файл <filename>web.xml</filename> модуля <structname>core</structname> приложения Магазин:</para>
-          <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/web.xml" encoding="UTF-8" parse="text"/></programlisting>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-    <para>TODO</para>
-  </section>
-  <section>
     <title>Создание проекта</title>
     <para>TODO</para>
   </section>

@@ -57,6 +57,17 @@
     </glossentry>
   </glossdiv>
   <glossdiv>
+    <title>З</title>
+    <glossentry id="lazy_loading">
+      <glossterm>
+        <emphasis role="bold">Загрузка по требованию</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Режим загрузки данных, при котором связанные сущности загружаются не одновременно с основной сущностью, а отложенно, при обращении к соответствующему атрибуту. Загрузка по требованию возможна только в рамках транзакции, в которой была загружена  основная сущность.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
     <title>И</title>
     <glossentry id="datasource_glossentry">
       <glossterm>
@@ -90,6 +101,17 @@
     </glossentry>
   </glossdiv>
   <glossdiv>
+    <title>Л</title>
+    <glossentry id="local_attribute">
+      <glossterm>
+        <emphasis role="bold">Локальный атрибут</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Атрибут сущности, не являющийся ссылкой или коллекцией ссылок на другую сущность. Значения всех локальных атрибутов сущности как правило хранятся в одной таблице (исключение составляют некоторые стратегии наследования сущностей). </para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
     <title>П</title>
     <glossentry id="message_pack_glossentry">
       <glossterm>
@@ -100,7 +122,7 @@
         <para>См. <xref xrefstyle="" linkend="localization_section"/></para>
       </glossdef>
     </glossentry>
-    <glossentry id="message_pack_glossentry_1">
+    <glossentry id="persistence_context">
       <glossterm>
         <emphasis role="bold">Персистентный контекст</emphasis>
       </glossterm>
@@ -151,6 +173,17 @@
     </glossentry>
   </glossdiv>
   <glossdiv>
+    <title>Э</title>
+    <glossentry id="eager_fetching">
+      <glossterm>
+        <emphasis role="bold">Энергичная загрузка</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Загрузка данных подклассов и связанных объектов одновременно с основной запрашиваемой сущностью.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
     <title>A</title>
     <glossentry id="app_tiers_glossentry">
       <glossterm>
@@ -180,13 +213,11 @@
   </glossdiv>
   <glossdiv>
     <title>E</title>
-    <glossentry id="eager_fetching_glossentry">
+    <glossentry id="">
       <glossterm>
         <emphasis role="bold">Eager Fetching</emphasis>
       </glossterm>
-      <glossdef>
-        <para>Энергичная загрузка − загрузка данных подклассов и связанных объектов одновременно с основной запрашиваемой сущностью.</para>
-      </glossdef>
+      <glosssee otherterm="eager_fetching"/>
     </glossentry>
     <glossentry id="EntityManager_glossentry">
       <glossterm>
@@ -208,6 +239,13 @@
         <para>Элемент AOP (Aspect Oriented Programming), позволяющий изменить или расширить обычный вызов метода объекта.</para>
         <para>См. <ulink url="http://en.wikipedia.org/wiki/Interceptor_pattern">http://en.wikipedia.org/wiki/Interceptor_pattern</ulink></para>
       </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>L</title>
+    <glossentry>
+      <glossterm>Lazy loading</glossterm>
+      <glosssee otherterm="lazy_loading"/>
     </glossentry>
   </glossdiv>
   <glossdiv>

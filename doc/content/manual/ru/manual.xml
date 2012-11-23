@@ -108,9 +108,268 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_development.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_deployment.xml" encoding="UTF-8"/>
   <appendix>
-    <title>Часто задаваемые вопросы</title>
-    <para>TODO</para>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="qanda.xml" encoding="UTF-8"/>
+    <title>Описание конфигурационных файлов</title>
+    <section id="datatypes.xml">
+      <title>datatypes.xml</title>
+      <para>TODO</para>
+    </section>
+    <section id="persistence.xml">
+      <title>persistence.xml</title>
+      <para>TODO</para>
+    </section>
+    <section id="metadata.xml">
+      <title>metadata.xml</title>
+      <para>TODO</para>
+    </section>
+    <section id="views.xml">
+      <title>views.xml</title>
+      <para>Файлы данного типа используются для описания представлений, см. <xref linkend="views_section"/></para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.0/view.xsd">http://schemas.haulmont.com/cuba/4.0/view.xsd</ulink></para>
+      <itemizedlist>
+        <listitem>
+          <para><sgmltag>views</sgmltag> - корневой элемент</para>
+          <para>Элементы <sgmltag>views</sgmltag>:<itemizedlist>
+              <listitem>
+                <para><sgmltag>view</sgmltag> - описатель <classname>View</classname></para>
+                <para>Атрибуты <sgmltag>view</sgmltag>:<itemizedlist>
+                    <listitem>
+                      <para><sgmltag>class</sgmltag> - класс сущности</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>name</sgmltag> - имя представления, должно быть уникальным в пределах сущности</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>systemProperties</sgmltag> - признак включения системных атрибутов сущности (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <interfacename>BaseEntity</interfacename> и  <interfacename>Updatable</interfacename>). Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>overwrite</sgmltag> - признак того, что данный описатель должен переопределить представление с таким же классом и именем, уже развернутое в репозитории. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>extends</sgmltag> - указывает имя представления той же сущности, от которого нужно унаследовать атрибуты. Порядок следования описателей в файле при этом не важен. Например, при указании <literal>extends=&quot;_local&quot;</literal> в текущее представление будут включены все <link linkend="local_attribute">локальные атрибуты</link> сущности. Необязательный атрибут.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Элементы <sgmltag>view</sgmltag>:<itemizedlist>
+                    <listitem>
+                      <para><sgmltag>property</sgmltag> - описатель <classname>ViewProperty</classname></para>
+                      <para>Атрибуты <sgmltag>property</sgmltag>:<itemizedlist>
+                          <listitem>
+                            <para><sgmltag>name</sgmltag> - имя атрибута сущности</para>
+                          </listitem>
+                          <listitem>
+                            <para><sgmltag>view</sgmltag> - для ссылочного атрибута указывает имя представления, с которым должна загружаться ассоциированная сущность. Порядок следования описателей в файле при этом не важен.</para>
+                          </listitem>
+                          <listitem>
+                            <para><sgmltag>lazy</sgmltag> - для ссылочных атрибутов признак того, что данный атрибут нужно не  включать в Fetch Plan, а загружать отдельным SQL запросом, инициированным обращением к атрибуту. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
+                            <para>Рекомендуется использовать <sgmltag>lazy</sgmltag> для атрибутов-коллекций, если таких атрибутов больше одного для данного графа представлениий. Т.е. устанавливайте  <literal>lazy = &quot;true&quot;</literal> для всех коллекций, кроме одной.</para>
+                          </listitem>
+                        </itemizedlist></para>
+                      <para>Элементы <sgmltag>property</sgmltag>:<itemizedlist>
+                          <listitem>
+                            <para><sgmltag>property</sgmltag> - описатель атрибута связанной сущности. Таким способом можно определить неименованное представление для связанной сущности прямо внутри  текущего описателя (inline). </para>
+                          </listitem>
+                        </itemizedlist></para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+              <listitem>
+                <para><sgmltag>include</sgmltag> - включение другого файла типа views.xml</para>
+                <para>Атрибуты <sgmltag>include</sgmltag>:<itemizedlist>
+                    <listitem>
+                      <para><sgmltag>file</sgmltag> - путь к файлу по правилам интерфейса <interfacename>
+                          <link linkend="resources">Resources</link>
+                        </interfacename></para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+      </itemizedlist>
+      <para>Пример:<programlisting>&lt;views xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/view.xsd&quot;&gt;
+
+    &lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
+          name=&quot;orderWithCustomer&quot;
+          extends=&quot;_local&quot;&gt;
+        &lt;property name=&quot;customer&quot; view=&quot;_minimal&quot;/&gt;
+    &lt;/view&gt;
+
+    &lt;view class=&quot;com.haulmont.sales.entity.Item&quot;
+          name=&quot;itemsInOrder&quot;&gt;
+        &lt;property name=&quot;quantity&quot;/&gt;
+        &lt;property name=&quot;product&quot; view=&quot;_minimal&quot;/&gt;
+    &lt;/view&gt;
+
+    &lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
+          name=&quot;orderWithCustomerDefinedInline&quot;
+          extends=&quot;_local&quot;&gt;
+        &lt;property name=&quot;customer&quot;&gt;
+            &lt;property name=&quot;name&quot;/&gt;
+            &lt;property name=&quot;email&quot;/&gt;
+        &lt;/property&gt;
+    &lt;/view&gt;
+
+&lt;/views&gt;</programlisting></para>
+      <para>См. также свойство приложения <property>
+          <link linkend="cuba.viewsConfig">cuba.viewsConfig</link>
+        </property></para>
+    </section>
+    <section id="web.xml">
+      <title>web.xml</title>
+      <para>TODO</para>
+    </section>
+    <section id="context.xml">
+      <title>context.xml</title>
+      <para>TODO</para>
+    </section>
+  </appendix>
+  <appendix id="appendix_security_properties">
+    <title>Описание свойств приложения</title>
+    <variablelist>
+      <varlistentry id="cuba.viewsConfig">
+        <term>cuba.viewsConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий набор файлов <link linkend="views.xml">views.xml</link>, автоматически развертываемых на старте приложения. См. <xref linkend="views_section"/></para>
+          <para><link linkend="app_tiers_section">Уровень</link>: все</para>
+          <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml sales-views.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.lazyLoadServerViews">
+        <term>cuba.lazyLoadServerViews</term>
+        <listitem>
+          <para>Указывает, что глобальные представления c <structname>Middleware</structname> нужно загружать на клиентский уровень не все сразу, а по необходимости. См. <xref linkend="views_section"/></para>
+          <para>Значение по умолчанию: <code>false</code></para>
+          <para>Интерфейс: <classname>ClientConfig</classname></para>
+          <para><link linkend="app_tiers_section">Уровень</link>: клиентский - <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.availableLocales</term>
+        <listitem>
+          <para id="property_available_locales">Список поддерживаемых языков интерфейса. Формат свойства: <code>&lt;Название языка&gt;|&lt;Языковой код&gt;</code>. Значения разных языков между собой разделяются точкой с запятой. Пример: <programlisting>cuba.availableLocales=French|fr;English|en</programlisting></para>
+          <para><code>&lt;Название языка&gt;</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. <code>&lt;Языковой код</code>&gt; − это суффикс для формирования <glossterm linkend="message_pack_glossentry">файлов локализации</glossterm>. Например, <filename>messages_fr.properties.</filename></para>
+          <para>Следует иметь в виду, что язык, который указан первым в списке языков  свойства <parameter>cuba.availableLocales</parameter>, будет отображаться первым в списке доступных языков в том случае, если среди языков данного свойства не будет найден текущий язык системы. В противном случае первым будет отображаться язык системы. </para>
+          <para>Если для языка,  указанного в свойстве, отсутствует файл для его локализации, то по умолчанию берется локализация из файла без суффикса − <filename>messages.properties</filename>.</para>
+          <para>Значение по умолчанию: <literal>cuba.availableLocales=English|en;Russian|ru</literal></para>
+          <para>Интерфейс: <classname>GlobalConfig</classname></para>
+          <para><link linkend="app_tiers_section">Уровень</link>: все</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.web.localeSelectVisible</term>
+        <listitem id="parameter_locale_visible">
+          <para>Включает или отключает возможность пользователя выбирать язык
+интерфейса при входе в систему. </para>
+          <para>Значение по умолчанию:</para>
+          <para><parameter>cuba.web.localeSelectVisible=true</parameter></para>
+          <para>Интерфейс: <classname>GlobalConfig</classname></para>
+          <para>Уровень: свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.trustedClientPassword</term>
+        <listitem>
+          <para>Пароль, используемый методом <methodname>LoginService.loginTrusted()</methodname>. Доверенный клиент может зайти в систему, не вводя пользовательский пароль. Это свойство используется при интеграции с <application>Active Directory</application>.</para>
+          <para>Интерфейсы: <interfacename> ServerConfig</interfacename>, <interfacename>WebConfig</interfacename></para>
+          <para><link linkend="app_tiers_section">Уровень</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.userSessionExpirationTimeoutSec</term>
+        <listitem id="property_sessionExpirTime">
+          <para>Задает  таймаут неактивности сессии пользователя
+ в секундах.</para>
+          <para>Значение по умолчанию:</para>
+          <para><parameter>cuba.userSessionExpirationTimeoutSec=1800</parameter></para>
+          <para>Интерфейс: <classname>ServerConfig</classname></para>
+          <para>Уровень: <glossterm linkend="text_middleware_id">Middleware</glossterm>.</para>
+          <tip>
+            <para>В большинстве случаев рекомендуется выставлять параметры <parameter>cuba.userSessionExpirationTimeoutSec</parameter> и  <link linkend="property_httpExpirTime">cuba.httpSessionExpirationTimeoutSec</link>  в одинаковое значение.</para>
+          </tip>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.httpSessionExpirationTimeoutSec</term>
+        <listitem id="property_httpExpirTime">
+          <para>Задает  таймаут бездействия HTTP-сессии
+ в секундах.</para>
+          <para>Значение по умолчанию:</para>
+          <para><parameter>cuba.httpSessionExpirationTimeoutSec=1800</parameter></para>
+          <para>Интерфейс: <classname>WebConfig</classname></para>
+          <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
+          <tip>
+            <para>В большинстве случаев рекомендуется выставлять параметры <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link> и  <parameter>cuba.httpSessionExpirationTimeoutSec</parameter>  в одинаковое значение.</para>
+          </tip>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.passwordPolicyEnabled</term>
+        <listitem id="property_passwPolicyEnabled">
+          <para>Определяет, нужно ли применять политику проверки пароля. Если свойство имеет значение <code>true</code>, то все новые пароли будут проверены в соответствии со свойством cuba.passwordPolicyRegExp.</para>
+          <para>Значение по умолчанию:</para>
+          <para><parameter>cuba.passwordPolicyEnabled=false</parameter></para>
+          <para>Интерфейс: <classname>ClientConfig</classname></para>
+          <para>Уровни:   <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.passwordPolicyRegExp</term>
+        <listitem id="property_passwPolicyRegExp">
+          <para>В данном свойстве задается регулярное выражение, которое используется в политике проверки пароля.</para>
+          <para>Значение по умолчанию:</para>
+          <para><prompt>cuba.passwordPolicyRegExp=((?=.*\\d)(?=.*\\p{javaLowerCase}) (?=.*\\p{javaUpperCase}).{6,20})</prompt></para>
+          <para>Это означает, что в пароль должен содержать от 6 до 20 символов, в нем можно использоваться цифры, символы и буквы латинского алфавита. При этом обязательно в пароле должна  быть хотя бы одна цифра, одна буква в нижнем регистре и одна буква в верхнем регистре. Более подробная информация о синтаксисе регулярных выражений можно найти на сайтах: <ulink url="http://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5_%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">http://ru.wikipedia.org/wiki/Регулярные_выражения</ulink> и <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html</ulink></para>
+          <para>Интерфейс: <classname>ClientConfig</classname></para>
+          <para>Уровни:   <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.web.loginDialogDefaultUser</term>
+        <listitem>
+          <para>Задает имя пользователя по умолчанию. Оно будет автоматически указываться в экране входа в систему. Если в качестве значения свойства указать
+&lt;disabled&gt;, то при входе в систему пользователь сам будет вводить имя.</para>
+          <para>Значение по умолчанию:</para>
+          <para><parameter>cuba.web.loginDialogDefaultUser=admin</parameter></para>
+          <para>Интерфейс: <classname>WebConfig</classname></para>
+          <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.web.loginDialogDefaultPassword</term>
+        <listitem>
+          <para>Задает имя пользователя по умолчанию. Оно будет автоматически указываться в экране входа в систему. Если в качестве значения свойства указать
+&lt;disabled&gt;, то при входе в систему пользователь сам будет вводить пароль.</para>
+          <para>Значение по умолчанию:</para>
+          <para><parameter>cuba.web.loginDialogDefaultPassword=admin</parameter></para>
+          <para>Интерфейс: <classname>WebConfig</classname></para>
+          <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.user.fullNamePattern</term>
+        <listitem id="property_fullNamePattern">
+          <para>Задает шаблон формирования полного имени пользователя. </para>
+          <para>Значение по умолчанию</para>
+          <para><parameter>cuba.user.fullNamePattern={LL| }{F|. }{M|.}</parameter></para>
+          <para>Таким образом, можно сформировать полное имя по  шаблону из имени, отчества и фамилии  пользователя. В шаблоне  используются следующие правила:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Фигурными скобками {} разделяются части шаблона между собой</para>
+            </listitem>
+            <listitem>
+              <para>Правила формирования шаблона внутри фигурных скобок: один из следующих символов и далее, без пробела, символ   |.</para>
+              <para><code>LL</code> означает фамилию пользователя, написанную в полном варианте (Иванов)</para>
+              <para><code>L</code> означает фамилию пользователя, написанную в кратком варианте (И)</para>
+              <para><code>FF</code> означает имя пользователя, написанного в полном варианте (Петр)</para>
+              <para><code>F</code> означает фамилию пользователя, написанную в кратком варианте (П)</para>
+              <para><code>MM</code> означает отчество пользователя, написанное в полном варианте (Сергеевич)</para>
+              <para><code>M</code> означает отчество пользователя, написанное в кратком варианте (С)</para>
+            </listitem>
+            <listitem>
+              <para>После символа | могут идти любые символы, в том числе, и пробел.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </varlistentry>
+    </variablelist>
   </appendix>
   <appendix>
     <title>Схема базы данных</title>
@@ -123,114 +382,5 @@
       </mediaobject>
     </figure>
   </appendix>
-  <appendix id="appendix_security_properties">
-    <title>Описание конфигурационных свойств</title>
-    <itemizedlist>
-      <listitem>
-        <para id="property_available_locales"><parameter>cuba.availableLocales</parameter>. Список поддерживаемых языков интерфейса. Формат свойства: <code>&lt;Название языка&gt;|&lt;Языковой код&gt;</code>. Значения разных языков между собой разделяются точкой с запятой. Пример: <programlisting>cuba.availableLocales=French|fr;English|en</programlisting></para>
-        <para><code>&lt;Название языка&gt;</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. <code>&lt;Языковой код</code>&gt; − это суффикс для формирования <glossterm linkend="message_pack_glossentry">файлов локализации</glossterm>. Например, <filename>messages_fr.properties.</filename></para>
-        <para>Следует иметь в виду, что язык, который указан первым в списке языков  свойства <parameter>cuba.availableLocales</parameter>, будет отображаться первым в списке доступных языков в том случае, если среди языков данного свойства не будет найден текущий язык системы. В противном случае первым будет отображаться язык системы. </para>
-        <para>Если для языка,  указанного в свойстве, отсутствует файл для его локализации, то по умолчанию берется локализация из файла без суффикса − <filename>messages.properties</filename>.</para>
-        <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.availableLocales=English|en;Russian|ru</parameter></para>
-        <para>Интерфейс: <classname>GlobalConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm>.</para>
-      </listitem>
-      <listitem id="parameter_locale_visible">
-        <para><parameter>cuba.web.localeSelectVisible</parameter>. Включает или отключает возможность пользователя выбирать язык
-интерфейса при входе в систему. </para>
-        <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.web.localeSelectVisible=true</parameter></para>
-        <para>Интерфейс: <classname>GlobalConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm>.</para>
-      </listitem>
-      <listitem>
-        <para><parameter>cuba.trustedClientPassword</parameter>. Пароль, используемый методом <methodname>LoginService.loginTrusted()</methodname>. Доверенный клиент может зайти в систему, не вводя пользовательский пароль. Это свойство используется при интеграции с <application>Active Directory</application>.</para>
-        <para>Интерфейсы: <classname>GlobalConfig</classname>, <classname>ServerConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm>.</para>
-      </listitem>
-      <listitem id="property_sessionExpirTime">
-        <para><parameter>cuba.userSessionExpirationTimeoutSec</parameter> задает  таймаут неактивности сессии пользователя
- в секундах.</para>
-        <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.userSessionExpirationTimeoutSec=1800</parameter></para>
-        <para>Интерфейс: <classname>ServerConfig</classname></para>
-        <para>Уровень: <glossterm linkend="text_middleware_id">Middleware</glossterm>.</para>
-        <caution>
-          <title>Совет</title>
-          <para>В большинстве случаев рекомендуется выставлять параметры <parameter>cuba.userSessionExpirationTimeoutSec</parameter> и  <link linkend="property_httpExpirTime">cuba.httpSessionExpirationTimeoutSec</link>  в одинаковое значение.</para>
-        </caution>
-      </listitem>
-      <listitem id="property_httpExpirTime">
-        <para><parameter>cuba.httpSessionExpirationTimeoutSec</parameter> задает  таймаут бездействия HTTP-сессии
- в секундах.</para>
-        <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.httpSessionExpirationTimeoutSec=1800</parameter></para>
-        <para>Интерфейс: <classname>WebConfig</classname></para>
-        <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
-        <caution>
-          <title>Совет</title>
-          <para>В большинстве случаев рекомендуется выставлять параметры <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link> и  <parameter>cuba.httpSessionExpirationTimeoutSec</parameter>  в одинаковое значение.</para>
-        </caution>
-      </listitem>
-      <listitem id="property_passwPolicyEnabled">
-        <para><parameter>cuba.passwordPolicyEnabled</parameter> определяет, нужно ли применять политику проверки пароля. Если свойство имеет значение <code>true</code>, то все новые пароли будут проверены в соответствии со свойством cuba.passwordPolicyRegExp.</para>
-        <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.passwordPolicyEnabled=false</parameter></para>
-        <para>Интерфейс: <classname>ClientConfig</classname></para>
-        <para>Уровни:   <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm>.</para>
-      </listitem>
-      <listitem id="property_passwPolicyRegExp">
-        <para><parameter>cuba.passwordPolicyRegExp</parameter>. В данном свойстве задается регулярное выражение, которое используется в политике проверки пароля.</para>
-        <para>Значение по умолчанию:</para>
-        <para><prompt>cuba.passwordPolicyRegExp=((?=.*\\d)(?=.*\\p{javaLowerCase}) (?=.*\\p{javaUpperCase}).{6,20})</prompt></para>
-        <para>Это означает, что в пароль должен содержать от 6 до 20 символов, в нем можно использоваться цифры, символы и буквы латинского алфавита. При этом обязательно в пароле должна  быть хотя бы одна цифра, одна буква в нижнем регистре и одна буква в верхнем регистре. Более подробная информация о синтаксисе регулярных выражений можно найти на сайтах: <ulink url="http://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5_%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">http://ru.wikipedia.org/wiki/Регулярные_выражения</ulink> и <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html</ulink></para>
-        <para>Интерфейс: <classname>ClientConfig</classname></para>
-        <para>Уровни:   <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm>.</para>
-      </listitem>
-      <listitem>
-        <para><parameter>cuba.web.loginDialogDefaultUser</parameter> задает имя пользователя по умолчанию. Оно будет автоматически указываться в экране входа в систему. Если в качестве значения свойства указать
-&lt;disabled&gt;, то при входе в систему пользователь сам будет вводить имя.</para>
-        <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.web.loginDialogDefaultUser=admin</parameter></para>
-        <para>Интерфейс: <classname>WebConfig</classname></para>
-        <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
-      </listitem>
-      <listitem>
-        <para><parameter>cuba.web.loginDialogDefaultPassword</parameter> задает имя пользователя по умолчанию. Оно будет автоматически указываться в экране входа в систему. Если в качестве значения свойства указать
-&lt;disabled&gt;, то при входе в систему пользователь сам будет вводить пароль.</para>
-        <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.web.loginDialogDefaultPassword=admin</parameter></para>
-        <para>Интерфейс: <classname>WebConfig</classname></para>
-        <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
-      </listitem>
-      <listitem id="property_fullNamePattern">
-        <para><parameter>cuba.user.fullNamePattern</parameter> задает шаблон формирования полного имени пользователя. </para>
-        <para>Значение по умолчанию</para>
-        <para><parameter>cuba.user.fullNamePattern={LL| }{F|. }{M|.}</parameter></para>
-        <para>Таким образом, можно сформировать полное имя по  шаблону из имени, отчества и фамилии  пользователя. В шаблоне  используются следующие правила:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Фигурными скобками {} разделяются части шаблона между собой</para>
-          </listitem>
-          <listitem>
-            <para>Правила формирования шаблона внутри фигурных скобок: один из следующих символов и далее, без пробела, символ   |.</para>
-            <para><code>LL</code> означает фамилию пользователя, написанную в полном варианте (Иванов)</para>
-            <para><code>L</code> означает фамилию пользователя, написанную в кратком варианте (И)</para>
-            <para><code>FF</code> означает имя пользователя, написанного в полном варианте (Петр)</para>
-            <para><code>F</code> означает фамилию пользователя, написанную в кратком варианте (П)</para>
-            <para><code>MM</code> означает отчество пользователя, написанное в полном варианте (Сергеевич)</para>
-            <para><code>M</code> означает отчество пользователя, написанное в кратком варианте (С)</para>
-          </listitem>
-          <listitem>
-            <para>После символа | могут идти любые символы, в том числе, и пробел.</para>
-          </listitem>
-        </itemizedlist>
-      </listitem>
-    </itemizedlist>
-  </appendix>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" encoding="UTF-8"/>
-  <index type="А" lang="ru">
-    <para>TODO</para>
-  </index>
 </book>

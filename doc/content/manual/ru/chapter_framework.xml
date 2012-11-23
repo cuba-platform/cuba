@@ -43,21 +43,13 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para>CUBA-приложение всегда состоит как минимум из двух частей:</para>
-      <itemizedlist>
-        <listitem>
-          <para>Веб-приложения среднего слоя (<structname>Middleware</structname>)</para>
-        </listitem>
-        <listitem>
-          <para>Веб-приложения веб-клиента (<structname>Web Client</structname>)</para>
-        </listitem>
-      </itemizedlist>
-      <para>Опционально приложение может содержать десктопный клиент и один или несколько порталов.</para>
+      <para>Обязательным уровнем любого приложения является средний слой - <structname>Middleware</structname>. Для реализации пользовательского интерфейса как правило используется один или несколько клиентских уровней, например <structname>Web Client</structname> и <structname>Web Portal</structname>. </para>
+      <para>Вышеперечисленные уровни являются стандартными, однако в комплексном приложении для разделения функциональности можно без труда создать произвольное количество как клиентских уровней, так и уровней среднего слоя.</para>
       <para>Все клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым экраном. Следует отметить, что при развертывании в простейшем случае среднего слоя и веб-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
     </section>
     <section id="app_modules_section">
       <title>Модули приложения</title>
-      <para>Модуль – наименьшая структурная единица CUBA-приложения. Представляет собой один модуль проекта приложения и соответствующий ему JAR файл.</para>
+      <para>Модуль – наименьшая структурная единица CUBA-приложения. Представляет собой один модуль проекта приложения и соответствующий ему JAR файл с исполняемым кодом.</para>
       <para>Стандартные модули: <itemizedlist>
           <listitem>
             <para><structname>global</structname> – включает в себя классы сущностей, интерфейсы сервисов и другие общие для всех уровней классы. Используется на всех <link linkend="app_tiers_section">уровнях приложения</link>.</para>
@@ -210,7 +202,7 @@
             <para>сущность</para>
           </listitem>
         </itemizedlist></para>
-      <figure>
+      <figure id="entity_base_classes">
         <title>Базовые классы сущностей</title>
         <mediaobject>
           <imageobject>
@@ -402,7 +394,7 @@
                 <para>Пример:<programlisting>@PrimaryKeyJoinColumn(name = &quot;CARD_ID&quot;, referencedColumnName = &quot;ID&quot;)</programlisting></para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="namePattern">
               <term>
                 <interfacename>@NamePattern</interfacename>
               </term>
@@ -1058,177 +1050,180 @@ public class MyBean implements AppContext.Listener {
           <para>позволяет создавать универсальные механизмы работы с данными</para>
         </listitem>
       </itemizedlist>
-      <figure>
-        <title>Интерфейсы фреймворка метаданных</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata contentwidth="80%" align="center" fileref="img/MetadataFramework.png"/>
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>Рассмотрим основные интерфейсы метаданных.</para>
-      <variablelist>
-        <varlistentry>
-          <term>
-            <interfacename>Session</interfacename>
-          </term>
-          <listitem>
-            <para>Точка входа в фреймворк метаданных. Позволяет получать экземпляры <interfacename>MetaClass</interfacename> по имени и по соответствующему классу Java. Обратите внимание на различие методов <code>getClass()</code> и <code>getClassNN()</code> - первые могут возвращать <code>null</code>, вторые нет (NonNull).</para>
-            <para>Объект <interfacename>Session</interfacename> может быть получен через интерфейс инфраструктуры <interfacename>
-                <link linkend="Metadata">Metadata</link>
-              </interfacename>.</para>
-            <para>Пример:<programlisting>@Inject
+      <section>
+        <title>Интерфейсы метаданных</title>
+        <para>Рассмотрим основные интерфейсы метаданных.</para>
+        <figure>
+          <title>Интерфейсы фреймворка метаданных</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata contentwidth="80%" align="center" fileref="img/MetadataFramework.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <variablelist>
+          <varlistentry>
+            <term>
+              <interfacename>Session</interfacename>
+            </term>
+            <listitem>
+              <para>Точка входа в фреймворк метаданных. Позволяет получать экземпляры <interfacename>MetaClass</interfacename> по имени и по соответствующему классу Java. Обратите внимание на различие методов <code>getClass()</code> и <code>getClassNN()</code> - первые могут возвращать <code>null</code>, вторые нет (NonNull).</para>
+              <para>Объект <interfacename>Session</interfacename> может быть получен через интерфейс инфраструктуры <interfacename>
+                  <link linkend="Metadata">Metadata</link>
+                </interfacename>.</para>
+              <para>Пример:<programlisting>@Inject
 protected Metadata metadata;
 ...
 Session session = metadata.getSession();
 MetaClass metaClass1 = session.getClassNN(&quot;sec$User&quot;);
 MetaClass metaClass2 = session.getClassNN(User.class);
 assert metaClass1 == metaClass2;</programlisting></para>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>
-            <interfacename>MetaModel</interfacename>
-          </term>
-          <listitem>
-            <para>Редко используемый интерфейс, служит для группировки мета-классов. </para>
-            <para>Группировка осуществляется по первым  трем частям имени пакета Java класса сущности. Например, мета-класс сущности <classname>com.abc.sales.entity.Customer</classname> принадлежит мета-модели с именем <code>com.abc.sales</code></para>
-          </listitem>
-        </varlistentry>
-        <varlistentry id="MetaClass">
-          <term>
-            <interfacename>MetaClass</interfacename>
-          </term>
-          <listitem>
-            <para>Интерфейс метаданных класса сущности. <classname>MetaClass</classname> всегда ассоциирован с классом Java, которого он представляет.</para>
-            <para>Основные методы:</para>
-            <itemizedlist>
-              <listitem>
-                <para><code>getName()</code> – имя сущности, по соглашению первой частью имени до знака <code>$</code> является код пространства имен, например, <classname>sales$Customer</classname></para>
-              </listitem>
-              <listitem>
-                <para><code>getProperties()</code> – список мета-свойств (<interfacename>MetaProperty</interfacename>)</para>
-              </listitem>
-              <listitem>
-                <para><code>getProperty()</code>, <code>getPropertyNN()</code> - получение мета-свойства по имени. Первый метод в случае отсутствия атрибута с указанным именем возвращает <code>null</code>, второй выбрасывает исключение.</para>
-                <para>Пример:<programlisting>MetaClass userClass = session.getClassNN(User.class);
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>MetaModel</interfacename>
+            </term>
+            <listitem>
+              <para>Редко используемый интерфейс, служит для группировки мета-классов. </para>
+              <para>Группировка осуществляется по первым  трем частям имени пакета Java класса сущности. Например, мета-класс сущности <classname>com.abc.sales.entity.Customer</classname> принадлежит мета-модели с именем <code>com.abc.sales</code></para>
+            </listitem>
+          </varlistentry>
+          <varlistentry id="MetaClass">
+            <term>
+              <interfacename>MetaClass</interfacename>
+            </term>
+            <listitem>
+              <para>Интерфейс метаданных класса сущности. <classname>MetaClass</classname> всегда ассоциирован с классом Java, которого он представляет.</para>
+              <para>Основные методы:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><code>getName()</code> – имя сущности, по соглашению первой частью имени до знака <code>$</code> является код пространства имен, например, <classname>sales$Customer</classname></para>
+                </listitem>
+                <listitem>
+                  <para><code>getProperties()</code> – список мета-свойств (<interfacename>MetaProperty</interfacename>)</para>
+                </listitem>
+                <listitem>
+                  <para><code>getProperty()</code>, <code>getPropertyNN()</code> - получение мета-свойства по имени. Первый метод в случае отсутствия атрибута с указанным именем возвращает <code>null</code>, второй выбрасывает исключение.</para>
+                  <para>Пример:<programlisting>MetaClass userClass = session.getClassNN(User.class);
 MetaProperty groupProperty = userClass.getPropertyNN(&quot;group&quot;);</programlisting></para>
-              </listitem>
-              <listitem>
-                <para><code>getPropertyPath()</code> - позволяет перемещаться по ссылкам. Данный метод принимает строковый параметр - путь из имен атрибутов, разделенных точкой. Возвращаемый объект <classname>MetaPropertyPath</classname> позволяет обратиться к искомому (последнему в пути) атрибуту вызовом <code>getMetaProperty()</code>. </para>
-                <para>Пример:<programlisting>MetaClass userClass = session.getClassNN(User.class);
+                </listitem>
+                <listitem>
+                  <para><code>getPropertyPath()</code> - позволяет перемещаться по ссылкам. Данный метод принимает строковый параметр - путь из имен атрибутов, разделенных точкой. Возвращаемый объект <classname>MetaPropertyPath</classname> позволяет обратиться к искомому (последнему в пути) атрибуту вызовом <code>getMetaProperty()</code>. </para>
+                  <para>Пример:<programlisting>MetaClass userClass = session.getClassNN(User.class);
 MetaProperty groupNameProp = userClass.getPropertyPath(&quot;group.name&quot;).getMetaProperty();
 assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</programlisting></para>
-              </listitem>
-              <listitem>
-                <para><code>getJavaClass()</code> – класс сущности, которому соответствует данный <classname>MetaClass</classname></para>
-              </listitem>
-              <listitem>
-                <para><code>getAnnotations()</code> – коллекция <link linkend="meta_annotations_section">мета-аннотаций</link> </para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>
-            <interfacename>MetaProperty</interfacename>
-          </term>
-          <listitem>
-            <para>Интерфейс метаданных атрибута сущности. </para>
-            <para>Основные методы:</para>
-            <itemizedlist>
-              <listitem>
-                <para><code>getName()</code> – имя свойства, соответствует имени атрибута сущности</para>
-              </listitem>
-              <listitem>
-                <para><code>getDomain()</code> – мета-класс, которому принадлежит данное свойство</para>
-              </listitem>
-              <listitem id="MetaProperty.getType">
-                <para><code>getType() </code>– тип свойства:<itemizedlist>
-                    <listitem>
-                      <para>простой тип: <code>DATATYPE</code></para>
-                    </listitem>
-                    <listitem>
-                      <para>перечисление: <code>ENUM</code></para>
-                    </listitem>
-                    <listitem>
-                      <para>ссылочный тип двух видов:</para>
-                      <itemizedlist>
-                        <listitem>
-                          <para><code>ASSOCIATION</code> − простая ссылка на другую сущность. Например, отношение заказа и покупателя − ассоциация.</para>
-                        </listitem>
-                        <listitem>
-                          <para><code>COMPOSITION</code> − ссылка на сущность, которая не имеет самостоятельного значения без владеющей сущности. <code>COMPOSITION</code> можно считать &quot;более тесным&quot; отношением, чем <code>ASSOCIATION</code>. Например, отношение заказа и пункта этого заказа − <code>COMPOSITION</code>, т.к. пункт не может существовать без заказа, которому он принадлежит.</para>
-                        </listitem>
-                      </itemizedlist>
-                      <para>Вид ссылочного атрибута <code>ASSOCIATION</code> или <code>COMPOSITION</code> влияет на режим редактирования сущности: в первом случае сохранение связанной сущности в базу данных происходит независимо, а во втором − связанная сущность сохраняется в БД только вместе с владеющей сущностью.</para>
-                    </listitem>
-                  </itemizedlist></para>
-              </listitem>
-              <listitem>
-                <para><code>getRange()</code> –  интерфейс <interfacename>Range</interfacename>, детально описывающий тип данного атрибута</para>
-              </listitem>
-              <listitem>
-                <para><code>isMandatory()</code> – признак обязательности атрибута. Используется, например, визуальными компонентами для сигнализации пользователю о необходимости ввода значения.</para>
-              </listitem>
-              <listitem>
-                <para><code>isReadOnly()</code> – признак неизменности атрибута</para>
-              </listitem>
-              <listitem>
-                <para><code>getInverse()</code> – для ссылочного атрибута возвращает мета-свойство с обратной стороны ассоциации, если таковое имеется</para>
-              </listitem>
-              <listitem>
-                <para><code>getAnnotatedElement()</code> – поле (<classname>java.lang.reflect.Field</classname>) или метод (<classname>java.lang.reflect.Method</classname>), соответствующие данному атрибуту сущности</para>
-              </listitem>
-              <listitem>
-                <para><code>getJavaType()</code> – класс Java данного атрибута сущности. Это либо тип поля класса, либо тип возвращаемого значения метода.</para>
-              </listitem>
-              <listitem>
-                <para><code>getDeclaringClass()</code> – класс Java, содержащий данный атрибут</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>
-            <interfacename>Range</interfacename>
-          </term>
-          <listitem>
-            <para>Интерфейс, детально описывающий тип атрибута сущности.</para>
-            <para>Основные методы:</para>
-            <itemizedlist>
-              <listitem>
-                <para><code>isDatatype()</code> – возвращает <code>true</code> для атрибута простого  <link linkend="MetaProperty.getType">типа</link></para>
-              </listitem>
-              <listitem>
-                <para><code>asDatatype()</code> - возвращает <link linkend="Datatype_section">
-                    <interfacename>Datatype</interfacename>
-                  </link> для атрибута простого <link linkend="MetaProperty.getType">типа</link></para>
-              </listitem>
-              <listitem>
-                <para><code>isEnum()</code> – возвращает <code>true</code> для атрибута <link linkend="MetaProperty.getType">типа</link> перечисления</para>
-              </listitem>
-              <listitem>
-                <para><code>asEnumeration()</code> - возвращает <link linkend="Datatype_section">
-                    <interfacename>Enumeration</interfacename>
-                  </link> для атрибута  <link linkend="MetaProperty.getType">типа</link> перечисления</para>
-              </listitem>
-              <listitem>
-                <para><code>isClass()</code> – возвращает <code>true</code> для ссылочного атрибута <link linkend="MetaProperty.getType"> типа</link>  <code>ASSOCIATION</code> или <code>COMPOSITION</code></para>
-              </listitem>
-              <listitem>
-                <para><code>asClass()</code> - возвращает <link linkend="MetaClass">мета-класс</link> ассоциированной сущности для ссылочного атрибута</para>
-              </listitem>
-              <listitem>
-                <para><code>isOrdered()</code> – возвращает <code>true</code>  если атрибут представляет собой упорядоченную коллекцию (например <interfacename>List</interfacename>)</para>
-              </listitem>
-              <listitem>
-                <para><code>getCardinality()</code> – вид отношения для ссылочного атрибута: <code>ONE_TO_ONE</code>, <code>MANY_TO_ONE</code>, <code>ONE_TO_MANY</code>, <code>MANY_TO_MANY</code></para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </varlistentry>
-      </variablelist>
+                </listitem>
+                <listitem>
+                  <para><code>getJavaClass()</code> – класс сущности, которому соответствует данный <classname>MetaClass</classname></para>
+                </listitem>
+                <listitem>
+                  <para><code>getAnnotations()</code> – коллекция <link linkend="meta_annotations_section">мета-аннотаций</link> </para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>MetaProperty</interfacename>
+            </term>
+            <listitem>
+              <para>Интерфейс метаданных атрибута сущности. </para>
+              <para>Основные методы:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><code>getName()</code> – имя свойства, соответствует имени атрибута сущности</para>
+                </listitem>
+                <listitem>
+                  <para><code>getDomain()</code> – мета-класс, которому принадлежит данное свойство</para>
+                </listitem>
+                <listitem id="MetaProperty.getType">
+                  <para><code>getType() </code>– тип свойства:<itemizedlist>
+                      <listitem>
+                        <para>простой тип: <code>DATATYPE</code></para>
+                      </listitem>
+                      <listitem>
+                        <para>перечисление: <code>ENUM</code></para>
+                      </listitem>
+                      <listitem>
+                        <para>ссылочный тип двух видов:</para>
+                        <itemizedlist>
+                          <listitem>
+                            <para><code>ASSOCIATION</code> − простая ссылка на другую сущность. Например, отношение заказа и покупателя − ассоциация.</para>
+                          </listitem>
+                          <listitem>
+                            <para><code>COMPOSITION</code> − ссылка на сущность, которая не имеет самостоятельного значения без владеющей сущности. <code>COMPOSITION</code> можно считать &quot;более тесным&quot; отношением, чем <code>ASSOCIATION</code>. Например, отношение заказа и пункта этого заказа − <code>COMPOSITION</code>, т.к. пункт не может существовать без заказа, которому он принадлежит.</para>
+                          </listitem>
+                        </itemizedlist>
+                        <para>Вид ссылочного атрибута <code>ASSOCIATION</code> или <code>COMPOSITION</code> влияет на режим редактирования сущности: в первом случае сохранение связанной сущности в базу данных происходит независимо, а во втором − связанная сущность сохраняется в БД только вместе с владеющей сущностью.</para>
+                      </listitem>
+                    </itemizedlist></para>
+                </listitem>
+                <listitem>
+                  <para><code>getRange()</code> –  интерфейс <interfacename>Range</interfacename>, детально описывающий тип данного атрибута</para>
+                </listitem>
+                <listitem>
+                  <para><code>isMandatory()</code> – признак обязательности атрибута. Используется, например, визуальными компонентами для сигнализации пользователю о необходимости ввода значения.</para>
+                </listitem>
+                <listitem>
+                  <para><code>isReadOnly()</code> – признак неизменности атрибута</para>
+                </listitem>
+                <listitem>
+                  <para><code>getInverse()</code> – для ссылочного атрибута возвращает мета-свойство с обратной стороны ассоциации, если таковое имеется</para>
+                </listitem>
+                <listitem>
+                  <para><code>getAnnotatedElement()</code> – поле (<classname>java.lang.reflect.Field</classname>) или метод (<classname>java.lang.reflect.Method</classname>), соответствующие данному атрибуту сущности</para>
+                </listitem>
+                <listitem>
+                  <para><code>getJavaType()</code> – класс Java данного атрибута сущности. Это либо тип поля класса, либо тип возвращаемого значения метода.</para>
+                </listitem>
+                <listitem>
+                  <para><code>getDeclaringClass()</code> – класс Java, содержащий данный атрибут</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
+              <interfacename>Range</interfacename>
+            </term>
+            <listitem>
+              <para>Интерфейс, детально описывающий тип атрибута сущности.</para>
+              <para>Основные методы:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><code>isDatatype()</code> – возвращает <code>true</code> для атрибута простого  <link linkend="MetaProperty.getType">типа</link></para>
+                </listitem>
+                <listitem>
+                  <para><code>asDatatype()</code> - возвращает <link linkend="Datatype_section">
+                      <interfacename>Datatype</interfacename>
+                    </link> для атрибута простого <link linkend="MetaProperty.getType">типа</link></para>
+                </listitem>
+                <listitem>
+                  <para><code>isEnum()</code> – возвращает <code>true</code> для атрибута <link linkend="MetaProperty.getType">типа</link> перечисления</para>
+                </listitem>
+                <listitem>
+                  <para><code>asEnumeration()</code> - возвращает <link linkend="Datatype_section">
+                      <interfacename>Enumeration</interfacename>
+                    </link> для атрибута  <link linkend="MetaProperty.getType">типа</link> перечисления</para>
+                </listitem>
+                <listitem>
+                  <para><code>isClass()</code> – возвращает <code>true</code> для ссылочного атрибута <link linkend="MetaProperty.getType"> типа</link>  <code>ASSOCIATION</code> или <code>COMPOSITION</code></para>
+                </listitem>
+                <listitem>
+                  <para><code>asClass()</code> - возвращает <link linkend="MetaClass">мета-класс</link> ассоциированной сущности для ссылочного атрибута</para>
+                </listitem>
+                <listitem>
+                  <para><code>isOrdered()</code> – возвращает <code>true</code>  если атрибут представляет собой упорядоченную коллекцию (например <interfacename>List</interfacename>)</para>
+                </listitem>
+                <listitem>
+                  <para><code>getCardinality()</code> – вид отношения для ссылочного атрибута: <code>ONE_TO_ONE</code>, <code>MANY_TO_ONE</code>, <code>ONE_TO_MANY</code>, <code>MANY_TO_MANY</code></para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
       <section>
         <title>Формирование метаданных</title>
         <para>Основной источник формирования структуры метаданных - <link linkend="entity_annotations_section">аннотированные</link> классы сущностей. </para>
@@ -1405,26 +1400,143 @@ String formattedValue = format.format(value);</programlisting></para>
     </section>
     <section id="views_section">
       <title>Представления</title>
-      <para>Механизм представлений обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
-      <para>Представление всегда должно быть задано при запросе данных у <glossterm linkend="middleware_glossentry">middleware</glossterm>. Получив выборку данных по представлению, клиентский код может быть уверен, что все запрошенные атрибуты и связанные сущности получены, и их можно использовать без опаски получить <errorname role="italic">NullPointerException</errorname> или исключение типа <errorname role="italic">LazyInitializationException</errorname>. Представление решает и обратную задачу − ненужные атрибуты не извлекаются из БД, что снижает нагрузку в случае &quot;широких&quot; сущностей (содержащих большое число атрибутов).</para>
-      <para>Для каждой сущности по умолчанию доступны два типа представления с именами <filename>_local</filename> и <filename>_minimal</filename></para>
-      <itemizedlist>
-        <listitem>
-          <para><filename>_local</filename> определяет все локальные атрибуты сущности (т.е. все, кроме ссылок на другие сущности);</para>
-        </listitem>
-        <listitem>
-          <para><filename>_minimal</filename> определяет атрибуты, входящие в <varname>InstanceName</varname>. Если <varname>InstanceName</varname> не задано, данное представление определяет только системные атрибуты (<varname>id</varname>, <varname>createTs</varname> и пр.).</para>
-        </listitem>
-      </itemizedlist>
-      <para>Представления нужно определять в файле <filename>ext-views.xml</filename> модуля <structname>core</structname>.</para>
-      <warning>
-        <title>Внимание</title>
-        <para>Имя представления должно быть уникально в пределах сущности. При этом рекомендуется давать более  &quot;описательные&quot; имена. Например, не &quot;browse&quot;, а &quot;nameOfEntityBrowse&quot;. Это упрощает поиск XML-описателей представлений по имени. </para>
-      </warning>
-      <para>Пример представления для сущности <classname>User</classname>, которое должно выбирать все простые поля и ссылку на группу:</para>
-      <programlisting>&lt;view entity=&quot;sec$User&quot; name=&quot;user.browse&quot; extends=&quot;_local&quot;&gt;
-     &lt;property name=&quot;group&quot; view=&quot;_local&quot;/&gt;
-&lt;/view&gt;</programlisting>
+      <section>
+        <title>Общие сведения</title>
+        <para>При извлечении сущностей из базы данных обычно встает вопрос - как обеспечить загрузку связанных сущностей на нужную глубину? </para>
+        <para>Например,  для браузера Заказов нужно отобразить дату и сумму заказа совместно с названием Покупателя, т.е. загрузить связанный экземпляр Покупателя. А для экрана редактирования Заказа необходимо загрузить еще и коллекцию Пунктов заказа, причем каждый Пункт заказа должен содержать связанный экземпляр Товара для отображения его наименования. </para>
+        <para><glossterm linkend="lazy_loading">Загрузка по требованию</glossterm> в большинстве случаев не может помочь, так как обработка данных как правило происходит не в транзакции, в которой загружаются сущности, а, например, на клиентском <link linkend="app_tiers_section">уровне</link> в пользовательском интерфейсе. В то же время задание <glossterm linkend="eager_fetching">энергичной загрузки</glossterm> в <link linkend="entity_annotations_section">аннотациях сущностей</link> недопустимо, так как приводит к постоянному извлечению всего графа связанных сущностей, который может быть очень большим.</para>
+        <para>Другой похожей проблемой является ограничение набора <glossterm linkend="local_attribute">локальных</glossterm> атрибутов сущностей загружаемого графа: например, некоторая сущность имеет 50 атрибутов, в том числе BLOB, а в экране отображается только 10 атрибутов. Зачем загружать из БД, затем сериализовать и передавать клиенту 40 атрибутов, которые ему в данный момент не нужны?</para>
+        <para>Механизм <firstterm>представлений</firstterm> (views)  решает эти проблемы, обеспечивая извлечение из базы данных и передачу клиенту графов сущностей, ограниченных в глубину и по атрибутам. <firstterm>Представление</firstterm> является описателем графа объектов, который требуется в некотором экране UI или другом процессе обработки данных.</para>
+        <para>Обработка представлений производится следующим образом:<itemizedlist>
+            <listitem>
+              <para>все связи в модели данных объявляются с признаком <glossterm linkend="lazy_loading">загрузки по требованию</glossterm> (<code>fetch = FetchType.LAZY</code>, см. <xref linkend="entity_annotations_section"/>)</para>
+            </listitem>
+            <listitem>
+              <para>в процессе загрузки данных через <link linkend="DataService_section">DataService</link> клиентский код помимо <glossterm linkend="jpql_glossentry">JPQL</glossterm> запроса указывает нужное  представление</para>
+            </listitem>
+            <listitem>
+              <para>на основе представления формируется так называемый <firstterm>Fetch Plan</firstterm> - особенность лежащего в основе <link linkend="orm_section">слоя ORM</link> фреймворка <application>Apache OpenJPA</application>. Fetch Plan влияет на формирование SQL запроса к базе данных: как на список возвращаемых полей, так и на соединения с другими таблицами, содержащими связанные сущности.</para>
+            </listitem>
+            <listitem>
+              <para>ссылки, не включенные в Fetch Plan (иногда это полезно  для упрощения основного SQL запроса), загружаются отдельными SQL запросами, для чего механизм обработки представлений просто обращается к соответствующим методам чтения атрибутов</para>
+            </listitem>
+            <listitem>
+              <para>в результате на момент завершения <link linkend="transactions_section">транзакции</link>, загружающей данные, в памяти <structname>Middleware</structname> содержится граф объектов, заданный  JPQL запросом и представлением.</para>
+            </listitem>
+          </itemizedlist></para>
+        <figure>
+          <title>Классы представления</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/View.png" align="center"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>Представление определяется экземпляром класса <classname>View</classname>, в котором:<itemizedlist>
+            <listitem>
+              <para><code>entityClass</code> - класс сущности, для  которого определено представление. Другими словами, &quot;корень&quot; дерева загружаемых сущностей.</para>
+            </listitem>
+            <listitem>
+              <para><code>name</code> - имя представления. Должно быть либо <code>null</code>, либо уникальным в пределах данной сущности.</para>
+            </listitem>
+            <listitem>
+              <para><code>properties</code> - коллекция экземпляров класса ViewProperty, соответствующих загружаемым атрибутам сущности.</para>
+            </listitem>
+            <listitem>
+              <para><code>includeSystemProperties</code> - признак включения системных атрибутов (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <interfacename>BaseEntity</interfacename> и  <interfacename>Updatable</interfacename>). Системные атрибуты не перечисляются в <code>properties</code>  явно, а учитываются механизмом обработки представлений в зависимости от того, какие интерфейсы реализует данная сущность.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Класс <classname>ViewProperty</classname> имеет следующие свойства:<itemizedlist>
+            <listitem>
+              <para><code>name</code> - имя атрибута сущности</para>
+            </listitem>
+            <listitem>
+              <para><code>view</code> - для ссылочных атрибутов задает представление, с которым необходимо загружать связанную сущность</para>
+            </listitem>
+            <listitem>
+              <para><code>lazy</code> - для ссылочных атрибутов признак того, что данный атрибут нужно не  включать в Fetch Plan, а загружать отдельным SQL запросом, инициированным обращением к атрибуту. Следует иметь в виду, что атрибут в любом случае будет загружен на момент окончания транзакции, данный признак влияет только на способ загрузки. </para>
+            </listitem>
+          </itemizedlist></para>
+        <warning>
+          <para>Независимо от набора атрибутов, определенного в представлении, всегда загружаются следующие атрибуты:<itemizedlist>
+              <listitem>
+                <para><code>id</code> - идентификатор сущности</para>
+              </listitem>
+              <listitem>
+                <para><code>version</code> - для оптимистично блокируемых сущностей, реализующих <interfacename>Versioned</interfacename></para>
+              </listitem>
+              <listitem>
+                <para><code>deleteTs</code>, <code>deletedBy</code> - для сущностей, реализующих <interfacename>
+                    <link linkend="soft_delete_section">SoftDelete</link>
+                  </interfacename></para>
+              </listitem>
+            </itemizedlist></para>
+        </warning>
+      </section>
+      <section>
+        <title>Создание представлений</title>
+        <para>Представление может быть создано двумя путями:<itemizedlist>
+            <listitem>
+              <para><emphasis role="bold">программно</emphasis> - созданием экземпляра <classname>View</classname>, например:<programlisting>View view = new View(Order.class)
+        .addProperty(&quot;date&quot;)
+        .addProperty(&quot;amount&quot;)
+        .addProperty(&quot;customer&quot;, new View(Customer.class)
+            .addProperty(&quot;name&quot;)
+        );</programlisting></para>
+              <para>Как правило, таким способом создаются представления, используемые только в каком-то одном месте бизнес-логики.</para>
+              <warning>
+                <para>Механизм обработки представлений кэширует создаваемые для <emphasis>именованных</emphasis> представлений объекты Fetch Plan. Это означает, что если Вы <emphasis>программно</emphasis> создадите два представления для одной сущности с одинаковыми именами, но с разным набором атрибутов, то выборка со вторым представлением окажется неверной.</para>
+                <para>Поэтому никогда не задавайте имен для &quot;одноразовых&quot; представлений, создаваемых программно.</para>
+              </warning>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">декларативно</emphasis> - путем создания описателя на XML и его развертывания в репозитории представлений <classname>ViewRepository</classname>. При развертывании на основе XML-описателя создаются и кэшируются экземпляры <classname>View</classname>. В дальнейшем в любом месте кода приложения требуемое представление можно получить вызовом репозитория с указанием класса сущности и имени представления.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Рассмотрим подробнее декларативный способ создания и работы с представлениями.</para>
+        <para>Ссылка на <classname>ViewRepository</classname> может быть получена через интерфейс инфраструктуры <interfacename>
+            <link linkend="Metadata">Metadata</link>
+          </interfacename>. Для получения экземпляра <classname>View</classname>, содержащегося в репозитории, используются методы <code>getView()</code>. Для развертывания XML-описателей представлений в репозитории используются методы  <code>deployViews()</code>.</para>
+        <para>В репозитории для каждой сущности по умолчанию доступны два  представления с именами <filename>_local</filename> и <filename>_minimal</filename>:<itemizedlist>
+            <listitem>
+              <para><filename>_local</filename> включает в себя все <glossterm linkend="local_attribute">локальные</glossterm> атрибуты сущности</para>
+            </listitem>
+            <listitem>
+              <para><filename>_minimal</filename> включает в себя атрибуты, входящие в имя экземпляра сущности, и задаваемые аннотацией <interfacename>
+                  <link linkend="namePattern">@NamePattern</link>
+                </interfacename>. Если аннотация <interfacename>@NamePattern</interfacename>  для сущности не указана, данное представление не включает никаких атрибутов.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Подробная структура XML-описателей изложена в <xref linkend="views.xml"/></para>
+        <para>Пример описателя представления для сущности Заказ, которое должно обеспечить загрузку всех локальных атрибутов, ассоциированного Покупателя и коллекции Пунктов заказа:<programlisting>&lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
+      name=&quot;orderWithCustomer&quot;
+      extends=&quot;_local&quot;&gt;
+    &lt;property name=&quot;customer&quot; view=&quot;_minimal&quot;/&gt;
+    &lt;property name=&quot;items&quot; view=&quot;itemsInOrder&quot;/&gt;
+&lt;/view&gt;</programlisting></para>
+        <para>Рекомендуемый способ группировки и развертывания описателей представлений:<itemizedlist>
+            <listitem>
+              <para>В <link linkend="app_modules_section">модуле</link> <structname>core</structname>  в корне <filename>src</filename>  создать файл <filename>{имя_проекта}-views.xml</filename> и поместить в него все описатели представлений, которые должны быть доступны глобально, т.е. на всех <link linkend="app_tiers_section">уровнях приложения</link>.</para>
+            </listitem>
+            <listitem>
+              <para>Зарегистрировать данный файл в свойстве <property>
+                  <link linkend="cuba.viewsConfig">cuba.viewsConfig</link>
+                </property> уровня <structname>Middleware</structname>, т.е. в файле <filename>{имя_проекта}-app.properties</filename> модуля <structname>core</structname>. Это обеспечит автоматическое развертывание представлений на старте приложения в репозитории <structname>Middleware</structname> (см. метод <code>MetadataImpl.initViews()</code>). Развернутые представления будут доступны и для <structname>Middleware</structname>, и для  клиентских уровней приложения, которые получат соответствующие экземпляры <classname>View</classname> при подключении к среднему слою.</para>
+            </listitem>
+            <listitem>
+              <para>Если существуют представления, которые необходимы только какому-то одному клиентскому уровню приложения, то можно определить их в аналогичном файле этого уровня, например <filename>{имя_проекта}-web-views.xml</filename>, и зарегистрировать в свойстве <property>
+                  <link linkend="cuba.viewsConfig">cuba.viewsConfig</link>
+                </property> этого уровня, т.е. в файле <filename>{имя_проекта}-web-app.properties</filename>. Тогда клиентский уровень сначала загрузит все имеющиеся представления с <structname>Middleware</structname>,  а затем развернет свои собственные (см. <code>MetadataClientImpl.initViews()</code>).</para>
+              <para>Возможна также ситуация, когда некоторому клиентскому уровню не нужны глобальные представления, зарегистрированные на среднем слое, или нужны редко. В этом случае имеет смысл объявить на этом клиентском уровне свойство <link linkend="cuba.lazyLoadServerViews">
+                  <property>cuba.lazyLoadServerViews</property>
+                </link>, тогда глобальные представления будут загружаться на клиентский уровень не все сразу, а по необходимости.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Если на момент развертывания некоторого представления в репозитории уже есть представление для этого же класса сущности и с таким же именем, то новое будет проигнорировано. Для того, чтобы представление заменило имеющееся в репозитории и гарантированно было развернуто, в XML-описателе должен быть явно указан атрибут <literal>overwrite = &quot;true&quot;</literal>. В частности, развертывание представлений клиентского уровня производится после загрузки представлений со среднего слоя, поэтому некоторое клиентское представление может оказаться &quot;замаскированным&quot; одноименным представлением <structname>Middleware</structname>.</para>
+        <tip>
+          <para>Рекомендуется давать представлениям &quot;описательные&quot; имена. Например, не &quot;browse&quot;, а &quot;customerBrowse&quot;. Это упрощает поиск XML-описателей представлений по имени в процессе разработки приложения.</para>
+        </tip>
+      </section>
     </section>
     <section id="infrastructure_interfaces_section">
       <title>Интерфейсы инфраструктуры</title>
@@ -1444,6 +1556,10 @@ String formattedValue = format.format(value);</programlisting></para>
       <section id="Metadata">
         <title>Metadata</title>
         <para>Обеспечивает доступ к сессии <link linkend="metadata_framework_section">метаданных</link> и ViewRepository.</para>
+      </section>
+      <section id="resources">
+        <title>Resources</title>
+        <para>TODO</para>
       </section>
       <section id="scripting_section">
         <title>Scripting</title>
