@@ -13,7 +13,7 @@
       <para>Разработка экранов пользовательского интерфейса, позволяющих создавать, просматривать, обновлять и удалять сущности модели данных.</para>
     </listitem>
   </orderedlist>
-  <section id="quick_start_section">
+  <section id="quick_start">
     <title>Описание задачи</title>
     <para>Приложение предназначено для ведения сведений о покупателях и их заказах. </para>
     <para>Покупатель имеет следующие характеристики:</para>
@@ -121,7 +121,7 @@
           </figure>
         </listitem>
         <listitem>
-          <para>Откройте проектный файл <filename>sales.ipr</filename> в IntelliJ IDEA. Вы увидите структуру проекта, аналогичную описанной в <xref linkend="project_file_structure_section"/></para>
+          <para>Откройте проектный файл <filename>sales.ipr</filename> в IntelliJ IDEA. Вы увидите структуру проекта, аналогичную описанной в <xref linkend="project_file_structure"/></para>
         </listitem>
       </orderedlist>
     </section>
@@ -183,12 +183,12 @@ Customer.name=Имя
 Customer.email=Email</programlisting></para>
       <para>Далее создайте в том же пакете <code>com.haulmont.sales.entity</code> сущность <classname>Заказ (Order)</classname>. Класс сущности представлен в листинге ниже:</para>
       <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Order.java" parse="text" encoding="UTF-8"/></programlisting>
-      <para>Рассмотрим аннотации, использованные в классе сущности: <itemizedlist>
+      <para>Рассмотрим <link linkend="entity_annotations">аннотации</link>, использованные в классе сущности: <itemizedlist>
           <listitem>
             <para><interfacename>@javax.persistence.ManyToOne</interfacename> − определяет атрибут ссылочного типа с отношением <literal>many-to-one</literal>, т.е. в нашем случае несколько заказов для одного покупателя. Параметр <code>fetch = FetchType.LAZY</code> означает, что загрузка сущности <classname>Customer</classname> не обязательно будет производиться одновременно с сущностью <classname>Order</classname>.</para>
           </listitem>
           <listitem>
-            <para><interfacename>@javax.persistence.JoinColumn</interfacename> −  определяет, каким образом сущности связаны на уровне таблиц базы данных. Параметр <code>name</code> определяет поле таблицы <database>SALES_ORDER</database>, которое ссылается на первичный ключ таблицы <database>SALES_CUSTOMER</database>.</para>
+            <para><interfacename>@javax.persistence.JoinColumn</interfacename> −  определяет, каким образом сущности связаны на <link linkend="app_tiers">уровне</link>  базы данных. Параметр <code>name</code> определяет поле таблицы <database>SALES_ORDER</database>, которое ссылается на первичный ключ таблицы <database>SALES_CUSTOMER</database>.</para>
           </listitem>
           <listitem>
             <para><interfacename>@javax.persistence.Temporal</interfacename> − для атрибута типа дата/время определяет возможное содержимое: дата+время, только дата, только время.</para>
@@ -209,8 +209,8 @@ Order.amount=Сумма</programlisting></para>
       <title>Создание пользовательского интерфейса приложения</title>
       <para>Для ограничения списка поддерживаемых языков интерфейса откройте файл <filename>sales-web-app.properties</filename> модуля <structname>web</structname> и добавьте в него следующее значение:<programlisting>cuba.availableLocales=English|en;Russian|ru</programlisting></para>
       <para>Файлы, относящиеся к экранам, будем создавать в пакете <code>com.haulmont.sales.gui</code> модуля gui.</para>
-      <para>Любой экран  определяется <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескриптором</glossterm>, описывающим  <glossterm linkend="datasource_glossentry">источники данных</glossterm> и расположение <link linkend="gui_framework_section">визуальных компонентов</link> экрана. У экрана также может быть <glossterm linkend="screen_controller_glossentry">контроллер</glossterm> − Java-класс, содержащий логику инициализации и обработки событий экрана.</para>
-      <section id="qs_customer_browse_section">
+      <para>Любой экран  определяется <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескриптором</glossterm>, описывающим  <glossterm linkend="datasource_glossentry">источники данных</glossterm> и расположение <link linkend="gui_framework">визуальных компонентов</link> экрана. У экрана также может быть <glossterm linkend="screen_controller_glossentry">контроллер</glossterm> − Java-класс, содержащий логику инициализации и обработки событий экрана.</para>
+      <section id="qs_customer_browse">
         <title>Экран списка Покупателей</title>
         <para>В данном экране будет отображаться список покупателей в виде таблицы, фильтр и панель с кнопками, обеспечивающими основные операции с записями (создание, редактирование, удаление).</para>
         <para>Создайте пакет <code>com.haulmont.sales.gui.customer</code> в модуле <structname>gui</structname>, где будут находиться файлы, относящиеся к пользовательскому интерфейсу  сущности <classname>Покупатель</classname>. Создайте  <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескриптор</glossterm> экрана списка покупателей <filename>customer-browse.xml</filename>: </para>
@@ -288,7 +288,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
       <section>
         <title>Экран списка Заказов</title>
         <para>Создайте пакет <code>com.haulmont.sales.gui.order</code> и в нем файл <filename>order-browse.xml</filename> следующего содержания:<programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/order-browse.xml" parse="text" encoding="UTF-8"/></programlisting></para>
-        <para>Данный экран аналогичен описанному в <xref linkend="qs_customer_browse_section"/> и имеет следующую особенность: так как среди прочих отображается ссылочный атрибут <code>Order.customer</code>, требуется определить представление сущности <classname>Order</classname>, включающее этот атрибут (стандартные представления <literal>_local</literal> и <literal>_minimal</literal> не включают ссылочных атрибутов).</para>
+        <para>Данный экран аналогичен описанному в <xref linkend="qs_customer_browse"/> и имеет следующую особенность: так как среди прочих отображается ссылочный атрибут <code>Order.customer</code>, требуется определить представление сущности <classname>Order</classname>, включающее этот атрибут (стандартные представления <literal>_local</literal> и <literal>_minimal</literal> не включают ссылочных атрибутов).</para>
         <para>Определите представление <literal>orderWithCustomer</literal> в файле <filename>sales-views.xml</filename> модуля <structname>core</structname>: <programlisting>&lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
       name=&quot;orderWithCustomer&quot;
       extends=&quot;_local&quot;&gt;

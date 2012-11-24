@@ -29,7 +29,7 @@
         развернуты в отказоустойчивой конфигурации</para>
       </listitem>
       <listitem>
-        <para>Наличие эффективных средств разработки <link linkend="gui_framework_section">пользовательского интерфейса</link> с
+        <para>Наличие эффективных средств разработки <link linkend="gui_framework">пользовательского интерфейса</link> с
         помощью только <application>Java</application> и
         <application>XML</application></para>
       </listitem>
@@ -56,12 +56,12 @@
                 <productname>Платформа CUBA. Отображение диаграмм</productname>)</para>
       </listitem>
       <listitem>
-        <para>Встроенный <link linkend="rest_api_section">REST API</link> с
+        <para>Встроенный <link linkend="rest_api">REST API</link> с
         передачей данных в форматах XML или JSON для быстрой интеграции со
         сторонними приложениями</para>
       </listitem>
       <listitem>
-        <para><link linkend="extension_section">Механизм создания расширений функциональности</link>, позволяющий адаптировать
+        <para><link linkend="extension">Механизм создания расширений функциональности</link>, позволяющий адаптировать
         тиражируемые продукты для конкретных заказчиков, не затрудняя при этом
         обновления версий продуктов</para>
       </listitem>
@@ -100,23 +100,23 @@
               <para>Системный уровень<itemizedlist>
                   <listitem>
                     <para>Инфраструктура и средства организации бизнес-логики
-                    на <link linkend="middleware_section">среднем слое</link></para>
+                    на <link linkend="middleware">среднем слое</link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="gui_vcl_section">Библиотека визуальных компонентов</link> и <link linkend="client_section">инфраструктура клиентского уровня</link></para>
+                    <para><link linkend="gui_vcl">Библиотека визуальных компонентов</link> и <link linkend="client">инфраструктура клиентского уровня</link></para>
                   </listitem>
                   <listitem>
-                    <para>Средства работы с <link linkend="config_params_section">параметрами конфигурации</link> и <link linkend="localization_section">локализованными сообщениями</link></para>
+                    <para>Средства работы с <link linkend="config_params">параметрами конфигурации</link> и <link linkend="localization">локализованными сообщениями</link></para>
                   </listitem>
                   <listitem>
-                    <para>Средства выполнения <link linkend="background_tasks_section">фоновых задач</link>
+                    <para>Средства выполнения <link linkend="background_tasks">фоновых задач</link>
                     пользовательского интерфейса</para>
                   </listitem>
                   <listitem>
-                    <para>Механизмы запуска на среднем слое <link linkend="scheduled_tasks_section">задач по расписанию</link></para>
+                    <para>Механизмы запуска на среднем слое <link linkend="scheduled_tasks">задач по расписанию</link></para>
                   </listitem>
                   <listitem>
-                    <para>Возможность применения <link linkend="runtime_properties_section">динамических атрибутов</link>, позволяющих задавать новые атрибуты
+                    <para>Возможность применения <link linkend="runtime_properties">динамических атрибутов</link>, позволяющих задавать новые атрибуты
                     <glossterm linkend="entity_glossentry">сущностей</glossterm>
                     на этапе настройки и эксплуатации системы</para>
                   </listitem>
@@ -138,14 +138,14 @@
                     поиск</para>
                   </listitem>
                   <listitem>
-                    <para>Механизм надежной асинхронной <link linkend="email_sending_section">рассылки email</link></para>
+                    <para>Механизм надежной асинхронной <link linkend="email_sending">рассылки email</link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="audit_section">Средства ведения журнала аудита</link> изменений <glossterm linkend="entity_glossentry">сущностей</glossterm> и
-<link linkend="entity_snapshots_section"> сохранения версий</link></para>
+                    <para><link linkend="audit">Средства ведения журнала аудита</link> изменений <glossterm linkend="entity_glossentry">сущностей</glossterm> и
+<link linkend="entity_snapshots"> сохранения версий</link></para>
                   </listitem>
                   <listitem>
-                    <para>Средства организации <link linkend="objects_cache_section">кэшей данных</link></para>
+                    <para>Средства организации <link linkend="objects_cache">кэшей данных</link></para>
                   </listitem>
                 </itemizedlist></para>
             </listitem>
@@ -156,10 +156,10 @@
                     конфигурации</para>
                   </listitem>
                   <listitem>
-                    <para>Готовые средства <link linkend="rest_api_section">интеграции со сторонними приложениями</link></para>
+                    <para>Готовые средства <link linkend="rest_api">интеграции со сторонними приложениями</link></para>
                   </listitem>
                   <listitem>
-                    <para>Возможность независимого создания <link linkend="extension_section">расширений</link>
+                    <para>Возможность независимого создания <link linkend="extension">расширений</link>
                     основного продукта для адаптации под конкретного
                     заказчика</para>
                   </listitem>

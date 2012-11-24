@@ -2,7 +2,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_development" lang="ru">
   <title>Разработка приложений</title>
-  <section id="project_file_structure_section">
+  <section id="project_file_structure">
     <title>Файловая структура проекта</title>
     <para>Рассмотрим структуру классов и других файлов в проекте.</para>
     <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
@@ -33,7 +33,7 @@
     <para>Модуль <structname>global</structname> определяет компоненты, доступные как среднему слою (Middleware), так и клиентскому коду.</para>
     <itemizedlist>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="services_section">сервисов</link> среднего слоя (Middleware). </para>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="services">сервисов</link> среднего слоя (Middleware). </para>
       </listitem>
       <listitem>
         <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="entity_glossentry">сущностей</glossterm> и <glossterm linkend="message_pack_glossentry">файлы локализованных сообщений</glossterm>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
@@ -42,7 +42,7 @@
         <para>В файле <filename>shop-persistence.xml</filename>  регистрируются новые классы сущностей.</para>
       </listitem>
       <listitem>
-        <para>В файле <filename>shop-metadata.xml</filename>  может быть задано <link linkend="extension_section">замещение</link> стандартных сущностей новыми.</para>
+        <para>В файле <filename>shop-metadata.xml</filename>  может быть задано <link linkend="extension">замещение</link> стандартных сущностей новыми.</para>
       </listitem>
     </itemizedlist>
     <figure>
@@ -56,22 +56,22 @@
     <para>Модуль <structname>core</structname> определяет компоненты среднего слоя (Middleware) системы.</para>
     <itemizedlist>
       <listitem>
-        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и <link linkend="db_update_section">изменения</link> базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
+        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и <link linkend="db_update">изменения</link> базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
       </listitem>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации <link linkend="services_section">сервисов (Services)</link> среднего слоя (Middleware), а также другие компоненты бизнес-логики приложения.</para>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации <link linkend="services">сервисов (Services)</link> среднего слоя (Middleware), а также другие компоненты бизнес-логики приложения.</para>
       </listitem>
       <listitem>
         <para>Файл <filename>shop-app.properties</filename> содержит конфигурационные параметры среднего слоя:</para>
         <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_spring">Spring</link>-фреймворка;</para>
         <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_additionally_ORM">ORM</link>;</para>
-        <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <link linkend="views_section">представлений</link>;</para>
+        <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <link linkend="views">представлений</link>;</para>
       </listitem>
       <listitem>
         <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком <link linkend="text_additionally_spring">Spring</link> компонентов, а также зарегистрировать создаваемые <glossterm linkend="jmx_glossentry">JMX</glossterm>-компоненты.</para>
       </listitem>
       <listitem>
-        <para>Файл <filename>shop-views.xml</filename> содержит описание <link linkend="views_section">представлений</link>. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
+        <para>Файл <filename>shop-views.xml</filename> содержит описание <link linkend="views">представлений</link>. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
       </listitem>
       <listitem>
         <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
@@ -80,7 +80,7 @@
         <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя (Middleware). Среди прочего содержит список <glossterm linkend="app_properties_glossentry">конфигурационных файлов</glossterm> <filename>*-app.properties</filename>, используемых данным приложением.</para>
       </listitem>
     </itemizedlist>
-    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="gui_framework_section">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm>, <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="message_pack_glossentry">локализованных сообщений</glossterm>.</para>
+    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm>, <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="message_pack_glossentry">локализованных сообщений</glossterm>.</para>
     <itemizedlist>
       <listitem>
         <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
@@ -240,7 +240,7 @@
           <programlisting>@Service(DataService.NAME)</programlisting>
         </step>
         <step>
-          <para>При необходимости обращения к базе данных создавать и завершать <link linkend="transactions_section">транзакцию</link></para>
+          <para>При необходимости обращения к базе данных создавать и завершать <link linkend="transactions">транзакцию</link></para>
           <programlisting>@Inject
 private Persistence persistence;
 ...
@@ -259,7 +259,7 @@ try {
       </warning>
       <tip>
         <title>Совет</title>
-        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов Middleware, ее необходимо инкапсулировать внутри соответствующего <link linkend="managed_beans_section">Managed Bean</link> либо <glossterm linkend="pojo_glossentry">POJO</glossterm>.</para>
+        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов Middleware, ее необходимо инкапсулировать внутри соответствующего <link linkend="managed_beans">Managed Bean</link> либо <glossterm linkend="pojo_glossentry">POJO</glossterm>.</para>
       </tip>
       <para><emphasis role="bold">Использование на клиенте</emphasis></para>
       <para>Для того чтобы вызывать сервис с клиента, для него должен быть создан соответствующий <firstterm>объект-заместитель</firstterm> (прокси-объект). Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для веб-клиента или <parameter>RemoteProxyBeanCreator</parameter> для  десктоп-клиента.</para>
@@ -302,11 +302,11 @@ public class TaskWorkerBean implements TaskWorker {
       </itemizedlist>
       <para>Данные правила дают возможность в дальнейшем получать ссылки на бин, указывая константу в качестве имени:</para>
       <programlisting>LoginService ls = AppContext.getBean(LoginService.NAME);</programlisting>
-      <para>Ссылку на бин в другом управляемом бине (а также  в <link linkend="services_section">сервисе</link> или <link linkend="mbeans_section">МБине</link>) можно получить более простым и естественным способом, объявив поле соответствующего типа и добавив ему аннотацию<literal> @Inject</literal>:</para>
+      <para>Ссылку на бин в другом управляемом бине (а также  в <link linkend="services">сервисе</link> или <link linkend="mbeans">МБине</link>) можно получить более простым и естественным способом, объявив поле соответствующего типа и добавив ему аннотацию<literal> @Inject</literal>:</para>
       <programlisting>@Inject
 private TaskWorker taskWorker;</programlisting>
       <para>В этом случае контейнер автоматически найдет подходящую реализацию и установит ссылку на объект во время разворачивания приложения в памяти.</para>
-      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например, кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="jmx_glossentry">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="mbeans_section">МБин</link>.</para>
+      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например, кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="jmx_glossentry">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="mbeans">МБин</link>.</para>
     </section>
     <section>
       <title>Правила создания Мбинов</title>
