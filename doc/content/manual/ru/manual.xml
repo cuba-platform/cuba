@@ -228,7 +228,7 @@
         <term>cuba.viewsConfig</term>
         <listitem>
           <para>Конфигурационный параметр, задающий набор файлов <link linkend="views.xml">views.xml</link>, автоматически развертываемых на старте приложения. См. <xref linkend="views_section"/></para>
-          <para><link linkend="app_tiers_section">Уровень</link>: все</para>
+          <para>Используется во всех стандартных <link linkend="app_tiers_section">блоках</link>.</para>
           <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml sales-views.xml</programlisting></para>
         </listitem>
       </varlistentry>
@@ -238,7 +238,7 @@
           <para>Указывает, что глобальные представления c <structname>Middleware</structname> нужно загружать на клиентский уровень не все сразу, а по необходимости. См. <xref linkend="views_section"/></para>
           <para>Значение по умолчанию: <code>false</code></para>
           <para>Интерфейс: <classname>ClientConfig</classname></para>
-          <para><link linkend="app_tiers_section">Уровень</link>: клиентский - <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname></para>
+          <para>Используется в <link linkend="app_tiers_section">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname></para>
         </listitem>
       </varlistentry>
       <varlistentry>

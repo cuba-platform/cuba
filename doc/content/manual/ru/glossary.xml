@@ -136,7 +136,6 @@
         <emphasis role="bold">Представление</emphasis>
       </glossterm>
       <glossdef>
-        <para>Механизм представлений (views) обеспечивает извлечение из базы данных и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
         <para>См. <xref xrefstyle="" linkend="views_section"/></para>
       </glossdef>
     </glossentry>
@@ -185,7 +184,7 @@
   </glossdiv>
   <glossdiv>
     <title>A</title>
-    <glossentry id="app_tiers_glossentry">
+    <glossentry id="">
       <glossterm>
         <emphasis role="bold">Application Tiers</emphasis>
       </glossterm>
@@ -199,6 +198,14 @@
       </glossterm>
       <glossdef>
         <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="">
+      <glossterm>
+        <emphasis role="bold">Application Units</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>См. <xref linkend="app_tiers_section"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -370,7 +377,9 @@
       <glossterm>
         <emphasis role="bold">View</emphasis>
       </glossterm>
-      <glosssee otherterm="view_glossentry">Представление</glosssee>
+      <glossdef>
+        <para>См. <xref linkend="views_section"/></para>
+      </glossdef>
     </glossentry>
   </glossdiv>
   <glossdiv lang="ru">
