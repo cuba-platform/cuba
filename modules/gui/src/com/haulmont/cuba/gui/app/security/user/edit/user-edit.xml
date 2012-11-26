@@ -63,7 +63,7 @@
                     <button action="rolesTable.edit"/>
                     <button action="rolesTable.remove"/>
                 </buttonsPanel>
-                <table id="rolesTable" editable="false" width="100%">
+                <table id="rolesTable" editable="false" multiselect="true" width="100%">
                     <actions>
                         <action id="add"/>
                         <action id="edit"/>
@@ -85,7 +85,7 @@
                     <button action="substTable.edit"/>
                     <button action="substTable.remove"/>
                 </buttonsPanel>
-                <table id="substTable" editable="false" width="100%">
+                <table id="substTable" editable="false" multiselect="true" width="100%">
                     <actions>
                         <action id="add"/>
                         <action id="edit"/>
