@@ -48,7 +48,7 @@
                 <productname>Платформа CUBA. Подсистема Workflow</productname>)</para>
       </listitem>
       <listitem>
-        <para>Полнотекстовый поиск по атрибутам <glossterm linkend="entity_glossentry">сущностей</glossterm> и по содержимому загруженных файлов (см. руководство
+        <para>Полнотекстовый поиск по атрибутам <glossterm linkend="entity">сущностей</glossterm> и по содержимому загруженных файлов (см. руководство
                 <productname>Платформа CUBA. Полнотекстовый поиск</productname>)</para>
       </listitem>
       <listitem>
@@ -106,7 +106,7 @@
                     <para><link linkend="gui_vcl">Библиотека визуальных компонентов</link> и <link linkend="client">инфраструктура клиентского уровня</link></para>
                   </listitem>
                   <listitem>
-                    <para>Средства работы с <link linkend="config_params">параметрами конфигурации</link> и <link linkend="localization">локализованными сообщениями</link></para>
+                    <para>Средства работы с параметрами конфигурации и <link linkend="localization">локализованными сообщениями</link></para>
                   </listitem>
                   <listitem>
                     <para>Средства выполнения <link linkend="background_tasks">фоновых задач</link>
@@ -117,7 +117,7 @@
                   </listitem>
                   <listitem>
                     <para>Возможность применения <link linkend="runtime_properties">динамических атрибутов</link>, позволяющих задавать новые атрибуты
-                    <glossterm linkend="entity_glossentry">сущностей</glossterm>
+                    <glossterm linkend="entity">сущностей</glossterm>
                     на этапе настройки и эксплуатации системы</para>
                   </listitem>
                 </itemizedlist></para>
@@ -141,7 +141,7 @@
                     <para>Механизм надежной асинхронной <link linkend="email_sending">рассылки email</link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="audit">Средства ведения журнала аудита</link> изменений <glossterm linkend="entity_glossentry">сущностей</glossterm> и
+                    <para><link linkend="audit">Средства ведения журнала аудита</link> изменений <glossterm linkend="entity">сущностей</glossterm> и
 <link linkend="entity_snapshots"> сохранения версий</link></para>
                   </listitem>
                   <listitem>

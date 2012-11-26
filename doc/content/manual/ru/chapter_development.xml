@@ -36,7 +36,7 @@
         <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="services">сервисов</link> среднего слоя (Middleware). </para>
       </listitem>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="entity_glossentry">сущностей</glossterm> и <glossterm linkend="message_pack_glossentry">файлы локализованных сообщений</glossterm>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
+        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="entity">сущностей</glossterm> и <glossterm linkend="message_pack_glossentry">файлы локализованных сообщений</glossterm>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
       </listitem>
       <listitem>
         <para>В файле <filename>shop-persistence.xml</filename>  регистрируются новые классы сущностей.</para>
@@ -63,12 +63,12 @@
       </listitem>
       <listitem>
         <para>Файл <filename>shop-app.properties</filename> содержит конфигурационные параметры среднего слоя:</para>
-        <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_spring">Spring</link>-фреймворка;</para>
-        <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_additionally_ORM">ORM</link>;</para>
+        <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов Spring-фреймворка;</para>
+        <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов ORM;</para>
         <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <link linkend="views">представлений</link>;</para>
       </listitem>
       <listitem>
-        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком <link linkend="text_additionally_spring">Spring</link> компонентов, а также зарегистрировать создаваемые <glossterm linkend="jmx_glossentry">JMX</glossterm>-компоненты.</para>
+        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком Spring компонентов, а также зарегистрировать создаваемые <glossterm linkend="jmx">JMX</glossterm>-компоненты.</para>
       </listitem>
       <listitem>
         <para>Файл <filename>shop-views.xml</filename> содержит описание <link linkend="views">представлений</link>. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
@@ -77,10 +77,10 @@
         <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
       </listitem>
       <listitem>
-        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя (Middleware). Среди прочего содержит список <glossterm linkend="app_properties_glossentry">конфигурационных файлов</glossterm> <filename>*-app.properties</filename>, используемых данным приложением.</para>
+        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя (Middleware). Среди прочего содержит список конфигурационных файлов <filename>*-app.properties</filename>, используемых данным приложением.</para>
       </listitem>
     </itemizedlist>
-    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm>, <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="message_pack_glossentry">локализованных сообщений</glossterm>.</para>
+    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm>, <glossterm linkend="screen_xml_glossentry">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="message_pack_glossentry">локализованных сообщений</glossterm>.</para>
     <itemizedlist>
       <listitem>
         <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
@@ -253,13 +253,13 @@ try {
 }</programlisting>
         </step>
       </procedure>
-      <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <acronym>ServiceInterceptor.aroundInvoke()</acronym>.</para>
+      <para>Каждый вызов сервиса перехватывается с помощью Spring AOP  и обрамляется вызовом <acronym>ServiceInterceptor.aroundInvoke()</acronym>.</para>
       <warning>
         <para>Сервисы не должны вызывать методы других сервисов ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. В случае вызова сервиса сервисом в журнале приложения появятся соответствующие сообщения об ошибке.</para>
       </warning>
       <tip>
         <title>Совет</title>
-        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов Middleware, ее необходимо инкапсулировать внутри соответствующего <link linkend="managed_beans">Managed Bean</link> либо <glossterm linkend="pojo_glossentry">POJO</glossterm>.</para>
+        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов Middleware, ее необходимо инкапсулировать внутри соответствующего <link linkend="managed_beans">Managed Bean</link> либо <glossterm linkend="pojo">POJO</glossterm>.</para>
       </tip>
       <para><emphasis role="bold">Использование на клиенте</emphasis></para>
       <para>Для того чтобы вызывать сервис с клиента, для него должен быть создан соответствующий <firstterm>объект-заместитель</firstterm> (прокси-объект). Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для веб-клиента или <parameter>RemoteProxyBeanCreator</parameter> для  десктоп-клиента.</para>
@@ -280,7 +280,7 @@ try {
           <programlisting>BookingService service = ServiceLocator.lookup(BookingService.NAME);</programlisting>
         </listitem>
         <listitem>
-          <para>Для <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm> экранов предпочтительный способ − <glossterm linkend="dependency_injection_glossentry">внедрение зависимости</glossterm>.</para>
+          <para>Для <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm> экранов предпочтительный способ − <glossterm linkend="dependency_injection">внедрение зависимости</glossterm>.</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -306,7 +306,7 @@ public class TaskWorkerBean implements TaskWorker {
       <programlisting>@Inject
 private TaskWorker taskWorker;</programlisting>
       <para>В этом случае контейнер автоматически найдет подходящую реализацию и установит ссылку на объект во время разворачивания приложения в памяти.</para>
-      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например, кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="jmx_glossentry">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="mbeans">МБин</link>.</para>
+      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например, кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="jmx">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="mbeans">МБин</link>.</para>
     </section>
     <section>
       <title>Правила создания Мбинов</title>
@@ -317,7 +317,7 @@ private TaskWorker taskWorker;</programlisting>
           <para>Создать интерфейс с именем, заканчивающимся на <classname>*MBean</classname>, например, <classname>SampleMBean</classname> в пакете <package>app</package></para>
         </listitem>
         <listitem>
-          <para>Если нужно обращение к МБину из кода сервера (а не только из <glossterm linkend="jmx_glossentry">JMX</glossterm>-консоли), создать интерфейс <interfacename>SampleAPI</interfacename>. Создать в интерфейсе поле с именем бина, в качестве префикса использовать имя проекта:</para>
+          <para>Если нужно обращение к МБину из кода сервера (а не только из <glossterm linkend="jmx">JMX</glossterm>-консоли), создать интерфейс <interfacename>SampleAPI</interfacename>. Создать в интерфейсе поле с именем бина, в качестве префикса использовать имя проекта:</para>
           <programlisting>public interface SampleAPI {
     String NAME = &quot;myproject_Sample&quot;;
     ...</programlisting>
@@ -345,7 +345,7 @@ private TaskWorker taskWorker;</programlisting>
     &lt;/bean&gt;</programlisting>
         </listitem>
       </itemizedlist>
-      <para>Один <link linkend="text_additionally_spring">Spring</link>-объект <classname>MBeanExporter</classname> может экспортировать несколько МБинов. 
+      <para>Один Spring-объект <classname>MBeanExporter</classname> может экспортировать несколько МБинов.
 Для удобства работы администратора методы JMX-интерфейса должны возвращать строку. В случае успешного выполнения это может быть полезная информация, либо просто строка <computeroutput>Done</computeroutput>. В случае возникновения исключения нужно его записать в журнал и вернуть stacktrace:</para>
       <programlisting>public String jmxMethod1() {
     try {
@@ -356,7 +356,7 @@ private TaskWorker taskWorker;</programlisting>
     } 
 }</programlisting>
       <para><emphasis role="bold">Security</emphasis></para>
-      <para>Как правило, для выполнения функций МБинов требуется аутентификация в <trademark>CUBA</trademark>-security, а <glossterm linkend="jmx_glossentry">JMX</glossterm>-интерфейс  ее обеспечить не может. Простой механизм входа в систему/выхода из системы (login/logout) содержится в классе <classname>com.haulmont.cuba.core.app.ManagementBean</classname>, поэтому желательно наследовать свои классы МБинов, работающих с данными, от этого класса. Пример использования:</para>
+      <para>Как правило, для выполнения функций МБинов требуется аутентификация в <trademark>CUBA</trademark>-security, а <glossterm linkend="jmx">JMX</glossterm>-интерфейс  ее обеспечить не может. Простой механизм входа в систему/выхода из системы (login/logout) содержится в классе <classname>com.haulmont.cuba.core.app.ManagementBean</classname>, поэтому желательно наследовать свои классы МБинов, работающих с данными, от этого класса. Пример использования:</para>
       <programlisting>public String jmxMethod2() {
     try {
 loginOnce(); // defined in ManagementBean
@@ -370,7 +370,7 @@ return ExceptionUtils.getStackTrace(e);
       <para>Методы <methodname>login()</methodname> и <methodname>loginOnce()</methodname>, определенные в классе <classname>ManagementBean</classname>, осуществляют вход в систему, используя имя и пароль, заданные в <link>файле свойств</link> в параметрах  <parameter>cuba.jmxUserLogin</parameter> и <parameter>cuba.jmxUserPassword</parameter> соответственно. Пароль должен быть захеширован и указан с префиксом <code>md5:</code>. Простейший способ получить пароль пользователя в <code>md5</code> − скопировать значение из поля <database>SEC_USER.PASSWORD</database> базы данных.</para>
       <para><emphasis role="bold">Работа с JMX-интерфейсом</emphasis></para>
       <para>Обращаться к МБинам можно с помощью утилиты <application>jconsole</application>, входящей в состав <application>JDK</application>, либо с помощью программы <application>VisualVM</application>.</para>
-      <para>Для того чтобы увидеть свои МБины, сервер <application>Tomcat</application> должен быть запущен с опциями удаленного подключения к <glossterm linkend="jmx_glossentry">JMX</glossterm>. В простейшем случае, без аутентификации, параметры запуска <application>JVM</application> должны содержать следующие опции:</para>
+      <para>Для того чтобы увидеть свои МБины, сервер <application>Tomcat</application> должен быть запущен с опциями удаленного подключения к <glossterm linkend="jmx">JMX</glossterm>. В простейшем случае, без аутентификации, параметры запуска <application>JVM</application> должны содержать следующие опции:</para>
       <programlisting>set CATALINA_OPTS=-Dcom.sun.management.jmxremote
 -Dcom.sun.management.jmxremote.port=7777
 -Dcom.sun.management.jmxremote.ssl=false

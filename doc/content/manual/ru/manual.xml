@@ -255,7 +255,7 @@
       </varlistentry>
       <varlistentry>
         <term>cuba.localeSelectVisible</term>
-        <listitem id="parameter_locale_visible">
+        <listitem>
           <para>Включает или отключает возможность пользователя выбирать язык
 интерфейса при входе в систему. </para>
           <para>Значение по умолчанию: <literal>true</literal></para>
@@ -274,7 +274,7 @@
       </varlistentry>
       <varlistentry id="cuba.userSessionExpirationTimeoutSec">
         <term>cuba.userSessionExpirationTimeoutSec</term>
-        <listitem id="property_sessionExpirTime">
+        <listitem>
           <para>Задает  таймаут неактивности сессии пользователя
  в секундах.</para>
           <para>Значение по умолчанию: <literal>1800</literal></para>
@@ -289,7 +289,7 @@
       </varlistentry>
       <varlistentry id="cuba.httpSessionExpirationTimeoutSec">
         <term>cuba.httpSessionExpirationTimeoutSec</term>
-        <listitem id="property_httpExpirTime">
+        <listitem>
           <para>Задает  таймаут бездействия HTTP-сессии
  в секундах.</para>
           <para>Значение по умолчанию: <literal>1800</literal></para>
@@ -304,7 +304,7 @@
       </varlistentry>
       <varlistentry>
         <term>cuba.passwordPolicyEnabled</term>
-        <listitem id="property_passwPolicyEnabled">
+        <listitem>
           <para>Определяет, нужно ли применять политику проверки пароля. Если свойство имеет значение <code>true</code>, то все новые задаваемые пользователями пароли будут проверяться в соответствии со свойством <property>
               <link linkend="cuba.passwordPolicyRegExp">cuba.passwordPolicyRegExp</link>
             </property>.</para>
@@ -315,7 +315,7 @@
       </varlistentry>
       <varlistentry id="cuba.passwordPolicyRegExp">
         <term>cuba.passwordPolicyRegExp</term>
-        <listitem id="property_passwPolicyRegExp">
+        <listitem>
           <para>В данном свойстве задается регулярное выражение, которое используется в политике проверки пароля.</para>
           <para>Значение по умолчанию:</para>
           <para><prompt>((?=.*\\d)(?=.*\\p{javaLowerCase}) (?=.*\\p{javaUpperCase}).{6,20})</prompt></para>
@@ -344,7 +344,7 @@
       </varlistentry>
       <varlistentry>
         <term>cuba.user.fullNamePattern</term>
-        <listitem id="property_fullNamePattern">
+        <listitem>
           <para>Задает шаблон формирования полного имени пользователя. </para>
           <para>Значение по умолчанию: <literal>{LL| }{F|. }{M|.}</literal></para>
           <para>Полное имя можно сформировать по  шаблону из имени, отчества и фамилии  пользователя. В шаблоне  используются следующие правила:</para>

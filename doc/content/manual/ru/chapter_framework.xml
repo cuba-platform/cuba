@@ -23,7 +23,7 @@
         <varlistentry>
           <term>Middleware</term>
           <listitem>
-            <para>Средний слой, содержащий основную бизнес-логику приложения и выполняющий обращения к базе данных. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="javaee_web_profile_glossentry">Java EE Web Profile</glossterm>. См. <xref linkend="middleware"/></para>
+            <para>Средний слой, содержащий основную бизнес-логику приложения и выполняющий обращения к базе данных. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="javaee_web_profile">Java EE Web Profile</glossterm>. См. <xref linkend="middleware"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -106,7 +106,7 @@
             <para><structname>bpmn</structname> – механизм исполнения бизнес-процессов по стандарту <application>BPMN 2.0</application></para>
           </listitem>
         </itemizedlist></para>
-      <para>Создаваемое на основе платформы приложение может включать в себя функциональность базовых проектов путем объявления зависимостей от их <glossterm linkend="artifact_glossentry"> артефактов</glossterm>. Зависимость от артефактов <structname>cuba</structname> является обязательной. Опциональные базовые проекты в свою очередь также зависят от <structname>cuba</structname>, и в принципе могут содержать зависимости между собой.</para>
+      <para>Создаваемое на основе платформы приложение может включать в себя функциональность базовых проектов путем объявления зависимостей от их <glossterm linkend="artifact"> артефактов</glossterm>. Зависимость от артефактов <structname>cuba</structname> является обязательной. Опциональные базовые проекты в свою очередь также зависят от <structname>cuba</structname>, и в принципе могут содержать зависимости между собой.</para>
       <figure>
         <title>Зависимости между проектами</title>
         <mediaobject>
@@ -129,7 +129,7 @@
         </mediaobject>
       </figure>
       <para>На рисунке изображено содержимое некоторых каталогов сервера <application>Tomcat</application> с развернутым в нем приложением <application>sales</application>. </para>
-      <para><link linkend="app_tiers">Блок</link><structname> Middleware</structname> реализован веб-приложением <filename>app-core</filename>, блок <structname>Web Client</structname> – веб-приложением <filename>app</filename>. Исполняемый код веб-приложений содержится в каталогах <filename>WEB-INF/lib</filename> в наборе JAR-файлов. Каждый JAR представляет собой результат сборки (<glossterm linkend="artifact_glossentry">артефакт</glossterm>) одного из <link linkend="app_modules">модулей</link> приложения или <link linkend="base_projects">базового проекта</link>.</para>
+      <para><link linkend="app_tiers">Блок</link><structname> Middleware</structname> реализован веб-приложением <filename>app-core</filename>, блок <structname>Web Client</structname> – веб-приложением <filename>app</filename>. Исполняемый код веб-приложений содержится в каталогах <filename>WEB-INF/lib</filename> в наборе JAR-файлов. Каждый JAR представляет собой результат сборки (<glossterm linkend="artifact">артефакт</glossterm>) одного из <link linkend="app_modules">модулей</link> приложения или <link linkend="base_projects">базового проекта</link>.</para>
       <para>Например, состав JAR-файлов веб-приложения среднего слоя <filename>app-core</filename> определяется тем, что блок <structname>Middleware</structname> состоит из модулей <structname>global</structname> и <structname>core</structname>, и приложение использует базовые проекты <structname>cuba</structname> и <structname>reports</structname> (в данном случае версии 4.0.0). </para>
     </section>
   </section>
@@ -157,7 +157,7 @@
             <para>иметь набор полей и методов доступа, соответствующих атрибутам сущностей</para>
           </listitem>
           <listitem>
-            <para>класс и его поля (или методы доступа при отсутствии для атрибута соответствующего поля)  должны быть определенным образом <link linkend="entity_annotations">аннотированы</link> для работы <glossterm linkend="jpa_glossentry">JPA</glossterm> (в случае персистентной сущности) и <link linkend="metadata_framework">фреймворка метаданных</link> </para>
+            <para>класс и его поля (или методы доступа при отсутствии для атрибута соответствующего поля)  должны быть определенным образом <link linkend="entity_annotations">аннотированы</link> для работы <glossterm linkend="jpa">JPA</glossterm> (в случае персистентной сущности) и <link linkend="metadata_framework">фреймворка метаданных</link> </para>
           </listitem>
           <listitem>
             <para>для поддержки возможного <link linkend="extension">расширения</link> сущностей поля класса необходимо объявлять с модификатором <code>protected</code>, а не <code>private</code></para>
@@ -242,16 +242,16 @@
             <para><interfacename>BaseEntity</interfacename> – декларирует присущие всем персистентным сущностям методы работы с информацией о том, кто и когда создал экземпляр сущности в базе данных </para>
           </listitem>
           <listitem>
-            <para><classname>BaseUuidEntity</classname> - реализует <interfacename>BaseEntity</interfacename> с типом идентификатора <classname>UUID</classname> и поддержкой <glossterm linkend="jpa_glossentry">JPA</glossterm></para>
+            <para><classname>BaseUuidEntity</classname> - реализует <interfacename>BaseEntity</interfacename> с типом идентификатора <classname>UUID</classname> и поддержкой <glossterm linkend="jpa">JPA</glossterm></para>
           </listitem>
           <listitem>
-            <para><interfacename>Versioned</interfacename> – интерфейс сущностей, поддерживающих <glossterm linkend="optimistic_locking_glossentry">оптимистичную блокировку</glossterm></para>
+            <para><interfacename>Versioned</interfacename> – интерфейс сущностей, поддерживающих <glossterm linkend="optimistic_locking">оптимистичную блокировку</glossterm></para>
           </listitem>
           <listitem>
             <para><interfacename>Updatable</interfacename> – интерфейс сущностей, для которых требуется сохранять информацию о том, кто и когда изменял экземпляр в последний раз</para>
           </listitem>
           <listitem>
-            <para><interfacename>SoftDelete</interfacename> – интерфейс сущностей, поддерживающих <link linkend="soft_delete">мягкое удаление</link></para>
+            <para><interfacename>SoftDelete</interfacename> – интерфейс сущностей, поддерживающих <link linkend="soft_deletion">мягкое удаление</link></para>
           </listitem>
           <listitem>
             <para><classname>StandardEntity</classname> – наиболее часто используемый базовый класс персистентных сущностей, реализующий вышеперечисленные интерфейсы</para>
@@ -277,7 +277,7 @@
       <section id="entity_annotations">
         <title>Аннотации сущностей</title>
         <para>В данном разделе описаны все поддерживаемые платформой аннотации классов и атрибутов сущностей. </para>
-        <para>Аннотации пакета <code>javax.persistence</code> обеспечивают работу <glossterm linkend="jpa_glossentry">JPA</glossterm>, аннотации пакетов <code>com.haulmont.*</code> предназначены для управления <link linkend="metadata_framework">метаданными</link> и другими механизмами платформы. Если указано только простое имя класса, подразумевается что это класс платформы, расположенный в одном  из пакетов <code>com.haulmont.*</code></para>
+        <para>Аннотации пакета <code>javax.persistence</code> обеспечивают работу <glossterm linkend="jpa">JPA</glossterm>, аннотации пакетов <code>com.haulmont.*</code> предназначены для управления <link linkend="metadata_framework">метаданными</link> и другими механизмами платформы. Если указано только простое имя класса, подразумевается что это класс платформы, расположенный в одном  из пакетов <code>com.haulmont.*</code></para>
         <section>
           <title>Аннотации класса</title>
           <variablelist>
@@ -407,7 +407,7 @@
                       <para><literal>{0}</literal> - строка форматирования по правилам  <code>String.format()</code>, или имя метода данного объекта с префиксом <literal>#</literal>. Метод должен возвращать <classname>String</classname> и не иметь параметров.</para>
                     </listitem>
                     <listitem>
-                      <para><literal>{1}</literal> - разделенный запятыми список имен полей класса, соответствующий формату <literal>{0}</literal>. В случае использования в <literal>{0}</literal> метода список полей все равно необходим, так как по нему формируется <glossterm linkend="view_glossentry">представление</glossterm> <literal>_minimal</literal>.</para>
+                      <para><literal>{1}</literal> - разделенный запятыми список имен полей класса, соответствующий формату <literal>{0}</literal>. В случае использования в <literal>{0}</literal> метода список полей все равно необходим, так как по нему формируется <link linkend="views">представление</link> <literal>_minimal</literal>.</para>
                     </listitem>
                   </itemizedlist></para>
                 <para>Примеры:<programlisting>@NamePattern(&quot;%s|name&quot;)</programlisting><programlisting>@NamePattern(&quot;#getCaption|login,name&quot;)</programlisting></para>
@@ -451,7 +451,7 @@
                 <interfacename>@EnableRestore</interfacename>
               </term>
               <listitem>
-                <para>Указывает, что экземпляры данной сущности доступны для восстановления после <link linkend="soft_delete">мягкого удаления</link> в специальном экране <literal>core$Entity.restore</literal>. </para>
+                <para>Указывает, что экземпляры данной сущности доступны для восстановления после <link linkend="soft_deletion">мягкого удаления</link> в специальном экране <literal>core$Entity.restore</literal>. </para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -484,7 +484,7 @@
               </term>
               <listitem>
                 <para>Указывает, что данное поле не хранится в БД, т.е. является неперсистентным. </para>
-                <para>Поля поддерживаемых <glossterm linkend="jpa_glossentry">JPA</glossterm> типов (см. <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html">http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html</ulink>) <emphasis>по умолчанию являются персистентными</emphasis>, поэтому аннотация <interfacename>@Transient</interfacename> обязательна для объявления неперсистентного атрибута такого типа. </para>
+                <para>Поля поддерживаемых <glossterm linkend="jpa">JPA</glossterm> типов (см. <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html">http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html</ulink>) <emphasis>по умолчанию являются персистентными</emphasis>, поэтому аннотация <interfacename>@Transient</interfacename> обязательна для объявления неперсистентного атрибута такого типа. </para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -493,7 +493,7 @@
               </term>
               <listitem>
                 <para>Указывает, что данное поле хранится в БД, т.е. является персистентным.</para>
-                <para>Данная аннотация требуется только для нестандартного для <glossterm linkend="jpa_glossentry">JPA</glossterm> типа поля, платформа на данный момент поддерживает  один такой тип - <classname>java.util.UUID</classname>. Таким образом, <interfacename>@Persistent</interfacename> требуется только в одном случае - при объявлении персистентного поля типа <classname>UUID</classname>.</para>
+                <para>Данная аннотация требуется только для нестандартного для <glossterm linkend="jpa">JPA</glossterm> типа поля, платформа на данный момент поддерживает  один такой тип - <classname>java.util.UUID</classname>. Таким образом, <interfacename>@Persistent</interfacename> требуется только в одном случае - при объявлении персистентного поля типа <classname>UUID</classname>.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -512,7 +512,7 @@
                       <para><code>length</code> - (необязательный параметр, по умолчанию <literal>255</literal>) - длина колонки. Используется также при формировании <link linkend="metadata_framework">метаданных</link> и в конечном счете может ограничивать максимальныю длину вводимого текста в визуальных компонентах, работающих с данным атрибутом.</para>
                     </listitem>
                     <listitem>
-                      <para><code>nullable</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>nullable = false</code> <glossterm linkend="jpa_glossentry">JPA</glossterm> контролирует наличие значения поля при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
+                      <para><code>nullable</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>nullable = false</code> <glossterm linkend="jpa">JPA</glossterm> контролирует наличие значения поля при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
@@ -527,10 +527,10 @@
                 <para>Определяет атрибут-ссылку на сущность с типом ассоциации много-к-одному. </para>
                 <para>Параметры:<itemizedlist>
                     <listitem>
-                      <para><code>fetch</code> - (по умолчанию <code>EAGER</code>) параметр, определяющий, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать ассоциированную сущность. Данный параметр всегда должен быть установлен в значение <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                      <para><code>fetch</code> - (по умолчанию <code>EAGER</code>) параметр, определяющий, будет ли JPA <glossterm linkend="eager_fetching">энергично</glossterm> загружать ассоциированную сущность. Данный параметр всегда должен быть установлен в значение <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <link linkend="views">представлений</link>.</para>
                     </listitem>
                     <listitem>
-                      <para><code>optional</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>optional = false</code> <glossterm linkend="jpa_glossentry">JPA</glossterm> контролирует наличие ссылки при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
+                      <para><code>optional</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>optional = false</code> <glossterm linkend="jpa">JPA</glossterm> контролирует наличие ссылки при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
                     </listitem>
                   </itemizedlist></para>
                 <para>Например, несколько экземпляров <classname>Order</classname> (заказов) ссылаются на один экземпляр <classname>Customer</classname> (покупателя), в этом случае класс <classname>Order</classname> должен содержать следующее объявление:<programlisting>@ManyToOne(fetch = FetchType.LAZY)
@@ -554,7 +554,7 @@ protected Customer customer;</programlisting></para>
                       <para><code>targetEntity</code> - тип связанной сущности. Необязательный параметр, если коллекция объявлена с использованием <application>Java generics</application>. </para>
                     </listitem>
                     <listitem>
-                      <para><code>fetch</code> - (необязательный параметр, по умолчанию <code>LAZY</code>) - определяет, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать коллекцию связанных сущностей. Необходимо всегда оставлять значение по умолчанию <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                      <para><code>fetch</code> - (необязательный параметр, по умолчанию <code>LAZY</code>) - определяет, будет ли JPA <glossterm linkend="eager_fetching">энергично</glossterm> загружать коллекцию связанных сущностей. Необходимо всегда оставлять значение по умолчанию <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <link linkend="views">представлений</link>.</para>
                     </listitem>
                     <listitem>
                       <para><code>cascade</code> - (необязательный параметр, по умолчанию <code>{}</code>) - каскадирование операций определяет, какие операции над сущностью должны быть применены к ассоциированным сущностям. Каскадирование на данном уровне не рекомендуется использовать.</para>
@@ -574,13 +574,13 @@ protected Set&lt;Item&gt; items;</programlisting></para>
                 <para>Определяет атрибут-ссылку на сущность с типом ассоциации один-к-одному. </para>
                 <para>Параметры:<itemizedlist>
                     <listitem>
-                      <para><code>fetch</code> - (по умолчанию <code>EAGER</code>) параметр, определяющий, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать ассоциированную сущность. Данный параметр всегда должен быть установлен в значение <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                      <para><code>fetch</code> - (по умолчанию <code>EAGER</code>) параметр, определяющий, будет ли JPA <glossterm linkend="eager_fetching">энергично</glossterm> загружать ассоциированную сущность. Данный параметр всегда должен быть установлен в значение <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <link linkend="views">представлений</link>.</para>
                     </listitem>
                     <listitem>
                       <para><code>mappedBy</code> - поле связанной сущности, определяющее ассоциацию. Требуется устанавливать только на ведомой стороне ассоциации. </para>
                     </listitem>
                     <listitem>
-                      <para><code>optional</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>optional = false</code> <glossterm linkend="jpa_glossentry">JPA</glossterm> контролирует наличие ссылки при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
+                      <para><code>optional</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>optional = false</code> <glossterm linkend="jpa">JPA</glossterm> контролирует наличие ссылки при сохранении, кроме того, визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
                     </listitem>
                   </itemizedlist></para>
                 <para>Пример ведущей стороны ассоциации, класс <classname>Driver</classname>:<programlisting>@OneToOne(fetch = FetchType.LAZY)
@@ -607,7 +607,7 @@ protected Driver driver;</programlisting></para>
                       <para><code>targetEntity</code> - тип связанной сущности. Необязательный параметр, если коллекция объявлена с использованием <application>Java generics</application>. </para>
                     </listitem>
                     <listitem>
-                      <para><code>fetch</code> - (необязательный параметр, по умолчанию <code>LAZY</code>) - определяет, будет ли JPA <glossterm linkend="eager_fetching_glossentry">энергично</glossterm> загружать коллекцию связанных сущностей. Необходимо всегда оставлять значение по умолчанию <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <glossterm linkend="view_glossentry">представлений</glossterm>.</para>
+                      <para><code>fetch</code> - (необязательный параметр, по умолчанию <code>LAZY</code>) - определяет, будет ли JPA <glossterm linkend="eager_fetching">энергично</glossterm> загружать коллекцию связанных сущностей. Необходимо всегда оставлять значение по умолчанию <code>LAZY</code>, так как в CUBA-приложении политика загрузки связей определяется динамически на основе механизма <link linkend="views">представлений</link>.</para>
                     </listitem>
                   </itemizedlist></para>
                 <para>Пример:<programlisting>TODO</programlisting></para>
@@ -715,7 +715,7 @@ protected Date startDate;</programlisting></para>
                 </interfacename>
               </term>
               <listitem>
-                <para>Указывает, что данное поле хранит версию для поддержки <glossterm linkend="optimistic_locking_glossentry">оптимистичной блокировки</glossterm> сущностей. </para>
+                <para>Указывает, что данное поле хранит версию для поддержки <glossterm linkend="optimistic_locking">оптимистичной блокировки</glossterm> сущностей. </para>
                 <para>Применение такого поля необходимо при реализации классом сущности интерфейса <interfacename>Versioned</interfacename> (базовый класс <classname>StandardEntity</classname> уже содержит такое поле).</para>
                 <para>Пример:<programlisting>@Version
 @Column(name = &quot;VERSION&quot;)
@@ -751,7 +751,7 @@ public String getLocValue() {
                 <interfacename>@OnDelete</interfacename>
               </term>
               <listitem>
-                <para>Определяет политику обработки связи в случае мягкого удаления сущности, содержащей данный атрибут. См. <xref linkend="soft_delete"/></para>
+                <para>Определяет политику обработки связи в случае мягкого удаления сущности, содержащей данный атрибут. См. <xref linkend="soft_deletion"/></para>
                 <para>Пример:<programlisting>@OneToMany(mappedBy = &quot;group&quot;)
 @OnDelete(DeletePolicy.CASCADE)
 private Set&lt;Constraint&gt; constraints;</programlisting></para>
@@ -762,7 +762,7 @@ private Set&lt;Constraint&gt; constraints;</programlisting></para>
                 <interfacename>@OnDeleteInverse</interfacename>
               </term>
               <listitem>
-                <para>Определяет политику обработки связи в случае мягкого удаления сущности с обратной стороны ассоциации. См. <xref linkend="soft_delete"/> </para>
+                <para>Определяет политику обработки связи в случае мягкого удаления сущности с обратной стороны ассоциации. См. <xref linkend="soft_deletion"/> </para>
                 <para>Пример:<programlisting>@ManyToOne
 @JoinColumn(name = &quot;DRIVER_ID&quot;)
 @OnDeleteInverse(DeletePolicy.DENY)
@@ -780,12 +780,12 @@ private Driver driver;</programlisting></para>
 protected List&lt;Item&gt; items;</programlisting></para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="localizedValue_annotation">
               <term>
                 <interfacename>@LocalizedValue</interfacename>
               </term>
               <listitem>
-                <para>Служит для описания способа получения локализованного значения некоторого изменяющегося атрибута, которое возвращает метод <code>MessageTools.getLocValue()</code>. </para>
+                <para>Служит для описания способа получения локализованного значения некоторого изменяющегося атрибута, которое возвращает метод <code><link linkend="messageTools">MessageTools</link>.getLocValue()</code>. </para>
                 <para>Параметры:<itemizedlist>
                     <listitem>
                       <para><code>messagePack</code> - явное указание пакета, из которого будет взято локализованное сообщение, например <code>com.haulmont.cuba.core.entity</code></para>
@@ -806,7 +806,7 @@ protected Proc proc;</programlisting></para>
           </variablelist>
         </section>
       </section>
-      <section id="soft_delete">
+      <section id="soft_deletion">
         <title>Мягкое удаление</title>
         <para>Платформа <productname>CUBA</productname> поддерживает режим &quot;мягкого удаления&quot; данных - когда вместо удаления записей из базы данных они только помечаются определенным образом и становятся недоступными для обычного использования. В дальнейшем такие записи можно либо совсем удалить из БД с помощью отдельной регламентной процедуры, либо восстановить.</para>
         <para>Механизм мягкого удаления является &quot;прозрачным&quot; для прикладного программиста - достаточно убедиться что класс сущности реализует интерфейс <interfacename>SoftDelete</interfacename>, и платформа сама нужным образом будет  модифицировать запросы и операции с данными.</para>
@@ -833,20 +833,20 @@ protected Proc proc;</programlisting></para>
             </itemizedlist></para>
           <para>Поведение системы по умолчанию - сущности, реализующие <interfacename>SoftDelete</interfacename>, удаляются мягко, удаленные сущности не возвращаются запросами и поиском по идентификатору. При необходимости такое поведение можно динамически отключить следующими способами:<itemizedlist>
               <listitem>
-                <para>для текущего экземпляра <glossterm linkend="EntityManager_glossentry">EntityManager</glossterm> - вызовом <code>setSoftDeletion(false)</code></para>
+                <para>для текущего экземпляра <link linkend="entityManager">EntityManager</link> - вызовом <code>setSoftDeletion(false)</code></para>
               </listitem>
               <listitem>
                 <para>при запросе данных через <interfacename>
                     <link linkend="dataService">DataService</link>
                   </interfacename> или <interfacename>
-                    <link linkend="DataWorker">DataWorker</link>
+                    <link linkend="dataService">DataWorker</link>
                   </interfacename> - вызовом у передаваемого объекта <classname>LoadContext</classname> метода <code>setSoftDeletion(false)</code></para>
               </listitem>
               <listitem>
                 <para>на уровне <link linkend="datasources">источников данных</link> - используя метод <code>CollectionDatasource.setSoftDeletion(false)</code> или атрибут <literal>softDeletion=&quot;false&quot;</literal> элемента <sgmltag>collectionDatasource</sgmltag> в <link linkend="screen_xml">XML-дескрипторе</link> экрана.</para>
               </listitem>
             </itemizedlist></para>
-          <para>В режиме мягкого удаления платформа автоматически отфильтровывает  удаленные экземпляры при загрузке по идентификатору и по <glossterm linkend="jpql_glossentry">JPQL-запросу</glossterm>, а также удаленные элементы связанных сущностей в атрибутах-коллекциях. Однако связанные сущности в единичных атрибутах загружаются независимо от того, удален связанный экземпляр или нет.</para>
+          <para>В режиме мягкого удаления платформа автоматически отфильтровывает  удаленные экземпляры при загрузке по идентификатору и по <glossterm linkend="jpql">JPQL-запросу</glossterm>, а также удаленные элементы связанных сущностей в атрибутах-коллекциях. Однако связанные сущности в единичных атрибутах загружаются независимо от того, удален связанный экземпляр или нет.</para>
         </section>
         <section id="delete_policy">
           <title>Политика обработки связей</title>
@@ -980,7 +980,7 @@ protected Role role;</programlisting></para>
               <interfacename>BeforeDeleteEntityListener</interfacename>
             </term>
             <listitem>
-              <para>Метод <code>onBeforeDelete()</code> вызывается перед удалением записи из БД (или в случае <link linkend="soft_delete">мягкого удаления</link> - перед изменением записи). В данном методе возможны любые операции с текущим <interfacename>
+              <para>Метод <code>onBeforeDelete()</code> вызывается перед удалением записи из БД (или в случае <link linkend="soft_deletion">мягкого удаления</link> - перед изменением записи). В данном методе возможны любые операции с текущим <interfacename>
                   <link linkend="entityManager">EntityManager</link>
                 </interfacename>.</para>
             </listitem>
@@ -990,7 +990,7 @@ protected Role role;</programlisting></para>
               <interfacename>AfterDeleteEntityListener</interfacename>
             </term>
             <listitem>
-              <para>Метод <code>onAfterDelete()</code> вызывается после удаления записи из БД (или в случае <link linkend="soft_delete">мягкого удаления</link> - после изменения записи), но до коммита транзакции. В данном методе нельзя модифицировать текущий персистентный контекст, однако можно производить изменения в БД с помощью <link linkend="queryRunner">
+              <para>Метод <code>onAfterDelete()</code> вызывается после удаления записи из БД (или в случае <link linkend="soft_deletion">мягкого удаления</link> - после изменения записи), но до коммита транзакции. В данном методе нельзя модифицировать текущий персистентный контекст, однако можно производить изменения в БД с помощью <link linkend="queryRunner">
                   <interfacename>QueryRunner</interfacename>
                 </link>.</para>
             </listitem>
@@ -1040,7 +1040,7 @@ public class MyBean implements AppContext.Listener {
       <para>Для эффективной работы с <link linkend="data_model">моделью данных</link> в CUBA-приложениях используется фреймворк метаданных, который:</para>
       <itemizedlist>
         <listitem>
-          <para>предоставляет удобный интерфейс для получения информации о <glossterm linkend="entity_glossentry">сущностях</glossterm>, их атрибутах и отношениях между сущностями; а также для навигации по ссылкам</para>
+          <para>предоставляет удобный интерфейс для получения информации о <glossterm linkend="entity">сущностях</glossterm>, их атрибутах и отношениях между сущностями; а также для навигации по ссылкам</para>
         </listitem>
         <listitem>
           <para>служит специализированной и более удобной в использовании альтернативой <application>Java Reflection API</application></para>
@@ -1125,7 +1125,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
               </itemizedlist>
             </listitem>
           </varlistentry>
-          <varlistentry>
+          <varlistentry id="metaProperty">
             <term>
               <interfacename>MetaProperty</interfacename>
             </term>
@@ -1414,7 +1414,7 @@ String formattedValue = format.format(value);</programlisting></para>
               <para>все связи в модели данных объявляются с признаком <glossterm linkend="lazy_loading">загрузки по требованию</glossterm> (<code>fetch = FetchType.LAZY</code>, см. <xref linkend="entity_annotations"/>)</para>
             </listitem>
             <listitem>
-              <para>в процессе загрузки данных через <link linkend="dataService">DataService</link> клиентский код помимо <glossterm linkend="jpql_glossentry">JPQL</glossterm> запроса указывает нужное  представление</para>
+              <para>в процессе загрузки данных через <link linkend="dataService">DataService</link> клиентский код помимо <glossterm linkend="jpql">JPQL</glossterm> запроса указывает нужное  представление</para>
             </listitem>
             <listitem>
               <para>на основе представления формируется так называемый <firstterm>Fetch Plan</firstterm> - особенность лежащего в основе <link linkend="orm">слоя ORM</link> фреймворка <application>Apache OpenJPA</application>. Fetch Plan влияет на формирование SQL запроса к базе данных: как на список возвращаемых полей, так и на соединения с другими таблицами, содержащими связанные сущности.</para>
@@ -1469,7 +1469,7 @@ String formattedValue = format.format(value);</programlisting></para>
               </listitem>
               <listitem>
                 <para><code>deleteTs</code>, <code>deletedBy</code> - для сущностей, реализующих <interfacename>
-                    <link linkend="soft_delete">SoftDelete</link>
+                    <link linkend="soft_deletion">SoftDelete</link>
                   </interfacename></para>
               </listitem>
             </itemizedlist></para>
@@ -1542,25 +1542,122 @@ String formattedValue = format.format(value);</programlisting></para>
     </section>
     <section id="infrastructure_interfaces">
       <title>Интерфейсы инфраструктуры</title>
-      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Некоторые из этих интерфейсов расположены в модуле <structname>global</structname> и могут быть использованы как из среднего слоя (Middleware), так и из любого клиентского кода, другие доступны только коду среднего слоя.</para>
-      <para>Интерфейсы инфраструктуры реализуются управляемыми компонентами Spring Framework, поэтому зависимости от интерфейсов могут быть <glossterm linkend="dependency_injection_glossentry">внедрены</glossterm> в любые другие управляемые компоненты (<link linkend="managed_beans">управляемые бины (Managed Beans)</link>, <link linkend="services">сервисы среднего слоя (MiddlewareServices)</link>, <glossterm linkend="screen_controller_glossentry">контроллеры</glossterm> экранов (Screen Controllers)).</para>
-      <para>Все интерфейсы инфраструктуры имеют соответствующие &quot;статические фасады&quot;, которые называются <firstterm>провайдерами</firstterm>, и могут быть использованы в неуправляемых компонентах (<glossterm linkend="pojo_glossentry">POJO</glossterm>, вспомогательных классах и так далее).</para>
-      <para><emphasis role="bold">Глобальные интерфейсы инфраструктуры</emphasis></para>
-      <simpara><emphasis role="bold">TimeSource</emphasis>. Обеспечивает получение текущего времени. Применение <classname>new Date()</classname> и т.п. запрещено. Статический фасад − <classname>TimeProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">UuidSource</emphasis>. Обеспечивает получение значений <classname>UUID</classname>, в том числе для идентификаторов сущностей. Статический фасад − <classname>UuidProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">UserSessionSource</emphasis>. Обеспечивает получение объекта сессии текущего пользователя. Статический фасад − <classname>UserSessionProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">Security</emphasis>. Содержит методы проверки прав текущего пользователя. Не имеет соответствующего статического фасада. При необходимости в статическом контексте можно получить через <classname>UserSessionProvider</classname> объект пользовательской сессии и вызвать соответствующие методы у него.</simpara>
-      <simpara><emphasis role="bold">Messages</emphasis>. Интерфейс <interface>Messages</interface> обеспечивает получение локализованных строк сообщений. Статический фасад − <classname>MessageProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">Configuration</emphasis>. Является фасадом к фреймворку работы с конфигурационными параметрами. Статический фасад − <classname>ConfigProvider</classname>.</simpara>
-      <simpara><emphasis role="bold">Resources</emphasis>. Обеспечивает загрузку ресурсов из конфигурационного каталога приложения или из <code>classpath</code>, а также по явно указанному URL.</simpara>
-      <para><emphasis role="bold">Интерфейсы инфраструктуры среднего слоя</emphasis></para>
-      <simpara><emphasis role="bold">Persistence</emphasis>. Обеспечивает доступ к интерфейсам <interface>Transaction</interface>, <interface>EntityManager</interface>, и некоторые сервисные функции, относящиеся к хранению данных. Статический фасад − <classname>PersistenceProvider</classname>.</simpara>
+      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Большинство из этих интерфейсов расположены в <link linkend="app_modules">модуле</link> <structname>global</structname> и могут быть использованы как на среднем слое, так и в <link linkend="app_tiers">блоках</link> клиентского уровня, но некоторые доступны только коду среднего слоя.</para>
+      <para>Интерфейсы инфраструктуры реализуются бинами <application>Spring Framework</application>, поэтому они могут быть инжектированы в любые другие управляемые компоненты (<link linkend="managed_beans">Managed Beans</link>, <link linkend="services">сервисы среднего слоя</link>, <link linkend="screen_controller">контроллеры</link> экранов универсального пользовательского интерфейса.</para>
+      <para>Кроме того, как и любые другие бины, интерфейсы инфраструктуры могут быть получены с помощью статических методов класса <classname>AppBeans</classname>, и использоваться в неуправляемых компонентах (<glossterm linkend="pojo">POJO</glossterm>, вспомогательных классах и пр.).</para>
+      <section>
+        <title>Configuration</title>
+        <para>Позволяет получать ссылки на <link linkend="config_interfaces">конфигурационные интерфейсы</link>.</para>
+        <para>Примеры:<programlisting>@Inject
+protected Configuration configuration;
+...
+String tempDir = configuration.getConfig(GlobalConfig.class).getTempDir();</programlisting><programlisting>protected GlobalConfig globalConfig;
+
+@Inject
+public void setConfiguration(Configuration configuration) {
+    this.globalConfig = configuration.getConfig(GlobalConfig.class);
+}</programlisting><programlisting>String tempDir = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTempDir();</programlisting></para>
+      </section>
+      <section>
+        <title>Messages</title>
+        <para>Интерфейс <interfacename>Messages</interfacename> обеспечивает получение <link linkend="localization">локализованных строк сообщений</link>.</para>
+        <para>Рассмотрим методы интерфейса подробнее.</para>
+        <itemizedlist>
+          <listitem>
+            <para><code>getMessage()</code> - возвращает локализованное сообщение по ключу, имени пакета сообщений и требуемой локали. Существует несколько модификаций данного метода в зависимости от набора параметров. Если локаль не указана в параметре метода, используется локаль текущего пользователя. </para>
+            <para>Примеры:<programlisting>@Inject
+protected Messages messages;
+...
+String message1 = messages.getMessage(getClass(), &quot;someMessage&quot;);
+String message2 = messages.getMessage(&quot;com.abc.sales.web.customer&quot;, &quot;someMessage&quot;);
+String message3 = messages.getMessage(RoleType.STANDARD);</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>formatMessage()</code> - находит локализованное сообщение по ключу, имени пакета сообщений и требуемой локали, и использует его для форматирования переданных параметров. Формат задается по правилам метода <code>String.format()</code>. Существует несколько модификаций данного метода в зависимости от набора параметров. Если локаль не указана в параметре метода, используется локаль текущего пользователя.</para>
+            <para>Пример:<programlisting>String formattedValue = messages.formatMessage(getClass(), &quot;someFormat&quot;, someValue);</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>getMainMessage()</code> - возвращает локализованное сообщение из главного пакета данного <link linkend="app_tiers">блока</link> приложения.</para>
+            <para>Пример:<programlisting>protected Messages messages = AppBeans.get(Messages.class);
+...
+messages.getMainMessage(&quot;actions.Ok&quot;);</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>getMainMessagePack()</code> - возвращает имя главного пакета сообщений данного блока приложения.</para>
+            <para>Пример:<programlisting>String formattedValue = messages.formatMessage(messages.getMainMessagePack(), &quot;someFormat&quot;, someValue);</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>getTools()</code> - возвращает экземпляр интерфейса  <interfacename>MessageTools</interfacename> </para>
+          </listitem>
+        </itemizedlist>
+        <section id="messageTools">
+          <title>MessageTools</title>
+          <para><link linkend="managed_beans">ManagedBean</link>, содержащий вспомогательные методы работы с <link linkend="localization">локализованными сообщениями</link>. Интерфейс <interfacename>MessageTools</interfacename> можно получить либо методом <code>Messages.getTools()</code>, либо как любой другой бин - инжекцией или через класс <classname>AppBeans</classname>. </para>
+          <para>Методы <interfacename>MessageTools</interfacename>:<itemizedlist>
+              <listitem id="loadString">
+                <para><code>loadString()</code> - возвращает локализованное сообщение, заданное ссылкой вида <literal>msg://{messagePack}/{key}</literal></para>
+                <para>Составные части ссылки:<itemizedlist>
+                    <listitem>
+                      <para><literal>msg://</literal> - обязательный префикс</para>
+                    </listitem>
+                    <listitem>
+                      <para><literal>{messagePack}</literal> - необязательное имя пакета сообщения. Если не указано, предполагается, что имя пакета передается в loadString() отдельным параметром</para>
+                    </listitem>
+                    <listitem>
+                      <para><literal>{key}</literal> - ключ сообщения в пакете</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Примеры ссылок на сообщения:<programlisting>msg://someMessage
+msg://com.abc.sales.web.customer/someMessage</programlisting></para>
+              </listitem>
+              <listitem>
+                <para><code>getEntityCaption()</code> - возвращает локализованное название сущности</para>
+              </listitem>
+              <listitem>
+                <para><code>getPropertyCaption()</code> - возвращает локализованное название атрибута сущности</para>
+              </listitem>
+              <listitem>
+                <para><code>hasPropertyCaption()</code> - определяет, задано ли для атрибута сущности локализованное название </para>
+              </listitem>
+              <listitem>
+                <para><code>getLocValue()</code> - возвращает локализованное значение атрибута сущности, основываясь на определении аннотации <interfacename>
+                    <link linkend="localizedValue_annotation">@LocalizedValue</link>
+                  </interfacename></para>
+              </listitem>
+              <listitem>
+                <para><code>getMessageRef()</code> - формирует для <link linkend="metaProperty">мета-свойства</link> <link linkend="loadString">ссылку на сообщение</link>, по которой  можно получить локализованное название атрибута сущности</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Для расширения набора вспомогательных методов в конкретном приложении бин <interfacename>MessageTools</interfacename> можно <link linkend="extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMessageTools tools = messages.getTools();
+tools.foo();</programlisting><programlisting>((MyMessageTools) messages.getTools()).foo();</programlisting> </para>
+        </section>
+      </section>
       <section id="metadata">
         <title>Metadata</title>
-        <para>Обеспечивает доступ к сессии <link linkend="metadata_framework">метаданных</link> и ViewRepository.</para>
+        <para>Интерфейс <interfacename>Metadata</interfacename> обеспечивает доступ к сессии <link linkend="metadata_framework">метаданных</link> и репозиторию <link linkend="views">представлений</link>.</para>
+        <para>Методы интерфейса:<itemizedlist>
+            <listitem>
+              <para><code>getSession()</code> - возвращает экземпляр сессии <link linkend="metadata_framework">метаданных</link> </para>
+            </listitem>
+            <listitem>
+              <para><code>getViewRepository()</code> - возвращает экземпляр репозитория <link linkend="views">представлений</link></para>
+            </listitem>
+            <listitem>
+              <para><code>getExtendedEntities()</code> - возвращает экземпляр <classname>ExtendedEntities</classname>, предназначенный для работы с расширенными сущностями. Подробнее см. <xref linkend="entity_extension"/></para>
+            </listitem>
+            <listitem>
+              <para><code>create()</code> - создать экземпляр сущности, учитывая возможность расширения. Подробнее см. <xref linkend="entity_extension"/> </para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section>
+        <title>Persistence</title>
+        <para>Обеспечивает доступ к интерфейсам <interface>Transaction</interface>, <interface>EntityManager</interface>, и некоторые сервисные функции, относящиеся к хранению данных. </para>
+        <para>TODO</para>
       </section>
       <section id="resources">
         <title>Resources</title>
+        <para>Обеспечивает загрузку ресурсов из конфигурационного каталога приложения или из <code>classpath</code>, а также по явно указанному URL.</para>
         <para>TODO</para>
       </section>
       <section id="scripting">
@@ -1592,8 +1689,32 @@ String formattedValue = format.format(value);</programlisting></para>
           </itemizedlist></para>
         <para>Запуск скриптов выполняется методом runGroovyScript(). Имя скрипта должно содержать путь с корнем в conf (каталог конфигурации приложения).</para>
       </section>
+      <section>
+        <title>Security</title>
+        <para>Обеспечивает авторизацию - проверку прав пользователя на различные объекты системы. Большинство методов просто получают текущую пользовательскую сессию через <link linkend="userSessionSource">UserSessionSource</link> и делегируют ей выполнение авторизации. Подробнее см. <xref linkend="authentication"/></para>
+      </section>
+      <section>
+        <title>TimeSource</title>
+        <para>Обеспечивает получение текущего времени. Применение <classname>new Date()</classname> и т.п. в прикладном коде не рекомендуется.</para>
+        <para>Примеры:<programlisting>@Inject
+protected TimeSource timeSource;
+...
+Date date = timeSource.currentTimestamp();</programlisting><programlisting>long startTime = AppBeans.get(TimeSource.class).currentTimeMillis();</programlisting></para>
+      </section>
+      <section id="userSessionSource">
+        <title>UserSessionSource</title>
+        <para>Обеспечивает получение объекта сессии текущего пользователя. Подробнее см. <xref linkend="authentication"/></para>
+      </section>
+      <section>
+        <title>UuidSource</title>
+        <para>Обеспечивает получение значений <classname>UUID</classname>, в том числе для идентификаторов сущностей. Применение <code>UUID.randomUUID()</code> в прикладном коде не рекомендуется.</para>
+      </section>
     </section>
     <section>
+      <title>AppContext</title>
+      <para>TODO</para>
+    </section>
+    <section id="appProperties">
       <title>Свойства приложения</title>
       <para wordsize="20"><emphasis role="bold">Основные понятия</emphasis></para>
       <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
@@ -1603,7 +1724,7 @@ String formattedValue = format.format(value);</programlisting></para>
           <para>Конфигурационные параметры: определяют наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса. Например: <parameter>cuba.springContextConfig</parameter>, <parameter>cuba.web.useLightHeader</parameter>.</para>
         </listitem>
         <listitem>
-          <para>Параметры развертывания: различные URL для соединения <glossterm linkend="app_tiers_glossentry">уровней</glossterm> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType,</parameter> <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
+          <para>Параметры развертывания: различные URL для соединения уровней приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType,</parameter> <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
         </listitem>
         <listitem>
           <para>Параметры времени выполнения: активность аудита, параметры отсылки email и т.д. Например, <parameter>cuba.security.EntityLog.enabled</parameter>, <parameter>cuba.email.smtpHost</parameter>.</para>
@@ -1612,11 +1733,11 @@ String formattedValue = format.format(value);</programlisting></para>
       <para><emphasis role="bold">Работа со свойствами приложения</emphasis></para>
       <formalpara>
         <title>Программный доступ к свойствам</title>
-        <para>Основной способ доступа к свойствам приложения из программного кода − использование Java-интерфейсов механизма Configuration Parameters. Кроме того, все свойства конфигурации и развертывания доступны через методы класса <classname>com.haulmont.cuba.core.sys.AppContext</classname>.</para>
+        <para>Основной способ доступа к свойствам приложения из программного кода − использование механизма <link linkend="config_interfaces">конфигурационных интерфейсов</link>. Кроме того, все свойства конфигурации и развертывания доступны через методы класса <classname>com.haulmont.cuba.core.sys.AppContext</classname>.</para>
       </formalpara>
       <formalpara>
         <title>Принадлежность уровням</title>
-        <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="app_tiers_glossentry">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="app_tiers_glossentry">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
+        <para>Как правило, некоторое свойство принадлежит только одному или нескольким уровням приложения. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только дляMiddleware,  <parameter>cuba.web.useLightHeader</parameter> − только для Web Client, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
         <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="properties_storage_para">Хранение значений свойств</link>). </para>
         <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
             <listitem>
@@ -1626,25 +1747,25 @@ String formattedValue = format.format(value);</programlisting></para>
               <para>Проследив использование свойства в коде приложения</para>
             </listitem>
             <listitem>
-              <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства <glossterm linkend="app_tiers_glossentry">уровням приложения</glossterm>:</para>
+              <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства уровням приложения:</para>
               <itemizedlist>
                 <listitem>
-                  <para><structname>global</structname> − свойство принадлежит всем <glossterm linkend="app_tiers_glossentry">уровням</glossterm></para>
+                  <para><structname>global</structname> − свойство принадлежит всем уровням</para>
                 </listitem>
                 <listitem>
                   <para><structname>core</structname> − <glossterm>Middleware</glossterm></para>
                 </listitem>
                 <listitem>
-                  <para><structname>client</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
+                  <para><structname>client</structname> − Web Client, Web Portal, Desktop Client</para>
                 </listitem>
                 <listitem>
-                  <para><structname>web</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm></para>
+                  <para><structname>web</structname> − Web Client</para>
                 </listitem>
                 <listitem>
-                  <para><structname>web-portal</structname> − <glossterm linkend="text_portal_id">Web Portal</glossterm></para>
+                  <para><structname>web-portal</structname> − Web Portal</para>
                 </listitem>
                 <listitem>
-                  <para><structname>desktop</structname> − <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
+                  <para><structname>desktop</structname> − Desktop Client</para>
                 </listitem>
               </itemizedlist>
             </listitem>
@@ -1652,22 +1773,22 @@ String formattedValue = format.format(value);</programlisting></para>
       </formalpara>
       <formalpara>
         <title>JMX-интерфейс</title>
-        <para>Некоторые <glossterm linkend="app_tiers_glossentry">уровни приложения</glossterm> определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm> имеется JMX-интерфейс <classname>ConfigStorageMBean</classname> с именем <classname>app-core.cuba:service=ConfigStorage</classname>, а на уровне <glossterm linkend="text_webclient_id">Web Client</glossterm> − <classname>ConfigurationMBean</classname> с именем <classname>app.cuba:service=Configuration</classname>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="properties_storage_para">хранения</link> этих категорий свойств.</para>
+        <para>Некоторые уровни приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне Middleware имеется JMX-интерфейс <classname>ConfigStorageMBean</classname> с именем <classname>app-core.cuba:service=ConfigStorage</classname>, а на уровне Web Client − <classname>ConfigurationMBean</classname> с именем <classname>app.cuba:service=Configuration</classname>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="properties_storage_para">хранения</link> этих категорий свойств.</para>
       </formalpara>
       <para id="properties_storage_para"><emphasis role="bold">Хранение значений свойств</emphasis></para>
       <formalpara id="text_properties_files_1">
         <title>Файлы свойств</title>
-        <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый <glossterm linkend="app_tiers_glossentry">уровень приложения</glossterm> имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
+        <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый уровень приложения имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
       </formalpara>
       <itemizedlist>
         <listitem>
-          <para>Для уровней, являющихся веб-приложениями (<glossterm linkend="text_middleware_id">Middleware</glossterm>, <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
+          <para>Для уровней, являющихся веб-приложениями (Middleware, Web Client, Web Portal) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
         </listitem>
         <listitem>
-          <para>Для уровня <glossterm linkend="text_desktop_id">Desktop Client</glossterm> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>.</para>
+          <para>Для уровня Desktop Client основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>.</para>
         </listitem>
       </itemizedlist>
-      <para>Например, набор файлов свойств уровня <glossterm linkend="text_middleware_id">Middleware</glossterm> проекта <application>shop</application> − <filename>web.xml</filename> − выглядит следующим образом:</para>
+      <para>Например, набор файлов свойств уровня Middleware проекта <application>shop</application> − <filename>web.xml</filename> − выглядит следующим образом:</para>
       <programlisting>classpath:cuba-app.properties
 classpath:shop-app.properties
 file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
@@ -1701,11 +1822,115 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         </warning></para>
       <formalpara>
         <title>Таблица базы данных</title>
-        <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
+        <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне Middleware. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
       </formalpara>
       <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
       <para>Если обращение к свойству производится через Java-интерфейс механизма Configuration Parameters и если значение свойства не задано в месте его хранения (файлы <filename>*-app.properties</filename> или БД), то будет возвращено значение по умолчанию, если оно задано в аннотации соответствующего метода Java-интерфейса.</para>
       <para>Подробное описание свойств подсистемы безопасности содержится в <link linkend="appendix_security_properties">Приложении А</link>.</para>
+      <section id="config_interfaces">
+        <title>Конфигурационные интерфейсы</title>
+        <para>Подсистема работы с конфигурационными параметрами позволяет сохранять/извлекать пары имя-значение с помощью стандартных Java-интерфейсов. При этом хранилищем параметров может быть база данных, системные свойства Java, и свойства приложения, задаваемые в файлах app.properties.</para>
+        <para>Рекомендуется использовать только для хранения системных настроек, доступных администратору системы. Для хранения настроек пользователя лучше создавать отдельную сущность для их хранения и использовать стандартный эдитор для редактирования.</para>
+        <para><emphasis role="bold">Использование</emphasis></para>
+        <para>Для создания конфигурационного параметра необходимо:</para>
+        <itemizedlist>
+          <listitem>
+            <para>Создать интерфейс, унаследованный от <interface>com.haulmont.cuba.core.config.Config</interface></para>
+          </listitem>
+          <listitem>
+            <para>Создать методы доступа к параметру (getXXX/setXXX). Возможный тип параметра обсуждается ниже.</para>
+          </listitem>
+          <listitem>
+            <para>Добавить интерфейсу аннотацию <literal>@Prefix</literal> для указания префикса имен входящих в интерфейс параметров</para>
+          </listitem>
+          <listitem>
+            <para>Добавить интерфейсу и/или параметру аннотацию <literal>@Source</literal> для указания источника (места хранения) параметров</para>
+          </listitem>
+        </itemizedlist>
+        <para>Например:</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
+        <para>Реализовывать интерфейс не нужно.</para>
+        <para>Для получения доступа к параметрам используется интерфейс инфраструктуры <interface>Configuration</interface> или его статический фасад <interface>ConfigProvider</interface>.</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example2.txt" encoding="UTF-8" parse="text"/></programlisting>
+        <para>Стандартный UI для доступа к параметрам, хранящимся в базе данных, предоставляет МБин haulmont.cuba:service=ConfigStorage. Он содержит следующие методы:</para>
+        <itemizedlist>
+          <listitem>
+            <para>setProperty(p1, p2) − установить параметр с именем p1 в значение p2</para>
+          </listitem>
+          <listitem>
+            <para>getProperty(p1) − показать параметр с именем p1</para>
+          </listitem>
+          <listitem>
+            <para>removeProperty(p1) − удалить параметр с именем p1</para>
+          </listitem>
+          <listitem>
+            <para>printProperties(p1) − показать все параметры с фильтром на имя p1 по правилам SQL like</para>
+          </listitem>
+          <listitem>
+            <para>printProperties − показать все параметры</para>
+          </listitem>
+          <listitem>
+            <para>loadSystemProperties − загрузить в System.properties параметры из файла conf/system.properties</para>
+          </listitem>
+        </itemizedlist>
+        <para><emphasis role="bold">Возможности</emphasis></para>
+        <para><emphasis role="bold">Имена параметров</emphasis></para>
+        <para>Имя параметра в БД или в app.properties формируется по следующему принципу:</para>
+        <itemizedlist>
+          <listitem>
+            <para>Если на параметре есть аннотация <literal>@Property</literal>, то берется ее значение</para>
+          </listitem>
+          <listitem>
+            <para>Иначе:</para>
+            <itemizedlist>
+              <listitem>
+                <para>Если есть аннотация <literal>@Prefix</literal>, берется ее значение</para>
+              </listitem>
+              <listitem>
+                <para>Если нет аннотации <literal>@Prefix</literal>, то</para>
+                <itemizedlist>
+                  <listitem>
+                    <para>Если интерфейс является внутренним, то берется полное имя включающего класса и добавляется &quot;.&quot;</para>
+                  </listitem>
+                  <listitem>
+                    <para>Иначе берется полное имя пакета и добавляется &quot;.&quot;</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+              <listitem>
+                <para>Добавляется декапитализированное имя метода доступа без get/set/is (см. комментарии к методу <methodname>com.haulmont.cuba.core.config.ConfigUtil#extendedUncapitalize</methodname>)</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+        <para><emphasis role="bold">Источники параметров</emphasis></para>
+        <para>В соответствии со значениями <classname>com.haulmont.cuba.core.config.SourceType</classname> на данный момент возможны 3 источника параметров: app.propperties, System.properties или база данных.</para>
+        <para>В случае базы данных параметры хранятся в таблице <database>SYS_CONFIG</database>.</para>
+        <para>Аннотация <literal>@Source</literal> может быть задана как на весь интерфейс, так и на отдельный параметр. В первом случае она определяет источник всех параметров данного интерфейса. Во втором случае она переопределяет источник для данного параметра, если он отличен от указанного для интерфейса.</para>
+        <para><emphasis role="bold">Типы параметров</emphasis></para>
+        <para>Без дополнительных усилий параметр может быть любого простого типа либо его объектного аналога (String, int, Integer, etc.) либо сущностью, реализующей интерфейс Entity.</para>
+        <para>Для произвольного типа необходимо реализовать классы TypeStringify и TypeFactory для преобразования значения в строку и из нее, и указать эти классы для параметра с помощью аннотаций @Stringify и @Factory.</para>
+        <para>Рассмотрим этот процесс на примере типа UUID.</para>
+        <itemizedlist>
+          <listitem>
+            <para>Создаем класс com.haulmont.cuba.core.config.type.UuidTypeFactory унаследованный от com.haulmont.cuba.core.config.type.TypeFactory и реализуем в нем метод:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example3.txt" encoding="UTF-8" parse="text"/></programlisting>
+          </listitem>
+          <listitem>
+            <para>TypeStringify создавать не нужно, т.к. по умолчанию будет использован Object.toString() − в данном случае он нам подходит.</para>
+          </listitem>
+          <listitem>
+            <para>Аннотируем параметр:</para>
+            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example4.txt" encoding="UTF-8" parse="text"/></programlisting>
+          </listitem>
+        </itemizedlist>
+        <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
+        <para>Для параметров могут быть заданы значения по умолчанию. Эти значения будут возвращаться, если данный параметр не задан (не существует в БД или в app.properties).</para>
+        <para>Дефолтное значение может быть задано в виде строки с помощью аннотации @com.haulmont.cuba.core.config.defaults.Default, либо в виде конкретного типа с помощью других аннотаций пакета com.haulmont.cuba.core.config.defaults.</para>
+        <para>Для сущностей дефолтное значение задается в виде имя_сущности-id-имя_представления, например</para>
+        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
+        <para>имя представления необязательно.</para>
+      </section>
     </section>
     <section id="localization">
       <title>Локализация сообщений</title>
@@ -1729,7 +1954,7 @@ actions.Edit=Edit
         </listitem>
       </itemizedlist>
     </section>
-    <section>
+    <section id="authentication">
       <title>Аутентификация и авторизация пользователей</title>
       <para>TODO</para>
     </section>
@@ -1747,17 +1972,17 @@ actions.Edit=Edit
     </figure>
     <para>Компоненты сгруппированы по двум <link linkend="text_modules">модулям</link>: <structname>core</structname> и <structname>global</structname>. В <structname>global</structname> расположены компоненты, доступные как коду Middleware, так и клиентскому коду. В <structname>core</structname> расположены компоненты ядра Middleware.</para>
     <para>Рассмотрим элементы диаграммы более подробно.</para>
-    <para><link linkend="services">Services</link> – управляемые <glossterm linkend="container_glossentry">контейнером</glossterm> компоненты, формирующие границу приложения и предоставляющие интерфейс клиентам Middleware. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
-    <para><link linkend="managed_beans">Managed Beans</link> – управляемые <glossterm linkend="container_glossentry">контейнером</glossterm> компоненты, содержащие бизнес-логику приложения. Вызываются <link linkend="services">сервисами</link>, другими бинами или через опциональный <glossterm linkend="jmx_glossentry">JMX</glossterm> интерфейс.</para>
-    <para>Entity Classes – классы, моделирующие предметную область приложения.  Представляют собой аннотированные <glossterm linkend="pojo_glossentry">POJO</glossterm>. Аннотации используются для задания соответствий между столбцами таблицы базы данных и полями объектов с помощью <link linkend="text_additionally_JPA">OpenJPA</link>, а также для формирования метаданных в <link linkend="metadata_framework">Metadata Framework</link>.</para>
+    <para><link linkend="services">Services</link> – управляемые <glossterm linkend="container">контейнером</glossterm> компоненты, формирующие границу приложения и предоставляющие интерфейс клиентам Middleware. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
+    <para><link linkend="managed_beans">Managed Beans</link> – управляемые <glossterm linkend="container">контейнером</glossterm> компоненты, содержащие бизнес-логику приложения. Вызываются <link linkend="services">сервисами</link>, другими бинами или через опциональный <glossterm linkend="jmx">JMX</glossterm> интерфейс.</para>
+    <para>Entity Classes – классы, моделирующие предметную область приложения.  Представляют собой аннотированные <glossterm linkend="pojo">POJO</glossterm>. Аннотации используются для задания соответствий между столбцами таблицы базы данных и полями объектов с помощью OpenJPA, а также для формирования метаданных в <link linkend="metadata_framework">Metadata Framework</link>.</para>
     <para><emphasis role="bold">Persistence</emphasis> −  центральный интерфейс для доступа к функциональности хранения данных. Позволяет получать ссылки на интерфейсы <classname>EntityManager</classname> и <classname>Transaction</classname>.</para>
     <para><emphasis role="bold">Transaction</emphasis> − интерфейс управления <link linkend="transactions">транзакциями</link> Middleware.</para>
-    <para><emphasis role="bold">Entity Manager</emphasis> − интерфейс для работы с данными на уровне Middleware. Позволяет извлекать <glossterm linkend="entity_glossentry">сущности</glossterm> из базы данных по идентификатору и по запросу, а также сохранять и удалять их.</para>
+    <para><emphasis role="bold">Entity Manager</emphasis> − интерфейс для работы с данными на уровне Middleware. Позволяет извлекать <glossterm linkend="entity">сущности</glossterm> из базы данных по идентификатору и по запросу, а также сохранять и удалять их.</para>
     <para><link linkend="metadata_framework">Metadata Framework</link> позволяет создавать описание предметной области в терминах классов, атрибутов и отношений между классами. Метаданные (модель данных) существенно упрощают создание универсальных механизмов работы с данными. Исходной информацией для построения модели являются аннотированные классы сущностей.</para>
     <para><link linkend="infrastructure_interfaces">Global Infrastructure Interfaces</link> (интерфейсы инфраструктуры) предоставляют доступ к общей часто используемой функциональности. Реализованы в платформе аналогично <link linkend="managed_beans">Managed Beans</link>.
 
 Все интерфейсы инфраструктуры имеют соответствующие <firstterm>статические фасады</firstterm> − классы со статическими методами, позволяющие иметь доступ к нужной функциональности из статического контекста (при невозможности использовать <link linkend="middleware">dependency injection</link>). Статические фасады имеют имена, заканчивающиеся на <classname>*Provider</classname>.</para>
-    <para><link linkend="text_additionally_spring">Spring Framework</link> − основа среднего слоя. Используются следующие возможности <link linkend="text_additionally_spring">Spring</link> Framework: </para>
+    <para>Spring Framework − основа среднего слоя. Используются следующие возможности Spring Framework: </para>
     <itemizedlist>
       <listitem>
         <para>Инверсия управления (IoC container)</para>
@@ -1775,7 +2000,7 @@ actions.Edit=Edit
         <para>Реализация веб-сервисов и <link linkend="rest_api">REST API</link></para>
       </listitem>
     </itemizedlist>
-    <para><link linkend="text_additionally_JPA">OpenJPA Framework</link> − реализация <link linkend="text_additionally_ORM">ORM</link> по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке <link linkend="middleware">JPQL</link>.</para>
+    <para>OpenJPA Framework − реализация ORM по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке <link linkend="middleware">JPQL</link>.</para>
     <section id="services">
       <title>Services</title>
       <para>Сервисы представляют собой слой  компонентов, формирующих границу приложения. Сервисы определяют множество операций, предоставляемых ими для интерфейсных клиентских слоев кода. Сервисы инкапсулируют бизнес-логику приложения, управляют транзакциями и координируют реакции на действия.</para>
@@ -1803,17 +2028,17 @@ actions.Edit=Edit
           </imageobject>
         </mediaobject>
       </figure>
-      <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <classname>ServiceInterceptor.aroundInvoke()</classname>.</para>
+      <para>Каждый вызов сервиса перехватывается с помощью Spring AOP  и обрамляется вызовом <classname>ServiceInterceptor.aroundInvoke()</classname>.</para>
     </section>
     <section id="managed_beans">
       <title>Managed Beans</title>
-      <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами <link linkend="text_injection_IoC">Inversion of Control</link>. <glossterm linkend="container_glossentry">Контейнером</glossterm> для бинов служит Spring Framework.</para>
+      <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами Inversion of Control. <glossterm linkend="container">Контейнером</glossterm> для бинов служит Spring Framework.</para>
       <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть всегда используется один экземпляр данного класса. Соответственно, если создаваемый Вами бин содержит изменяемые данные в полях (имеет состояние), то необходимо синхронизировать обращение к таким данным.</para>
       <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>.</para>
     </section>
     <section id="mbeans">
       <title>JMX Beans</title>
-      <para><firstterm>МБин</firstterm> − программный компонент, реализующий бизнес-логику, и имеющий <glossterm linkend="jmx_glossentry">JMX</glossterm>-интерфейс. Как правило, имеет внутреннее состояние (например, кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.</para>
+      <para><firstterm>МБин</firstterm> − программный компонент, реализующий бизнес-логику, и имеющий <glossterm linkend="jmx">JMX</glossterm>-интерфейс. Как правило, имеет внутреннее состояние (например, кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.</para>
       <para>МБин является расширенным вариантом <link linkend="managed_beans">управляемого бина</link>.</para>
       <figure>
         <title/>
@@ -1824,7 +2049,7 @@ actions.Edit=Edit
         </mediaobject>
       </figure>
       <para>Как видно из диаграммы, МБин имеет два набора методов, разделенных по интерфейсам <interfacename>...MBean</interfacename> и <interfacename>...API</interfacename>. Первый из них служит для управления через JMX, а второй − для вызова из программного кода.</para>
-      <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="interceptor_glossentry">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью <link linkend="text_springAOP">Spring AOP</link>), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <classname>ClassLoader</classname>.</para>
+      <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="interceptor">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью Spring AOP), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <classname>ClassLoader</classname>.</para>
     </section>
     <section id="orm">
       <title>Слой ORM</title>
@@ -1837,7 +2062,7 @@ actions.Edit=Edit
             <listitem>
               <itemizedlist>
                 <listitem>
-                  <para>Позволяет работать с  данными реляционной СУБД, манипулируя простыми объектами Java (<glossterm linkend="pojo_glossentry">POJO</glossterm>)</para>
+                  <para>Позволяет работать с  данными реляционной СУБД, манипулируя простыми объектами Java (<glossterm linkend="pojo">POJO</glossterm>)</para>
                 </listitem>
                 <listitem>
                   <para>Упрощает программирование, избавляя от рутины написания тривиальных SQL-запросов</para>
@@ -1849,7 +2074,7 @@ actions.Edit=Edit
                   <para>Обеспечивает легкое портирование приложения на различные СУБД</para>
                 </listitem>
                 <listitem>
-                  <para>Использует лаконичный язык запросов <glossterm linkend="jpql_glossentry">JPQL</glossterm></para>
+                  <para>Использует лаконичный язык запросов <glossterm linkend="jpql">JPQL</glossterm></para>
                 </listitem>
                 <listitem>
                   <para>Оптимизирует количество выполняемых SQL-запросов на команды insert и update</para>
@@ -1878,7 +2103,7 @@ actions.Edit=Edit
                   <para>JPA – Java Persistence API</para>
                 </listitem>
                 <listitem>
-                  <para><link linkend="text_openJPA">OpenJPA</link> – фреймворк, реализующий JPA.  На данный момент в платформе используется версия 2.x.</para>
+                  <para>OpenJPA – фреймворк, реализующий JPA.  На данный момент в платформе используется версия 2.x.</para>
                 </listitem>
               </itemizedlist>
             </listitem>
@@ -1931,13 +2156,13 @@ actions.Edit=Edit
               <para>Работает только для экземпляра в состоянии <firstterm>Managed</firstterm>, то есть внутри транзакции, загрузившей данный экземпляр</para>
             </listitem>
             <listitem>
-              <para>Загрузка по требованию (lazy loading)  в сумме порождает больше запросов к БД, чем <glossterm linkend="eager_fetching_glossentry">энергичная загрузка (Eager Fetching)</glossterm>, однако нагрузка при этом растянута во времени</para>
+              <para>Загрузка по требованию (lazy loading)  в сумме порождает больше запросов к БД, чем <glossterm linkend="eager_fetching">энергичная загрузка (Eager Fetching)</glossterm>, однако нагрузка при этом растянута во времени</para>
               <itemizedlist>
                 <listitem>
                   <para>Например, при извлечении списка N экземпляров сущности A, содержащих ссылку на экземпляр сущности B, в случае загрузки по требованию будет выполнено N+1 запросов к БД.</para>
                 </listitem>
                 <listitem>
-                  <para>Для минимизации времени отклика и снижения нагрузки необходимо стремиться к меньшему количеству обращений к БД. Для этого  в платформе  используется механизм <glossterm linkend="view_glossentry">представлений</glossterm>, с помощью которого в вышеописанном случае ORM сформирует один  запрос к БД с объединением таблиц.</para>
+                  <para>Для минимизации времени отклика и снижения нагрузки необходимо стремиться к меньшему количеству обращений к БД. Для этого  в платформе  используется механизм <link linkend="views">представлений</link>, с помощью которого в вышеописанном случае ORM сформирует один  запрос к БД с объединением таблиц.</para>
                 </listitem>
                 <listitem>
                   <para>Если A содержит коллекцию B, в случае энергичной загрузки  ORM сформирует SQL запрос, возвращающий произведение строк A и B. </para>
@@ -1984,7 +2209,7 @@ actions.Edit=Edit
             <para><emphasis role="bold">Настройка</emphasis></para>
             <para>Параметр среднего слоя:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_postgres.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Источник данных в <link linkend="text_context_xml">context.xml</link>:</para>
+            <para>Источник данных в context.xml:</para>
             <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_postgres.xml" encoding="UTF-8" parse="text"/></programlisting>
           </listitem>
         </varlistentry>
@@ -1995,7 +2220,7 @@ actions.Edit=Edit
             <para><emphasis role="bold">Настройка</emphasis></para>
             <para>Параметр среднего слоя:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Источник данных в <link linkend="text_context_xml">context.xml</link>:</para>
+            <para>Источник данных в context.xml:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_mssql.xml" encoding="UTF-8" parse="text"/></programlisting>
             <para>В настройках MS SQL надо включить возможность логина для пользователя sa и задать для него пароль из context.xml. Это можно сделать из MS SQL Management Studio, в окне Object Explorer.
 
@@ -2032,7 +2257,7 @@ Instance − ваш SQL Server.</para>
       <title>Экраны</title>
       <section id="screen_controller">
         <title>Контроллер экрана</title>
-        <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>, с помощью различных событий. Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
+        <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>, с помощью различных событий. Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
         <itemizedlist>
           <listitem>
             <para><classname>AbstractFrame</classname> − реализует интерфейс <interfacename>IFrame</interfacename> и предназначен для реализации фреймов − многократно используемых компонентов экранов.</para>
@@ -2124,7 +2349,7 @@ Instance − ваш SQL Server.</para>
       </section>
       <section id="screen_xml">
         <title>XML-дескриптор</title>
-        <para>Описывает <glossterm linkend="datasource_glossentry">источники данных</glossterm> и расположение визуальных компонентов экрана.</para>
+        <para>Описывает <link linkend="datasources">источники данных</link> и расположение визуальных компонентов экрана.</para>
         <para>XML-дескриптор содержит следующие элементы:</para>
         <itemizedlist>
           <listitem>
@@ -2148,10 +2373,10 @@ Instance − ваш SQL Server.</para>
             </orderedlist>
           </listitem>
           <listitem>
-            <para><parameter>metadataContext</parameter> − опциональный элемент для инициализации <glossterm linkend="view_glossentry">представлений</glossterm> (views). Предпочтительным является определение всех представлений в одном общем файле <filename>ext-views.xml</filename>  модуля <structname>core</structname>. </para>
+            <para><parameter>metadataContext</parameter> − опциональный элемент для инициализации <link linkend="views">представлений</link> (views). Предпочтительным является определение всех представлений в одном общем файле <filename>ext-views.xml</filename>  модуля <structname>core</structname>. </para>
           </listitem>
           <listitem>
-            <para><parameter>dsContext</parameter> − элемент, определяющий <glossterm linkend="datasource_glossentry">источники данных</glossterm> данного экрана. Источники данных предназначены для реализации связанных с данными  компонентов.</para>
+            <para><parameter>dsContext</parameter> − элемент, определяющий <link linkend="datasources">источники данных</link> данного экрана. Источники данных предназначены для реализации связанных с данными  компонентов.</para>
           </listitem>
           <listitem>
             <para><parameter>layout</parameter> − элемент, определяющий компоновку экрана.</para>
@@ -2182,7 +2407,7 @@ Instance − ваш SQL Server.</para>
                 <para><emphasis role="bold">id</emphasis> − идентификатор  экрана, по которому   производится обращение</para>
               </listitem>
               <listitem>
-                <para><emphasis role="bold">template</emphasis> − путь к <glossterm linkend="screen_xml_descriptor_glossentry">дескриптору</glossterm> экрана. Сначала будет произведена попытка найти дескриптор в каталоге конфигурации приложения <filename>WEB-INF/conf</filename>. Если его там нет, то будет произведен поиск в <filename>classpath</filename>.</para>
+                <para><emphasis role="bold">template</emphasis> − путь к <glossterm linkend="screen_xml_glossentry">дескриптору</glossterm> экрана. Сначала будет произведена попытка найти дескриптор в каталоге конфигурации приложения <filename>WEB-INF/conf</filename>. Если его там нет, то будет произведен поиск в <filename>classpath</filename>.</para>
               </listitem>
               <listitem>
                 <para><emphasis role="bold">class</emphasis> − имя класса. Элемент может быть использован вместо <emphasis role="bold">template</emphasis>. Класс должен реализовывать либо интерфейс <interface>Callable</interface>, либо интерфейс <interface>Runnable</interface>. В случае реализации интерфейса <interface>Callable</interface> метод <methodname>call()</methodname> должен возвращать экземпляр созданного <classname>Window</classname>, который будет возвращен как результат вызова <methodname>WindowManager.openWindow()</methodname>. Класс может содержать конструктор с параметрами для передачи ему строковых значений, заданных атрибутом <emphasis role="bold">param</emphasis>.</para>
@@ -2523,7 +2748,7 @@ Instance − ваш SQL Server.</para>
         </informaltable>
         <section id="gui_Label">
           <title>Label</title>
-          <para>Надпись (<classname>Label</classname>) − текстовый компонент, отображающий  статический текст либо значение атрибута <glossterm linkend="entity_glossentry">сущности</glossterm>.</para>
+          <para>Надпись (<classname>Label</classname>) − текстовый компонент, отображающий  статический текст либо значение атрибута <glossterm linkend="entity">сущности</glossterm>.</para>
           <para>XML-имя компонента: <sgmltag>label</sgmltag></para>
           <figure>
             <title/>
@@ -2542,7 +2767,7 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Для того чтобы создать компонент надписи, создайте в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
+          <para>Для того чтобы создать компонент надписи, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/label.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибут <sgmltag id="attr_value">value</sgmltag> предназначен для отображения текста надписи. Обычно значение атрибута задается с помощью ключа <glossterm linkend="message_pack_glossentry">пакета сообщений</glossterm>.</para>
           <para>Текст, содержащийся в атрибуте <sgmltag>value</sgmltag>, будет перенесен на следующую строку, если по длине он превысит значение атрибута <link linkend="attr_width">width</link>. Поэтому если Вам нужно использовать многострочную надпись, укажите требуемое значение атрибута <link linkend="attr_width">width</link> (применимо только для веб-приложений). Если текст надписи слишком длинный, и значение атрибута <link linkend="attr_width">width</link> не определено, то текст будет урезан.</para>
@@ -2633,7 +2858,7 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующий код: </para>
+          <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код: </para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/textButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Для создания кнопки с пиктограммой:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/iconButton.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -2663,7 +2888,7 @@ Instance − ваш SQL Server.</para>
           <para>Пример кнопки с атрибутом <sgmltag>action</sgmltag>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/actionButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para><link linkend="gui_Action">Action</link> для кнопки можно создавать программно, в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана.</para>
-          <para>В качестве примера создадим кнопку, имеющую в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> только атрибут <link linkend="attr_id">id</link>:</para>
+          <para>В качестве примера создадим кнопку, имеющую в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> только атрибут <link linkend="attr_id">id</link>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/withoutActionButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>В контроллере  в методе <code>init()</code> экрана определим действие и название для кнопки.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/withoutActionButtonContr.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -2736,7 +2961,7 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующий код: </para>
+          <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код: </para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/popupButton/textPopupButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Для создания кнопки с пиктограммой:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/popupButton/iconPopupButton.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -2825,7 +3050,7 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующий код: </para>
+          <para>Для создания кнопки с текстом достаточно написать в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код: </para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/linkButton/textLinkButton.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Для создания кнопки с пиктограммой:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/linkButton/iconLinkButton.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -2894,8 +3119,8 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Классы текстовых полей существуют как для веб-приложений, так  и для десктоп-приложений.</para>
-          <para>Текстовое поле служит для обеспечения возможности получить текстовую информацию от пользователя, а также для отображения атрибутов <glossterm linkend="entity_glossentry">сущности</glossterm>.</para>
-          <para>Для создания простого текстового поля достаточно в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> написать следующий код:</para>
+          <para>Текстовое поле служит для обеспечения возможности получить текстовую информацию от пользователя, а также для отображения атрибутов <glossterm linkend="entity">сущности</glossterm>.</para>
+          <para>Для создания простого текстового поля достаточно в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> написать следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>На рисунке ниже показан вид простого текстового поля.</para>
           <figure>
@@ -2968,7 +3193,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Вы можете связать текстовое поле с типом данных с помощью атрибута <sgmltag id="attr_datatype">datatype</sgmltag>. Атрибут используется  для форматирования значения поля в том случае, если поле не связано с данными (то есть не указан источник данных и название атрибута). Значением атрибута <sgmltag>datatype</sgmltag> является имя типа данных из списка:</para>
-          <para>Для текстового компонента можно ограничить максимальную длину вводимого текста с помощью атрибута <sgmltag id="attr_maxLength">maxLength</sgmltag>. Значение атрибута устанавливается по умолчанию на основании длины строкового атрибута <glossterm linkend="entity_glossentry">сущности</glossterm>, если этот параметр указан в аннотации сущности. Значение &quot;-1&quot; означает отсутствие ограничения.</para>
+          <para>Для текстового компонента можно ограничить максимальную длину вводимого текста с помощью атрибута <sgmltag id="attr_maxLength">maxLength</sgmltag>. Значение атрибута устанавливается по умолчанию на основании длины строкового атрибута <glossterm linkend="entity">сущности</glossterm>, если этот параметр указан в аннотации сущности. Значение &quot;-1&quot; означает отсутствие ограничения.</para>
           <para>Ниже показан пример, ограничивающий длину вводимого текста в 10 символов.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldMaxLength.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Для компонента <classname>TextField</classname> существует атрибут <sgmltag id="attr_resizable">resizable</sgmltag>. При задании атрибуту значения <literal>true</literal> и установке количества строк, больших одной, у пользователя появляется возможность  изменять размеры компонента.</para>
@@ -3204,7 +3429,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса полей для ввода даты и времени: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Для создания  поля даты, связанного с <glossterm linkend="datasource_glossentry">источником данных</glossterm>, необходимо определить его описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующим образом:</para>
+          <para>Для создания  поля даты, связанного с <link linkend="datasources">источником данных</link>, необходимо определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Возможно изменить формат представления даты и времени с помощью атрибута  <sgmltag id="attr_dateFormat">dateFormat</sgmltag> по правилам  SimpleDateFormat (<ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">http://docs.oracle.com/javase/6/docs/ api/java/text/SimpleDateFormat.html</ulink>). Значением атрибута может быть либо строка формата, либо ключ в пакете сообщений (если строка начинается с msg://)</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateFieldFormat.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -3216,7 +3441,7 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>В большинстве бизнес-приложений нет необходимости отображать милисекунды или даже время.  Точность представления даты или времени контролируется атрибутом <sgmltag id="attr_resolution">resolution</sgmltag>.  Значение атрибута должно соответствовать перечислению <classname>DateField.Resolution</classname> − <literal>SEC</literal>, <literal>MIN</literal>, <literal>HOUR</literal>, <literal>DAY</literal>, <literal>MONTH</literal>, <literal>YEAR</literal>. По умолчанию точность определяется по аннотации <interfacename>javax.persistence.Temporal</interfacename> соответствующего атрибута <glossterm linkend="entity_glossentry">сущности</glossterm>.</para>
+          <para>В большинстве бизнес-приложений нет необходимости отображать милисекунды или даже время.  Точность представления даты или времени контролируется атрибутом <sgmltag id="attr_resolution">resolution</sgmltag>.  Значение атрибута должно соответствовать перечислению <classname>DateField.Resolution</classname> − <literal>SEC</literal>, <literal>MIN</literal>, <literal>HOUR</literal>, <literal>DAY</literal>, <literal>MONTH</literal>, <literal>YEAR</literal>. По умолчанию точность определяется по аннотации <interfacename>javax.persistence.Temporal</interfacename> соответствующего атрибута <glossterm linkend="entity">сущности</glossterm>.</para>
           <para>Если <code>resolution=&quot;DAY&quot;</code> и не указан атрибут <sgmltag>dateFormat</sgmltag>, то в качестве формата будет взят формат, указанный в <glossterm linkend="main_message_pack_glossentry">главном пакете сообщений</glossterm> с ключом <sgmltag>dateFormat</sgmltag>.</para>
           <para>Если <code>resolution=&quot;MIN&quot;</code> и не указан атрибут <sgmltag>dateFormat</sgmltag>, то в качестве формата будет взят формат, указанный в <glossterm linkend="main_message_pack_glossentry">главном пакете сообщений</glossterm> с ключом <sgmltag>dateTimeFormat</sgmltag>.</para>
           <para>Ниже показано определения поля для ввода даты с точностью до месяца.</para>
@@ -3318,9 +3543,9 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса полей для ввода времени: для веб-приложений и для десктоп-приложений.</para>
-          <para>Для создания поля времени, связанного с <glossterm linkend="datasource_glossentry">источником данных</glossterm>, необходимо указать атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link> в определении поля:</para>
+          <para>Для создания поля времени, связанного с <link linkend="datasources">источником данных</link>, необходимо указать атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link> в определении поля:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timeField/timeFieldDs.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Для создания простого  поля для ввода времени необходимо определить его в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующим образом:</para>
+          <para>Для создания простого  поля для ввода времени необходимо определить его в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timeField/timeField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>С помощью установки атрибута <sgmltag id="attr_showSeconds">showSeconds</sgmltag> в значение <literal>true</literal> можно настроить отображение секунд.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timeField/timeFieldSec.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -3400,7 +3625,7 @@ Instance − ваш SQL Server.</para>
         </section>
         <section id="gui_FieldGroup">
           <title>FieldGroup</title>
-          <para>Группа полей (<classname>FieldGroup</classname>) генерализует представление атрибутов одного или более <glossterm linkend="datasource_glossentry">источника данных</glossterm>. Представление поля зависит от типа соответствующего атрибута. Для отображения <glossterm linkend="entity_glossentry">сущностей</glossterm> может использоваться как <link linkend="gui_LookupField">LookupField</link>, так и <link linkend="gui_PickerField">PickerField</link>.</para>
+          <para>Группа полей (<classname>FieldGroup</classname>) генерализует представление атрибутов одного или более <link linkend="datasources">источника данных</link>. Представление поля зависит от типа соответствующего атрибута. Для отображения <glossterm linkend="entity">сущностей</glossterm> может использоваться как <link linkend="gui_LookupField">LookupField</link>, так и <link linkend="gui_PickerField">PickerField</link>.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -3419,9 +3644,9 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса групп полей: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Ниже представлено описание группы полей в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> экрана:</para>
+          <para>Ниже представлено описание группы полей в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> экрана:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/fieldGroup/fieldGroup.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para><glossterm linkend="datasource_glossentry">Источник данных</glossterm> (атрибут <link linkend="attr_datasource" id="attr_fG_datasource">datasource</link>) можно задать как для всего компонента целиком, так и для каждого поля в отдельности. Если для компонента <sgmltag>fieldGroup</sgmltag> атрибут не задан, то атрибут <sgmltag>datasource</sgmltag> должен быть задан для каждого <link linkend="attr_field">поля</link> в отдельности, либо представление полей должно задаваться разработчиком.</para>
+          <para><link linkend="datasources">Источник данных</link> (атрибут <link linkend="attr_datasource" id="attr_fG_datasource">datasource</link>) можно задать как для всего компонента целиком, так и для каждого поля в отдельности. Если для компонента <sgmltag>fieldGroup</sgmltag> атрибут не задан, то атрибут <sgmltag>datasource</sgmltag> должен быть задан для каждого <link linkend="attr_field">поля</link> в отдельности, либо представление полей должно задаваться разработчиком.</para>
           <para>При установке  атрибута <sgmltag id="attr_collapsable">collapsable</sgmltag>   в значение <literal>true</literal> компонент может сворачивать свое содержимое.</para>
           <figure>
             <title/>
@@ -3453,7 +3678,7 @@ Instance − ваш SQL Server.</para>
           <para id="attr_field"><sgmltag>field</sgmltag> − элемент, содержащий описание выводимого поля. Может содержать описание формата выводимого значения (<link linkend="element_formatter">formatter</link>) и описание валидаторов, применяемых к соответствующему полю (<link linkend="element_validator">validator</link>). Рассмотрим более подробно некоторые атрибуты элемента <sgmltag>field</sgmltag>. </para>
           <itemizedlist>
             <listitem>
-              <para><link linkend="attr_id" id="attr_field_id">id</link> − обязательный атрибут, идентификатор поля. Имеет физический смысл: в случае, если задан <glossterm linkend="datasource_glossentry">источник данных</glossterm>, то идентификатором поля должно быть имя атрибута, иначе − просто идентификатор поля.</para>
+              <para><link linkend="attr_id" id="attr_field_id">id</link> − обязательный атрибут, идентификатор поля. Имеет физический смысл: в случае, если задан <link linkend="datasources">источник данных</link>, то идентификатором поля должно быть имя атрибута, иначе − просто идентификатор поля.</para>
             </listitem>
             <listitem>
               <para><link linkend="attr_caption" id="attr_field_caption">caption</link> − необязательный атрибут, содержащий заголовок поля.</para>
@@ -3465,7 +3690,7 @@ Instance − ваш SQL Server.</para>
               <para><link linkend="attr_optionsDatasource" id="attr_field_optionsDatasource">optionsDatasource</link> − необязательный атрибут, определяющий список возможных значений поля.</para>
             </listitem>
             <listitem>
-              <para><link linkend="attr_datasource" id="attr_field_datasource">datasource</link> − необязательный атрибут, содержит имя <glossterm linkend="datasource_glossentry">источника данных</glossterm> для конкретного поля.</para>
+              <para><link linkend="attr_datasource" id="attr_field_datasource">datasource</link> − необязательный атрибут, содержит имя <link linkend="datasources">источника данных</link> для конкретного поля.</para>
             </listitem>
             <listitem>
               <para>Есть возможность самостоятельно задать представление поля с помощью атрибута <sgmltag id="attr_custom">custom</sgmltag>. Значение атрибута в этом случае должно быть равно  <literal>true</literal>. Представление пользовательского поля необходимо определить в контроллере экрана. Компонент представления должен реализовывать интерфейс <interfacename>Field</interfacename>. Ниже представлен пример представления пользовательского поля:</para>
@@ -3657,7 +3882,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Классы флажков существуют как для веб-приложений, так  и для десктоп-приложений.</para>
-          <para>Для создания флажка достаточно в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> написать следующий код:</para>
+          <para>Для создания флажка достаточно в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> написать следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/checkBox/checkBox.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Сброс или установка флажка изменяет его состояние. Состояние − это свойство типа <code>Boolean</code>, может быть получено с помощью метода  <code>getValue()</code> и установлено с помощью метода <code>setValue()</code>. </para>
           <para>При каждом изменении состояния флажка генерируется событие элемента, которое может быть обработано с помощью <classname>ValueListener</classname>.</para>
@@ -3727,7 +3952,7 @@ Instance − ваш SQL Server.</para>
         </section>
         <section id="gui_PickerField">
           <title>PickerField</title>
-          <para>Поле ввода с дополнительными кнопками действий (<classname>PickerField</classname>) позволяет отображать экземпляр <glossterm linkend="entity_glossentry">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа.</para>
+          <para>Поле ввода с дополнительными кнопками действий (<classname>PickerField</classname>) позволяет отображать экземпляр <glossterm linkend="entity">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа.</para>
           <para>XML-имя компонента: <sgmltag>pickerField</sgmltag>.</para>
           <figure>
             <title/>
@@ -3738,9 +3963,9 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса полей ввода с дополнительными кнопками действий: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Для того чтобы создать компонент <classname>PickerField</classname>, создайте в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
+          <para>Для того чтобы создать компонент <classname>PickerField</classname>, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldMetaClass.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибут <sgmltag id="attr_metaclass">metaClass</sgmltag> задает тип <glossterm linkend="entity_glossentry">сущности</glossterm>, экземпляр которой будет выбираться с помощью действия поиска (<literal>lookup</literal>). Для заданной сущности должен быть определен экран <literal>Название_сущности.lookup</literal> либо в атрибуте <sgmltag id="attr_lookupScreen">lookupScreen</sgmltag> указан идентификатор экрана, который нужно открыть для выбора экземпляра сущности.</para>
+          <para>Атрибут <sgmltag id="attr_metaclass">metaClass</sgmltag> задает тип <glossterm linkend="entity">сущности</glossterm>, экземпляр которой будет выбираться с помощью действия поиска (<literal>lookup</literal>). Для заданной сущности должен быть определен экран <literal>Название_сущности.lookup</literal> либо в атрибуте <sgmltag >lookupScreen</sgmltag> указан идентификатор экрана, который нужно открыть для выбора экземпляра сущности.</para>
           <para>Определить компонент можно также следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldProperty.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
@@ -3901,7 +4126,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса групп опций: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Если в качестве значений списка используются экземпляры <glossterm linkend="entity_glossentry">сущностей</glossterm>, нужно использовать атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link> при описании компонента.</para>
+          <para>Если в качестве значений списка используются экземпляры <glossterm linkend="entity">сущностей</glossterm>, нужно использовать атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link> при описании компонента.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/optionsGroup/optionsGroupOptDs.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Если в качестве значений списка используются, например, значения перечисления (enum), то следует использовать атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>. </para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/optionsGroup/optionsGroupDatasource.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -4004,9 +4229,9 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса раскрывающегося списка: для веб-приложений и для десктоп-приложений.</para>
-          <para>Если в качестве значений списка используются экземпляры <glossterm linkend="entity_glossentry">сущностей</glossterm>, нужно использовать атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link> при описании компонента.</para>
+          <para>Если в качестве значений списка используются экземпляры <glossterm linkend="entity">сущностей</glossterm>, нужно использовать атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link> при описании компонента.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/lookupField/lookupFieldOptDs.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Ниже представлено описание раскрывающегося списка, значения которого заданы с помощью установки <glossterm linkend="datasource_glossentry">источника данных</glossterm> и имени атрибута <glossterm linkend="entity_glossentry">сущности</glossterm>. Атрибут сущности является перечислением (enum).</para>
+          <para>Ниже представлено описание раскрывающегося списка, значения которого заданы с помощью установки <link linkend="datasources">источника данных</link> и имени атрибута <glossterm linkend="entity">сущности</glossterm>. Атрибут сущности является перечислением (enum).</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/lookupField/lookupField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>С помощью атрибута <sgmltag id="attr_filterMode">filterMode</sgmltag> можно задать тип фильтрации значений:</para>
           <itemizedlist>
@@ -4213,9 +4438,9 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Класс поля поиска существует только для веб-приложений.</para>
-          <para>Для компонента <sgmltag>searchField</sgmltag> необходимо предварительно создать <glossterm linkend="datasource_glossentry">источник данных</glossterm>, предназначенный для работы с коллекцией <glossterm linkend="entity_glossentry">сущностей</glossterm>, и задать в нем запрос, содержащий условия поиска. Например:</para>
+          <para>Для компонента <sgmltag>searchField</sgmltag> необходимо предварительно создать <link linkend="datasources">источник данных</link>, предназначенный для работы с коллекцией <glossterm linkend="entity">сущностей</glossterm>, и задать в нем запрос, содержащий условия поиска. Например:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchFieldDs.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>При описании компонента в <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескрипторе</glossterm> используйте атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link>. </para>
+          <para>При описании компонента в <glossterm linkend="screen_xml_glossentry">XML-дескрипторе</glossterm> используйте атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link>. </para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Значение атрибута <sgmltag id="minSearchStringLength_attr">minSearchStringLength</sgmltag> − это минимальное количество символов, необходимых для поиска значения.</para>
           <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана можно указать содержание нотификаций, которые будут выводиться на экран в двух случаях:</para>
@@ -4291,7 +4516,7 @@ Instance − ваш SQL Server.</para>
         </section>
         <section id="gui_SearchPickerField">
           <title>SearchPickerField</title>
-          <para>Поле поиска с расширенной функциональностью (<interfacename>SearchPickerField</interfacename>) отличается от простого <link linkend="gui_SearchField">поля поиска</link> тем, что содержит дополнительные кнопки справа. С помощью кнопок можно открывать экземпляр выбранной в поле <glossterm linkend="entity_glossentry">сущности</glossterm>, удалять экземпляр или выбирать экземпляр из экрана списка сущностей.</para>
+          <para>Поле поиска с расширенной функциональностью (<interfacename>SearchPickerField</interfacename>) отличается от простого <link linkend="gui_SearchField">поля поиска</link> тем, что содержит дополнительные кнопки справа. С помощью кнопок можно открывать экземпляр выбранной в поле <glossterm linkend="entity">сущности</glossterm>, удалять экземпляр или выбирать экземпляр из экрана списка сущностей.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -4310,7 +4535,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Класса поля поиска c расширенной функциональностью существует только для веб-приложений.</para>
-          <para>Ниже представлено описание поля поиска с расширенной функциональностью в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Ниже представлено описание поля поиска с расширенной функциональностью в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchPickerField/searchPickerField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Если при объявлении компонента никаких <link linkend="gui_Action">действий</link> не задано,  загрузчик XML определит для него действия <literal>lookup</literal> и <literal>open</literal>.</para>
           <para>Стандартные действия определяются перечислением <code>PickerField.ActionType</code>: <literal>lookup</literal>, <literal>clear</literal>, <literal>open</literal>.</para>
@@ -4427,7 +4652,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Класс сдвоенного списка существует только для веб-приложений.</para>
-          <para>Ниже представлено описание сдвоенного списка в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>:</para>
+          <para>Ниже представлено описание сдвоенного списка в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/twinColumn/twinColumnOptDs.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>В данном примере используется атрибут <sgmltag id="attr_columns_twin">columns</sgmltag> для задания количества колонок текста в списке и атрибут <sgmltag id="attr_rows_twin">rows</sgmltag> для задания количества строк текста в списке.</para>
           <para>Атрибуты <sgmltag>twinColumn</sgmltag>:</para>
@@ -4524,7 +4749,7 @@ Instance − ваш SQL Server.</para>
         </section>
         <section id="gui_TokenList">
           <title>TokenList</title>
-          <para>Список маркеров (<classname>TokenList</classname>) представляет собой компонент, имеющий упрощенный вариант отображения и формирования списка <glossterm linkend="entity_glossentry">сущностей</glossterm>.</para>
+          <para>Список маркеров (<classname>TokenList</classname>) представляет собой компонент, имеющий упрощенный вариант отображения и формирования списка <glossterm linkend="entity">сущностей</glossterm>.</para>
           <para>Для выбора значений используется компонент, подобный <link linkend="gui_LookupPickerField">LookupPickerField</link> </para>
           <figure>
             <title/>
@@ -4544,7 +4769,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса списка маркеров: для веб-приложений  и для десктоп-приложений. </para>
-          <para>Для создания списка маркеров необходимо задать описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>:</para>
+          <para>Для создания списка маркеров необходимо задать описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tokenList/tokenList.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>С помощью атрибута <sgmltag id="attr_position">position</sgmltag> можно задавать позиционирование раскрывающегося списка. Атрибут может принимать два  значения:</para>
           <itemizedlist>
@@ -4572,7 +4797,7 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Установка атрибута <sgmltag id="attr_simple">simple</sgmltag> в значение <literal>true</literal> позволяет сворачивать компонент, оставляя только кнопку добавления. При нажатии на кнопку добавления сразу показывается экран списка экземпляров <glossterm linkend="entity_glossentry">сущности</glossterm>, для которой задан <glossterm linkend="datasource_glossentry">источник данных</glossterm>.</para>
+          <para>Установка атрибута <sgmltag id="attr_simple">simple</sgmltag> в значение <literal>true</literal> позволяет сворачивать компонент, оставляя только кнопку добавления. При нажатии на кнопку добавления сразу показывается экран списка экземпляров <glossterm linkend="entity">сущности</glossterm>, для которой задан <link linkend="datasources">источник данных</link>.</para>
           <figure>
             <title>Список маркеров со значением атрибута simple=&quot;true&quot;</title>
             <mediaobject>
@@ -4741,8 +4966,8 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Классы простых таблиц существуют как для веб-приложений, так  и для десктоп-приложений.  Интерфейс <interfacename>Table</interfacename>,  наследуется от интерфейса  <interfacename>ListComponent</interfacename> − базового интерфейса компонентов, предназначенных для работы с коллекциями <glossterm linkend="entity_glossentry">сущностей</glossterm>.</para>
-          <para>Для того чтобы создать простую таблицу, необходимо в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> задать <glossterm linkend="datasource_glossentry">источник данных</glossterm> и определить описание таблицы:</para>
+          <para>Классы простых таблиц существуют как для веб-приложений, так  и для десктоп-приложений.  Интерфейс <interfacename>Table</interfacename>,  наследуется от интерфейса  <interfacename>ListComponent</interfacename> − базового интерфейса компонентов, предназначенных для работы с коллекциями <glossterm linkend="entity">сущностей</glossterm>.</para>
+          <para>Для того чтобы создать простую таблицу, необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> задать <link linkend="datasources">источник данных</link> и определить описание таблицы:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/table.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
             <para>Обязательными для таблицы являются элементы <link linkend="element_table_columns">columns</link> и  <link linkend="element_table_rows">rows</link>.</para>
@@ -4761,12 +4986,12 @@ Instance − ваш SQL Server.</para>
                 <imagedata fileref="img/gui_sortable_up.png"/>
               </imageobject>
             </inlinemediaobject>.</para>
-          <para>Существует возможность использования для колонок функций <link linkend="gui_Table_aggregation">агрегирования</link> без модификации <glossterm linkend="datasource_glossentry">источника данных</glossterm> с помощью атрибута <sgmltag id="attr_aggregatable">aggregatable</sgmltag>. По умолчанию атрибут  имеет значение <literal>false</literal>.</para>
+          <para>Существует возможность использования для колонок функций <link linkend="gui_Table_aggregation">агрегирования</link> без модификации <link linkend="datasources">источника данных</link> с помощью атрибута <sgmltag id="attr_aggregatable">aggregatable</sgmltag>. По умолчанию атрибут  имеет значение <literal>false</literal>.</para>
           <para>Атрибут <sgmltag id="attr_showTotalAggregation">showTotalAggregation</sgmltag> разрешает или запрещает отображение строки итоговой агрегации в таблице. По умолчанию имеет значение <literal>true</literal>.</para>
           <para>Можно задать множественное выделение строк в таблице с помощью присваивания атрибуту <sgmltag id="attr_table_multiselect">multiselect</sgmltag>  значения <literal>true</literal>. По умолчанию значение атрибута равно <literal>false</literal>.</para>
           <para>С помощью элемента <sgmltag id="element_table_actions">actions</sgmltag> возможно определять набор действий (<link linkend="gui_Action">action</link>). Кроме описания произвольного действия возможно использование стандартных действий, определяемых перечислением <code>ListActionType</code>: <code>create</code>, <code>edit</code>, <code>remove</code>, <code>refresh</code>, <code>add</code>, <code>exclude</code>, <code>excel</code>.</para>
           <para><sgmltag id="attr_rowsCount">rowsCount</sgmltag> − необязательный элемент, создающий для таблицы компонент <classname>RowsCount</classname>, который позволяет загружать в таблицу данные постранично.</para>
-          <para>Элемент <sgmltag id="element_table_rows">rows</sgmltag> является обязательным. В этом элементе необходимо объявить используемый <glossterm linkend="datasource_glossentry">источник данных</glossterm>.</para>
+          <para>Элемент <sgmltag id="element_table_rows">rows</sgmltag> является обязательным. В этом элементе необходимо объявить используемый <link linkend="datasources">источник данных</link>.</para>
           <para>Атрибут <sgmltag id="attr_headerMode">headerMode</sgmltag> элемента <sgmltag>rows</sgmltag> задает вариант отображения заголовков рядов:</para>
           <itemizedlist>
             <listitem>
@@ -4780,7 +5005,7 @@ Instance − ваш SQL Server.</para>
           <para><sgmltag id="element_table_columns_column_1">column</sgmltag>  − элемент, задающий опции для колонки таблицы. Может содержать следующие атрибуты:</para>
           <itemizedlist>
             <listitem>
-              <para><sgmltag id="attr_table_column_id">id</sgmltag> − обязательный атрибут, содержит название атрибута <glossterm linkend="entity_glossentry">сущности</glossterm>, выводимого в колонке.</para>
+              <para><sgmltag id="attr_table_column_id">id</sgmltag> − обязательный атрибут, содержит название атрибута <glossterm linkend="entity">сущности</glossterm>, выводимого в колонке.</para>
             </listitem>
             <listitem>
               <para><sgmltag id="attr_table_column_collapsed">collapsed</sgmltag> − необязательный атрибут, скрывает/показывает колонку. По умолчанию имеет значение <literal>false</literal>.</para>
@@ -4967,7 +5192,7 @@ Instance − ваш SQL Server.</para>
         </section>
         <section id="gui_TreeTable">
           <title>TreeTable</title>
-          <para>Таблица с иерархией  (<classname>TreeTable</classname>)   − таблица, отображающая иерархию <glossterm linkend="entity_glossentry">сущностей</glossterm>.</para>
+          <para>Таблица с иерархией  (<classname>TreeTable</classname>)   − таблица, отображающая иерархию <glossterm linkend="entity">сущностей</glossterm>.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -4986,7 +5211,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса иерархичных таблиц: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Для того чтобы создать иерархическую таблицу, необходимо в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> задать иерархический <glossterm linkend="datasource_glossentry">источник данных</glossterm> и определить описание таблицы:</para>
+          <para>Для того чтобы создать иерархическую таблицу, необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> задать иерархический <link linkend="datasources">источник данных</link> и определить описание таблицы:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/treeTable/treeTable.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
             <para>Обязательными для иерархической таблицы являются элементы <link linkend="element_table_columns">columns</link> и  <link linkend="element_table_rows">rows</link>.</para>
@@ -5025,7 +5250,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса таблиц с группировкой: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Для правильного функционирования <classname>GroupTable</classname> должна быть соединена с <link linkend="datasource_glossentry">GroupDatasource</link>.</para>
+          <para>Для правильного функционирования <classname>GroupTable</classname> должна быть соединена с <link linkend="datasources">GroupDatasource</link>.</para>
           <para>Пример использования:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/groupTable/groupTable.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Элемент <sgmltag>group</sgmltag> − необязательный элемент, может в единственном экземпляре находиться внутри <link linkend="element_table_columns">columns</link>. Содержит набор элементов <link linkend="element_table_columns_column_1">column</link>, по которым будет выполняться первоначальная группировка.</para>
@@ -5051,12 +5276,12 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса деревьев: для веб-приложений  и для десктоп-приложений.</para>
-          <para>Для того чтобы создать компонент дерева, создайте в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
+          <para>Для того чтобы создать компонент дерева, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tree/tree.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
             <para>Обязательными для дерева являются элемент <sgmltag>treechildren</sgmltag>.</para>
           </warning>
-          <para>Элемент <sgmltag id="element_treechildren">treechildren</sgmltag>  декларирует используемый <glossterm linkend="datasource_glossentry">источник данных</glossterm>. </para>
+          <para>Элемент <sgmltag id="element_treechildren">treechildren</sgmltag>  декларирует используемый <link linkend="datasources">источник данных</link>. </para>
           <para>Атрибуты <sgmltag>tree</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
@@ -5128,7 +5353,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>Существует два класса индикатора прогресса: для веб-приложений и для десктоп-приложений.</para>
-          <para>Для создания индикатора необходимо в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> определить его описание:</para>
+          <para>Для создания индикатора необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> определить его описание:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/progressBar/progressBar.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>С помощью атрибута <sgmltag id="attr_indeterminate">indeterminate</sgmltag> можно задать отображение неопределенного состояния индикатора. Если значение атрибута равно <literal>true</literal>, то индикатор отображает неопределенное состояние. Значение атрибута по умолчанию равно <literal>true</literal>.</para>
           <para>Значения прогресса задачи для индикатора прогресса следует передавать в  значениях типа <code>Float</code> в диапазоне от 0.0 до 1.0.</para>
@@ -5191,7 +5416,7 @@ Instance − ваш SQL Server.</para>
           </figure>
           <para>Существует два класса компонентов загрузки файлов: для веб-приложений  и для десктоп-приложений.</para>
           <para>Ниже расположен пример, содержащий обработчик загрузки файла. В этом обработчике написан программный код, обеспечивающий вывод на экран сообщения об успешной или не успешной загрузке файла, а также вывод названия файла в компоненте  <link linkend="gui_Label">надписи</link>.</para>
-          <para>Для начала определим описание компонента в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>:</para>
+          <para>Для начала определим описание компонента в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/upload/upload.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Программный код <glossterm linkend="screen_controller_glossentry">контроллера</glossterm> выглядит следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/upload/uploadContr.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -5258,7 +5483,7 @@ Instance − ваш SQL Server.</para>
           </figure>
           <para>Существует два класса компонентов множественной загрузки файлов: для веб-приложений  и для десктоп-приложений.</para>
           <para>Ниже расположен пример, содержащий обработчик загрузки файлов. В этом обработчике написан программный код, обеспечивающий вывод на экран сообщения об успешной или не успешной загрузке файлов, а также вывод названий файлов в <link linkend="gui_TextField">текстовое поле</link>.</para>
-          <para>Для начала определим описание компонента в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>:</para>
+          <para>Для начала определим описание компонента в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/multipleUpload/multipleUpload.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Программный код <glossterm linkend="screen_controller_glossentry">контроллера</glossterm> выглядит следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/multipleUpload/multipleUploadContr.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -5305,7 +5530,7 @@ Instance − ваш SQL Server.</para>
         </section>
         <section id="gui_Filter">
           <title>Generic Filter</title>
-          <para>Универсальный фильтр (<interfacename>Filter</interfacename>) − компонент для организации поиска данных, предназначен для отбора информации, отображаемой в таблице экземпляров <glossterm linkend="entity_glossentry">сущностей</glossterm>.</para>
+          <para>Универсальный фильтр (<interfacename>Filter</interfacename>) − компонент для организации поиска данных, предназначен для отбора информации, отображаемой в таблице экземпляров <glossterm linkend="entity">сущностей</glossterm>.</para>
           <para>Типичный фильтр имеет следующий вид:</para>
           <figure>
             <title/>
@@ -5391,7 +5616,7 @@ Instance − ваш SQL Server.</para>
                 <sgmltag>properties</sgmltag>
               </term>
               <listitem>
-                <para>Элемент, определяющий набор атрибутов <glossterm linkend="entity_glossentry">сущности</glossterm>, заданной <glossterm linkend="datasource_glossentry">источником данных</glossterm>. В качестве названий атрибутов используются <glossterm linkend="localization">локализованные имена атрибутов сущностей</glossterm>. Атрибуты:</para>
+                <para>Элемент, определяющий набор атрибутов <glossterm linkend="entity">сущности</glossterm>, заданной <link linkend="datasources">источником данных</link>. В качестве названий атрибутов используются <glossterm linkend="localization">локализованные имена атрибутов сущностей</glossterm>. Атрибуты:</para>
                 <itemizedlist>
                   <listitem>
                     <para><sgmltag id="include_filter_attr">include</sgmltag> − обязательный атрибут, содержит регулярное выражение для включения атрибутов сущности. Атрибуты-коллекции не включаются независимо от данного регулярного выражения.</para>
@@ -5421,7 +5646,7 @@ Instance − ваш SQL Server.</para>
                 <para>Элемент, определяющий один атрибут сущности. Атрибуты:</para>
                 <itemizedlist>
                   <listitem>
-                    <para><sgmltag id="name_filter_property_attr">name</sgmltag> − имя атрибута сущности. Может быть путем (через &quot;.&quot;) по графу <glossterm linkend="entity_glossentry">сущностей</glossterm>.</para>
+                    <para><sgmltag id="name_filter_property_attr">name</sgmltag> − имя атрибута сущности. Может быть путем (через &quot;.&quot;) по графу <glossterm linkend="entity">сущностей</glossterm>.</para>
                     <warning>
                       <para>Если в качестве имени атрибута указан путь по графу сущностей, обязательно указание значения для атрибута <link linkend="caption_filter_attr">caption</link>.</para>
                     </warning>
@@ -5439,7 +5664,7 @@ Instance − ваш SQL Server.</para>
                     </figure>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="paramWhere_filter_attr">paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-<glossterm linkend="entity_glossentry">сущности</glossterm>. </para>
+                    <para><sgmltag id="paramWhere_filter_attr">paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-<glossterm linkend="entity">сущности</glossterm>. </para>
                     <para>Например, можно ограничить список предлагаемых пользователю  моделей автомобилей только моделями марки <literal>Audi</literal>.</para>
                     <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_paramWhere.txt" encoding="UTF-8" parse="text"/></programlisting>
                     <figure>
@@ -5452,7 +5677,7 @@ Instance − ваш SQL Server.</para>
                     </figure>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="paramView_filter_attr">paramView</sgmltag> − необязательный атрибут для задания <glossterm linkend="view_glossentry">представления</glossterm>, с которым будут загружаться список значений параметра-<glossterm linkend="entity_glossentry">сущности</glossterm>. Например, <literal>_local</literal>.</para>
+                    <para><sgmltag id="paramView_filter_attr">paramView</sgmltag> − необязательный атрибут для задания <link linkend="views">представления</link>, с которым будут загружаться список значений параметра-<glossterm linkend="entity">сущности</glossterm>. Например, <literal>_local</literal>.</para>
                   </listitem>
                 </itemizedlist>
               </listitem>
@@ -5462,7 +5687,7 @@ Instance − ваш SQL Server.</para>
                 <sgmltag>custom</sgmltag>
               </term>
               <listitem>
-                <para>Элемент, определяющий произвольное условие. Содержимым элемента должно быть выражение на <glossterm linkend="jpql_glossentry">JPQL</glossterm> (возможно использование JPQL Macros), которое будет добавлено в условие <code>where</code> результирующего запроса. Параметр (если он есть) обозначается символом <literal>?</literal>. </para>
+                <para>Элемент, определяющий произвольное условие. Содержимым элемента должно быть выражение на <glossterm linkend="jpql">JPQL</glossterm> (возможно использование JPQL Macros), которое будет добавлено в условие <code>where</code> результирующего запроса. Параметр (если он есть) обозначается символом <literal>?</literal>. </para>
                 <para>Пример фильтра с произвольными условиями:</para>
                 <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_custom.txt" encoding="UTF-8" parse="text"/></programlisting>
                 <para>Созданные произвольные условия попадают в раздел <guilabel>Специальные условия</guilabel> в редакторе условий.</para>
@@ -5486,7 +5711,7 @@ Instance − ваш SQL Server.</para>
                     <para><sgmltag id="paramClass_filter_attr">paramClass</sgmltag> или <sgmltag>class</sgmltag> − класс параметра условия</para>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="inExpr_filter_attr">inExpr</sgmltag> − значение должно быть равно <literal>true</literal>, если выражение <glossterm linkend="jpql_glossentry">JPQL</glossterm> содержит условие <code>in (?)</code></para>
+                    <para><sgmltag id="inExpr_filter_attr">inExpr</sgmltag> − значение должно быть равно <literal>true</literal>, если выражение <glossterm linkend="jpql">JPQL</glossterm> содержит условие <code>in (?)</code></para>
                   </listitem>
                   <listitem>
                     <para><sgmltag id="join_filter_attr">join</sgmltag> − необязательный атрибут для задания строки, которая будет добавлена в секцию <literal>join</literal> запроса.</para>
@@ -5495,13 +5720,13 @@ Instance − ваш SQL Server.</para>
                     <para><sgmltag>paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-сущности.</para>
                   </listitem>
                   <listitem>
-                    <para><sgmltag>paramView</sgmltag> − необязательный атрибут для задания <glossterm linkend="view_glossentry">представления</glossterm>, с которым будут загружаться список значений параметра-<glossterm linkend="entity_glossentry">сущности</glossterm>. Например,  <literal>_local</literal>.</para>
+                    <para><sgmltag>paramView</sgmltag> − необязательный атрибут для задания <link linkend="views">представления</link>, с которым будут загружаться список значений параметра-<glossterm linkend="entity">сущности</glossterm>. Например,  <literal>_local</literal>.</para>
                   </listitem>
                 </itemizedlist>
               </listitem>
             </varlistentry>
           </variablelist>
-          <para>Атрибут <sgmltag>paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-сущности. Содержит условие в формате <glossterm linkend="jpql_glossentry">JPQL</glossterm> без слова <literal>where</literal>. Алиас сущности можно задавать любым.
+          <para>Атрибут <sgmltag>paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-сущности. Содержит условие в формате <glossterm linkend="jpql">JPQL</glossterm> без слова <literal>where</literal>. Алиас сущности можно задавать любым.
 
 Можно использовать параметры экрана, атрибуты сессии, а также <link linkend="component_filter_name_caution">компоненты</link> экрана, в том числе отображающие другие параметры.</para>
           <caution id="component_filter_name_caution">
@@ -5592,7 +5817,7 @@ Instance − ваш SQL Server.</para>
           <para>Механизм последовательного наложения фильтров работает следующим образом:</para>
           <itemizedlist>
             <listitem>
-              <para>При наличии закрепленных фильтров результаты предыдущего запроса (точнее только <link linkend="attr_id">идентификаторы</link> отобранных <glossterm linkend="entity_glossentry">сущностей</glossterm>) помещаются в таблицу <database>SYS_QUERY_RESULT</database>. Данная таблица содержит колонки, отделяющие результаты запросов для различных пользователей по идентификатору сессии и ключу серии запросов.</para>
+              <para>При наличии закрепленных фильтров результаты предыдущего запроса (точнее только <link linkend="attr_id">идентификаторы</link> отобранных <glossterm linkend="entity">сущностей</glossterm>) помещаются в таблицу <database>SYS_QUERY_RESULT</database>. Данная таблица содержит колонки, отделяющие результаты запросов для различных пользователей по идентификатору сессии и ключу серии запросов.</para>
             </listitem>
             <listitem>
               <para>К запросу текущего применяемого фильтра добавляется объединение с таблицей <database>SYS_QUERY_RESULT</database>, что ограничивает результаты текущего фильтра предыдущими отобранными записями.</para>
@@ -5792,7 +6017,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>buttonsPanel</sgmltag>.</para>
-          <para>Для создания панели с кнопками нужно определить ее описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Для создания панели с кнопками нужно определить ее описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/buttonsPanel/buttonsPanel.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибут <sgmltag id="attr_alwaysVisible">alwaysVisible</sgmltag> служит для управления видимостью панели с кнопками при открытии окна списка в режиме поиска (например, при открытии окна списка из компонента <link linkend="gui_PickerField">PickerField</link>). Если значение атрибута равно <literal>true</literal>, то панель с кнопками не скрывается. По умолчанию значение атрибута равно <literal>false</literal>.</para>
           <para>Элементами панели с кнопками являются элементы <link linkend="gui_Button">button</link>.</para>
@@ -5846,7 +6071,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>grid</sgmltag>.</para>
-          <para>Для создания контейнера с табличным расположением нужно определить его описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Для создания контейнера с табличным расположением нужно определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/grid/grid.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
             <para>Обязательными вложенными элементами являются элементы <sgmltag>columns</sgmltag> и <sgmltag>rows</sgmltag>. </para>
@@ -5943,7 +6168,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>scrollBox</sgmltag></para>
-          <para>Для создания контейнера с табличным расположением нужно определить его описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Для создания контейнера с табличным расположением нужно определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/scrollBox/scrollBox.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>С помощью атрибута <sgmltag id="attr_scroll_orientation">orientation</sgmltag> можно задавать направление расположения вложенных компонентов − <literal>horizontal</literal> или <literal>vertical</literal>. По умолчанию значением атрибута является <literal>vertical</literal>.</para>
           <warning>
@@ -5996,7 +6221,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>split</sgmltag>.</para>
-          <para>Для создания панели с разделителем нужно определить ее описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Для создания панели с разделителем нужно определить ее описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/split/split.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>При создании панели с разделителем нужно указать ориентацию разделителя с помощью атрибута <sgmltag id="attr_layout_orientation">orientation</sgmltag>. По умолчанию значение атрибута равно <literal>vertical</literal>.</para>
           <para id="attr_layout_pos"><sgmltag>pos</sgmltag> − необязательный атрибут, определяет процентное соотношение областей. Например, <code>pos=&quot;30%&quot;</code> означает соотношение областей 30/70. По умолчанию соотношение областей составляет 50/50.</para>
@@ -6039,7 +6264,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>groupBox</sgmltag>.</para>
-          <para>Для создания контейнера с названием и рамкой нужно определить его описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Для создания контейнера с названием и рамкой нужно определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/groupBox/groupBox.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибут <sgmltag id="attr_group_orientation">orientation</sgmltag>  задает направление расположения вложенных компонентов − <literal>horizontal</literal> или <literal>vertical</literal>. По умолчанию значением атрибута является <literal>vertical</literal>.</para>
           <para><sgmltag id="attr_group_collapsable">collapsable</sgmltag> − необязательный атрибут, в значении <literal>true</literal> компонент может сворачивать свое содержимое. В верхнем нижнем углу контейнера появляется значок <inlinemediaobject>
@@ -6112,7 +6337,7 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>tabsheet</sgmltag>.</para>
-          <para>Для создания панели с вкладками нужно определить ее описание в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Для создания панели с вкладками нужно определить ее описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tabsheet/tabsheet.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Как видно, компонент <sgmltag>tabsheet</sgmltag> состоит из элементов <sgmltag>tab</sgmltag>.</para>
           <para>Элемент <sgmltag>tab</sgmltag> может содержать как другой <link linkend="gui_layouts">контейнер</link>, так и <link linkend="gui_components">компонент</link>.</para>
@@ -6186,14 +6411,14 @@ Instance − ваш SQL Server.</para>
           <title>IFrame</title>
           <para>Фреймы предназначены для декомпозиции и многократного использования частей экранов.</para>
           <para>Фрейм включается в экран с помощью элемента <sgmltag>iframe</sgmltag>.</para>
-          <para>Для включения фрейма в экран необходимо в <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескрипторе</glossterm> определить его описание:</para>
+          <para>Для включения фрейма в экран необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> определить его описание:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/iframe/iframe.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибут <sgmltag id="attr_frame_src">src</sgmltag> − путь к <glossterm linkend="screen_xml_descriptor_glossentry">XML-дескриптору</glossterm> фрейма. </para>
+          <para>Атрибут <sgmltag id="attr_frame_src">src</sgmltag> − путь к <glossterm linkend="screen_xml_glossentry">XML-дескриптору</glossterm> фрейма. </para>
           <para>Если фрейм зарегистрирован в файле <filename>screens.xml</filename>, то можно указать идентификатор фрейма в атрибуте <sgmltag id="attr_frame_screen">screen</sgmltag>.</para>
           <warning>
             <para>Обязательно должен быть указан один из атрибутов: <link linkend="attr_frame_src">src</link> или <link linkend="attr_frame_screen">screen</link>.</para>
           </warning>
-          <para>Дескриптор фрейма идентичен <glossterm linkend="screen_xml_descriptor_glossentry">xml-дескриптору</glossterm> экрана и может содержать собственный <sgmltag>metadataContext</sgmltag>, <sgmltag>dsContext</sgmltag>, <sgmltag>messagesPack</sgmltag>. Кроме того, фрейм может иметь собственный <glossterm linkend="screen_controller_glossentry">контроллер</glossterm>.</para>
+          <para>Дескриптор фрейма идентичен <glossterm linkend="screen_xml_glossentry">xml-дескриптору</glossterm> экрана и может содержать собственный <sgmltag>metadataContext</sgmltag>, <sgmltag>dsContext</sgmltag>, <sgmltag>messagesPack</sgmltag>. Кроме того, фрейм может иметь собственный <glossterm linkend="screen_controller_glossentry">контроллер</glossterm>.</para>
           <para>Правила взаимодействия экрана и вложенного в него фрейма:</para>
           <itemizedlist>
             <listitem>
@@ -6203,7 +6428,7 @@ Instance − ваш SQL Server.</para>
               <para>Из контроллера фрейма получить компонент экрана  можно обычным вызовом <code>getComponent(component_id)</code>, но только в том случае, если компонент с таким именем не объявлен в самом фрейме. То есть компоненты фрейма маскируют компоненты экрана.</para>
             </listitem>
             <listitem>
-              <para>Из фрейма получить <glossterm linkend="datasource_glossentry">источник данных</glossterm> экрана можно простым вызовом <code>getDsContext().get(ds_id)</code> либо в запросе <code>ds$ds_id</code>, но только в том случае, если источник данных с таким именем не объявлен в самом фрейме (аналогично компонентам).</para>
+              <para>Из фрейма получить <link linkend="datasources">источник данных</link> экрана можно простым вызовом <code>getDsContext().get(ds_id)</code> либо в запросе <code>ds$ds_id</code>, но только в том случае, если источник данных с таким именем не объявлен в самом фрейме (аналогично компонентам).</para>
             </listitem>
             <listitem>
               <para>Из экрана получить источник данных фрейма можно только через итерацию по <code>getDsContext().getChildren()</code></para>
@@ -6447,7 +6672,7 @@ Instance − ваш SQL Server.</para>
             <term>captionProperty</term>
             <listitem>
               <para>XML-атрибут визуального компонента, реализующего интерфейс <interfacename>OptionsField</interfacename>.</para>
-              <para>Задает имя атрибута сущности, которую содержит <glossterm linkend="datasource_glossentry">источник данных</glossterm>, используемый для формирования списка опций (<link linkend="attr_optionsDatasource">optionsDatasource</link>).</para>
+              <para>Задает имя атрибута сущности, которую содержит <link linkend="datasources">источник данных</link>, используемый для формирования списка опций (<link linkend="attr_optionsDatasource">optionsDatasource</link>).</para>
               <para>Если данный атрибут не задан, список опций будет содержать Instance Name экземпляров, содержащихся в списке.</para>
             </listitem>
           </varlistentry>
@@ -6457,7 +6682,7 @@ Instance − ваш SQL Server.</para>
               <para>Атрибут содержит описание действия, которое будет выполнено при клике в ячейке или в поле (для компонента <link linkend="gui_FieldGroup">FieldGroup</link>). Возможны два типа действий:</para>
               <itemizedlist>
                 <listitem>
-                  <para><classname>open</classname> − открывает для <glossterm linkend="entity_glossentry">сущности</glossterm>, отображаемой в ячейке, экран редактирования с указанным именем, например: <classname>clickAction=&quot;open:sec$User.edit&quot;</classname>. Имя сущности отображается в виде ссылки:</para>
+                  <para><classname>open</classname> − открывает для <glossterm linkend="entity">сущности</glossterm>, отображаемой в ячейке, экран редактирования с указанным именем, например: <classname>clickAction=&quot;open:sec$User.edit&quot;</classname>. Имя сущности отображается в виде ссылки:</para>
                   <figure>
                     <title/>
                     <mediaobject>
@@ -6477,7 +6702,7 @@ Instance − ваш SQL Server.</para>
             <term>datasource</term>
             <listitem>
               <para>XML-атрибут компонента, реализующего интерфейс <interfacename>DatasourceComponent</interfacename>.</para>
-              <para>Предназначен для задания <link linkend="datasource_glossentry">источника данных</link> и должен содержать имя источника данных, описанного в секции <parameter>dsContext</parameter> <link linkend="screen_xml_descriptor_glossentry">дескриптора</link> экрана.</para>
+              <para>Предназначен для задания <link linkend="datasources">источника данных</link> и должен содержать имя источника данных, описанного в секции <parameter>dsContext</parameter> <link linkend="screen_xml_glossentry">дескриптора</link> экрана.</para>
               <para>Атрибут property является обязательным, иначе возникает ошибка java.lang.IllegalStateException: Can&apos;t set assign datasource &apos;sampleDs&apos; for component &apos;labelInfo&apos; due &apos;property&apos; attribute is not defined. </para>
               <para>Смотрите также атрибут property.</para>
             </listitem>
@@ -6561,7 +6786,7 @@ Instance − ваш SQL Server.</para>
             <term>optionsDatasource</term>
             <listitem>
               <para>XML-атрибут визуального компонента, реализующего интерфейс <interfacename>OptionsField</interfacename>.</para>
-              <para>Задает имя <glossterm linkend="datasource_glossentry">источника данных</glossterm>, используемого для формирования списка опций.</para>
+              <para>Задает имя <link linkend="datasources">источника данных</link>, используемого для формирования списка опций.</para>
               <para>Совместно с optionsDatasource может использоваться атрибут <link linkend="attr_captionProperty">captionProperty</link>.</para>
             </listitem>
           </varlistentry>
@@ -6728,7 +6953,7 @@ Instance − ваш SQL Server.</para>
           </itemizedlist>
         </listitem>
       </itemizedlist>
-      <para>Как правило, источники данных объявляются декларативно в секции <parameter>dsContext</parameter> <glossterm linkend="screen_xml_descriptor_glossentry">дескриптора экрана</glossterm>.</para>
+      <para>Как правило, источники данных объявляются декларативно в секции <parameter>dsContext</parameter> <glossterm linkend="screen_xml_glossentry">дескриптора экрана</glossterm>.</para>
     </section>
     <section id="background_tasks">
       <title>Фоновые задачи</title>
@@ -6850,112 +7075,8 @@ taskHandler.execute();</programlisting>
   </section>
   <section>
     <title>Механизмы платформы</title>
-    <section id="config_params">
-      <title>Работа с конфигурационными параметрами</title>
-      <para>Подсистема работы с конфигурационными параметрами позволяет сохранять/извлекать пары имя-значение с помощью стандартных Java-интерфейсов. При этом хранилищем параметров может быть база данных, системные свойства Java, и свойства приложения, задаваемые в файлах app.properties.</para>
-      <para>Рекомендуется использовать только для хранения системных настроек, доступных администратору системы. Для хранения настроек пользователя лучше создавать отдельную сущность для их хранения и использовать стандартный эдитор для редактирования.</para>
-      <para><emphasis role="bold">Использование</emphasis></para>
-      <para>Для создания конфигурационного параметра необходимо:</para>
-      <itemizedlist>
-        <listitem>
-          <para>Создать интерфейс, унаследованный от <interface>com.haulmont.cuba.core.config.Config</interface></para>
-        </listitem>
-        <listitem>
-          <para>Создать методы доступа к параметру (getXXX/setXXX). Возможный тип параметра обсуждается ниже.</para>
-        </listitem>
-        <listitem>
-          <para>Добавить интерфейсу аннотацию <literal>@Prefix</literal> для указания префикса имен входящих в интерфейс параметров</para>
-        </listitem>
-        <listitem>
-          <para>Добавить интерфейсу и/или параметру аннотацию <literal>@Source</literal> для указания источника (места хранения) параметров</para>
-        </listitem>
-      </itemizedlist>
-      <para>Например:</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
-      <para>Реализовывать интерфейс не нужно.</para>
-      <para>Для получения доступа к параметрам используется интерфейс инфраструктуры <interface>Configuration</interface> или его статический фасад <interface>ConfigProvider</interface>.</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example2.txt" encoding="UTF-8" parse="text"/></programlisting>
-      <para>Стандартный UI для доступа к параметрам, хранящимся в базе данных, предоставляет МБин haulmont.cuba:service=ConfigStorage. Он содержит следующие методы:</para>
-      <itemizedlist>
-        <listitem>
-          <para>setProperty(p1, p2) − установить параметр с именем p1 в значение p2</para>
-        </listitem>
-        <listitem>
-          <para>getProperty(p1) − показать параметр с именем p1</para>
-        </listitem>
-        <listitem>
-          <para>removeProperty(p1) − удалить параметр с именем p1</para>
-        </listitem>
-        <listitem>
-          <para>printProperties(p1) − показать все параметры с фильтром на имя p1 по правилам SQL like</para>
-        </listitem>
-        <listitem>
-          <para>printProperties − показать все параметры</para>
-        </listitem>
-        <listitem>
-          <para>loadSystemProperties − загрузить в System.properties параметры из файла conf/system.properties</para>
-        </listitem>
-      </itemizedlist>
-      <para><emphasis role="bold">Возможности</emphasis></para>
-      <para><emphasis role="bold">Имена параметров</emphasis></para>
-      <para>Имя параметра в БД или в app.properties формируется по следующему принципу:</para>
-      <itemizedlist>
-        <listitem>
-          <para>Если на параметре есть аннотация <literal>@Property</literal>, то берется ее значение</para>
-        </listitem>
-        <listitem>
-          <para>Иначе:</para>
-          <itemizedlist>
-            <listitem>
-              <para>Если есть аннотация <literal>@Prefix</literal>, берется ее значение</para>
-            </listitem>
-            <listitem>
-              <para>Если нет аннотации <literal>@Prefix</literal>, то</para>
-              <itemizedlist>
-                <listitem>
-                  <para>Если интерфейс является внутренним, то берется полное имя включающего класса и добавляется &quot;.&quot;</para>
-                </listitem>
-                <listitem>
-                  <para>Иначе берется полное имя пакета и добавляется &quot;.&quot;</para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-            <listitem>
-              <para>Добавляется декапитализированное имя метода доступа без get/set/is (см. комментарии к методу <methodname>com.haulmont.cuba.core.config.ConfigUtil#extendedUncapitalize</methodname>)</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-      </itemizedlist>
-      <para><emphasis role="bold">Источники параметров</emphasis></para>
-      <para>В соответствии со значениями <classname>com.haulmont.cuba.core.config.SourceType</classname> на данный момент возможны 3 источника параметров: app.propperties, System.properties или база данных.</para>
-      <para>В случае базы данных параметры хранятся в таблице <database>SYS_CONFIG</database>.</para>
-      <para>Аннотация <literal>@Source</literal> может быть задана как на весь интерфейс, так и на отдельный параметр. В первом случае она определяет источник всех параметров данного интерфейса. Во втором случае она переопределяет источник для данного параметра, если он отличен от указанного для интерфейса.</para>
-      <para><emphasis role="bold">Типы параметров</emphasis></para>
-      <para>Без дополнительных усилий параметр может быть любого простого типа либо его объектного аналога (String, int, Integer, etc.) либо сущностью, реализующей интерфейс Entity.</para>
-      <para>Для произвольного типа необходимо реализовать классы TypeStringify и TypeFactory для преобразования значения в строку и из нее, и указать эти классы для параметра с помощью аннотаций @Stringify и @Factory.</para>
-      <para>Рассмотрим этот процесс на примере типа UUID.</para>
-      <itemizedlist>
-        <listitem>
-          <para>Создаем класс com.haulmont.cuba.core.config.type.UuidTypeFactory унаследованный от com.haulmont.cuba.core.config.type.TypeFactory и реализуем в нем метод:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example3.txt" encoding="UTF-8" parse="text"/></programlisting>
-        </listitem>
-        <listitem>
-          <para>TypeStringify создавать не нужно, т.к. по умолчанию будет использован Object.toString() − в данном случае он нам подходит.</para>
-        </listitem>
-        <listitem>
-          <para>Аннотируем параметр:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example4.txt" encoding="UTF-8" parse="text"/></programlisting>
-        </listitem>
-      </itemizedlist>
-      <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
-      <para>Для параметров могут быть заданы значения по умолчанию. Эти значения будут возвращаться, если данный параметр не задан (не существует в БД или в app.properties).</para>
-      <para>Дефолтное значение может быть задано в виде строки с помощью аннотации @com.haulmont.cuba.core.config.defaults.Default, либо в виде конкретного типа с помощью других аннотаций пакета com.haulmont.cuba.core.config.defaults.</para>
-      <para>Для сущностей дефолтное значение задается в виде имя_сущности-id-имя_представления, например</para>
-      <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
-      <para>имя представления необязательно.</para>
-    </section>
     <section id="db_update">
-      <title>Автоматическое обновление базы данных</title>
+      <title>Обновление базы данных</title>
       <para>TODO</para>
     </section>
     <section id="email_sending">
@@ -7065,5 +7186,9 @@ taskHandler.execute();</programlisting>
   <section id="extension">
     <title>Расширение функциональности </title>
     <para>TODO</para>
+    <section id="entity_extension">
+      <title>Расширение сущностей</title>
+      <para>TODO</para>
+    </section>
   </section>
 </chapter>
