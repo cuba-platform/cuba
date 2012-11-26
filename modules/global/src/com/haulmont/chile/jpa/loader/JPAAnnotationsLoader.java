@@ -224,6 +224,9 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
 
     @Override
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
+        if (isPersistent(field))
+            metaProperty.getAnnotations().put("persistent", true);
+
         Column column = field.getAnnotation(Column.class);
         if (column != null && column.length() != 0) {
             metaProperty.getAnnotations().put("length", column.length());
@@ -233,5 +236,14 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         if (temporal != null) {
             metaProperty.getAnnotations().put("temporal", temporal.value());
         }
+    }
+
+    protected boolean isPersistent(Field field) {
+        return  field.isAnnotationPresent(Column.class)
+                || field.isAnnotationPresent(OneToOne.class)
+                || field.isAnnotationPresent(OneToMany.class)
+                || field.isAnnotationPresent(ManyToOne.class)
+                || field.isAnnotationPresent(ManyToMany.class)
+                || field.isAnnotationPresent(Embedded.class);
     }
 }

@@ -93,6 +93,7 @@ public class MetadataTools {
      * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CasacdeType defined.
      */
     public boolean isCascade(MetaProperty metaProperty) {
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
         OneToMany oneToMany = metaProperty.getAnnotatedElement().getAnnotation(OneToMany.class);
         if (oneToMany != null) {
             final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
@@ -114,6 +115,7 @@ public class MetadataTools {
      * {@link BaseEntity}, {@link Updatable}, {@link SoftDelete}, {@link Versioned}
      */
     public boolean isSystem(MetaProperty metaProperty) {
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
         String name = metaProperty.getName();
         for (String property : BaseEntity.PROPERTIES) {
             if (name.equals(property))
@@ -139,6 +141,7 @@ public class MetadataTools {
      * @see #isPersistent(com.haulmont.chile.core.model.MetaProperty)
      */
     public boolean isPersistent(MetaPropertyPath metaPropertyPath) {
+        Objects.requireNonNull(metaPropertyPath, "metaPropertyPath is null");
         for (MetaProperty metaProperty : metaPropertyPath.getMetaProperties()) {
             if (!isPersistent(metaProperty))
                 return false;
@@ -150,25 +153,31 @@ public class MetadataTools {
      * Determine whether the given property is persistent, that is stored in the database.
      */
     public boolean isPersistent(MetaProperty metaProperty) {
-        return !metaProperty.getAnnotatedElement().isAnnotationPresent(
-                com.haulmont.chile.core.annotations.MetaProperty.class);
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
+        return Boolean.TRUE.equals(metaProperty.getAnnotations().get("persistent"));
     }
 
     /**
      * Determine whether the given property is transient, that is not stored in the database.
+     * <p/>Unlike {@link #isTransient(com.haulmont.chile.core.model.MetaProperty)} for objects and properties not
+     * registered in metadata this method returns <code>true</code>.
      * @param object    entity instance
      * @param property  property name
      */
     public boolean isTransient(Object object, String property) {
-        return isAnnotationPresent(object, property, Transient.class);
+        Objects.requireNonNull(object, "object is null");
+        MetaClass metaClass = metadata.getSession().getClass(object.getClass());
+        if (metaClass == null)
+            return true;
+        MetaProperty metaProperty = metaClass.getProperty(property);
+        return metaProperty == null || !isPersistent(metaProperty);
     }
 
     /**
      * Determine whether the given property is transient, that is not stored in the database.
      */
     public boolean isTransient(MetaProperty metaProperty) {
-        boolean isMetaProperty = metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class);
-        return isMetaProperty || metaProperty.getAnnotatedElement().isAnnotationPresent(Transient.class);
+        return !isPersistent(metaProperty);
     }
 
     /**
@@ -176,7 +185,8 @@ public class MetadataTools {
      * @see Embedded
      */
     public boolean isEmbedded(MetaProperty metaProperty) {
-        return metaProperty.getAnnotatedElement().getAnnotation(Embedded.class) != null;
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
+        return metaProperty.getAnnotatedElement().isAnnotationPresent(Embedded.class);
     }
 
     /**
