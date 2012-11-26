@@ -48,7 +48,6 @@ public class LayoutLoaderConfig {
         config.register("hbox", HBoxLoader.class);
         config.register("vbox", VBoxLoader.class);
         config.register("grid", GridLayoutLoader.class);
-        config.register("runtimePropertyGrid", RuntimePropertyGridLayoutLoader.class);
         config.register("scrollBox", ScrollBoxLayoutLoader.class);
         config.register("scrollbox", ScrollBoxLayoutLoader.class); // for backward compatibility
         config.register("togglebox", ToggleBoxLoader.class);

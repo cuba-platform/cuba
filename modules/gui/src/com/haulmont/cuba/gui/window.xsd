@@ -1047,41 +1047,6 @@
         <xs:attributeGroup ref="hasSpacingMargin"/>
     </xs:complexType>
 
-    <!-- RuntimePropertyGridLayout -->
-    <xs:complexType name="runtimePropertyGridLayout">
-        <xs:sequence>
-            <xs:element name="columns" minOccurs="0">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded">
-                            <xs:complexType>
-                                <xs:attribute name="flex" type="xs:float" use="optional"/>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-
-        <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasSize"/>
-        <xs:attributeGroup ref="hasStyle"/>
-        <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attributeGroup ref="hasSpacingMargin"/>
-
-        <xs:attributeGroup ref="hasEditable"/>
-        <xs:attributeGroup ref="hasCaptionProp"/>
-        <xs:attributeGroup ref="hasDatasourceProp"/>
-
-        <xs:attribute name="typeProperty" type="xs:string" use="required"/>
-        <xs:attribute name="attributeValueProperty" type="xs:string" use="required"/>
-        <xs:attribute name="attributeProperty" type="xs:string" use="required"/>
-        <xs:attribute name="attributePropertyOrder" type="xs:string" use="optional"/>
-        <xs:attribute name="innerComponentWidth" type="xs:string" use="optional"/>
-        <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
-        <xs:attribute name="checkNewAttributes" type="xs:string" use="optional"/>
-    </xs:complexType>
-
     <!-- GroupBox -->
     <xs:complexType name="groupBoxLayout">
         <xs:group ref="layoutOrComponent" minOccurs="0"/>
@@ -1288,7 +1253,6 @@
                 <xs:element name="tabsheet" type="tabsheetContainer"/>
                 <xs:element name="iframe" type="iframeContainer"/>
 
-                <xs:element name="runtimePropertyGrid" type="runtimePropertyGridLayout"/>
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
 
                 <xs:element name="accessControl" type="accessControlContainer"/>
