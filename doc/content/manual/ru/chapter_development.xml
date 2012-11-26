@@ -92,7 +92,7 @@
     <para>Модуль <structname>web</structname> определяет компоненты веб-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или <glossterm>компаньоны</glossterm> и файлы конфигурации.</para>
     <itemizedlist>
       <listitem>
-        <para>Класс  <classname>com.haulmont.shop.App.java</classname> определяет главное окно приложения.</para>
+        <para>Класс  <code>com.haulmont.shop.App.java</code> определяет главное окно приложения.</para>
       </listitem>
       <listitem>
         <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры веб-клиента:</para>
@@ -148,26 +148,26 @@
           <row>
             <entry align="left">Название класса, тип перечисления, событие, класс исключения, интерфейс</entry>
             <entry align="left">UpperCamelCase </entry>
-            <entry align="left"><classname>Buyer</classname>, <classname>Unit</classname>, <classname>EditRoleAction</classname>, <classname>RuntimeException</classname>, <classname>Editor</classname></entry>
+            <entry align="left"><code>Buyer</code>, <code>Unit</code>, <code>EditRoleAction</code>, <code>RuntimeException</code>, <code>Editor</code></entry>
           </row>
           <row>
             <entry align="left" role="left">Название класса контроллера</entry>
-            <entry align="left" role="special">UpperCamelCase, контроллеры экранов со списком сущностей − <classname>&lt;ИмяКлассаСущности&gt;Browser</classname>, контроллеры экранов редактирования − <classname>&lt;ИмяКлассаСущности&gt;Editor</classname></entry>
+            <entry align="left" role="special">UpperCamelCase, контроллеры экранов со списком сущностей − <code>&lt;ИмяКлассаСущности&gt;Browser</code>, контроллеры экранов редактирования − <code>&lt;ИмяКлассаСущности&gt;Editor</code></entry>
             <entry align="left" role="right">
-              <classname>BuyerBrowser</classname>
+              <code>BuyerBrowser</code>
             </entry>
           </row>
           <row>
             <entry align="left">Статическое поле только для чтения</entry>
             <entry align="left">UPPERCASE</entry>
             <entry align="left">
-              <classname>ENTITY_SPECIAL_KEY</classname>
+              <code>ENTITY_SPECIAL_KEY</code>
             </entry>
           </row>
           <row>
             <entry align="left" role="left">Метод, переменная</entry>
             <entry align="left" role="special">lowerCamelCase</entry>
-            <entry align="left" role="right"><classname>setItem</classname>, <classname>discountsTable</classname></entry>
+            <entry align="left" role="right"><code>setItem</code>, <code>discountsTable</code></entry>
           </row>
           <row>
             <entry namest="c1" nameend="c3" align="center">
@@ -177,20 +177,20 @@
           <row>
             <entry align="left" role="left">Идентификатор компонента, имена параметров в запросах</entry>
             <entry align="left" role="special">lowerCamelCase, только буквы и цифры</entry>
-            <entry align="left" role="right"><classname>attributesTable</classname>, <classname>component$relevantTo</classname></entry>
+            <entry align="left" role="right"><code>attributesTable</code>, <code>component$relevantTo</code></entry>
           </row>
           <row>
             <entry align="left">Идентификатор источника данных</entry>
-            <entry align="left">lowerCamelCase, только буквы и цифры, оканчивается на <classname>Ds</classname></entry>
+            <entry align="left">lowerCamelCase, только буквы и цифры, оканчивается на <code>Ds</code></entry>
             <entry align="left">
-              <classname>attributesDs</classname>
+              <code>attributesDs</code>
             </entry>
           </row>
           <row>
             <entry align="left">Имена параметров в запросах</entry>
             <entry align="left">lowerCamelCase, только буквы и цифры</entry>
             <entry align="left">
-              <classname>component$relevantTo</classname>
+              <code>component$relevantTo</code>
             </entry>
           </row>
           <row>
@@ -202,14 +202,14 @@
             <entry align="left">Зарезервированные слова</entry>
             <entry align="left">lowercase</entry>
             <entry align="left">
-              <classname>create table</classname>
+              <code>create table</code>
             </entry>
           </row>
           <row>
             <entry align="left" role="left">Идентификаторы</entry>
             <entry align="left" role="special">UPPERCASE. Слова в названии разделяются подчеркиванием. В именах таблиц используется либо единственное число, либо множественное, но не оба сразу. Рекомендуем использовать единственное число.</entry>
             <entry align="left" role="right">
-              <classname>SYS_FTS_QUEUE</classname>
+              <code>SYS_FTS_QUEUE</code>
             </entry>
           </row>
         </tbody>
@@ -228,7 +228,7 @@
     <title>Практические руководства</title>
     <section>
       <title>Правила создания сервисов</title>
-      <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена реализаций на <classname>...ServiceBean</classname>.</para>
+      <para>Имена интерфейсов сервисов должны заканчиваться на <code>...Service</code>, имена реализаций на <code>...ServiceBean</code>.</para>
       <para>При создании сервиса необходимо выполнить следующее:</para>
       <procedure>
         <step>
@@ -263,7 +263,7 @@ try {
       </tip>
       <para><emphasis role="bold">Использование на клиенте</emphasis></para>
       <para>Для того чтобы вызывать сервис с клиента, для него должен быть создан соответствующий <firstterm>объект-заместитель</firstterm> (прокси-объект). Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для веб-клиента или <parameter>RemoteProxyBeanCreator</parameter> для  десктоп-клиента.</para>
-      <para>Например, чтобы в приложении <application>RefApp</application> вызвать с веб-клиента сервис <classname>refapp_MyService</classname>, необходимо добавить в файл <filename>refapp-web-spring.xml</filename> следующее:</para>
+      <para>Например, чтобы в приложении <application>RefApp</application> вызвать с веб-клиента сервис <code>refapp_MyService</code>, необходимо добавить в файл <filename>refapp-web-spring.xml</filename> следующее:</para>
       <programlisting language="xml">&lt;bean id=&quot;refapp_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
     &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
     &lt;property name=&quot;remoteServices&quot;&gt;
@@ -272,11 +272,11 @@ try {
         &lt;/map&gt;
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
-      <para>Все импортируемые сервисы должны быть объявлены в одном <firstterm>словаре</firstterm> (map) бина <classname>refapp_proxyCreator</classname>.</para>
+      <para>Все импортируемые сервисы должны быть объявлены в одном <firstterm>словаре</firstterm> (map) бина <code>refapp_proxyCreator</code>.</para>
       <para>Получить ссылку на сервис с клиента можно двумя способами:</para>
       <itemizedlist>
         <listitem>
-          <para><classname>ServiceLocator</classname> </para>
+          <para><code>ServiceLocator</code> </para>
           <programlisting>BookingService service = ServiceLocator.lookup(BookingService.NAME);</programlisting>
         </listitem>
         <listitem>
@@ -310,23 +310,23 @@ private TaskWorker taskWorker;</programlisting>
     </section>
     <section>
       <title>Правила создания Мбинов</title>
-      <para>Если JMX-методы МБина работают с данными, то ему потребуется пользовательская сессия с правами на доступ. В этом случае рекомендуется наследовать МБин от базового класса <classname>ManagementBean</classname>, который содержит удобные методы входа в систему/выхода из системы (login/logout).</para>
+      <para>Если JMX-методы МБина работают с данными, то ему потребуется пользовательская сессия с правами на доступ. В этом случае рекомендуется наследовать МБин от базового класса <code>ManagementBean</code>, который содержит удобные методы входа в систему/выхода из системы (login/logout).</para>
       <para><emphasis role="bold">Правила создания</emphasis></para>
       <itemizedlist>
         <listitem>
-          <para>Создать интерфейс с именем, заканчивающимся на <classname>*MBean</classname>, например, <classname>SampleMBean</classname> в пакете <package>app</package></para>
+          <para>Создать интерфейс с именем, заканчивающимся на <code>*MBean</code>, например, <code>SampleMBean</code> в пакете <package>app</package></para>
         </listitem>
         <listitem>
-          <para>Если нужно обращение к МБину из кода сервера (а не только из <glossterm linkend="jmx">JMX</glossterm>-консоли), создать интерфейс <interfacename>SampleAPI</interfacename>. Создать в интерфейсе поле с именем бина, в качестве префикса использовать имя проекта:</para>
+          <para>Если нужно обращение к МБину из кода сервера (а не только из <glossterm linkend="jmx">JMX</glossterm>-консоли), создать интерфейс <code>SampleAPI</code>. Создать в интерфейсе поле с именем бина, в качестве префикса использовать имя проекта:</para>
           <programlisting>public interface SampleAPI {
     String NAME = &quot;myproject_Sample&quot;;
     ...</programlisting>
         </listitem>
         <listitem>
-          <para>Создать класс реализации с именем, соответствующим интерфейсу, в нашем случае <classname>Sample</classname> и аннотировать его как <literal>@ManagedBean(SampleAPI.NAME)</literal></para>
+          <para>Создать класс реализации с именем, соответствующим интерфейсу, в нашем случае <code>Sample</code> и аннотировать его как <literal>@ManagedBean(SampleAPI.NAME)</literal></para>
         </listitem>
         <listitem>
-          <para>Экспортировать <interfacename>*MBean</interfacename> интерфейс в JMX в файле <filename>myproject-spring.xml</filename>, например:</para>
+          <para>Экспортировать <code>*MBean</code> интерфейс в JMX в файле <filename>myproject-spring.xml</filename>, например:</para>
           <programlisting>&lt;bean id=&quot;myproject_MBeanExporter&quot; class=&quot;org.springframework.jmx.export.MBeanExporter&quot; lazy-init=&quot;false&quot;&gt;
         &lt;property name=&quot;beans&quot;&gt;
             &lt;map&gt;
@@ -345,7 +345,7 @@ private TaskWorker taskWorker;</programlisting>
     &lt;/bean&gt;</programlisting>
         </listitem>
       </itemizedlist>
-      <para>Один Spring-объект <classname>MBeanExporter</classname> может экспортировать несколько МБинов.
+      <para>Один Spring-объект <code>MBeanExporter</code> может экспортировать несколько МБинов.
 Для удобства работы администратора методы JMX-интерфейса должны возвращать строку. В случае успешного выполнения это может быть полезная информация, либо просто строка <computeroutput>Done</computeroutput>. В случае возникновения исключения нужно его записать в журнал и вернуть stacktrace:</para>
       <programlisting>public String jmxMethod1() {
     try {
@@ -356,7 +356,7 @@ private TaskWorker taskWorker;</programlisting>
     } 
 }</programlisting>
       <para><emphasis role="bold">Security</emphasis></para>
-      <para>Как правило, для выполнения функций МБинов требуется аутентификация в <trademark>CUBA</trademark>-security, а <glossterm linkend="jmx">JMX</glossterm>-интерфейс  ее обеспечить не может. Простой механизм входа в систему/выхода из системы (login/logout) содержится в классе <classname>com.haulmont.cuba.core.app.ManagementBean</classname>, поэтому желательно наследовать свои классы МБинов, работающих с данными, от этого класса. Пример использования:</para>
+      <para>Как правило, для выполнения функций МБинов требуется аутентификация в <trademark>CUBA</trademark>-security, а <glossterm linkend="jmx">JMX</glossterm>-интерфейс  ее обеспечить не может. Простой механизм входа в систему/выхода из системы (login/logout) содержится в классе <code>com.haulmont.cuba.core.app.ManagementBean</code>, поэтому желательно наследовать свои классы МБинов, работающих с данными, от этого класса. Пример использования:</para>
       <programlisting>public String jmxMethod2() {
     try {
 loginOnce(); // defined in ManagementBean
@@ -367,7 +367,7 @@ return &quot;Done&quot;;
 return ExceptionUtils.getStackTrace(e);
     } 
 }</programlisting>
-      <para>Методы <methodname>login()</methodname> и <methodname>loginOnce()</methodname>, определенные в классе <classname>ManagementBean</classname>, осуществляют вход в систему, используя имя и пароль, заданные в <link>файле свойств</link> в параметрах  <parameter>cuba.jmxUserLogin</parameter> и <parameter>cuba.jmxUserPassword</parameter> соответственно. Пароль должен быть захеширован и указан с префиксом <code>md5:</code>. Простейший способ получить пароль пользователя в <code>md5</code> − скопировать значение из поля <database>SEC_USER.PASSWORD</database> базы данных.</para>
+      <para>Методы <methodname>login()</methodname> и <methodname>loginOnce()</methodname>, определенные в классе <code>ManagementBean</code>, осуществляют вход в систему, используя имя и пароль, заданные в <link>файле свойств</link> в параметрах  <parameter>cuba.jmxUserLogin</parameter> и <parameter>cuba.jmxUserPassword</parameter> соответственно. Пароль должен быть захеширован и указан с префиксом <code>md5:</code>. Простейший способ получить пароль пользователя в <code>md5</code> − скопировать значение из поля <database>SEC_USER.PASSWORD</database> базы данных.</para>
       <para><emphasis role="bold">Работа с JMX-интерфейсом</emphasis></para>
       <para>Обращаться к МБинам можно с помощью утилиты <application>jconsole</application>, входящей в состав <application>JDK</application>, либо с помощью программы <application>VisualVM</application>.</para>
       <para>Для того чтобы увидеть свои МБины, сервер <application>Tomcat</application> должен быть запущен с опциями удаленного подключения к <glossterm linkend="jmx">JMX</glossterm>. В простейшем случае, без аутентификации, параметры запуска <application>JVM</application> должны содержать следующие опции:</para>
@@ -378,7 +378,7 @@ return ExceptionUtils.getStackTrace(e);
     </section>
     <section>
       <title>Управление транзакциями</title>
-      <para>Используется интерфейс <classname>com.haulmont.cuba.core.Transaction</classname>, получаемый из Locator&apos;a
+      <para>Используется интерфейс <code>com.haulmont.cuba.core.Transaction</code>, получаемый из Locator&apos;a
 
 
 
@@ -386,19 +386,19 @@ return ExceptionUtils.getStackTrace(e);
 </para>
       <itemizedlist>
         <listitem>
-          <para><classname>Locator.createTransaction()</classname> – старт транзакции</para>
+          <para><code>Locator.createTransaction()</code> – старт транзакции</para>
         </listitem>
         <listitem>
-          <para><classname>Transaction.commit()</classname> – коммит, <classname>commitRetaining() </classname>– коммит и старт новой</para>
+          <para><code>Transaction.commit()</code> – коммит, <code>commitRetaining() </code>– коммит и старт новой</para>
         </listitem>
         <listitem>
-          <para><classname>Transaction.end()</classname> – выполняет rollback, если ранее не был вызван коммит</para>
+          <para><code>Transaction.end()</code> – выполняет rollback, если ранее не был вызван коммит</para>
         </listitem>
         <listitem>
-          <para><classname>Locator.isInTransaction()</classname> – есть ли в данный момент транзакция</para>
+          <para><code>Locator.isInTransaction()</code> – есть ли в данный момент транзакция</para>
         </listitem>
         <listitem>
-          <para>Обязательно  вызывать <classname>Transaction.end()</classname> в блоке finally, в противном случае возможно зависание открытых транзакций в БД, что недопустимо</para>
+          <para>Обязательно  вызывать <code>Transaction.end()</code> в блоке finally, в противном случае возможно зависание открытых транзакций в БД, что недопустимо</para>
           <programlisting>Transaction tx = Locator.createTransaction();
 try {
     …
@@ -411,13 +411,13 @@ try {
       <para><emphasis role="bold">Особенности применения</emphasis></para>
       <itemizedlist>
         <listitem>
-          <para><classname>Locator.createTransaction()</classname> всегда создает новую транзакцию. Если в этот момент уже есть открытая транзакция, она приостанавливается (REQUIRES_NEW).</para>
+          <para><code>Locator.createTransaction()</code> всегда создает новую транзакцию. Если в этот момент уже есть открытая транзакция, она приостанавливается (REQUIRES_NEW).</para>
         </listitem>
         <listitem>
-          <para><classname>Locator.getTransaction()</classname> создает новую транзакцию, только если в данный момент нет уже открытой транзакции (REQUIRES). </para>
+          <para><code>Locator.getTransaction()</code> создает новую транзакцию, только если в данный момент нет уже открытой транзакции (REQUIRES). </para>
         </listitem>
         <listitem>
-          <para>Варианты использования см. в тесте <classname>com.haulmont.cuba.core.TransactionTest</classname></para>
+          <para>Варианты использования см. в тесте <code>com.haulmont.cuba.core.TransactionTest</code></para>
         </listitem>
       </itemizedlist>
     </section>

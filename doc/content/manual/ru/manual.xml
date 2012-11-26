@@ -130,7 +130,7 @@
           <para><sgmltag>views</sgmltag> - корневой элемент</para>
           <para>Элементы <sgmltag>views</sgmltag>:<itemizedlist>
               <listitem>
-                <para><sgmltag>view</sgmltag> - описатель <classname>View</classname></para>
+                <para><sgmltag>view</sgmltag> - описатель <code>View</code></para>
                 <para>Атрибуты <sgmltag>view</sgmltag>:<itemizedlist>
                     <listitem>
                       <para><sgmltag>class</sgmltag> - класс сущности</para>
@@ -139,7 +139,7 @@
                       <para><sgmltag>name</sgmltag> - имя представления, должно быть уникальным в пределах сущности</para>
                     </listitem>
                     <listitem>
-                      <para><sgmltag>systemProperties</sgmltag> - признак включения системных атрибутов сущности (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <interfacename>BaseEntity</interfacename> и  <interfacename>Updatable</interfacename>). Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
+                      <para><sgmltag>systemProperties</sgmltag> - признак включения системных атрибутов сущности (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <code>BaseEntity</code> и  <code>Updatable</code>). Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
                     </listitem>
                     <listitem>
                       <para><sgmltag>overwrite</sgmltag> - признак того, что данный описатель должен переопределить представление с таким же классом и именем, уже развернутое в репозитории. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
@@ -150,7 +150,7 @@
                   </itemizedlist></para>
                 <para>Элементы <sgmltag>view</sgmltag>:<itemizedlist>
                     <listitem>
-                      <para><sgmltag>property</sgmltag> - описатель <classname>ViewProperty</classname></para>
+                      <para><sgmltag>property</sgmltag> - описатель <code>ViewProperty</code></para>
                       <para>Атрибуты <sgmltag>property</sgmltag>:<itemizedlist>
                           <listitem>
                             <para><sgmltag>name</sgmltag> - имя атрибута сущности</para>
@@ -175,9 +175,9 @@
                 <para><sgmltag>include</sgmltag> - включение другого файла типа views.xml</para>
                 <para>Атрибуты <sgmltag>include</sgmltag>:<itemizedlist>
                     <listitem>
-                      <para><sgmltag>file</sgmltag> - путь к файлу по правилам интерфейса <interfacename>
+                      <para><sgmltag>file</sgmltag> - путь к файлу по правилам интерфейса <code>
                           <link linkend="resources">Resources</link>
-                        </interfacename></para>
+                        </code></para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
@@ -237,7 +237,7 @@
         <listitem>
           <para>Указывает, что глобальные представления c <structname>Middleware</structname> нужно загружать на клиентский уровень не все сразу, а по необходимости. См. <xref linkend="views"/></para>
           <para>Значение по умолчанию: <code>false</code></para>
-          <para>Интерфейс: <interfacename>ClientConfig</interfacename></para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
           <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
@@ -249,7 +249,7 @@
           <para>Следует иметь в виду, что язык, который указан первым в списке языков  свойства <property>cuba.availableLocales</property>, будет отображаться первым в списке доступных языков в том случае, если среди языков данного свойства не будет найден текущий язык системы. В противном случае первым будет отображаться язык системы. </para>
           <para>Если для языка,  указанного в свойстве, отсутствует файл для его локализации, то по умолчанию берется локализация из файла без суффикса − <filename>messages.properties</filename>.</para>
           <para>Значение по умолчанию: <literal>English|en;Russian|ru;French|fr</literal></para>
-          <para>Интерфейс: <interfacename>GlobalConfig</interfacename></para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
@@ -259,7 +259,7 @@
           <para>Включает или отключает возможность пользователя выбирать язык
 интерфейса при входе в систему. </para>
           <para>Значение по умолчанию: <literal>true</literal></para>
-          <para>Интерфейс: <interfacename>GlobalConfig</interfacename></para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
@@ -268,7 +268,7 @@
         <listitem>
           <para>Пароль, используемый методом <code>LoginService.loginTrusted()</code>. Средний слой может аутентифицировать пользователей, подключающихся через доверенный клиентский <link linkend="app_tiers">блок</link>, без проверки пользовательского пароля. </para>
           <para>Это свойство используется в случае, если пароли пользователей не хранятся в БД, и реальную аутентификацию выполняет сам клиентский блок, например,  путем интеграции с <application>Active Directory</application>.</para>
-          <para>Интерфейсы: <interfacename> ServerConfig</interfacename>, <interfacename>WebConfig</interfacename></para>
+          <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
           <para>Используется в<link linkend="app_tiers"> блоках</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
@@ -278,7 +278,7 @@
           <para>Задает  таймаут неактивности сессии пользователя
  в секундах.</para>
           <para>Значение по умолчанию: <literal>1800</literal></para>
-          <para>Интерфейс: <interfacename>ServerConfig</interfacename></para>
+          <para>Интерфейс: <code>ServerConfig</code></para>
           <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Middleware</structname>.</para>
           <tip>
             <para>Рекомендуется выставлять параметры <property>cuba.userSessionExpirationTimeoutSec</property> и  <link linkend="cuba.httpSessionExpirationTimeoutSec">
@@ -293,7 +293,7 @@
           <para>Задает  таймаут бездействия HTTP-сессии
  в секундах.</para>
           <para>Значение по умолчанию: <literal>1800</literal></para>
-          <para>Интерфейс: <interfacename>WebConfig</interfacename></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Web Client</structname>.</para>
           <tip>
             <para>Рекомендуется выставлять параметры <link linkend="cuba.userSessionExpirationTimeoutSec">
@@ -309,7 +309,7 @@
               <link linkend="cuba.passwordPolicyRegExp">cuba.passwordPolicyRegExp</link>
             </property>.</para>
           <para>Значение по умолчанию: <literal>false</literal></para>
-          <para>Интерфейс: <interfacename>ClientConfig</interfacename></para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
           <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
@@ -320,7 +320,7 @@
           <para>Значение по умолчанию:</para>
           <para><prompt>((?=.*\\d)(?=.*\\p{javaLowerCase}) (?=.*\\p{javaUpperCase}).{6,20})</prompt></para>
           <para>Это означает, что в пароль должен содержать от 6 до 20 символов, в нем можно использоваться цифры, символы и буквы латинского алфавита. При этом обязательно в пароле должна  быть хотя бы одна цифра, одна буква в нижнем регистре и одна буква в верхнем регистре. Более подробная информация о синтаксисе регулярных выражений можно найти на сайтах: <ulink url="http://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5_%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">http://ru.wikipedia.org/wiki/Регулярные_выражения</ulink> и <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html</ulink></para>
-          <para>Интерфейс: <interfacename>ClientConfig</interfacename></para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
           <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
@@ -329,7 +329,7 @@
         <listitem>
           <para>Задает имя пользователя по умолчанию. Оно будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
-          <para>Интерфейс: <interfacename>WebConfig</interfacename></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
@@ -338,7 +338,7 @@
         <listitem>
           <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
-          <para>Интерфейс: <interfacename>WebConfig</interfacename></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>

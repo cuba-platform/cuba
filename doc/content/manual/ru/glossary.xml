@@ -95,7 +95,7 @@
         <emphasis role="bold">Контроллер экрана</emphasis>
       </glossterm>
       <glossdef>
-        <para><classname>Java</classname>  класс, содержащий логику инициализации и обработки событий экрана. Связан с <glossterm linkend="screen_xml_glossentry" arch="">XML-дескриптором</glossterm> экрана.</para>
+        <para><code>Java</code>  класс, содержащий логику инициализации и обработки событий экрана. Связан с <glossterm linkend="screen_xml_glossentry" arch="">XML-дескриптором</glossterm> экрана.</para>
         <para>См. <xref xrefstyle="" linkend="screen_controller"/></para>
       </glossdef>
     </glossentry>
