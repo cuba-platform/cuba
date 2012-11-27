@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 11.11.2008 18:32:18
- *
- * $Id$
  */
 package com.haulmont.cuba.core.entity;
 
@@ -16,8 +11,11 @@ import javax.persistence.Version;
 import java.util.Date;
 
 /**
- * Most commonly used base class for persistent entities.<br>
- * Optimistically locked, implements Updatable and SoftDelete
+ * The most widely used base class for persistent entities.
+ * <p/>Optimistically locked, implements Updatable and SoftDelete.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @MappedSuperclass
 public class StandardEntity

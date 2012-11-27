@@ -1,19 +1,17 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 11.11.2008 18:25:30
- *
- * $Id$
  */
 package com.haulmont.cuba.core.entity;
 
 import java.util.Date;
 
 /**
- * Interface implemented by entities supporting update information saving
+ * Interface to be implemented by entities that support update information saving.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface Updatable {
 

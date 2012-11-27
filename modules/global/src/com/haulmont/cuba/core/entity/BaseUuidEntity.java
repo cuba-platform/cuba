@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 07.11.2008 16:40:37
- * $Id$
  */
 package com.haulmont.cuba.core.entity;
 
@@ -24,6 +20,9 @@ import java.util.UUID;
 /**
  * Base class for persistent entities with UUID identifier.<br>
  * Inherit from it if you need an entity without optimistic locking, update and soft deletion info.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @MappedSuperclass
 public abstract class BaseUuidEntity extends AbstractInstance implements BaseEntity<UUID>
