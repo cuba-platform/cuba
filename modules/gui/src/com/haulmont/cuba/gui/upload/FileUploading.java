@@ -6,9 +6,9 @@
 
 package com.haulmont.cuba.gui.upload;
 
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -19,6 +19,7 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,14 +45,32 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     private Log log = LogFactory.getLog(getClass());
 
-    private static final String CORE_FILE_UPLOAD_CONTEXT = "/remoting/upload";
+    private static final String CORE_FILE_UPLOAD_CONTEXT = "/upload";
+
+    private String tempDir;
+
+    @Inject
+    private ClusterInvocationSupport clusterInvocationSupport;
+
+    @Inject
+    private UuidSource uuidSource;
+
+    @Inject
+    private TimeSource timeSource;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        tempDir = configuration.getConfig(GlobalConfig.class).getTempDir();
+    }
 
     @Override
     public UUID saveFile(byte[] data) throws FileStorageException {
         checkNotNull(data, "No file content");
 
-        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
-        UUID uuid = UuidProvider.createUuid();
+        UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         try {
@@ -86,8 +105,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             throws FileStorageException {
         if (stream == null)
             throw new NullPointerException("Null input stream for save file");
-        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
-        UUID uuid = UuidProvider.createUuid();
+        UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         if (file.exists()) {
@@ -123,8 +141,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public UUID createEmptyFile() throws FileStorageException {
-        UUID uuid = UuidProvider.createUuid();
-        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
+        UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
 
@@ -146,8 +163,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public UUID getNewDescriptor() throws FileStorageException {
-        UUID uuid = UuidProvider.createUuid();
-        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
+        UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         if (file.exists()) {
@@ -179,7 +195,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         fDesc.setSize(fileSize);
         fDesc.setExtension(ext);
         fDesc.setName(name);
-        fDesc.setCreateDate(TimeProvider.currentTimestamp());
+        fDesc.setCreateDate(timeSource.currentTimestamp());
 
         return fDesc;
     }
@@ -223,35 +239,50 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     @Override
     public void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException {
         File file = getFile(fileId);
-        String connectionUrl = ConfigProvider.getConfig(ClientConfig.class).getConnectionUrl()
-                + CORE_FILE_UPLOAD_CONTEXT
-                + "?s=" + UserSessionProvider.getUserSession().getId()
-                + "&f=" + fileDescr.toUrlParam();
 
-        HttpPost method = new HttpPost(connectionUrl);
-        method.setEntity(new FileEntity(file, "application/octet-stream"));
-        HttpClient client = new DefaultHttpClient();
-        try {
-            HttpResponse response = client.execute(method);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != HttpStatus.SC_OK) {
-                log.error("Unable to upload file to " + connectionUrl + "\n" + response.getStatusLine());
-                throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fileDescr.getName());
+        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
+            String url = iterator.next()
+                    + CORE_FILE_UPLOAD_CONTEXT
+                    + "?s=" + userSessionSource.getUserSession().getId()
+                    + "&f=" + fileDescr.toUrlParam();
+
+            HttpPost method = new HttpPost(url);
+            method.setEntity(new FileEntity(file, "application/octet-stream"));
+            HttpClient client = new DefaultHttpClient();
+            try {
+                HttpResponse response = client.execute(method);
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode == HttpStatus.SC_OK) {
+                    break;
+                } else {
+                    log.debug("Unable to upload file to " + url + "\n" + response.getStatusLine());
+                    if (statusCode == HttpStatus.SC_NOT_FOUND && iterator.hasNext())
+                        log.debug("Trying next URL");
+                    else
+                        throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fileDescr.getName());
+                }
+            } catch (IOException e) {
+                log.debug("Unable to upload file to " + url + "\n" + e);
+                if (iterator.hasNext())
+                    log.debug("Trying next URL");
+                else
+                    throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
+            } finally {
+                client.getConnectionManager().shutdown();
             }
-        } catch (IOException e) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
         }
-        client.getConnectionManager().shutdown();
+
         deleteFile(fileId);
     }
 
     @Override
     public void clearTempDirectory() {
         try {
-            GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
-            File dir = new File(config.getTempDir());
+            File dir = new File(tempDir);
             File[] files = dir.listFiles();
-            Date currentDate = TimeProvider.currentTimestamp();
+            if (files == null)
+                throw new IllegalStateException("Not a directory: " + tempDir);
+            Date currentDate = timeSource.currentTimestamp();
             for (File file : files) {
                 Date fileDate = new Date(file.lastModified());
                 Calendar calendar = new GregorianCalendar();

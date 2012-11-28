@@ -139,6 +139,10 @@
         <priority value="INFO"/>
     </category>
 
+    <category name="org.apache.http">
+        <priority value="INFO"/>
+    </category>
+
     <!-- Begin Perf4J -->
 
     <logger name="org.perf4j.TimingLogger" additivity="false">
