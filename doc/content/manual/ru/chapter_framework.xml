@@ -138,7 +138,7 @@
     <para>В данной главе рассмотрены компоненты платформы, общие для всех <link linkend="app_tiers">уровней</link> приложения.</para>
     <section id="data_model">
       <title>Модель данных</title>
-      <para>Предметная область моделируется в системе с помощью взаимосвязанных классов Java, называемых классами сущностей или просто сущностями. </para>
+      <para>Предметная область моделируется в приложении с помощью взаимосвязанных классов Java, называемых классами сущностей или просто сущностями. </para>
       <para>Сущности подразделяются на две категории:<itemizedlist>
           <listitem>
             <para>персистентные – экземпляры таких сущностей хранятся в таблицах базы данных</para>
@@ -204,15 +204,18 @@
             <para>сущность</para>
           </listitem>
         </itemizedlist></para>
-      <figure id="entity_base_classes">
+      <section>
         <title>Базовые классы сущностей</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/EntityClasses.png"/>
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>Рассмотрим базовые классы и интерфейсы сущностей более подробно. <itemizedlist>
+        <para>Рассмотрим базовые классы и интерфейсы сущностей более подробно.</para>
+        <figure id="entity_base_classes">
+          <title>Базовые классы сущностей</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/EntityClasses.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <itemizedlist>
           <listitem>
             <para><code>Instance</code> – декларирует базовые методы работы с объектами предметной области: <itemizedlist>
                 <listitem>
@@ -234,6 +237,9 @@
           </listitem>
           <listitem>
             <para><code>AbstractInstance</code> – реализует логику работы со слушателями изменения атрибутов</para>
+            <warning>
+              <para><code>AbstractInstance</code> хранит слушателей в коллекции <code>WeakReference</code>, т.е. при отсутствии внешних ссылок на добавленного слушателя, он будет немедленно уничтожен сборщиком мусора. Как правило, слушателями изменения атрибутов являются <link linkend="gui_vcl">визуальные компоненты</link> и <link linkend="datasources">источники данных</link> UI, на которые всегда имеются ссылки из других объектов, поэтому проблема исчезновения слушателей не возникает. Однако если слушатель создается прикладным кодом и на него никто не ссылается естественным образом, необходимо кроме добавления в <code>Instance</code> сохранить  его в некотором поле объекта.</para>
+            </warning>
           </listitem>
           <listitem>
             <para><code>AbstractNotPersistentEntity</code> – базовый класс неперсистентных сущностей с идентификаторами типа <code>UUID</code>.</para>
@@ -256,28 +262,31 @@
           <listitem>
             <para><code>StandardEntity</code> – наиболее часто используемый базовый класс персистентных сущностей, реализующий вышеперечисленные интерфейсы</para>
           </listitem>
-        </itemizedlist></para>
-      <para>При создании классов сущностей рекомендуется выбирать базовый класс по следующим правилам:<itemizedlist>
-          <listitem>
-            <para>если сущность не хранится в БД, наследуйте ее от <code>AbstractNotPersistentEntity</code></para>
-          </listitem>
-          <listitem>
-            <para>если сущность встраиваемая - наследуйте ее от <code>EmbeddableEntity</code></para>
-          </listitem>
-          <listitem>
-            <para>если сущность только создается в БД, никогда не изменяется, и мягкое удаление не требуется - наследуйте ее от <code>BaseUuidEntity</code></para>
-          </listitem>
-          <listitem>
-            <para>если сущность ведет себя стандартным образом: изменяется в БД, требует оптимистичной блокировки и мягкого удаления   − наследуйте ее от <code>StandardEntity</code></para>
-          </listitem>
-          <listitem>
-            <para>в противном случае наследуйте сущность от <code>BaseUuidEntity</code> и реализуйте в классе тот набор интерфейсов <code>Versioned</code>, <code>Updatable</code>, <code>SoftDelete</code>, который требуется</para>
-          </listitem>
-        </itemizedlist></para>
+        </itemizedlist>
+        <para>При создании классов сущностей рекомендуется выбирать базовый класс по следующим правилам:<itemizedlist>
+            <listitem>
+              <para>если сущность не хранится в БД, наследуйте ее от <code>AbstractNotPersistentEntity</code></para>
+            </listitem>
+            <listitem>
+              <para>если сущность встраиваемая - наследуйте ее от <code>EmbeddableEntity</code></para>
+            </listitem>
+            <listitem>
+              <para>если сущность только создается в БД, никогда не изменяется, и мягкое удаление не требуется - наследуйте ее от <code>BaseUuidEntity</code></para>
+            </listitem>
+            <listitem>
+              <para>если сущность ведет себя стандартным образом: изменяется в БД, требует оптимистичной блокировки и мягкого удаления   − наследуйте ее от <code>StandardEntity</code></para>
+            </listitem>
+            <listitem>
+              <para>в противном случае наследуйте сущность от <code>BaseUuidEntity</code> и реализуйте в классе тот набор интерфейсов <code>Versioned</code>, <code>Updatable</code>, <code>SoftDelete</code>, который требуется</para>
+            </listitem>
+          </itemizedlist></para>
+        <para/>
+      </section>
       <section id="entity_annotations">
         <title>Аннотации сущностей</title>
         <para>В данном разделе описаны все поддерживаемые платформой аннотации классов и атрибутов сущностей. </para>
-        <para>Аннотации пакета <code>javax.persistence</code> обеспечивают работу <glossterm linkend="jpa">JPA</glossterm>, аннотации пакетов <code>com.haulmont.*</code> предназначены для управления <link linkend="metadata_framework">метаданными</link> и другими механизмами платформы. Если указано только простое имя класса, подразумевается что это класс платформы, расположенный в одном  из пакетов <code>com.haulmont.*</code></para>
+        <para>Аннотации пакета <code>javax.persistence</code> обеспечивают работу <glossterm linkend="jpa">JPA</glossterm>, аннотации пакетов <code>com.haulmont.*</code> предназначены для управления <link linkend="metadata_framework">метаданными</link> и другими механизмами платформы. </para>
+        <para>Если для аннотации указано только простое имя класса, подразумевается что это класс платформы, расположенный в одном  из пакетов <code>com.haulmont.*</code></para>
         <section>
           <title>Аннотации класса</title>
           <variablelist>
@@ -485,6 +494,9 @@
               <listitem>
                 <para>Указывает, что данное поле не хранится в БД, т.е. является неперсистентным. </para>
                 <para>Поля поддерживаемых <glossterm linkend="jpa">JPA</glossterm> типов (см. <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html">http://docs.oracle.com/javaee/5/api/javax/persistence/Basic.html</ulink>) <emphasis>по умолчанию являются персистентными</emphasis>, поэтому аннотация <code>@Transient</code> обязательна для объявления неперсистентного атрибута такого типа. </para>
+                <para>Для включения <code>@Transient</code> атрибута в метаданные, необходимо также указать аннотацию <code>
+                    <link linkend="metaProperty_annotation">@MetaProperty</link>
+                  </code>. </para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -722,12 +734,13 @@ protected Date startDate;</programlisting></para>
 private Integer version;</programlisting></para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="metaProperty_annotation">
               <term>
                 <code>@MetaProperty</code>
               </term>
               <listitem>
-                <para>Определяет неперсистентный атрибут сущности. Данная аннотация может быть установлена как на поле класса, так и на метод доступа, в случае отсутствия соответствующего атрибуту поля.</para>
+                <para>Указывает, что данный атрибут должен быть включен в <link linkend="metadata_framework">метаданные</link>. Данная аннотация может быть установлена как на поле класса, так и на метод доступа, в случае отсутствия соответствующего атрибуту поля.</para>
+                <para>Данная аннотация не обязательна для полей, снабженных следующими аннотациями пакета <code>javax.persistence</code>: <code>@Column</code>, <code>@OneToOne</code>, <code>@OneToMany</code>, <code>@ManyToOne</code>, <code>@ManyToMany</code>, <code>@Embedded</code>. Такие поля отражаются в метаданных автоматически. Поэтому <code>@MetaProperty</code> в основном применяется для определения неперсистентных атрибутов сущностей. </para>
                 <para>Параметры:<itemizedlist>
                     <listitem>
                       <para><code>mandatory</code> - (необязательный параметр, по умолчанию <code>false</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>mandatory = true</code> визуальные компоненты, работающих с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
@@ -805,6 +818,62 @@ protected Proc proc;</programlisting></para>
             </varlistentry>
           </variablelist>
         </section>
+      </section>
+      <section id="enum_attributes">
+        <title>Атрибуты типа enum</title>
+        <para>В стандартном варианте использования <glossterm linkend="jpa">JPA</glossterm> для атрибутов типа <code>enum</code> в базе данных хранится целое число, получаемое методом <code>ordinal()</code> этого перечисления. Такой подход может привести к следующим проблемам при эксплуатации и развитии системы:<itemizedlist>
+            <listitem>
+              <para>при появлении в БД значения, не равного ни одному <code>ordinal</code> значению перечисления, экземпляр сущности нельзя загрузить вообще;</para>
+            </listitem>
+            <listitem>
+              <para>невозможно ввести новое значение между имеющимися, что актуально при использовании сортировки по значению перечисления (order by).</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Чтобы решить эти проблемы, в подходе <productname>CUBA</productname> предлагается отвязать значение, хранимое в БД, от <code>ordinal</code> перечисления. Для этого необходимо поле класса сущности объявлять с типом, хранимым в БД (<code>Integer</code> или <code>String</code>), а методы доступа (getter / setter) создавать для типа самого перечисления.</para>
+        <para>Например:<programlisting>@Entity(name = &quot;sales$Customer&quot;)
+@Table(name = &quot;SALES_CUSTOMER&quot;)
+public class Customer extends StandardEntity {
+
+    @Column(name = &quot;GRADE&quot;)
+    protected Integer grade;
+
+    public CustomerGrade getGrade() {
+        return grade == null ? null : CustomerGrade.fromId(grade);
+    }
+
+    public void setGrade(CustomerGrade grade) {
+        this.grade = grade == null ? null : grade.getId();
+    }
+...
+}  </programlisting></para>
+        <para>При этом сам класс перечисления может выглядеть следующим образом:<programlisting>public enum CustomerGrade implements EnumClass&lt;Integer&gt; {
+
+    PREMIUM(10),
+    HIGH(20),
+    MEDIUM(30);
+
+    private Integer id;
+
+    CustomerGrade(Integer id) {
+        this.id = id;
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    public static CustomerGrade fromId(Integer id) {
+        for (CustomerGrade grade : CustomerGrade.values()) {
+            if (grade.getId().equals(id))
+                return grade;
+        }
+        return null;
+    }
+}</programlisting></para>
+        <para>Для правильного отражения в <link linkend="metadata_framework">метаданных</link> класс перечисления, используемый в качестве типа атрибута сущности, должен реализовывать интерфейс <code>EnumClass</code>.</para>
+        <para>Как видно из примеров, для атрибута <code>grade</code> в БД хранится значение типа <code>Integer</code>, задаваемое полем <code>id</code> перечисления <code>CustomerGrade</code>, а конкретно <literal>10</literal>, <literal>20</literal> или <literal>30</literal>. В то же время прикладной код и метаданные работают с самим типом <code>CustomerGrade</code> через методы доступа, которые и осуществляют конвертацию.</para>
+        <para>При наличии в поле БД значения, не соответствующего ни одному значению перечисления, метод <code>getGrade()</code> просто вернет <code>null</code>. Для ввода нового значения, например <code>HIGHER</code>, между <code>HIGH</code> и <code>PREMIUM</code>, достаточно добавить это значение в перечисление с идентификатором <literal>15</literal>, при этом сортировка по полю <code>Customer.grade</code> останется верной.</para>
       </section>
       <section id="soft_deletion">
         <title>Мягкое удаление</title>
@@ -1226,7 +1295,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
           </varlistentry>
         </variablelist>
       </section>
-      <section>
+      <section id="metadata_building">
         <title>Формирование метаданных</title>
         <para>Основной источник формирования структуры метаданных - <link linkend="entity_annotations">аннотированные</link> классы сущностей. </para>
         <para>Класс сущности отражается в метаданные в следующих случаях: <itemizedlist>
@@ -1587,7 +1656,7 @@ messages.getMainMessage(&quot;actions.Ok&quot;);</programlisting></para>
             <para>Пример:<programlisting>String formattedValue = messages.formatMessage(messages.getMainMessagePack(), &quot;someFormat&quot;, someValue);</programlisting></para>
           </listitem>
           <listitem>
-            <para><code>getTools()</code> - возвращает экземпляр интерфейса  <code>MessageTools</code> </para>
+            <para><code>getTools()</code> - возвращает экземпляр интерфейса  <code>MessageTools</code>  (см. ниже).</para>
           </listitem>
         </itemizedlist>
         <section id="messageTools">
@@ -1648,46 +1717,247 @@ tools.foo();</programlisting><programlisting>((MyMessageTools) messages.getTools
             <listitem>
               <para><code>create()</code> - создать экземпляр сущности, учитывая возможность расширения. Подробнее см. <xref linkend="entity_extension"/> </para>
             </listitem>
+            <listitem>
+              <para><code>getTools()</code> - возвращает экземпляр интерфейса  <code>MetadataTools</code>  (см. ниже).</para>
+            </listitem>
           </itemizedlist></para>
+        <section>
+          <title>MetadataTools</title>
+          <para><link linkend="managed_beans">ManagedBean</link>, содержащий вспомогательные методы работы с метаданными. Интерфейс <code>MetadataTools</code> можно получить либо методом <code>Metadata.getTools()</code>, либо как любой другой бин - инжекцией или через класс <code>AppBeans</code>.</para>
+          <para>Методы <code>MetadataTools</code>:<itemizedlist>
+              <listitem>
+                <para><code>getAllPersistentMetaClasses()</code> - возвращает коллекцию <link linkend="metaClass">мета-классов</link> персистентных сущностей</para>
+              </listitem>
+              <listitem>
+                <para><code>getAllEmbeddableMetaClasses()</code> - возвращает коллекцию <link linkend="metaClass">мета-классов</link> встраиваемых сущностей</para>
+              </listitem>
+              <listitem>
+                <para><code>getAllEnums()</code> - возвращает коллекцию классов перечислений, используемых в качестве типов атрибутов сущностей</para>
+              </listitem>
+              <listitem>
+                <para><code>format()</code> - форматирует переданное значение в соответствии с типом данных заданного <link linkend="metaProperty">мета-свойства</link></para>
+              </listitem>
+              <listitem>
+                <para><code>isSystem()</code> - определяет, является ли переданное <link linkend="metaProperty">мета-свойство</link> системным, т.е. заданным в одном из <link linkend="entity_base_classes">базовых интерфейсов сущностей</link></para>
+              </listitem>
+              <listitem>
+                <para><code>isPersistent()</code> - определяет, является ли переданное мета-свойство персистентным, т.е. хранимым в БД</para>
+              </listitem>
+              <listitem>
+                <para><code>isTransient()</code> - определяет, является ли переданное мета-свойство или произвольный атрибут неперсистентным</para>
+              </listitem>
+              <listitem>
+                <para><code>isEmbedded()</code> - определяет, является ли переданное мета-свойство встроенным объектом</para>
+              </listitem>
+              <listitem>
+                <para><code>isAnnotationPresent()</code> - определяет наличие указанной аннотации на классе или его предках</para>
+              </listitem>
+              <listitem>
+                <para><code>getNamePatternProperties()</code> - возвращает коллекцию мета-свойств атрибутов, входящих в  имя экземпляра, возвращаемого методом <code>Instance.getInstanceName()</code>. См. <code>
+                    <link linkend="namePattern">@NamePattern</link>
+                  </code>.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para><para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>MetadataTools</code> можно <link linkend="extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMetadataTools tools = metadata.getTools();
+tools.foo();</programlisting><programlisting>((MyMetadataTools) metadata.getTools()).foo();</programlisting></para></para>
+        </section>
       </section>
       <section>
         <title>Persistence</title>
-        <para>Обеспечивает доступ к интерфейсам <interface>Transaction</interface>, <interface>EntityManager</interface>, и некоторые сервисные функции, относящиеся к хранению данных. </para>
-        <para>TODO</para>
+        <para>Интерфейс <link linkend="app_tiers">уровня</link> <structname>Middleware</structname>, являющийся точкой входа в функциональность хранения данных в БД.<tip>
+            <para>Интерфейс <code>Persistence</code> доступен только в <link linkend="app_modules">модуле</link> <structname>core</structname> проекта приложения.</para>
+          </tip></para>
+        <para>Методы интерфейса:<itemizedlist>
+            <listitem>
+              <para><code>createTransaction()</code>, <code>getTransaction()</code> - получить интерфейс управления <link linkend="transactions">транзакциями</link></para>
+            </listitem>
+            <listitem>
+              <para><code>isInTransaction()</code> - определяет, существует ли в данный момент активная транзакция</para>
+            </listitem>
+            <listitem>
+              <para><code>getEntityManager()</code> - возвращает экземпляр <code>
+                  <link linkend="entityManager">EntityManager</link>
+                </code> для текущей транзакции</para>
+            </listitem>
+            <listitem>
+              <para><code>isSoftDeletion()</code> - позволяет определить, активен ли режим <link linkend="soft_deletion">мягкого удаления</link></para>
+            </listitem>
+            <listitem>
+              <para><code>setSoftDeletion()</code> - устанавливает или отключает режим мягкого удаления. Влияет на аналогичный признак всех создаваемых экземпляров <code>EntityManager</code>. По умолчанию мягкое удаление включено.</para>
+            </listitem>
+            <listitem>
+              <para><code>getDbDialect()</code> - возвращает диалект используемой в данный момент базы данных. Интерфейс <code>DbDialect</code> определяет тип БД и некоторые специфические для данной БД параметры.</para>
+              <para>В прикладном коде данный метод можно использовать для определения типа используемой БД, например:<programlisting>@Inject
+protected Persistence persistence;
+...
+if (persistence.getDbDialect() instanceof PostgresDbDialect) 
+...</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>getDataSource()</code> - получить <code>javax.sql.DataSource</code> для используемой в данный момент базы данных.</para>
+              <warning>
+                <para>Для всех объектов <code>javax.sql.Connection</code>, получаемых методом <code>getDataSource().getConnection()</code>, необходимо после использования соединения вызвать метод <code>close()</code> в секции <code>finally</code>. В противном случае соединение не вернется в пул, через какое-то время пул переполнится, и приложение не сможет выполнять запросы к базе данных. </para>
+              </warning>
+            </listitem>
+            <listitem>
+              <para><code>getTools()</code> - возвращает экземпляр интерфейса  <code>PersistenceTools</code> (см. ниже).</para>
+            </listitem>
+          </itemizedlist></para>
+        <section>
+          <title>PersistenceTools</title>
+          <para><link linkend="managed_beans">ManagedBean</link>, содержащий вспомогательные методы работы с хранилищем данных. Интерфейс <code>PersistenceTools</code> можно получить либо методом <code>Persistence.getTools()</code>, либо как любой другой бин - инжекцией или через класс <code>AppBeans</code>.</para>
+          <para>Методы <code>PersistenceTools</code>:<itemizedlist>
+              <listitem>
+                <para><code>getDirtyFields()</code> - возвращает коллекцию имен атрибутов сущности, измененных со времени последней загрузки экземпляра из БД. Для новых экземпляров возвращает пустую коллекцию.</para>
+              </listitem>
+              <listitem>
+                <para><code>isLoaded()</code> - определяет, загружен ли из БД указанный атрибут экземпляра. Атрибут может быть <emphasis>не</emphasis> загружен, если он не указан в примененном при загрузке <link linkend="views">представлении</link>. </para>
+                <para>Данный метод работает только для экземпляров в  состоянии <link linkend="entity_states">Managed</link>.</para>
+              </listitem>
+              <listitem>
+                <para><code>getReferenceId()</code> - возвращает идентификатор связанной сущности без загрузки ее из БД. </para>
+                <para>Предположим, в <glossterm linkend="persistence_context">персистентный контекст</glossterm> загружен экземпляр <code>Order</code>, и нужно получить значение идентификатора экземпляра <code>Customer</code>, связанного с данным Заказом. Стандартное решение <code>order.getCustomer().getId()</code> приведет к выполнению SQL запроса к БД для загрузки экземпляра <code>Customer</code>, что в данном случае избыточно, так как значение идентификатора Покупателя физически находится также и в таблице Заказов. Выполнение же <programlisting>persistence.getTools().getReferenceId(order, &quot;customer&quot;)</programlisting>не вызывет никаких дополнительных запросов к базе данных. </para>
+                <para>Данный метод работает только для экземпляров в  состоянии <link linkend="entity_states">Managed</link>.</para>
+              </listitem>
+              <listitem>
+                <para><code>reloadEntity()</code> - перезагрузить экземпляр сущности с указанным <link linkend="views">представлением</link>. Данный метод должен вызываться внутри активной <link linkend="transactions">транзакции</link>.</para>
+              </listitem>
+            </itemizedlist><para><para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>PersistenceTools</code> можно <link linkend="extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyPersistenceTools tools = persistence.getTools();
+tools.foo();</programlisting><programlisting>((MyPersistenceTools) persistence.getTools()).foo();</programlisting></para></para></para>
+        </section>
+        <section id="persistenceHelper">
+          <title>PersistenceHelper</title>
+          <para>Вспомогательный класс для получения информации о персистентных сущностях. В отличие от бинов <code>Persistence</code> и <code>PersistenceTools</code> доступен на всех <link linkend="app_tiers">уровнях</link> приложения.</para>
+          <para>Методы <code>PersistenceHelper</code>:<itemizedlist>
+              <listitem>
+                <para><code>isNew()</code> - определяет, является ли переданный экземпляр только что созданным, т.е. находящимся в состоянии <link linkend="entity_states">New</link>. Возвращает <code>true</code> также если экземпляр не является персистентной сущностью.</para>
+              </listitem>
+              <listitem>
+                <para><code>isDetached()</code> - определяет, находится ли переданный экземпляр в состоянии <link linkend="entity_states">Detached</link>. Возвращает <code>true</code> также если экземпляр не является персистентной сущностью.</para>
+              </listitem>
+              <listitem>
+                <para><code>isSoftDeleted()</code> - определяет, поддерживает ли переданный класс сущности <link linkend="soft_deletion">мягкое удаление</link></para>
+              </listitem>
+              <listitem>
+                <para><code>getEntityName()</code> - возвращает имя сущности, заданное в <link linkend="entity_annotations">аннотации</link> <code>@Entity</code></para>
+              </listitem>
+              <listitem>
+                <para><code>getTableName()</code> - возвращает имя таблицы БД, хранящей экземпляры сущности, заданное в <link linkend="entity_annotations">аннотации</link> <code>@Table</code></para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
       </section>
       <section id="resources">
         <title>Resources</title>
-        <para>Обеспечивает загрузку ресурсов из конфигурационного каталога приложения или из <code>classpath</code>, а также по явно указанному URL.</para>
-        <para>TODO</para>
+        <para>Обеспечивает загрузку ресурсов по следующим правилам:<orderedlist>
+            <listitem>
+              <para>если указанное местонахождение представляет собой URL, ресурс загружается из этого URL;</para>
+            </listitem>
+            <listitem>
+              <para>если указанное местонахождение начинается с префикса <literal>classpath:</literal>, ресурс загружается из classpath;</para>
+            </listitem>
+            <listitem>
+              <para>если не URL и не начинается с <literal>classpath:</literal>, то:<orderedlist>
+                  <listitem>
+                    <para>в <link linkend="conf_dir">каталоге конфигурации</link> приложения ищется файл, используя указанное местонахождение как относительный путь. Если файл найден, ресурс загружается из него;</para>
+                  </listitem>
+                  <listitem>
+                    <para>если ресурс не найден на предыдущих этапах, он загружается из classpath.</para>
+                  </listitem>
+                </orderedlist></para>
+            </listitem>
+          </orderedlist></para>
+        <para>На практике явное указание URL или префикса <code>classpath:</code> используется редко, т.е. обычно ресурсы загружаются либо из <link linkend="conf_dir">конфигурационного каталога</link>, либо из classpath. Ресурс в конфигурационном каталоге замещает одноименный ресурс в classpath.</para>
+        <para>Методы <code>Resources</code>:<itemizedlist>
+            <listitem>
+              <para><code>getResourceAsStream()</code> - возвращает <code>InputStream</code> для указанного ресурса, либо <code>null</code>, если ресурс не найден. Поток должен быть закрыт после использования, например:<programlisting>@Inject
+protected Resources resources;
+...
+InputStream stream = null;
+try {
+    stream = resources.getResourceAsStream(resourceLocation);
+    ...
+} finally {
+    IOUtils.closeQuietly(stream);
+}</programlisting></para>
+              <para>Возможно использование &quot;try with resources&quot;:<programlisting>try (InputStream stream = resources.getResourceAsStream(resourceLocation)) {
+    ...
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>getResourceAsString()</code> - возвращает указанный ресурс в виде строки, либо <code>null</code>, если ресурс не найден</para>
+            </listitem>
+          </itemizedlist></para>
       </section>
       <section id="scripting">
         <title>Scripting</title>
-        <para><code>Scripting</code> − глобальный интерфейс инфраструктуры, решающий следующие задачи:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Выполнение выражений и скриптов Groovy</para>
-          </listitem>
-          <listitem>
-            <para>Компиляция и загрузка классов Groovy</para>
-          </listitem>
-          <listitem>
-            <para>Компиляция и загрузка классов Java, поставляемых в исходниках в каталоге конфигурации приложения conf</para>
-          </listitem>
-          <listitem>
-            <para>Загрузка ресурсов из каталога конфигурации приложения conf или из classpath.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Общий принцип действия таков: если запрашиваемый класс или ресурс имеется в каталоге conf, будет использован он, в противном случае будет произведен поиск по данному пути в classpath. Это дает возможность в production или в процессе разработки динамически подменять и дополнять приложение нужными классами и ресурсами.</para>
-        <para><emphasis role="bold">Выполнение выражений (evaluate)</emphasis></para>
-        <para><emphasis role="bold">Выполнение скриптов</emphasis><itemizedlist>
+        <para>Интерфейс <code>Scripting</code> позволяет динамически (т.е. во время работы приложения) компилировать и загружать классы Java и Groovy, а также выполнять скрипты и выражения на Groovy.</para>
+        <para>Методы <code>Scripting</code>:<itemizedlist>
             <listitem>
-              <para>При инициализации приложения могут быть заданы классы для импорта, автоматически добавляемые всем выражениям.</para>
+              <para><code>evaluateGroovy()</code> - выполняет выражение на Groovy и возвращает его результат. </para>
+              <para>Свойство приложения <property>
+                  <link linkend="cuba.groovyEvaluatorImport">cuba.groovyEvaluatorImport</link>
+                </property> позволяет определить общий набор импортируемых классов, подставляемых в каждое выполняемое выражение. По умолчанию все стандартные блоки приложения импортируют класс <code>
+                  <link linkend="persistenceHelper">PersistenceHelper</link>
+                </code>.</para>
+              <para>Скомпилированные выражения кэшируются, что значительно ускоряет повторное выполнение.</para>
+              <para>Пример:<programlisting>@Inject
+protected Scripting scripting;
+...
+Integer intResult = scripting.evaluateGroovy(&quot;2 + 2&quot;, new Binding());
+
+Binding binding = new Binding();
+binding.setVariable(&quot;instance&quot;, new User());
+Boolean boolResult = scripting.evaluateGroovy(&quot;return PersistenceHelper.isNew(instance)&quot;, binding);</programlisting></para>
+            </listitem>
+            <listitem id="scripting.runGroovyScript">
+              <para><code>runGroovyScript()</code> - выполняет скрипт Groovy и возвращает его результат.</para>
+              <para>Скрипт должен быть расположен либо в <link linkend="conf_dir">конфигурационном каталоге</link> приложения, либо в classpath (текущая реализация <code>Scripting</code> поддерживает ресурсы classpath только внутри JAR-файлов). Скрипт в конфигурационном каталоге замещает одноименный скрипт в classpath.</para>
+              <para>Путь к скрипту указывается с разделителями <literal>/</literal>, в начале пути символ <literal>/</literal> не требуется.</para>
+              <para>Пример:<programlisting>@Inject
+protected Scripting scripting;
+...
+Binding binding = new Binding();
+binding.setVariable(&quot;itemId&quot;, itemId);
+BigDecimal amount = scripting.runGroovyScript(&quot;com/abc/sales/CalculatePrice.groovy&quot;, binding);</programlisting></para>
             </listitem>
             <listitem>
-              <para>Скомпилированные выражения сохраняются в кэше, что значительно ускоряет повторное выполнение.</para>
+              <para><code>loadClass()</code> - загружает Java или Groovy класс, используя следующую последовательность действий:<orderedlist>
+                  <listitem>
+                    <para>Если класс уже загружен, возвращает его.</para>
+                  </listitem>
+                  <listitem>
+                    <para>Ищет исходный текст Groovy (файл <filename>*.groovy</filename>) в каталоге конфигурации. Если найден, компилирует его, загружает  и возвращает класс.</para>
+                  </listitem>
+                  <listitem>
+                    <para>Ищет исходный текст Java (файл <filename>*.java</filename>) в каталоге конфигурации. Если найден, компилирует его, загружает и возвращает класс.</para>
+                  </listitem>
+                  <listitem>
+                    <para>Ищет скомпилированный класс в classpath, если найден - загружает и возвращает его.</para>
+                  </listitem>
+                  <listitem>
+                    <para>Если ничего не найдено, возвращает <code>null</code>.</para>
+                  </listitem>
+                </orderedlist></para>
+              <para>Файлы исходных текстов Java и Groovy  в каталоге конфигурации можно изменять во время работы приложения. При следующем вызове <code>loadClass()</code> соответствующий класс будет перекомпилирован и возвращен новый, однако существуют следующие ограничения:<itemizedlist>
+                  <listitem>
+                    <para>нельзя изменять тип исходного текста с Groovy на Java</para>
+                  </listitem>
+                  <listitem>
+                    <para>если существовал исходный текст Groovy, и был однажды скомпилирован, то удаление файла исходного текста не приведет к загрузке другого класса из classpath - будет по прежнему возвращаться класс, скомпилированный из  удаленного исходника.</para>
+                  </listitem>
+                </itemizedlist></para>
+              <para>Пример:<programlisting>@Inject
+protected Scripting scripting;
+...
+Class calculatorClass = scripting.loadClass(&quot;com.abc.sales.PriceCalculator&quot;);</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>getClassLoader()</code> - возвращает <code>ClassLoader</code>, способный работать по правилам, описанным выше для метода <code>loadClass()</code>.</para>
             </listitem>
           </itemizedlist></para>
-        <para>Запуск скриптов выполняется методом runGroovyScript(). Имя скрипта должно содержать путь с корнем в conf (каталог конфигурации приложения).</para>
+        <para>Кэш скомпилированных классов можно очистить во время выполнения с помощью JMX-бинов <link linkend="cachingMBean">CachingMBean</link> и <link linkend="cachingFacadeMBean">CachingFacadeMBean</link>.</para>
+        <para>См. также <xref linkend="scriptingManagerMBean"/></para>
       </section>
       <section>
         <title>Security</title>
@@ -1712,9 +1982,66 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
     </section>
     <section>
       <title>AppContext</title>
-      <para>TODO</para>
+      <para><code>AppContext</code> - системный класс, в статических полях которого хранятся ссылки на некоторые общие для любого <link linkend="app_tiers">блока</link> приложения компоненты:<itemizedlist>
+          <listitem>
+            <para><code>ApplicationContext</code> фреймворка <application>Spring</application></para>
+          </listitem>
+          <listitem>
+            <para>Набор <link linkend="app_properties">свойств приложения</link>, загруженных из файлов <filename>app.properties</filename></para>
+          </listitem>
+          <listitem>
+            <para><code>ThreadLocal</code> переменная, хранящая экземпляры <code>SecurityContext</code></para>
+          </listitem>
+          <listitem>
+            <para>Коллекция слушателей жизненного цикла приложения ( <code>AppContext.Listener</code>)</para>
+          </listitem>
+        </itemizedlist></para>
+      <para><code>AppContext</code> инициализируется на запуске приложения классами-загрузчиками, специфичными для типа <link linkend="app_tiers">блока</link> приложения:<itemizedlist>
+          <listitem>
+            <para>загрузчик <structname>Middleware</structname> - <code>AppContextLoader</code></para>
+          </listitem>
+          <listitem>
+            <para>загрузчик <structname>Web Client</structname> - <code>WebAppContextLoader</code></para>
+          </listitem>
+          <listitem>
+            <para>загрузчик <structname>Web Portal</structname> - <code>PortalAppContextLoader</code></para>
+          </listitem>
+          <listitem>
+            <para>загрузчик <structname>Desktop Client</structname> - <code>DesktopAppContextLoader</code></para>
+          </listitem>
+        </itemizedlist></para>
+      <para><code>AppContext</code> может быть использован в прикладном коде для решения следующих задач:<itemizedlist>
+          <listitem>
+            <para>Регистрации слушателей, срабатывающих после полной инициализации и перед закрытием приложения, например:<programlisting>AppContext.addListener(new AppContext.Listener() {
+    @Override
+    public void applicationStarted() {
+        System.out.println(&quot;Application is ready&quot;);
+    }
+
+    @Override
+    public void applicationStopped() {
+        System.out.println(&quot;Application is closing&quot;);
+    }
+});</programlisting>  </para>
+          </listitem>
+          <listitem>
+            <para>Проверки того, что данный <link linkend="app_tiers">блок</link> приложения полностью инициализирован и готов к выполнению. Такая проверка обычно необходима в методах бинов, автоматически запускаемых <link linkend="scheduled_tasks">планировщиком</link> <application>Sping Framework</application>.</para>
+            <para>Пример:<programlisting>if (!AppContext.isStarted())
+    return;</programlisting></para>
+          </listitem>
+          <listitem>
+            <para>Получения значений <link linkend="app_properties">свойств приложения</link>, хранимых в файлах <filename>app.properties</filename>, если они недоступны через <link linkend="config_interfaces">конфигурационные интерфейсы</link>.</para>
+          </listitem>
+          <listitem>
+            <para>Передачи <code>SecurityContext</code> в новые потоки выполнения, см. <xref linkend="authentication"/>.</para>
+          </listitem>
+        </itemizedlist></para>
+      <tip>
+        <para>Для получения ссылок на <application>Spring</application>-бины используйте инжекцию или статические методы класса <code>AppBeans</code>.</para>
+        <para>Использование <code>AppContext.getApplicationContext().getBean()</code> не рекомендуется.</para>
+      </tip>
     </section>
-    <section id="appProperties">
+    <section id="app_properties">
       <title>Свойства приложения</title>
       <para wordsize="20"><emphasis role="bold">Основные понятия</emphasis></para>
       <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
@@ -2050,6 +2377,33 @@ actions.Edit=Edit
       </figure>
       <para>Как видно из диаграммы, МБин имеет два набора методов, разделенных по интерфейсам <code>...MBean</code> и <code>...API</code>. Первый из них служит для управления через JMX, а второй − для вызова из программного кода.</para>
       <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="interceptor">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью Spring AOP), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <code>ClassLoader</code>.</para>
+      <section id="cachingFacadeMBean">
+        <title id="">CachingFacadeMBean</title>
+        <para><code>CachingFacadeMBean</code> предоставляет методы очистки различных кэшей на <link linkend="app_tiers">уровне</link> <structname>Middleware</structname>.</para>
+        <para>JMX ObjectName: <literal>app-core.cuba:type=CachingFacade</literal></para>
+      </section>
+      <section id="cachingMBean">
+        <title id="">CachingMBean</title>
+        <para><code>CachingMBean</code> предоставляет методы очистки различных кэшей в <link linkend="app_tiers">блоке</link> <structname>Web Client</structname>.</para>
+        <para>JMX ObjectName: <literal id="">app.cuba:type=Caching</literal></para>
+      </section>
+      <section id="scriptingManagerMBean">
+        <title id="">ScriptingManagerMBean</title>
+        <para><code>ScriptingManagerMBean</code> является JMX-фасадом для интерфейса инфраструктуры <code>
+            <link linkend="scripting">Scripting</link>
+          </code>.</para>
+        <para>JMX ObjectName: <literal>app-core.cuba:type=ScriptingManager</literal></para>
+        <para>JMX атрибуты:<itemizedlist>
+            <listitem>
+              <para><code>RootPath</code> - абсолютный путь к <link linkend="conf_dir">конфигурационному каталогу</link> <link linkend="app_tiers">блока приложения</link>, в котором запущен данный МБин</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>JMX операции:<itemizedlist>
+            <listitem>
+              <para><code>runGroovyScript()</code> - выполнить скрипт Groovy и вернуть результат. Для отображения в JMX-интерфейсе результат должен быть типа <code>String</code>. В остальном аналогичен методу <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript()</link></code>. </para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
     </section>
     <section id="orm">
       <title>Слой ORM</title>
@@ -2118,7 +2472,7 @@ actions.Edit=Edit
 Экземпляр <code>EntityManager</code> содержит в себе &quot;персистентный контекст&quot; – набор экземпляров сущностей, загруженных из БД или только что созданных. Персистентный контекст является кэшем данных в рамках данной транзакции.
 <code>EntityManager</code> автоматически сбрасывает в БД все изменения, сделанные в своем персистентном контексте, в момент коммита транзакции, либо явным вызовом метода  <code>flush()</code>.</para>
       </section>
-      <section>
+      <section id="entity_states">
         <title>Состояния сущности</title>
         <para><variablelist>
             <varlistentry>
@@ -3965,7 +4319,7 @@ Instance − ваш SQL Server.</para>
           <para>Существует два класса полей ввода с дополнительными кнопками действий: для веб-приложений  и для десктоп-приложений.</para>
           <para>Для того чтобы создать компонент <code>PickerField</code>, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldMetaClass.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибут <sgmltag id="attr_metaclass">metaClass</sgmltag> задает тип <glossterm linkend="entity">сущности</glossterm>, экземпляр которой будет выбираться с помощью действия поиска (<literal>lookup</literal>). Для заданной сущности должен быть определен экран <literal>Название_сущности.lookup</literal> либо в атрибуте <sgmltag >lookupScreen</sgmltag> указан идентификатор экрана, который нужно открыть для выбора экземпляра сущности.</para>
+          <para>Атрибут <sgmltag id="attr_metaclass">metaClass</sgmltag> задает тип <glossterm linkend="entity">сущности</glossterm>, экземпляр которой будет выбираться с помощью действия поиска (<literal>lookup</literal>). Для заданной сущности должен быть определен экран <literal>Название_сущности.lookup</literal> либо в атрибуте <sgmltag>lookupScreen</sgmltag> указан идентификатор экрана, который нужно открыть для выбора экземпляра сущности.</para>
           <para>Определить компонент можно также следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldProperty.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>

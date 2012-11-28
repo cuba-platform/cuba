@@ -367,6 +367,18 @@
           </itemizedlist>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.groovyEvaluatorImport">
+        <term>cuba.groovyEvaluatorImport</term>
+        <listitem>
+          <para>Задает список классов, импортируемых всеми выполняемыми через <code>
+              <link linkend="scripting">Scripting</link>
+            </code> выражениями на Groovy. </para>
+          <para>Имена классов в списке разделяются запятой или точкой с запятой.</para>
+          <para>Значение по умолчанию: <code>com.haulmont.cuba.core.global.PersistenceHelper</code></para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+          <para>Пример:<programlisting>cuba.groovyEvaluatorImport=com.haulmont.cuba.core.global.PersistenceHelper,com.abc.sales.CommonUtils</programlisting></para>
+        </listitem>
+      </varlistentry>
     </variablelist>
   </appendix>
   <appendix>
