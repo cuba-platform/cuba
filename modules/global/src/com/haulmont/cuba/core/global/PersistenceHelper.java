@@ -1,34 +1,33 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 13.02.2009 16:35:29
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ClassUtils;
+import org.apache.openjpa.enhance.PersistenceCapable;
 
+import javax.annotation.Nullable;
 import javax.persistence.Table;
-import java.util.BitSet;
-import java.util.List;
 import java.lang.annotation.Annotation;
 
 /**
- * Helper providing some information about persistent entities.
+ * Utility class providing some information about persistent entities.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public class PersistenceHelper {
 
+    /**
+     * Determines whether the instance is in <em>New</em> state.
+     * @param entity entity instance
+     * @return <code>true</code> if new or if the object provided is not persistent or is not an entity
+     */
     public static boolean isNew(Object entity) {
         if (entity instanceof PersistenceCapable)
             return ((PersistenceCapable) entity).pcIsDetached() == null;
@@ -38,15 +37,24 @@ public class PersistenceHelper {
             return true;
     }
 
+    /**
+     * Determines whether the instance is in <em>Detached</em> state.
+     * @param entity entity instance
+     * @return <code>true</code> if the instance is detached or if it is not a persistent entity
+     */
     public static boolean isDetached(Object entity) {
         return !(entity instanceof PersistenceCapable)
                 || BooleanUtils.isTrue(((PersistenceCapable) entity).pcIsDetached());
     }
 
+    /**
+     * @param entityClass entity class
+     * @return entity name as defined in {@link javax.persistence.Entity} annotation
+     */
     public static String getEntityName(Class<?> entityClass) {
         Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
         if (annotation == null)
-            throw new IllegalArgumentException("Class " + entityClass + " is not an entity");
+            throw new IllegalArgumentException("Class " + entityClass + " is not a persistent entity");
         String name = ((javax.persistence.Entity) annotation).name();
         if (!StringUtils.isEmpty(name))
             return name;
@@ -54,21 +62,20 @@ public class PersistenceHelper {
             return entityClass.getSimpleName();
     }
 
+    /**
+     * Determines whether the entity supports <em>Soft Deletion</em>.
+     * @param entityClass entity class
+     * @return <code>true</code> if the entity implements {@link SoftDelete}
+     */
     public static boolean isSoftDeleted(Class entityClass) {
-        boolean softDelete = false;
-        if (SoftDelete.class.isAssignableFrom(entityClass)) {
-            softDelete = true;
-        } else {
-            for (Class c : (List<Class>) ClassUtils.getAllSuperclasses(entityClass)) {
-                if (SoftDelete.class.isAssignableFrom(c)) {
-                    softDelete = true;
-                    break;
-                }
-            }
-        }
-        return softDelete;
+        return SoftDelete.class.isAssignableFrom(entityClass);
     }
 
+    /**
+     * @param entityClass entity class
+     * @return table name as defined in {@link Table} annotation, or <code>null</code> if there is no such annotation
+     */
+    @Nullable
     public static String getTableName(Class<?> entityClass) {
         Table annotation = entityClass.getAnnotation(Table.class);
         return annotation == null ? null : annotation.name();

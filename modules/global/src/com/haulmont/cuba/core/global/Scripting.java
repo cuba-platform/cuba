@@ -15,12 +15,11 @@ import java.util.Map;
 /**
  * Central interface to provide scripting functionality.
  *
- * <p>Scripting includes ability to run dynamically compiled Java and Groovy classes, as well as loading resources
- * from classpath and conf directory.</p>
- *
- * <p>$Id$</p>
+ * <p>Scripting includes the ability to load dynamically compiled Java and Groovy classes from classpath
+ * and <em>conf</em> directory, as well as running Groovy scripts and expressions.</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Scripting {
 
@@ -46,8 +45,8 @@ public interface Scripting {
 
     /**
      * Runs Groovy script.
-     * The script must be located as file under <em>conf</em> dir (see {@link com.haulmont.cuba.core.global.GlobalConfig#getConfDir()}).
-     * @param name      path to the script relative to <em>conf</em> dir
+     * The script must be located as file under <em>conf</em> directory, or as a classpath resource.
+     * @param name      path to the script relative to <em>conf</em> dir or to the classpath root
      * @param binding   Groovy binding
      * @param <T>       result type
      * @return          result of the script execution
@@ -56,8 +55,8 @@ public interface Scripting {
 
     /**
      * Runs Groovy script.
-     * The script must be located as file under <strong>conf</strong> dir (see {@link com.haulmont.cuba.core.global.GlobalConfig#getConfDir()}).
-     * @param name      path to the script relative to <em>conf</em> dir
+     * The script must be located as file under <em>conf</em> directory, or as a classpath resource.
+     * @param name      path to the script relative to <em>conf</em> dir or to the classpath root
      * @param context   map of parameters to pass to the script, same as Binding
      * @param <T>       result type
      * @return          result of the script execution
