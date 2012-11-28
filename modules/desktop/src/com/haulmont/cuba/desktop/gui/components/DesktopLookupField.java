@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author krivopustov
@@ -325,6 +326,12 @@ public class DesktopLookupField
     @Override
     public void setOptionsList(List optionsList) {
         super.setOptionsList(optionsList);
+        optionsInitialized = false;
+    }
+
+    @Override
+    public void setOptionsMap(Map<String, Object> map) {
+        super.setOptionsMap(map);
         optionsInitialized = false;
     }
 
