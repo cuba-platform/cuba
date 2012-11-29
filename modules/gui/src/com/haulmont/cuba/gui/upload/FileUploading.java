@@ -35,28 +35,28 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ManagedBean("cuba_FileUploading")
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
-    private Map<UUID, File> tempFiles = new ConcurrentHashMap<>();
+    protected Map<UUID, File> tempFiles = new ConcurrentHashMap<>();
 
     /**
      * Upload buffer size.
      * Default: 64 KB
      */
-    private static final int BUFFER_SIZE = 64 * 1024;
+    protected static final int BUFFER_SIZE = 64 * 1024;
 
-    private Log log = LogFactory.getLog(getClass());
+    protected Log log = LogFactory.getLog(getClass());
 
-    private static final String CORE_FILE_UPLOAD_CONTEXT = "/upload";
+    protected static final String CORE_FILE_UPLOAD_CONTEXT = "/upload";
 
-    private String tempDir;
-
-    @Inject
-    private ClusterInvocationSupport clusterInvocationSupport;
+    protected String tempDir;
 
     @Inject
-    private UuidSource uuidSource;
+    protected ClusterInvocationSupport clusterInvocationSupport;
 
     @Inject
-    private TimeSource timeSource;
+    protected UuidSource uuidSource;
+
+    @Inject
+    protected TimeSource timeSource;
 
     @Inject
     protected UserSessionSource userSessionSource;
