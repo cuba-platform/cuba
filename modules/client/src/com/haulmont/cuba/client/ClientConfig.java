@@ -31,10 +31,10 @@ public interface ClientConfig extends Config {
     String getConnectionUrl();
 
     /**
-     * @return Context of the middleware file download controller.<br/>
-     * Usually <code>/remoting/download</code>
+     * @return Context of the middleware file download controller.
      */
     @Property("cuba.fileDownloadContext")
+    @DefaultString("/download")
     String getFileDownloadContext();
 
     /**
