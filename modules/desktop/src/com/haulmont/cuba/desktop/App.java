@@ -388,7 +388,7 @@ public class App implements ConnectionListener {
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
         panel.setPreferredSize(new Dimension(0, 20));
 
-        ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.class);
+        ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
         String url = clusterInvocationSupport.getUrlList().isEmpty() ? "?" : clusterInvocationSupport.getUrlList().get(0);
 
         final JLabel connectionStateLab = new JLabel(

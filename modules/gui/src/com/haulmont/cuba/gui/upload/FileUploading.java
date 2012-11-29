@@ -19,7 +19,9 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,7 +51,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     protected String tempDir;
 
-    @Inject
+    // Using injection by name here, because an application project can define several instances
+    // of ClusterInvocationSupport type to work with different middleware blocks
+    @Resource(name = ClusterInvocationSupport.NAME)
     protected ClusterInvocationSupport clusterInvocationSupport;
 
     @Inject

@@ -18,11 +18,20 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * <p>$Id$</p>
+ * Class that holds the information about current cluster topology.
+ * <p/>
+ * Always inject or lookup this bean by name, not by type, because an application project can define several instances
+ * of this type to work with different middleware blocks.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class ClusterInvocationSupport {
+
+    /**
+     * Default name for the bean instance used by the platform code.
+     */
+    public static final String NAME = "cuba_clusterInvocationSupport";
 
     public interface Listener {
         void urlListChanged(List<String> newUrlList);
