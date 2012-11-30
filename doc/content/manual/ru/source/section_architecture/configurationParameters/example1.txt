@@ -1,6 +1,0 @@
-@Prefix("cuba.FileUploadConfig.")
-@Source(type = SourceType.DATABASE)
-public interface FileUploadConfig extends Config
-{
-    String getUploadDir();
-}

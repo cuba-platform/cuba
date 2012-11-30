@@ -221,26 +221,9 @@
       <para>TODO</para>
     </section>
   </appendix>
-  <appendix id="appendix_security_properties">
+  <appendix id="app_properties_reference">
     <title>Описание свойств приложения</title>
     <variablelist>
-      <varlistentry id="cuba.viewsConfig">
-        <term>cuba.viewsConfig</term>
-        <listitem>
-          <para>Конфигурационный параметр, задающий набор файлов <link linkend="views.xml">views.xml</link>, автоматически развертываемых на старте приложения. См. <xref linkend="views"/></para>
-          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
-          <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml sales-views.xml</programlisting></para>
-        </listitem>
-      </varlistentry>
-      <varlistentry id="cuba.lazyLoadServerViews">
-        <term>cuba.lazyLoadServerViews</term>
-        <listitem>
-          <para>Указывает, что глобальные представления c <structname>Middleware</structname> нужно загружать на клиентский уровень не все сразу, а по необходимости. См. <xref linkend="views"/></para>
-          <para>Значение по умолчанию: <code>false</code></para>
-          <para>Интерфейс: <code>ClientConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
-        </listitem>
-      </varlistentry>
       <varlistentry>
         <term>cuba.availableLocales</term>
         <listitem>
@@ -253,38 +236,16 @@
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
-      <varlistentry>
-        <term>cuba.localeSelectVisible</term>
+      <varlistentry id="cuba.groovyEvaluatorImport">
+        <term>cuba.groovyEvaluatorImport</term>
         <listitem>
-          <para>Включает или отключает возможность пользователя выбирать язык
-интерфейса при входе в систему. </para>
-          <para>Значение по умолчанию: <literal>true</literal></para>
-          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Задает список классов, импортируемых всеми выполняемыми через <code>
+              <link linkend="scripting">Scripting</link>
+            </code> выражениями на Groovy. </para>
+          <para>Имена классов в списке разделяются запятой или точкой с запятой.</para>
+          <para>Значение по умолчанию: <code>com.haulmont.cuba.core.global.PersistenceHelper</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>cuba.trustedClientPassword</term>
-        <listitem>
-          <para>Пароль, используемый методом <code>LoginService.loginTrusted()</code>. Средний слой может аутентифицировать пользователей, подключающихся через доверенный клиентский <link linkend="app_tiers">блок</link>, без проверки пользовательского пароля. </para>
-          <para>Это свойство используется в случае, если пароли пользователей не хранятся в БД, и реальную аутентификацию выполняет сам клиентский блок, например,  путем интеграции с <application>Active Directory</application>.</para>
-          <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
-          <para>Используется в<link linkend="app_tiers"> блоках</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry id="cuba.userSessionExpirationTimeoutSec">
-        <term>cuba.userSessionExpirationTimeoutSec</term>
-        <listitem>
-          <para>Задает  таймаут неактивности сессии пользователя
- в секундах.</para>
-          <para>Значение по умолчанию: <literal>1800</literal></para>
-          <para>Интерфейс: <code>ServerConfig</code></para>
-          <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Middleware</structname>.</para>
-          <tip>
-            <para>Рекомендуется выставлять параметры <property>cuba.userSessionExpirationTimeoutSec</property> и  <link linkend="cuba.httpSessionExpirationTimeoutSec">
-                <property>cuba.httpSessionExpirationTimeoutSec</property>
-              </link>  в одинаковое значение.</para>
-          </tip>
+          <para>Пример:<programlisting>cuba.groovyEvaluatorImport=com.haulmont.cuba.core.global.PersistenceHelper,com.abc.sales.CommonUtils</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.httpSessionExpirationTimeoutSec">
@@ -300,6 +261,25 @@
                 <property>cuba.userSessionExpirationTimeoutSec</property>
               </link> и  <property>cuba.httpSessionExpirationTimeoutSec</property>  в одинаковое значение.</para>
           </tip>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.lazyLoadServerViews">
+        <term>cuba.lazyLoadServerViews</term>
+        <listitem>
+          <para>Указывает, что глобальные представления c <structname>Middleware</structname> нужно загружать на клиентский уровень не все сразу, а по необходимости. См. <xref linkend="views"/></para>
+          <para>Значение по умолчанию: <code>false</code></para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
+          <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.localeSelectVisible</term>
+        <listitem>
+          <para>Включает или отключает возможность пользователя выбирать язык
+интерфейса при входе в систему. </para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -325,21 +305,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term>cuba.web.loginDialogDefaultUser</term>
+        <term>cuba.trustedClientPassword</term>
         <listitem>
-          <para>Задает имя пользователя по умолчанию. Оно будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
-          <para>Значение по умолчанию: <literal>admin</literal></para>
-          <para>Интерфейс: <code>WebConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>cuba.web.loginDialogDefaultPassword</term>
-        <listitem>
-          <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
-          <para>Значение по умолчанию: <literal>admin</literal></para>
-          <para>Интерфейс: <code>WebConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
+          <para>Пароль, используемый методом <code>LoginService.loginTrusted()</code>. Средний слой может аутентифицировать пользователей, подключающихся через доверенный клиентский <link linkend="app_tiers">блок</link>, без проверки пользовательского пароля. </para>
+          <para>Это свойство используется в случае, если пароли пользователей не хранятся в БД, и реальную аутентификацию выполняет сам клиентский блок, например,  путем интеграции с <application>Active Directory</application>.</para>
+          <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
+          <para>Используется в<link linkend="app_tiers"> блоках</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -367,16 +338,45 @@
           </itemizedlist>
         </listitem>
       </varlistentry>
-      <varlistentry id="cuba.groovyEvaluatorImport">
-        <term>cuba.groovyEvaluatorImport</term>
+      <varlistentry id="cuba.userSessionExpirationTimeoutSec">
+        <term>cuba.userSessionExpirationTimeoutSec</term>
         <listitem>
-          <para>Задает список классов, импортируемых всеми выполняемыми через <code>
-              <link linkend="scripting">Scripting</link>
-            </code> выражениями на Groovy. </para>
-          <para>Имена классов в списке разделяются запятой или точкой с запятой.</para>
-          <para>Значение по умолчанию: <code>com.haulmont.cuba.core.global.PersistenceHelper</code></para>
+          <para>Задает  таймаут неактивности сессии пользователя
+ в секундах.</para>
+          <para>Значение по умолчанию: <literal>1800</literal></para>
+          <para>Интерфейс: <code>ServerConfig</code></para>
+          <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Middleware</structname>.</para>
+          <tip>
+            <para>Рекомендуется выставлять параметры <property>cuba.userSessionExpirationTimeoutSec</property> и  <link linkend="cuba.httpSessionExpirationTimeoutSec">
+                <property>cuba.httpSessionExpirationTimeoutSec</property>
+              </link>  в одинаковое значение.</para>
+          </tip>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.viewsConfig">
+        <term>cuba.viewsConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий набор файлов <link linkend="views.xml">views.xml</link>, автоматически развертываемых на старте приложения. См. <xref linkend="views"/></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
-          <para>Пример:<programlisting>cuba.groovyEvaluatorImport=com.haulmont.cuba.core.global.PersistenceHelper,com.abc.sales.CommonUtils</programlisting></para>
+          <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml sales-views.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.web.loginDialogDefaultUser</term>
+        <listitem>
+          <para>Задает имя пользователя по умолчанию. Оно будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
+          <para>Значение по умолчанию: <literal>admin</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.web.loginDialogDefaultPassword</term>
+        <listitem>
+          <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
+          <para>Значение по умолчанию: <literal>admin</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
     </variablelist>

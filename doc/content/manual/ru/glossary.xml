@@ -184,7 +184,7 @@
   </glossdiv>
   <glossdiv>
     <title>A</title>
-    <glossentry id="">
+    <glossentry>
       <glossterm>
         <emphasis role="bold">Application Tiers</emphasis>
       </glossterm>
@@ -316,7 +316,7 @@
 </para>
       </glossdef>
     </glossentry>
-    <glossentry id="middleware">
+    <glossentry id="middleware_glossentry">
       <glossterm>
         <emphasis role="bold">Middleware</emphasis>
       </glossterm>
@@ -329,7 +329,7 @@
         <emphasis role="bold">Middleware Services</emphasis>
       </glossterm>
       <glossdef>
-        <para>Сервисы среднего слоя предоставляют интерфейс для вызова бизнес-логики клиентами и образуют границу <glossterm linkend="middleware">Middleware</glossterm>. Сервисы могут содержать бизнес-логику внутри себя, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
+        <para>Сервисы среднего слоя предоставляют интерфейс для вызова бизнес-логики клиентами и образуют границу <glossterm linkend="middleware_glossentry">Middleware</glossterm>. Сервисы могут содержать бизнес-логику внутри себя, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
         <para>См. <xref linkend="services"/></para>
       </glossdef>
     </glossentry>

@@ -545,11 +545,11 @@ table .footnote {
 	font-weight: bold;
 }
 
-.authorinitials, .firstterm, .property  {
+.authorinitials, .firstterm {
 	font-style: italic;
 }
 
-.classname,.methodname,.interfacename,.errortext,.type, .varname, .envar {
+.property, .classname, .methodname, .interfacename, .errortext, .type, .varname, .envar {
 	font-family:  'Courier New', Courier, monospace;
 }
 

@@ -1614,7 +1614,7 @@ String formattedValue = format.format(value);</programlisting></para>
       <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Большинство из этих интерфейсов расположены в <link linkend="app_modules">модуле</link> <structname>global</structname> и могут быть использованы как на среднем слое, так и в <link linkend="app_tiers">блоках</link> клиентского уровня, но некоторые доступны только коду среднего слоя.</para>
       <para>Интерфейсы инфраструктуры реализуются бинами <application>Spring Framework</application>, поэтому они могут быть инжектированы в любые другие управляемые компоненты (<link linkend="managed_beans">Managed Beans</link>, <link linkend="services">сервисы среднего слоя</link>, <link linkend="screen_controller">контроллеры</link> экранов универсального пользовательского интерфейса.</para>
       <para>Кроме того, как и любые другие бины, интерфейсы инфраструктуры могут быть получены с помощью статических методов класса <code>AppBeans</code>, и использоваться в неуправляемых компонентах (<glossterm linkend="pojo">POJO</glossterm>, вспомогательных классах и пр.).</para>
-      <section>
+      <section id="configuration">
         <title>Configuration</title>
         <para>Позволяет получать ссылки на <link linkend="config_interfaces">конфигурационные интерфейсы</link>.</para>
         <para>Примеры:<programlisting>@Inject
@@ -1980,7 +1980,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
         <para>Обеспечивает получение значений <code>UUID</code>, в том числе для идентификаторов сущностей. Применение <code>UUID.randomUUID()</code> в прикладном коде не рекомендуется.</para>
       </section>
     </section>
-    <section>
+    <section id="appContext">
       <title>AppContext</title>
       <para><code>AppContext</code> - системный класс, в статических полях которого хранятся ссылки на некоторые общие для любого <link linkend="app_tiers">блока</link> приложения компоненты:<itemizedlist>
           <listitem>
@@ -2043,220 +2043,224 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
     </section>
     <section id="app_properties">
       <title>Свойства приложения</title>
-      <para wordsize="20"><emphasis role="bold">Основные понятия</emphasis></para>
-      <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
-      <para>По назначению свойства приложения можно классифицировать следующим образом:</para>
-      <itemizedlist>
-        <listitem>
-          <para>Конфигурационные параметры: определяют наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса. Например: <parameter>cuba.springContextConfig</parameter>, <parameter>cuba.web.useLightHeader</parameter>.</para>
-        </listitem>
-        <listitem>
-          <para>Параметры развертывания: различные URL для соединения уровней приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType,</parameter> <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
-        </listitem>
-        <listitem>
-          <para>Параметры времени выполнения: активность аудита, параметры отсылки email и т.д. Например, <parameter>cuba.security.EntityLog.enabled</parameter>, <parameter>cuba.email.smtpHost</parameter>.</para>
-        </listitem>
-      </itemizedlist>
-      <para><emphasis role="bold">Работа со свойствами приложения</emphasis></para>
-      <formalpara>
-        <title>Программный доступ к свойствам</title>
-        <para>Основной способ доступа к свойствам приложения из программного кода − использование механизма <link linkend="config_interfaces">конфигурационных интерфейсов</link>. Кроме того, все свойства конфигурации и развертывания доступны через методы класса <code>com.haulmont.cuba.core.sys.AppContext</code>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Принадлежность уровням</title>
-        <para>Как правило, некоторое свойство принадлежит только одному или нескольким уровням приложения. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только дляMiddleware,  <parameter>cuba.web.useLightHeader</parameter> − только для Web Client, а <parameter>cuba.springContextConfig </parameter>− для всех уровней. </para>
-        <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="properties_storage_para">Хранение значений свойств</link>). </para>
+      <section>
+        <title>Основные понятия</title>
+        <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
+        <para>По назначению свойства приложения можно классифицировать следующим образом:</para>
+        <itemizedlist>
+          <listitem>
+            <para><firstterm>Конфигурационные параметры</firstterm> - задают наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса, т.е. определяют функциональность приложения. </para>
+            <para>Например: <property>cuba.springContextConfig</property>, <property>cuba.web.useLightHeader</property>.</para>
+          </listitem>
+          <listitem>
+            <para><firstterm>Параметры развертывания</firstterm> - различные URL для соединения <link linkend="app_tiers">блоков</link> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. </para>
+            <para>Например: <property>cuba.connectionUrl</property>, <property>cuba.dbmsType</property>, <property>
+                <link linkend="cuba.userSessionExpirationTimeoutSec">cuba.userSessionExpirationTimeoutSec</link>
+              </property>.</para>
+          </listitem>
+          <listitem>
+            <para><firstterm>Параметры времени выполнения</firstterm> - активность аудита, параметры отсылки email и т.д. </para>
+            <para>Например: <property>cuba.security.EntityLog.enabled</property>, <property>cuba.email.smtpHost</property>.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Как правило, некоторое свойство принадлежит только одному или нескольким <link linkend="app_tiers">блокам</link> приложения. Например, <property>cuba.persistenceConfig</property> имеет смысл только для <structname>Middleware</structname>, <property> cuba.web.useLightHeader</property> − только для <structname>Web Client</structname>, а <property>cuba.springContextConfig</property> − для всех блоков. </para>
+        <para>Принадлежность к блоку означает, что если нужно задать значение некоторому свойству, это необходимо сделать <emphasis>во всех блоках</emphasis>, которым данное свойство принадлежит (и которые используются в приложении). </para>
         <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
             <listitem>
-              <para>Из документации</para>
+              <para>Из документации: см. <xref linkend="app_properties_reference"/> </para>
             </listitem>
             <listitem>
               <para>Проследив использование свойства в коде приложения</para>
             </listitem>
             <listitem>
-              <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства уровням приложения:</para>
-              <itemizedlist>
-                <listitem>
-                  <para><structname>global</structname> − свойство принадлежит всем уровням</para>
-                </listitem>
-                <listitem>
-                  <para><structname>core</structname> − <glossterm>Middleware</glossterm></para>
-                </listitem>
-                <listitem>
-                  <para><structname>client</structname> − Web Client, Web Portal, Desktop Client</para>
-                </listitem>
-                <listitem>
-                  <para><structname>web</structname> − Web Client</para>
-                </listitem>
-                <listitem>
-                  <para><structname>web-portal</structname> − Web Portal</para>
-                </listitem>
-                <listitem>
-                  <para><structname>desktop</structname> − Desktop Client</para>
-                </listitem>
-              </itemizedlist>
+              <para>Если к свойству есть доступ через <link linkend="config_interfaces">конфигурационный интерфейс</link>, то по принадлежности интерфейса <link linkend="app_modules">модулю</link> проекта.</para>
             </listitem>
           </itemizedlist></para>
-      </formalpara>
-      <formalpara>
-        <title>JMX-интерфейс</title>
-        <para>Некоторые уровни приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне Middleware имеется JMX-интерфейс <code>ConfigStorageMBean</code> с именем <code>app-core.cuba:service=ConfigStorage</code>, а на уровне Web Client − <code>ConfigurationMBean</code> с именем <code>app.cuba:service=Configuration</code>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="properties_storage_para">хранения</link> этих категорий свойств.</para>
-      </formalpara>
-      <para id="properties_storage_para"><emphasis role="bold">Хранение значений свойств</emphasis></para>
-      <formalpara id="text_properties_files_1">
-        <title>Файлы свойств</title>
-        <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый уровень приложения имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
-      </formalpara>
-      <itemizedlist>
-        <listitem>
-          <para>Для уровней, являющихся веб-приложениями (Middleware, Web Client, Web Portal) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
-        </listitem>
-        <listitem>
-          <para>Для уровня Desktop Client основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <code>com.haulmont.cuba.desktop.App</code>.</para>
-        </listitem>
-      </itemizedlist>
-      <para>Например, набор файлов свойств уровня Middleware проекта <application>shop</application> − <filename>web.xml</filename> − выглядит следующим образом:</para>
-      <programlisting>classpath:cuba-app.properties
-classpath:shop-app.properties
+      </section>
+      <section>
+        <title>Доступ к свойствам</title>
+        <para><para>Основной способ доступа к свойствам приложения из прикладного кода − использование механизма <link linkend="config_interfaces">конфигурационных интерфейсов</link>. Кроме того, все параметры конфигурации и развертывания доступны через методы класса <code>
+              <link linkend="appContext">AppContext</link>
+            </code>.</para></para>
+        <para>Некоторые блоки приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <structname>Middleware</structname> имеется JMX-интерфейс <code>
+            <link linkend="configStorageMBean">ConfigStorageMBean</link>
+          </code>, а на уровне <structname>Web Client</structname> − <code>
+            <link linkend="configurationMBean">ConfigurationMBean</link>
+          </code>. Методы этих интерфейсов работают по отдельности с параметрами конфигурации и развертывания (<code>*AppProperties</code>) и с параметрами времени выполнения (<code>*DbProperties</code>). Это обусловлено различием механизмов хранения этих категорий свойств.</para>
+      </section>
+      <section>
+        <title>Хранение свойств в файлах</title>
+        <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый <link linkend="app_tiers">блок</link> приложения имеет набор таких файлов, включающий в себя файлы из <link linkend="base_projects">базовых проектов</link> платформы и файл текущего приложения. Набор файлов свойств  определяется следующим образом:</para>
+        <itemizedlist>
+          <listitem>
+            <para>Для блоков, являющихся веб-приложениями (<structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <literal>appPropertiesConfig</literal>.</para>
+          </listitem>
+          <listitem>
+            <para>Для блока <structname>Desktop Client</structname> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig()</methodname> в классе-наследнике <code>com.haulmont.cuba.desktop.App</code>.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Например, набор файлов свойств блока <structname>Middleware</structname> проекта <application>sales</application> задается в файле  <filename>web/WEB-INF/web.xml</filename>  модуля <structname>core</structname>, и выглядит следующим образом:</para>
+        <programlisting>classpath:cuba-app.properties
+classpath:sales-app.properties
 file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
-      <para>Здесь префикс <code>classpath:</code> означает, что данный файл нужно искать в Java classpath, префикс <code>file:</code> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <code>catalina.home</code> − путь к корню <application>Tomcat</application>.</para>
-      <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
-      <para>Последний файл в приведенном наборе − <filename>local.app.properties</filename>.</para>
-      <para><emphasis role="bold">Синтаксис</emphasis></para>
-      <para><warning>
-          <para>Обратите внимание на синтаксис ключей и значений в *.properties файлах.</para>
+        <para>Здесь префикс <literal>classpath:</literal> означает, что данный файл нужно искать в Java classpath, префикс <literal>file:</literal> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <literal>catalina.home</literal> − путь к корню <application>Tomcat</application>.</para>
+        <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
+        <para>Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Он может использоваться для переопределения свойств приложения при развертывании. Если этого файла нет, он игнорируется. Если же во время инсталляции системы требуется переопределение некоторых параметров (как правило различных URL), достаточно создать этот файл и поместить в него переопределяемые свойства. При последующих обновлениях системы такой файл с локальными настройками легко сохранить.</para>
+        <tip>
+          <para>Правила задания информации в файлах  <filename>*.properties</filename>:</para>
           <itemizedlist>
             <listitem>
-              <para>Ключ состоит из латинских букв и цифр, разделенных точкой</para>
+              <para>Кодировка файла - <literal>UTF-8</literal></para>
             </listitem>
             <listitem>
-              <para>Значение пишется после знака равно (=)</para>
+              <para>Ключ может состоять из латинских букв, цифр, точек  и знаков подчеркивания</para>
             </listitem>
             <listitem>
-              <para>Значение <emphasis role="bold">никогда</emphasis> не берется в кавычки &quot;&quot; или &apos;&apos;</para>
+              <para>Значение пишется после знака равно (<literal>=</literal>)</para>
             </listitem>
             <listitem>
-              <para>Файловые пути записываются либо в UNIX виде (/opt/haulmont/), либо в Windows виде (c:\\haulmont\\)</para>
+              <para>Значение  не нужно брать в кавычки &quot; или &apos;</para>
             </listitem>
             <listitem>
-              <para>Для различных спецсимволов используются коды (\n \t \r). \  является зарезервированным символом, для вставки в значение экранируется сам собой (\\).
-Подробнее: <ulink url="http://docs.oracle.com/javase/tutorial/java/data/characters.html">http://docs.oracle.com/javase/tutorial/java/data/characters.html</ulink></para>
+              <para>Файловые пути записываются либо в UNIX виде (<filename>/opt/haulmont/</filename>), либо в Windows виде (<filename>c:\\haulmont\\</filename>)</para>
             </listitem>
             <listitem>
-              <para>В значениях могут присутствовать спецсимволы (пробелы, табуляции).     Внимательно проверяйте значения, скопированные в файл из других программ</para>
+              <para>Возможно использование кодов <literal>\n \t \r</literal>. Символ <literal>\</literal>  является зарезервированным, для вставки в значение экранируется сам собой (<literal>\\</literal>).
+Подробнее см.: <ulink url="http://docs.oracle.com/javase/tutorial/java/data/characters.html">http://docs.oracle.com/javase/tutorial/java/data/characters.html</ulink></para>
+            </listitem>
+            <listitem>
+              <para>Для ввода значения в нескольких строках файла используйте символ <literal>\</literal> в конце строки, для того чтобы данное значение продолжалось на следующей строке.</para>
             </listitem>
           </itemizedlist>
-        </warning></para>
-      <formalpara>
-        <title>Таблица базы данных</title>
-        <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне Middleware. Очистить кэш можно через JMX-интерфейсы <code>app-core.cuba:service=ConfigStorage</code> методом <methodname>clearCache</methodname> или <code>app-core.cuba:service=CachingFacade</code> методом <methodname>clearConfigStorageCache</methodname>.</para>
-      </formalpara>
-      <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
-      <para>Если обращение к свойству производится через Java-интерфейс механизма Configuration Parameters и если значение свойства не задано в месте его хранения (файлы <filename>*-app.properties</filename> или БД), то будет возвращено значение по умолчанию, если оно задано в аннотации соответствующего метода Java-интерфейса.</para>
-      <para>Подробное описание свойств подсистемы безопасности содержится в <link linkend="appendix_security_properties">Приложении А</link>.</para>
+        </tip>
+      </section>
+      <section>
+        <title>Хранение свойств в базе данных</title>
+        <para>Параметры времени выполнения хранятся в таблице <database>SYS_CONFIG</database> базы данных. </para>
+        <para>Такие свойства имеют следующие особенности:<itemizedlist>
+            <listitem>
+              <para>так как значение свойства хранится в базе данных, оно задается в одном месте, независимо от того, в каких  блоках приложения оно используется</para>
+            </listitem>
+            <listitem>
+              <para>значение может быть изменено и сохранено во время работы приложения, как через <link linkend="config_interfaces">конфигурационный интерфейс</link>, содержащий это свойство, так и через <link linkend="configStorageMBean">ConfigStorageMBean</link>.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Хранящиеся в БД свойства кэшируются на уровне <structname>Middleware</structname>. Очистить кэш можно с помощью JMX-интерфейсов <code>
+            <link linkend="configStorageMBean">ConfigStorageMBean</link>
+          </code> методом <code>clearCache()</code> или <code>
+            <link linkend="cachingFacadeMBean">CachingFacadeMBean</link>
+          </code> методом <code>clearConfigStorageCache()</code>.</para>
+        <para>Следует иметь в виду, что на клиентском уровне чтение свойства, хранящегося в БД, приводит к запросу к <structname>Middleware</structname>, что менее эффективно, чем чтение локального свойства из <filename>app.properties</filename>. Для уменьшения количества таких запросов клиент кэширует все свойства, хранящиеся в БД, на время жизни экземпляра реализации конфигурационного интерфейса. Поэтому если например в некотором экране UI необходимо несколько раз обратиться к свойствам одного конфигурационного интерфейса, лучше получить ссылку на него при инициализации экрана, и сохранить в поле для последующих обращений к одному и тому же экземпляру. </para>
+      </section>
       <section id="config_interfaces">
         <title>Конфигурационные интерфейсы</title>
-        <para>Подсистема работы с конфигурационными параметрами позволяет сохранять/извлекать пары имя-значение с помощью стандартных Java-интерфейсов. При этом хранилищем параметров может быть база данных, системные свойства Java, и свойства приложения, задаваемые в файлах app.properties.</para>
-        <para>Рекомендуется использовать только для хранения системных настроек, доступных администратору системы. Для хранения настроек пользователя лучше создавать отдельную сущность для их хранения и использовать стандартный эдитор для редактирования.</para>
-        <para><emphasis role="bold">Использование</emphasis></para>
-        <para>Для создания конфигурационного параметра необходимо:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Создать интерфейс, унаследованный от <interface>com.haulmont.cuba.core.config.Config</interface></para>
-          </listitem>
-          <listitem>
-            <para>Создать методы доступа к параметру (getXXX/setXXX). Возможный тип параметра обсуждается ниже.</para>
-          </listitem>
-          <listitem>
-            <para>Добавить интерфейсу аннотацию <literal>@Prefix</literal> для указания префикса имен входящих в интерфейс параметров</para>
-          </listitem>
-          <listitem>
-            <para>Добавить интерфейсу и/или параметру аннотацию <literal>@Source</literal> для указания источника (места хранения) параметров</para>
-          </listitem>
-        </itemizedlist>
-        <para>Например:</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
-        <para>Реализовывать интерфейс не нужно.</para>
-        <para>Для получения доступа к параметрам используется интерфейс инфраструктуры <interface>Configuration</interface> или его статический фасад <interface>ConfigProvider</interface>.</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example2.txt" encoding="UTF-8" parse="text"/></programlisting>
-        <para>Стандартный UI для доступа к параметрам, хранящимся в базе данных, предоставляет МБин haulmont.cuba:service=ConfigStorage. Он содержит следующие методы:</para>
-        <itemizedlist>
-          <listitem>
-            <para>setProperty(p1, p2) − установить параметр с именем p1 в значение p2</para>
-          </listitem>
-          <listitem>
-            <para>getProperty(p1) − показать параметр с именем p1</para>
-          </listitem>
-          <listitem>
-            <para>removeProperty(p1) − удалить параметр с именем p1</para>
-          </listitem>
-          <listitem>
-            <para>printProperties(p1) − показать все параметры с фильтром на имя p1 по правилам SQL like</para>
-          </listitem>
-          <listitem>
-            <para>printProperties − показать все параметры</para>
-          </listitem>
-          <listitem>
-            <para>loadSystemProperties − загрузить в System.properties параметры из файла conf/system.properties</para>
-          </listitem>
-        </itemizedlist>
-        <para><emphasis role="bold">Возможности</emphasis></para>
-        <para><emphasis role="bold">Имена параметров</emphasis></para>
-        <para>Имя параметра в БД или в app.properties формируется по следующему принципу:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Если на параметре есть аннотация <literal>@Property</literal>, то берется ее значение</para>
-          </listitem>
-          <listitem>
-            <para>Иначе:</para>
-            <itemizedlist>
-              <listitem>
-                <para>Если есть аннотация <literal>@Prefix</literal>, берется ее значение</para>
-              </listitem>
-              <listitem>
-                <para>Если нет аннотации <literal>@Prefix</literal>, то</para>
-                <itemizedlist>
+        <para>Данный механизм позволяет работать  со свойствами приложения через методы Java-интерфейсов, что дает следующие преимущества:<itemizedlist>
+            <listitem>
+              <para>типизированность - прикладной код работает с нужными типами (String, Boolean, Integer и пр.), а не только со строками</para>
+            </listitem>
+            <listitem>
+              <para>в прикладном коде вместо строковых идентификаторов свойств используются методы интерфейсов, имена которых подсказываются средой разработки</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Пример получения значения таймаута транзакции в блоке <structname>Middleware</structname>:<programlisting>@Inject
+protected Configuration configuration;
+...
+ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
+int timeout = serverConfig.getDefaultQueryTimeoutSec();</programlisting></para>
+        <para>Или при невозможности инжекции <link linkend="configuration">Configuration</link>:<programlisting>int timeout = AppBeans.get(Configuration.class)
+    .getConfig(ServerConfig.class)
+    .getDefaultQueryTimeoutSec();</programlisting></para>
+        <section>
+          <title>Использование</title>
+          <para>Для создания конфигурационного интерфейса необходимо:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Создать интерфейс, унаследованный от <code>com.haulmont.cuba.core.config.Config</code> (не путать с классом сущности <code>com.haulmont.cuba.core.entity.Config</code>)</para>
+            </listitem>
+            <listitem>
+              <para>Добавить интерфейсу  аннотацию <code>@Source</code> для указания источника (способа хранения) параметров:<itemizedlist>
                   <listitem>
-                    <para>Если интерфейс является внутренним, то берется полное имя включающего класса и добавляется &quot;.&quot;</para>
+                    <para><code>SourceType.SYSTEM</code> - значение свойства будет взято из системных свойств данной JVM, т.е. методом <code> System.getProperty()</code></para>
                   </listitem>
                   <listitem>
-                    <para>Иначе берется полное имя пакета и добавляется &quot;.&quot;</para>
+                    <para><code>SourceType.APP</code> - значение свойства будет взято из файлов <filename>app.properties</filename></para>
                   </listitem>
-                </itemizedlist>
+                  <listitem>
+                    <para><code>SourceType.DATABASE</code> - значение свойства будет взято из таблицы <database>SYS_CONFIG</database></para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+            <listitem>
+              <para>Создать методы доступа к свойству (getter / settter). Если значение свойства не предполагается изменять во время выполнения, метод доступа на запись не нужен. Возможный тип свойства рассмотрен ниже.</para>
+            </listitem>
+            <listitem>
+              <para>Добавить методу доступа на чтение аннотацию <code>@Property</code>, определяющую имя свойства.</para>
+            </listitem>
+            <listitem>
+              <para>Опционально аннотацию <code>@Source</code> можно задать для отдельного свойства в интерфейсе, если его источник отличается от заданного для всего интерфейса.</para>
+            </listitem>
+          </itemizedlist>
+          <para>Например:<programlisting>@Source(type = SourceType.DATABASE)
+public interface SalesConfig extends Config {
+
+    @Property(&quot;sales.companyName&quot;)
+    String getCompanyName();
+}</programlisting></para>
+          <para>Создавать класс реализации конфигурационного интерфейса не нужно - при получении ссылки на интерфейс через <link linkend="configuration">Configuration</link> будет автоматически создан необходимый прокси-объект.</para>
+        </section>
+        <section>
+          <title>Типы свойств</title>
+          <para>Без дополнительных усилий поддерживаются следующие типы свойств: <itemizedlist>
+              <listitem>
+                <para><code>String</code></para>
               </listitem>
               <listitem>
-                <para>Добавляется декапитализированное имя метода доступа без get/set/is (см. комментарии к методу <methodname>com.haulmont.cuba.core.config.ConfigUtil#extendedUncapitalize</methodname>)</para>
+                <para>простые типы либо их объектные обертки (<code>boolean</code>, <code>Boolean</code>, <code>int</code>, <code>Integer</code>, etc.)</para>
               </listitem>
-            </itemizedlist>
-          </listitem>
-        </itemizedlist>
-        <para><emphasis role="bold">Источники параметров</emphasis></para>
-        <para>В соответствии со значениями <code>com.haulmont.cuba.core.config.SourceType</code> на данный момент возможны 3 источника параметров: app.propperties, System.properties или база данных.</para>
-        <para>В случае базы данных параметры хранятся в таблице <database>SYS_CONFIG</database>.</para>
-        <para>Аннотация <literal>@Source</literal> может быть задана как на весь интерфейс, так и на отдельный параметр. В первом случае она определяет источник всех параметров данного интерфейса. Во втором случае она переопределяет источник для данного параметра, если он отличен от указанного для интерфейса.</para>
-        <para><emphasis role="bold">Типы параметров</emphasis></para>
-        <para>Без дополнительных усилий параметр может быть любого простого типа либо его объектного аналога (String, int, Integer, etc.) либо сущностью, реализующей интерфейс Entity.</para>
-        <para>Для произвольного типа необходимо реализовать классы TypeStringify и TypeFactory для преобразования значения в строку и из нее, и указать эти классы для параметра с помощью аннотаций @Stringify и @Factory.</para>
-        <para>Рассмотрим этот процесс на примере типа UUID.</para>
-        <itemizedlist>
-          <listitem>
-            <para>Создаем класс com.haulmont.cuba.core.config.type.UuidTypeFactory унаследованный от com.haulmont.cuba.core.config.type.TypeFactory и реализуем в нем метод:</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example3.txt" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-          <listitem>
-            <para>TypeStringify создавать не нужно, т.к. по умолчанию будет использован Object.toString() − в данном случае он нам подходит.</para>
-          </listitem>
-          <listitem>
-            <para>Аннотируем параметр:</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example4.txt" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-        </itemizedlist>
-        <para><emphasis role="bold">Значения по умолчанию</emphasis></para>
-        <para>Для параметров могут быть заданы значения по умолчанию. Эти значения будут возвращаться, если данный параметр не задан (не существует в БД или в app.properties).</para>
-        <para>Дефолтное значение может быть задано в виде строки с помощью аннотации @com.haulmont.cuba.core.config.defaults.Default, либо в виде конкретного типа с помощью других аннотаций пакета com.haulmont.cuba.core.config.defaults.</para>
-        <para>Для сущностей дефолтное значение задается в виде имя_сущности-id-имя_представления, например</para>
-        <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_architecture/configurationParameters/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
-        <para>имя представления необязательно.</para>
+              <listitem>
+                <para>классы персистентных <link linkend="data_model">сущностей</link>. При обращении к свойству типа сущности происходит загрузка из БД экземпляра, заданного значением свойства.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Для поддержки произвольного типа необходимо реализовать классы <code>TypeStringify</code> и <code>TypeFactory</code> для преобразования значения в строку и из нее, и указать эти классы для свойства с помощью аннотаций <code>@Stringify</code> и <code>@Factory</code>.</para>
+          <para>Рассмотрим этот процесс на примере типа <code>UUID</code>.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Создаем класс <code>com.haulmont.cuba.core.config.type.UuidTypeFactory</code> унаследованный от <code>com.haulmont.cuba.core.config.type.TypeFactory</code> и реализуем в нем метод:<programlisting>public Object build(String string) {
+    if (string == null)
+        return null;
+    return UUID.fromString(string);
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>TypeStringify</code> создавать не нужно, т.к. по умолчанию будет использован метод <code>toString()</code> − в данном случае он нам подходит.</para>
+            </listitem>
+            <listitem>
+              <para>Аннотируем свойство в конфигурационном интерфейсе:<programlisting>@Factory(factory = UuidTypeFactory.class)
+UUID getUuidProp();
+void setUuidProp(UUID value);</programlisting></para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section>
+          <title>Значения по умолчанию</title>
+          <para>Для свойств конфигурационных интерфейсов могут быть заданы значения по умолчанию. Эти значения будут возвращаться, если данный параметр не задан в месте хранения - в БД или в <filename>app.properties</filename>.</para>
+          <para>Значение по умолчанию может быть задано в виде строки с помощью аннотации <code>@Default</code>, либо в виде конкретного типа с помощью других аннотаций пакета <code>com.haulmont.cuba.core.config.defaults</code>:<programlisting>@Property(&quot;cuba.email.adminAddress&quot;)
+@Default(&quot;address@company.com&quot;)
+String getAdminAddress();
+
+@Property(&quot;cuba.email.delayCallCount&quot;)
+@Default(&quot;2&quot;)
+int getDelayCallCount();
+
+@Property(&quot;cuba.email.defaultSendingAttemptsCount&quot;)
+@DefaultInt(10)
+int getDefaultSendingAttemptsCount();</programlisting></para>
+          <para>Для сущностей  значение по умолчанию задается строкой вида <literal>{entity_name}-{id}-{optional_view_name}</literal>, например:<programlisting>@Default(&quot;sec$User-98e5e66c-3ac9-11e2-94c1-3860770d7eaf-browse&quot;)
+User getAdminUser();
+
+@Default(&quot;sec$Role-a294aef0-3ac9-11e2-9433-3860770d7eaf&quot;)
+Role getAdminRole();</programlisting></para>
+        </section>
       </section>
     </section>
     <section id="localization">
@@ -2378,17 +2382,29 @@ actions.Edit=Edit
       <para>Как видно из диаграммы, МБин имеет два набора методов, разделенных по интерфейсам <code>...MBean</code> и <code>...API</code>. Первый из них служит для управления через JMX, а второй − для вызова из программного кода.</para>
       <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="interceptor">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью Spring AOP), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <code>ClassLoader</code>.</para>
       <section id="cachingFacadeMBean">
-        <title id="">CachingFacadeMBean</title>
+        <title>CachingFacadeMBean</title>
         <para><code>CachingFacadeMBean</code> предоставляет методы очистки различных кэшей на <link linkend="app_tiers">уровне</link> <structname>Middleware</structname>.</para>
         <para>JMX ObjectName: <literal>app-core.cuba:type=CachingFacade</literal></para>
       </section>
       <section id="cachingMBean">
-        <title id="">CachingMBean</title>
+        <title>CachingMBean</title>
         <para><code>CachingMBean</code> предоставляет методы очистки различных кэшей в <link linkend="app_tiers">блоке</link> <structname>Web Client</structname>.</para>
-        <para>JMX ObjectName: <literal id="">app.cuba:type=Caching</literal></para>
+        <para>JMX ObjectName: <literal>app.cuba:type=Caching</literal></para>
+      </section>
+      <section id="configStorageMBean">
+        <title>ConfigStorageMBean</title>
+        <para><code>ConfigStorageMBean</code> позволяет просматривать и задавать значения <link linkend="app_properties">свойствам приложения</link> <link linkend="app_tiers">блока</link> <structname>Middleware</structname>.</para>
+        <para>Следует иметь в виду, что измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
+        <para>JMX ObjectName: <literal>app-core.cuba:type=ConfigStorage</literal></para>
+      </section>
+      <section id="configurationMBean">
+        <title>ConfigurationMBean</title>
+        <para><code>ConfigurationMBean</code> позволяет просматривать и задавать значения <link linkend="app_properties">свойствам приложения</link> <link linkend="app_tiers">блока</link> <structname>Web Client</structname>, хранящимся в файлах <filename>app.properties</filename>. </para>
+        <para>Следует иметь в виду, что измененные значения не сохраняются, и действуют только до рестарта данного блока.</para>
+        <para>JMX ObjectName: <literal>app.cuba:type=Configuration</literal></para>
       </section>
       <section id="scriptingManagerMBean">
-        <title id="">ScriptingManagerMBean</title>
+        <title>ScriptingManagerMBean</title>
         <para><code>ScriptingManagerMBean</code> является JMX-фасадом для интерфейса инфраструктуры <code>
             <link linkend="scripting">Scripting</link>
           </code>.</para>

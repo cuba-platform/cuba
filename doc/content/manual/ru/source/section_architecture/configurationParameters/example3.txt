@@ -1,3 +1,0 @@
-public Object build(String string) {
-    return UUID.fromString(string);
-}
