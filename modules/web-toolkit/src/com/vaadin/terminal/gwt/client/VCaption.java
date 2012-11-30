@@ -210,7 +210,7 @@ public class VCaption extends HTML {
             }
         } else if (requiredFieldIndicator != null) {
             // Remove existing
-            DOM.removeChild(getElement(), requiredFieldIndicator);
+            requiredFieldIndicator.removeFromParent();
             requiredFieldIndicator = null;
         }
 
