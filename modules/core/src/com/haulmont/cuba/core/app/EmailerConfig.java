@@ -6,7 +6,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.config.Prefix;
+import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
@@ -16,17 +16,16 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 /**
  * Configuration parameters interface used for sending emails.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-@Prefix("cuba.email.")
 @Source(type = SourceType.DATABASE)
 public interface EmailerConfig extends Config
 {
     /**
      * @return Default "from" address
      */
+    @Property("cuba.email.fromAddress")
     @Default("DoNotReply@haulmont.com")
     String getFromAddress();
     void setFromAddress(String fromAddress);
@@ -34,6 +33,7 @@ public interface EmailerConfig extends Config
     /**
      * @return SMTP host name
      */
+    @Property("cuba.email.smtpHost")
     @Default("test.host")
     String getSmtpHost();
 
@@ -41,12 +41,14 @@ public interface EmailerConfig extends Config
      * Used in server startup.
      * Sending emails will be started after delayCallCount cron ticks (used to not overload server in startup)
      */
+    @Property("cuba.email.delayCallCount")
     @Default("2")
     int getDelayCallCount();
 
     /**
      * MaxResults query limit for load messages from DB in one tick
      */
+    @Property("cuba.email.messageQueueCapacity")
     @Default("100")
     int getMessageQueueCapacity();
 
@@ -54,6 +56,7 @@ public interface EmailerConfig extends Config
      * 
      * @return Quantity of sending attempts after which message's status is set to NOT_SENT
      */
+    @Property("cuba.email.defaultSendingAttemptsCount")
     @DefaultInt(10)
     int getDefaultSendingAttemptsCount();
 
@@ -61,6 +64,7 @@ public interface EmailerConfig extends Config
      *
      * @return Max time of sending message while it is still considered to be valid
      */
+    @Property("cuba.email.maxSendingTimeSec")
     @DefaultInt(120)
     int getMaxSendingTimeSec();
 
@@ -68,13 +72,14 @@ public interface EmailerConfig extends Config
      *
      * @return Admin's email address
      */
+    @Property("cuba.email.adminAddress")
     @Default("address@company.com")
     String getAdminAddress();
 
     /**
      * If this parameter is set to true, all email messages will be sent to admin's email address
-     * @return
      */
+    @Property("cuba.email.sendAllToAdmin")
     @DefaultBoolean(false)
     boolean getSendAllToAdmin();
 }

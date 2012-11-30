@@ -7,7 +7,7 @@
 package com.haulmont.cuba.portal.config;
 
 import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.config.Prefix;
+import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
@@ -19,17 +19,20 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
  * @version $Id$
  */
 @Source(type = SourceType.APP)
-@Prefix("cuba.portal.")
 public interface PortalConfig extends Config {
 
+    @Property("cuba.portal.trustedClientLogin")
     String getTrustedClientLogin();
 
+    @Property("cuba.portal.trustedClientPassword")
     String getTrustedClientPassword();
 
+    @Property("cuba.portal.defaultLocale")
     @DefaultString("en")
     String getDefaultLocale();
     void setDefaultLocale(String defaultLocale);
 
+    @Property("cuba.portal.theme")
     @DefaultString("default")
     String getTheme();
 }

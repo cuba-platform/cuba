@@ -13,6 +13,7 @@ import java.lang.annotation.*;
  * @author Merlin Hughes
  * @version 0.1, 2007/04/15
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface Prefix

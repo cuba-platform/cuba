@@ -7,7 +7,7 @@
 package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.config.Prefix;
+import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
@@ -26,7 +26,6 @@ import java.util.List;
  * @author krivopustov
  */
 @Source(type = SourceType.APP)
-@Prefix("cuba.desktop.")
 public interface DesktopConfig extends Config {
 
     /**
@@ -36,9 +35,11 @@ public interface DesktopConfig extends Config {
      *
      * @return list of root resource directories
      */
+    @Property("cuba.desktop.resourceLocations")
     @Default("com/haulmont/cuba/desktop/res")
     String getResourceLocations();
 
+    @Property("cuba.desktop.mainTabCaptionLength")
     @DefaultInt(25)
     int getMainTabCaptionLength();
 
@@ -48,12 +49,15 @@ public interface DesktopConfig extends Config {
      *
      * @return desktop theme name
      */
+    @Property("cuba.desktop.theme")
     @Default("nimbus")
     String getTheme();
 
+    @Property("cuba.desktop.dialogNotificationsEnabled")
     @DefaultBoolean(false)
     boolean isDialogNotificationsEnabled();
 
+    @Property("cuba.desktop.availableFontSizes")
     @Factory(factory = IntegerListTypeFactory.class)
     @Default("6 8 10 12 14 16 18 20 22 24 28 32 36 48 54 60 72")
     List<Integer> getAvailableFontSizes();
@@ -61,6 +65,7 @@ public interface DesktopConfig extends Config {
     /**
      * @return true if application should change time zone to that which is used by server
      */
+    @Property("cuba.desktop.useServerTimeZone")
     @DefaultBoolean(true)
     boolean isUseServerTimeZone();
 }

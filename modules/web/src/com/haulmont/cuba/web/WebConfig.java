@@ -5,7 +5,10 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.config.*;
+import com.haulmont.cuba.core.config.Config;
+import com.haulmont.cuba.core.config.Property;
+import com.haulmont.cuba.core.config.Source;
+import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
@@ -15,12 +18,10 @@ import java.util.List;
 /**
  * Configuration parameters interface used by the WEB layer.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Source(type = SourceType.APP)
-@Prefix("cuba.web.")
 public interface WebConfig extends Config
 {
     /**
@@ -44,11 +45,13 @@ public interface WebConfig extends Config
     /**
      * @return Default user login to set in the login dialog.
      */
+    @Property("cuba.web.loginDialogDefaultUser")
     String getLoginDialogDefaultUser();
 
     /**
      * @return Default user password to set in the login dialog.
      */
+    @Property("cuba.web.loginDialogDefaultPassword")
     String getLoginDialogDefaultPassword();
 
     /**
@@ -62,54 +65,61 @@ public interface WebConfig extends Config
     /**
      * @return Whether to use the ActiveDirectory authentication
      */
+    @Property("cuba.web.useActiveDirectory")
     @DefaultBoolean(false)
     boolean getUseActiveDirectory();
 
-    /**
-     * @return Whether to use the ActiveDirectory authentication
-     */
+    @Property("cuba.web.activeDirectoryDebug")
     @DefaultBoolean(false)
     boolean getActiveDirectoryDebug();
 
     /**
      * @return ActiveDirectory domains configuration info
      */
+    @Property("cuba.web.activeDirectoryDomains")
     String getActiveDirectoryDomains();
 
     /**
      * @return Short/User-friendly domain aliases for login window form
      */
+    @Property("cuba.web.activeDirectoryAliases")
     String getActiveDirectoryAliases();
 
     /**
      * @return ActiveDirectory authentification provider
      */
+    @Property("cuba.web.activeDirectoryAuthClass")
     @DefaultString("com.haulmont.cuba.web.sys.auth.KerberosAuthProvider")
     String getActiveDirectoryAuthClass();
 
     /**
      * @return Kerberos domain and realms config (krb5.ini)
      */
+    @Property("cuba.web.kerberosConf")
     String getKerberosConf();
 
     /**
      * @return Kerberos login module config (jaas.conf)
      */
+    @Property("cuba.web.kerberosJaasConf")
     String getKerberosJaasConf();
 
     /**
      * @return Kerberos single-sign-on module in JaasConf
      */
+    @Property("cuba.web.kerberosLoginModule")
     String getKerberosLoginModule();
 
     /**
      * @return Kerberos auth module in JaasConf
      */
+    @Property("cuba.web.kerberosAuthModule")
     String getKerberosAuthModule();
 
     /**
      *  @return Comma-separated list of URLs for CubaHttpFilter to bypass.
      */
+    @Property("cuba.web.cubaHttpFilterBypassUrls")
     @Default("/ws/")
     String getCubaHttpFilterBypassUrls();
 
@@ -117,24 +127,28 @@ public interface WebConfig extends Config
      * @return Default main window mode.
      * Takes place until the user did not change its own preference through user settings.
      */
+    @Property("cuba.web.appWindowMode")
     @Default("TABBED")
     String getAppWindowMode();
 
     /**
      * @return Maximum number of open tabs. 0 for unlimited.
      */
+    @Property("cuba.web.maxTabCount")
     @DefaultInt(0)
     int getMaxTabCount();
 
     /**
      * @return Whether to use native HTML buttons
      */
+    @Property("cuba.web.useNativeButtons")
     @DefaultBoolean(false)
     boolean getUseNativeButtons();
 
     /**
      * @return If true and if IE browser is used, we suggest to install Chrome frame IE plugin.
      */
+    @Property("cuba.web.useChromeFramePlugin")
     @DefaultBoolean(false)
     boolean getUseChromeFramePlugin();
 
@@ -143,30 +157,35 @@ public interface WebConfig extends Config
      * Default behaviour is the following: if the DateField contains time, the calendar popup allows to select time and
      * closes only when user clicks somewhere outside the popup.
      */
+    @Property("cuba.web.closeCalendarWhenDateSelected")
     @DefaultBoolean(false)
     boolean getCloseCalendarWhenDateSelected();
 
     /**
      * @return Request execution time in seconds, after which a message log will be logged.
      */
+    @Property("cuba.web.logLongRequestsThresholdSec")
     @DefaultInt(5)
     int getLogLongRequestsThresholdSec();
 
     /**
      * @return AppFolders refresh period in seconds.
      */
+    @Property("cuba.web.appFoldersRefreshPeriodSec")
     @DefaultInt(180)
     int getAppFoldersRefreshPeriodSec();
 
     /**
      * @return Whether to use icons for folders.
      */
+    @Property("cuba.web.showFolderIcons")
     @DefaultBoolean(false)
     boolean getShowFolderIcons();
 
     /**
      * @return Maximum number of symbols in main tabs captions.
      */
+    @Property("cuba.web.mainTabCaptionLength")
     @DefaultInt(25)
     int getMainTabCaptionLength();
 
@@ -187,6 +206,7 @@ public interface WebConfig extends Config
     /**
      * @return Supported web themes
      */
+    @Property("cuba.web.availableAppThemes")
     @Factory(factory = StringListTypeFactory.class)
     @Default("peyto|havana")
     List<String> getAvailableAppThemes();
@@ -201,12 +221,14 @@ public interface WebConfig extends Config
     /**
      * @return Path to an image for use as wallpaper. Not used in the platform.
      */
+    @Property("cuba.web.appWindowWallpaper")
     @Default("default")
     String getAppWindowWallpaper();
 
     /**
      * @return List of file extensions which should be shown in the browser instead of downloading as attachments.
      */
+    @Property("cuba.web.viewFileExtensions")
     @Factory(factory = StringListTypeFactory.class)
     @Default("htm|html|jpg|png|jpeg|pdf")
     List<String> getViewFileExtensions();
@@ -215,6 +237,7 @@ public interface WebConfig extends Config
      * @return Whether to show {@link com.haulmont.cuba.web.app.folders.FoldersPane} on first login.
      * This parameter can be overridden by user settings.
      */
+    @Property("cuba.web.foldersPaneVisibleByDefault")
     @DefaultBoolean(false)
     boolean getFoldersPaneVisibleByDefault();
 
@@ -222,9 +245,11 @@ public interface WebConfig extends Config
      * @return Default {@link com.haulmont.cuba.web.app.folders.FoldersPane} width.
      * This parameter can be overridden by user settings.
      */
+    @Property("cuba.web.foldersPaneDefaultWidth")
     @DefaultInt(200)
     int getFoldersPaneDefaultWidth();
 
+    @Property("cuba.web.resourcesRoot")
     String getResourcesRoot();
 
     /**
@@ -257,6 +282,7 @@ public interface WebConfig extends Config
      * @return comma-separated list of entity ids
      */
     @Property("cuba.restoreScreenEntityIds")
+    @Deprecated
     String getRestoreEntityId();
 
     /**
