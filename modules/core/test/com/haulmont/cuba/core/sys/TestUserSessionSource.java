@@ -40,9 +40,13 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
             user.setName("Test Administrator");
             user.setPassword(DigestUtils.md5Hex("test_admin"));
 
-            session = new UserSession(user, Collections.<Role>emptyList(), Locale.forLanguageTag("en"), false);
+            session = new UserSession(UUID.randomUUID(), user, Collections.<Role>emptyList(), Locale.forLanguageTag("en"), false);
             session.addConstraint("sec$Group", "", "a.createdBy = :currentUserLogin");
         }
         return session;
+    }
+
+    public void setUserSession(UserSession session) {
+        this.session = session;
     }
 }

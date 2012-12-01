@@ -6,7 +6,8 @@
 package com.haulmont.cuba.security.global;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.UuidProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.security.entity.*;
 
 import java.io.Serializable;
@@ -22,12 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>On the client side a descendant of this class is maintained:
  * <code>com.haulmont.cuba.client.ClientUserSession</code></p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class UserSession implements Serializable
-{
+public class UserSession implements Serializable {
+
     private static final long serialVersionUID = -8248326616891177382L;
 
     protected UUID id;
@@ -65,8 +65,8 @@ public class UserSession implements Serializable
         return name;
     }
 
-    public UserSession(User user, Collection<Role> roles, Locale locale, boolean system) {
-        this.id = UuidProvider.createUuid();
+    public UserSession(UUID id, User user, Collection<Role> roles, Locale locale, boolean system) {
+        this.id = id;
         this.user = user;
         this.system = system;
 
@@ -88,10 +88,9 @@ public class UserSession implements Serializable
     }
     
     public UserSession(UserSession src, User user, Collection<Role> roles, Locale locale) {
-        this(user, roles, locale, src.system);
-        this.id = src.id;
+        this(src.id, user, roles, locale, src.system);
         this.user = src.user;
-        this.substitutedUser = user;
+        this.substitutedUser = this.user.equals(user) ? null : user;
     }
 
     public UserSession(UserSession src) {
@@ -339,7 +338,9 @@ public class UserSession implements Serializable
     }
 
     /**
-     * System session is created by LoginWorker.loginSystem() for schedulers and JMX users
+     * System session is created by <code>LoginWorker.loginSystem()</code> for system users like schedulers and JMX.
+     * <p/>
+     * It is not replicated in cluster.
      */
     public boolean isSystem() {
         return system;

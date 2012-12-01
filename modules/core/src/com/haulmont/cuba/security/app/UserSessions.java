@@ -9,7 +9,8 @@ import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
@@ -28,9 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * User sessions distributed cache.
  *
- * @version $Id$
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UserSessionsAPI.NAME)
 public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
@@ -42,9 +42,8 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
         private final long since;
         private volatile long lastUsedTs; // set to 0 when propagating removal to cluster
 
-        private UserSessionInfo(UserSession session) {
+        private UserSessionInfo(UserSession session, long now) {
             this.session = session;
-            long now = TimeProvider.currentTimestamp().getTime();
             this.since = now;
             this.lastUsedTs = now;
         }
@@ -62,17 +61,27 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
 
     private ClusterManagerAPI clusterManager;
 
+    @Inject
+    protected TimeSource timeSource;
+
     private UserSession NO_USER_SESSION;
 
     public UserSessions() {
         User noUser = new User();
         noUser.setLogin("server");
-        NO_USER_SESSION = new UserSession(noUser, Collections.<Role>emptyList(), Locale.getDefault(), true) {
+        NO_USER_SESSION = new UserSession(
+                UUID.fromString("a66abe96-3b9d-11e2-9db2-3860770d7eaf"), noUser,
+                Collections.<Role>emptyList(), Locale.getDefault(), true) {
             @Override
             public UUID getId() {
                 return AppContext.NO_USER_CONTEXT.getSessionId();
             }
         };
+    }
+
+    @Inject
+    public void setUuidSource(UuidSource uuidSource) {
+
     }
 
     @Inject
@@ -140,7 +149,7 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
     }
 
     public void add(UserSession session) {
-        UserSessionInfo usi = new UserSessionInfo(session);
+        UserSessionInfo usi = new UserSessionInfo(session, timeSource.currentTimeMillis());
         cache.put(session.getId(), usi);
         if (!session.isSystem())
             clusterManager.send(usi);
@@ -162,7 +171,7 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
 
         UserSessionInfo usi = cache.get(id);
         if (usi != null) {
-            usi.lastUsedTs = TimeProvider.currentTimestamp().getTime();
+            usi.lastUsedTs = timeSource.currentTimestamp().getTime();
             if (propagate && !usi.session.isSystem()) {
                 clusterManager.send(usi);
             }
@@ -175,7 +184,7 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
     public void propagate(UUID id) {
         UserSessionInfo usi = cache.get(id);
         if (usi != null) {
-            usi.lastUsedTs = TimeProvider.currentTimestamp().getTime();
+            usi.lastUsedTs = timeSource.currentTimestamp().getTime();
             clusterManager.send(usi);
         }
     }
@@ -207,11 +216,10 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
             use.setUserName(nfo.session.getUser().getName());
             use.setAddress(nfo.session.getAddress());
             use.setClientInfo(nfo.session.getClientInfo());
-            Date since = TimeProvider.currentTimestamp();
+            Date since = timeSource.currentTimestamp();
             since.setTime(nfo.since);
             use.setSince(since);
-            Date last = TimeProvider.currentTimestamp();
-            last.setTime(nfo.lastUsedTs);
+            Date last = new Date(nfo.lastUsedTs);
             use.setLastUsedTs(last);
             use.setSystem(nfo.session.isSystem());
             sessionInfoList.add(use);
@@ -233,7 +241,7 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
             return;
 
         log.trace("Processing eviction");
-        long now = TimeProvider.currentTimestamp().getTime();
+        long now = timeSource.currentTimeMillis();
         for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {
             UserSessionInfo usi = it.next();
             if (now > (usi.lastUsedTs + expirationTimeout * 1000)) {

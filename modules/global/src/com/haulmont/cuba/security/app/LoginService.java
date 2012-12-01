@@ -14,6 +14,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -24,33 +25,57 @@ import java.util.UUID;
  * @version $Id$
  */
 public interface LoginService {
+
     String NAME = "cuba_LoginService";
 
     /**
-     * Login using user name and password
+     * Log in using login and user's password.
      *
-     * @param login    login name
-     * @param password encrypted password
-     * @param locale   client locale
+     * @param login     login
+     * @param password  user's encrypted password
+     * @param locale    client locale
      * @return created user session
-     * @throws LoginException in case of unsuccessful login
+     * @throws LoginException in case of unsuccessful log in
      */
     UserSession login(String login, String password, Locale locale) throws LoginException;
 
     /**
-     * Login using user name and trusted password
+     * Log in from a trusted client.
      *
-     * @param login    login name
-     * @param password Trusted password
-     * @param locale   client locale
+     * @param login     login
+     * @param password  client's encrypted trusted password
+     * @param locale    client locale
      * @return created user session
-     * @throws LoginException in case of unsuccessful login
+     * @throws LoginException in case of unsuccessful log in
      */
     UserSession loginTrusted(String login, String password, Locale locale) throws LoginException;
 
+    /**
+     * Log out and destroy an active user session.
+     */
     void logout();
 
+    /**
+     * Substitute a user, obtaining all its security related environment.
+     * <p/>
+     * This method replaces an active UserSession with the new one, which is returned.
+     *
+     * @param substitutedUser a user to substitute. Must be in the current users's {@link User#substitutions} list.
+     * @return new UserSession instance that contains: <ul>
+     *     <li> id - the previously active user session id </li>
+     *     <li> user - the logged in user </li>
+     *     <li> substitutedUser - the user passed to this method  </li>
+     *     <li> all security data - loaded for the substitutedUser </li>
+     * </ul>
+     */
     UserSession substituteUser(User substitutedUser);
 
+    /**
+     * Get a UserSession from the cache of currently active sessions.
+     *
+     * @param sessionId the session id
+     * @return a UserSession instance or null, if not found
+     */
+    @Nullable
     UserSession getSession(UUID sessionId);
 }

@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -41,6 +42,9 @@ public class UserSessionManager
     public static final String NAME = "cuba_UserSessionManager";
 
     @Inject
+    protected UuidSource uuidSource;
+
+    @Inject
     private UserSessionsAPI sessions;
 
     @Inject
@@ -65,7 +69,7 @@ public class UserSessionManager
                 roles.add(userRole.getRole());
             }
         }
-        UserSession session = new UserSession(user, roles, locale, system);
+        UserSession session = new UserSession(uuidSource.createUuid(), user, roles, locale, system);
         compilePermissions(session, roles);
         compileConstraints(session, user.getGroup());
         compileSessionAttributes(session, user.getGroup());
@@ -200,7 +204,7 @@ public class UserSessionManager
                     roles.add(userRole.getRole());
                 }
             }
-            UserSession session = new UserSession(user, roles, userSessionSource.getLocale(), false);
+            UserSession session = new UserSession(uuidSource.createUuid(), user, roles, userSessionSource.getLocale(), false);
             compilePermissions(session, roles);
             result = session.getPermissionValue(permissionType, target);
             tx.commit();

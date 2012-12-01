@@ -5,10 +5,7 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
@@ -215,9 +212,26 @@ public class LoginWorkerBean implements LoginWorker {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            User user = em.find(User.class, substitutedUser.getId());
-            if (user == null)
-                throw new javax.persistence.NoResultException("User not found");
+
+            User user;
+            if (currentSession.getUser().equals(substitutedUser)) {
+                user = em.find(User.class, substitutedUser.getId());
+                if (user == null)
+                    throw new javax.persistence.NoResultException("User not found");
+            } else {
+                TypedQuery<User> query = em.createQuery(
+                        "select s.substitutedUser from sec$User u join u.substitutions s " +
+                        "where u.id = ?1 and s.substitutedUser.id = ?2",
+                        User.class
+                );
+                query.setParameter(1, currentSession.getUser());
+                query.setParameter(2, substitutedUser);
+                List<User> list = query.getResultList();
+                if (list.isEmpty())
+                    throw new javax.persistence.NoResultException("User not found");
+                else
+                    user = list.get(0);
+            }
 
             UserSession session = userSessionManager.createSession(currentSession, user);
 

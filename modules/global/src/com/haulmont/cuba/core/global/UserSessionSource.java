@@ -27,7 +27,7 @@ public interface UserSessionSource {
     boolean checkCurrentUserSession();
 
     /**
-     * @return current user session
+     * @return current user session. Throws an exception if there is no active user session.
      */
     UserSession getUserSession();
 

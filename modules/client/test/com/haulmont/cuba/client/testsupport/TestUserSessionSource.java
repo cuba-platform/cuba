@@ -41,7 +41,7 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
             user.setName("Test Administrator");
             user.setPassword(DigestUtils.md5Hex("test_admin"));
 
-            session = new UserSession(user, Collections.<Role>emptyList(), Locale.getDefault(), false);
+            session = new UserSession(UUID.randomUUID(), user, Collections.<Role>emptyList(), Locale.getDefault(), false);
         }
         return session;
     }

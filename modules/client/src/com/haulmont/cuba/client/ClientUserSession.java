@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.client;
 
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 
@@ -17,9 +17,8 @@ import java.io.Serializable;
  *
  * <p>Sends updates of the user session properties to the middleware.</p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ClientUserSession extends UserSession {
 
@@ -32,21 +31,21 @@ public class ClientUserSession extends UserSession {
     @Override
     public void setAttribute(String name, Serializable value) {
         super.setAttribute(name, value);
-        UserSessionService uss = (UserSessionService) AppContext.getApplicationContext().getBean(UserSessionService.NAME);
+        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         uss.setSessionAttribute(id, name, value);
     }
 
     @Override
     public void setAddress(String address) {
         super.setAddress(address);
-        UserSessionService uss = (UserSessionService) AppContext.getApplicationContext().getBean(UserSessionService.NAME);
+        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         uss.setSessionAddress(id, address);
     }
 
     @Override
     public void setClientInfo(String clientInfo) {
         super.setClientInfo(clientInfo);
-        UserSessionService uss = (UserSessionService) AppContext.getApplicationContext().getBean(UserSessionService.NAME);
+        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         uss.setSessionClientInfo(id, clientInfo);
     }
 }
