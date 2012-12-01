@@ -36,7 +36,7 @@
         <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="services">сервисов</link> среднего слоя (Middleware). </para>
       </listitem>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="entity">сущностей</glossterm> и <glossterm linkend="message_pack_glossentry">файлы локализованных сообщений</glossterm>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
+        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="entity">сущностей</glossterm> и <link linkend="message_packs">файлы локализованных сообщений</link>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
       </listitem>
       <listitem>
         <para>В файле <filename>shop-persistence.xml</filename>  регистрируются новые классы сущностей.</para>
@@ -80,7 +80,7 @@
         <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя (Middleware). Среди прочего содержит список конфигурационных файлов <filename>*-app.properties</filename>, используемых данным приложением.</para>
       </listitem>
     </itemizedlist>
-    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm>, <glossterm linkend="screen_xml_glossentry">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="message_pack_glossentry">локализованных сообщений</glossterm>.</para>
+    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm>, <glossterm linkend="screen_xml_glossentry">XML-дескрипторы</glossterm> экранов, файлы <link linkend="message_packs">локализованных сообщений</link>.</para>
     <itemizedlist>
       <listitem>
         <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
@@ -98,7 +98,7 @@
         <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры веб-клиента:</para>
         <para><parameter>cuba.windowConfig</parameter> − в этом свойстве указывается набор файлов конфигурации экранов приложения;</para>
         <para><parameter>cuba.menuConfig</parameter> содержит список файлов, описывающих меню приложения;</para>
-        <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <glossterm linkend="message_pack_glossentry">пакетов сообщений</glossterm>, формирующих <glossterm linkend="main_message_pack_glossentry">главный пакет</glossterm>, используемый главным меню и другими общими компонентами системы;</para>
+        <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <link linkend="message_packs">пакетов сообщений</link>, формирующих <link linkend="main_message_pack">главный пакет</link>, используемый главным меню и другими общими компонентами системы;</para>
       </listitem>
       <listitem>
         <para>Файл <filename>shop-web-menu.xml</filename> содержит описание пунктов главного меню приложения.</para>

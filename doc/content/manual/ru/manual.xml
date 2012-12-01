@@ -224,13 +224,14 @@
   <appendix id="app_properties_reference">
     <title>Описание свойств приложения</title>
     <variablelist>
-      <varlistentry>
+      <varlistentry id="cuba.availableLocales">
         <term>cuba.availableLocales</term>
         <listitem>
-          <para id="property_available_locales">Список поддерживаемых языков интерфейса. Формат свойства: <literal>{Название языка}|{Языковой код}</literal>. Значения разных языков между собой разделяются точкой с запятой. Пример: <programlisting>cuba.availableLocales=French|fr;English|en</programlisting></para>
-          <para><code>{Название языка}</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. <code>{Языковой код}</code> − это суффикс для формирования <glossterm linkend="message_pack_glossentry">файлов локализации</glossterm>. Например, <filename>messages_fr.properties.</filename></para>
-          <para>Следует иметь в виду, что язык, который указан первым в списке языков  свойства <property>cuba.availableLocales</property>, будет отображаться первым в списке доступных языков в том случае, если среди языков данного свойства не будет найден текущий язык системы. В противном случае первым будет отображаться язык системы. </para>
-          <para>Если для языка,  указанного в свойстве, отсутствует файл для его локализации, то по умолчанию берется локализация из файла без суффикса − <filename>messages.properties</filename>.</para>
+          <para id="property_available_locales">Список поддерживаемых языков интерфейса. </para>
+          <para id="property_available_locales_1">Формат свойства: <literal>{название_языка1}|{код_языка_1};{название_языка2}|{код_языка_2};</literal>... Пример: <programlisting>cuba.availableLocales=French|fr;English|en</programlisting></para>
+          <para><code>{название_языка}</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. </para>
+          <para><code>{код_языка}</code> − соответствует коду, возвращаемому методом <code>Locale.getLanguage()</code>. Используется как суффикс для формирования имен <link linkend="message_packs">файлов пакетов сообщений</link>. Например, <filename>messages_fr.properties.</filename></para>
+          <para>Следует иметь в виду, что язык, который указан первым в списке языков  свойства <property>cuba.availableLocales</property>, будет отображаться первым в списке доступных языков в том случае, если среди языков данного свойства не будет найден текущий язык операционной системы пользователя. Если же язык операционной системы присутствует в списке доступных, то отображаться  первым будет он. </para>
           <para>Значение по умолчанию: <literal>English|en;Russian|ru;French|fr</literal></para>
           <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
@@ -272,14 +273,38 @@
           <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
-      <varlistentry>
+      <varlistentry id="cuba.localeSelectVisible">
         <term>cuba.localeSelectVisible</term>
         <listitem>
           <para>Включает или отключает возможность пользователя выбирать язык
 интерфейса при входе в систему. </para>
+          <para>Если <literal>cuba.localeSelectVisible=false</literal>, то локаль пользовательской сессии выбирается следующим образом:<itemizedlist>
+              <listitem>
+                <para>если для данного экземпляра сущности <code>User</code> установлен атрибут <code>language</code>, то устанавливается локаль для этого языка;</para>
+              </listitem>
+              <listitem>
+                <para>если язык операционной системы пользователя присутствует в списке доступных (заданных свойством <property>
+                    <link linkend="cuba.availableLocales">cuba.availableLocales</link>
+                  </property>), то выбирается он;</para>
+              </listitem>
+              <listitem>
+                <para>в противном случае выбирается язык, заданный первым в свойстве <property>
+                    <link linkend="cuba.availableLocales">cuba.availableLocales</link>
+                  </property>.</para>
+              </listitem>
+            </itemizedlist></para>
           <para>Значение по умолчанию: <literal>true</literal></para>
           <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.mainMessagePack">
+        <term>cuba.mainMessagePack</term>
+        <listitem>
+          <para>Задает <link linkend="main_message_pack">главный пакет сообщений</link> данного блока приложения. </para>
+          <para>Значением свойства может быть либо один пакет, либо список пакетов, разделенный пробелами. </para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+          <para>Пример:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.abc.sales.web</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry>

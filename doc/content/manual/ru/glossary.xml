@@ -47,12 +47,12 @@
   </glossdiv>
   <glossdiv>
     <title>Г</title>
-    <glossentry id="main_message_pack_glossentry">
+    <glossentry>
       <glossterm>
         <emphasis role="bold">Главный пакет сообщений</emphasis>
       </glossterm>
       <glossdef>
-        <para><glossterm linkend="message_pack_glossentry">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса.</para>
+        <para>См. <xref linkend="main_message_pack"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -113,13 +113,12 @@
   </glossdiv>
   <glossdiv>
     <title>П</title>
-    <glossentry id="message_pack_glossentry">
+    <glossentry>
       <glossterm>
         <emphasis role="bold">Пакет локализованных сообщений</emphasis>
       </glossterm>
       <glossdef>
-        <para>Набор файлов, содержащих локализованные сообщения пользовательского интерфейса: заголовки полей и кнопок, названия сущностей и их  атрибутов, содержимое диалогов  и так далее. </para>
-        <para>См. <xref xrefstyle="" linkend="localization"/></para>
+        <para>См. <xref linkend="message_packs"/></para>
       </glossdef>
     </glossentry>
     <glossentry id="persistence_context">
@@ -215,9 +214,9 @@
       <glossterm>
         <emphasis role="bold">Datasource</emphasis>
       </glossterm>
-        <glossdef>
-         <para>См. <xref linkend="datasources"/></para>
-       </glossdef>
+      <glossdef>
+        <para>См. <xref linkend="datasources"/></para>
+      </glossdef>
     </glossentry>
   </glossdiv>
   <glossdiv>
@@ -287,15 +286,15 @@
       </glossdef>
     </glossentry>
   </glossdiv>
-    <glossdiv>
-      <title>L</title>
-      <glossentry>
-        <glossterm>
-          <emphasis role="bold">Lazy loading</emphasis>
-        </glossterm>
-        <glosssee otherterm="lazy_loading"/>
-      </glossentry>
-    </glossdiv>
+  <glossdiv>
+    <title>L</title>
+    <glossentry>
+      <glossterm>
+        <emphasis role="bold">Lazy loading</emphasis>
+      </glossterm>
+      <glosssee otherterm="lazy_loading"/>
+    </glossentry>
+  </glossdiv>
   <glossdiv>
     <title>M</title>
     <glossentry>

@@ -1331,8 +1331,8 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
             </itemizedlist> </para>
         </warning>
       </section>
-      <section>
-        <title id="datatype">Datatype</title>
+      <section id="datatype">
+        <title>Datatype</title>
         <para>Интерфейс <code>Datatype</code> описывает тип данных, допустимый для  атрибута сущности, не являющегося ассоциацией. Каждый экземпляр реализации <code>Datatype</code> соответствует одному классу Java, для работы с которым он предназначен.</para>
         <para>Все экземпляры зарегистрированы в репозитории - классе <code>Datatypes</code>, который выполняет загрузку и инициализацию классов реализации <code>Datatype</code> следующим образом:<itemizedlist>
             <listitem>
@@ -1369,7 +1369,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
         <para>Форматы для преобразований без учета локали задаются в вышеупомянутом файле <filename>
             <link linkend="datatypes.xml">datatypes.xml</link>
           </filename>.</para>
-        <para>Форматы для преобразований с учетом локали задаются в <glossterm linkend="main_message_pack_glossentry">главных пакетах локализованных сообщений</glossterm>, в  строках со следующими ключами:<itemizedlist>
+        <para>Форматы для преобразований с учетом локали задаются в <link linkend="main_message_pack">главных пакетах локализованных сообщений</link>, в  строках со следующими ключами:<itemizedlist>
             <listitem>
               <para><literal>numberDecimalSeparator</literal></para>
             </listitem>
@@ -1397,7 +1397,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
             <listitem>
               <para><literal>falseString</literal></para>
             </listitem>
-          </itemizedlist>Все перечисленные форматы по умолчанию заданы в <glossterm linkend="main_message_pack_glossentry">главных пакетах локализованных сообщений</glossterm> <link linkend="base_projects">базового проекта</link> <structname>cuba</structname>, и могут быть переопределены в аналогичных файлах проекта приложения.</para>
+          </itemizedlist>Все перечисленные форматы по умолчанию заданы в <link linkend="main_message_pack">главных пакетах локализованных сообщений</link> <link linkend="base_projects">базового проекта</link> <structname>cuba</structname>, и могут быть переопределены в аналогичных файлах проекта приложения.</para>
         <section>
           <title>Пример форматирования даты в UI</title>
           <para>Рассмотрим отображение атрибута <code>Order.date</code> в таблице браузера заказов.</para>
@@ -1409,7 +1409,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
           <para>Атрибут <code>date</code>  в классе <code>Order</code> определен с типом &quot;дата&quot;:<programlisting>@Column(name = &quot;DATE&quot;, nullable = false)
 @Temporal(TemporalType.DATE)
 private Date date;</programlisting></para>
-          <para>Если текущий пользователь зарегистрирован c русской локалью, то из <glossterm linkend="main_message_pack_glossentry">главного пакета</glossterm> локализованных сообщений клиентского <link linkend="app_tiers">уровня</link>, из файла <filename>messages_ru.properties</filename> извлекается строка:<programlisting>dateFormat=dd.MM.yyyy</programlisting></para>
+          <para>Если текущий пользователь зарегистрирован c русской локалью, то из <link linkend="main_message_pack">главного пакета</link> локализованных сообщений клиентского <link linkend="app_tiers">уровня</link>, из файла <filename>messages_ru.properties</filename> извлекается строка:<programlisting>dateFormat=dd.MM.yyyy</programlisting></para>
           <para>Результат: дата &quot;6 августа 2012 года&quot; конвертируется в строку &quot;06.08.2012&quot; для отображения в ячейке таблицы.</para>
         </section>
         <section>
@@ -1627,7 +1627,7 @@ public void setConfiguration(Configuration configuration) {
     this.globalConfig = configuration.getConfig(GlobalConfig.class);
 }</programlisting><programlisting>String tempDir = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTempDir();</programlisting></para>
       </section>
-      <section>
+      <section id="messages">
         <title>Messages</title>
         <para>Интерфейс <code>Messages</code> обеспечивает получение <link linkend="localization">локализованных строк сообщений</link>.</para>
         <para>Рассмотрим методы интерфейса подробнее.</para>
@@ -1663,14 +1663,14 @@ messages.getMainMessage(&quot;actions.Ok&quot;);</programlisting></para>
           <title>MessageTools</title>
           <para><link linkend="managed_beans">ManagedBean</link>, содержащий вспомогательные методы работы с <link linkend="localization">локализованными сообщениями</link>. Интерфейс <code>MessageTools</code> можно получить либо методом <code>Messages.getTools()</code>, либо как любой другой бин - инжекцией или через класс <code>AppBeans</code>. </para>
           <para>Методы <code>MessageTools</code>:<itemizedlist>
-              <listitem id="loadString">
+              <listitem id="messageTools.loadString">
                 <para><code>loadString()</code> - возвращает локализованное сообщение, заданное ссылкой вида <literal>msg://{messagePack}/{key}</literal></para>
                 <para>Составные части ссылки:<itemizedlist>
                     <listitem>
                       <para><literal>msg://</literal> - обязательный префикс</para>
                     </listitem>
                     <listitem>
-                      <para><literal>{messagePack}</literal> - необязательное имя пакета сообщения. Если не указано, предполагается, что имя пакета передается в loadString() отдельным параметром</para>
+                      <para><literal>{messagePack}</literal> - необязательное имя пакета сообщения. Если не указано, предполагается, что имя пакета передается в <code>loadString()</code> отдельным параметром</para>
                     </listitem>
                     <listitem>
                       <para><literal>{key}</literal> - ключ сообщения в пакете</para>
@@ -1694,7 +1694,7 @@ msg://com.abc.sales.web.customer/someMessage</programlisting></para>
                   </code></para>
               </listitem>
               <listitem>
-                <para><code>getMessageRef()</code> - формирует для <link linkend="metaProperty">мета-свойства</link> <link linkend="loadString">ссылку на сообщение</link>, по которой  можно получить локализованное название атрибута сущности</para>
+                <para><code>getMessageRef()</code> - формирует для <link linkend="metaProperty">мета-свойства</link> <link linkend="messageTools.loadString">ссылку на сообщение</link>, по которой  можно получить локализованное название атрибута сущности</para>
               </listitem>
             </itemizedlist></para>
           <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>MessageTools</code> можно <link linkend="extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMessageTools tools = messages.getTools();
@@ -2265,25 +2265,133 @@ Role getAdminRole();</programlisting></para>
     </section>
     <section id="localization">
       <title>Локализация сообщений</title>
-      <para>Содержит файлы локализованных сообщений  для задания названий сущностей, атрибутов сущностей, папок, заголовков закладок и так далее. Правила создания файлов локализованных сообщений:</para>
-      <itemizedlist>
-        <listitem>
-          <para>Файл по умолчанию имеет имя <filename>messages.properties</filename>, для конкретного языка − <filename>messages_ru.properties</filename> и т.д. При отсутствии файла конкретного языка или при отсутствии искомого ключа в файле конкретного языка будет использовано сообщение из файла по умолчанию.</para>
-        </listitem>
-        <listitem>
-          <para>Кодировка <code>UTF-8</code>.</para>
-        </listitem>
-        <listitem>
-          <para>Можно включать другие файлы сообщений с помощью ключа <literal>@include</literal>. При этом если некоторый ключ встречается и во включаемом файле, и в текущем, будет использовано сообщение из текущего (переопределение). Пример включения файла:<programlisting>@include=com.haulmont.cuba.web
+      <para>Приложение на основе платформы CUBA поддерживает локализацию сообщений, то есть вывод всех элементов пользовательского интерфейса на языке, выбранном пользователем.</para>
+      <para>Возможности выбора языка определяются комбинацией свойств приложения <link linkend="cuba.localeSelectVisible">cuba.localeSelectVisible</link> и <link linkend="cuba.availableLocales">cuba.availableLocales</link>.</para>
+      <para>Для того, чтобы некоторое сообщение могло быть локализовано, т.е. представлено пользователю на нужном языке, его необходимо поместить в так называемый <firstterm>пакет сообщений</firstterm>. </para>
+      <section id="message_packs">
+        <title>Пакеты сообщений</title>
+        <para>Пакет сообщений представляет собой набор файлов свойств с именами вида <filename>messages{_XX}.properties</filename>, расположенных в одном Java-пакете. Суффикс <literal>XX</literal> определяет язык, для которого в данном файле содержатся сообщения, и соответствует коду языка в <code>Locale.getLanguage()</code>. Один из файлов пакета может быть без суффикса языка - это <firstterm>файл по умолчанию</firstterm>. Именем пакета сообщений считается имя Java-пакета, в котором расположены файлы пакета.</para>
+        <para>Рассмотрим пример:<programlisting>/com/abc/sales/gui/customer/messages.properties
+/com/abc/sales/gui/customer/messages_fr.properties
+/com/abc/sales/gui/customer/messages_ru.properties</programlisting></para>
+        <para>Данный пакет состоит из 3-х файлов - один для русского языка, один для французского, и один по умолчанию. Имя пакета - <code>com.abc.sales.gui.customer</code> </para>
+        <para>Файлы сообщений содержат пары ключ-значение,  где ключ - это идентификатор сообщения, на который ссылается код приложения, а значение - само сообщение на языке данного файла. Правила задания пар аналогичны правилам файлов свойств<code>java.util.Properties</code>, со следующими особенностями:<itemizedlist>
+            <listitem>
+              <para>Кодировка файла - обязательно <code>UTF-8</code></para>
+            </listitem>
+            <listitem>
+              <para>Поддерживается включение других пакетов сообщений с помощью ключа <literal>@include</literal>, в том числе нескольких сразу - перечислением через запятую. При этом если некоторый ключ сообщения встречается и во включаемом пакете, и в текущем, будет использовано сообщение из текущего. Пример включения пакетов:<programlisting>@include=com.haulmont.cuba.web, com.abc.sales.web
 
-actions.Create=Create
-actions.Edit=Edit
+someMessage=Some Message
 ...</programlisting></para>
-        </listitem>
-        <listitem>
-          <para>Полным именем пакета сообщений считается имя Java-пакета, содержащего языковые файлы. Например, именем пакета сообщений, расположенного в <filename>/com/haulmont/cuba/web/app/ui/security/user/messages.properties</filename> является строка <package>com.haulmont.cuba.web.app.ui.security.user</package></para>
-        </listitem>
-      </itemizedlist>
+            </listitem>
+          </itemizedlist></para>
+        <para>Получение сообщений из пакетов производится с помощью методов интерфейса <code>
+            <link linkend="messages">Messages</link>
+          </code> по следующим правилам:<itemizedlist>
+            <listitem>
+              <para>Сначала производится поиск в <link linkend="conf_dir">конфигурационном каталоге</link> приложения<itemizedlist>
+                  <listitem>
+                    <para>Ищется файл <filename>messages_XX.properties</filename> в каталоге, задаваемом именем пакета сообщений, где <literal>XX</literal> - код требуемого языка</para>
+                  </listitem>
+                  <listitem>
+                    <para>Если такого файла нет, в этом же каталоге ищется файл по умолчанию <filename>messages.properties</filename></para>
+                  </listitem>
+                  <listitem>
+                    <para>Если найден или файл нужного языка, или файл по умолчанию, он загружается вместе со всеми <literal>@include</literal>, и в нем ищется ключ сообщения</para>
+                  </listitem>
+                  <listitem>
+                    <para>Если файл не найден, либо нужный ключ в нем отсутствует, производится смена каталога на родительский, и процедура поиска повторяется. И так до достижения корня конфигурационного каталога.</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+            <listitem>
+              <para>Если в конфигурационном каталоге сообщение не найдено, производится поиск в classpath по такому-же алгоритму.</para>
+            </listitem>
+            <listitem>
+              <para>На клиентском <link linkend="app_tiers">уровне</link>, если сообщение не найдено на предыдущих шагах, отправляется запрос на <structname>Middleware</structname>, и сообщение ищется там аналогичным способом.</para>
+            </listitem>
+            <listitem>
+              <para>Если сообщение найдено, оно кэшируется и возвращается. Если не найдено - кэшируется факт отсутствия сообщения и возвращается ключ, который был передан для поиска. Таким образом, сложная процедура поиска выполняется только один раз, в дальнейшем результат загружается из локального для блока приложения кэша.</para>
+            </listitem>
+          </itemizedlist></para>
+        <tip>
+          <para>Рекомендуется организовывать пакеты сообщений следующим образом:<itemizedlist>
+              <listitem>
+                <para>Если приложение не предполагает интернационализации, то можно не использовать пакеты и включать строки сообщений прямо в код приложения, либо пользоваться файлами по умолчанию <filename>messages.properties</filename> для отделения ресурсов от кода.</para>
+              </listitem>
+              <listitem>
+                <para>Если приложение  интернациональное, логично файлы по умолчанию использовать для языка основной аудитории приложения, либо для английского языка. Именно сообщения из файлов по умолчанию будут показаны пользователю, если сообщений для нужного языка не найдено.</para>
+              </listitem>
+            </itemizedlist></para>
+        </tip>
+      </section>
+      <section id="main_message_pack">
+        <title>Главный пакет сообщений</title>
+        <para>Каждый стандартный <link linkend="app_tiers">блок</link> приложения определяет для себя один <firstterm>главный</firstterm> пакет сообщений. Для блоков клиентского уровня этот пакет содержит названия пунктов главного меню и общих элементов UI (например названия кнопок <guibutton>OK</guibutton> и <guibutton>Cancel</guibutton>). Для всех блоков приложения, включая <structname>Midleware</structname>, главный пакет  определяет форматы преобразований <link linkend="datatype">
+            <code>Datatype</code>
+          </link>.</para>
+        <para>Для указания главного пакета соощений используется свойство приложения <property>
+            <link linkend="cuba.mainMessagePack">cuba.mainMessagePack</link>
+          </property>. Значением свойства может быть либо один пакет, либо список пакетов, разделенный пробелами. Например:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.abc.sales.web</programlisting></para>
+        <para>В данном случае сообщения, заданные во втором пакете списка будут перекрывать сообщений из первого пакета. Таким образом в проекте приложения можно переопределять сообщения, заданные в пакетах <link linkend="base_projects">базовых проектов</link>.</para>
+      </section>
+      <section>
+        <title>Локализация названий сущностей и атрибутов</title>
+        <para>Для отображения в UI локализованных названий сущностей и их атрибутов необходимо создать специальные пакеты сообщений в тех же Java-пакетах, что и сами сущности. Формат файлов сообщений должен быть следующим:<itemizedlist>
+            <listitem>
+              <para>Ключ названия сущности - простое имя класса (без пакета)</para>
+            </listitem>
+            <listitem>
+              <para>Ключ названия атрибута - простое имя класса, затем через точку имя атрибута</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Пример русской локализации сущнсти <code>com.abc.sales.entity.Customer</code> - файл <filename>/com/abc/sales/entity/messages_ru.properties</filename>:<programlisting>Customer=Покупатель
+Customer.name=Имя
+Customer.email=Email
+
+Order=Заказ
+Order.customer=Покупатель
+Order.date=Дата
+Order.amount=Сумма</programlisting></para>
+        <para>Такие пакеты сообщений как правило используются неявно для  разработчика, например визуальными компонентами <code>
+            <link linkend="gui_Table">Table</link>
+          </code> и <code>
+            <link linkend="gui_FieldGroup">FieldGroup</link>
+          </code>. Кроме того, названия сущностей и атрибутов могут быть также получены следующими методами:<itemizedlist>
+            <listitem>
+              <para>программно - методами <code>
+                  <link linkend="messageTools">MessageTools</link>
+                </code> <code>getEntityCaption()</code>, <code>getPropertyCaption()</code></para>
+            </listitem>
+            <listitem>
+              <para>в XML дескрипторе экрана - указанием ссылки на сообщение по правилам <code>MessageTools.<link linkend="messageTools.loadString">loadString</link>()</code>: <literal>msg://{entity_package}/{key}</literal>, например <programlisting>caption=&quot;msg://com.abc.sales.entity/Customer.name&quot;</programlisting></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section>
+        <title>Локализация enum</title>
+        <para>Для локализации названий  и значений перечислений необходимо в пакет сообщений, находящийся в Java-пакете класса перечисления добавить сообщения со следующими ключами:<itemizedlist>
+            <listitem>
+              <para>Ключ названия перечисления - простое имя класса (без пакета)</para>
+            </listitem>
+            <listitem>
+              <para>Ключ значения - простое имя класса, затем через точку имя значения</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Например, для перечисления <programlisting>package com.abc.sales;
+
+public enum CustomerGrade { PREMIUM, HIGH, STANDARD }</programlisting></para>
+        <para>файл русской локализации <filename>/com/abc/sales/messages_ru.properties</filename> должен содержать строки:<programlisting>CustomerGrade=Уровень покупателя
+CustomerGrade.PREMIUM=Премиум
+CustomerGrade.HIGH=Высокий
+CustomerGrade.STANDARD=Стандартный</programlisting></para>
+        <para>Локализованные значения перечислений автоматически используются различными визуальными компонентами, например <code>
+            <link linkend="gui_LookupField">LookupField</link>
+          </code>. Для программного получения локализованного значения перечисления можно использовать метод <code>getMessage()</code> интерфейса <code>
+            <link linkend="messages">Messages</link>
+          </code>, просто передавая в него экземпляр <code>enum</code>.</para>
+      </section>
     </section>
     <section id="authentication">
       <title>Аутентификация и авторизация пользователей</title>
@@ -2732,7 +2840,7 @@ Instance − ваш SQL Server.</para>
                 <para><property>class</property> − имя класса <glossterm linkend="screen_controller_glossentry">контроллера</glossterm></para>
               </listitem>
               <listitem>
-                <para><property>messagesPack</property> − имя <glossterm linkend="message_pack_glossentry">пакета сообщений</glossterm>. Фактически это имя Java-пакета, содержащего файл  <filename>messages.properties</filename></para>
+                <para><property>messagesPack</property> − имя <link linkend="message_packs">пакета сообщений</link>. Фактически это имя Java-пакета, содержащего файл  <filename>messages.properties</filename></para>
               </listitem>
               <listitem>
                 <para><property>caption</property> − заголовок экрана, должен содержать ссылку на сообщение из вышеуказанного пакета, например, <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
@@ -3139,7 +3247,7 @@ Instance − ваш SQL Server.</para>
           </figure>
           <para>Для того чтобы создать компонент надписи, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/label/label.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибут <sgmltag id="attr_value">value</sgmltag> предназначен для отображения текста надписи. Обычно значение атрибута задается с помощью ключа <glossterm linkend="message_pack_glossentry">пакета сообщений</glossterm>.</para>
+          <para>Атрибут <sgmltag id="attr_value">value</sgmltag> предназначен для отображения текста надписи. Обычно значение атрибута задается с помощью ключа <link linkend="message_packs">пакета сообщений</link>.</para>
           <para>Текст, содержащийся в атрибуте <sgmltag>value</sgmltag>, будет перенесен на следующую строку, если по длине он превысит значение атрибута <link linkend="attr_width">width</link>. Поэтому если Вам нужно использовать многострочную надпись, укажите требуемое значение атрибута <link linkend="attr_width">width</link> (применимо только для веб-приложений). Если текст надписи слишком длинный, и значение атрибута <link linkend="attr_width">width</link> не определено, то текст будет урезан.</para>
           <figure>
             <title/>
@@ -3812,8 +3920,8 @@ Instance − ваш SQL Server.</para>
             </mediaobject>
           </figure>
           <para>В большинстве бизнес-приложений нет необходимости отображать милисекунды или даже время.  Точность представления даты или времени контролируется атрибутом <sgmltag id="attr_resolution">resolution</sgmltag>.  Значение атрибута должно соответствовать перечислению <code>DateField.Resolution</code> − <literal>SEC</literal>, <literal>MIN</literal>, <literal>HOUR</literal>, <literal>DAY</literal>, <literal>MONTH</literal>, <literal>YEAR</literal>. По умолчанию точность определяется по аннотации <code>javax.persistence.Temporal</code> соответствующего атрибута <glossterm linkend="entity">сущности</glossterm>.</para>
-          <para>Если <code>resolution=&quot;DAY&quot;</code> и не указан атрибут <sgmltag>dateFormat</sgmltag>, то в качестве формата будет взят формат, указанный в <glossterm linkend="main_message_pack_glossentry">главном пакете сообщений</glossterm> с ключом <sgmltag>dateFormat</sgmltag>.</para>
-          <para>Если <code>resolution=&quot;MIN&quot;</code> и не указан атрибут <sgmltag>dateFormat</sgmltag>, то в качестве формата будет взят формат, указанный в <glossterm linkend="main_message_pack_glossentry">главном пакете сообщений</glossterm> с ключом <sgmltag>dateTimeFormat</sgmltag>.</para>
+          <para>Если <code>resolution=&quot;DAY&quot;</code> и не указан атрибут <sgmltag>dateFormat</sgmltag>, то в качестве формата будет взят формат, указанный в <link linkend="main_message_pack">главном пакете сообщений</link> с ключом <sgmltag>dateFormat</sgmltag>.</para>
+          <para>Если <code>resolution=&quot;MIN&quot;</code> и не указан атрибут <sgmltag>dateFormat</sgmltag>, то в качестве формата будет взят формат, указанный в <link linkend="main_message_pack">главном пакете сообщений</link> с ключом <sgmltag>dateTimeFormat</sgmltag>.</para>
           <para>Ниже показано определения поля для ввода даты с точностью до месяца.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateFieldResolution.txt" encoding="UTF-8" parse="text"/></programlisting>
           <figure>
@@ -6153,7 +6261,7 @@ Instance − ваш SQL Server.</para>
               <para>Его не могут редактировать пользователи</para>
             </listitem>
             <listitem>
-              <para>Название такого фильтра локализуется − в <glossterm linkend="main_message_pack_glossentry">главном пакете сообщений</glossterm> приложения должна быть строка с ключом, равным коду фильтра.</para>
+              <para>Название такого фильтра локализуется − в <link linkend="main_message_pack">главном пакете сообщений</link> приложения должна быть строка с ключом, равным коду фильтра.</para>
             </listitem>
           </itemizedlist>
           <para id="sequential_filter_para"><emphasis role="bold">Последовательное наложение фильтров</emphasis></para>
