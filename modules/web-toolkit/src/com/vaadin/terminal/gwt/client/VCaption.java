@@ -186,7 +186,7 @@ public class VCaption extends HTML {
         } else {
             removeStyleDependentName("hasdescription");
             if (toolTipIndicator != null) {
-                DOM.removeChild(getElement(), toolTipIndicator);
+                toolTipIndicator.removeFromParent();
                 toolTipIndicator = null;
             }
         }

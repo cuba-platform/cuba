@@ -160,6 +160,8 @@ public class VFieldGroupLayout extends VGridLayout {
     private class FieldGroupComponentContainer extends ChildComponentContainer {
 
         protected Element rightCaption;
+        protected Element requiredElement;
+        protected Element tooltipElement;
         protected int additionalWidth = MAX_ADDITIONAL_WIDTH;
 
         protected FieldGroupComponentContainer(Widget widget, int orientation) {
@@ -225,29 +227,52 @@ public class VFieldGroupLayout extends VGridLayout {
             }
         }
 
-        protected void moveCaptionIndicators(VCaption caption){
+        protected void moveCaptionIndicators(VCaption caption) {
             int fakeCaptionWidth = 0;
-            if (caption.getRequiredElement() != null) {
-                rightCaption = DOM.createDiv();
-                rightCaption.setClassName(VCaption.CLASSNAME);
-                caption.getElement().removeChild(caption.getRequiredElement());
-                rightCaption.appendChild(caption.getRequiredElement());
-                fakeCaptionWidth += REQUIRED_INDICATOR_WIDTH;
-                containerDIV.insertAfter(rightCaption, widgetDIV);
-            }
-            if (caption.getTooltipElement() != null) {
+            boolean widthChanged = false;
+            if (caption.getRequiredElement() != null && requiredElement == null) {
                 if (rightCaption == null) {
                     rightCaption = DOM.createDiv();
                     rightCaption.setClassName(VCaption.CLASSNAME);
                     containerDIV.insertAfter(rightCaption, widgetDIV);
                 }
-                caption.getElement().removeChild(caption.getTooltipElement());
-                if (!(widget instanceof VCheckBox)) {
+                caption.getElement().removeChild(caption.getRequiredElement());
+                requiredElement = caption.getRequiredElement();
+                rightCaption.appendChild(requiredElement);
+                if (caption.getTooltipElement() != null) {
                     rightCaption.appendChild(caption.getTooltipElement());
-                    fakeCaptionWidth += TOOLTIP_INDICATOR_WIDTH;
                 }
+
+                widthChanged = true;
+            } else if (caption.getRequiredElement() == null && requiredElement != null) {
+                requiredElement = null;
+                widthChanged = true;
             }
-            if (rightCaption != null)
+            if (caption.getTooltipElement() != null && tooltipElement == null) {
+                if (rightCaption == null) {
+                    rightCaption = DOM.createDiv();
+                    rightCaption.setClassName(VCaption.CLASSNAME);
+                    containerDIV.insertAfter(rightCaption, widgetDIV);
+                }
+                if (!caption.getTooltipElement().getParentElement().equals(rightCaption)) {
+                    caption.getElement().removeChild(caption.getTooltipElement());
+                }
+                if (!(widget instanceof VCheckBox)) {
+                    tooltipElement = caption.getTooltipElement();
+                    rightCaption.appendChild(tooltipElement);
+                }
+                widthChanged = true;
+            } else if (caption.getTooltipElement() == null && tooltipElement != null) {
+                tooltipElement = null;
+                widthChanged = true;
+            }
+            if (requiredElement != null) {
+                fakeCaptionWidth += REQUIRED_INDICATOR_WIDTH;
+            }
+            if (tooltipElement != null) {
+                fakeCaptionWidth += TOOLTIP_INDICATOR_WIDTH;
+            }
+            if (rightCaption != null && widthChanged)
                 DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
             additionalWidth = MAX_ADDITIONAL_WIDTH - fakeCaptionWidth;
         }
