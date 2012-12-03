@@ -23,7 +23,9 @@ import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
 
 import javax.persistence.TemporalType;
 import java.io.ByteArrayOutputStream;
@@ -122,9 +124,25 @@ public class ExcelExporter {
         HSSFRow row = sheet.createRow(r);
         createAutoColumnSizers(columns.size());
 
+        float maxHeight = sheet.getDefaultRowHeightInPoints();
+
+        CellStyle headerCellStyle = wb.createCellStyle();
+        headerCellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+        for (Table.Column column : columns) {
+            String caption = column.getCaption();
+
+            int countOfReturnSymbols = StringUtils.countMatches(caption, "\n");
+            if (countOfReturnSymbols > 0) {
+                maxHeight = Math.max(maxHeight, (countOfReturnSymbols + 1) * sheet.getDefaultRowHeightInPoints());
+                headerCellStyle.setWrapText(true);
+            }
+        }
+        row.setHeightInPoints(maxHeight);
+
         for (int c = 0; c < columns.size(); c++) {
             Table.Column column = columns.get(c);
             String caption = column.getCaption();
+
             HSSFCell cell = row.createCell(c);
             HSSFRichTextString richTextString = new HSSFRichTextString(caption);
             richTextString.applyFont(boldFont);
@@ -133,6 +151,8 @@ public class ExcelExporter {
             ExcelAutoColumnSizer sizer = new ExcelAutoColumnSizer();
             sizer.notifyCellValue(caption, boldFont);
             sizers[c] = sizer;
+
+            cell.setCellStyle(headerCellStyle);
         }
 
         CollectionDatasource datasource = table.getDatasource();
