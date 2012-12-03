@@ -13,7 +13,8 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
@@ -28,9 +29,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractFieldFactory {
 
@@ -122,7 +122,7 @@ public abstract class AbstractFieldFactory {
         String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
         if (!StringUtils.isEmpty(dateFormat)) {
             if (dateFormat.startsWith("msg://")) {
-                dateFormat = MessageProvider.getMessage(
+                dateFormat = AppBeans.get(Messages.class).getMessage(
                         AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
             }
             dateField.setDateFormat(dateFormat);
@@ -142,6 +142,8 @@ public abstract class AbstractFieldFactory {
         CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
         if (optionsDatasource == null) {
             pickerField = new DesktopPickerField();
+            pickerField.addLookupAction();
+            pickerField.addClearAction();
         } else {
             pickerField = new DesktopLookupPickerField();
             ((DesktopLookupPickerField) pickerField).setOptionsDatasource(optionsDatasource);
@@ -149,16 +151,14 @@ public abstract class AbstractFieldFactory {
                 pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
         }
         pickerField.setDatasource(datasource, property);
-        pickerField.addLookupAction();
-        pickerField.addClearAction();
         return pickerField;
     }
 
     private Component createEnumField(Datasource datasource, String property, MetaProperty metaProperty) {
-        Map<String, Object> options = new TreeMap<String, Object>();
+        Map<String, Object> options = new TreeMap<>();
         Enumeration<Enum> enumeration = metaProperty.getRange().asEnumeration();
         for (Enum value : enumeration.getValues()) {
-            String caption = MessageProvider.getMessage(value);
+            String caption = AppBeans.get(Messages.class).getMessage(value);
             options.put(caption, value);
         }
 
