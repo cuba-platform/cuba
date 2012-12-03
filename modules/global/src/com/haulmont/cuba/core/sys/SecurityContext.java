@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Holds information about the current user session.
  *
- * <p/>Instances of this class are normally being set in {@link AppContext} by the framework, but also have to be
+ * <p/>Instances of this class are normally set in {@link AppContext} by the framework, but also have to be
  * passed to it in case of manually running new threads. Here is the sample code for an asynchronous execution:
  * <pre>
  *     final SecurityContext securityContext = AppContext.getSecurityContext();

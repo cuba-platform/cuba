@@ -24,8 +24,8 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 public interface ServerConfig extends Config {
 
     /**
-     * @return URL of user session provider - usually the main application core.
-     * This URL is used by modules which don't login themselves but get existing sessions from main app.
+     * @return URL of a user session provider - usually the main middleware unit.
+     * This URL is used by middleware units which don't login themselves but get existing sessions from the main app.
      */
     @Property("cuba.userSessionProviderUrl")
     String getUserSessionProviderUrl();

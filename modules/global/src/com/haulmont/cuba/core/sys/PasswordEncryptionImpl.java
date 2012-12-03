@@ -70,7 +70,7 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
     }
 
     @Override
-    public boolean checkPassword(User user, String givenPassword) {
-        return encryptionModule.checkPassword(user, givenPassword);
+    public boolean checkPassword(User user, String password) {
+        return encryptionModule.checkPassword(user, password);
     }
 }

@@ -82,8 +82,8 @@ public class Sha1EncryptionModule implements EncryptionModule {
     }
 
     @Override
-    public boolean checkPassword(User user, String givenPassword) {
-        String hashedPassword = getHash(givenPassword, user.getId().toString());
+    public boolean checkPassword(User user, String password) {
+        String hashedPassword = getHash(password, user.getId().toString());
         return StringUtils.equals(hashedPassword, user.getPassword());
     }
 
