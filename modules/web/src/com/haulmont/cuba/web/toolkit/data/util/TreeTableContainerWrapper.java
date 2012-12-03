@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.web.toolkit.data.util;
 
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
@@ -9,8 +15,8 @@ import com.vaadin.data.util.ContainerHierarchicalWrapper;
 import java.util.*;
 
 /**
- * User: Nikolay Gorodnov
- * Date: 05.06.2009
+ * @author gorodnov
+ * @version $Id$
  */
 @SuppressWarnings("serial")
 public class TreeTableContainerWrapper
@@ -30,9 +36,9 @@ public class TreeTableContainerWrapper
         super(toBeWrapped);
         treeTableContainer = toBeWrapped instanceof TreeTableContainer;
 
-        inline = new LinkedList<Object>();
-        expanded = new HashSet<Object>();
-        captions = new Hashtable<Object, String>();
+        inline = new LinkedList<>();
+        expanded = new HashSet<>();
+        captions = new Hashtable<>();
     }
 
     @Override
@@ -42,12 +48,12 @@ public class TreeTableContainerWrapper
         updateFirst();
 
         if (inline == null || expanded == null || captions == null) {
-            inline = new LinkedList<Object>();
-            expanded = new HashSet<Object>();
-            captions = new Hashtable<Object, String>();
+            inline = new LinkedList<>();
+            expanded = new HashSet<>();
+            captions = new Hashtable<>();
         } else {
             inline.clear();
-            final Set<Object> s = new HashSet<Object>();
+            final Set<Object> s = new HashSet<>();
             s.addAll(expanded);
             s.addAll(captions.keySet());
             for (final Object o : s) {
@@ -112,7 +118,7 @@ public class TreeTableContainerWrapper
 
         boolean b = super.setParent(itemId, newParentId);
         if (b) {
-            final LinkedList<Object> inlineList = new LinkedList<Object>();
+            final LinkedList<Object> inlineList = new LinkedList<>();
             inlineList.add(itemId);
             inlineList.addAll(getInlineChildren(itemId));
 
@@ -139,6 +145,7 @@ public class TreeTableContainerWrapper
         return inline.size();
     }
 
+    @Override
     public Object nextItemId(Object itemId) {
         if (itemId == null) {
             throw new NullPointerException("Item id cannot be NULL");
@@ -150,9 +157,11 @@ public class TreeTableContainerWrapper
         return inline.get(index + 1);
     }
 
+    @Override
     public Object prevItemId(Object itemId) {
         if (itemId == null) {
-            throw new NullPointerException("Item id cannot be NULL");
+            return null;
+//            throw new NullPointerException("Item id cannot be NULL");
         }
         int index = inlineIndex(itemId);
         if (index == -1 || isFirstId(itemId)) {
@@ -161,30 +170,37 @@ public class TreeTableContainerWrapper
         return inline.get(index - 1);
     }
 
+    @Override
     public Object firstItemId() {
         return first;
     }
 
+    @Override
     public Object lastItemId() {
         return inline.peekLast();
     }
 
+    @Override
     public boolean isFirstId(Object itemId) {
         return itemId != null && itemId.equals(first);
     }
 
+    @Override
     public boolean isLastId(Object itemId) {
         return itemId != null && itemId.equals(lastItemId());
     }
 
+    @Override
     public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isCaption(Object itemId) {
         if (itemId != null) {
             if (!treeTableContainer) {
@@ -196,6 +212,7 @@ public class TreeTableContainerWrapper
         throw new NullPointerException("Item id cannot be NULL");
     }
 
+    @Override
     public String getCaption(Object itemId) {
         if (itemId != null) {
             if (!treeTableContainer) {
@@ -207,6 +224,7 @@ public class TreeTableContainerWrapper
         throw new NullPointerException("Item id cannot be NULL");
     }
 
+    @Override
     public boolean setCaption(Object itemId, String caption) {
         if (itemId != null) {
             if (!treeTableContainer) {
@@ -223,6 +241,7 @@ public class TreeTableContainerWrapper
         throw new NullPointerException("Item id cannot be NULL");
     }
 
+    @Override
     public int getLevel(Object itemId) {
         if (itemId != null) {
             if (!treeTableContainer) {
@@ -342,7 +361,7 @@ public class TreeTableContainerWrapper
 
     protected LinkedList<Object> getInlineChildren(Object itemId) {
         if (areChildrenAllowed(itemId)) {
-            final LinkedList<Object> inlineChildren = new LinkedList<Object>();
+            final LinkedList<Object> inlineChildren = new LinkedList<>();
             if (isExpanded(itemId)) {
                 makeInlineElements(inlineChildren, getChildren(itemId));
             }
@@ -387,6 +406,7 @@ public class TreeTableContainerWrapper
         return -1;
     }
 
+    @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
         if (container instanceof Sortable) {
             ((Sortable) container).sort(propertyId, ascending);
@@ -395,6 +415,7 @@ public class TreeTableContainerWrapper
             throw new IllegalStateException("Wrapped container is not Sortable: " + container.getClass());
     }
 
+    @Override
     public Collection getSortableContainerPropertyIds() {
         if (container instanceof Sortable)
             return ((Sortable) container).getSortableContainerPropertyIds();
@@ -402,6 +423,7 @@ public class TreeTableContainerWrapper
             throw new IllegalStateException("Wrapped container is not Sortable: " + container.getClass());
     }
 
+    @Override
     public Collection getAggregationPropertyIds() {
         if (container instanceof AggregationContainer) {
             return ((AggregationContainer) container).getAggregationPropertyIds();
@@ -410,6 +432,7 @@ public class TreeTableContainerWrapper
                 + container.getClass());
     }
 
+    @Override
     public Type getContainerPropertyAggregation(Object propertyId) {
         if (container instanceof AggregationContainer) {
             return ((AggregationContainer) container).getContainerPropertyAggregation(propertyId);
@@ -418,6 +441,7 @@ public class TreeTableContainerWrapper
                 + container.getClass());
     }
 
+    @Override
     public void addContainerPropertyAggregation(Object propertyId, Type type) {
         if (container instanceof AggregationContainer) {
             ((AggregationContainer) container).addContainerPropertyAggregation(propertyId, type);
@@ -427,6 +451,7 @@ public class TreeTableContainerWrapper
         }
     }
 
+    @Override
     public void removeContainerPropertyAggregation(Object propertyId) {
         if (container instanceof AggregationContainer) {
             ((AggregationContainer) container).removeContainerPropertyAggregation(propertyId);
@@ -436,6 +461,7 @@ public class TreeTableContainerWrapper
         }
     }
 
+    @Override
     public Map<Object, Object> aggregate(Context context) {
         if (container instanceof AggregationContainer) {
             return ((AggregationContainer) container).aggregate(context);
