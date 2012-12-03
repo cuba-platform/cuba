@@ -13,18 +13,20 @@ import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class MenuBuilder {
 
@@ -87,6 +89,7 @@ public class MenuBuilder {
         final MenuCommand command = new MenuCommand(App.getInstance().getMainFrame().getWindowManager(), item, windowInfo);
         jMenuItem.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         command.execute();
                     }
@@ -95,26 +98,40 @@ public class MenuBuilder {
     }
 
     private void createSubMenu(JMenu jMenu, MenuItem item) {
-        for (MenuItem child : item.getChildren()) {
-            if (child.isPermitted(userSession)) {
-                if (child.getChildren().isEmpty()) {
-                    if (child.isSeparator()) {
-                        jMenu.addSeparator();
-                    } else {
-                        JMenuItem jMenuItem = new JMenuItem(MenuConfig.getMenuItemCaption(child.getId()));
-                        assignCommand(jMenuItem, child);
-                        assignShortcut(jMenuItem, child);
-                        jMenu.add(jMenuItem);
+        List<MenuItem> itemChildren = new LinkedList<>(item.getChildren());
+        CollectionUtils.filter(itemChildren, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return ((MenuItem) object).isPermitted(userSession);
+            }
+        });
+
+        MenuItem prevItem = null;
+        for (MenuItem child : itemChildren) {
+            if (child.getChildren().isEmpty()) {
+                if (child.isSeparator()) {
+                    // skip first and last separator
+                    if (child != itemChildren.get(0) &&
+                            child != itemChildren.get(itemChildren.size() - 1)) {
+                        // skip separator after separator
+                        if (prevItem == null || !prevItem.isSeparator())
+                            jMenu.addSeparator();
                     }
                 } else {
-                    JMenu jChildMenu = new JMenu(MenuConfig.getMenuItemCaption(child.getId()));
-                    assignShortcut(jChildMenu, child);
-                    createSubMenu(jChildMenu, child);
-                    if (!isMenuEmpty(jChildMenu)) {
-                        jMenu.add(jChildMenu);
-                    }
+                    JMenuItem jMenuItem = new JMenuItem(MenuConfig.getMenuItemCaption(child.getId()));
+                    assignCommand(jMenuItem, child);
+                    assignShortcut(jMenuItem, child);
+                    jMenu.add(jMenuItem);
+                }
+            } else {
+                JMenu jChildMenu = new JMenu(MenuConfig.getMenuItemCaption(child.getId()));
+                assignShortcut(jChildMenu, child);
+                createSubMenu(jChildMenu, child);
+                if (!isMenuEmpty(jChildMenu)) {
+                    jMenu.add(jChildMenu);
                 }
             }
+            prevItem = child;
         }
     }
 
