@@ -7,6 +7,11 @@ import com.vaadin.ui.AbstractSelect;
 
 import java.util.*;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class WebAbstractList<T extends AbstractSelect>
     extends
         WebAbstractActionsHolderComponent<T>
@@ -15,14 +20,17 @@ public abstract class WebAbstractList<T extends AbstractSelect>
 {
     protected CollectionDatasource datasource;
 
+    @Override
     public boolean isMultiSelect() {
         return component.isMultiSelect();
     }
 
+    @Override
     public void setMultiSelect(boolean multiselect) {
         component.setMultiSelect(multiselect);
     }
 
+    @Override
     public <T extends Entity> T getSingleSelected() {
         final Set selected = getSelectedItemIds();
         return selected == null || selected.isEmpty() ?
@@ -59,6 +67,7 @@ public abstract class WebAbstractList<T extends AbstractSelect>
         }
     }
 
+    @Override
     public void setSelected(Entity item) {
         if (item == null) {
             component.setValue(null);
@@ -67,21 +76,24 @@ public abstract class WebAbstractList<T extends AbstractSelect>
         }
     }
 
+    @Override
     public void setSelected(Collection<Entity> items) {
         Set itemIds = new HashSet();
         for (Entity item : items) {
             if (!datasource.containsItem(item.getId())) {
-                throw new IllegalStateException("Datasource doen't contain items");
+                throw new IllegalStateException("Datasource doesn't contain items");
             }
             itemIds.add(item.getId());
         }
         component.setValue(itemIds.size() == 1 ? itemIds.iterator().next() : itemIds);
     }
 
+    @Override
     public void refresh() {
         datasource.refresh();
     }
 
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
