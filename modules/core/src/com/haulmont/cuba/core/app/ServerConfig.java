@@ -41,7 +41,7 @@ public interface ServerConfig extends Config {
     String getTrustedClientPassword();
 
     @Property("cuba.trustedClientPermittedIpMask")
-    @DefaultString("127.0.0.1")
+    @DefaultString("127\\.0\\.0\\.1")
     String getTrustedClientPermittedIpMask();
 
     @Property("cuba.security.resetPasswordTemplateBody")
