@@ -1762,7 +1762,7 @@ tools.foo();</programlisting><programlisting>((MyMessageTools) messages.getTools
 tools.foo();</programlisting><programlisting>((MyMetadataTools) metadata.getTools()).foo();</programlisting></para></para>
         </section>
       </section>
-      <section>
+      <section id="persistence">
         <title>Persistence</title>
         <para>Интерфейс <link linkend="app_tiers">уровня</link> <structname>Middleware</structname>, являющийся точкой входа в функциональность хранения данных в БД.<tip>
             <para>Интерфейс <code>Persistence</code> доступен только в <link linkend="app_modules">модуле</link> <structname>core</structname> проекта приложения.</para>
@@ -2394,89 +2394,203 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
       </section>
     </section>
     <section id="authentication">
-      <title>Аутентификация и авторизация пользователей</title>
-      <para>TODO</para>
+      <title>Аутентификация пользователей</title>
+      <para>В данном разделе рассмотрены некоторые аспекты управления доступом с точки зрения разработчика приложения. Для получения полной информации о возможностях и настройке доступа пользователей к данным  обратитесь к руководству <productname>Платформа CUBA. Подсистема безопасности</productname>. </para>
+      <section id="userSession">
+        <title>UserSession</title>
+        <para>Основной элемент подсистемы контроля доступа в CUBA-приложении - пользовательская сессия. Это объект класса <code>UserSession</code>, который ассоциирован с аутентифицированным в данный момент в системе пользователем, и содержит информацию о правах доступа пользователя к данным. Объект текущей сессии может быть получен в любом <link linkend="app_tiers">блоке</link> приложения через интерфейс инфраструктуры <code>
+            <link linkend="userSessionSource">UserSessionSource</link>
+          </code>. </para>
+        <para>Пользовательская сессия создается на <structname>Middleware</structname> при выполнении метода <code>LoginService.login()</code> после аутентификации пользователя по переданному имени и паролю. Объект <code>UserSession</code> затем кэшируется в данном блоке <structname>Middleware</structname>, и возвращается на клиентский уровень. Пр работе в кластере объект сессии реплицируется на соседние узлы кластера <structname>Middleware</structname>. Клиентский блок, получив объект сессии, также сохраняет его у себя, так или иначе ассоциируя с активным пользователем (например в HTTP сессии). Далее все вызовы <structname>Middleware</structname> для данного пользователя сопровождаются передачей идентификатора сессии (типа <code>UUID</code>), причем прикладному коду не нужно об этом заботиться - идентификатор сессии передается автоматически, независимо от сигнатуры вызываемых методов среднего слоя. Обработка вызовов клиентов на <structname>Middleware</structname> начинается с извлечения из кэша сессии по полученному идентификатору и установки ее в потоке выполнения. Объект сессии удаляется из кэша при вызове метода <code>LoginService.logout()</code>, либо при истечения времени бездействия, определяемого свойством  приложения <property>
+            <link linkend="cuba.userSessionExpirationTimeoutSec">cuba.userSessionExpirationTimeoutSec</link>
+          </property>.</para>
+        <para>Таким образом, идентификатор сессии, создаваемой при входе пользователя в систему, служит для аутентификации пользователя при каждом вызове среднего слоя.</para>
+        <para>Объект <code>UserSession</code> содержит также методы для <firstterm>авторизации</firstterm> текущего пользователя, т.е. проверки его прав на объекты системы: <code>isScreenPermitted()</code>, <code>isEntityOpPermitted()</code>, <code>isEntityAttrPermitted()</code>, <code>isSpecificPermitted()</code>.</para>
+      </section>
+      <section>
+        <title>Вход в систему</title>
+        <para>Стандартный вариант входа пользователя: <itemizedlist>
+            <listitem>
+              <para>пользователь вводит свой логин и пароль</para>
+            </listitem>
+            <listitem>
+              <para>клиентский блок приложения хэширует пароль, вызывая метод <code>getPlainHash()</code> бина <code>PasswordEncryption</code> и вызывает на <structname>Middleware</structname> метод <code>LoginService.login()</code>, передавая ему логин пользователя и хэш пароля</para>
+            </listitem>
+            <listitem>
+              <para><code>LoginService</code> делегирует выполнение бину <code>LoginWorker</code>, который загружает объект <code>User</code> по полученному логину, хэширует полученный хэш пароля повторно, используя в качестве соли идентификатор пользователя, и сравнивает полученный хэш с сохраненным в БД хэшем пароля. В случае несовпадения выбрасывается исключение <code>LoginException</code>.</para>
+            </listitem>
+            <listitem>
+              <para>После успешной аутентификации в созданный экземпляр <code>
+                  <link linkend="userSession">UserSession</link>
+                </code> загружаются все параметры доступа данного пользователя: список ролей, права, ограничения и атрибуты сессии.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Алгоритм хэширования паролей реализуется бином типа <code>EncryptionModule</code> и задается в свойстве приложения <property>
+            <link linkend="cuba.passwordEncryptionModule">cuba.passwordEncryptionModule</link>
+          </property>. По умолчанию - SHA-1.</para>
+        <para>Возможен вариант, когда пароль пользователя (точнее, хэш пароля) не хранится в базе данных, а проверяется внешними средствами, например путем интеграции с <application>ActiveDirectory</application>. В этом случае фактически аутентификацию выполняет клиентский блок, а <structname> Middleware</structname> &quot;доверяет&quot; клиенту, создавая сессию по одному только логину пользователя без пароля методом <code>LoginService.loginTrusted()</code>. Метод <code>loginTrusted()</code> требует выполнения следующих условия:<itemizedlist>
+            <listitem>
+              <para>клиентский блок должен передать так называемый доверенный пароль, задаваемый на <structname>Middleware</structname> и на клиентском блоке свойством приложения <property>
+                  <link linkend="cuba.trustedClientPassword">cuba.trustedClientPassword</link>
+                </property></para>
+            </listitem>
+            <listitem>
+              <para>IP адрес клиентского блока должен соответствовать маске, задаваемой свойством приложения <property>
+                  <link linkend="cuba.trustedClientPermittedIpMask">cuba.trustedClientPermittedIpMask</link>
+                </property></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Вход в систему требуется также для автоматических процессов, запускаемых по расписанию, а также при подключении к бинам <structname>Middleware</structname> через JMX-интерфейс. Строго говоря, такие действия считаются административными и не требуют аутентификации до тех пор, пока не выполняется каких-либо изменений сущностей в базе данных. При записи сущностей в БД требуется проставить логин пользователя, который выполнил изменения, поэтому для работы таких процессов должен быть указан пользователь, от лица которого выполняются изменения. </para>
+        <para>Дополнительным плюсом входа в систему для автоматического процесса и для JMX-вызова является то, что вывод в журнал сообщений от логгеров сопровождается указанием логина текущего пользователя, если пользовательская сессия установлена в потоке выполнения. Это упрощает поиск сообщений от конкретного процесса при разборе журнала.</para>
+        <para>Вход в систему для процессов внутри <structname>Middleware</structname> выполняется вызовом <code>LoginWorker.loginSystem()</code> с передачей логина пользователя (без пароля), от имени которого будет работать данный процесс. В результате создается объект <code>
+            <link linkend="userSession">UserSession</link>
+          </code>, который будет закэширован в данном блоке <structname>Middleware</structname> и не будет реплицироваться в кластере. </para>
+        <para>Стандартная реализация входа / выхода для компонентов <structname>Middleware</structname> заключена в специальном базовом классе <code>
+            <link linkend="managementBean">ManagementBean</link>
+          </code>, поэтому свои JMX-бины рекомендуется наследовать от него.</para>
+      </section>
+      <section>
+        <title>SecurityContext</title>
+        <para>Экземпляр класса <code>SecurityContext</code> хранит информацию о пользовательской сессии для текущего потока выполнения. Он создается и передается в метод <code>AppContext.setSecurityContext()</code> в следующие моменты:<itemizedlist>
+            <listitem>
+              <para>для блоков <structname>Web Client</structname>  и <structname>Web Portal</structname> - в начале обработки каждого HTTP-запроса от пользовательского браузера</para>
+            </listitem>
+            <listitem>
+              <para>для блока <structname>Middleware</structname> - в начале обработки каждого запроса от клиентского уровня</para>
+            </listitem>
+            <listitem>
+              <para>для блока <structname>Desktop Client</structname> - один раз после входа пользователя, так как десктопное приложение является однопользовательским</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>По окончании выполнения запроса в первых двух случаях  <code>SecurityContext</code> удаляется из потока выполнения.</para>
+        <para>При создании прикладным кодом нового потока выполнения в него необходимо передать текущий экземпляр <code>SecurityContext</code>, например:<programlisting>final SecurityContext securityContext = AppContext.getSecurityContext();
+executor.submit(new Runnable() {
+    public void run() {
+        AppContext.setSecurityContext(securityContext);
+        // business logic here
+    }
+});</programlisting></para>
+      </section>
     </section>
   </section>
   <section id="middleware">
     <title>Компоненты среднего слоя</title>
     <para>На следующем рисунке приведены основные компоненты среднего слоя CUBA-приложения.</para>
     <figure>
-      <title>Архитектура среднего слоя</title>
+      <title>Компоненты среднего слоя</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/Middleware.png"/>
+          <imagedata contentwidth="80%" align="center" fileref="img/Middleware.png"/>
         </imageobject>
       </mediaobject>
     </figure>
-    <para>Компоненты сгруппированы по двум <link linkend="text_modules">модулям</link>: <structname>core</structname> и <structname>global</structname>. В <structname>global</structname> расположены компоненты, доступные как коду Middleware, так и клиентскому коду. В <structname>core</structname> расположены компоненты ядра Middleware.</para>
-    <para>Рассмотрим элементы диаграммы более подробно.</para>
-    <para><link linkend="services">Services</link> – управляемые <glossterm linkend="container">контейнером</glossterm> компоненты, формирующие границу приложения и предоставляющие интерфейс клиентам Middleware. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
+    <para><link linkend="services">Services</link> – управляемые <glossterm linkend="container">контейнером</glossterm> компоненты, формирующие границу приложения и предоставляющие интерфейс клиентскому <link linkend="app_tiers">уровню</link> приложения. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
     <para><link linkend="managed_beans">Managed Beans</link> – управляемые <glossterm linkend="container">контейнером</glossterm> компоненты, содержащие бизнес-логику приложения. Вызываются <link linkend="services">сервисами</link>, другими бинами или через опциональный <glossterm linkend="jmx">JMX</glossterm> интерфейс.</para>
-    <para>Entity Classes – классы, моделирующие предметную область приложения.  Представляют собой аннотированные <glossterm linkend="pojo">POJO</glossterm>. Аннотации используются для задания соответствий между столбцами таблицы базы данных и полями объектов с помощью OpenJPA, а также для формирования метаданных в <link linkend="metadata_framework">Metadata Framework</link>.</para>
-    <para><emphasis role="bold">Persistence</emphasis> −  центральный интерфейс для доступа к функциональности хранения данных. Позволяет получать ссылки на интерфейсы <code>EntityManager</code> и <code>Transaction</code>.</para>
-    <para><emphasis role="bold">Transaction</emphasis> − интерфейс управления <link linkend="transactions">транзакциями</link> Middleware.</para>
-    <para><emphasis role="bold">Entity Manager</emphasis> − интерфейс для работы с данными на уровне Middleware. Позволяет извлекать <glossterm linkend="entity">сущности</glossterm> из базы данных по идентификатору и по запросу, а также сохранять и удалять их.</para>
-    <para><link linkend="metadata_framework">Metadata Framework</link> позволяет создавать описание предметной области в терминах классов, атрибутов и отношений между классами. Метаданные (модель данных) существенно упрощают создание универсальных механизмов работы с данными. Исходной информацией для построения модели являются аннотированные классы сущностей.</para>
-    <para><link linkend="infrastructure_interfaces">Global Infrastructure Interfaces</link> (интерфейсы инфраструктуры) предоставляют доступ к общей часто используемой функциональности. Реализованы в платформе аналогично <link linkend="managed_beans">Managed Beans</link>.
-
-Все интерфейсы инфраструктуры имеют соответствующие <firstterm>статические фасады</firstterm> − классы со статическими методами, позволяющие иметь доступ к нужной функциональности из статического контекста (при невозможности использовать <link linkend="middleware">dependency injection</link>). Статические фасады имеют имена, заканчивающиеся на <code>*Provider</code>.</para>
-    <para>Spring Framework − основа среднего слоя. Используются следующие возможности Spring Framework: </para>
-    <itemizedlist>
-      <listitem>
-        <para>Инверсия управления (IoC container)</para>
-      </listitem>
-      <listitem>
-        <para>Аспектно-ориентированное программирование (AOP)</para>
-      </listitem>
-      <listitem>
-        <para>Управление транзакциями</para>
-      </listitem>
-      <listitem>
-        <para>Remoting − доступ к сервисам среднего слоя по протоколу HTTP</para>
-      </listitem>
-      <listitem>
-        <para>Реализация веб-сервисов и <link linkend="rest_api">REST API</link></para>
-      </listitem>
-    </itemizedlist>
-    <para>OpenJPA Framework − реализация ORM по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке <link linkend="middleware">JPQL</link>.</para>
+    <para><code>
+        <link linkend="persistence">Persistence</link>
+      </code> − инфраструктурный интерфейс для доступа к функциональности хранения данных: управлению <link linkend="transactions">транзакциями</link> и <link linkend="orm">ORM</link>. </para>
     <section id="services">
-      <title>Services</title>
-      <para>Сервисы представляют собой слой  компонентов, формирующих границу приложения. Сервисы определяют множество операций, предоставляемых ими для интерфейсных клиентских слоев кода. Сервисы инкапсулируют бизнес-логику приложения, управляют транзакциями и координируют реакции на действия.</para>
+      <title>Сервисы</title>
+      <para>Сервисы образуют слой  компонентов, определяющий множество операций <structname>Middleware</structname>, доступных клиентскому <link linkend="app_tiers">уровню</link> приложения. Внутри сервисов  инкапсулируется бизнес-логика и  управление <link linkend="transactions">транзакциями</link>.</para>
       <para>Основные задачи сервисов:</para>
       <itemizedlist>
         <listitem>
-          <para>Обеспечить выполнение каждого метода в отдельной <link linkend="transactions">транзакции</link>. </para>
+          <para>Предоставляют удаленный (remote) интерфейс для вызова с клиентского уровня</para>
         </listitem>
         <listitem>
-          <para>Обеспечивать запись исключений в журнал.</para>
+          <para>Проверяют наличие активной <link linkend="userSession">пользовательской сессии</link>, соответствующей идентификатору сессии, переданному с клиента</para>
         </listitem>
         <listitem>
-          <para>Обеспечивать отказоустойчивость (failover) в кластере для удаленных клиентов.</para>
-        </listitem>
-        <listitem>
-          <para>В бизнес-методах сервисов могут проверяться права пользователя на доступ к данным</para>
+          <para>Записывают в журнал  необработанные исключения среднего слоя</para>
         </listitem>
       </itemizedlist>
-      <para>Диаграмма классов, входящих в состав сервиса:</para>
+      <para>Кроме того, именно в слое сервисов рекомендуется выполнять авторизацию текущего пользователя, т.е. проверять его права на ту или иную функциональность.</para>
+      <para>Общие для всех сервисов задачи решаются следующим образом:<itemizedlist>
+          <listitem>
+            <para>Проверка наличия пользовательской сессии и логгирование исключений производится классом-интерцептором <code>ServiceInterceptor</code>, который перехватывает выполнение каждого метода сервиса с помощью <application>Spring AOP</application></para>
+          </listitem>
+          <listitem>
+            <para>Удаленный интерфейс для доступа к сервису через <application>Spring HTTP Invoker</application> создается бином <code>RemoteServicesBeanCreator</code>. </para>
+          </listitem>
+        </itemizedlist></para>
       <figure>
-        <title>Диаграмма классов, входящих в состав сервиса</title>
+        <title>Диаграмма классов сервиса</title>
         <mediaobject>
           <imageobject>
             <imagedata contentwidth="80%" align="center" fileref="img/MiddlewareServices.png"/>
           </imageobject>
         </mediaobject>
       </figure>
-      <para>Каждый вызов сервиса перехватывается с помощью Spring AOP  и обрамляется вызовом <code>ServiceInterceptor.aroundInvoke()</code>.</para>
+      <section>
+        <title>Создание сервиса</title>
+        <para>Имена интерфейсов сервисов должны заканчиваться на <code>Service</code>, имена классов реализации на <code>ServiceBean</code>.</para>
+        <para>При создании сервиса необходимо выполнить следующее:</para>
+        <procedure>
+          <step>
+            <para>Создать интерфейс в <link linkend="app_modules">модуле</link> <structname>global</structname> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через символ нижнего подчеркивания должно идти имя сервиса. Например:</para>
+            <programlisting language="java">package com.haulmont.sales.service;
+
+import com.haulmont.sales.entity.Order;
+import java.math.BigDecimal;
+
+public interface OrderService {
+    public static final String NAME = &quot;sales_OrderService&quot;;
+
+    BigDecimal calculateTotals(Order order);
+}</programlisting>
+          </step>
+          <step>
+            <para>Создать класс сервиса в модуле <structname>core</structname> и добавить ему аннотацию <code>@org.springframework.stereotype.Service</code> с именем, заданным в интерфейсе</para>
+            <programlisting>package com.haulmont.sales.service;
+
+import com.haulmont.sales.entity.Order;
+import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
+
+@Service(OrderService.NAME)
+public class OrderServiceBean implements OrderService {
+    @Override
+    public BigDecimal calculateTotals(Order order) {
+        return ...;
+    }
+}</programlisting>
+          </step>
+        </procedure>
+        <warning>
+          <para>Сервисы предназначены только для вызова &quot;снаружи&quot; Middleware. Не рекомендуется вызывать методы сервисов из других компонентов среднего слоя. При обнаружении факта вызова сервиса из другого сервиса в журнал  выводится сообщение об ошибке.</para>
+          <para>Если некоторую бизнес-логику требуется вызывать из разных сервисов либо других компонентов <structname>Middleware</structname>, ее необходимо выделить и инкапсулировать внутри соответствующего <link linkend="managed_beans">Managed Bean</link>.</para>
+        </warning>
+      </section>
+      <section>
+        <title>Использование сервиса</title>
+        <para>Для того чтобы вызывать сервис, в клиентском  блоке приложения для него должен быть создан соответствующий прокси-объект. Делается это путем объявления имени и интерфейса сервиса в параметрах фабрики прокси-объектов. Для блока <structname>Web Client</structname> это бин класса <code>WebRemoteProxyBeanCreator</code>, для <structname>Web Portal</structname> - <code>PortalRemoteProxyBeanCreator</code> , для <structname>Desktop Client</structname> - <code>RemoteProxyBeanCreator</code> .</para>
+        <para>Фабрика прокси-объектов конфигурируется в файле <filename>
+            <link linkend="spring.xml">spring.xml</link>
+          </filename> ссответствующего клиентского блока.</para>
+        <para>Например, чтобы в приложении <application>sales</application> вызвать с веб-клиента сервис <code>sales_OrderService</code>, необходимо добавить в файл <filename>sales-web-spring.xml</filename> модуля <structname>web</structname> следующее:</para>
+        <programlisting language="xml">&lt;bean id=&quot;sales_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
+    &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
+    &lt;property name=&quot;remoteServices&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;sales_OrderService&quot; value=&quot;com.haulmont.sales.service.OrderService&quot;/&gt;
+        &lt;/map&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;</programlisting>
+        <para>Все импортируемые сервисы объявляются в одном свойстве <code>remoteServices</code>  в элементах <literal>map/entry</literal>.</para>
+        <para>С точки зрения прикладного кода прокси-объект сервиса на клиентском уровне является обычным бином <application>Spring</application> и может быть получен либо инжекцией, либо с помощью класса <code>AppBeans</code>, например:<programlisting>@Inject
+protected OrderService orderService;
+...
+BigDecimal sum = orderService.calculateTotals(order);</programlisting></para>
+      </section>
     </section>
     <section id="managed_beans">
-      <title>Managed Beans</title>
+      <title>Управляемые бины</title>
       <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами Inversion of Control. <glossterm linkend="container">Контейнером</glossterm> для бинов служит Spring Framework.</para>
       <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть всегда используется один экземпляр данного класса. Соответственно, если создаваемый Вами бин содержит изменяемые данные в полях (имеет состояние), то необходимо синхронизировать обращение к таким данным.</para>
       <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>.</para>
     </section>
     <section id="mbeans">
-      <title>JMX Beans</title>
+      <title>JMX-бины</title>
       <para><firstterm>МБин</firstterm> − программный компонент, реализующий бизнес-логику, и имеющий <glossterm linkend="jmx">JMX</glossterm>-интерфейс. Как правило, имеет внутреннее состояние (например, кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.</para>
       <para>МБин является расширенным вариантом <link linkend="managed_beans">управляемого бина</link>.</para>
       <figure>
@@ -2489,6 +2603,10 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
       </figure>
       <para>Как видно из диаграммы, МБин имеет два набора методов, разделенных по интерфейсам <code>...MBean</code> и <code>...API</code>. Первый из них служит для управления через JMX, а второй − для вызова из программного кода.</para>
       <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="interceptor">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью Spring AOP), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <code>ClassLoader</code>.</para>
+      <section id="managementBean">
+        <title>ManagementBean</title>
+        <para>TODO</para>
+      </section>
       <section id="cachingFacadeMBean">
         <title>CachingFacadeMBean</title>
         <para><code>CachingFacadeMBean</code> предоставляет методы очистки различных кэшей на <link linkend="app_tiers">уровне</link> <structname>Middleware</structname>.</para>

@@ -86,8 +86,8 @@
         <emphasis role="bold">Контейнер</emphasis>
       </glossterm>
       <glossdef>
-        <para>Контейнер   управляет жизненным циклом и конфигурацией программных объектов. Является базовым компонентом технологии Dependency Injection (или Inversion of Control). </para>
-        <para>Для получения более подробной информации см.  <xref linkend="additional_info"/> </para>
+        <para>Контейнер   управляет жизненным циклом и конфигурацией программных объектов. Является базовым компонентом технологии Dependency Injection (или Inversion of Control).</para>
+        <para>В платформе <productname>CUBA</productname> используется контейнер <application>Spring Framework</application>. Для получения более подробной информации см.  <xref linkend="additional_info"/> </para>
       </glossdef>
     </glossentry>
     <glossentry id="screen_controller_glossentry">
@@ -323,15 +323,6 @@
         <para>Средний слой − <link linkend="app_tiers">уровень</link> приложения, содержащий бизнес-логику, работающий с базой данных, и предоставляющий общий интерфейс для верхних (клиентских) уровней приложения.</para>
       </glossdef>
     </glossentry>
-    <glossentry>
-      <glossterm>
-        <emphasis role="bold">Middleware Services</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Сервисы среднего слоя предоставляют интерфейс для вызова бизнес-логики клиентами и образуют границу <glossterm linkend="middleware_glossentry">Middleware</glossterm>. Сервисы могут содержать бизнес-логику внутри себя, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
-        <para>См. <xref linkend="services"/></para>
-      </glossdef>
-    </glossentry>
   </glossdiv>
   <glossdiv>
     <title>O</title>
@@ -367,6 +358,15 @@
   </glossdiv>
   <glossdiv>
     <title>S</title>
+    <glossentry>
+      <glossterm>
+        <emphasis role="bold">Services</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Сервисы среднего слоя предоставляют интерфейс для вызова бизнес-логики клиентами и образуют границу <glossterm linkend="middleware_glossentry">Middleware</glossterm>. Сервисы могут содержать бизнес-логику внутри себя, либо делегировать выполнение <link linkend="managed_beans">Managed Beans</link>.</para>
+        <para>См. <xref linkend="services"/></para>
+      </glossdef>
+    </glossentry>
     <glossentry>
       <glossterm>
         <emphasis role="bold">Soft deletion</emphasis>

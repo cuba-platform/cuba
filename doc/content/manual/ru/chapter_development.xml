@@ -227,64 +227,6 @@
   <section>
     <title>Практические руководства</title>
     <section>
-      <title>Правила создания сервисов</title>
-      <para>Имена интерфейсов сервисов должны заканчиваться на <code>...Service</code>, имена реализаций на <code>...ServiceBean</code>.</para>
-      <para>При создании сервиса необходимо выполнить следующее:</para>
-      <procedure>
-        <step>
-          <para>Создать интерфейс в модуле <structname>global</structname> в пакете <package>app</package> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через символ нижнего подчеркивания должно идти имя сервиса. Например:</para>
-          <programlisting language="java">String NAME = &quot;cuba_DataService&quot;;</programlisting>
-        </step>
-        <step>
-          <para>Создать класс сервиса и добавить ему аннотацию <literal>@Service</literal> с именем, заданным в интерфейсе</para>
-          <programlisting>@Service(DataService.NAME)</programlisting>
-        </step>
-        <step>
-          <para>При необходимости обращения к базе данных создавать и завершать <link linkend="transactions">транзакцию</link></para>
-          <programlisting>@Inject
-private Persistence persistence;
-...
-Transaction tx = persistence.createTransaction();
-try {
-    ...
-    tx.commit();
-} finally {
-    tx.end();
-}</programlisting>
-        </step>
-      </procedure>
-      <para>Каждый вызов сервиса перехватывается с помощью Spring AOP  и обрамляется вызовом <acronym>ServiceInterceptor.aroundInvoke()</acronym>.</para>
-      <warning>
-        <para>Сервисы не должны вызывать методы других сервисов ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. В случае вызова сервиса сервисом в журнале приложения появятся соответствующие сообщения об ошибке.</para>
-      </warning>
-      <tip>
-        <title>Совет</title>
-        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов Middleware, ее необходимо инкапсулировать внутри соответствующего <link linkend="managed_beans">Managed Bean</link> либо <glossterm linkend="pojo">POJO</glossterm>.</para>
-      </tip>
-      <para><emphasis role="bold">Использование на клиенте</emphasis></para>
-      <para>Для того чтобы вызывать сервис с клиента, для него должен быть создан соответствующий <firstterm>объект-заместитель</firstterm> (прокси-объект). Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для веб-клиента или <parameter>RemoteProxyBeanCreator</parameter> для  десктоп-клиента.</para>
-      <para>Например, чтобы в приложении <application>RefApp</application> вызвать с веб-клиента сервис <code>refapp_MyService</code>, необходимо добавить в файл <filename>refapp-web-spring.xml</filename> следующее:</para>
-      <programlisting language="xml">&lt;bean id=&quot;refapp_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
-    &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
-    &lt;property name=&quot;remoteServices&quot;&gt;
-        &lt;map&gt;
-            &lt;entry key=&quot;refapp_MyService&quot; value=&quot;com.haulmont.refapp.core.app.MyService&quot;/&gt;
-        &lt;/map&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;</programlisting>
-      <para>Все импортируемые сервисы должны быть объявлены в одном <firstterm>словаре</firstterm> (map) бина <code>refapp_proxyCreator</code>.</para>
-      <para>Получить ссылку на сервис с клиента можно двумя способами:</para>
-      <itemizedlist>
-        <listitem>
-          <para><code>ServiceLocator</code> </para>
-          <programlisting>BookingService service = ServiceLocator.lookup(BookingService.NAME);</programlisting>
-        </listitem>
-        <listitem>
-          <para>Для <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm> экранов предпочтительный способ − <glossterm linkend="dependency_injection">внедрение зависимости</glossterm>.</para>
-        </listitem>
-      </itemizedlist>
-    </section>
-    <section>
       <title>Правила создания управляемых бинов</title>
       <itemizedlist>
         <listitem>

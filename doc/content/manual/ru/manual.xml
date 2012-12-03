@@ -109,16 +109,24 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_deployment.xml" encoding="UTF-8"/>
   <appendix>
     <title>Описание конфигурационных файлов</title>
+    <section id="context.xml">
+      <title>context.xml</title>
+      <para>TODO</para>
+    </section>
     <section id="datatypes.xml">
       <title>datatypes.xml</title>
+      <para>TODO</para>
+    </section>
+    <section id="metadata.xml">
+      <title>metadata.xml</title>
       <para>TODO</para>
     </section>
     <section id="persistence.xml">
       <title>persistence.xml</title>
       <para>TODO</para>
     </section>
-    <section id="metadata.xml">
-      <title>metadata.xml</title>
+    <section id="spring.xml">
+      <title>spring.xml</title>
       <para>TODO</para>
     </section>
     <section id="views.xml">
@@ -216,10 +224,6 @@
       <title>web.xml</title>
       <para>TODO</para>
     </section>
-    <section id="context.xml">
-      <title>context.xml</title>
-      <para>TODO</para>
-    </section>
   </appendix>
   <appendix id="app_properties_reference">
     <title>Описание свойств приложения</title>
@@ -307,6 +311,14 @@
           <para>Пример:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.abc.sales.web</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.passwordEncryptionModule">
+        <term>cuba.passwordEncryptionModule</term>
+        <listitem>
+          <para>Задает имя бина, используемого для хэширования паролей пользователей.</para>
+          <para>Значение по умолчанию: <literal>cuba_Sha1EncryptionModule</literal></para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry>
         <term>cuba.passwordPolicyEnabled</term>
         <listitem>
@@ -329,11 +341,20 @@
           <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
-      <varlistentry>
+      <varlistentry id="cuba.trustedClientPassword">
         <term>cuba.trustedClientPassword</term>
         <listitem>
           <para>Пароль, используемый методом <code>LoginService.loginTrusted()</code>. Средний слой может аутентифицировать пользователей, подключающихся через доверенный клиентский <link linkend="app_tiers">блок</link>, без проверки пользовательского пароля. </para>
           <para>Это свойство используется в случае, если пароли пользователей не хранятся в БД, и реальную аутентификацию выполняет сам клиентский блок, например,  путем интеграции с <application>Active Directory</application>.</para>
+          <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
+          <para>Используется в<link linkend="app_tiers"> блоках</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.trustedClientPermittedIpMask">
+        <term>cuba.trustedClientPermittedIpMask</term>
+        <listitem>
+          <para>Маска IP адресов, с которых возможен вызов метода <code>LoginService.loginTrusted()</code>, в формате регулярного выражения.</para>
+          <para>Значение по умолчанию: <literal>127\.0\.0\.1</literal></para>
           <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
           <para>Используется в<link linkend="app_tiers"> блоках</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
@@ -376,6 +397,15 @@
                 <property>cuba.httpSessionExpirationTimeoutSec</property>
               </link>  в одинаковое значение.</para>
           </tip>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.userSessionProviderUrl</term>
+        <listitem>
+          <para>URL для соединения с блоком <structname>Middleware</structname>, через который выполняется вход пользователей в систему. </para>
+          <para>Этот параметр необходимо устанавливать  в дополнительных блоках среднего слоя, которые выполняют запросы клиентов, но не содержат общего кэша пользовательских сессий. Тогда в начале выполнения запроса при отсутствии требуемой сессии в локальном кэше данный блок вызовет метод <code>LoginService.getSession()</code> по указанному URL, и в случае успеха закэширует полученную сессию у себя.</para>
+          <para>Интерфейс: <code>ServerConfig</code></para>
+          <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.viewsConfig">

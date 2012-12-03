@@ -168,7 +168,7 @@
           </listitem>
         </itemizedlist></para>
       <para id="text_registration_entity">После создания класса зарегистрируйте его в файле <filename>sales-persistence.xml</filename> модуля <structname>global</structname> в элементе <sgmltag>persistence-unit</sgmltag>:<programlisting>&lt;class&gt;com.haulmont.sales.entity.Customer&lt;/class&gt;</programlisting></para>
-      <para>Для <link linkend="message_packs">локализации</link> имен сущностей и атрибутов создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в том же пакете, что и классы.</para>
+      <para>Для <link linkend="localization">локализации</link> имен сущностей и атрибутов создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в том же пакете, что и классы.</para>
       <para>В этих файлах определяются строки с ключом <literal>класс_сущности</literal> для названия сущности и <literal>класс_сущности.атрибут</literal> для названий атрибутов. Эти названия будут использованы при отображении списка экземпляров  и в окне редактирования сущности.</para>
       <caution>
         <title>Подсказка</title>
