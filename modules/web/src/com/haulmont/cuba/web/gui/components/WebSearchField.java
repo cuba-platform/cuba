@@ -3,7 +3,6 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
-
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
@@ -13,8 +12,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.SearchSelect;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -69,6 +66,8 @@ public class WebSearchField
                                         if (newValue == valueKey)
                                             v = getValueFromDs();
                                     }
+                                } else  {
+                                    optionRepaint();
                                 }
 
                                 itemProperty.setValue(v);
@@ -76,14 +75,6 @@ public class WebSearchField
                         }
                     });
                 }
-            }
-
-            @Override
-            public void paintContent(PaintTarget target) throws PaintException {
-                super.paintContent(target);
-
-                // clear value
-                newSettingValue = null;
             }
         };
 
@@ -112,6 +103,30 @@ public class WebSearchField
         });
     }
 
+    @Override
+    protected Object getKeyFromValue(Object value) {
+        Object key = super.getKeyFromValue(value);
+        if (value instanceof Entity && key == null && optionsDatasource.getItemIds().size() == 0)
+            key = ((Entity) value).getId();
+        return key;
+    }
+
+    @Override
+    protected <T> T getValueFromKey(Object key) {
+        T v = super.getValueFromKey(key);
+        Object valueFromDs;
+        if (datasource != null)
+            valueFromDs = getValueFromDs();
+        else
+            valueFromDs = newSettingValue;
+
+        if (key != null && v == null && optionsDatasource.getItemIds().size() == 0 &&
+                valueFromDs instanceof Entity && key.equals(((Entity) valueFromDs).getId()))
+            v = (T) valueFromDs;
+
+        return v;
+    }
+
     private SearchSelect getSearchComponent() {
         return (SearchSelect) component;
     }
@@ -130,6 +145,8 @@ public class WebSearchField
     public void setValue(@Nullable Object value) {
         if (value instanceof Entity)
             newSettingValue = (Entity) value;
+        else
+            newSettingValue = null;
 
         super.setValue(value);
     }
