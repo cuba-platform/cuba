@@ -64,8 +64,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
-
 /**
  * @param <T>
  * @author abramov
@@ -73,6 +71,8 @@ import com.haulmont.cuba.web.toolkit.ui.CheckBox;
  */
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
+
+    private static final String REQUIRED_TABLE_STYLE = "table";
 
     protected Map<Object, Table.Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
@@ -105,6 +105,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected TablePresentations tablePresentations;
 
     private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
+
+    private String customStyle;
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -291,6 +293,20 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return componentComposition.getWidthUnits();
     }
 
+    @Override
+    public void setStyleName(String name) {
+        this.customStyle = name;
+        String style = REQUIRED_TABLE_STYLE;
+        if (StringUtils.isNotEmpty(name))
+            style += " " + name;
+        super.setStyleName(style);
+    }
+
+    @Override
+    public String getStyleName() {
+        return customStyle;
+    }
+
     @SuppressWarnings({"UnusedDeclaration"})
     protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Table.Column column) {
         if (datasource == null)
@@ -328,7 +344,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setImmediate(true);
         component.setValidationVisible(false);
         component.setStoreColWidth(true);
-        component.setStyleName("table"); //It helps us to manage a caption style
+        component.setStyleName(REQUIRED_TABLE_STYLE); //It helps us to manage a caption style
         component.setPageLength(15);
 
         component.addActionHandler(new ActionsAdapter());
