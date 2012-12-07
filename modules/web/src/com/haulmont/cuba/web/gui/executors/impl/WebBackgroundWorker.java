@@ -6,9 +6,7 @@
 
 package com.haulmont.cuba.web.gui.executors.impl;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Timer;
@@ -104,7 +102,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             @Override
             public void onTimer(Timer timer) {
-                if (UserSessionProvider.getUserSession() == null) {
+                if (AppBeans.get(UserSessionSource.class).getUserSession() == null) {
                     log.debug("Null UserSession in background task");
                     return;
                 }
@@ -123,7 +121,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     taskExecutor.handleDone();
                 } else {
                     if (!taskExecutor.isCancelled()) {
-                        long actualTimeMs = TimeProvider.currentTimestamp().getTime();
+                        long actualTimeMs = AppBeans.get(TimeSource.class).currentTimestamp().getTime();
                         long timeout = taskHandler.getTimeoutMs();
 
                         if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout) {

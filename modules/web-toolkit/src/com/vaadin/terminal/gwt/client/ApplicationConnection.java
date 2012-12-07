@@ -22,11 +22,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -105,8 +101,6 @@ public class ApplicationConnection {
 
     private VContextMenu contextMenu = null;
 
-    private long lastEndedRequest = 0L;
-
     private Timer loadTimer;
     private Timer blockUITimer;
     private Element loadElement;
@@ -148,12 +142,19 @@ public class ApplicationConnection {
 
     private boolean errorShown = false;
 
+    // Timers
+
+    protected ApplicationTimer lastTimerAction = null;
+
+    protected int timerRequestTimeoutMillis = 5000;
+
+    protected HashMap<Request, ApplicationTimer> timersMapping = new HashMap<Request, ApplicationTimer>();
+
+        
     class ApplicationTimer extends Timer {
         private String id;
         private boolean repeat;
         private int delay;
-
-        private long lastCompleteTimerRequest = 0;
 
         public ApplicationTimer(String id, boolean repeat, int delay) {
             this.id = id;
@@ -162,29 +163,21 @@ public class ApplicationConnection {
         }
 
         void startTimer() {
-            if (repeat) {
-                scheduleRepeating(delay);
-            } else {
-                schedule(delay);
-            }
+            schedule(delay);
         }
 
         @Override
         public void run() {
-            if (repeat) {
-                if (lastEndedRequest > lastCompleteTimerRequest) {
-                    lastCompleteTimerRequest = lastEndedRequest;
-                    runTimerAction();
-//                    VConsole.log("TIMER COMPLETE " + id);
-                }/* else {
-                    VConsole.log("SKIP HANGING OUT TIMER ACTION " + id);
-                }*/
-            } else
-                runTimerAction();
+            if (!applicationTimers.containsValue(this))
+                return;
+
+            runTimerAction();
         }
 
         private void runTimerAction() {
+            lastTimerAction = this;
             updateVariable(id, "timer", "", true);
+            lastTimerAction = null;
         }
 
         public boolean isRepeat() {
@@ -202,6 +195,16 @@ public class ApplicationConnection {
         public void setDelay(int delay) {
             this.delay = delay;
        }
+
+        public void requestTimeout() {
+            if (repeat)
+                schedule(delay);
+        }
+
+        public void requestSuccessful() {
+            if (repeat)
+                schedule(delay);
+        }
     }
 
     private Map<String, ApplicationTimer> applicationTimers = new HashMap<String, ApplicationTimer>();
@@ -215,15 +218,15 @@ public class ApplicationConnection {
     public void init(WidgetSet widgetSet, ApplicationConfiguration cnf) {
         VConsole.log("Starting application " + cnf.getRootPanelId());
 
-        VConsole.log("Vaadin application servlet version: "
-                + cnf.getServletVersion());
-        VConsole.log("Application version: " + cnf.getApplicationVersion());
+//        VConsole.log("Vaadin application servlet version: "
+//                + cnf.getServletVersion());
+//        VConsole.log("Application version: " + cnf.getApplicationVersion());
 
-        if (!cnf.getServletVersion().equals(ApplicationConfiguration.VERSION)) {
-            VConsole.error("Warning: your widget set seems to be built with a different "
-                    + "version than the one used on server. Unexpected "
-                    + "behavior may occur.");
-        }
+//        if (!cnf.getServletVersion().equals(ApplicationConfiguration.VERSION)) {
+//            VConsole.error("Warning: your widget set seems to be built with a different "
+//                    + "version than the one used on server. Unexpected "
+//                    + "behavior may occur.");
+//        }
 
         this.widgetSet = widgetSet;
         configuration = cnf;
@@ -506,16 +509,36 @@ public class ApplicationConnection {
         if (!synchronous) {
             RequestCallback requestCallback = new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
-                    showCommunicationError(exception.getMessage());
-                    endRequest();
-                    if (!applicationRunning) {
-                        // start failed, let's try to start the next app
-                        ApplicationConfiguration.startNextApplication();
+                    boolean timerRequestTimeout = timersMapping.containsKey(request) &&
+                                exception instanceof RequestTimeoutException;
+
+                    if (!timerRequestTimeout) {
+                        showCommunicationError(exception.getMessage());
+                        endRequest();
+
+                        if (!applicationRunning) {
+                            // start failed, let's try to start the next app
+                            ApplicationConfiguration.startNextApplication();
+                        }
+                    } else {
+                        VConsole.error("Timer request timeout");
+                        endRequest();
+
+                        if (timersMapping.get(request) != null) {
+                            timersMapping.get(request).requestTimeout();
+                            timersMapping.remove(request);
+                        }
                     }
                 }
 
                 public void onResponseReceived(Request request,
                         Response response) {
+
+                    if (timersMapping.get(request) != null) {
+                        timersMapping.get(request).requestSuccessful();
+                        timersMapping.remove(request);
+                    }
+
                     VConsole.log("Server visit took "
                             + String.valueOf((new Date()).getTime()
                                     - requestStartTime.getTime()) + "ms");
@@ -625,12 +648,21 @@ public class ApplicationConnection {
             RequestCallback requestCallback) throws RequestException {
         RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, uri);
         // TODO enable timeout
-        // rb.setTimeoutMillis(timeoutMillis);
+        if (isTimerRequest())
+            rb.setTimeoutMillis(timerRequestTimeoutMillis);
+
         rb.setHeader("Content-Type", "text/plain;charset=utf-8");
         rb.setRequestData(payload);
         rb.setCallback(requestCallback);
 
-        rb.send();
+        Request r = rb.send();
+        if (isTimerRequest()) {
+            timersMapping.put(r, lastTimerAction);
+        }
+    }
+
+    private boolean isTimerRequest() {
+        return lastTimerAction != null;
     }
 
     int cssWaits = 0;
@@ -737,26 +769,27 @@ public class ApplicationConnection {
     protected void startRequest() {
         activeRequests++;
         requestStartTime = new Date();
-        // show initial throbber
-        if (loadTimer == null) {
-            loadTimer = new Timer() {
-                @Override
-                public void run() {
-                    /*
-                     * IE7 does not properly cancel the event with
-                     * loadTimer.cancel() so we have to check that we really
-                     * should make it visible
-                     */
-                    if (getLoadTimer() != null) {
-                        showLoadingIndicator(true);
-                    }
+        if (!isTimerRequest()) {
+            // show initial throbber
+            if (loadTimer == null) {
+                loadTimer = new Timer() {
+                    @Override
+                    public void run() {
+                        /*
+                        * IE7 does not properly cancel the event with
+                        * loadTimer.cancel() so we have to check that we really
+                        * should make it visible
+                        */
+                        if (getLoadTimer() != null) {
+                            showLoadingIndicator(true);
+                        }
 
-                }
-            };
-            // First one kicks in at 300ms
+                    }
+                };
+                // First one kicks in at 300ms
+            }
+            loadTimer.schedule(300);
         }
-//        VConsole.log("Start loading timer");
-        loadTimer.schedule(300);
     }
 
     protected Timer getLoadTimer() {
@@ -779,7 +812,6 @@ public class ApplicationConnection {
             public void execute() {
                 if (activeRequests == 0) {
                     hideLoadingIndicator();
-                    lastEndedRequest++;
                 }
             }
         });
@@ -845,14 +877,14 @@ public class ApplicationConnection {
                             if (getBlockUITimer() != null) {
                                 blockUI(configuration.getBlockUiMessage());
                                 uiblocked = true;
-                                VConsole.log("Block UI");
+//                                VConsole.log("Block UI");
                             }
                         }
                     };
                 }
                 // Block UI after 3 sec delay
                 blockUITimer.schedule(DELAY_FOR_BLOCKING_UI);
-                VConsole.log("Start blocking timer");
+//                VConsole.log("Start blocking timer");
             }
         }
 

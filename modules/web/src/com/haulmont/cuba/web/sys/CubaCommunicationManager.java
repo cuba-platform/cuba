@@ -235,10 +235,16 @@ public class CubaCommunicationManager extends CommunicationManager {
     }
 
     private void fireTimer(Timer timer) {
+        long startStamp = new Date().getTime();
+
         final List<Timer.Listener> listeners = timer.getListeners();
         for (final Timer.Listener listener : listeners) {
             listener.onTimer(timer);
         }
+
+        long endStamp = new Date().getTime();
+        if (endStamp - startStamp > 2000)
+            log.warn("Too long timer processing: " + (endStamp - startStamp) + " ms");
     }
 
     private void fireTimerStop(Timer timer) {
