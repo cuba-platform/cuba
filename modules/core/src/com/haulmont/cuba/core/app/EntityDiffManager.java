@@ -56,12 +56,12 @@ public class EntityDiffManager {
 
         // Sort snapshots by date, first - old, second - new
         long firstTime = 0;
-        if (first != null && first.getCreateTs() != null)
-            firstTime = first.getCreateTs().getTime();
+        if (first != null && first.getSnapshotDate() != null)
+            firstTime = first.getSnapshotDate().getTime();
 
         long secondTime = 0;
-        if (second != null && second.getCreateTs() != null)
-            secondTime = second.getCreateTs().getTime();
+        if (second != null && second.getSnapshotDate() != null)
+            secondTime = second.getSnapshotDate().getTime();
 
         if (secondTime < firstTime) {
             EntitySnapshot temp = first;
