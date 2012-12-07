@@ -281,13 +281,17 @@ public class WebBackgroundWorker implements BackgroundWorker {
         @Override
         public final V getResult() {
             try {
-                if (this.isAlive()) {
+                if (!this.closed) {
                     this.join();
                     this.stopTimer();
 
-                    runnableTask.done(result);
+                    if (!isCancelled()) {
+                        handleIntents();
+                    }
 
-                    closed = true;
+                    if (isDone()) {
+                        handleDone();
+                    }
                 }
             } catch (InterruptedException e) {
                 return null;
@@ -347,10 +351,13 @@ public class WebBackgroundWorker implements BackgroundWorker {
         public final void handleIntents() {
             try {
                 synchronized (intents) {
-                    runnableTask.progress(intents);
-                    // notify listeners
-                    for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                        listener.onProgress(intents);
+                    if (intents.size() > 0) {
+                        runnableTask.progress(intents);
+                        // notify listeners
+                        for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                            listener.onProgress(intents);
+                        }
+                        intents.clear();
                     }
                 }
             } catch (Exception ex) {
