@@ -2449,7 +2449,7 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
             <link linkend="managementBean">ManagementBean</link>
           </code>, поэтому свои JMX-бины рекомендуется наследовать от него.</para>
       </section>
-      <section>
+      <section id="securityContext">
         <title>SecurityContext</title>
         <para>Экземпляр класса <code>SecurityContext</code> хранит информацию о пользовательской сессии для текущего потока выполнения. Он создается и передается в метод <code>AppContext.setSecurityContext()</code> в следующие моменты:<itemizedlist>
             <listitem>
@@ -2507,10 +2507,12 @@ executor.submit(new Runnable() {
       <para>Кроме того, именно в слое сервисов рекомендуется выполнять авторизацию текущего пользователя, т.е. проверять его права на ту или иную функциональность.</para>
       <para>Общие для всех сервисов задачи решаются следующим образом:<itemizedlist>
           <listitem>
-            <para>Проверка наличия пользовательской сессии и логгирование исключений производится классом-интерцептором <code>ServiceInterceptor</code>, который перехватывает выполнение каждого метода сервиса с помощью <application>Spring AOP</application></para>
+            <para>Проверка наличия пользовательской сессии и логгирование исключений производится классом-<glossterm linkend="interceptor">интерцептором</glossterm> <code>ServiceInterceptor</code>, который перехватывает выполнение каждого метода сервиса с помощью <application>Spring AOP</application></para>
           </listitem>
           <listitem>
-            <para>Удаленный интерфейс для доступа к сервису через <application>Spring HTTP Invoker</application> создается бином <code>RemoteServicesBeanCreator</code>. </para>
+            <para>Удаленный интерфейс для доступа к сервису через <application>Spring HTTP Invoker</application> создается бином <code>RemoteServicesBeanCreator</code>, который конфигурируется в файле <filename>
+                <link linkend="remoting-spring.xml">remoting-spring.xml</link>
+              </filename> модуля <structname>core</structname>. </para>
           </listitem>
         </itemizedlist></para>
       <figure>
@@ -2527,33 +2529,33 @@ executor.submit(new Runnable() {
         <para>При создании сервиса необходимо выполнить следующее:</para>
         <procedure>
           <step>
-            <para>Создать интерфейс в <link linkend="app_modules">модуле</link> <structname>global</structname> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через символ нижнего подчеркивания должно идти имя сервиса. Например:</para>
-            <programlisting language="java">package com.haulmont.sales.service;
+            <para>Создать интерфейс в <link linkend="app_modules">модуле</link> <structname>global</structname> (т.к. интерфейс сервиса должен быть доступен на всех <link linkend="app_tiers">уровнях</link>) и задать в нем имя сервиса. Имя рекомендуется задавать в формате <literal>{имя_проекта}_{имя_интерфейса}</literal>. Например:</para>
+            <programlisting language="java">package com.haulmont.sales.core;
 
 import com.haulmont.sales.entity.Order;
-import java.math.BigDecimal;
 
 public interface OrderService {
-    public static final String NAME = &quot;sales_OrderService&quot;;
+    String NAME = &quot;sales_OrderService&quot;;
 
-    BigDecimal calculateTotals(Order order);
+    void calculateTotals(Order order);
 }</programlisting>
           </step>
           <step>
             <para>Создать класс сервиса в модуле <structname>core</structname> и добавить ему аннотацию <code>@org.springframework.stereotype.Service</code> с именем, заданным в интерфейсе</para>
-            <programlisting>package com.haulmont.sales.service;
+            <programlisting>package com.haulmont.sales.core;
 
 import com.haulmont.sales.entity.Order;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
 
 @Service(OrderService.NAME)
 public class OrderServiceBean implements OrderService {
     @Override
-    public BigDecimal calculateTotals(Order order) {
-        return ...;
+    public void calculateTotals(Order order) {
     }
 }</programlisting>
+            <para>Класс сервиса, как и класс любого другого <link linkend="managed_beans">управляемого бина</link>, должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
+                <link linkend="spring.xml">spring.xml</link>
+              </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.haulmont.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.haulmont.sales</code>.</para>
           </step>
         </procedure>
         <warning>
@@ -2572,7 +2574,7 @@ public class OrderServiceBean implements OrderService {
     &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
     &lt;property name=&quot;remoteServices&quot;&gt;
         &lt;map&gt;
-            &lt;entry key=&quot;sales_OrderService&quot; value=&quot;com.haulmont.sales.service.OrderService&quot;/&gt;
+            &lt;entry key=&quot;sales_OrderService&quot; value=&quot;com.haulmont.sales.core.OrderService&quot;/&gt;
         &lt;/map&gt;
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
@@ -2580,72 +2582,256 @@ public class OrderServiceBean implements OrderService {
         <para>С точки зрения прикладного кода прокси-объект сервиса на клиентском уровне является обычным бином <application>Spring</application> и может быть получен либо инжекцией, либо с помощью класса <code>AppBeans</code>, например:<programlisting>@Inject
 protected OrderService orderService;
 ...
-BigDecimal sum = orderService.calculateTotals(order);</programlisting></para>
+orderService.calculateTotals(order);</programlisting></para>
       </section>
     </section>
     <section id="managed_beans">
       <title>Управляемые бины</title>
-      <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами Inversion of Control. <glossterm linkend="container">Контейнером</glossterm> для бинов служит Spring Framework.</para>
-      <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть всегда используется один экземпляр данного класса. Соответственно, если создаваемый Вами бин содержит изменяемые данные в полях (имеет состояние), то необходимо синхронизировать обращение к таким данным.</para>
-      <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>.</para>
+      <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, предназначенные для реализации бизнес-логики приложения. Термин &quot;управляемые&quot; в данном случае означает, что созданием экземпляров и установкой связей между такими компонентами управляет <glossterm linkend="container">контейнер</glossterm>, который является основной частью фреймворка <application>Sping</application>.</para>
+      <warning>
+        <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть в некотором блоке приложения существует только один экземпляр данного класса. Поэтому, если бин содержит изменяемые данные в полях (другими словами, имеет состояние), то обращение к таким данным необходимо синхронизировать.</para>
+      </warning>
+      <section>
+        <title>Создание бина</title>
+        <para>Для создания  управляемого бина достаточно добавить классу  Java аннотацию  <literal>@javax.annotation.ManagedBean</literal>. Например:<programlisting>package com.haulmont.sales.core;
+
+import com.haulmont.sales.entity.Order;
+import javax.annotation.ManagedBean;
+
+@ManagedBean(OrderWorker.NAME)
+public class OrderWorker {
+    public static final String NAME = &quot;sales_OrderWorker&quot;;
+
+    public void calculateTotals(Order order) {
+    }
+}</programlisting></para>
+        <para>Рекомендуется присваивать бину уникальное имя вида <literal>{имя_проекта}_{имя_класса}</literal>, и определять его в константе <code>NAME</code>. </para>
+        <para>Класс управляемого бина должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
+            <link linkend="spring.xml">spring.xml</link>
+          </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.haulmont.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.haulmont.sales</code>.</para>
+        <para>Если нужно обеспечить возможность подмены реализации,  рекомендуется  выделять бизнес-интерфейс бина, например следующим образом:</para>
+        <programlisting>package com.haulmont.sales.core;
+
+import com.haulmont.sales.entity.Order;
+
+public interface OrderWorker {
+    String NAME = &quot;sales_OrderWorker&quot;;
+
+    void calculateTotals(Order order);
+}</programlisting>
+        <programlisting>package com.haulmont.sales.core;
+
+import com.haulmont.sales.entity.Order;
+import javax.annotation.ManagedBean;
+
+@ManagedBean(OrderWorker.NAME)
+public class OrderWorkerBean implements OrderWorker {
+    @Override
+    public void calculateTotals(Order order) {
+    }
+}</programlisting>
+        <para>Управляемые бины можно создавать на любом <link linkend="app_tiers">уровне</link>, так как контейнер <application>Spring Framework</application> используется во всех стандартные блоках приложения.</para>
+      </section>
+      <section>
+        <title>Использование бина</title>
+        <para>Ссылку на бин можно получить с помощью инжекции или класса <code>AppBeans</code>. В качестве примера использования бина рассмотрим реализацию сервиса <code>OrderService</code>, делегирующего выполнение бину <code>OrderWorker</code>:<programlisting>package com.haulmont.sales.core;
+
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.sales.entity.Order;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import javax.inject.Inject;
+
+@Service(OrderService.NAME)
+public class OrderServiceBean implements OrderService {
+    
+    @Inject
+    protected Persistence persistence;
+    
+    @Inject
+    protected OrderWorker orderWorker;
+    
+    @Transactional
+    @Override
+    public BigDecimal calculateTotals(Order order) {
+        Order entity = persistence.getEntityManager().merge(order);
+        orderWorker.calculateTotals(entity);
+    }
+}</programlisting></para>
+        <para>В данном примере сервис стартует <link linkend="transactions">транзакцию</link>, вносит полученный с клиентского уровня экземпляр сущности в <link linkend="entityManager">персистентный контекст</link>, и передает управление бину <code>OrderWorker</code>, который и содержит основную бизнес-логику. </para>
+      </section>
     </section>
-    <section id="mbeans">
+    <section id="jmx_beans">
       <title>JMX-бины</title>
-      <para><firstterm>МБин</firstterm> − программный компонент, реализующий бизнес-логику, и имеющий <glossterm linkend="jmx">JMX</glossterm>-интерфейс. Как правило, имеет внутреннее состояние (например, кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.</para>
-      <para>МБин является расширенным вариантом <link linkend="managed_beans">управляемого бина</link>.</para>
+      <para>Иногда требуется  предоставить администратору системы возможность просматривать и изменять  состояние некоторого <link linkend="managed_beans">управляемого бина</link> во время выполнения. В этом случае рекомендуется создать  JMX-бин - программный компонент, имеющий <glossterm linkend="jmx">JMX</glossterm>-интерфейс. Такой бин как правило делегирует вызовы управляемому бину, содержащему кэш, конфигурационные данные или статистику, к которым нужно обеспечить доступ через JMX.</para>
       <figure>
         <title/>
         <mediaobject>
           <imageobject>
-            <imagedata align="center" fileref="img/MBeans.png"/>
+            <imagedata align="center" fileref="img/JMXBeans.png"/>
           </imageobject>
         </mediaobject>
       </figure>
-      <para>Как видно из диаграммы, МБин имеет два набора методов, разделенных по интерфейсам <code>...MBean</code> и <code>...API</code>. Первый из них служит для управления через JMX, а второй − для вызова из программного кода.</para>
-      <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="interceptor">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью Spring AOP), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <code>ClassLoader</code>.</para>
-      <section id="managementBean">
-        <title>ManagementBean</title>
-        <para>TODO</para>
+      <para>Как видно из диаграммы, JMX-бин состоит из интерфейса и класса реализации. Класс должен представлять собой <link linkend="managed_beans">управляемый бин</link>, то есть иметь аннотацию <code>@ManagedBean</code> и уникальное имя. Интерфейс JMX-бина специальным образом регистрируется в <link linkend="spring.xml">spring.xml</link> для создания в текущей JVM собственно JMX-интерфейса.</para>
+      <para>Вызовы всех методов интерфейса JMX-бина перехватываются с помощью <application>Spring AOP</application> классом−<glossterm linkend="interceptor">интерцептором</glossterm> <methodname>MBeanInterceptor</methodname>, который обеспечивает установку правильного <code>ClassLoader</code> в контексте потока выполнения, и журналирование необработанных исключений.</para>
+      <warning>
+        <para>Интерфейс JMX-бина обязательно должен иметь имя вида <literal>{имя_класса}MBean</literal>.</para>
+      </warning>
+      <section>
+        <title>Создание JMX-бина</title>
+        <para>Рассмотрим процесс создания JMX-бина на примере.</para>
+        <itemizedlist>
+          <listitem>
+            <para>Интерфейс JMX-бина:<programlisting>package com.haulmont.sales.core;
+
+import org.springframework.jmx.export.annotation.*;
+
+@ManagedResource(description = &quot;Performs operations on Orders&quot;)
+public interface OrdersMBean {
+
+    @ManagedOperation(description = &quot;Recalculates an order amount&quot;)
+    @ManagedOperationParameters({@ManagedOperationParameter(name = &quot;orderId&quot;, description = &quot;&quot;)})
+    String calculateTotals(String orderId);
+}</programlisting></para>
+            <para>Интерфейс и его методы могут содержать аннотации для задания описания JMX-бина и его операций. Это описание будет отображаться во всех инструментах, работающих с данным JMX-интерфейсом, тем самым помогая администратору системы.</para>
+            <para>Так как инструменты JMX поддерживают ограниченный набор типов данных,  параметры и результат метода желательно задавать типа <code>String</code>, и при необходимости выполнять конвертацию внутри метода.</para>
+          </listitem>
+          <listitem>
+            <para>Класс JMX-бина:<programlisting>package com.haulmont.sales.core;
+
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.*;
+import com.haulmont.sales.entity.Order;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
+import java.util.UUID;
+
+@ManagedBean(&quot;sales_OrdersMBean&quot;)
+public class Orders implements OrdersMBean {
+
+    @Inject
+    protected OrderWorker orderWorker;
+
+    @Inject
+    protected Persistence persistence;
+
+    @Authenticated
+    @Override
+    public String calculateTotals(final String orderId) {
+        try {
+            persistence.createTransaction().execute(new Transaction.Runnable() {
+                @Override
+                public void run(EntityManager em) {
+                    Order entity = em.find(Order.class, UUID.fromString(orderId));
+                    orderWorker.calculateTotals(entity);
+                }
+            });
+            return &quot;Done&quot;;
+        } catch (Throwable e) {
+            return ExceptionUtils.getStackTrace(e);
+        }
+    }
+}</programlisting></para>
+            <para>Аннотация <code>@ManagedBean</code> определяет, что данный класс является управляемым бином с именем <literal>sales_OrdersMBean</literal>. Имя указано напрямую в аннотации, а не в константе, так как доступ к JMX-бину из кода Java не требуется.</para>
+            <para>Рассмотрим реализацию метода <code>calculateTotals()</code>.<itemizedlist>
+                <listitem>
+                  <para>Метод имеет аннотацию <code>@Authenticated</code>, т.е. при входе в метод и при отсутствии в потоке выполнения <link linkend="userSession">пользовательской сессии</link> выполняется <link linkend="system_authentication">системная аутентификация</link>.</para>
+                </listitem>
+                <listitem>
+                  <para>Тело метода обернуто в блок <code>try/catch</code>, так что метод в случае успешного выполнения возвращает строку &quot;Done&quot;, а в случае ошибки - stacktrace исключения в виде строки. </para>
+                  <para>Следует иметь в виду, что в данном случае все исключения обрабатываются, а значит, не попадают в <code>MBeanInterceptor</code> и не выводятся в журнал автоматически. Поэтому при необходимости логгировать исключения здесь нужно добавить вызов логгера в секции <code>catch</code>.</para>
+                </listitem>
+                <listitem>
+                  <para>Логика метода заключается в том, что он стартует транзакцию, загружает экземпляр сущности <code> Order</code> по  идентификатору, и передает управление бину <code>OrderWorker</code> для обработки.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para>Регистрация JMX-бина в <filename>sales-spring.xml</filename>:</para>
+            <programlisting>&lt;bean id=&quot;sales_MBeanExporter&quot; lazy-init=&quot;false&quot; 
+      class=&quot;com.haulmont.cuba.jmxcontrol.export.MBeanExporter&quot;&gt;
+    &lt;property name=&quot;beans&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;${cuba.webContextName}.sales:type=Orders&quot;
+                   value-ref=&quot;sales_OrdersMBean&quot;/&gt;
+        &lt;/map&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;</programlisting>
+          </listitem>
+        </itemizedlist>
+        <para>Все JMX-бины проекта объявляются в одном экземпляре <code>MBeanExporter</code>  в элементах <literal>map/entry</literal> свойства <code>beans</code>. Ключом элемента здесь является JMX ObjectName, значением - имя бина, заданное
+в аннотации <code>@ManagedBean</code>. ObjectName начинается с имени веб-приложения, так как в одном экземпляре <application>Tomcat</application> (т.е. в одной JVM) может быть развернуто несколько веб-приложений, экспортирующих одинаковые JMX-интерфейсы.</para>
       </section>
-      <section id="cachingFacadeMBean">
-        <title>CachingFacadeMBean</title>
-        <para><code>CachingFacadeMBean</code> предоставляет методы очистки различных кэшей на <link linkend="app_tiers">уровне</link> <structname>Middleware</structname>.</para>
-        <para>JMX ObjectName: <literal>app-core.cuba:type=CachingFacade</literal></para>
+      <section>
+        <title>JMX-бины платформы</title>
+        <para>В данном разделе описаны некоторые имеющиеся в платформе JMX-бины.</para>
+        <section id="cachingFacadeMBean">
+          <title>CachingFacadeMBean</title>
+          <para><code>CachingFacadeMBean</code> предоставляет методы очистки различных кэшей в блоках <structname>Middleware</structname> и  <structname>Web Client</structname>.</para>
+          <para>JMX ObjectName: <literal>app-core.cuba:type=CachingFacade</literal> и <literal>app.cuba:type=CachingFacade</literal></para>
+        </section>
+        <section id="configStorageMBean">
+          <title>ConfigStorageMBean</title>
+          <para><code>ConfigStorageMBean</code> позволяет просматривать и задавать значения <link linkend="app_properties">свойствам приложения</link> в блоках <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>.</para>
+          <para>Следует иметь в виду, что измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
+          <para>JMX ObjectName: <literal>app-core.cuba:type=ConfigStorage</literal>, <literal>app.cuba:type=ConfigStorage</literal>, <literal>app-portal.cuba:type=ConfigStorage</literal></para>
+        </section>
+        <section id="scriptingManagerMBean">
+          <title>ScriptingManagerMBean</title>
+          <para><code>ScriptingManagerMBean</code> является JMX-фасадом для интерфейса инфраструктуры <code>
+              <link linkend="scripting">Scripting</link>
+            </code>.</para>
+          <para>JMX ObjectName: <literal>app-core.cuba:type=ScriptingManager</literal></para>
+          <para>JMX атрибуты:<itemizedlist>
+              <listitem>
+                <para><code>RootPath</code> - абсолютный путь к <link linkend="conf_dir">конфигурационному каталогу</link> <link linkend="app_tiers">блока приложения</link>, в котором запущен данный бин</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>JMX операции:<itemizedlist>
+              <listitem>
+                <para><code>runGroovyScript()</code> - выполнить скрипт Groovy и вернуть результат. Для отображения в JMX-интерфейсе результат должен быть типа <code>String</code>. В остальном аналогичен методу <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript()</link></code>. </para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
       </section>
-      <section id="cachingMBean">
-        <title>CachingMBean</title>
-        <para><code>CachingMBean</code> предоставляет методы очистки различных кэшей в <link linkend="app_tiers">блоке</link> <structname>Web Client</structname>.</para>
-        <para>JMX ObjectName: <literal>app.cuba:type=Caching</literal></para>
-      </section>
-      <section id="configStorageMBean">
-        <title>ConfigStorageMBean</title>
-        <para><code>ConfigStorageMBean</code> позволяет просматривать и задавать значения <link linkend="app_properties">свойствам приложения</link> <link linkend="app_tiers">блока</link> <structname>Middleware</structname>.</para>
-        <para>Следует иметь в виду, что измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
-        <para>JMX ObjectName: <literal>app-core.cuba:type=ConfigStorage</literal></para>
-      </section>
-      <section id="configurationMBean">
-        <title>ConfigurationMBean</title>
-        <para><code>ConfigurationMBean</code> позволяет просматривать и задавать значения <link linkend="app_properties">свойствам приложения</link> <link linkend="app_tiers">блока</link> <structname>Web Client</structname>, хранящимся в файлах <filename>app.properties</filename>. </para>
-        <para>Следует иметь в виду, что измененные значения не сохраняются, и действуют только до рестарта данного блока.</para>
-        <para>JMX ObjectName: <literal>app.cuba:type=Configuration</literal></para>
-      </section>
-      <section id="scriptingManagerMBean">
-        <title>ScriptingManagerMBean</title>
-        <para><code>ScriptingManagerMBean</code> является JMX-фасадом для интерфейса инфраструктуры <code>
-            <link linkend="scripting">Scripting</link>
-          </code>.</para>
-        <para>JMX ObjectName: <literal>app-core.cuba:type=ScriptingManager</literal></para>
-        <para>JMX атрибуты:<itemizedlist>
-            <listitem>
-              <para><code>RootPath</code> - абсолютный путь к <link linkend="conf_dir">конфигурационному каталогу</link> <link linkend="app_tiers">блока приложения</link>, в котором запущен данный МБин</para>
-            </listitem>
-          </itemizedlist></para>
-        <para>JMX операции:<itemizedlist>
-            <listitem>
-              <para><code>runGroovyScript()</code> - выполнить скрипт Groovy и вернуть результат. Для отображения в JMX-интерфейсе результат должен быть типа <code>String</code>. В остальном аналогичен методу <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript()</link></code>. </para>
-            </listitem>
-          </itemizedlist></para>
-      </section>
+    </section>
+    <section id="system_authentication">
+      <title>Системная аутентификация</title>
+      <para>При выполнении пользовательских запросов программному коду <structname>Middleware</structname>  через интерфейс <code>
+          <link linkend="userSessionSource">UserSessionSource</link>
+        </code> всегда доступна информация о текущем пользователе. Это возможно потому, что при получении запроса с клиентского уровня в потоке выполнения автоматически устанавливается соответствующий объект <code>
+          <link linkend="securityContext">SecurityContext</link>
+        </code>.</para>
+      <para>Однако существуют ситуации, когда текущий поток выполнения  не связан ни с каким пользователем системы: например, при вызове метода бина из <link linkend="scheduled_tasks">планировщика</link>, либо через JMX-интерфейс. Если при этом бин выполняет изменение сущностей в базе данных, то ему потребуется информация о том, кто выполняет изменения, то есть аутентификация.</para>
+      <para>Такого рода аутентификация называется системной, так как не требует участия пользователя - средний слой приложения просто создает (или использует имеющуюся) пользовательскую сессию, и устанавливает в потоке выполнения соответствующий объект <code>SecurityContext</code>. </para>
+      <para>Обеспечить системную аутентификацию некоторого участка кода можно следующими способами:<itemizedlist>
+          <listitem>
+            <para>явно используя бин <code>com.haulmont.cuba.security.app.Authentication</code>, например:<programlisting>@Inject
+protected Authentication authentication;
+...
+authentication.begin();
+try {
+    // authenticated code
+} finally {
+    authentication.end();
+}</programlisting></para>
+          </listitem>
+          <listitem>
+            <para>добавив методу бина аннотацию <code>@Authenticated</code>, например:<programlisting>@Authenticated
+public String foo(String value) {
+    // authenticated code
+}</programlisting></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Во втором случае также используется бин <code>Authentication</code>, но неявно, через интерцептор <code>AuthenticationInterceptor</code>, который перехватывает вызовы всех методов бинов с аннотацией <code>@Authenticated</code>.</para>
+      <para>В приведенных примерах пользовательская сессия будет создаваться от лица пользователя, логин которого указан в свойстве приложения <property>
+          <link linkend="cuba.jmxUserLogin">cuba.jmxUserLogin</link>
+        </property>. Если требуется аутентификация от имени другого пользователя, нужно воспользоваться первым вариантом и передать в метод <code>begin()</code> логин нужного пользователя.</para>
+      <warning>
+        <para>Если в момент выполнения <code>Authentication.begin()</code> в текущем потоке выполнения присутствует активная пользовательская сессия, то она не заменяется - соответственно, код, требующий аутентификации, будет выполняться с имеющейся сессией, и последующий метод <code>end()</code> не будет очищать поток.</para>
+        <para>Следует иметь в виду, что вызов метода JMX-бина из встроенной в <structname>Web Client</structname> консоли JMX является обычной обработкой пользовательского запроса. Это означает, что метод JMX-бина будет выполнен от имени текущего зарегистрированного в системе пользователя, независимо от наличия системной аутентификации.</para>
+      </warning>
     </section>
     <section id="orm">
       <title>Слой ORM</title>

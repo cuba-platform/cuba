@@ -264,7 +264,7 @@
         <emphasis role="bold">JMX</emphasis>
       </glossterm>
       <glossdef>
-        <para>Java Management Extensions − технология, которая предоставляет инструменты для управления  приложениями, объектами системы, устройствами. Определяет стандарт для написания JMX-компонентов − <link linkend="mbeans">MBeans</link>. </para>
+        <para>Java Management Extensions − технология, которая предоставляет инструменты для управления  приложениями, объектами системы, устройствами. Определяет стандарт для написания JMX-компонентов − <link linkend="jmx_beans">MBeans</link>. </para>
         <para>Более подробную информацию можно найти по адресу: <ulink url="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html">http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html</ulink></para>
       </glossdef>
     </glossentry>

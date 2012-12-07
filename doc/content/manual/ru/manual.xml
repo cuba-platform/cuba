@@ -125,6 +125,10 @@
       <title>persistence.xml</title>
       <para>TODO</para>
     </section>
+    <section id="remoting-spring.xml">
+      <title>remoting-spring.xml</title>
+      <para>TODO</para>
+    </section>
     <section id="spring.xml">
       <title>spring.xml</title>
       <para>TODO</para>
@@ -260,12 +264,20 @@
  в секундах.</para>
           <para>Значение по умолчанию: <literal>1800</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
-          <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Web Client</structname>.</para>
+          <para>Используется в блоке <structname>Web Client</structname>.</para>
           <tip>
             <para>Рекомендуется выставлять параметры <link linkend="cuba.userSessionExpirationTimeoutSec">
                 <property>cuba.userSessionExpirationTimeoutSec</property>
               </link> и  <property>cuba.httpSessionExpirationTimeoutSec</property>  в одинаковое значение.</para>
           </tip>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.jmxUserLogin">
+        <term>cuba.jmxUserLogin</term>
+        <listitem>
+          <para>Логин пользователя, под которым выполняется вход в систему при  <link linkend="system_authentication">системной аутентификации</link>. </para>
+          <para>Значение по умолчанию: <literal>admin</literal></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.lazyLoadServerViews">
@@ -274,7 +286,7 @@
           <para>Указывает, что глобальные представления c <structname>Middleware</structname> нужно загружать на клиентский уровень не все сразу, а по необходимости. См. <xref linkend="views"/></para>
           <para>Значение по умолчанию: <code>false</code></para>
           <para>Интерфейс: <code>ClientConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
+          <para>Используется в блоках клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.localeSelectVisible">
@@ -327,7 +339,7 @@
             </property>.</para>
           <para>Значение по умолчанию: <literal>false</literal></para>
           <para>Интерфейс: <code>ClientConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
+          <para>Используется в блоках клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.passwordPolicyRegExp">
@@ -338,7 +350,7 @@
           <para><prompt>((?=.*\\d)(?=.*\\p{javaLowerCase}) (?=.*\\p{javaUpperCase}).{6,20})</prompt></para>
           <para>Это означает, что в пароль должен содержать от 6 до 20 символов, в нем можно использоваться цифры, символы и буквы латинского алфавита. При этом обязательно в пароле должна  быть хотя бы одна цифра, одна буква в нижнем регистре и одна буква в верхнем регистре. Более подробная информация о синтаксисе регулярных выражений можно найти на сайтах: <ulink url="http://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5_%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">http://ru.wikipedia.org/wiki/Регулярные_выражения</ulink> и <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html</ulink></para>
           <para>Интерфейс: <code>ClientConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоках</link> клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
+          <para>Используется в блоках клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.trustedClientPassword">
@@ -347,7 +359,7 @@
           <para>Пароль, используемый методом <code>LoginService.loginTrusted()</code>. Средний слой может аутентифицировать пользователей, подключающихся через доверенный клиентский <link linkend="app_tiers">блок</link>, без проверки пользовательского пароля. </para>
           <para>Это свойство используется в случае, если пароли пользователей не хранятся в БД, и реальную аутентификацию выполняет сам клиентский блок, например,  путем интеграции с <application>Active Directory</application>.</para>
           <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
-          <para>Используется в<link linkend="app_tiers"> блоках</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
+          <para>Используется в блоках: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.trustedClientPermittedIpMask">
@@ -356,7 +368,7 @@
           <para>Маска IP адресов, с которых возможен вызов метода <code>LoginService.loginTrusted()</code>, в формате регулярного выражения.</para>
           <para>Значение по умолчанию: <literal>127\.0\.0\.1</literal></para>
           <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
-          <para>Используется в<link linkend="app_tiers"> блоках</link>: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
+          <para>Используется в блоках: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -391,7 +403,7 @@
  в секундах.</para>
           <para>Значение по умолчанию: <literal>1800</literal></para>
           <para>Интерфейс: <code>ServerConfig</code></para>
-          <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Middleware</structname>.</para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
           <tip>
             <para>Рекомендуется выставлять параметры <property>cuba.userSessionExpirationTimeoutSec</property> и  <link linkend="cuba.httpSessionExpirationTimeoutSec">
                 <property>cuba.httpSessionExpirationTimeoutSec</property>
@@ -402,10 +414,10 @@
       <varlistentry>
         <term>cuba.userSessionProviderUrl</term>
         <listitem>
-          <para>URL для соединения с блоком <structname>Middleware</structname>, через который выполняется вход пользователей в систему. </para>
+          <para>URL для соединения с <link linkend="app_tiers">блоком</link> <structname>Middleware</structname>, через который выполняется вход пользователей в систему. </para>
           <para>Этот параметр необходимо устанавливать  в дополнительных блоках среднего слоя, которые выполняют запросы клиентов, но не содержат общего кэша пользовательских сессий. Тогда в начале выполнения запроса при отсутствии требуемой сессии в локальном кэше данный блок вызовет метод <code>LoginService.getSession()</code> по указанному URL, и в случае успеха закэширует полученную сессию у себя.</para>
           <para>Интерфейс: <code>ServerConfig</code></para>
-          <para>Используется в<link linkend="app_tiers"> блоке</link> <structname>Middleware</structname>.</para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.viewsConfig">
@@ -422,7 +434,7 @@
           <para>Задает имя пользователя по умолчанию. Оно будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -431,7 +443,7 @@
           <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
-          <para>Используется в <link linkend="app_tiers">блоке</link>   <structname>Web Client</structname>.</para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
     </variablelist>
