@@ -32,12 +32,12 @@ import java.util.List;
 @ManagedBean(Coordinator.NAME)
 public class DbBasedCoordinator implements Coordinator {
 
-    private static class ContextImpl implements Context {
+    protected static class ContextImpl implements Context {
 
-        private List<ScheduledTask> tasks;
-        private Transaction transaction;
+        protected List<ScheduledTask> tasks;
+        protected Transaction transaction;
 
-        private ContextImpl(List<ScheduledTask> tasks, Transaction transaction) {
+        protected ContextImpl(List<ScheduledTask> tasks, Transaction transaction) {
             this.tasks = tasks;
             this.transaction = transaction;
         }
@@ -53,9 +53,9 @@ public class DbBasedCoordinator implements Coordinator {
     }
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
-    private Log log = LogFactory.getLog(getClass());
+    protected Log log = LogFactory.getLog(getClass());
 
     @Override
     public Context begin() {
@@ -100,7 +100,7 @@ public class DbBasedCoordinator implements Coordinator {
         }
     }
 
-    private synchronized List<ScheduledTask> getTasks() {
+    protected synchronized List<ScheduledTask> getTasks() {
         log.trace("Read all active tasks from DB and lock them");
         EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery("select t from sys$ScheduledTask t where t.active = true");

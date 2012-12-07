@@ -11,14 +11,18 @@ import com.haulmont.cuba.core.entity.SendingMessage;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author ovchinnikov
+ * @version $Id$
  */
 public interface EmailManagerAPI {
+
     String NAME = "cuba_EmailManager";
 
     List<SendingMessage> addEmailsToQueue(List<SendingMessage> sendingMessageList);
 
     void queueEmailsToSend();
+
+    int getMessageQueueCapacity();
+
+    int getDelayCallCount();
 }

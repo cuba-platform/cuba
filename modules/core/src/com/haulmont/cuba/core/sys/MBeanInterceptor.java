@@ -20,6 +20,7 @@ public class MBeanInterceptor {
 
     private Log log = LogFactory.getLog(getClass());
 
+    @SuppressWarnings("UnusedDeclaration")
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 

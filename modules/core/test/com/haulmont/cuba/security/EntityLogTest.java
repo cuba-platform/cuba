@@ -11,8 +11,8 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.app.EntityLogAPI;
-import com.haulmont.cuba.security.app.EntityLogMBean;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.LoggedAttribute;
 import com.haulmont.cuba.security.entity.LoggedEntity;
@@ -25,7 +25,6 @@ public class EntityLogTest extends CubaTestCase
     private UUID leId;
     private UUID laId;
 
-    private EntityLogMBean mBean;
     private UUID userId;
 
     protected void setUp() throws Exception {
@@ -57,8 +56,8 @@ public class EntityLogTest extends CubaTestCase
             tx.end();
         }
 
-        mBean = Locator.lookup(EntityLogAPI.NAME);
-        mBean.invalidateCache();
+        EntityLogAPI entityLog = AppBeans.get(EntityLogAPI.NAME);
+        entityLog.invalidateCache();
     }
 
     public void test() {

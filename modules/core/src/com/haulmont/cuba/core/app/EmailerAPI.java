@@ -75,4 +75,8 @@ public interface EmailerAPI {
      * Don't use
      */
     void scheduledSendEmail(SendingMessage sendingMessage) throws LoginException, EmailException;
+
+    String getFromAddress();
+
+    String getSmtpHost();
 }

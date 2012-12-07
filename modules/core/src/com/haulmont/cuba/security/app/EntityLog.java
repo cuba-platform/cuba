@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 17.03.2009 16:10:25
- *
- * $Id$
  */
 package com.haulmont.cuba.security.app;
 
@@ -22,6 +17,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.jmx.EntityLogMBean;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -36,14 +32,11 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * EntityLog MBean implementation.
- * <p/>
- * Allows to log entity lifecycle events: create, modify, delete.<br>
- * Configured by {@link com.haulmont.cuba.security.entity.LoggedEntity} and {@link com.haulmont.cuba.security.entity.LoggedAttribute} entities.
- * See also {@link com.haulmont.cuba.security.app.EntityLogConfig} configuration parameters.
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(EntityLogAPI.NAME)
-public class EntityLog implements EntityLogMBean, EntityLogAPI {
+public class EntityLog implements EntityLogAPI {
 
     private Log log = LogFactory.getLog(EntityLog.class);
 

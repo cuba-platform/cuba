@@ -1,50 +1,38 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 06.08.2009 16:25:05
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
-import org.apache.openjpa.datacache.ConcurrentDataCache;
-import org.apache.openjpa.datacache.ConcurrentQueryCache;
-import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.persistence.*;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.QueryResultCache;
+import org.apache.openjpa.persistence.StoreCache;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Collection;
 
 /**
- * DataCache MBean implementation.
- * <p>
- * This MBean is a facade to OpenJPA data cache functionality.
- * It allows to control data cache through JMX-console. 
+ * Facade to OpenJPA data cache functionality.
  */
 @ManagedBean(DataCacheAPI.NAME)
-public class DataCache implements DataCacheAPI, DataCacheMBean {
+public class DataCache implements DataCacheAPI {
 
-    private OpenJPAEntityManagerFactorySPI jpaEmf;
+    protected OpenJPAEntityManagerFactorySPI jpaEmf;
 
     @Inject
     public void setJpaEmf(OpenJPAEntityManagerFactory jpaEmf) {
         this.jpaEmf = (OpenJPAEntityManagerFactorySPI) jpaEmf;
     }
 
-    private StoreCache getStoreCache() {
+    protected StoreCache getStoreCache() {
         return jpaEmf.getStoreCache();
     }
 
-    private QueryResultCache getQueryCache() {
+    protected QueryResultCache getQueryCache() {
         return jpaEmf.getQueryResultCache();
-    }
-
-    public DataCacheAPI getAPI() {
-        return this;
     }
 
     public boolean isStoreCacheEnabled() {
@@ -55,54 +43,6 @@ public class DataCache implements DataCacheAPI, DataCacheMBean {
     public boolean isQueryCacheEnabled() {
         String s = jpaEmf.getConfiguration().getQueryCache();
         return s != null && !s.startsWith("false");
-    }
-
-    public int getStoreCacheSize() {
-        if (!isStoreCacheEnabled())
-            return 0;
-
-        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
-        if (cache instanceof ConcurrentDataCache) {
-            return ((ConcurrentDataCache) cache).getCacheMap().size();
-        } else {
-            return -1;
-        }
-    }
-
-    public int getStoreCacheMaxSize() {
-        if (!isStoreCacheEnabled())
-            return 0;
-
-        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
-        if (cache instanceof ConcurrentDataCache) {
-            return ((ConcurrentDataCache) cache).getCacheSize();
-        } else {
-            return -1;
-        }
-    }
-
-    public int getQueryCacheSize() {
-        if (!isQueryCacheEnabled())
-            return 0;
-
-        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
-        if (cache instanceof ConcurrentQueryCache) {
-            return ((ConcurrentQueryCache) cache).getCacheMap().size();
-        } else {
-            return -1;
-        }
-    }
-
-    public int getQueryCacheMaxSize() {
-        if (!isQueryCacheEnabled())
-            return 0;
-
-        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
-        if (cache instanceof ConcurrentQueryCache) {
-            return ((ConcurrentQueryCache) cache).getCacheSize();
-        } else {
-            return -1;
-        }
     }
 
     public void dataCacheEvict(Class cls, Object id) {

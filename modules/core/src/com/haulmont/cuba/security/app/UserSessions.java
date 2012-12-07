@@ -16,6 +16,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.jmx.UserSessionsMBean;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id$
  */
 @ManagedBean(UserSessionsAPI.NAME)
-public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
+public class UserSessions implements UserSessionsAPI {
 
     private static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
@@ -77,11 +78,6 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
                 return AppContext.NO_USER_CONTEXT.getSessionId();
             }
         };
-    }
-
-    @Inject
-    public void setUuidSource(UuidSource uuidSource) {
-
     }
 
     @Inject
@@ -195,16 +191,6 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
 
     public void setExpirationTimeoutSec(int value) {
         expirationTimeout = value;
-    }
-
-    public int getCount() {
-        return cache.size();
-    }
-
-    public String printSessions() {
-        StrBuilder sb = new StrBuilder();
-        sb.appendWithSeparators(cache.values(), "\n");
-        return sb.toString();
     }
 
     public Collection<UserSessionEntity> getUserSessionInfo() {

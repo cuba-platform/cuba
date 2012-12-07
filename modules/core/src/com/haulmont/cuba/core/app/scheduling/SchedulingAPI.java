@@ -8,13 +8,13 @@ package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.entity.ScheduledTask;
 
+import java.util.List;
+
 /**
  * Interface to control processing of {@link ScheduledTask}s.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
- * @see Scheduling
+ * @version $Id$
  */
 public interface SchedulingAPI {
 
@@ -43,6 +43,8 @@ public interface SchedulingAPI {
      */
     void processScheduledTasks();
 
+    void processScheduledTasks(boolean onlyIfActive);
+
     /**
      * Mark the sheduled task as running/not running in the internal list. This method should not be used in the
      * application code.
@@ -50,4 +52,9 @@ public interface SchedulingAPI {
      * @param running   true to mark as running, false to mark as not running
      */
     void setRunning(ScheduledTask task, boolean running);
+
+    /**
+     * @return a list of active task instances in detached state
+     */
+    List<ScheduledTask> getActiveTasks();
 }

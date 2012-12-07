@@ -1,23 +1,17 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.06.2010 19:00:43
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
 import java.io.Serializable;
 
 /**
- * Interface defining methods of communication in the middleware cluster.
- *
- * <p>$Id$</p>
+ * Interface defining methods for communication in a middleware cluster.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ClusterManagerAPI {
 
@@ -56,4 +50,19 @@ public interface ClusterManagerAPI {
      * @return  string representation of a set of active nodes
      */
     String getCurrentView();
+
+    /**
+     * Join a cluster.
+     */
+    void start();
+
+    /**
+     * Leave the cluster.
+     */
+    void stop();
+
+    /**
+     * @return  true if clustering is started on this node
+     */
+    boolean isStarted();
 }

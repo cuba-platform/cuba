@@ -9,9 +9,8 @@ package com.haulmont.cuba.core.app;
 /**
  * Interface to provide basic information about the middleware.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ServerInfoAPI {
 

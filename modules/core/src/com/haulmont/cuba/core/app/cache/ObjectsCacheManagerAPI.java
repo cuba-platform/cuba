@@ -6,15 +6,17 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Interface to provide "Data in memory" caches and controllers
- * <p>$Id$</p>
+ * Interface to provide "Data in memory" caches and controllers.
  *
  * @author artamonov
+ * @version $Id$
  */
 public interface ObjectsCacheManagerAPI {
+
     String NAME = "cuba_ObjectsCacheManager";
 
     /**
@@ -40,6 +42,7 @@ public interface ObjectsCacheManagerAPI {
      * @param cacheName Unique cache name
      * @return Cache istance
      */
+    @Nullable
     ObjectsCacheInstance getCache(String cacheName);
 
     /**
@@ -47,5 +50,6 @@ public interface ObjectsCacheManagerAPI {
      * @param cacheName Unique cache name
      * @return Cache controller
      */
+    @Nullable
     ObjectsCacheController getController(String cacheName);
 }

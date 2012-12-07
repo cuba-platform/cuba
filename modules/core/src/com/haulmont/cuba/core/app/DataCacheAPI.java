@@ -1,20 +1,14 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 06.08.2009 16:24:11
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
 import java.util.Collection;
 
 /**
- * API of DataCache MBean.<br>
- * Reference to this interface must be obtained through {@link DataCacheMBean#getAPI()} method
+ * Facade to OpenJPA data cache functionality.
  */
 public interface DataCacheAPI {
 

@@ -10,6 +10,11 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.entity.EntityStatistics;
+
+import java.util.List;
+import java.util.SortedMap;
+
 /**
  * API to {@link PersistenceManager}.
  *
@@ -27,6 +32,8 @@ public interface PersistenceManagerAPI
      * @return      true if this database table supports soft deletion
      */
     boolean isSoftDeleteFor(String table);
+
+    List<String> getSoftDeleteTables();
 
     /**
      * Whether to use a lazy collection datasource for this entity, based on current statistics.
@@ -55,4 +62,15 @@ public interface PersistenceManagerAPI
      * @return              maximum number of rows
      */
     int getMaxFetchUI(String entityName);
+
+    void flushStatisticsCache();
+
+    void refreshStatisticsForEntity(String name);
+
+    void deleteStatistics(String name);
+
+    EntityStatistics enterStatistics(String name, Long instanceCount, Integer fetchUI, Integer maxFetchUI,
+                         Integer lazyCollectionThreshold, Integer lookupScreenThreshold);
+
+    SortedMap<String, EntityStatistics> getEntityStatistics();
 }

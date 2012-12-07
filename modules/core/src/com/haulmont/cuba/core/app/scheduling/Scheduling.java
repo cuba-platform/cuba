@@ -7,19 +7,18 @@
 package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.ManagementBean;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.StopWatch;
@@ -27,7 +26,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,85 +35,75 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Class that manages {@link ScheduledTask}s in distributed environment.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(SchedulingAPI.NAME)
-public class Scheduling extends ManagementBean implements SchedulingAPI, SchedulingMBean {
+public class Scheduling implements SchedulingAPI {
 
     @Inject
-    private Configuration configuration;
+    protected Configuration configuration;
 
     @Inject
-    private ServerInfoAPI serverInfo;
+    protected ServerInfoAPI serverInfo;
 
     @Inject
-    private ClusterManagerAPI clusterManager;
+    protected ClusterManagerAPI clusterManager;
 
     @Inject
-    private TimeSource timeSource;
+    protected TimeSource timeSource;
 
     @Inject
-    private Coordinator coordinator;
+    protected Authentication authentication;
 
     @Inject
-    private Runner runner;
+    protected Coordinator coordinator;
 
     @Inject
-    private UserSessionManager userSessionManager;
+    protected Runner runner;
 
-    private Map<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<ScheduledTask, Long>();
+    @Inject
+    protected UserSessionManager userSessionManager;
 
-    private Map<ScheduledTask, Long> lastStartCache = new HashMap<ScheduledTask, Long>();
+    protected Map<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<ScheduledTask, Long>();
 
-    private volatile long schedulingStartTime;
+    protected Map<ScheduledTask, Long> lastStartCache = new HashMap<ScheduledTask, Long>();
 
-    private Log log = LogFactory.getLog(getClass());
+    protected volatile long schedulingStartTime;
+
+    protected Log log = LogFactory.getLog(getClass());
 
     @Override
     public void processScheduledTasks() {
-        if (!AppContext.isStarted() || !isActive())
-            return;
-
-        internalProcessTasks();
-    }
-
-    @Override
-    public String processScheduledTasksOnce() {
-        if (!AppContext.isStarted())
-            return "Not started yet";
-
-        try {
-            internalProcessTasks();
-            return "Done";
-        } catch (Throwable e) {
-            return ExceptionUtils.getStackTrace(e);
+        if (AppContext.isStarted()) {
+            processScheduledTasks(true);
         }
     }
 
-    private void internalProcessTasks() {
+    @Override
+    public void processScheduledTasks(boolean onlyIfActive) {
+        if (onlyIfActive && !isActive())
+            return;
+
         log.debug("Processing scheduled tasks");
         if (schedulingStartTime == 0)
             schedulingStartTime = timeSource.currentTimeMillis();
 
+        authentication.begin();
         try {
-            loginOnce();
-        } catch (LoginException e) {
-            log.error("Unable to login", e);
-            return;
-        }
-
-        StopWatch sw = new Log4JStopWatch("Scheduling.processTasks");
-        Coordinator.Context context = coordinator.begin();
-        try {
-            for (ScheduledTask task : context.getTasks()) {
-                processTask(task);
+            StopWatch sw = new Log4JStopWatch("Scheduling.processTasks");
+            Coordinator.Context context = coordinator.begin();
+            try {
+                for (ScheduledTask task : context.getTasks()) {
+                    processTask(task);
+                }
+            } finally {
+                coordinator.end(context);
             }
+            sw.stop();
         } finally {
-            coordinator.end(context);
+            authentication.end();
         }
-        sw.stop();
     }
 
     @Override
@@ -138,35 +126,22 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
     }
 
     @Override
-    public String printActiveScheduledTasks() {
+    public List<ScheduledTask> getActiveTasks() {
         Coordinator.Context context = coordinator.begin();
         coordinator.end(context);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        StringBuilder sb = new StringBuilder();
         List<ScheduledTask> tasks = context.getTasks();
         for (ScheduledTask task : tasks) {
-            sb.append(task);
-            if (BooleanUtils.isTrue(task.getSingleton())) {
-                sb.append(", lastStart=");
-                if (task.getLastStartTime() != null) {
-                    sb.append(dateFormat.format(task.getLastStartTime()));
-                    sb.append(" on ").append(task.getLastStartServer());
-                } else {
-                    sb.append("<never>");
-                }
-            } else {
+            if (!BooleanUtils.isTrue(task.getSingleton())) {
                 Long time = lastStartCache.get(task);
-                if (time != null) {
-                    sb.append(", lastStart=").append(dateFormat.format(new Date(time)));
-                }
+                if (time != null)
+                    task.setLastStartTime(new Date(time));
             }
-            sb.append("\n");
         }
-        return sb.toString();
+        return tasks;
     }
 
-    private void processTask(ScheduledTask task) {
+    protected void processTask(ScheduledTask task) {
         if (isRunning(task)) {
             log.trace(task + " is running");
             return;
@@ -257,11 +232,11 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
         }
     }
 
-    private boolean lastServerWasNotMe(ScheduledTask task, String me) {
+    protected boolean lastServerWasNotMe(ScheduledTask task, String me) {
         return task.getLastStartServer() != null && !task.getLastStartServer().equals(me);
     }
 
-    private void runSingletonTask(ScheduledTask task, long now, String server) throws LoginException {
+    protected void runSingletonTask(ScheduledTask task, long now, String server) throws LoginException {
         boolean finished = true;
         if (task.getLastStart() > 0 && lastServerWasNotMe(task, server)) {
             // Check whether the task is finished if the last execution was from another server
@@ -275,12 +250,12 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
             log.trace(task + "\n not finished");
     }
 
-    private void runTask(ScheduledTask task, long time) throws LoginException {
+    protected void runTask(ScheduledTask task, long time) throws LoginException {
         lastStartCache.put(task, time);
         runner.runTask(task, time, getUserSession(task));
     }
 
-    private boolean checkFirst(ScheduledTask task, Integer serverPriority, long now) {
+    protected boolean checkFirst(ScheduledTask task, Integer serverPriority, long now) {
         if (serverPriority == null) {
             log.trace(task + ": not in permitted hosts or not a master");
             return false;
@@ -298,7 +273,7 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
         return true;
     }
 
-    private Integer getServerPriority(ScheduledTask task, String serverId) {
+    protected Integer getServerPriority(ScheduledTask task, String serverId) {
         String permittedServers = task.getPermittedServers();
 
         if (StringUtils.isBlank(permittedServers)) {
@@ -318,15 +293,15 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
         return null;
     }
 
-    private UserSession getUserSession(ScheduledTask task) throws LoginException {
+    protected UserSession getUserSession(ScheduledTask task) throws LoginException {
         if (StringUtils.isBlank(task.getUserName())) {
-            return userSessionManager.findSession(this.sessionId);
+            return userSessionManager.findSession(AppContext.getSecurityContext().getSessionId());
         } else {
             return null;
         }
     }
 
-    private boolean isRunning(ScheduledTask task) {
+    protected boolean isRunning(ScheduledTask task) {
         Long startTime = runningTasks.get(task);
         if (startTime != null) {
             boolean timedOut;

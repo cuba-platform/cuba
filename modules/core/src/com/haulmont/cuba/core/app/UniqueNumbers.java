@@ -25,14 +25,12 @@ import java.util.Set;
 /**
  * Provides unique numbers based on database sequences.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UniqueNumbersAPI.NAME)
-public class UniqueNumbers
-        extends ManagementBean implements UniqueNumbersMBean, UniqueNumbersAPI
-{
+public class UniqueNumbers implements UniqueNumbersAPI {
+
     @Inject
     private Persistence persistence;
 
@@ -46,6 +44,7 @@ public class UniqueNumbers
         return getResult(seqName, support, sqlScript);
     }
 
+    @Override
     public long getCurrentNumber(String domain) {
         String seqName = getSequenceName(domain);
         SequenceSupport support = getSequenceSqlProvider();
@@ -54,6 +53,7 @@ public class UniqueNumbers
         return getResult(seqName, support, sqlScript);
     }
 
+    @Override
     public void setCurrentNumber(String domain, long value) {
         String seqName = getSequenceName(domain);
         SequenceSupport support = getSequenceSqlProvider();

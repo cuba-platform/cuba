@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.02.2010 10:33:49
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -14,6 +9,12 @@ import com.haulmont.cuba.core.global.LockInfo;
 
 import java.util.List;
 
+/**
+ * Interface for pessimistic locking.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface LockManagerAPI {
 
     String NAME = "cuba_LockManager";
@@ -54,4 +55,6 @@ public interface LockManagerAPI {
      * Process locks expiring. All expired locks will be removed.
      */
     void expireLocks();
+
+    void reloadConfiguration();
 }

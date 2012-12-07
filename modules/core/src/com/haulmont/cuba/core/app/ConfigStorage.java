@@ -10,26 +10,23 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Config;
-import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang.text.StrBuilder;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Supports configuration parameters framework functionality.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(ConfigStorageAPI.NAME)
-public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI {
+public class ConfigStorage implements ConfigStorageAPI {
 
     @Inject
     private Persistence persistence;
@@ -56,85 +53,6 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
     }
     
     @Override
-    public String printDbProperties() {
-        return printDbProperties(null);
-    }
-
-    @Override
-    public String printDbProperties(String prefix) {
-        try {
-            login();
-            loadCache();
-            StringBuilder sb = new StringBuilder();
-
-            for (Map.Entry<String, String> entry : cache.entrySet()) {
-                if (prefix == null || entry.getKey().startsWith(prefix)) {
-                    sb.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
-                }
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            logout();
-        }
-    }
-
-    @Override
-    public String getDbPropertyJmx(String name) {
-        if (StringUtils.isBlank(name))
-            return "Enter a property name";
-
-        try {
-            login();
-            String value = getDbProperty(name);
-            return name + "=" + value;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            logout();
-        }
-    }
-
-    @Override
-    public String setDbPropertyJmx(String name, String value) {
-        if (StringUtils.isBlank(name))
-            return "Enter a property name";
-        if (StringUtils.isBlank(value))
-            return "Enter a property value";
-
-        try {
-            login();
-            setDbProperty(name, value);
-            return "Property " + name + " set to " + value;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            logout();
-        }
-    }
-
-    @Override
-    public String removeDbPropertyJmx(String name) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            login();
-            EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("delete from sys$Config c where c.name = ?1");
-            query.setParameter(1, name);
-            query.executeUpdate();
-            tx.commit();
-            clearCache();
-            return "Property " + name + " removed";
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-            logout();
-        }
-    }
-
-    @Override
     public void clearCache() {
         internalClearCache();
         clusterManager.send(new InvalidateCacheMsg());
@@ -146,45 +64,9 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
     }
 
     @Override
-    public String printAppProperties() {
-        return printAppProperties(null);
-    }
-
-    @Override
-    public String printAppProperties(String prefix) {
-        List<String> list = new ArrayList<String>();
-        for (String name : AppContext.getPropertyNames()) {
-            if (prefix == null || name.startsWith(prefix)) {
-                list.add(name + "=" + AppContext.getProperty(name));
-            }
-        }
-        Collections.sort(list);
-        return new StrBuilder().appendWithSeparators(list, "\n").toString();
-    }
-
-    @Override
-    public String getAppProperty(String name) {
-        if (StringUtils.isBlank(name))
-            return "Enter a property name";
-
-        return name + "=" + AppContext.getProperty(name);
-    }
-
-    @Override
-    public String setAppProperty(String name, String value) {
-        if (StringUtils.isBlank(name))
-            return "Enter a property name";
-        if (StringUtils.isBlank(value))
-            return "Enter a property value";
-
-        AppContext.setProperty(name, value);
-        return "Property " + name + " set to " + value;
-    }
-
-    @Override
     public Map<String, String> getDbProperties() {
         loadCache();
-        return new HashMap<String, String>(cache);
+        return new HashMap<>(cache);
     }
 
     @Override

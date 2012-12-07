@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.global.LoginException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.QCodec;
@@ -44,7 +45,7 @@ import java.util.*;
  * @version $Id$
  */
 @ManagedBean(EmailerAPI.NAME)
-public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {
+public class Emailer implements EmailerAPI {
 
     private Log log = LogFactory.getLog(Emailer.class);
 
@@ -63,6 +64,9 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     @Inject
     private Persistence persistence;
+
+    @Inject
+    protected Authentication authentication;
 
     private static final String EMAIL_SMTP_HOST_PROPERTY_NAME = "cuba.email.smtpHost";
     private static final String EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME = "cuba.email.fromAddress";
@@ -121,8 +125,12 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     @Override
     public void scheduledSendEmail(SendingMessage sendingMessage) throws LoginException, EmailException {
-        loginOnce();
-        sendEmail(sendingMessage);
+        authentication.begin(AppContext.getProperty("cuba.emailerUserLogin"));
+        try {
+            sendEmail(sendingMessage);
+        } finally {
+            authentication.end();
+        }
     }
 
     private List<SendingMessage> splitEmail(EmailInfo info, Integer attemptsCount, Date deadline) {
@@ -324,20 +332,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     }
 
     @Override
-    public void setFromAddress(String address) {
-        if (address != null) {
-            try {
-                login();
-                config.setFromAddress(address);
-            } catch (LoginException e) {
-                throw new RuntimeException(e);
-            } finally {
-                logout();
-            }
-        }
-    }
-
-    @Override
     public String getSmtpHost() {
         String smtpHost = AppContext.getProperty(EMAIL_SMTP_HOST_PROPERTY_NAME);
         return smtpHost != null ? smtpHost : config.getSmtpHost();
@@ -351,20 +345,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     private boolean getSendAllToAdmin() {
         final Boolean sendAllToAdmin = BooleanUtils.toBooleanObject(AppContext.getProperty(SEND_ALL_TO_ADMIN_PROPERTY_NAME));
         return sendAllToAdmin != null ? sendAllToAdmin : config.getSendAllToAdmin();
-    }
-
-    @Override
-    public String sendTestEmail(String addresses) {
-        try {
-            String att = "<html><body><h1>Test attachment</h1></body></html>";
-            EmailAttachment emailAtt = new EmailAttachment(att.getBytes(), "test attachment.html");
-            sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
-//            EmailInfo info = new EmailInfo(addresses, "Test email from mailer", "cuba@haulmont.com", "../server/default/conf/cuba/templates/testEmail.html", new HashMap<String, Serializable>(), null, emailAtt);
-//            sendEmail(info);
-            return "Email to '" + addresses + "' sent succesfully";
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        }
     }
 
     private static class ByteArrayDataSource implements DataSource {
@@ -450,11 +430,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         sendingMessage.setAttemptsCount(attemptsCount);
         sendingMessage.setDeadline(deadline);
         return sendingMessage;
-    }
-
-    @Override
-    protected Credentials getCredentialsForLogin() {
-        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"));
     }
 
     private EmailAttachment[] getEmailAttachments(SendingMessage sendingMessage) {

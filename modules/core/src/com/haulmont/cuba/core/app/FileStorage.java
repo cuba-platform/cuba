@@ -5,10 +5,6 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -16,16 +12,17 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.*;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,38 +33,46 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @version $Id$
  */
 @ManagedBean(FileStorageAPI.NAME)
-public class FileStorage implements FileStorageMBean, FileStorageAPI {
+public class FileStorage implements FileStorageAPI {
+
+    protected Log log = LogFactory.getLog(FileStorage.class);
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Persistence persistence;
+    protected TimeSource timeSource;
 
-    private ExecutorService writeExecutor = Executors.newFixedThreadPool(5);
+    @Inject
+    protected Configuration configuration;
 
-    private Log log = LogFactory.getLog(FileStorage.class);
+    protected ExecutorService writeExecutor = Executors.newFixedThreadPool(5);
+
+    protected volatile File[] storageRoots;
 
     @Override
     public File[] getStorageRoots() {
-        String conf = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
-        if (StringUtils.isBlank(conf)) {
-            String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
-            File dir = new File(dataDir, "filestorage");
-            dir.mkdirs();
-            return new File[]{dir};
-        } else {
-            List<File> list = new ArrayList<>();
-            for (String str : conf.split(",")) {
-                str = str.trim();
-                if (!StringUtils.isEmpty(str)) {
-                    File file = new File(str);
-                    if (!list.contains(file))
-                        list.add(file);
+        if (storageRoots == null) {
+            String conf = configuration.getConfig(ServerConfig.class).getFileStorageDir();
+            if (StringUtils.isBlank(conf)) {
+                String dataDir = configuration.getConfig(GlobalConfig.class).getDataDir();
+                File dir = new File(dataDir, "filestorage");
+                dir.mkdirs();
+                storageRoots = new File[]{dir};
+            } else {
+                List<File> list = new ArrayList<>();
+                for (String str : conf.split(",")) {
+                    str = str.trim();
+                    if (!StringUtils.isEmpty(str)) {
+                        File file = new File(str);
+                        if (!list.contains(file))
+                            list.add(file);
+                    }
                 }
+                storageRoots = list.toArray(new File[list.size()]);
             }
-            return list.toArray(new File[list.size()]);
         }
+        return storageRoots;
     }
 
     @Override
@@ -147,7 +152,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         StringBuilder sb = new StringBuilder();
-        sb.append(df.format(TimeProvider.currentTimestamp())).append(" ");
+        sb.append(df.format(timeSource.currentTimestamp())).append(" ");
         sb.append("[").append(userSessionSource.getUserSession().getUser()).append("] ");
         sb.append(remove ? "REMOVE" : "CREATE").append(" ");
         sb.append("\"").append(file.getAbsolutePath()).append("\"\n");
@@ -253,7 +258,8 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
     }
 
-    private File getStorageDir(File rootDir, Date createDate) {
+    @Override
+    public File getStorageDir(File rootDir, Date createDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(createDate);
         int year = cal.get(Calendar.YEAR);
@@ -263,92 +269,5 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         return new File(rootDir, year + "/"
                 + StringUtils.leftPad(String.valueOf(month), 2, '0') + "/"
                 + StringUtils.leftPad(String.valueOf(day), 2, '0'));
-    }
-
-    @Override
-    public String findInvalidDescriptors() {
-        File[] roots = getStorageRoots();
-        if (roots.length == 0)
-            return "No storage directories defined";
-
-        StringBuilder sb = new StringBuilder();
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from core$FileDescriptor fd");
-            List<FileDescriptor> fileDescriptors = query.getResultList();
-            for (FileDescriptor fileDescriptor : fileDescriptors) {
-                File dir = getStorageDir(roots[0], fileDescriptor.getCreateDate());
-                File file = new File(dir, fileDescriptor.getFileName());
-                if (!file.exists()) {
-                    sb.append(fileDescriptor.getId())
-                            .append(", ")
-                            .append(fileDescriptor.getName())
-                            .append(", ")
-                            .append(fileDescriptor.getCreateDate())
-                            .append("\n");
-                }
-            }
-            tx.commit();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public String findInvalidFiles() {
-        File[] roots = getStorageRoots();
-        if (roots.length == 0)
-            return "No storage directories defined";
-
-        StringBuilder sb = new StringBuilder();
-
-        File storageFolder = roots[0];
-        if (!storageFolder.exists())
-            return ExceptionUtils.getStackTrace(
-                    new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, storageFolder.getAbsolutePath()));
-
-        Collection<File> systemFiles = FileUtils.listFiles(storageFolder, null, true);
-        Collection<File> filesInRootFolder = FileUtils.listFiles(storageFolder, null, false);
-        //remove files of root storage folder (e.g. storage.log) from files collection
-        systemFiles.removeAll(filesInRootFolder);
-
-        List<FileDescriptor> fileDescriptors = new ArrayList<>();
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from core$FileDescriptor fd");
-            fileDescriptors = query.getResultList();
-            tx.commit();
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-            tx.end();
-        }
-
-        Set<String> descriptorsFileNames = new HashSet<>();
-        for (FileDescriptor fileDescriptor : fileDescriptors) {
-            descriptorsFileNames.add(fileDescriptor.getFileName());
-        }
-
-        for (File file : systemFiles) {
-            if (!descriptorsFileNames.contains(file.getName()))
-                //Encode file path if it contains non-ASCII characters
-                if (!file.getPath().matches("\\p{ASCII}+")) {
-                    try {
-                        String encodedFilePath = URLEncoder.encode(file.getPath(), "utf-8");
-                        sb.append(encodedFilePath).append("\n");
-                    } catch (UnsupportedEncodingException e) {
-                        return ExceptionUtils.getStackTrace(e);
-                    }
-                } else {
-                    sb.append(file.getPath()).append("\n");
-                }
-        }
-
-        return sb.toString();
     }
 }

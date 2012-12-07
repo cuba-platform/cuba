@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * Interface to store and load files defined by {@link FileDescriptor}s.
@@ -68,4 +69,8 @@ public interface FileStorageAPI {
      * @throws FileStorageException if something goes wrong
      */
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
+
+    File[] getStorageRoots();
+
+    File getStorageDir(File rootDir, Date createDate);
 }

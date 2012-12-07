@@ -66,9 +66,11 @@
         <property name="userSessions" ref="cuba_UserSessions"/>
     </bean>
 
-    <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
+    <bean id="authenticationInterceptor" class="com.haulmont.cuba.security.sys.AuthenticationInterceptor">
+        <property name="authentication" ref="cuba_Authentication"/>
+    </bean>
 
-    <bean id="authenticatedMBeanInterceptor" class="com.haulmont.cuba.core.sys.AuthenticatedMBeanInterceptor"/>
+    <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
 
     <aop:config proxy-target-class="false">
         <aop:aspect id="serviceAspect" ref="serviceInterceptor">
@@ -77,15 +79,12 @@
 
         <aop:aspect id="mbeanAspect" ref="mbeanInterceptor" order="1">
             <aop:around method="aroundInvoke"
-                        pointcut="execution(* *..*MBean.*(..)) &amp;&amp;
-                        !@annotation(com.haulmont.cuba.core.app.Authenticated)"/>
+                        pointcut="execution(* *..*MBean.*(..))"/>
         </aop:aspect>
 
-        <aop:aspect id="authenticatedMBeanAscpect" ref="authenticatedMBeanInterceptor" order="2">
-            <aop:around method="beforeInvoke"
-                        pointcut="execution(* *..*MBean.*(..)) &amp;&amp;
-                        within(com.haulmont.cuba.core.app.ManagementBean+) &amp;&amp;
-                        @annotation(com.haulmont.cuba.core.app.Authenticated)"/>
+        <aop:aspect id="authenticationAspect" ref="authenticationInterceptor" order="2">
+            <aop:around method="aroundInvoke"
+                        pointcut="execution(@com.haulmont.cuba.security.app.Authenticated * *(..))"/>
         </aop:aspect>
     </aop:config>
 
@@ -95,25 +94,39 @@
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:type=PersistenceManager"
-                       value-ref="cuba_PersistenceManager"/>
-                <entry key="${cuba.webContextName}.cuba:type=ConfigStorage" value-ref="cuba_ConfigStorage"/>
-                <entry key="${cuba.webContextName}.cuba:type=DataCache" value-ref="cuba_DataCache"/>
-                <entry key="${cuba.webContextName}.cuba:type=UserSessions" value-ref="cuba_UserSessions"/>
-                <entry key="${cuba.webContextName}.cuba:type=UniqueNumbers" value-ref="cuba_UniqueNumbers"/>
-                <entry key="${cuba.webContextName}.cuba:type=Emailer" value-ref="cuba_Emailer"/>
-                <entry key="${cuba.webContextName}.cuba:type=EntityLog" value-ref="cuba_EntityLog"/>
-                <entry key="${cuba.webContextName}.cuba:type=FileStorage" value-ref="cuba_FileStorage"/>
-                <entry key="${cuba.webContextName}.cuba:type=LockManager" value-ref="cuba_LockManager"/>
-                <entry key="${cuba.webContextName}.cuba:type=CachingFacade" value-ref="cuba_CachingFacade"/>
-                <entry key="${cuba.webContextName}.cuba:type=ClusterManager" value-ref="cuba_ClusterManager"/>
-                <entry key="${cuba.webContextName}.cuba:type=ScriptingManager" value-ref="cuba_ScriptingManager"/>
-                <entry key="${cuba.webContextName}.cuba:type=ServerInfo" value-ref="cuba_ServerInfo"/>
-                <entry key="${cuba.webContextName}.cuba:type=EmailManager" value-ref="cuba_EmailManager"/>
-                <entry key="${cuba.webContextName}.cuba:type=Scheduling" value-ref="cuba_Scheduling"/>
+                       value-ref="cuba_PersistenceManagerMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=ConfigStorage"
+                       value-ref="cuba_ConfigStorageMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=DataCache"
+                       value-ref="cuba_DataCacheMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=UserSessions"
+                       value-ref="cuba_UserSessionsMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=UniqueNumbers"
+                       value-ref="cuba_UniqueNumbersMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=Emailer"
+                       value-ref="cuba_EmailerMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=EntityLog"
+                       value-ref="cuba_EntityLogMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=FileStorage"
+                       value-ref="cuba_FileStorageMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=LockManager"
+                       value-ref="cuba_LockManagerMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=CachingFacade"
+                       value-ref="cuba_CachingFacadeMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=ClusterManager"
+                       value-ref="cuba_ClusterManagerMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=ScriptingManager"
+                       value-ref="cuba_ScriptingManagerMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=ServerInfo"
+                       value-ref="cuba_ServerInfoMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=EmailManager"
+                       value-ref="cuba_EmailManagerMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=Scheduling"
+                       value-ref="cuba_SchedulingMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=ObjectsCacheManager"
-                       value-ref="cuba_ObjectsCacheManager"/>
+                       value-ref="cuba_ObjectsCacheManagerMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=PasswordEncryptionSupport"
-                       value-ref="cuba_PasswordEncryptionSupport"/>
+                       value-ref="cuba_PasswordEncryptionSupportMBean"/>
             </map>
         </property>
     </bean>

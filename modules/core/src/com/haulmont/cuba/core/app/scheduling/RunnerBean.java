@@ -43,34 +43,34 @@ import java.util.concurrent.*;
 @ManagedBean(Runner.NAME)
 public class RunnerBean implements Runner {
 
-    private static final int MAX_THREADS = 10;
+    protected static final int MAX_THREADS = 10;
 
-    private Log log = LogFactory.getLog(getClass());
+    protected Log log = LogFactory.getLog(getClass());
 
-    private ExecutorService executorService;
-
-    @Inject
-    private SchedulingAPI scheduling;
+    protected ExecutorService executorService;
 
     @Inject
-    private ServerInfoAPI serverInfo;
+    protected SchedulingAPI scheduling;
 
     @Inject
-    private Persistence persistence;
+    protected ServerInfoAPI serverInfo;
 
     @Inject
-    private TimeSource timeSource;
+    protected Persistence persistence;
 
     @Inject
-    private LoginWorker loginWorker;
+    protected TimeSource timeSource;
 
     @Inject
-    private UserSessionManager userSessionManager;
+    protected LoginWorker loginWorker;
 
     @Inject
-    private Scripting scripting;
+    protected UserSessionManager userSessionManager;
 
-    private Map<String, UUID> userSessionIds = new ConcurrentHashMap<>();
+    @Inject
+    protected Scripting scripting;
+
+    protected Map<String, UUID> userSessionIds = new ConcurrentHashMap<>();
 
     public RunnerBean() {
         executorService = Executors.newFixedThreadPool(MAX_THREADS, new ThreadFactory() {
@@ -113,7 +113,7 @@ public class RunnerBean implements Runner {
         });
     }
 
-    private void setSecurityContext(ScheduledTask task, UserSession userSession) throws LoginException {
+    protected void setSecurityContext(ScheduledTask task, UserSession userSession) throws LoginException {
         if (userSession == null) {
             UUID sessionId = userSessionIds.get(task.getUserName());
             userSession = sessionId == null ? null : userSessionManager.findSession(sessionId);
@@ -125,7 +125,7 @@ public class RunnerBean implements Runner {
         AppContext.setSecurityContext(new SecurityContext(userSession));
     }
 
-    private ScheduledExecution registerExecutionStart(ScheduledTask task, long now) {
+    protected ScheduledExecution registerExecutionStart(ScheduledTask task, long now) {
         if (!BooleanUtils.isTrue(task.getLogStart()) && !BooleanUtils.isTrue(task.getSingleton()))
             return null;
 
@@ -149,7 +149,7 @@ public class RunnerBean implements Runner {
         }
     }
 
-    private void registerExecutionFinish(ScheduledTask task, ScheduledExecution execution, Object result) {
+    protected void registerExecutionFinish(ScheduledTask task, ScheduledExecution execution, Object result) {
         if ((!BooleanUtils.isTrue(task.getLogStart()) && !BooleanUtils.isTrue(task.getSingleton())) || execution == null)
             return;
 
@@ -168,7 +168,7 @@ public class RunnerBean implements Runner {
         }
     }
 
-    private Object executeTask(ScheduledTask task) {
+    protected Object executeTask(ScheduledTask task) {
         switch (task.getDefinedBy()) {
             case BEAN: {
                 log.trace(task + ": invoking bean");

@@ -33,8 +33,8 @@
     <bean id="cuba_web_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
-                <entry key="${cuba.webContextName}.cuba:type=Configuration" value-ref="cuba_ConfigurationMBean"/>
-                <entry key="${cuba.webContextName}.cuba:type=Caching" value-ref="cuba_CachingMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=ConfigStorage" value-ref="cuba_ConfigStorageMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=CachingFacade" value-ref="cuba_CachingFacadeMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=FileUploading" value-ref="cuba_FileUploading"/>
             </map>
         </property>

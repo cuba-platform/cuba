@@ -10,7 +10,9 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.jmx.EmailManagerMBean;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.app.Authentication;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
@@ -27,37 +29,39 @@ import java.util.concurrent.RejectedExecutionException;
  * @version $Id$
  */
 @ManagedBean(EmailManagerAPI.NAME)
-public class EmailManager extends ManagementBean implements EmailManagerMBean,EmailManagerAPI {
+public class EmailManager implements EmailManagerAPI {
 
-    private Log log = LogFactory.getLog(EmailManager.class);
+    protected Log log = LogFactory.getLog(getClass());
 
-    private Set<SendingMessage> messageQueue;
-    private static int callCount = 0;
-    private static final String EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME = "cuba.email.delayCallCount";
-    private static final String EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME = "cuba.email.messageQueueCapacity";
-
-    @Inject
-    private ThreadPoolTaskExecutor mailSendTaskExecutor;
+    protected Set<SendingMessage> messageQueue;
+    protected static int callCount = 0;
+    protected static final String EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME = "cuba.email.delayCallCount";
+    protected static final String EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME = "cuba.email.messageQueueCapacity";
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected ThreadPoolTaskExecutor mailSendTaskExecutor;
 
     @Inject
-    private TimeSource timeSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Persistence persistence;
+    protected TimeSource timeSource;
 
-    private EmailerConfig config;
+    @Inject
+    protected Persistence persistence;
+
+    @Inject
+    protected Authentication authentication;
+
+    protected EmailerConfig config;
 
     @Inject
     public void setConfig(Configuration configuration) {
         this.config = configuration.getConfig(EmailerConfig.class);
     }
 
-    @Override
-    protected Credentials getCredentialsForLogin() {
-        return new Credentials(AppContext.getProperty(EmailerAPI.NAME + ".login"));
+    protected String getSystemLogin() {
+        return AppContext.getProperty("cuba.emailerUserLogin");
     }
 
     @Override
@@ -67,7 +71,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
             if (callCount >= delay) {
                 log.debug("Queueing Emails");
 
-                loginOnce();
+                authentication.begin(getSystemLogin());
                 try {
                     List<SendingMessage> loadedMessages = loadEmailsToSend();
                     List<SendingMessage> updatedMessages = updateSendingMessagesStatus(loadedMessages);
@@ -91,7 +95,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
                         updateSendingMessagesStatus(notSentMessageIds, SendingStatus.NOTSENT);
 
                 } finally {
-                    AppContext.setSecurityContext(null);
+                    authentication.end();
                 }
 
             } else {
@@ -260,7 +264,8 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         }
     }
 
-    private int getMessageQueueCapacity() {
+    @Override
+    public int getMessageQueueCapacity() {
         String messageQueueCapacity = AppContext.getProperty(EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME);
         int capacity = 0;
         if (messageQueueCapacity != null)
@@ -273,7 +278,8 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         return capacity;
     }
 
-    private int getDelayCallCount() {
+    @Override
+    public int getDelayCallCount() {
         String delayCallCountStr = AppContext.getProperty(EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME);
         int delayCallCount = 0;
         if (delayCallCountStr != null)
@@ -284,15 +290,5 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
             }
         delayCallCount = delayCallCount == 0 ? config.getDelayCallCount() : delayCallCount;
         return delayCallCount;
-    }
-
-    @Override
-    public String getDelayCallCountAsString() {
-        return String.valueOf(getDelayCallCount());
-    }
-
-    @Override
-    public String getMessageQueueCapacityAsString() {
-        return String.valueOf(getMessageQueueCapacity());
     }
 }

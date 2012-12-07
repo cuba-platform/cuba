@@ -18,8 +18,8 @@ import java.util.Collection;
  *
  * @author krivopustov
  */
-public interface UserSessionsAPI
-{
+public interface UserSessionsAPI {
+
     String NAME = "cuba_UserSessions";
     
     void add(UserSession session);
@@ -43,4 +43,10 @@ public interface UserSessionsAPI
     Collection<UserSessionEntity> getUserSessionInfo();
 
     void killSession(UUID id);
+
+    int getExpirationTimeoutSec();
+
+    void setExpirationTimeoutSec(int value);
+
+    void processEviction();
 }

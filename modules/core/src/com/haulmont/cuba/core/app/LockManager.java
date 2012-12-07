@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.02.2010 10:36:50
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -16,6 +11,7 @@ import com.haulmont.cuba.core.global.LockInfo;
 import com.haulmont.cuba.core.global.LockNotSupported;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.jmx.LockManagerMBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,8 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean(LockManagerAPI.NAME)
-public class LockManager implements LockManagerAPI, LockManagerMBean, ClusterListener<LockInfo> {
+public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
 
     private static class LockKey {
         
@@ -172,18 +172,7 @@ public class LockManager implements LockManagerAPI, LockManagerMBean, ClusterLis
         }
     }
 
-    public int getLockCount() {
-        return locks.size();
-    }
-
-    public String showLocks() {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<LockKey, LockInfo> entry : locks.entrySet()) {
-            sb.append(entry.getValue()).append("\n");
-        }
-        return sb.toString();
-    }
-
+    @Override
     public void reloadConfiguration() {
         config = null;
     }

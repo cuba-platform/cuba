@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 17.03.2009 17:43:12
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -22,21 +17,20 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * ServerInfo MBean implementation.
- *
- * <p>Holds the server parameters.</p>
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(ServerInfoAPI.NAME)
-public class ServerInfo implements ServerInfoAPI, ServerInfoMBean
+public class ServerInfo implements ServerInfoAPI
 {
-    private Log log = LogFactory.getLog(ServerInfo.class);
+    protected Log log = LogFactory.getLog(getClass());
 
-    private String releaseNumber = "?";
-    private String releaseTimestamp = "?";
+    protected String releaseNumber = "?";
+    protected String releaseTimestamp = "?";
 
-    private Configuration configuration;
+    protected Configuration configuration;
 
-    private volatile String serverId;
+    protected volatile String serverId;
 
     @Inject
     public void setConfiguration(Configuration configuration) {

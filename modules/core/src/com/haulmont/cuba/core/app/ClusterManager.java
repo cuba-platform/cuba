@@ -1,16 +1,12 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.06.2010 19:06:02
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.jmx.ClusterManagerMBean;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.Deserializer;
 import org.apache.commons.io.IOUtils;
@@ -19,7 +15,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
-import org.springframework.core.io.Resource;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -31,25 +26,24 @@ import java.util.Vector;
 /**
  * Standard implementation of middleware clustering based on JGroups.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(ClusterManagerAPI.NAME)
-public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, AppContext.Listener {
+public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
-    private static Log log = LogFactory.getLog(ClusterManager.class);
+    protected Log log = LogFactory.getLog(ClusterManager.class);
 
-    private Map<String, ClusterListener> listeners = new HashMap<String, ClusterListener>();
+    protected Map<String, ClusterListener> listeners = new HashMap<String, ClusterListener>();
 
-    private JChannel channel;
+    protected JChannel channel;
 
-    private View currentView;
+    protected View currentView;
 
     @Inject
-    private Resources resources;
+    protected Resources resources;
 
-    private static final String STATE_MAGIC = "CUBA_STATE";
+    protected static final String STATE_MAGIC = "CUBA_STATE";
 
     public ClusterManager() {
         AppContext.addListener(this);
@@ -119,8 +113,8 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
             channel.connect("cubaCluster");
             channel.getState(null, 5000);
         } catch (Exception e) {
-            log.error("Unable to start cluster", e);
             channel = null;
+            throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(stream);
         }
@@ -164,7 +158,7 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
         return currentView == null ? "" : currentView.toString();
     }
 
-    private class ClusterReceiver implements Receiver {
+    protected class ClusterReceiver implements Receiver {
 
         public void receive(Message msg) {
             byte[] bytes = msg.getBuffer();
