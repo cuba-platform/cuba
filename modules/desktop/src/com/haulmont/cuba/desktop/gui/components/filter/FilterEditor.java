@@ -401,7 +401,7 @@ public class FilterEditor extends AbstractFilterEditor {
         if (editor == null)
             editor = condition.createOperationEditor();
         if (editor instanceof HasAction && descriptor.isShowImmediately()) {
-            ((HasAction) editor).doAction();
+            ((HasAction) editor).doAction(panel);
         }
 
         table.requestFocus();

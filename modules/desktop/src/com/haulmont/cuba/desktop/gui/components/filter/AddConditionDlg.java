@@ -133,8 +133,8 @@ public class AddConditionDlg extends JDialog {
             if (selectionHandler != null) {
                 Object pathComponent = tree.getLastSelectedPathComponent();
                 if (pathComponent instanceof ModelItem && ((ModelItem) pathComponent).getDescriptor() != null) {
-                    selectionHandler.select(((ModelItem) pathComponent).getDescriptor());
                     close();
+                    selectionHandler.select(((ModelItem) pathComponent).getDescriptor());
                 }
             }
         }

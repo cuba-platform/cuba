@@ -6,14 +6,15 @@
 
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author devyatkin
  */
-public class RuntimePropOperationEditor extends OperationEditor implements HasAction {
+public class RuntimePropOperationEditor extends OperationEditor implements HasAction<Component> {
 
     private final Button btn = WebComponentsHelper.createButton();
 
@@ -35,7 +36,7 @@ public class RuntimePropOperationEditor extends OperationEditor implements HasAc
 
         btn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                doAction();
+                doAction(btn);
             }
         });
 
@@ -45,13 +46,14 @@ public class RuntimePropOperationEditor extends OperationEditor implements HasAc
     private void setCaption(Button btn) {
         String caption = condition.getOperationCaption();
         if (StringUtils.isEmpty(caption)) {
-            caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Edit");
+            Messages messages = AppBeans.get(Messages.NAME);
+            caption = messages.getMainMessage("actions.Edit");
         }
         btn.setCaption(caption);
     }
 
     @Override
-    public void doAction() {
+    public void doAction(Component component) {
         RuntimePropConditionEditDlg dlg = new RuntimePropConditionEditDlg((RuntimePropCondition) condition);
         final Window dlgWindow = dlg.getImpl();
         dlgWindow.addListener(new Window.CloseListener() {

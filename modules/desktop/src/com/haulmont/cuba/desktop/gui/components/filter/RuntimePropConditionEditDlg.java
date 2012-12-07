@@ -26,9 +26,11 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
     private Editor impl;
     private static final int FIELD_WIDTH = 250;
+    private JComponent component;
 
-    public RuntimePropConditionEditDlg(final RuntimePropCondition condition) {
+    public RuntimePropConditionEditDlg(final RuntimePropCondition condition, JComponent component) {
         super(condition);
+        this.component = component;
     }
 
     @Override
@@ -79,7 +81,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
     protected class Editor extends JDialog {
         public Editor() {
-            super(App.getInstance().getMainFrame());
+            super(DesktopComponentsHelper.getTopLevelFrame(component));
             setLocationRelativeTo(App.getInstance().getMainFrame());
             setTitle(condition.getLocCaption());
             setSize(350, 230);

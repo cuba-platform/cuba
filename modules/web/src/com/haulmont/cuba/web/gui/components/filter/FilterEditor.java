@@ -384,7 +384,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         AbstractOperationEditor operationEditor = condition.getOperationEditor();
         if (operationEditor instanceof HasAction && descriptor.isShowImmediately()) {
-            ((HasAction) operationEditor).doAction();
+            ((HasAction) operationEditor).doAction(layout);
         }
     }
 

@@ -11,6 +11,6 @@ package com.haulmont.cuba.gui.components.filter;
  *
  * @author devyatkin
  */
-public interface HasAction {
-    void doAction();
+public interface HasAction<T> {
+    void doAction(T component);
 }

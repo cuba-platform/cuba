@@ -31,8 +31,11 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
 
     protected EditDlg impl;
 
-    public CustomConditionEditDlg(final CustomCondition condition) {
+    protected JComponent component;
+
+    public CustomConditionEditDlg(final CustomCondition condition, JComponent component) {
         super(condition);
+        this.component = component;
     }
 
     @Override
@@ -83,7 +86,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
 
     private class EditDlg extends JDialog {
         public EditDlg() {
-            super(App.getInstance().getMainFrame());
+            super(DesktopComponentsHelper.getTopLevelFrame(component));
             setLocationRelativeTo(App.getInstance().getMainFrame());
             setSize(430, 380);
             setResizable(false);

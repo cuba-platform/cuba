@@ -6,9 +6,9 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +24,7 @@ import java.awt.event.WindowEvent;
  *
  * @author devyatkin
  */
-public class RuntimePropOperationEditor extends OperationEditor implements HasAction {
+public class RuntimePropOperationEditor extends OperationEditor implements HasAction<JComponent> {
 
     private JButton btn;
 
@@ -44,7 +44,7 @@ public class RuntimePropOperationEditor extends OperationEditor implements HasAc
         btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                doAction();
+                doAction(btn);
             }
         });
         impl = btn;
@@ -53,21 +53,22 @@ public class RuntimePropOperationEditor extends OperationEditor implements HasAc
     private void setCaption(JButton btn) {
         String caption = condition.getOperationCaption();
         if (StringUtils.isEmpty(caption)) {
-            caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Edit");
+            Messages messages = AppBeans.get(Messages.NAME);
+            caption = messages.getMainMessage("actions.Edit");
         }
         btn.setText(caption);
     }
 
     @Override
-    public void doAction() {
-        final RuntimePropConditionEditDlg dlg = new RuntimePropConditionEditDlg((RuntimePropCondition) condition);
+    public void doAction(JComponent component) {
+        final RuntimePropConditionEditDlg dlg = new RuntimePropConditionEditDlg((RuntimePropCondition) condition, component);
         dlg.getImpl().addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
                 setCaption(btn);
             }
         });
         JDialog dlgImpl = dlg.getImpl();
-        DesktopComponentsHelper.getTopLevelFrame(getImpl()).deactivate(null);
+        DesktopComponentsHelper.getTopLevelFrame(component).deactivate(null);
         dlgImpl.setVisible(true);
     }
 }
