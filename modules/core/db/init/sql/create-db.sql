@@ -630,6 +630,21 @@ INSERT INTO sec_filter (id,create_ts,created_by,version,update_ts,updated_by,del
 
 --------------------------------------------------------------------------------------------------------------
 
+create table SEC_SCREEN_HISTORY (
+	ID varchar(36),
+	CREATE_TS timestamp,
+	CREATED_BY varchar(50),
+	USER_ID varchar(36),
+	CAPTION varchar(255),
+	URL varchar(4000),
+	ENTITY_ID varchar(36),
+
+	primary key (ID),
+    constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID)
+);
+
+------------------------------------------------------------------------------------------------------------
+
 create table SYS_SENDING_MESSAGE (
     ID varchar(36),
     CREATE_TS timestamp,
