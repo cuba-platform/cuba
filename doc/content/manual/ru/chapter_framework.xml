@@ -1475,12 +1475,12 @@ String formattedValue = format.format(value);</programlisting></para>
         <title>Общие сведения</title>
         <para>При извлечении сущностей из базы данных обычно встает вопрос - как обеспечить загрузку связанных сущностей на нужную глубину? </para>
         <para>Например,  для браузера Заказов нужно отобразить дату и сумму заказа совместно с названием Покупателя, т.е. загрузить связанный экземпляр Покупателя. А для экрана редактирования Заказа необходимо загрузить еще и коллекцию Пунктов заказа, причем каждый Пункт заказа должен содержать связанный экземпляр Товара для отображения его наименования. </para>
-        <para><glossterm linkend="lazy_loading">Загрузка по требованию</glossterm> в большинстве случаев не может помочь, так как обработка данных как правило происходит не в транзакции, в которой загружаются сущности, а, например, на клиентском <link linkend="app_tiers">уровне</link> в пользовательском интерфейсе. В то же время задание <glossterm linkend="eager_fetching">энергичной загрузки</glossterm> в <link linkend="entity_annotations">аннотациях сущностей</link> недопустимо, так как приводит к постоянному извлечению всего графа связанных сущностей, который может быть очень большим.</para>
+        <para><link linkend="lazy_loading">Загрузка по требованию</link> в большинстве случаев не может помочь, так как обработка данных как правило происходит не в транзакции, в которой загружаются сущности, а, например, на клиентском <link linkend="app_tiers">уровне</link> в пользовательском интерфейсе. В то же время задание <glossterm linkend="eager_fetching">энергичной загрузки</glossterm> в <link linkend="entity_annotations">аннотациях сущностей</link> недопустимо, так как приводит к постоянному извлечению всего графа связанных сущностей, который может быть очень большим.</para>
         <para>Другой похожей проблемой является ограничение набора <glossterm linkend="local_attribute">локальных</glossterm> атрибутов сущностей загружаемого графа: например, некоторая сущность имеет 50 атрибутов, в том числе BLOB, а в экране отображается только 10 атрибутов. Зачем загружать из БД, затем сериализовать и передавать клиенту 40 атрибутов, которые ему в данный момент не нужны?</para>
         <para>Механизм <firstterm>представлений</firstterm> (views)  решает эти проблемы, обеспечивая извлечение из базы данных и передачу клиенту графов сущностей, ограниченных в глубину и по атрибутам. <firstterm>Представление</firstterm> является описателем графа объектов, который требуется в некотором экране UI или другом процессе обработки данных.</para>
         <para>Обработка представлений производится следующим образом:<itemizedlist>
             <listitem>
-              <para>все связи в модели данных объявляются с признаком <glossterm linkend="lazy_loading">загрузки по требованию</glossterm> (<code>fetch = FetchType.LAZY</code>, см. <xref linkend="entity_annotations"/>)</para>
+              <para>все связи в модели данных объявляются с признаком <link linkend="lazy_loading">загрузки по требованию</link> (<code>fetch = FetchType.LAZY</code>, см. <xref linkend="entity_annotations"/>)</para>
             </listitem>
             <listitem>
               <para>в процессе загрузки данных через <link linkend="dataService">DataService</link> клиентский код помимо <glossterm linkend="jpql">JPQL</glossterm> запроса указывает нужное  представление</para>
@@ -2840,11 +2840,11 @@ public String foo(String value) {
         <para>Object-Relational Mapping - объектно-реляционное отображение - технология связывания таблиц реляционной базы данных с объектами языка программирования. </para>
         <variablelist>
           <varlistentry>
-            <term>Преимущества</term>
+            <term>Преимущества использования ORM:</term>
             <listitem>
               <itemizedlist>
                 <listitem>
-                  <para>Позволяет работать с  данными реляционной СУБД, манипулируя простыми объектами Java (<glossterm linkend="pojo">POJO</glossterm>)</para>
+                  <para>Позволяет работать с  данными реляционной СУБД, манипулируя объектами Java</para>
                 </listitem>
                 <listitem>
                   <para>Упрощает программирование, избавляя от рутины написания тривиальных SQL-запросов</para>
@@ -2865,40 +2865,55 @@ public String foo(String value) {
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>Недостатки</term>
+            <term>Недостатки:</term>
             <listitem>
               <itemizedlist>
                 <listitem>
                   <para>Требует понимания особенностей работы с ORM</para>
                 </listitem>
                 <listitem>
-                  <para>Не позволяет напрямую оптимизировать SQL или использовать особенности СУБД, что приводит к снижению производительности</para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-          </varlistentry>
-          <varlistentry>
-            <term>Реализация</term>
-            <listitem>
-              <itemizedlist>
-                <listitem>
-                  <para>JPA – Java Persistence API</para>
-                </listitem>
-                <listitem>
-                  <para>OpenJPA – фреймворк, реализующий JPA.  На данный момент в платформе используется версия 2.x.</para>
+                  <para>Не позволяет напрямую оптимизировать SQL или использовать особенности применяемой СУБД</para>
                 </listitem>
               </itemizedlist>
             </listitem>
           </varlistentry>
         </variablelist>
+        <para>В платформе <productname>CUBA</productname> используется реализация ORM по стандарту Java Persistence API на основе фреймворка <application>Apache OpenJPA</application>.</para>
       </section>
       <section id="entityManager">
         <title>EntityManager</title>
-        <para>EntityManager - основной интерфейс ORM, служит для управления персистентными <link linkend="data_model">сущностями</link>.
-Его можно получить с помощью   вызова метода  <code>PersistenceProvider.getEntityManager()</code>.
-Экземпляр <code>EntityManager</code> всегда привязан к одной <link linkend="transactions">транзакции</link>. Более того, все вызовы <code>PersistenceProvider.getEntityManager()</code> в рамках одной транзакции возвращают один и тот же экземпляр <code>EntityManager</code>. После завершения транзакции обращения к данному экземпляру невозможны.
-Экземпляр <code>EntityManager</code> содержит в себе &quot;персистентный контекст&quot; – набор экземпляров сущностей, загруженных из БД или только что созданных. Персистентный контекст является кэшем данных в рамках данной транзакции.
-<code>EntityManager</code> автоматически сбрасывает в БД все изменения, сделанные в своем персистентном контексте, в момент коммита транзакции, либо явным вызовом метода  <code>flush()</code>.</para>
+        <para><code>EntityManager</code> - основной интерфейс ORM, служит для управления персистентными <link linkend="data_model">сущностями</link>.
+</para>
+        <para>Ссылку на <code>EntityManager</code>  можно получить через интерфейс <code>Persistence</code>,  вызовом метода  <code>getEntityManager()</code>.
+Полученный экземпляр <code>EntityManager</code> привязан к текущей <link linkend="transactions">транзакции</link>, то есть все вызовы <code>getEntityManager()</code> в рамках одной транзакции возвращают один и тот же экземпляр <code>EntityManager</code>. После завершения транзакции обращения к данному экземпляру невозможны.
+</para>
+        <para>Экземпляр <code>EntityManager</code> содержит в себе &quot;персистентный контекст&quot; – набор экземпляров сущностей, загруженных из БД или только что созданных. Персистентный контекст является своего рода кэшем данных в рамках  транзакции.
+<code>EntityManager</code> автоматически сбрасывает в БД все изменения, сделанные в его персистентном контексте, в момент коммита транзакции, либо при явном вызове метода  <code>flush()</code>.</para>
+        <para>Интерфейс <code>EntityManager</code>, используемый в CUBA-приложениях, в основном повторяет стандартный <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/EntityManager.html">javax.persistence.EntityManager</ulink>. Рассмотрим специфичные методы:<itemizedlist>
+            <listitem>
+              <para><code>setView()</code> - устанавливает <link linkend="views">представление</link>, с которым будет производиться последующая загрузка сущностей методом <code>find()</code> либо JPQL запросами. В результате <glossterm linkend="eager_fetching">энергично загружены</glossterm> будут все не-<literal>lazy</literal> атрибуты представления.</para>
+              <para>Если в данный метод передать <code>null</code>, либо не вызывать его вообще, загрузка будет производиться в соответствие с правилами <link linkend="entity_annotations">аннотаций сущностей</link>.</para>
+            </listitem>
+            <listitem>
+              <para><code>addView()</code> - аналогичен методу <code>setView()</code>, но в случае наличия уже установленного в <code>EntityManager</code> представления, не заменяет его, а добавляет атрибуты переданного представления.</para>
+            </listitem>
+            <listitem>
+              <para><code>fetch()</code> - обеспечивает для экземпляра сущности загрузку всех атрибутов указанного <link linkend="views">представления</link>, включая <literal>lazy</literal> атрибуты. Экземпляр сущности должен быть в <link linkend="entity_states">Managed</link> состоянии.</para>
+              <para>Данный метод рекомендуется вызывать перед коммитом транзакции, если представление содержит <literal>lazy</literal> атрибуты, а экземпляр сущности нужно отправить на клиентский уровень. В этом случае только после вызова <code>fetch()</code> можно быть уверенным, что все нужные клиентсткому коду атрибуты действительно загружены.</para>
+            </listitem>
+            <listitem>
+              <para><code>isSoftDeletion()</code> - проверяет, находится ли данный <code>EntityManager</code> в режиме <link linkend="soft_deletion">мягкого удаления</link>.</para>
+            </listitem>
+            <listitem>
+              <para><code>setSoftDeletion()</code> - устанавливает режим <link linkend="soft_deletion">мягкого удаления</link> для данного экземпляра <code>EntityManager</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>getConnection()</code> - возвращает  <code>java.sql.Connection</code>, через который выполняет запросы данный экземпляр <code>EntityManager</code>, и, соответственно, текущая транзакция. Закрывать такое соединение не нужно, оно будет закрыто при завершении транзакции.</para>
+            </listitem>
+            <listitem>
+              <para><code>getDelegate()</code> - возвращает <code>javax.persistence.EntityManager</code>, предоставляемый реализацией ORM. </para>
+            </listitem>
+          </itemizedlist></para>
       </section>
       <section id="entity_states">
         <title>Состояния сущности</title>
@@ -2906,63 +2921,133 @@ public String foo(String value) {
             <varlistentry>
               <term>New</term>
               <listitem>
-                <para>Только что созданный экземпляр, например: <code>Car car = new Car()</code>;
-может быть передан в <methodname>EntityManager.persist()</methodname> для сохранения в БД. При этом переходит в состояние <firstterm>Managed</firstterm></para>
+                <para>Только что созданный в памяти экземпляр, например: <code>Car car = new Car()</code></para>
+                <para>Новый экземпляр может быть передан в <methodname>EntityManager.persist()</methodname> для сохранения в БД, при этом он переходит в состояние Managed.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Managed</term>
               <listitem>
-                <para>Загруженный из БД или новый, переданный в <methodname>EntityManager.persist()</methodname>, экземпляр;
-принадлежит некоторому экземпляру <code>EntityManager</code>, другими словами, находится в его персистентном контексте;
-любые изменения  экземпляра в состоянии <firstterm>Managed</firstterm> будут сохранены в БД в случае коммита транзакции, к которой принадлежит данный <code>EntityManager</code></para>
+                <para>Загруженный из БД или новый, переданный в <methodname>EntityManager.persist()</methodname>, экземпляр. Принадлежит некоторому экземпляру <code>EntityManager</code>, другими словами, находится в его персистентном контексте.</para>
+                <para>Любые изменения  экземпляра в состоянии Managed будут сохранены в БД в случае коммита транзакции, к которой принадлежит данный <code>EntityManager</code></para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Detached</term>
               <listitem>
-                <para>Экземпляр, загруженный из БД и отсоединенный от своего персистентного контекста (вследствие закрытия транзакции или сериализации);
-изменения, вносимые в <firstterm>Detached</firstterm> экземпляр, запоминаются в самом этом экземпляре (с помощью полей, добавленных с помощью Enhancing);
-изменения в <firstterm>Detached</firstterm> экземпляре будут сохранены в БД, только если он будет снова переведен в состояние <firstterm>Managed</firstterm> путем передачи в метод <methodname>EntityManager.merge()</methodname>; <methodname>EntityManager.merge()</methodname> выполняет следующее – загружает из БД экземпляр с тем же идентификатором, переносит в него состояние переданного <firstterm>Detached</firstterm> экземпляра и возвращает загруженный <firstterm>Managed</firstterm> экземпляр. Далее надо работать именно с возвращенным <firstterm>Managed</firstterm> экземпляром!</para>
+                <para>Экземпляр, загруженный из БД и отсоединенный от своего персистентного контекста (вследствие закрытия транзакции или сериализации).</para>
+                <para>Изменения, вносимые в Detached экземпляр, запоминаются в самом этом экземпляре (в полях, добавленных с помощью bytecode enhancement).
+Эти изменения будут сохранены в БД, только если данный экземпляр будет снова переведен в состояние Managed путем передачи в метод <methodname>EntityManager.merge()</methodname>. </para>
+                <para>Метод <methodname>merge()</methodname> выполняет следующее: загружает из БД экземпляр с тем же идентификатором, переносит в него состояние переданного Detached экземпляра и возвращает загруженный Managed экземпляр. Далее надо работать именно с возвращенным Managed экземпляром.</para>
               </listitem>
             </varlistentry>
           </variablelist></para>
       </section>
-      <section>
+      <section id="lazy_loading">
         <title>Загрузка по требованию</title>
-        <para><itemizedlist>
+        <para>Загрузка по требованию (lazy loading) позволяет загружать связанные сущности отложенно, т.е. только в момент первого обращения к их свойствам.</para>
+        <para>Загрузка по требованию  в сумме порождает больше запросов к БД, чем <glossterm linkend="eager_fetching">энергичная загрузка (eager fetching)</glossterm>, однако нагрузка при этом растянута во времени.<itemizedlist>
             <listitem>
-              <para>Позволяет загружать связанные сущности по требованию, т.е. только в момент первого обращения к их свойствам</para>
+              <para>Например, при извлечении списка N экземпляров сущности A, содержащих ссылку на экземпляр сущности B, в случае загрузки по требованию будет выполнено N+1 запросов к базе данных.</para>
             </listitem>
             <listitem>
-              <para>Работает только для экземпляра в состоянии <firstterm>Managed</firstterm>, то есть внутри транзакции, загрузившей данный экземпляр</para>
+              <para>Для минимизации времени отклика и снижения нагрузки необходимо стремиться к меньшему количеству обращений к БД. Для этого  в платформе  используется механизм <link linkend="views">представлений</link>, с помощью которого в вышеописанном случае ORM может сформировать один  запрос к БД с объединением таблиц.</para>
             </listitem>
             <listitem>
-              <para>Загрузка по требованию (lazy loading)  в сумме порождает больше запросов к БД, чем <glossterm linkend="eager_fetching">энергичная загрузка (Eager Fetching)</glossterm>, однако нагрузка при этом растянута во времени</para>
-              <itemizedlist>
-                <listitem>
-                  <para>Например, при извлечении списка N экземпляров сущности A, содержащих ссылку на экземпляр сущности B, в случае загрузки по требованию будет выполнено N+1 запросов к БД.</para>
-                </listitem>
-                <listitem>
-                  <para>Для минимизации времени отклика и снижения нагрузки необходимо стремиться к меньшему количеству обращений к БД. Для этого  в платформе  используется механизм <link linkend="views">представлений</link>, с помощью которого в вышеописанном случае ORM сформирует один  запрос к БД с объединением таблиц.</para>
-                </listitem>
-                <listitem>
-                  <para>Если A содержит коллекцию B, в случае энергичной загрузки  ORM сформирует SQL запрос, возвращающий произведение строк A и B. </para>
-                </listitem>
-                <listitem>
-                  <para>Иногда загрузка по требованию с точки зрения производительности предпочтительнее, чем энергичная загрузка. Например, когда работает асинхронный процесс, выполняющий некоторую бизнес-логику, общее время выполнения некритично и желательно распределить во времени  нагрузку на БД.</para>
-                </listitem>
-              </itemizedlist>
+              <para>Если A содержит коллекцию B, в случае энергичной загрузки  ORM сформирует SQL запрос, возвращающий произведение строк A и B. </para>
+            </listitem>
+            <listitem>
+              <para>Иногда загрузка по требованию с точки зрения производительности предпочтительнее, чем энергичная загрузка. Например, когда работает асинхронный процесс, выполняющий некоторую бизнес-логику, общее время выполнения некритично и желательно распределить во времени  нагрузку на БД.</para>
             </listitem>
           </itemizedlist></para>
+        <para>Загрузка по требованию работает только для экземпляра в состоянии <link linkend="entity_states">Managed</link>, то есть внутри транзакции, загрузившей данный экземпляр.</para>
       </section>
       <section>
-        <title>Макросы в JPQL</title>
-        <para>TODO</para>
-      </section>
-      <section>
-        <title>Запросы с distinct</title>
-        <para>TODO</para>
+        <title>Выполнение JPQL запросов</title>
+        <para>Для выполнения <link linkend="jpql">JPQL</link> запросов предназначен интерфейс <code>Query</code>, ссылку на который который можно получить у текущего экземпляра <code>EntityManager</code> вызовом метода <code>createQuery()</code>. Если запрос предполагается использовать для извлечения сущностей, рекомендуется вызывать <code>createQuery()</code> с передачей типа результата, что приведет к созданию <code>TypedQuery</code>. </para>
+        <para>Методы <code>Query</code> в основном соответствуют методам стандартного интерфейса <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Query.html">
+            <code>javax.persistence.Query</code>
+          </ulink>. Рассмотрим отличия.<itemizedlist>
+            <listitem>
+              <para><code>setParameter()</code> - устанавливает значение параметра запроса. При передаче в данный метод экземпляра сущности выполняет неявное преобразование экземпляра в его идентификатор. Например:<programlisting>Customer customer = ...;
+TypedQuery&lt;Order&gt; query = entityManager.createQuery(
+    &quot;select o from sales$Order o where o.customer.id = ?1&quot;, Order.class);
+query.setParameter(1, customer);</programlisting></para>
+              <para>Обратите внимание на сравнение в запросе по идентификатору, но передачу в качестве параметра самого экземпляра сущности. </para>
+              <para>Вариант метода с передачей <code>implicitConversions = false</code> не выполняет такого преобразования.</para>
+            </listitem>
+            <listitem>
+              <para><code>setView()</code>, <code>addView()</code> - аналогичны одноименным методам интерфейса <code>EntityManager</code> - устанавливают <link linkend="views">представление</link>, используемое при загрузке данных текущим запросом, не влияя на представление всего <code>EntityManager</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>getDelegate()</code> - возвращает экземпляр <code>javax.persistence.Query</code>, предоставляемый реализацией ORM.</para>
+            </listitem>
+          </itemizedlist></para>
+        <section>
+          <title>Макросы в JPQL</title>
+          <para>Текст JPQL запроса может включать макросы, которые обрабатываются перед выполнением и превращаются в исполняемый JPQL, дополнительно модифицируя набор параметров.</para>
+          <para>Макросы, определенные в платформе, решают следующие задачи:<itemizedlist>
+              <listitem>
+                <para>Позволяют обойти принципиальную невозможность средствами JPQL выразить условие зависимости значения поля от текущего момента времени (не работает арифметика типа current_date-1)</para>
+              </listitem>
+              <listitem>
+                <para>Позволяют сравнивать с датой поля типа Timestamp (содержащие дату+время)</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Рассмотрим их подробно:<variablelist>
+              <varlistentry>
+                <term>@between</term>
+                <listitem>
+                  <para>Имеет вид <literal>@between(field_name, moment1, moment2, time_unit)</literal>, где <itemizedlist>
+                      <listitem>
+                        <para><literal>field_name</literal> - имя атрибута для сравнения </para>
+                      </listitem>
+                      <listitem>
+                        <para><literal>moment1</literal>, <literal>moment2</literal> - моменты времени, в которые должно попасть значение атрибута <literal>field_name</literal>. Каждый из моментов должен быть определен выражением с участием переменной <literal>now</literal>, к которой может быть прибавлено или отнято целое число </para>
+                      </listitem>
+                      <listitem>
+                        <para><literal>time_unit</literal> - определяет единицу измерения времени, которое прибавляется или вычитается из <literal>now</literal> в выражениях моментов, а также точность округления моментов. Может быть следующим: <literal>year</literal>, <literal>month</literal>, <literal>day</literal>, <literal>hour</literal>, <literal>minute</literal>, <literal>second</literal>. При включенном <link linkend="base_projects">базовом проекте</link> <structname>workflow</structname> можно также использовать единицы рабочего времени: <literal>workday</literal>, <literal>workhour</literal>, workminute. </para>
+                      </listitem>
+                    </itemizedlist></para>
+                  <para>Макрос преобразуется в следующее выражение JPQL: <literal>field_name &gt;= :moment1 and field_name &lt; :moment2</literal></para>
+                  <para>Пример 1. Покупатель создан сегодня:<programlisting>select c from sales$Customer where @between(c.createTs, now, now+1, day)</programlisting></para>
+                  <para>Пример 2. Покупатель создан в течение последних 10 минут:<programlisting>select c from sales$Customer where @between(c.createTs, now-10, now, minute)</programlisting></para>
+                  <para>Пример 3. Документы, датированные последними 5 рабочими днями (для проектов, включающих <structname>workflow</structname>): <programlisting>select d from sales$Doc where @between(d.createTs, now-5, now, workday)</programlisting></para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>@today</term>
+                <listitem>
+                  <para>Имеет вид <literal>@today(field_name)</literal> и обеспечивает формирование условия попадания значения атрибута в текущий день. По сути это частный случай макроса <literal>@between</literal>.</para>
+                  <para>Пример.
+
+Пользователь создан сегодня: <programlisting>select d from sales$Doc where @today(d.createTs)</programlisting></para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>@dateEquals</term>
+                <listitem>
+                  <para>Имеет вид <literal>@dateEquals(field_name, parameter)</literal> и позволяет сформировать условие попадания значения поля <literal>field_name</literal> типа <code>Timestamp</code> в дату, задаваемую параметром <literal>parameter</literal>.</para>
+                  <para>Пример:<programlisting>select d from sales$Doc where @dateEquals(d.createTs, :param)</programlisting></para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>@dateBefore</term>
+                <listitem>
+                  <para>Имеет вид <literal>@dateBefore(field_name, parameter</literal>) и позволяет сформировать условие, что дата значения поля <literal>field_name</literal> типа <code>Timestamp</code> меньше даты, задаваемой параметром <literal>parameter</literal>.</para>
+                  <para>Пример:<programlisting>select d from sales$Doc where @dateBefore(d.createTs, :param)</programlisting></para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>@dateAfter</term>
+                <listitem>
+                  <para>Имеет вид <literal>@dateAfter(field_name, parameter</literal>) и позволяет сформировать условие, что дата значения поля <literal>field_name</literal> типа <code>Timestamp</code>  больше или равна дате, задаваемой параметром <literal>parameter</literal>.</para>
+                  <para>Пример:<programlisting>select d from sales$Doc where @dateAfter(d.createTs, :param)</programlisting></para>
+                </listitem>
+              </varlistentry>
+            </variablelist></para>
+          <para>Список макросов может быть расширен в прикладном проекте. Для создания нового макроса необходимо определить бин, реализующий интерфейс <code>QueryMacroHandler</code>, и задать ему <code>@Scope(&quot;prototype&quot;)</code>. Механизм выполнения JPQL  запросов создает все доступные бины типа <code>QueryMacroHandler</code>, и по очереди передает им текст запроса с набором параметров. Очередность вызова обработчиков не определена.</para>
+        </section>
       </section>
     </section>
     <section id="transactions">
@@ -2979,6 +3064,34 @@ public String foo(String value) {
     <section id="dataService">
       <title>DataService и DataWorker</title>
       <para>TODO</para>
+      <section>
+        <title>Запросы с distinct</title>
+        <para>В JPQL запросах для экранов со списками сущностей, в которых включено постраничное отображение и возможна непредсказуемая модификация запроса <link linkend="gui_Filter">универсальным фильтром</link> или механизмом ограничений групп доступа, при отсутствии в запросе оператора <literal>distinct</literal> может возникать следующий эффект: <itemizedlist>
+            <listitem>
+              <para>при объединении с коллекцией на уровне извлечения из базы данных возникает набор с дубликатами строк</para>
+            </listitem>
+            <listitem>
+              <para>на клиентском уровне в источнике данных дубликаты исчезают, т.к. попадают в мэп (<code>java.util.Map</code>) </para>
+            </listitem>
+            <listitem>
+              <para>при постраничном отображении на одной странице оказывается меньшее количество строк чем запрошено, общее количество строк наоборот завышено.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Таким образом, рекомендуется в JPQL запросы браузеров включать предложение <literal> distinct</literal>, которое гарантирует отсутствие дубликатов записей при выборке из базы данных. Однако в некоторых серверах БД (в частности <application>PostgreSQL</application>) при большом количестве извлекаемых записей (более 10000) SQL запрос с <literal>distinct</literal> выполняется недопустимо долго.</para>
+        <para>Для решения этой проблемы в платформе реализована возможность корректной работы без <literal>distinct</literal> на уровне SQL. Данный механизм включается свойством приложения <property>
+            <link linkend="cuba.inMemoryDistinct">cuba.inMemoryDistinct</link>
+          </property>, при активации которого выполняется следующее: <itemizedlist>
+            <listitem>
+              <para>В JPQL запросе должен по прежнему присутствовать <literal>select distinct</literal></para>
+            </listitem>
+            <listitem>
+              <para>В <code>DataWorker</code> из JPQL запроса перед отправкой в ORM <literal>distinct</literal> вырезается  </para>
+            </listitem>
+            <listitem>
+              <para>После загрузки страницы данных на <structname>Middleware</structname> удаляются дубликаты и выполняются дополнительные запросы к БД для получения нужного количества строк, которые затем и возвращаются клиенту.</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
     </section>
     <section id="dbms_types">
       <title>Поддерживаемые СУБД</title>

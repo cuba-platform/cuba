@@ -58,12 +58,13 @@
   </glossdiv>
   <glossdiv>
     <title>З</title>
-    <glossentry id="lazy_loading">
+    <glossentry id="lazy_loading_glossterm">
       <glossterm>
         <emphasis role="bold">Загрузка по требованию</emphasis>
       </glossterm>
       <glossdef>
         <para>Режим загрузки данных, при котором связанные сущности загружаются не одновременно с основной сущностью, а отложенно, при обращении к соответствующему атрибуту. Загрузка по требованию возможна только в рамках транзакции, в которой была загружена  основная сущность.</para>
+          <para>См. <xref linkend="lazy_loading"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -292,7 +293,7 @@
       <glossterm>
         <emphasis role="bold">Lazy loading</emphasis>
       </glossterm>
-      <glosssee otherterm="lazy_loading"/>
+      <glosssee otherterm="lazy_loading_glossterm"/>
     </glossentry>
   </glossdiv>
   <glossdiv>
