@@ -294,7 +294,7 @@ public class JSONConvertor implements Convertor {
         MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
         List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
         for (MetaProperty property : properties) {
-            if (metadataTools.isTransient(entity, property.getName()))
+            if (metadataTools.isTransient(property))
                 continue;
 
             if (!attrViewPermitted(metaClass, property.getName()))
