@@ -948,7 +948,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             for (final MetaPropertyPath id : propertyIds) {
                 com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
-                if (generator != null && !(generator instanceof WebAbstractTable.ReadOnlyBooleanDatatypeGenerator)) {
+                if (generator != null && !(generator instanceof WebAbstractTable.SystemTableColumnGenerator)) {
                     columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
                 }
             }
@@ -1067,7 +1067,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    protected abstract class LinkGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+    private interface SystemTableColumnGenerator extends com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+    }
+
+    protected abstract class LinkGenerator implements SystemTableColumnGenerator {
         protected Table.Column column;
 
         public LinkGenerator(Table.Column column) {
@@ -1168,9 +1171,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    private class ReadOnlyBooleanDatatypeGenerator
-            implements com.vaadin.ui.Table.ColumnGenerator,
-            TableSupport.ColumnGenerator {
+    private class ReadOnlyBooleanDatatypeGenerator implements SystemTableColumnGenerator {
         @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
@@ -1196,7 +1197,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    private class CalculatableColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+    private class CalculatableColumnGenerator implements SystemTableColumnGenerator {
         @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
