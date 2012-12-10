@@ -3052,17 +3052,206 @@ query.setParameter(1, customer);</programlisting></para>
     </section>
     <section id="transactions">
       <title>Управление транзакциями</title>
-      <para>Транзакция Middleware напрямую отображается на транзакцию БД.</para>
-      <para>Управление транзакциями производится только  на уровне сервисов или ниже.
+      <section>
+        <title>Программное управление транзакциями</title>
+        <para>Программное управление транзакциями осуществляется с помощью интерфейса <code>com.haulmont.cuba.core.Transaction</code>, ссылку на который можно получить методами <code>createTransaction()</code> или <code>getTransaction()</code> интерфейса инфраструктуры <code>
+            <link linkend="persistence">Persistence</link>
+          </code>.</para>
+        <para>Метод <code>createTransaction()</code> создает новую транзакцию и возвращает интерфейс <code>Transaction</code>. Последующие вызовы методов <code>commit()</code>, <code>commitRetaining()</code>, <code>end()</code> этого интерфейса управляют созданной транзакцией. Если в момент создания существовала другая транзакция, то она будет приостановлена, и возобновлена после завершения созданной. </para>
+        <para>Метод <code>getTransaction()</code> вызывает либо создание новой, либо присоединение к текущей транзакции. Если в момент вызова существовала активная транзакция, то метод успешно завершается, и последующие вызовы <code>commit()</code>, <code>commitRetaining()</code>, <code>end()</code> не оказывают никакого влияния на существующую транзакцию. Однако если <code>end()</code> вызван без предварительного вызова <code>commit()</code>, то текущая транзакция помечается как <code>RollbackOnly</code>.</para>
+        <para>Пример ручного управления транзакцией:<programlisting>@Inject
+private Persistence persistence;
+...
+Transaction tx = persistence.createTransaction();
+try {
+    EntityManager em = persistence.getEntityManager();
+    Customer customer = new Customer();
+    customer.setName(&quot;John Smith&quot;);
+    em.persist(customer);
+
+    tx.commit();
+} finally {
+    tx.end();
+}</programlisting></para>
+        <para>Интерфейс Transaction имеет также метод execute(), принимающий на вход класс-действие, которое нужно выполнить в данной транзакции. Это позволяет организовать управление транзакциями в функциональном стиле, например:<programlisting>persistence.createTransaction().execute(new Transaction.Runnable() {
+    public void run(EntityManager em) {
+        // transactional code here
+    }
+});</programlisting></para>
+        <para>Если транзакционный блок должен вернуть результат, класс-действие должен реализовывать интерфейс <code>Transaction.Callable</code>. Если результат не требуется, как в приведенном примере, то класс-действие удобно наследовать от абстрактного класса <code>Transaction.Runnable</code>.</para>
+        <para>Следует иметь в виду, что метод <code>execute()</code> у некоторого экземпляра <code>Transaction</code> можно вызвать только один раз, так как после выполнения кода класса-действия транзакция завершается.</para>
+      </section>
+      <section>
+        <title>Декларативное управление транзакциями</title>
+        <para>Любой метод <link linkend="managed_beans">управляемого бина</link> <structname>Middleware</structname> можно пометить аннотацией <code>@org.springframework.transaction.annotation.Transactional</code>, что вызовет автоматическое создание транзакции при вызове этого метода. В таком методе не нужно вызывать <code>Persistence.createTransaction()</code>, а можно сразу получать <code>EntityManager</code> и работать с ним.</para>
+        <para>Для аннотации <code>@Transactional</code> можно указать параметры. Основным параметром является режим создания транзакции - <code>Propagation</code>. Значение <code>REQUIRED</code> соответствует <code>getTransaction()</code>, значение <code>REQUIRES_NEW</code> - <code>createTransaction()</code>. По умолчанию <code>REQUIRED</code>.
 </para>
-      <para>Любой клиент, вызывая методы сервиса, должен понимать, что каждый метод будет выполняться в отдельной транзакции.
-Используется только ручное (не декларативное) управление транзакциями.</para>
-      <para>Управление транзакциями является частью бизнес-логики.
-При использовании ORM изменения в БД производятся при коммите транзакции, который в случае декларативного управления происходит за рамками прикладного кода (в интерцепторах контейнера), что крайне неудобно при отладке приложения.</para>
-      <para>При использовании ORM доменные объекты ведут себя принципиально по-разному внутри и вне транзакции</para>
+        <para>Декларативное управление транзакциями позволяет уменьшить количество <ulink url="http://en.wikipedia.org/wiki/Boilerplate_code">boilerplate кода</ulink>, однако имеет следующий недостаток: коммит транзакции проиходит вне прикладного кода, что часто затрудняет отладку, т.к. скрывается момент отправки изменений в БД и перехода сущностей в состояние <link linkend="entity_states">Detached</link>. Кроме того, следует иметь в виду, что декларативная разметка сработает только в случае вызова метода контейнером, т.е. вызов транзакционного метода из другого метода того же самого объекта не приведет к старту транзакции.
+</para>
+        <para>В связи с этим рекомендуется применять декларативное управление транзакциями только для простых случаев типа метода <link linkend="services">сервиса</link>, читающего некоторый объект и возвращающего его на клиента. </para>
+      </section>
+      <section>
+        <title>Примеры взаимодействия транзакций</title>
+        <section>
+          <title>Откат вложенной транзакции</title>
+          <para>Если вложенная транзакция создана через <code>getTransaction()</code>, то ее откат приведет к невозможности коммита охватывающей транзакции. Например:<programlisting>void methodA() {
+    Transaction tx = persistence.createTransaction();
+    try {
+        // (1) вызываем метод, создающий вложенную транзакцию
+        methodB();   
+
+        // (4) в этот момент будет выброшено исключение, т.к. транзакция 
+        //     помечена как rollback only
+        tx.commit(); 
+    } finally {
+        tx.end();
+    }
+}
+
+void methodB() {
+    Transaction tx = persistence.getTransaction();
+    try {
+        // (2) допустим здесь возникло исключение
+        tx.commit();
+    } catch (Exception e) {
+        // (3) обрабатываем его и выходим
+        return;    
+    } finally {
+        tx.end();
+    }
+}</programlisting></para>
+          <para>Если же транзакция в <code>methodB()</code> будет создана через <code>createTransaction()</code>, то ее откат не окажет никакого влияния на коммит охватывающей транзакции в <code>methodA()</code>. </para>
+        </section>
+        <section>
+          <title>Чтение и изменение данных во вложенной транзакции</title>
+          <para>Рассмотрим сначала зависимую вложенную транзакцию, создаваемую через <code>getTransaction()</code>:<programlisting>void methodA() {
+    Transaction tx = persistence.createTransaction();
+    try {
+        EntityManager em = persistence.getEntityManager();
+        
+        // (1) загружаем сущность, в которой name == &quot;old name&quot;
+        Employee employee = em.find(Employee.class, id); 
+        assertEquals(&quot;old name&quot;, employee.getName());
+        
+        // (2) присваиваем новое значение полю 
+        employee.setName(&quot;name A&quot;);                      
+        
+        // (3) вызываем метод, создающий вложенную транзакцию
+        methodB();                                       
+        
+        // (8) здесь происходит коммит изменений в БД, и в ней 
+        //     окажется значение &quot;name B&quot;
+        tx.commit();                                     
+                                                         
+    } finally {
+        tx.end();
+    }
+}
+
+void methodB() {
+    Transaction tx = persistence.getTransaction();
+    try {
+        // (4) получаем тот же экземпляр EntityManager, что и methodA
+        EntityManager em = persistence.getEntityManager(); 
+
+        // (5) загружаем сущность с тем же идентификатором
+        Employee employee = em.find(Employee.class, id);   
+
+        // (6) значение поля новое, т.к. мы работаем с тем же
+        //     персистентным контекстом, и обращения к БД вообще 
+        //     не происходит
+        assertEquals(&quot;name A&quot;, employee.getName());        
+        employee.setName(&quot;name B&quot;);                        
+
+        // (7) в этот момент реально коммита не происходит                        
+        tx.commit();                                       
+    } finally {
+        tx.end();
+    }
+}</programlisting></para>
+          <para>Теперь рассмотрим тот же самый пример с независимой вложенной транзакцией, создаваемой через <code>createTransaction()</code>: <programlisting>void methodA() {
+    Transaction tx = persistence.createTransaction();
+    try {
+        EntityManager em = persistence.getEntityManager();
+
+        // (1) загружаем сущность, в которой name == &quot;old name&quot; 
+        Employee employee = em.find(Employee.class, id); 
+        assertEquals(&quot;old name&quot;, employee.getName());
+
+        // (2) присваиваем новое значение полю 
+        employee.setName(&quot;name A&quot;);                      
+
+        // (3) вызываем метод, создающий вложенную транзакцию
+        methodB();                                       
+
+        // (8) здесь возникнет исключение из-за оптимистичной блокировки
+        //     и коммит не пройдет вообще
+        tx.commit();                                     
+                                                         
+    } finally {
+        tx.end();
+    }
+}
+
+void methodB() {
+    Transaction tx = persistence.createTransaction();
+    try {
+        // (4) создается новый экземпляр EntityManager, т.к. это 
+        //     новая транзакция                                       
+        EntityManager em = persistence.getEntityManager(); 
+
+        // (5) загружаем сущность с тем же идентификатором
+        Employee employee = em.find(Employee.class, id);   
+
+        // (6) значение поля старое, т.к. произошла загрузка из БД
+        //     старого экземпляра сущности
+        assertEquals(&quot;old name&quot;, employee.getName());      
+                                                           
+        employee.setName(&quot;name B&quot;);                        
+
+        // (7) здесь происходит коммит изменений в БД, и в ней                         
+        //     окажется значение &quot;name B&quot;
+        tx.commit();                                       
+                                                           
+    } finally {
+        tx.end();
+    }
+}</programlisting></para>
+          <para>В последнем случае исключение в точке (8) возникнет только если сущность является оптимистично блокируемой, т.е. если она реализует интерфейс <code>Versioned</code>.</para>
+        </section>
+      </section>
+      <section id="transaction_timeout">
+        <title>Таймаут транзакции</title>
+        <para>Для создаваемой транзакции может быть указан таймаут в секундах, при превышении которого транзакция будет прервана и откачена. Таймаут транзакции  ограничивает максимальную длительность запросов к базе данных.</para>
+        <para>При программном управлении транзакциями таймаут включается путем передачи объекта <code>TransactionParams</code> в метод <code>Persistence.createTransaction()</code>. Например:<programlisting>Transaction tx = persistence.createTransaction(new TransactionParams().setTimeout(2));</programlisting></para>
+        <para>При декларативном управлении транзакциями используется параметр <code>timeout</code> аннотации <code> @Transactional</code>, например:<programlisting>@Transactional(timeout = 2)
+public void someServiceMethod() {
+...</programlisting></para>
+        <para>Таймаут по умолчанию может быть задан в свойстве приложения <property>
+            <link linkend="cuba.defaultQueryTimeoutSec">cuba.defaultQueryTimeoutSec</link>
+          </property>. </para>
+        <section>
+          <title>Особенности реализации для различных СУБД</title>
+          <para><application>PostgreSQL</application></para>
+          <para>К сожалению, JDBC драйвер <application>PostgreSQL</application> не поддерживает метод <code>setQueryTimeout()</code> интерфейса <code>java.sql.Statement</code>, поэтому в начале каждой транзакции, для которой определен таймаут (любым способом, включая ненулевое значение  свойства <property>
+              <link linkend="cuba.defaultQueryTimeoutSec">cuba.defaultQueryTimeoutSec</link>
+            </property>), выполняется дополнительный оператор в БД: <code>set local statement_timeout to {value}</code>. При этом в случае превышения таймаута запрос будет прерван самим сервером БД. </para>
+          <para>Для снижения нагрузки от этих дополнительных операторов рекомендуется поступать следующим образом: <itemizedlist>
+              <listitem>
+                <para>Таймаут по умолчанию устанавливать не на <structname>Middleware</structname> с помощью свойства <property>cuba.defaultQueryTimeoutSec</property>, в на самом сервере <application>PostgreSQL</application> в файле <filename>postgresql.conf</filename>, например <literal>statement_timeout = 3000</literal> (это в миллисекундах). </para>
+              </listitem>
+              <listitem>
+                <para>Для методов, которым требуется большее время таймаута (отчеты и пр.), явно указывать желаемый таймаут в параметрах транзакции. </para>
+              </listitem>
+            </itemizedlist></para>
+          <para><application>Microsoft SQL Server</application></para>
+          <para>Драйвер JTDS поддерживает метод <code>setQueryTimeout()</code> интерфейса <code>java.sql.Statement</code>, поэтому для <code>EntityManager</code> просто устанавливается стандартное свойство <literal>javax.persistence.query.timeout</literal>, которое соответствующим образом влияет на JDBC запросы. </para>
+        </section>
+      </section>
     </section>
     <section id="dataService">
       <title>DataService и DataWorker</title>
+      <para><link linkend="managed_beans">Управляемый бин</link> <code>DataWorker</code> является универсальным средством для загрузки графов сущностей из базы данных, и для сохранения изменений, произведенных в <link linkend="entity_states">Detached</link> экземплярах сущностей. <link linkend="services">Сервис</link> <code>DataService</code> является фасадом для вызова DataWorker с клиентского <link linkend="app_tiers">уровня</link> приложения.</para>
       <para>TODO</para>
       <section>
         <title>Запросы с distinct</title>

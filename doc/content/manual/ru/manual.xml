@@ -245,6 +245,15 @@
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.defaultQueryTimeoutSec">
+        <term>cuba.defaultQueryTimeoutSec</term>
+        <listitem>
+          <para>Задает <link linkend="transaction_timeout">таймаут транзакции</link> по умолчанию.</para>
+          <para>Значение по умолчанию: <literal>0</literal>, означает что таймаут отсутствует.</para>
+          <para>Интерфейс: <code>ServerConfig</code></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.groovyEvaluatorImport">
         <term>cuba.groovyEvaluatorImport</term>
         <listitem>
