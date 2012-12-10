@@ -2,18 +2,13 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 20.07.2010 15:40:53
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
@@ -34,6 +29,10 @@ import com.vaadin.ui.*;
 
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList {
 
     private CollectionDatasource datasource;
@@ -58,18 +57,18 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
     private TokenStyleGenerator tokenStyleGenerator;
 
-    private boolean lookup;
+    private boolean lookup = false;
 
-    private boolean editable;
+    private boolean editable = true;
 
-    private boolean simple;
+    private boolean simple = false;
 
     private boolean multiselect;
     private PickerField.LookupAction lookupAction;
 
     public WebTokenList() {
         addButton = new WebButton();
-        addButton.setCaption(MessageProvider.getMessage(TokenList.class, "actions.Add"));
+        addButton.setCaption(AppBeans.get(Messages.class).getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new WebLookupPickerField();
         component = new TokenListImpl();
@@ -184,7 +183,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
     @SuppressWarnings("unchecked")
     public <T> T getValue() {
         if (datasource != null) {
-            List<Object> items = new ArrayList<Object>();
+            List<Object> items = new ArrayList<>();
             for (final Object itemId : datasource.getItemIds()) {
                 items.add(datasource.getItem(itemId));
             }
@@ -408,8 +407,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
         private Component editor;
 
-        private Map<Instance, TokenListLabel> itemComponents = new HashMap<Instance, TokenListLabel>();
-        private Map<TokenListLabel, Instance> componentItems = new HashMap<TokenListLabel, Instance>();
+        private Map<Instance, TokenListLabel> itemComponents = new HashMap<>();
+        private Map<TokenListLabel, Instance> componentItems = new HashMap<>();
         private KeyMapper componentsMapper = new KeyMapper();
 
         public TokenListImpl() {
@@ -482,7 +481,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
                         WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(windowAlias);
 
-                        Map<String, Object> params = new HashMap<String, Object>();
+                        Map<String, Object> params = new HashMap<>();
                         params.put("windowOpener", WebTokenList.this.<IFrame>getFrame().getId());
                         if (isMultiSelect()) {
                             params.put("multiSelect", "true");
@@ -537,7 +536,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
             scrollContainer.removeAllComponents();
 
             if (datasource != null) {
-                List<Instance> usedItems = new ArrayList<Instance>();
+                List<Instance> usedItems = new ArrayList<>();
 
                 // New tokens
                 for (final Object itemId : datasource.getItemIds()) {
