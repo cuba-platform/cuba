@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * Interface to be implemented by middleware connection objects on web-client.
+ * Interface to be implemented by middleware connection objects on Web Portal.
  *
  * @author krivopustov
  * @version $Id$

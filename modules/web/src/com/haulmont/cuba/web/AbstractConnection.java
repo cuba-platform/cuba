@@ -6,10 +6,10 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.ClientUserSession;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
@@ -28,19 +28,21 @@ import java.util.Map;
 /**
  * Abstract class that encapsulates common connection behaviour for web-client.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractConnection implements Connection {
 
-    private static Log log = LogFactory.getLog(AbstractConnection.class);
+    protected Log log = LogFactory.getLog(getClass());
 
     private Map<ConnectionListener, Object> connListeners = new HashMap<ConnectionListener, Object>();
     private Map<UserSubstitutionListener, Object> usListeners = new HashMap<UserSubstitutionListener, Object>();
 
-    private boolean connected;
-    private UserSession session;
+    protected boolean connected;
+    protected UserSession session;
+
+    protected LoginService loginService = AppBeans.get(LoginService.NAME);
+    protected Messages messages = AppBeans.get(Messages.class);
 
     @Override
     public boolean isConnected() {
@@ -72,7 +74,7 @@ public abstract class AbstractConnection implements Connection {
         }
     }
 
-    void internalLogin() throws LoginException {
+    protected void internalLogin() throws LoginException {
         AppContext.setSecurityContext(new SecurityContext(session));
 
         App app = App.getInstance();
@@ -81,25 +83,30 @@ public abstract class AbstractConnection implements Connection {
             IpMatcher ipMatcher = new IpMatcher(session.getUser().getIpMask());
             if (!ipMatcher.match(app.getClientAddress())) {
                 log.info(String.format("IP address %s is not permitted for user %s", app.getClientAddress(), session.getUser().toString()));
-                throw new LoginException(MessageProvider.getMessage(getClass(), "login.invalidIP"));
+                throw new LoginException(messages.getMessage(getClass(), "login.invalidIP"));
             }
         }
 
         session.setAddress(app.getClientAddress());
-        WebBrowser browser = ((WebApplicationContext) app.getContext()).getBrowser();
-        session.setClientInfo(browser.getBrowserApplication());
+        String clientInfo = makeClientInfo();
+        session.setClientInfo(clientInfo);
 
         fireConnectionListeners();
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
-                    session.getUser().getLogin(), app.getClientAddress(), browser.getBrowserApplication()));
+            log.debug(String.format("Logged in: user=%s, ip=%s, clientInfo=%s",
+                    session.getUser().getLogin(), app.getClientAddress(), clientInfo));
         }
+    }
+
+    protected String makeClientInfo() {
+        WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
+        return browser.getBrowserApplication();
     }
 
     @Override
     public void substituteUser(User substitutedUser) {
-        session = new ClientUserSession(getLoginService().substituteUser(substitutedUser));
+        session = new ClientUserSession(loginService.substituteUser(substitutedUser));
         fireSubstitutionListeners();
     }
 
@@ -116,9 +123,8 @@ public abstract class AbstractConnection implements Connection {
         return null;
     }
 
-    void internalLogout() {
-        LoginService ls = getLoginService();
-        ls.logout();
+    protected void internalLogout() {
+        loginService.logout();
 
         AppContext.setSecurityContext(null);
 
@@ -146,20 +152,15 @@ public abstract class AbstractConnection implements Connection {
         usListeners.remove(listener);
     }
 
-    void fireConnectionListeners() throws LoginException {
+    protected void fireConnectionListeners() throws LoginException {
         for (ConnectionListener listener : connListeners.keySet()) {
             listener.connectionStateChanged(this);
         }
     }
 
-    void fireSubstitutionListeners() {
+    protected void fireSubstitutionListeners() {
         for (UserSubstitutionListener listener : usListeners.keySet()) {
             listener.userSubstituted(this);
         }
-    }
-
-    protected LoginService getLoginService() {
-        LoginService ls = ServiceLocator.lookup(LoginService.NAME);
-        return ls;
     }
 }

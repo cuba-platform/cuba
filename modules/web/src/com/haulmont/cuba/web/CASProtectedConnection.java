@@ -11,6 +11,9 @@ import java.util.Locale;
 
 /**
  * This class is used as a {@link Connection} implementation in case of CAS integration.
+ *
+ * @author krokhin
+ * @version $Id$
  */
 public class CASProtectedConnection extends AbstractConnection {
 
@@ -19,7 +22,7 @@ public class CASProtectedConnection extends AbstractConnection {
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        update(getLoginService().login(login, password, locale));
+        update(loginService.login(login, password, locale));
     }
 
     @Override

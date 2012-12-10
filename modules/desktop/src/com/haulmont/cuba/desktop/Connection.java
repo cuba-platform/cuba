@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.client.ClientUserSession;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -24,22 +25,21 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class Connection {
 
     private List<ConnectionListener> listeners = new ArrayList<ConnectionListener>();
 
-    private boolean connected;
+    protected boolean connected;
 
-    private UserSession session;
+    protected UserSession session;
 
-    private Log log = LogFactory.getLog(Connection.class);
+    protected Log log = LogFactory.getLog(getClass());
 
     public void login(String login, String password, Locale locale) throws LoginException {
-        LoginService loginService = ServiceLocator.lookup(LoginService.NAME);
+        LoginService loginService = AppBeans.get(LoginService.NAME);
         UserSession userSession = loginService.login(login, password, locale);
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
@@ -50,13 +50,17 @@ public class Connection {
         fireConnectionListeners();
     }
 
-    private void updateSessionClientInfo() {
+    protected void updateSessionClientInfo() {
         try {
             InetAddress address = InetAddress.getLocalHost();
             session.setAddress(address.getHostName() + " (" + address.getHostAddress() + ")");
         } catch (UnknownHostException e) {
             log.warn("Unable to obtain local IP address", e);
         }
+        session.setClientInfo(makeClientInfo());
+    }
+
+    protected String makeClientInfo() {
         StringBuilder sb = new StringBuilder();
         sb.append("os{");
         sb.append("name=").append(System.getProperty("os.name"));
@@ -67,12 +71,12 @@ public class Connection {
         sb.append("vendor=").append(System.getProperty("java.vendor"));
         sb.append(", version=").append(System.getProperty("java.version"));
         sb.append("}");
-        session.setClientInfo(sb.toString());
+        return sb.toString();
     }
 
     public void logout() {
         try {
-            LoginService loginService = ServiceLocator.lookup(LoginService.NAME);
+            LoginService loginService = AppBeans.get(LoginService.NAME);
             loginService.logout();
             AppContext.setSecurityContext(null);
         } catch (Exception e) {
@@ -105,7 +109,7 @@ public class Connection {
         listeners.remove(listener);
     }
 
-    private void fireConnectionListeners() throws LoginException {
+    protected void fireConnectionListeners() throws LoginException {
         for (ConnectionListener listener : listeners) {
             listener.connectionStateChanged(this);
         }
