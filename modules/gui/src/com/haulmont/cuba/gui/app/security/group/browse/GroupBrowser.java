@@ -165,6 +165,14 @@ public class GroupBrowser extends AbstractWindow {
         if (!itemIds.isEmpty()) {
             groupsTree.setSelected(groupsDs.getItem(itemIds.iterator().next()));
         }
+
+        boolean hasPermissionsToCreateGroup =
+                userSession.isEntityOpPermitted(metadata.getSession().getClass(Group.class),
+                        EntityOp.CREATE);
+
+        if (groupCreateButton != null) {
+            groupCreateButton.setEnabled(hasPermissionsToCreateGroup);
+        }
     }
 
     public void copyGroup() {

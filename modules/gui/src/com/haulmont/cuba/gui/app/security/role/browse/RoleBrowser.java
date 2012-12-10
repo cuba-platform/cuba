@@ -8,22 +8,32 @@ package com.haulmont.cuba.gui.app.security.role.browse;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.global.UserSession;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.List;
 
 public class RoleBrowser extends AbstractLookup {
 
     private Table table;
+
+    @Inject
+    protected UserSession userSession;
+
+    @Inject
+    protected Metadata metadata;
 
     public void init(Map<String, Object> params) {
         table = getComponent("roles");
@@ -80,6 +90,14 @@ public class RoleBrowser extends AbstractLookup {
                 return getMessage("assignToUsers");
             }
         });
+
+        boolean hasPermissionsToCreateUserRole = userSession.isEntityOpPermitted(
+                metadata.getSession().getClass(UserRole.class), EntityOp.CREATE);
+
+        Action copy = table.getAction("assignToUsers");
+        if (copy != null) {
+            copy.setEnabled(hasPermissionsToCreateUserRole);
+        }
 
         table.refresh();
 

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.app.security.role.edit.BasicPermissionTreeStyleProvider;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -14,11 +15,13 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.security.SpecificPermissionTreeDatasource;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.PermissionVariant;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
@@ -47,6 +50,12 @@ public class SpecificPermissionsFrame extends AbstractFrame {
 
     @Inject
     private SpecificPermissionTreeDatasource specificPermissionsTreeDs;
+
+    @Inject
+    protected UserSession userSession;
+
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     private BoxLayout selectedPermissionPanel;
@@ -139,6 +148,16 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         specificPermissionsTreeDs.setPermissionDs(specificPermissionsDs);
         specificPermissionsTreeDs.refresh();
         specificPermissionsTree.expandAll();
+
+        boolean hasPermissionsToCreatePermission = userSession.isEntityOpPermitted(
+                metadata.getSession().getClass(Permission.class), EntityOp.CREATE);
+
+        setEditable(hasPermissionsToCreatePermission);
+    }
+
+    private void setEditable(boolean editable) {
+        allowCheckBox.setEditable(editable);
+        disallowCheckBox.setEditable(editable);
     }
 
     private void markItemPermission(PermissionVariant permissionVariant) {

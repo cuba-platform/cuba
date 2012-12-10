@@ -21,10 +21,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.security.entity.UserSubstitution;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -316,6 +313,12 @@ public class UserEditor extends AbstractEditor<User> {
                 ((Table) lookupComponent).setMultiSelect(true);
             }
         }
+
+        public boolean isEnabled() {
+            return super.isEnabled() &&
+                    userSession.isEntityOpPermitted(
+                            metadata.getSession().getClass(UserRole.class), EntityOp.CREATE);
+        }
     }
 
     private class EditRoleAction extends ItemTrackingAction {
@@ -375,6 +378,12 @@ public class UserEditor extends AbstractEditor<User> {
                     return true;
             }
             return false;
+        }
+
+        public boolean isEnabled() {
+            return super.isEnabled() &&
+                    userSession.isEntityOpPermitted(
+                            metadata.getSession().getClass(UserRole.class), EntityOp.DELETE);
         }
     }
 
