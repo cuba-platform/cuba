@@ -948,7 +948,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             for (final MetaPropertyPath id : propertyIds) {
                 com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
-                if (generator != null && !(generator instanceof ReadOnlyBooleanDatatypeGenerator)) {
+                if (generator != null && !(generator instanceof WebAbstractTable.ReadOnlyBooleanDatatypeGenerator)) {
                     columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
                 }
             }
