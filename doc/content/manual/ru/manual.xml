@@ -232,6 +232,15 @@
   <appendix id="app_properties_reference">
     <title>Описание свойств приложения</title>
     <variablelist>
+      <varlistentry id="cuba.allowQueryFromSelected">
+        <term>cuba.allowQueryFromSelected</term>
+        <listitem>
+          <para>Разрешает <link linkend="gui_Filter">универсальному фильтру</link> использовать режим последовательного наложения фильтров. См. также <xref linkend="query_from_selected"/></para>
+          <para>Значение по умолчанию: <code>true</code></para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.availableLocales">
         <term>cuba.availableLocales</term>
         <listitem>

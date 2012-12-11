@@ -3251,8 +3251,23 @@ public void someServiceMethod() {
     </section>
     <section id="dataService">
       <title>DataService и DataWorker</title>
-      <para><link linkend="managed_beans">Управляемый бин</link> <code>DataWorker</code> является универсальным средством для загрузки графов сущностей из базы данных, и для сохранения изменений, произведенных в <link linkend="entity_states">Detached</link> экземплярах сущностей. <link linkend="services">Сервис</link> <code>DataService</code> является фасадом для вызова DataWorker с клиентского <link linkend="app_tiers">уровня</link> приложения.</para>
-      <para>TODO</para>
+      <para><link linkend="managed_beans">Управляемый бин</link> <code>DataWorker</code> является универсальным средством для загрузки графов сущностей из базы данных, и для сохранения изменений, произведенных в <link linkend="entity_states">Detached</link> экземплярах сущностей. <link linkend="services">Сервис</link> <code>DataService</code> является фасадом для вызова <code>DataWorker</code> с клиентского <link linkend="app_tiers">уровня</link> приложения.</para>
+      <para>Выделение бизнес-логики загрузки и сохранения в <code>DataWorker</code> дает возможность при необходимости создать свой сервис, делегирующий основную работу <code>DataWorker</code> и выполняющий дополнительные преобразования, например перед возвратом данных на клиентский уровень.</para>
+      <para><code>DataWorker</code> всегда стартует новую транзакцию и по завершению работы выполняет коммит, таким образом возвращая сущности в состоянии <link linkend="entity_states">Detached</link>.</para>
+      <para>Методы <code>DataWorker</code>:<itemizedlist>
+          <listitem>
+            <para><code>load()</code>, <code>loadList()</code> - загружает граф сущностей в сответствии с параметрами переданного объекта <code>LoadContext</code>. </para>
+            <para>Данные методы проверяют наличие у пользователя права <code>EntityOp.READ</code> на загружаемую сущность. Кроме того, при извлечении сущностей из БД накладываются ограничения групп доступа (см. руководство <productname>Платформа CUBA. Подсистема безопасности</productname>). Для отмены действия ограничений в текущем запросе можно передать в <code>LoadContext</code> атрибут <code>useSecurityConstraints = false</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>commit()</code> - сохраняет в базе данных набор сущностей, переданный в объекте <code>CommitContext</code>. Возвращает набор экземпляров сущностей, возвращенных из метода <code>EntityManager.merge()</code>, то есть по сути свежие экземпляры, только что обновленные в БД. Дальнейшая работа должна производиться именно с этими возвращенными экземплярами, чтобы предотвратить потерю данных или исключения оптимистичной блокировки.</para>
+            <para>Данный метод  проверяет наличие у пользователя права <code>EntityOp.UPDATE</code> на изменяемые сущности, и <code>EntityOp.DELETE</code> на  удаляемые. </para>
+          </listitem>
+          <listitem>
+            <para><code>commitNotDetached()</code> - аналогичен методу <code>commit()</code>, но предназначен для сохранения в БД экземпляров, у которых отсутствует информация о <link linkend="entity_states">Detached</link> состоянии. Такие экземпляры сущностей могут быть переданы с клиентов, которые работают не напрямую с объектами, загруженными <structname>Middleware</structname>, а с дополнительными Data Transfer Objects, либо вообще не с Java объектами, а с их XML или JSON представлением (как например клиенты <link linkend="rest_api">REST API</link>)</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>В процессе загрузки данных <code>DataWorker</code> может реализовывать дополнительную функциональность, описанную ниже.</para>
       <section>
         <title>Запросы с distinct</title>
         <para>В JPQL запросах для экранов со списками сущностей, в которых включено постраничное отображение и возможна непредсказуемая модификация запроса <link linkend="gui_Filter">универсальным фильтром</link> или механизмом ограничений групп доступа, при отсутствии в запросе оператора <literal>distinct</literal> может возникать следующий эффект: <itemizedlist>
@@ -3280,6 +3295,26 @@ public void someServiceMethod() {
               <para>После загрузки страницы данных на <structname>Middleware</structname> удаляются дубликаты и выполняются дополнительные запросы к БД для получения нужного количества строк, которые затем и возвращаются клиенту.</para>
             </listitem>
           </itemizedlist></para>
+      </section>
+      <section id="query_from_selected">
+        <title>Последовательная выборка</title>
+        <para><code>DataWorker</code> может выполнять последовательную выборку данных из результатов предыдущего запроса. Эта возможность используется в <link linkend="gui_Filter">универсальном фильтре</link> при последовательном наложении фильтров. </para>
+        <para>Данный механизм работает следующим образом:<itemizedlist>
+            <listitem>
+              <para>При получении <code>LoadContext</code> с установленными атрибутами <code>prevQueries</code> и <code>queryKey</code> <code>DataWorker</code> выполняет выборку по предыдущему запросу и сохраняет идентификаторы полученных сущностей в таблице <database>SYS_QUERY_RESULT</database> (соответствующей сущности <literal>sys$QueryResult</literal>), разделяя наборы записей по идентификаторам пользовательских сессий и ключу сеанса выборки <code>queryKey</code>. </para>
+            </listitem>
+            <listitem>
+              <para>Текущий запрос модифицируется для объединения с результатами предыдущего, так что в итоге возвращает данные, соответствующие условиям обоих запросов, объединенных по &quot;И&quot;.</para>
+            </listitem>
+            <listitem>
+              <para>Далее процесс может повторяться, при  этом уменьшающийся набор предыдущих результатов удаляется из таблицы <database>SYS_QUERY_RESULT</database> и заполняется заново.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Таблицу <database>SYS_QUERY_RESULT</database> необходимо периодически чистить от ненужных результатов запросов, оставленных завершенными пользовательскими сессиями. Для этого предназначен метод <code>deleteForInactiveSessions</code> бина <code>QueryResultsManagerAPI</code>. В прикладном проекте с включенным параметром <property>
+            <link linkend="cuba.allowQueryFromSelected">cuba.allowQueryFromSelected</link>
+          </property> необходимо вызывать этот метод либо из <link linkend="scheduled_tasks">назначенных заданий</link>, либо из стандартного планировщика <application>Spring</application>, например:<programlisting>&lt;task:scheduled-tasks scheduler=&quot;scheduler&quot;&gt;
+    &lt;task:scheduled ref=&quot;cuba_QueryResultsManager&quot; method=&quot;deleteForInactiveSessions&quot; fixed-rate=&quot;600000&quot;/&gt;
+&lt;/task:scheduled-tasks&gt;</programlisting></para>
       </section>
     </section>
     <section id="dbms_types">
@@ -6613,7 +6648,7 @@ Instance − ваш SQL Server.</para>
           </informaltable>
         </section>
         <section id="gui_Filter">
-          <title>Generic Filter</title>
+          <title>Filter</title>
           <para>Универсальный фильтр (<code>Filter</code>) − компонент для организации поиска данных, предназначен для отбора информации, отображаемой в таблице экземпляров <glossterm linkend="entity">сущностей</glossterm>.</para>
           <para>Типичный фильтр имеет следующий вид:</para>
           <figure>
@@ -6871,7 +6906,9 @@ Instance − ваш SQL Server.</para>
             </listitem>
           </itemizedlist>
           <para id="sequential_filter_para"><emphasis role="bold">Последовательное наложение фильтров</emphasis></para>
-          <para>При включенном <glossterm linkend="app_properties_glossentry">параметре</glossterm> <property>cuba.allowQueryFromSelected</property> в пользовательском интерфейсе компонента можно закреплять последний примененный фильтр и текущие результаты фильтрации. После этого можно выбрать другой фильтр или параметры и применить их на уже выбранных записях.</para>
+          <para>При включенном свойстве приложения <property>
+              <link linkend="cuba.allowQueryFromSelected">cuba.allowQueryFromSelected</link>
+            </property> в пользовательском интерфейсе компонента можно закреплять последний примененный фильтр и текущие результаты фильтрации. После этого можно выбрать другой фильтр или параметры и применить их на уже выбранных записях.</para>
           <para>Данный подход позволяет решить две проблемы:</para>
           <itemizedlist>
             <listitem>
@@ -6898,17 +6935,12 @@ Instance − ваш SQL Server.</para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Механизм последовательного наложения фильтров работает следующим образом:</para>
-          <itemizedlist>
-            <listitem>
-              <para>При наличии закрепленных фильтров результаты предыдущего запроса (точнее только <link linkend="attr_id">идентификаторы</link> отобранных <glossterm linkend="entity">сущностей</glossterm>) помещаются в таблицу <database>SYS_QUERY_RESULT</database>. Данная таблица содержит колонки, отделяющие результаты запросов для различных пользователей по идентификатору сессии и ключу серии запросов.</para>
-            </listitem>
-            <listitem>
-              <para>К запросу текущего применяемого фильтра добавляется объединение с таблицей <database>SYS_QUERY_RESULT</database>, что ограничивает результаты текущего фильтра предыдущими отобранными записями.</para>
-            </listitem>
-          </itemizedlist>
-          <para>Таблицу <database>SYS_QUERY_RESULT</database> необходимо периодически чистить от ненужных результатов запросов, оставленных завершенными пользовательскими сессиями. Для этого предназначен метод <code>deleteForInactiveSessions</code> бина <code>QueryResultsManagerAPI</code>. В прикладном проекте с включенным параметром <property>cuba.allowQueryFromSelected</property> необходимо вызывать этот метод либо из <link linkend="scheduled_tasks">назначенных заданий</link>, либо из стандартного <link linkend="scheduled_tasks">планировщика</link> <application>Spring</application>, например:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_scheduler.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Механизм последовательного наложения фильтров основан на возможности <code>
+              <link linkend="dataService">DataWorker</link>
+            </code> выполнять <link linkend="query_from_selected">последовательные запросы</link>.</para>
+          <warning>
+            <para>На момент написания данного руководства механизм последовательного наложения фильтров реализован только для блока <structname>Web Client</structname>.</para>
+          </warning>
           <para>Атрибуты <sgmltag>filter</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
