@@ -68,6 +68,7 @@ import java.util.regex.Pattern;
 public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
+    protected Messages messages;
     protected PersistenceManagerService persistenceManager;
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
@@ -112,7 +113,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
     public DesktopFilter() {
-        persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
+        persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
+        messages = AppBeans.get(Messages.NAME);
         LC topLc = new LC();
         topLc.hideMode(3);
         topLc.insetsAll("0");
@@ -124,7 +126,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl = new JPanel(topLayout);
         //todo foldersPane
 
-        defaultFilterCaption = MessageProvider.getMessage(MESSAGES_PACK, "defaultFilter");
+        defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
 
         InputMap inputMap = impl.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = impl.getActionMap();
@@ -144,9 +146,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 return getName();
             }
         };
-        noFilter.setName(MessageProvider.getMessage(mainMessagesPack, "filter.noFilter"));
+        noFilter.setName(messages.getMainMessage("filter.noFilter"));
 
-        noFilterWrapper = new ItemWrapper<FilterEntity>(noFilter, noFilter.toString());
+        noFilterWrapper = new ItemWrapper(noFilter, noFilter.toString());
 
         select = new DesktopLookupField() {
             @Override
@@ -159,7 +161,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         select.<JComponent>getComponent().setMinimumSize(new Dimension(300, DesktopComponentsHelper.FIELD_HEIGHT));
         select.addListener(new SelectListener());
         impl.add(select.<java.awt.Component>getComponent());
-        applyBtn = new JButton(MessageProvider.getMessage(mainMessagesPack, "actions.Apply"));
+        applyBtn = new JButton(messages.getMainMessage("actions.Apply"));
         applyBtn.setIcon(App.getInstance().getResources().getIcon("icons/search.png"));
         DesktopComponentsHelper.adjustSize(applyBtn);
         applyBtn.addActionListener(new ActionListener() {
@@ -174,7 +176,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         actionsButton.setVisible(true);
         actionsButton.setPopupVisible(true);
 
-        actionsButton.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
+        actionsButton.setCaption(messages.getMessage(MESSAGES_PACK, "actionsCaption"));
         impl.add(actionsButton.<java.awt.Component>getComponent());
 
         initMaxResultsPanel();
@@ -440,7 +442,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
         if (hasGroups && conditions.getRootNodes().size() > 1) {
             JPanel groupBox = createParamsGroupBox(
-                    MessageProvider.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
+                    messages.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
             paramsPanel.add(groupBox);
             recursivelyCreateParamsPanel(focusOnConditions, conditions.getRootNodes(), groupBox, 0);
         } else {
@@ -570,7 +572,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         MigLayout layout = new MigLayout();
         maxResultsPanel = new JPanel(layout);
 
-        maxResultsCb = new JCheckBox(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label1"));
+        maxResultsCb = new JCheckBox(messages.getMainMessage("filter.maxResults.label1"));
         maxResultsCb.setSelected(true);
         maxResultsCb.addActionListener(new ActionListener() {
             @Override
@@ -584,7 +586,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         maxResultsField.setPreferredSize(new Dimension(42, DesktopComponentsHelper.FIELD_HEIGHT));
         maxResultsPanel.add(maxResultsField);
 
-        JLabel maxResultsLabel2 = new JLabel(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label2"));
+        JLabel maxResultsLabel2 = new JLabel(messages.getMainMessage("filter.maxResults.label2"));
         maxResultsPanel.add(maxResultsLabel2);
     }
 
@@ -594,21 +596,21 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             if (filterEntity.getCode() == null)
                 name = InstanceUtils.getInstanceName(filterEntity);
             else {
-                name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
+                name = messages.getMainMessage(filterEntity.getCode());
             }
         else
             name = "";
         AbstractSearchFolder folder = filterEntity.getFolder();
         if (folder != null) {
             if (!StringUtils.isBlank(folder.getTabName()))
-                name = MessageProvider.getMessage(mainMessagesPack, folder.getTabName());
+                name = messages.getMainMessage(folder.getTabName());
             else if (!StringUtils.isBlank(folder.getName())) {
-                name = MessageProvider.getMessage(mainMessagesPack, folder.getName());
+                name = messages.getMainMessage(folder.getName());
             }
             if (BooleanUtils.isTrue(filterEntity.getIsSet()))
-                name = MessageProvider.getMessage(MESSAGES_PACK, "setPrefix") + " " + name;
+                name = messages.getMessage(MESSAGES_PACK, "setPrefix") + " " + name;
             else
-                name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
+                name = messages.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
         }
         return name;
     }
@@ -617,13 +619,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
-
-                WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
-
                 boolean haveRequiredConditions = haveFilledRequiredConditions();
                 if (!haveRequiredConditions) {
                     if (!isNewWindow) {
-                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyRequiredConditions"),
+                        WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
+                        wm.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
                                 IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
@@ -632,7 +632,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 boolean haveCorrectCondition = hasCorrectCondition();
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
-                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"),
+                        WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(getComposition()).getWindowManager();
+                        wm.showNotification(messages.getMainMessage("filter.emptyConditions"),
                                 IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
@@ -707,14 +708,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         filterEntity = new FilterEntity();
 
         filterEntity.setComponentId(getComponentPath());
-        filterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
+        filterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
         filterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
     }
 
     private void copyFilterEntity() {
         FilterEntity newFilterEntity = new FilterEntity();
         newFilterEntity.setComponentId(filterEntity.getComponentId());
-        newFilterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
+        newFilterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
         newFilterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
         //newFilterEntity.setCode(filterEntity.getCode());
         newFilterEntity.setXml(filterEntity.getXml());
@@ -794,7 +795,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (filter.getCode() == null)
             return filter.getName();
         else {
-            return MessageProvider.getMessage(mainMessagesPack, filter.getCode());
+            return messages.getMainMessage(filter.getCode());
         }
     }
 
@@ -930,7 +931,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     names.add(filter.getName());
                 else {
                     for (Map.Entry<String, Locale> locale : locales.entrySet()) {
-                        names.add(MessageProvider.getMessage(mainMessagesPack, filter.getCode(), locale.getValue()));
+                        names.add(messages.getMessage(mainMessagesPack, filter.getCode(), locale.getValue()));
                     }
                 }
             }
@@ -1135,8 +1136,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private void delete() {
         getFrame().showOptionDialog(
-                MessageProvider.getMessage(MESSAGES_PACK, "deleteDlg.title"),
-                MessageProvider.getMessage(MESSAGES_PACK, "deleteDlg.msg"),
+                messages.getMessage(MESSAGES_PACK, "deleteDlg.title"),
+                messages.getMessage(MESSAGES_PACK, "deleteDlg.msg"),
                 IFrame.MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(DialogAction.Type.YES) {
@@ -1238,7 +1239,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 String descr;
                 if (filterEntity != null)
                     if (filterEntity.getCode() != null) {
-                        descr = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
+                        descr = messages.getMainMessage(filterEntity.getCode());
                     } else
                         descr = filterEntity.getName();
                 else
@@ -1267,7 +1268,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1285,7 +1286,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1304,7 +1305,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1321,7 +1322,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1337,7 +1338,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
