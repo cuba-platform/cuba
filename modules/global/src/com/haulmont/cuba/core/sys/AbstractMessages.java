@@ -88,9 +88,10 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public MessageTools getTools() {
-        return messageTools;
+    public <T extends MessageTools> T getTools() {
+        return (T)messageTools;
     }
 
     @Override
@@ -161,6 +162,11 @@ public abstract class AbstractMessages implements Messages {
     @Override
     public String getMainMessage(String key) {
         return getMessage(mainMessagePack, key);
+    }
+
+    @Override
+    public String getMainMessage(String key, Locale locale) {
+        return getMessage(mainMessagePack, key, locale);
     }
 
     @Override

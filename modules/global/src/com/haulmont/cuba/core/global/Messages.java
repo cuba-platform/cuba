@@ -110,6 +110,14 @@ public interface Messages {
     String getMainMessage(String key);
 
     /**
+     * Returns localized message
+     * @param key       message key
+     * @param locale    message locale
+     * @return          localized message or the key if the message not found
+     */
+    String getMainMessage(String key, Locale locale);
+
+    /**
      * Get localized message and use it as a format string for parameters provided.<br/>
      * Locale is determined by the current user session.
      * @param pack      package name to start searching the message. If the key is not found in this package,

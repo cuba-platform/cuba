@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 14.10.2009 14:22:13
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -19,6 +14,10 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FilterLoader extends ComponentLoader {
 
     public FilterLoader(Context context) {
@@ -50,11 +49,8 @@ public class FilterLoader extends ComponentLoader {
         if (required != null)
             filter.setRequired(required);
 
-        String editableAttr = element.attributeValue("editable");
-        Boolean editable = BooleanUtils.toBooleanObject(editableAttr);
-
-        if (editable != null)
-            filter.setEditable(editable);
+        String editable = element.attributeValue("editable");
+        filter.setEditable(editable == null || Boolean.valueOf(editable));
 
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {

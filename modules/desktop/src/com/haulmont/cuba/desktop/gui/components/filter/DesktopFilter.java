@@ -60,19 +60,20 @@ import java.util.regex.Pattern;
 
 /**
  * Generic filter implementation for the desktop-client.
- * <p/>
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     protected Messages messages;
+    protected UserSessionSource userSessionSource;
+
     protected PersistenceManagerService persistenceManager;
+
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
-    private String mainMessagesPack = AppConfig.getMessagesPack();
 
     private FilterEntity noFilter;
     private ItemWrapper<FilterEntity> noFilterWrapper;
@@ -103,8 +104,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private DesktopPopupButton actionsButton;
 
-    private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
-    private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+    private GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+    private ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
     private String defaultFilterCaption;
 
     private Component applyTo;
@@ -114,7 +115,10 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     public DesktopFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
-        messages = AppBeans.get(Messages.NAME);
+
+        messages = AppBeans.get(Messages.class);
+        userSessionSource = AppBeans.get(UserSessionSource.class);
+
         LC topLc = new LC();
         topLc.hideMode(3);
         topLc.insetsAll("0");
@@ -148,7 +152,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         };
         noFilter.setName(messages.getMainMessage("filter.noFilter"));
 
-        noFilterWrapper = new ItemWrapper(noFilter, noFilter.toString());
+        noFilterWrapper = new ItemWrapper<>(noFilter, noFilter.toString());
 
         select = new DesktopLookupField() {
             @Override
@@ -173,7 +177,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl.add(applyBtn);
 
         actionsButton = new DesktopPopupButton();
-        actionsButton.setVisible(true);
+        actionsButton.setVisible(isEditFiltersPermitted());
         actionsButton.setPopupVisible(true);
 
         actionsButton.setCaption(messages.getMessage(MESSAGES_PACK, "actionsCaption"));
@@ -325,23 +329,23 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
 
-        actionsButton.setVisible(editable);
+        actionsButton.setVisible(editable && isEditFiltersPermitted());
         actionsButton.setEnabled(actionsButton.getActions().size() > 0);
     }
 
     private boolean checkGlobalAppFolderPermission() {
-        return UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
+        return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
     }
 
     private boolean checkGlobalFilterPermission() {
         if (filterEntity == null || filterEntity.getUser() != null)
             return true;
         else
-            return UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
+            return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
     }
 
     private void fillActions() {
-        for (Action action : new ArrayList<Action>(actionsButton.getActions())) {
+        for (Action action : new ArrayList<>(actionsButton.getActions())) {
             actionsButton.removeAction(action);
         }
 
@@ -372,12 +376,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 actionsButton.addAction(new DeleteAction());
         } else {
             if (filterEntity.getFolder() instanceof SearchFolder) {
-                if ((UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())) &&
+                if ((userSessionSource.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())) &&
                         (BooleanUtils.isNotTrue(filterEntity.getIsSet())))
                     actionsButton.addAction(new EditAction());
             }
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null &&
-                    UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
+                    userSessionSource.getUserSession().getUser().equals(filterEntity.getUser()))
                 actionsButton.addAction(new DeleteAction());
         }
 
@@ -454,7 +458,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private void recursivelyCreateParamsPanel(
             boolean focusOnConditions, List<Node<AbstractCondition>> nodes, JComponent parentComponent, int level) {
-        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<Node<AbstractCondition>>();
+        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<>();
         for (Node<AbstractCondition> node : nodes) {
             AbstractCondition condition = node.getData();
             if (!condition.isHidden())
@@ -530,8 +534,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (BooleanUtils.isTrue(filterEntity.getIsDefault()) && filterEntity.getFolder() == null) {
             caption += " " + defaultFilterCaption;
         }
-        list.add(new ItemWrapper<FilterEntity>(filterEntity, caption));
-        final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
+        list.add(new ItemWrapper<>(filterEntity, caption));
+        final Map<FilterEntity, String> captions = new HashMap<>();
         for (ItemWrapper<FilterEntity> filterWrapper : list) {
             String filterCaption;
             if (filterWrapper.getItem() == filterEntity) {
@@ -709,14 +713,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         filterEntity.setComponentId(getComponentPath());
         filterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
-        filterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+        filterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
     }
 
     private void copyFilterEntity() {
         FilterEntity newFilterEntity = new FilterEntity();
         newFilterEntity.setComponentId(filterEntity.getComponentId());
         newFilterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
-        newFilterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+        newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
         //newFilterEntity.setCode(filterEntity.getCode());
         newFilterEntity.setXml(filterEntity.getXml());
         filterEntity = newFilterEntity;
@@ -780,8 +784,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             defaultFilterEmpty = true;
             updateControls();
         }
-
-        setEditable(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.edit"));
     }
 
     public void editorCancelled() {
@@ -800,13 +802,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void loadFilterEntities() {
-        DataService ds = ServiceLocator.getDataService();
+        DataService ds = AppBeans.get(DataService.class);
         LoadContext ctx = new LoadContext(FilterEntity.class);
         ctx.setView("app");
 
-        User user = UserSessionProvider.getUserSession().getSubstitutedUser();
+        User user = userSessionSource.getUserSession().getSubstitutedUser();
         if (user == null)
-            user = UserSessionProvider.getUserSession().getUser();
+            user = userSessionSource.getUserSession().getUser();
 
         ctx.setQueryString("select f from sec$Filter f " +
                 "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
@@ -814,7 +816,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 .addParameter("userId", user.getId());
 
         List<FilterEntity> filters = new ArrayList(ds.loadList(ctx));
-        final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
+        final Map<FilterEntity, String> captions = new HashMap<>();
         for (FilterEntity filter : filters) {
             String filterCaption = getFilterCaption(filter);
             captions.put(filter, filterCaption);
@@ -829,9 +831,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     }
                 }
         );
-        List<ItemWrapper<FilterEntity>> wrappedList = new LinkedList<ItemWrapper<FilterEntity>>();
+        List<ItemWrapper<FilterEntity>> wrappedList = new LinkedList<>();
         for (FilterEntity filter : filters) {
-            wrappedList.add(new ItemWrapper<FilterEntity>(filter, getFilterCaption(filter)));
+            wrappedList.add(new ItemWrapper<>(filter, getFilterCaption(filter)));
         }
         select.setOptionsList(wrappedList);
         if (!required) {
@@ -891,7 +893,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         Boolean isDefault = filterEntity.getIsDefault();
         Boolean applyDefault = filterEntity.getApplyDefault();
         if (filterEntity.getFolder() == null) {
-            DataService ds = ServiceLocator.getDataService();
+            DataService ds = AppBeans.get(DataService.class);
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
             Set<Entity> result = ds.commit(ctx);
             for (Entity entity : result) {
@@ -915,14 +917,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void deleteFilterEntity() {
-        DataService ds = ServiceLocator.getDataService();
+        DataService ds = AppBeans.get(DataService.class);
         CommitContext ctx = new CommitContext();
         ctx.setRemoveInstances(Collections.singletonList(filterEntity));
         ds.commit(ctx);
     }
 
     private void createEditLayout() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
         for (ItemWrapper<FilterEntity> filterWrapper : (List<ItemWrapper<FilterEntity>>) select.getOptionsList()) {
             FilterEntity filter = filterWrapper.getItem();
@@ -931,7 +933,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     names.add(filter.getName());
                 else {
                     for (Map.Entry<String, Locale> locale : locales.entrySet()) {
-                        names.add(messages.getMessage(mainMessagesPack, filter.getCode(), locale.getValue()));
+                        names.add(messages.getMainMessage(filter.getCode(), locale.getValue()));
                     }
                 }
             }
@@ -959,7 +961,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
         maxResultsPanel.setVisible(useMaxResults
-                && UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
+                && userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
     }
 
     @Override
@@ -1187,7 +1189,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        actionsButton.setVisible(editable);
+        actionsButton.setVisible(editable && isEditFiltersPermitted());
+    }
+
+    private boolean isEditFiltersPermitted() {
+        return AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.edit");
     }
 
     @Override

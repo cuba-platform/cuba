@@ -63,14 +63,16 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 /**
  * Generic filter implementation for the web-client.
- * <p/>
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
-public class WebFilter
-        extends WebAbstractComponent<VerticalActionsLayout> implements Filter {
+public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> implements Filter {
+
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
+
+    protected Messages messages;
+    protected UserSessionSource userSessionSource;
 
     protected PersistenceManagerService persistenceManager;
 
@@ -108,25 +110,26 @@ public class WebFilter
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
-    private String mainMessagesPack = AppConfig.getMessagesPack();
-
     private FilterEntity noFilter;
 
     private AppliedFilter lastAppliedFilter;
-    private LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<AppliedFilterHolder>();
+    private LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
     private VerticalLayout appliedFiltersLayout;
 
-
-    private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
-    private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+    private GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+    private ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
     private String defaultFilterCaption;
 
     protected HorizontalLayout topLayout = null;
 
     public WebFilter() {
-        persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
+        persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         component = new VerticalActionsLayout();
-        defaultFilterCaption = MessageProvider.getMessage(MESSAGES_PACK, "defaultFilter");
+
+        messages = AppBeans.get(Messages.class);
+        userSessionSource = AppBeans.get(UserSessionSource.class);
+
+        defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
         component.addActionHandler(new com.vaadin.event.Action.Handler() {
             private com.vaadin.event.ShortcutAction shortcutAction =
                     new com.vaadin.event.ShortcutAction("applyFilterAction",
@@ -162,7 +165,7 @@ public class WebFilter
                 return getName();
             }
         };
-        noFilter.setName(MessageProvider.getMessage(mainMessagesPack, "filter.noFilter"));
+        noFilter.setName(messages.getMainMessage("filter.noFilter"));
 
         select = new FilterSelect();
         select.setWidth(300, Sizeable.UNITS_PIXELS);
@@ -176,7 +179,7 @@ public class WebFilter
         topLayout.addComponent(select);
 
         applyBtn = WebComponentsHelper.createButton("icons/search.png");
-        applyBtn.setCaption(MessageProvider.getMessage(mainMessagesPack, "actions.Apply"));
+        applyBtn.setCaption(messages.getMainMessage("actions.Apply"));
         applyBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -188,8 +191,8 @@ public class WebFilter
 
         if (globalConfig.getAllowQueryFromSelected()) {
             pinAppliedFilterBtn = WebComponentsHelper.createButton();
-            pinAppliedFilterBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.caption"));
-            pinAppliedFilterBtn.setDescription(MessageProvider.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.description"));
+            pinAppliedFilterBtn.setCaption(messages.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.caption"));
+            pinAppliedFilterBtn.setDescription(messages.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.description"));
             pinAppliedFilterBtn.setEnabled(false);
             pinAppliedFilterBtn.addListener(new Button.ClickListener() {
                 @Override
@@ -204,7 +207,7 @@ public class WebFilter
         }
 
         actionsButton = new WebPopupButton();
-        actionsButton.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
+        actionsButton.setCaption(messages.getMessage(MESSAGES_PACK, "actionsCaption"));
         topLayout.addComponent((com.vaadin.ui.Component) actionsButton.getComponent());
 
         initMaxResultsLayout();
@@ -284,7 +287,7 @@ public class WebFilter
     private void initMaxResultsLayout() {
         maxResultsLayout = new HorizontalLayout();
         maxResultsLayout.setSpacing(true);
-        maxResultsCb = new CheckBox(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label1"));
+        maxResultsCb = new CheckBox(messages.getMainMessage("filter.maxResults.label1"));
         maxResultsCb.setImmediate(true);
         maxResultsCb.setValue(true);
         maxResultsCb.addListener(
@@ -304,7 +307,7 @@ public class WebFilter
         maxResultsField.setWidth(40, UNITS_PIXELS);
         maxResultsField.setInvalidAllowed(false);
         maxResultsField.addValidator(
-                new IntegerValidator(MessageProvider.getMessage(mainMessagesPack, "validation.invalidNumber")) {
+                new IntegerValidator(messages.getMainMessage("validation.invalidNumber")) {
                     @Override
                     public void validate(Object value) throws InvalidValueException {
                         try {
@@ -318,7 +321,7 @@ public class WebFilter
         );
         maxResultsLayout.addComponent(maxResultsField);
 
-        Label maxResultsLabel2 = new Label(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label2"));
+        Label maxResultsLabel2 = new Label(messages.getMainMessage("filter.maxResults.label2"));
         maxResultsLayout.addComponent(maxResultsLabel2);
         maxResultsLayout.setComponentAlignment(maxResultsLabel2, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
@@ -326,7 +329,7 @@ public class WebFilter
     }
 
     private void fillActions() {
-        for (Action action : new ArrayList<Action>(actionsButton.getActions())) {
+        for (Action action : new ArrayList<>(actionsButton.getActions())) {
             actionsButton.removeAction(action);
         }
 
@@ -356,12 +359,12 @@ public class WebFilter
                 actionsButton.addAction(new DeleteAction());
         } else {
             if (filterEntity.getFolder() instanceof SearchFolder) {
-                if ((UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())) &&
+                if ((userSessionSource.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())) &&
                         (BooleanUtils.isNotTrue(filterEntity.getIsSet())))
                     actionsButton.addAction(new EditAction());
             }
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null &&
-                    UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
+                    userSessionSource.getUserSession().getUser().equals(filterEntity.getUser()))
                 actionsButton.addAction(new DeleteAction());
         }
         if (filterEntity != null && BooleanUtils.isNotTrue(filterEntity.getIsDefault())
@@ -387,7 +390,7 @@ public class WebFilter
                 boolean haveRequiredConditions = haveFilledRequiredConditions();
                 if (!haveRequiredConditions) {
                     if (!isNewWindow) {
-                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyRequiredConditions"),
+                        wm.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
                                 IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
@@ -396,7 +399,7 @@ public class WebFilter
                 boolean haveCorrectCondition = hasCorrectCondition();
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
-                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"),
+                        wm.showNotification(messages.getMainMessage("filter.emptyConditions"),
                                 IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
@@ -481,8 +484,8 @@ public class WebFilter
         filterEntity = new FilterEntity();
 
         filterEntity.setComponentId(getComponentPath());
-        filterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
-        filterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+        filterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
+        filterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
 //        filterEntity.setXml(
 //                "<filter><and>\n" +
 //                        "<c type=\"PROPERTY\" name=\"login\">u.login like :component$usersFilter.login\n" +
@@ -501,8 +504,8 @@ public class WebFilter
 
         FilterEntity newFilterEntity = new FilterEntity();
         newFilterEntity.setComponentId(filterEntity.getComponentId());
-        newFilterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
-        newFilterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+        newFilterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
+        newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
         //newFilterEntity.setCode(filterEntity.getCode());
         newFilterEntity.setXml(filterEntity.getXml());
         filterEntity = newFilterEntity;
@@ -535,7 +538,7 @@ public class WebFilter
         if (hasGroups && conditions.getRootNodes().size() > 1) {
             WebGroupBox groupBox = new WebGroupBox();
             groupBox.setWidth("-1");
-            groupBox.setCaption(MessageProvider.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
+            groupBox.setCaption(messages.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
             paramsLayout = groupBox;
             recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), groupBox, 0);
         } else {
@@ -548,7 +551,7 @@ public class WebFilter
                                                              ComponentContainer parentContainer,
                                                              int level) {
 
-        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<Node<AbstractCondition>>();
+        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<>();
         for (Node<AbstractCondition> node : nodes) {
             AbstractCondition condition = node.getData();
             if (!condition.isHidden())
@@ -655,7 +658,7 @@ public class WebFilter
             if (addToCurSetBtn == null) {
                 addToCurSetBtn = new WebButton();
                 addToCurSetBtn.setId("addToCurSetBtn");
-                addToCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToCurSet"));
+                addToCurSetBtn.setCaption(messages.getMessage(MESSAGES_PACK, "addToCurSet"));
                 buttons.addButton(addToCurSetBtn);
             } else {
                 addToCurSetBtn.setVisible(true);
@@ -670,7 +673,7 @@ public class WebFilter
             if (removeFromCurSetBtn == null) {
                 removeFromCurSetBtn = new WebButton();
                 removeFromCurSetBtn.setId("removeFromCurSetBtn");
-                removeFromCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "removeFromCurSet"));
+                removeFromCurSetBtn.setCaption(messages.getMessage(MESSAGES_PACK, "removeFromCurSet"));
                 buttons.addButton(removeFromCurSetBtn);
             } else {
                 removeFromCurSetBtn.setVisible(true);
@@ -686,7 +689,7 @@ public class WebFilter
             if (addToSetBtn == null) {
                 addToSetBtn = new WebButton();
                 addToSetBtn.setId("addToSetBtn");
-                addToSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToSet"));
+                addToSetBtn.setCaption(messages.getMessage(MESSAGES_PACK, "addToSet"));
                 buttons.addButton(addToSetBtn);
             } else {
                 addToSetBtn.setVisible(true);
@@ -765,15 +768,13 @@ public class WebFilter
         }
 
         updateComponentRequired(required);
-
-        setEditable(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.edit"));
     }
 
     @Override
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
         maxResultsLayout.setVisible(useMaxResults
-                && UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
+                && AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
     }
 
     @Override
@@ -805,7 +806,7 @@ public class WebFilter
 
         list.add(filterEntity);
 
-        final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
+        final Map<FilterEntity, String> captions = new HashMap<>();
         for (FilterEntity filter : list) {
             String filterCaption;
             if (filter == filterEntity) {
@@ -844,19 +845,19 @@ public class WebFilter
             if (filterEntity.getCode() == null)
                 name = InstanceUtils.getInstanceName(filterEntity);
             else {
-                name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
+                name = messages.getMainMessage(filterEntity.getCode());
             }
             AbstractSearchFolder folder = filterEntity.getFolder();
             if (folder != null) {
                 if (!StringUtils.isBlank(folder.getTabName()))
-                    name = MessageProvider.getMessage(mainMessagesPack, folder.getTabName());
+                    name = messages.getMainMessage(folder.getTabName());
                 else if (!StringUtils.isBlank(folder.getName())) {
-                    name = MessageProvider.getMessage(mainMessagesPack, folder.getName());
+                    name = messages.getMainMessage(folder.getName());
                 }
                 if (BooleanUtils.isTrue(filterEntity.getIsSet()))
-                    name = MessageProvider.getMessage(MESSAGES_PACK, "setPrefix") + " " + name;
+                    name = messages.getMessage(MESSAGES_PACK, "setPrefix") + " " + name;
                 else
-                    name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
+                    name = messages.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
             }
         } else
             name = "";
@@ -879,26 +880,28 @@ public class WebFilter
         if (filter.getCode() == null)
             return filter.getName();
         else {
-            return MessageProvider.getMessage(mainMessagesPack, filter.getCode());
+            return messages.getMainMessage(filter.getCode());
         }
     }
 
     private void loadFilterEntities() {
-        DataService ds = ServiceLocator.getDataService();
+        DataService ds = AppBeans.get(DataService.class);
         LoadContext ctx = new LoadContext(FilterEntity.class);
         ctx.setView("app");
 
-        User user = UserSessionProvider.getUserSession().getSubstitutedUser();
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+
+        User user = userSessionSource.getUserSession().getSubstitutedUser();
         if (user == null)
-            user = UserSessionProvider.getUserSession().getUser();
+            user = userSessionSource.getUserSession().getUser();
 
         ctx.setQueryString("select f from sec$Filter f " +
                 "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
                 .addParameter("component", getComponentPath())
                 .addParameter("userId", user.getId());
 
-        List<FilterEntity> filters = new ArrayList(ds.loadList(ctx));
-        final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
+        List<FilterEntity> filters = new ArrayList<>(ds.<FilterEntity>loadList(ctx));
+        final Map<FilterEntity, String> captions = new HashMap<>();
         for (FilterEntity filter : filters) {
             String filterCaption = getFilterCaption(filter);
             captions.put(filter, filterCaption);
@@ -968,7 +971,7 @@ public class WebFilter
         Boolean isDefault = filterEntity.getIsDefault();
         Boolean applyDefault = filterEntity.getApplyDefault();
         if (filterEntity.getFolder() == null) {
-            DataService ds = ServiceLocator.getDataService();
+            DataService ds = AppBeans.get(DataService.class);
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
             Set<Entity> result = ds.commit(ctx);
             for (Entity entity : result) {
@@ -995,7 +998,7 @@ public class WebFilter
     }
 
     private void deleteFilterEntity() {
-        DataService ds = ServiceLocator.getDataService();
+        DataService ds = AppBeans.get(DataService.class);
         CommitContext ctx = new CommitContext();
         ctx.setRemoveInstances(Collections.singletonList(filterEntity));
         ds.commit(ctx);
@@ -1005,7 +1008,7 @@ public class WebFilter
         editLayout = new VerticalLayout();
         editLayout.setSpacing(true);
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
         for (Object id : select.getItemIds()) {
             if (id != filterEntity) {
@@ -1014,7 +1017,7 @@ public class WebFilter
                     names.add(fe.getName());
                 else {
                     for (Map.Entry<String, Locale> locale : locales.entrySet()) {
-                        names.add(MessageProvider.getMessage(mainMessagesPack, fe.getCode(), locale.getValue()));
+                        names.add(messages.getMainMessage(fe.getCode(), locale.getValue()));
                     }
                 }
             }
@@ -1104,17 +1107,18 @@ public class WebFilter
 
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
+        actionsButton.setVisible(editable && isEditFiltersPermitted());
     }
 
     private boolean checkGlobalAppFolderPermission() {
-        return UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
+        return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
     }
 
     private boolean checkGlobalFilterPermission() {
         if (filterEntity == null || filterEntity.getUser() != null)
             return true;
         else
-            return UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
+            return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
     }
 
     @Override
@@ -1264,7 +1268,7 @@ public class WebFilter
     private void saveAsFolder(boolean isAppFolder) {
         final AbstractSearchFolder folder;
         if (isAppFolder)
-            folder = (MetadataProvider.create(AppFolder.class));
+            folder = (AppBeans.get(Metadata.class).create(AppFolder.class));
         else
             folder = (new SearchFolder());
 
@@ -1272,7 +1276,7 @@ public class WebFilter
             folder.setName(filterEntity.getName());
             folder.setTabName(filterEntity.getName());
         } else {
-            String name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
+            String name = messages.getMainMessage(filterEntity.getCode());
             folder.setName(name);
             folder.setTabName(name);
         }
@@ -1282,10 +1286,10 @@ public class WebFilter
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(newXml);
         if (!isAppFolder) {
-            if (UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+            if (userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
                 ((SearchFolder) folder).setUser(filterEntity.getUser());
             else
-                ((SearchFolder) folder).setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+                ((SearchFolder) folder).setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
         }
         Presentations presentations;
         if (applyTo != null && applyTo instanceof HasPresentations) {
@@ -1398,8 +1402,8 @@ public class WebFilter
 
     private void delete() {
         getFrame().showOptionDialog(
-                MessageProvider.getMessage(MESSAGES_PACK, "deleteDlg.title"),
-                MessageProvider.getMessage(MESSAGES_PACK, "deleteDlg.msg"),
+                messages.getMessage(MESSAGES_PACK, "deleteDlg.title"),
+                messages.getMessage(MESSAGES_PACK, "deleteDlg.msg"),
                 IFrame.MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(DialogAction.Type.YES) {
@@ -1451,7 +1455,11 @@ public class WebFilter
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        ((PopupButton) actionsButton.getComponent()).setVisible(editable);
+        actionsButton.setVisible(editable && isEditFiltersPermitted());
+    }
+
+    private boolean isEditFiltersPermitted() {
+        return AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.edit");
     }
 
     @Override
@@ -1521,7 +1529,7 @@ public class WebFilter
                 String descr;
                 if (filterEntity != null)
                     if (filterEntity.getCode() != null) {
-                        descr = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
+                        descr = messages.getMainMessage(filterEntity.getCode());
                     } else
                         descr = filterEntity.getName();
                 else
@@ -1546,7 +1554,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1564,7 +1572,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1584,7 +1592,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1601,7 +1609,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1617,7 +1625,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1638,7 +1646,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1850,14 +1858,14 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
         public void actionPerform(Component component) {
             if (!table.getSelected().isEmpty()) {
                 String entityType = table.getDatasource().getMetaClass().getName();
-                Map<String, Object> params = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<>();
                 params.put("entityType", entityType);
                 params.put("items", table.getSelected());
                 params.put("componentPath", getComponentPath());
@@ -1884,7 +1892,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1922,7 +1930,7 @@ public class WebFilter
 
         @Override
         public String getCaption() {
-            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+            return messages.getMessage(MESSAGES_PACK, getId());
         }
 
         @Override
@@ -1968,7 +1976,7 @@ public class WebFilter
         }
 
         public static Set parseSet(String text) {
-            Set<String> set = new HashSet<String>();
+            Set<String> set = new HashSet<>();
             if ("NULL".equals(StringUtils.trimToEmpty(text)))
                 return set;
             String[] ids = text.split(",");
@@ -1985,7 +1993,7 @@ public class WebFilter
         }
 
         public static String createIdsString(Set<String> current, Collection entities) {
-            Set<String> convertedSet = new HashSet<String>();
+            Set<String> convertedSet = new HashSet<>();
             for (Object entity : entities) {
                 convertedSet.add(((BaseUuidEntity) entity).getId().toString());
             }
@@ -2005,7 +2013,7 @@ public class WebFilter
         }
 
         public static String removeIds(Set<String> current, Collection entities) {
-            Set<String> convertedSet = new HashSet<String>();
+            Set<String> convertedSet = new HashSet<>();
             for (Object entity : entities) {
                 convertedSet.add(((BaseUuidEntity) entity).getId().toString());
             }
