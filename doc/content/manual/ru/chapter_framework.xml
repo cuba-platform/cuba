@@ -2777,6 +2777,21 @@ public class Orders implements OrdersMBean {
           <para>Следует иметь в виду, что измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
           <para>JMX ObjectName: <literal>app-core.cuba:type=ConfigStorage</literal>, <literal>app.cuba:type=ConfigStorage</literal>, <literal>app-portal.cuba:type=ConfigStorage</literal></para>
         </section>
+        <section id="persistenceManagerMBean">
+          <title>PersistenceManagerMBean</title>
+          <para><code>PersistenceManagerMBean</code> предоставляет следующие возможности:<itemizedlist>
+              <listitem>
+                <para>управление механизмом <link linkend="entity_statistics">статистики сущностей</link></para>
+              </listitem>
+              <listitem>
+                <para>отображение новых скриптов обновления БД методом <code>findUpdateDatabaseScripts()</code> и запуск обновления методом <code>updateDatabase()</code></para>
+              </listitem>
+              <listitem>
+                <para>запуск произвольных JPQL запросов в контексте <structname>Middleware</structname> методами <code>jpqlLoadList()</code>, <code>jpqlExecuteUpdate()</code></para>
+              </listitem>
+            </itemizedlist></para>
+          <para>JMX ObjectName: <literal>app-core.cuba:type=PersistenceManager</literal></para>
+        </section>
         <section id="scriptingManagerMBean">
           <title>ScriptingManagerMBean</title>
           <para><code>ScriptingManagerMBean</code> является JMX-фасадом для интерфейса инфраструктуры <code>
@@ -2790,7 +2805,7 @@ public class Orders implements OrdersMBean {
             </itemizedlist></para>
           <para>JMX операции:<itemizedlist>
               <listitem>
-                <para><code>runGroovyScript()</code> - выполнить скрипт Groovy и вернуть результат. Для отображения в JMX-интерфейсе результат должен быть типа <code>String</code>. В остальном аналогичен методу <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript()</link></code>. </para>
+                <para><code>runGroovyScript()</code> - выполнить скрипт Groovy в контексте <structname>Middleware</structname> и вернуть результат. Для отображения в JMX-интерфейсе результат должен быть типа <code>String</code>. В остальном аналогичен методу <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript()</link></code>. </para>
               </listitem>
             </itemizedlist></para>
         </section>
@@ -2983,6 +2998,11 @@ query.setParameter(1, customer);</programlisting></para>
               <para><code>getDelegate()</code> - возвращает экземпляр <code>javax.persistence.Query</code>, предоставляемый реализацией ORM.</para>
             </listitem>
           </itemizedlist></para>
+        <section>
+          <title>Поиск like без учета регистра</title>
+          <para>Для удобного формирования условия поиска без учета регистра символов и по любой части строки можно использовать префикс <literal>(?i)</literal> имени параметра запроса, например:<programlisting>select c from sales$Customer c where c.name like :(?i)name</programlisting></para>
+          <para>В данном случае ORM переведет значение параметра <literal>name</literal> в нижний регистр и обрамит символами <literal>%</literal>, а затем в БД выполнит SQL с условием вида <literal> lower(C.NAME) like ?</literal></para>
+        </section>
         <section>
           <title>Макросы в JPQL</title>
           <para>Текст JPQL запроса может включать макросы, которые обрабатываются перед выполнением и превращаются в исполняемый JPQL, дополнительно модифицируя набор параметров.</para>
@@ -3318,40 +3338,196 @@ public void someServiceMethod() {
       </section>
     </section>
     <section id="dbms_types">
-      <title>Поддерживаемые СУБД</title>
-      <para>Тип используемой СУБД определяется <glossterm linkend="app_properties_glossentry">параметром</glossterm> среднего слоя <parameter>cuba.dbmsType</parameter> и настройкой источника данных в <application>Tomcat</application>.</para>
-      <variablelist>
-        <varlistentry>
-          <term>PostgreSQL</term>
-          <listitem>
-            <para>Поддерживается всеми проектами платформы: CUBA, Workflow, FTS, Charts, CCPayments, RefApp.</para>
-            <para><emphasis role="bold">Настройка</emphasis></para>
-            <para>Параметр среднего слоя:</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_postgres.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Источник данных в context.xml:</para>
-            <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_postgres.xml" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-        </varlistentry>
-        <varlistentry>
-          <term>Microsoft SQL Server</term>
-          <listitem>
-            <para>Поддерживается проектами: CUBA, Workflow, FTS, RefApp.</para>
-            <para><emphasis role="bold">Настройка</emphasis></para>
-            <para>Параметр среднего слоя:</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/cuba_dbmstype_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Источник данных в context.xml:</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/context_mssql.xml" encoding="UTF-8" parse="text"/></programlisting>
-            <para>В настройках MS SQL надо включить возможность логина для пользователя sa и задать для него пароль из context.xml. Это можно сделать из MS SQL Management Studio, в окне Object Explorer.
+      <title>Работа с СУБД</title>
+      <section>
+        <title>Выбор и подключение</title>
+        <para>Тип используемой СУБД определяется свойством приложения <property>
+            <link linkend="cuba.dbmsType">cuba.dbmsType</link>
+          </property> и настройкой источника данных. Конфигурационный файл для Tomcat, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
+        <warning>
+          <para>Обратите внимание на применимость СУБД в зависимости от используемых <link linkend="base_projects">базовых проектов</link> платформы:<itemizedlist>
+              <listitem>
+                <para><application>HSQLDB</application> - применяется только для запуска интеграционных тестов платформы, не используется в прикладных проектах</para>
+              </listitem>
+              <listitem>
+                <para><application>PostgreSQL</application> - поддерживается всеми базовыми проектами платформы</para>
+              </listitem>
+              <listitem>
+                <para><application>Microsoft SQL Server</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>workflow</structname>, <structname>fts</structname></para>
+              </listitem>
+            </itemizedlist></para>
+        </warning>
+      </section>
+      <section id="db_scripts">
+        <title>Создание и обновление БД</title>
+        <para>Проект CUBA-приложения всегда содержит два набора SQL скриптов:<itemizedlist>
+            <listitem>
+              <para>Скрипты создания БД - предназначены для создания базы данных с нуля.</para>
+              <para>Скрипты создания располагаются в каталоге <filename>/db/init</filename> модуля <structname>core</structname>. Для каждого типа СУБД, поддерживаемой приложением, создается свой набор скриптов и располагается в подкаталоге с именем, соответствующим значению перечисления <code>DbmsType</code>, например <filename>/db/init/postgres</filename>. Имена скриптов создания должны иметь вид <filename>{optional_prefix}create-db.sql</filename>.</para>
+            </listitem>
+            <listitem>
+              <para>Скрипты обновления БД - предназначены для поэтапного приведения структуры БД к текущему состоянию <link linkend="data_model">модели данных</link>.</para>
+              <para>Скрипты обновления располагаются в каталоге <filename>/db/update</filename> модуля <structname>core</structname>. Для каждого типа СУБД, поддерживаемой приложением,  создается свой набор скриптов и располагается в подкаталоге с именем, соответствующим значению перечисления <code>DbmsType</code>, например <filename>/db/update/postgres</filename>. </para>
+              <para>Скрипты обновления должны иметь имена, которые при сортировке в алфавитном порядке образуют правильную последовательность их выполнения (обычно это хронологическая последовательность их создания). Поэтому рекомендуется задавать имя скрипта обновления в виде <filename>{yymmdd}-{description}.sql</filename>, где <literal>yy</literal> - год, <literal>mm</literal> - месяц, <literal>dd</literal> - день, <literal>description</literal> - краткое описание скрипта. Например <filename>121003-addCodeToCategoryAttribute.sql</filename>.</para>
+              <para>Скрипты обновления можно группировать в подкаталоги, главное чтобы путь к скрипту с учетом подкаталога не нарушал хронологической последовательности. Например, можно создавать подкаталоги по номеру года или по году и месяцу.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>В развернутом приложении скрипты создания и обновления БД располагаются в специальном <link linkend="db_dir">каталоге скриптов базы данных</link>, задаваемым свойством приложения <property>
+            <link linkend="cuba.dbDir">cuba.dbDir</link>
+          </property>.</para>
+        <para>Скрипты представляют собой текстовые файлы с набором DDL и DML команд, разделенных символом &quot;<literal>^</literal>&quot;. Символ &quot;<literal>^</literal>&quot; применяется для того, чтобы можно было применять разделитель &quot;<literal>;</literal>&quot; в составе сложных команд, например при создании функций или триггеров. Встроенный механизм исполнения скриптов разделяет входной файл на команды по разделителю &quot;<literal>^</literal>&quot; и выполняет  каждую команду в отдельной транзакции. Это означает, что при необходимости можно сгруппировать несколько простых операторов (например <literal>insert</literal>), разделенных точкой с запятой, и обеспечить выполнение их в одной транзакции.</para>
+        <section>
+          <title>Создание БД</title>
+          <para>Базу данных можно создать двумя способами: с помощью скрипта сборки Gradle или на старте приложения путем запуска автоматического обновления.</para>
+          <para>Скрипт сборки <filename>build.gradle</filename> содержит задачу <code>createDb</code>, которая создает указанную в параметрах задачи БД и выполняет на ней все SQL скрипты создания (базовых проектов и самого приложения). </para>
+          <warning>
+            <para>Если база данных по указанному в скрипте сборки URL существует, она полностью удаляется и создается заново.</para>
+          </warning>
+          <para>Чтобы инициализировать БД <link linkend="db_update">механизмом автоматического обновления</link> (например в развернутом приложении при отсутствии скрипта сборки), нужно выполнить следующее:<itemizedlist>
+              <listitem>
+                <para>включить свойство приложения <property>
+                    <link linkend="cuba.automaticDatabaseUpdate">cuba.automaticDatabaseUpdate</link>
+                  </property></para>
+              </listitem>
+              <listitem>
+                <para>создать пустую базу данных, соответствующую URL, заданному в описании источника данных в <filename>
+                    <link linkend="context.xml">context.xml</link>
+                  </filename></para>
+              </listitem>
+              <listitem>
+                <para>запустить веб-сервер, содержащий блок <structname>Middleware</structname>. На старте приложения  БД будет проинициализирована и сразу же готова к работе.</para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
+        <section>
+          <title>Обновление БД</title>
+          <para>Процесс обновления базы данных заключается в выполнении скриптов обновления, присутствующих в проекте или в каталоге скриптов, которые не зарегистрированы как выполненные в таблице <database>SYS_DB_CHANGELOG</database>. Эти скрипты могут быть выполнены как вручную (используя сторонние инструменты), так и следующими встроенными в систему способами:<itemizedlist>
+              <listitem>
+                <para>Выполнением задачи <code>updateDb</code> скрипта сборки <filename>build.gradle</filename>.</para>
+              </listitem>
+              <listitem>
+                <para>В работающем приложении:<itemizedlist>
+                    <listitem>
+                      <para>на старте <structname>Middleware</structname> при включенном <link linkend="db_update">механизме автоматического обновления</link></para>
+                    </listitem>
+                    <listitem>
+                      <para>после старта вызовом метода <code>updateDatabase()</code> JMX-бина <code>
+                          <link linkend="persistenceManagerMBean">PersistenceManagerMBean</link>
+                        </code></para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
+        <section id="db_update">
+          <title>Механизм автоматического обновления</title>
+          <para>Механизм автоматического обновления включается свойством приложения <property>
+              <link linkend="cuba.automaticDatabaseUpdate">cuba.automaticDatabaseUpdate</link>
+            </property>. Он активируется на старте блока <structname>Middleware</structname> до момента полной инициализации приложения,  и действует следующим образом:<itemizedlist>
+              <listitem>
+                <para>Если в БД отсутствует таблица <database>SEC_USER</database>, то считается, что база данных пуста, и запускается полная инициализация с помощью скриптов создания БД. После выполнения инициализирующих скриптов их имена запоминаются в таблице <database>SYS_DB_CHANGELOG</database>. Кроме того, там же сохраняются имена всех доступных скриптов обновления, <emphasis>без их выполнения</emphasis>.</para>
+              </listitem>
+              <listitem>
+                <para>Если в БД имеется таблица <database>SEC_USER</database>, но отсутствует таблица <database>SYS_DB_CHANGELOG</database> (это случай, когда в первый раз запускается описываемый механизм на имеющейся рабочей БД), никакие скрипты <emphasis>не запускаются</emphasis>. Вместо этого создается таблица <database>SYS_DB_CHANGELOG</database> и в ней сохраняются имена всех доступных на данный момент скриптов обновления. </para>
+              </listitem>
+              <listitem>
+                <para>Если в БД имеются и таблица <database>SEC_USER</database> и таблица <database>SYS_DB_CHANGELOG</database>, производится запуск скриптов обновления, и их имена запоминаются в таблице <database>SYS_DB_CHANGELOG</database>. Причем запускаются только те скрипты, имен которых не было в таблице <database>SYS_DB_CHANGELOG</database>, т.е. не запускавшиеся ранее.
+Последовательность запуска скриптов определяется 2-мя факторами: приоритетом базового проекта (см. содержимое <link linkend="db_dir">каталога скриптов базы данных</link>: <filename>10-cuba</filename>, <filename>20-workflow</filename>, ...) и именем файла скрипта (с учетом подкаталогов внутри каталога <filename>update</filename>) в алфавитном порядке.</para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
+      </section>
+      <section>
+        <title>Проектирование БД</title>
+        <section>
+          <title>Соответствие типов данных</title>
+          <para>В таблице приведено соответствие типов данных, отличающихся для разных СУБД.</para>
+          <informaltable frame="all">
+            <tgroup cols="3">
+              <colspec colnum="1" colname="c0"/>
+              <colspec colnum="2" colname="c1"/>
+              <colspec colnum="3" colname="c2"/>
+              <thead>
+                <row>
+                  <entry>Java</entry>
+                  <entry>PostgreSQL</entry>
+                  <entry>MS SQL Server</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>UUID</entry>
+                  <entry>uuid</entry>
+                  <entry>uniqueidentifier</entry>
+                </row>
+                <row>
+                  <entry>Date</entry>
+                  <entry>timestamp</entry>
+                  <entry>datetime</entry>
+                </row>
+                <row>
+                  <entry>Boolean</entry>
+                  <entry>boolean</entry>
+                  <entry>tinyint</entry>
+                </row>
+                <row>
+                  <entry>byte[]</entry>
+                  <entry>bytea</entry>
+                  <entry>image</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </section>
+        <section>
+          <title>Особенности MS SQL Server</title>
+          <para><application>Microsoft SQL Server</application> использует кластерные индексы для таблиц.</para>
+          <para>По умолчанию кластерный индекс создается по первичному ключу таблицы, однако используемые в CUBA-приложении ключи типа <code>UUID</code> плохо подходят для кластерного индекса. Поэтому необходимо для каждой таблицы правильно выбрать и создать кластерный индекс. Поле для кластерного индекса должно быть небольшим и монотонно возрастающим, поэтому ориентировочные правила следующие:<itemizedlist>
+              <listitem>
+                <para>Для большинства таблиц подходит поле <database>CREATE_TS</database>. При этом записи будут физически располагаться в порядке их создания. </para>
+              </listitem>
+              <listitem>
+                <para>Для композитных сущностей, если чтение превалирует над записью, имеет смысл использовать ссылку на владельца. При этом записи будут сгруппированы по владельцам, и их извлечение вместе с владельцем будет происходить быстрее. </para>
+              </listitem>
+              <listitem>
+                <para>Для небольших (&lt; 100 записей) редко изменяемых таблиц тип кластерного индекса не важен, можно оставить <database>ID</database>. </para>
+              </listitem>
+              <listitem>
+                <para>Для таблиц сущностей, унаследованных по стратегии <code>JOINED</code>, в которых нет поля <database>CREATE_TS</database>, нужно создать его искусственно с параметром <literal>default current_tmestamp</literal>. </para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Пример:<programlisting>create table SALES_CUSTOMER (
+    ID uniqueidentifier not null,
+    CREATE_TS datetime,
+    ...
+    primary key nonclustered (ID)
+)^
 
-Instance − ваш SQL Server.</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Включить сетевую аутентификацию:</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance1_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Разрешить доступ по TCP/IP можно из Sql Server Configuration Manager</para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/instance2_mssql.txt" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-        </varlistentry>
-      </variablelist>
+create clustered index IDX_SALES_CUSTOMER_CREATE_TS on SALES_CUSTOMER (CREATE_TS)^</programlisting></para>
+          <para>Пример композитной сущности: <programlisting>create table SALES_ITEM (
+    ID uniqueidentifier not null,
+    CREATE_TS datetime,
+    ...
+    ORDER_ID uniqueidentifier,
+    ...
+    primary key nonclustered (ID),
+    constraint FK_SALES_ITEM_ORDER foreign key (ORDER_ID) references SALES_ORDER(ID)
+)^
+
+create clustered index IDX_SALES_ITEM_ORDER on SALES_ITEM (ORDER_ID)^</programlisting></para>
+          <para>Пример унаследованной сущности: <programlisting>create table SALES_DOC (
+    CARD_ID uniqueidentifier,
+    CREATE_TS datetime default current_timestamp,
+    NUMBER varchar(50),
+    primary key nonclustered (CARD_ID),
+    constraint FK_SALES_DOC_CARD foreign key (CARD_ID) references WF_CARD (ID)
+)^
+
+create clustered index IDX_SALES_DOC_CREATE_TS on SALES_DOC (CREATE_TS)^
+
+create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
+        </section>
+      </section>
     </section>
   </section>
   <section id="client">
@@ -8191,16 +8367,12 @@ taskHandler.execute();</programlisting>
   </section>
   <section>
     <title>Механизмы платформы</title>
-    <section id="db_update">
-      <title>Обновление базы данных</title>
+    <section id="scheduled_tasks">
+      <title>Выполнение задач по расписанию</title>
       <para>TODO</para>
     </section>
     <section id="email_sending">
       <title>Отсылка email</title>
-      <para>TODO</para>
-    </section>
-    <section id="scheduled_tasks">
-      <title>Выполнение задач по расписанию</title>
       <para>TODO</para>
     </section>
     <section id="runtime_properties">
@@ -8211,7 +8383,7 @@ taskHandler.execute();</programlisting>
       <title>Пессимистичная блокировка</title>
       <para>TODO</para>
     </section>
-    <section>
+    <section id="entity_statistics">
       <title>Статистика сущностей</title>
       <para>TODO</para>
     </section>

@@ -111,7 +111,34 @@
     <title>Описание конфигурационных файлов</title>
     <section id="context.xml">
       <title>context.xml</title>
-      <para>TODO</para>
+      <para>Файл <filename>context.xml</filename> является дескриптором развертывания приложения на сервере <application>Apache Tomcat</application>. В развернутом приложении этот файл располагается  в подкаталоге <filename>META-INF</filename> каталога веб-приложения или WAR-файла, например <filename>tomcat/webapps/app-core/META-INF/context.xml</filename>. В проекте файлы данного типа находятся в каталогах <filename>/web/META-INF</filename> модулей <structname>core</structname>, <structname>web</structname>, <structname>portal</structname>.</para>
+      <para>Основное предназначение файла для блока <structname>Middleware</structname> - определить источник данных и поместить его в JNDI под именем, заданным свойством приложения <property>
+          <link linkend="cuba.dataSourceJndiName">cuba.dataSourceJndiName</link>
+        </property>.</para>
+      <para>Пример определения источника данных для <application>PostgreSQL</application>:<programlisting>&lt;Resource
+    name=&quot;jdbc/CubaDS&quot;
+    type=&quot;javax.sql.DataSource&quot;
+    maxActive=&quot;20&quot;
+    maxIdle=&quot;2&quot;
+    maxWait=&quot;5000&quot;
+    driverClassName=&quot;org.postgresql.Driver&quot;
+    username=&quot;cuba&quot;
+    password=&quot;cuba&quot;
+    url=&quot;jdbc:postgresql://localhost/sales&quot;/&gt;</programlisting></para>
+      <para>Пример определения источника данных для <application>Microsoft SQL Server</application>:<programlisting>&lt;Resource
+    name=&quot;jdbc/CubaDS&quot;
+    type=&quot;javax.sql.DataSource&quot;
+    maxActive=&quot;20&quot;
+    maxIdle=&quot;2&quot;
+    maxWait=&quot;5000&quot;
+    driverClassName=&quot;net.sourceforge.jtds.jdbc.Driver&quot;
+    username=&quot;sa&quot;
+    password=&quot;saPass1&quot;
+    url=&quot;jdbc:jtds:sqlserver://localhost/sales&quot;/&gt;</programlisting></para>
+      <para>Для всех <link linkend="app_tiers">блоков</link>, являющихся веб-приложениями, данный файл может содержать код, отключающий сериализацию HTTP-сессий:<programlisting>&lt;Manager className=&quot;org.apache.catalina.session.PersistentManager&quot; debug=&quot;0&quot; distributable=&quot;false&quot;
+         saveOnRestart=&quot;false&quot;&gt;
+    &lt;Store className=&quot;org.apache.catalina.session.FileStore&quot;/&gt;
+&lt;/Manager&gt;</programlisting></para>
     </section>
     <section id="datatypes.xml">
       <title>datatypes.xml</title>
@@ -123,6 +150,9 @@
     </section>
     <section id="persistence.xml">
       <title>persistence.xml</title>
+      <para>В зависимости от выбранного значения свойства приложения  <property>
+          <link linkend="cuba.dbmsType">cuba.dbmsType</link>
+        </property> автоматически формируются параметры ORM, которые на старте приложения записываются в итоговый  файл <filename>persistence.xml</filename> в <link linkend="work_dir">рабочем каталоге</link> приложения.</para>
       <para>TODO</para>
     </section>
     <section id="remoting-spring.xml">
@@ -241,6 +271,15 @@
           <para>Используется в блоках <structname>Web Client</structname> и <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.automaticDatabaseUpdate">
+        <term>cuba.automaticDatabaseUpdate</term>
+        <listitem>
+          <para>Включает режим <link linkend="db_update">автоматического обновления базы данных</link> на старте приложения.</para>
+          <para>Значение по умолчанию: <code>false</code></para>
+          <para>Интерфейс: <code>ServerConfig</code></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.availableLocales">
         <term>cuba.availableLocales</term>
         <listitem>
@@ -252,6 +291,31 @@
           <para>Значение по умолчанию: <literal>English|en;Russian|ru;French|fr</literal></para>
           <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.dataSourceJndiName">
+        <term>cuba.dataSourceJndiName</term>
+        <listitem>
+          <para>Задает имя источника данных в JNDI.</para>
+          <para>Значение по умолчанию: <literal>java:comp/env/jdbc/CubaDS</literal></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.dbDir">
+        <term>cuba.dbDir</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий расположение <link linkend="db_dir">каталога скриптов базы данных</link>.</para>
+          <para>Значение по умолчанию: <literal>${catalina.home}/webapps/${cuba.webContextName}/WEB-INF/db</literal>, что означает расположение в подкаталоге <filename>WEB-INF/db</filename> каталога текущего веб-приложения <application>Tomcat</application>.</para>
+          <para>Интерфейс: <code>ServerConfig</code></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.dbmsType">
+        <term>cuba.dbmsType</term>
+        <listitem>
+          <para>Задает тип используемой базы данных. Возможные значения соответствуют значениям перечисления <code>DbmsType</code> без учета регистра: <literal>hsql</literal>, <literal>postgres</literal>, <literal>mssql</literal>.</para>
+          <para>Значение по умолчанию: <literal>hsql</literal></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.defaultQueryTimeoutSec">

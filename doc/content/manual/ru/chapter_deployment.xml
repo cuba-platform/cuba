@@ -19,6 +19,14 @@
       <title>Конфигурационный каталог</title>
       <para>TODO</para>
     </section>
+    <section id="work_dir">
+      <title>Рабочий каталог</title>
+      <para>TODO</para>
+    </section>
+    <section id="db_dir">
+      <title>Каталог скриптов базы данных</title>
+      <para>TODO</para>
+    </section>
   </section>
   <section>
     <title>Варианты запуска Tomcat</title>
@@ -29,139 +37,11 @@
     <para>TODO</para>
   </section>
   <section>
-    <title>Интеграция с Active Directory</title>
-    <para>TODO</para>
-  </section>
-  <section>
-    <title>Организация кластера</title>
+    <title>Отказоустойчивость и балансировка нагрузки</title>
     <para>TODO</para>
   </section>
   <section>
     <title>Мониторинг работы приложения</title>
     <para>TODO</para>
-  </section>
-  <section>
-    <title>Резервное копирование базы данных</title>
-    <para>Для резервного копирования базы данных и приложения необходимо:</para>
-    <orderedlist>
-      <listitem>
-        <para>Создать каталог для резервного копирования</para>
-      </listitem>
-      <listitem>
-        <para>Создать  скрипт в созданном каталоге</para>
-        <itemizedlist>
-          <listitem>
-            <para>Для <application>Windows</application> − <filename>backup.bat</filename></para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_development/applicationBackup/backup.bat" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-          <listitem>
-            <para>Для <application>Linux</application> − <filename>backup.sh</filename></para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_development/applicationBackup/backup.sh" encoding="UTF-8" parse="text"/></programlisting>
-          </listitem>
-        </itemizedlist>
-      </listitem>
-      <listitem>
-        <para>Настроить параметры в скрипте (см. таблицу ниже) в соответствии с Вашей системой</para>
-      </listitem>
-      <listitem>
-        <para>Создать файл с паролем</para>
-        <itemizedlist>
-          <listitem>
-            <para>Для <application>Windows</application> в файле <filename>%APPDATA%\postgresql\pgpass.conf </filename>(<filename>%APPDATA%</filename> − это Application Data пользователя <application>Windows</application>, под которым будет выполняться копирование) должна быть запись вида <parameter>host:port:databasename:user:password</parameter> (например, <parameter>localhost:5432:docflow:root:root</parameter>)</para>
-          </listitem>
-          <listitem>
-            <para>Для <application>Linux</application> нужно создать файл <filename>.pgpass</filename> в домашней директории пользователя, под которым будет выполняться копирование (например <filename>/root</filename>) c содержимым, описанным выше, и запретить просмотр и редактирование другим пользователям командой <prompt>chmod 600 .pgpass</prompt></para>
-          </listitem>
-        </itemizedlist>
-      </listitem>
-      <listitem>
-        <para>Сделать скрипт автоисполняемым в зависимости от системы</para>
-      </listitem>
-    </orderedlist>
-    <informaltable frame="all" pgwide="0" align="center">
-      <tgroup cols="3" colsep="1" rowsep="1" align="center">
-        <colspec colname="c1"/>
-        <colspec colname="c2"/>
-        <colspec colname="c3"/>
-        <thead wordsize="16">
-          <row>
-            <entry colname="Имя атрибута" role="bord">Параметр</entry>
-            <entry colname="Тип атрибута" role="caption">Описание</entry>
-            <entry colname="Тип атрибута" role="caption">Значение</entry>
-          </row>
-        </thead>
-        <tbody>
-          <row>
-            <entry align="center" role="left">PG_DIR</entry>
-            <entry role="special">Путь к папке <filename>bin</filename>, где установлен <application>PostgreSQL</application></entry>
-            <entry role="right"><filename>C:\Program Files\PostgreSQL\8.3\bin</filename> (пример)</entry>
-          </row>
-          <row>
-            <entry align="left">TOMCAT_DIR</entry>
-            <entry align="left">Каталог приложения</entry>
-            <entry align="left"><filename>D:\work\thesis2\tomcat</filename> (пример)</entry>
-          </row>
-          <row>
-            <entry align="left" role="left">BACKUP_DIR</entry>
-            <entry align="left" role="special">Каталог для резервного копирования, который был создан в п.1</entry>
-            <entry align="left" role="right"><filename>D:\backup</filename> (пример)</entry>
-          </row>
-          <row>
-            <entry align="left">PG_HOST</entry>
-            <entry align="left">IP адрес подключения к копируемой базе данных</entry>
-            <entry align="left">localhost (по умолчанию)</entry>
-          </row>
-          <row>
-            <entry align="left" role="left">PG_PORT</entry>
-            <entry align="left" role="special">Порт подключения к копируемой базе данных</entry>
-            <entry align="left" role="right">5432 (по умолчанию)</entry>
-          </row>
-          <row>
-            <entry align="center">DB_NAME</entry>
-            <entry>Имя копируемой базы данных</entry>
-            <entry>docflow (пример)</entry>
-          </row>
-          <row>
-            <entry align="left" role="left">PG_USER</entry>
-            <entry align="left" role="special">Пользователь базы данных, под которым выполняется копирование</entry>
-            <entry align="left" role="right">root (по умолчанию)</entry>
-          </row>
-        </tbody>
-      </tgroup>
-    </informaltable>
-    <para>В результате резервного копирования каталог, созданный в п.1, будет иметь следующий вид:</para>
-    <itemizedlist>
-      <listitem>
-        <para><filename>backup</filename></para>
-        <itemizedlist>
-          <listitem>
-            <para><filename>2010_09_22</filename> − каталог, созданный скриптом</para>
-            <itemizedlist>
-              <listitem>
-                <para><filename>tomcat</filename> − копия приложения</para>
-              </listitem>
-              <listitem>
-                <para><filename>docflow_2010_09_22.dump</filename> − копия базы данных</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-          <listitem>
-            <para>...</para>
-          </listitem>
-          <listitem>
-            <para><filename>2010_09_28</filename></para>
-            <itemizedlist>
-              <listitem>
-                <para><filename>tomcat</filename></para>
-              </listitem>
-              <listitem>
-                <para><filename>docflow_2010_10_28.dump</filename></para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </itemizedlist>
-      </listitem>
-    </itemizedlist>
-    <para>При повторном выполнении скрипта будет создана новая копия базы данных, а в копии приложения будут обновлены файлы.</para>
   </section>
 </chapter>

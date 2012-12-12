@@ -1,3 +1,0 @@
-﻿Instance -> Security -> Logins -> sa -> Properties -> 
-General (Задать пароль)
-Status (Login: Enabled)

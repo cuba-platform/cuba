@@ -1,3 +1,0 @@
-﻿Sql Server Configuration Manager -> SQL Server Network Configuration -> Protocols for SQLEXPRESS -> TCP/IP -> Properties
-General -> Enabled : Yes
-IP Addresses -> IP All -> TCP Port : 1433
