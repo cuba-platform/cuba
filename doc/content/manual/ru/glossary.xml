@@ -63,8 +63,7 @@
         <emphasis role="bold">Загрузка по требованию</emphasis>
       </glossterm>
       <glossdef>
-        <para>Режим загрузки данных, при котором связанные сущности загружаются не одновременно с основной сущностью, а отложенно, при обращении к соответствующему атрибуту. Загрузка по требованию возможна только в рамках транзакции, в которой была загружена  основная сущность.</para>
-          <para>См. <xref linkend="lazy_loading"/></para>
+        <para>См. <xref linkend="lazy_loading"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -75,7 +74,6 @@
         <emphasis role="bold">Источник данных</emphasis>
       </glossterm>
       <glossdef>
-        <para>Источники данных (datasources) − невизуальные элементы экрана, обеспечивающие работу связанных с данными (data-aware) визуальных компонентов.</para>
         <para>См. <xref xrefstyle="" linkend="datasources"/></para>
       </glossdef>
     </glossentry>
@@ -293,7 +291,9 @@
       <glossterm>
         <emphasis role="bold">Lazy loading</emphasis>
       </glossterm>
-      <glosssee otherterm="lazy_loading_glossterm"/>
+      <glossdef>
+        <para>См. <xref linkend="lazy_loading"/></para>
+      </glossdef>
     </glossentry>
   </glossdiv>
   <glossdiv>

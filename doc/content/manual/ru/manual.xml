@@ -142,105 +142,252 @@
     </section>
     <section id="datatypes.xml">
       <title>datatypes.xml</title>
-      <para>TODO</para>
+      <para>Файл <filename>datatypes.xml</filename> определяет доступные типы данных атрибутов сущностей, см. <xref linkend="datatype"/></para>
+      <para>Файл по умолчанию расположен в пакете <code>com.haulmont.chile.core.datatypes</code> <link linkend="base_projects">базового проекта</link> <structname>cuba</structname>. Если в прикладном проекте в <link linkend="app_modules">модуле</link> <structname>global</structname> создать аналогичный файл в корне CLASSPATH, то  типы данных будут загружены  из него.</para>
+      <warning>
+        <para>Механизм загрузки не поддерживает расширение, т.е. все типы данных загружаются из одного файла - либо из корня CLASSPATH, либо из пакета  <code>com.haulmont.chile.core.datatypes</code>.</para>
+      </warning>
+      <para>Доступные типы данных описываются в элементах <sgmltag>datatype</sgmltag>. Обязательным атрибутом является только class, в котором указывается класс типа данных, реализующий интерфейс <code>Datatype</code>. Набор остальных атрибутов зависит от класса, объекту которого при создании передается соответствующий XML элемент, и разбор атрибутов происходит в этом классе.</para>
+      <para>Типичные атрибуты:<itemizedlist>
+          <listitem>
+            <para><sgmltag>format</sgmltag> - формат преобразования в строку без учета локали</para>
+          </listitem>
+          <listitem>
+            <para><sgmltag>groupingSeparator</sgmltag> - символ-разделитель групп разрядов числа при форматировании без учета локали</para>
+          </listitem>
+          <listitem>
+            <para><sgmltag>decimalSeparator</sgmltag> - символ-разделитель целой и дробной части числа при форматировании без учета локали</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Пример:<programlisting>&lt;datatypes&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.BooleanDatatype&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.IntegerDatatype&quot;
+              format=&quot;0&quot; groupingSeparator=&quot;&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.LongDatatype&quot;
+              format=&quot;0&quot; groupingSeparator=&quot;&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.DoubleDatatype&quot;
+              format=&quot;0.###&quot; decimalSeparator=&quot;.&quot; groupingSeparator=&quot;&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype&quot;
+              format=&quot;0.####&quot; decimalSeparator=&quot;.&quot; groupingSeparator=&quot;&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.StringDatatype&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.DateTimeDatatype&quot;
+              format=&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSS&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.DateDatatype&quot;
+              format=&quot;yyyy-MM-dd&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.TimeDatatype&quot;
+              format=&quot;HH:mm:ss&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.UUIDDatatype&quot;/&gt;
+
+    &lt;datatype class=&quot;com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype&quot;/&gt;
+
+&lt;/datatypes&gt;</programlisting></para>
     </section>
     <section id="metadata.xml">
       <title>metadata.xml</title>
-      <para>TODO</para>
+      <para>Файлы данного типа используются для регистрации неперсистентных сущностей и присвоения <link linkend="meta_annotations">мета-аннотаций</link>, см. <xref linkend="metadata_framework"/></para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.0/metadata.xsd">http://schemas.haulmont.com/cuba/4.0/metadata.xsd</ulink></para>
+      <para>Набор файлов <filename>metadata.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.metadataConfig">cuba.metadataConfig</link>
+        </property>. </para>
+      <para>Рассмотрим структуру файла.</para>
+      <para><sgmltag>metadata</sgmltag> - корневой элемент</para>
+      <para>Элементы <sgmltag>metadata</sgmltag>:<itemizedlist>
+          <listitem>
+            <para><sgmltag>metadata-model</sgmltag> - корень элементов регистрации неперсистентных сущностей</para>
+            <para>Элементы <sgmltag>
+                <sgmltag>metadata-model</sgmltag>
+              </sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>class</sgmltag> - класс неперсистентной сущности</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para><sgmltag>annotations</sgmltag> - корень элементов присвоения <link linkend="meta_annotations">мета-аннотаций</link> сущностей</para>
+            <para>Элементы <sgmltag>annotations</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>entity</sgmltag> - элемент сущности, которой присваиваются мета-аннотации</para>
+                  <para>Атрибуты entity:<itemizedlist>
+                      <listitem>
+                        <para><sgmltag>class</sgmltag> - класс сущности</para>
+                      </listitem>
+                    </itemizedlist></para>
+                  <para>Элементы <sgmltag>entity</sgmltag>:<itemizedlist>
+                      <listitem>
+                        <para><sgmltag>annotation</sgmltag> - элемент мета-аннотации</para>
+                        <para>Атрибуты <sgmltag>annotation</sgmltag>:<itemizedlist>
+                            <listitem>
+                              <para><sgmltag>name</sgmltag> - имя мета-аннотации</para>
+                            </listitem>
+                            <listitem>
+                              <para><sgmltag>value</sgmltag> - значение мета-аннотации</para>
+                            </listitem>
+                          </itemizedlist></para>
+                      </listitem>
+                    </itemizedlist></para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Пример:<programlisting>&lt;metadata xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/metadata.xsd&quot;&gt;
+
+    &lt;metadata-model&gt;
+        &lt;class&gt;com.haulmont.refapp.core.entity.TransientDriver&lt;/class&gt;
+        &lt;class&gt;com.haulmont.refapp.core.entity.UserContainer&lt;/class&gt;
+    &lt;/metadata-model&gt;
+
+    &lt;annotations&gt;
+        &lt;entity class=&quot;com.haulmont.refapp.core.entity.Driver&quot;&gt;
+            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory&quot; 
+                        value=&quot;true&quot;/&gt;
+            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.EnableRestore&quot; 
+                        value=&quot;true&quot;/&gt;
+        &lt;/entity&gt;
+
+        &lt;entity class=&quot;com.haulmont.refapp.core.entity.Doc&quot;&gt;
+            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.ExtendedBy&quot;
+                        value=&quot;com.haulmont.refapp.core.entity.ExtDoc&quot;/&gt;
+        &lt;/entity&gt;
+
+        &lt;entity class=&quot;com.haulmont.refapp.core.entity.ExtDoc&quot;&gt;
+            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.Extends&quot;
+                        value=&quot;com.haulmont.refapp.core.entity.Doc&quot;/&gt;
+        &lt;/entity&gt;
+    &lt;/annotations&gt;
+
+&lt;/metadata&gt;</programlisting></para>
     </section>
     <section id="persistence.xml">
       <title>persistence.xml</title>
-      <para>В зависимости от выбранного значения свойства приложения  <property>
+      <para>Файлы данного типа являются стандартными для JPA и используются для регистрации персистентных сущностей и задания параметров функционирования фреймворка <link linkend="orm">ORM</link>.</para>
+      <para>Набор файлов <filename>persistence.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.persistenceConfig">cuba.persistenceConfig</link>
+        </property>. </para>
+      <para>На старте блока <structname>Middleware</structname> из заданных файлов собирается один <filename>persistence.xml</filename> и сохраняется в <link linkend="work_dir">рабочем каталоге</link> приложения. Параметры ORM могут переопределяться каждым следующим файлом списка, поэтому порядок указания файлов важен. Существует несколько параметры, жестко определяемые типом используемой СУБД (заданным в <property>
           <link linkend="cuba.dbmsType">cuba.dbmsType</link>
-        </property> автоматически формируются параметры ORM, которые на старте приложения записываются в итоговый  файл <filename>persistence.xml</filename> в <link linkend="work_dir">рабочем каталоге</link> приложения.</para>
-      <para>TODO</para>
+        </property>), которые невозможно переопределить в <filename>persistence.xml</filename>, это:<itemizedlist>
+          <listitem>
+            <para><literal>openjpa.jdbc.DBDictionary</literal></para>
+          </listitem>
+          <listitem>
+            <para><literal>openjpa.jdbc.MappingDefaults</literal></para>
+          </listitem>
+        </itemizedlist>Кроме того, при выключенном свойстве приложения <property>
+          <link linkend="cuba.disableOrmXmlGeneration">cuba.disableOrmXmlGeneration</link>
+        </property> и наличии <link linkend="extension">расширенных сущностей</link> на старте приложения в рабочем каталоге создается файл <filename>orm.xml</filename> и путь к нему записывается в параметр <literal>openjpa.MetaDataFactory</literal>. В этом случае параметр <literal>openjpa.MetaDataFactory</literal> также нельзя задать в <filename>persistence.xml</filename> заранее. </para>
+      <para>Пример:<programlisting>&lt;persistence xmlns=&quot;http://java.sun.com/xml/ns/persistence&quot; version=&quot;1.0&quot;&gt;
+    &lt;persistence-unit name=&quot;sales&quot; transaction-type=&quot;RESOURCE_LOCAL&quot;&gt;
+        &lt;class&gt;com.sample.sales.entity.Customer&lt;/class&gt;
+        &lt;class&gt;com.sample.sales.entity.Order&lt;/class&gt;
+    &lt;/persistence-unit&gt;
+&lt;/persistence&gt;</programlisting></para>
     </section>
     <section id="remoting-spring.xml">
       <title>remoting-spring.xml</title>
-      <para>TODO</para>
+      <para>Файлы данного типа определяют конфигурацию дополнительного контейнера <application>Spring Framework</application> для блока <structname>Middleware</structname>, который предназначен для экспорта сервисов и других компонентов среднего слоя, доступных клиентскому уровню (далее <firstterm>контейнер удаленного доступа</firstterm>). </para>
+      <para>Набор файлов <filename>remoting-spring.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.remotingSpringContextConfig">cuba.remotingSpringContextConfig</link>
+        </property>. Последовательность перечисления файлов важна, так как каждый последующий файл может переопределять конфигурацию бинов, заданную в предыдущих файлах.</para>
+      <para>Контейнер удаленного доступа создается таким образом, что основной контейнер (конфигурируемый файлами <filename>
+          <link linkend="spring.xml">spring.xml</link>
+        </filename>) является родительским по отношению к нему. Это означает, что бины контейнера удаленного доступа могут обращаться к бинам основного контейнера, а бины основного контейнера &quot;не видят&quot; контейнер удаленного доступа.</para>
+      <para>Основная задача контейнера удаленного доступа - сделать сервисы <structname>Middleware</structname> доступными клиентскому уровню с помощью механизма <application>Spring HttpInvoker</application>. Для этого в <filename>cuba-remoting-spring.xml</filename> базового проекта <structname>cuba</structname> определяется бин <literal>servicesExporter</literal> типа <code>RemoteServicesBeanCreator</code>, который получает из основного контейнера все классы сервисов и экспортирует их. В дополнение к обычным аннотированным сервисам контейнер удаленного доступа экспортирует некоторые специфические бины, такие как <code>LoginService</code>.</para>
+      <para>Кроме того, <filename>cuba-remoting-spring.xml</filename> определяет базовый пакет, начиная с которого производится поиск аннотированных классов контроллеров <application>Spring MVC</application>, используемых для загрузки-выгрузки файлов.</para>
+      <para>В прикладном проекте определять файл типа <filename>remoting-spring.xml</filename> необходимо только в том случае, если создаются специфические контроллеры <application>Spring MVC</application>. Сервисы прикладного проекта в любом случае будут импортированы стандартным бином <literal>servicesExporter</literal>, определенным в базовом проекте <structname>cuba</structname>.</para>
     </section>
     <section id="spring.xml">
       <title>spring.xml</title>
-      <para>TODO</para>
+      <para>Файлы данного типа определяют конфигурацию основного контейнера <application>Spring Framework</application> для каждого <link linkend="app_tiers">блока приложения</link>. </para>
+      <para>Набор файлов <filename>spring.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.springContextConfig">cuba.springContextConfig</link>
+        </property>. Последовательность перечисления файлов важна, так как каждый последующий файл может переопределять конфигурацию бинов, заданную в предыдущих файлах.</para>
+      <para>Основная часть конфигурирования контейнера возложена на аннотации бинов (такие как <code>@ManagedBean</code>, <code>@Servic</code>e, <code>@Inject</code> и др.), поэтому обязательной частью <filename>spring.xml</filename> в прикладном проекте является только элемент <sgmltag>context:component-scan</sgmltag>, в котором задается базовый пакет Java, с которого начинается поиск аннотированных классов. Например:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting></para>
+      <para>Остальное содержимое зависит от того, для какого блока приложения конфигурируется контейнер: например, для <structname>Middleware</structname> это регистрация <link linkend="jmx_beans">JMX-бинов</link>, для блоков клиентского уровня - <link linkend="service_import">импорт сервисов</link>.</para>
     </section>
     <section id="views.xml">
       <title>views.xml</title>
       <para>Файлы данного типа используются для описания представлений, см. <xref linkend="views"/></para>
       <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.0/view.xsd">http://schemas.haulmont.com/cuba/4.0/view.xsd</ulink></para>
-      <itemizedlist>
-        <listitem>
-          <para><sgmltag>views</sgmltag> - корневой элемент</para>
-          <para>Элементы <sgmltag>views</sgmltag>:<itemizedlist>
-              <listitem>
-                <para><sgmltag>view</sgmltag> - описатель <code>View</code></para>
-                <para>Атрибуты <sgmltag>view</sgmltag>:<itemizedlist>
-                    <listitem>
-                      <para><sgmltag>class</sgmltag> - класс сущности</para>
-                    </listitem>
-                    <listitem>
-                      <para><sgmltag>name</sgmltag> - имя представления, должно быть уникальным в пределах сущности</para>
-                    </listitem>
-                    <listitem>
-                      <para><sgmltag>systemProperties</sgmltag> - признак включения системных атрибутов сущности (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <code>BaseEntity</code> и  <code>Updatable</code>). Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
-                    </listitem>
-                    <listitem>
-                      <para><sgmltag>overwrite</sgmltag> - признак того, что данный описатель должен переопределить представление с таким же классом и именем, уже развернутое в репозитории. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
-                    </listitem>
-                    <listitem>
-                      <para><sgmltag>extends</sgmltag> - указывает имя представления той же сущности, от которого нужно унаследовать атрибуты. Порядок следования описателей в файле при этом не важен. Например, при указании <literal>extends=&quot;_local&quot;</literal> в текущее представление будут включены все <link linkend="local_attribute">локальные атрибуты</link> сущности. Необязательный атрибут.</para>
-                    </listitem>
-                  </itemizedlist></para>
-                <para>Элементы <sgmltag>view</sgmltag>:<itemizedlist>
-                    <listitem>
-                      <para><sgmltag>property</sgmltag> - описатель <code>ViewProperty</code></para>
-                      <para>Атрибуты <sgmltag>property</sgmltag>:<itemizedlist>
-                          <listitem>
-                            <para><sgmltag>name</sgmltag> - имя атрибута сущности</para>
-                          </listitem>
-                          <listitem>
-                            <para><sgmltag>view</sgmltag> - для ссылочного атрибута указывает имя представления, с которым должна загружаться ассоциированная сущность. Порядок следования описателей в файле при этом не важен.</para>
-                          </listitem>
-                          <listitem>
-                            <para><sgmltag>lazy</sgmltag> - для ссылочных атрибутов признак того, что данный атрибут нужно не  включать в Fetch Plan, а загружать отдельным SQL запросом, инициированным обращением к атрибуту. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
-                            <para>Рекомендуется использовать <sgmltag>lazy</sgmltag> для атрибутов-коллекций, если таких атрибутов больше одного для данного графа представлениий. Т.е. устанавливайте  <literal>lazy = &quot;true&quot;</literal> для всех коллекций, кроме одной.</para>
-                          </listitem>
-                        </itemizedlist></para>
-                      <para>Элементы <sgmltag>property</sgmltag>:<itemizedlist>
-                          <listitem>
-                            <para><sgmltag>property</sgmltag> - описатель атрибута связанной сущности. Таким способом можно определить неименованное представление для связанной сущности прямо внутри  текущего описателя (inline). </para>
-                          </listitem>
-                        </itemizedlist></para>
-                    </listitem>
-                  </itemizedlist></para>
-              </listitem>
-              <listitem>
-                <para><sgmltag>include</sgmltag> - включение другого файла типа views.xml</para>
-                <para>Атрибуты <sgmltag>include</sgmltag>:<itemizedlist>
-                    <listitem>
-                      <para><sgmltag>file</sgmltag> - путь к файлу по правилам интерфейса <code>
-                          <link linkend="resources">Resources</link>
-                        </code></para>
-                    </listitem>
-                  </itemizedlist></para>
-              </listitem>
-            </itemizedlist></para>
-        </listitem>
-      </itemizedlist>
+      <para><sgmltag>views</sgmltag> - корневой элемент</para>
+      <para>Элементы <sgmltag>views</sgmltag>:<itemizedlist>
+          <listitem>
+            <para><sgmltag>view</sgmltag> - описатель <code>View</code></para>
+            <para>Атрибуты <sgmltag>view</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>class</sgmltag> - класс сущности</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>name</sgmltag> - имя представления, должно быть уникальным в пределах сущности</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>systemProperties</sgmltag> - признак включения системных атрибутов сущности (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <code>BaseEntity</code> и  <code>Updatable</code>). Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>overwrite</sgmltag> - признак того, что данный описатель должен переопределить представление с таким же классом и именем, уже развернутое в репозитории. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>extends</sgmltag> - указывает имя представления той же сущности, от которого нужно унаследовать атрибуты. Порядок следования описателей в файле при этом не важен. Например, при указании <literal>extends=&quot;_local&quot;</literal> в текущее представление будут включены все <link linkend="local_attribute">локальные атрибуты</link> сущности. Необязательный атрибут.</para>
+                </listitem>
+              </itemizedlist></para>
+            <para>Элементы <sgmltag>view</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>property</sgmltag> - описатель <code>ViewProperty</code></para>
+                  <para>Атрибуты <sgmltag>property</sgmltag>:<itemizedlist>
+                      <listitem>
+                        <para><sgmltag>name</sgmltag> - имя атрибута сущности</para>
+                      </listitem>
+                      <listitem>
+                        <para><sgmltag>view</sgmltag> - для ссылочного атрибута указывает имя представления, с которым должна загружаться ассоциированная сущность. Порядок следования описателей в файле при этом не важен.</para>
+                      </listitem>
+                      <listitem>
+                        <para><sgmltag>lazy</sgmltag> - для ссылочных атрибутов признак того, что данный атрибут нужно не  включать в Fetch Plan, а загружать отдельным SQL запросом, инициированным обращением к атрибуту. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
+                        <para>Рекомендуется использовать <sgmltag>lazy</sgmltag> для атрибутов-коллекций, если таких атрибутов больше одного для данного графа представлениий. Т.е. устанавливайте  <literal>lazy = &quot;true&quot;</literal> для всех коллекций, кроме одной.</para>
+                      </listitem>
+                    </itemizedlist></para>
+                  <para>Элементы <sgmltag>property</sgmltag>:<itemizedlist>
+                      <listitem>
+                        <para><sgmltag>property</sgmltag> - описатель атрибута связанной сущности. Таким способом можно определить неименованное представление для связанной сущности прямо внутри  текущего описателя (inline). </para>
+                      </listitem>
+                    </itemizedlist></para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para><sgmltag>include</sgmltag> - включение другого файла типа views.xml</para>
+            <para>Атрибуты <sgmltag>include</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>file</sgmltag> - путь к файлу по правилам интерфейса <code>
+                      <link linkend="resources">Resources</link>
+                    </code></para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+        </itemizedlist></para>
       <para>Пример:<programlisting>&lt;views xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/view.xsd&quot;&gt;
 
-    &lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
+    &lt;view class=&quot;com.sample.sales.entity.Order&quot;
           name=&quot;orderWithCustomer&quot;
           extends=&quot;_local&quot;&gt;
         &lt;property name=&quot;customer&quot; view=&quot;_minimal&quot;/&gt;
     &lt;/view&gt;
 
-    &lt;view class=&quot;com.haulmont.sales.entity.Item&quot;
+    &lt;view class=&quot;com.sample.sales.entity.Item&quot;
           name=&quot;itemsInOrder&quot;&gt;
         &lt;property name=&quot;quantity&quot;/&gt;
         &lt;property name=&quot;product&quot; view=&quot;_minimal&quot;/&gt;
     &lt;/view&gt;
 
-    &lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
+    &lt;view class=&quot;com.sample.sales.entity.Order&quot;
           name=&quot;orderWithCustomerDefinedInline&quot;
           extends=&quot;_local&quot;&gt;
         &lt;property name=&quot;customer&quot;&gt;
@@ -256,7 +403,120 @@
     </section>
     <section id="web.xml">
       <title>web.xml</title>
-      <para>TODO</para>
+      <para>Файл <filename>web.xml</filename> является стандартным дескриптором веб-приложения <application>Java EE</application>, и должен быть создан для блоков <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>.</para>
+      <para>В проекте приложения файлы <filename>web.xml</filename> располагаются в каталогах <filename>web/WEB-INF</filename> соответствующих <link linkend="app_modules">модулей</link>.</para>
+      <para>Рассмотрим содержимое <filename>web.xml</filename> блока <structname>Middleware</structname> (модуль <structname>core</structname> проекта):<programlisting>&lt;web-app xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot;
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+           xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee
+           http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;
+           version=&quot;2.5&quot;&gt;
+
+    &lt;!-- Application properties config files --&gt;
+    &lt;context-param&gt;
+        &lt;param-name&gt;appPropertiesConfig&lt;/param-name&gt;
+        &lt;param-value&gt;
+            classpath:cuba-app.properties
+            classpath:sales-app.properties
+            file:${catalina.home}/conf/app-core/local.app.properties
+        &lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;com.haulmont.cuba.core.sys.AppContextLoader&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;remoting&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;com.haulmont.cuba.core.sys.remoting.RemotingServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;remoting&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/remoting/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;restapi&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;com.haulmont.cuba.core.sys.restapi.RestApiServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;restapi&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/api/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;</programlisting></para>
+      <para>В элементах <sgmltag>context-param</sgmltag> задаются иницилизирующие параметры объекта <code>ServletContext</code> данного веб-приложения. Здесь определен параметр <literal>appPropertiesConfig</literal>, значением которого является список <link linkend="app_properties_files">файлов свойств приложения</link>.</para>
+      <para>В элементе <sgmltag>listener</sgmltag> задается класс слушателя, реализующего интерфейс <code>ServletContextListener</code>. В блоке <structname>Middleware</structname> CUBA-приложения в качестве слушателя должен использоваться класс <code>AppContextLoader</code>, выполняющий инициализацию <code>
+          <link linkend="appContext">AppContext</link>
+        </code>.</para>
+      <para>Далее следуют определения сервлетов, среди которых обязательным для <structname>Middleware</structname> является класс <code>RemotingServlet</code>, связанный с контейнером удаленного доступа (см. <xref linkend="remoting-spring.xml"/>). Данный сервлет отображен на URL <literal>/remoting/*</literal>.</para>
+      <para>Рассмотрим содержимое <filename>web.xml</filename> блока <structname>Web Client</structname> (модуль <structname>web</structname> проекта):<programlisting>&lt;web-app xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot;
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+           xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee
+           http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd&quot;
+           version=&quot;2.5&quot;&gt;
+
+    &lt;context-param&gt;
+        &lt;description&gt;Vaadin production mode&lt;/description&gt;
+        &lt;param-name&gt;productionMode&lt;/param-name&gt;
+        &lt;param-value&gt;false&lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+    &lt;context-param&gt;
+        &lt;param-name&gt;appPropertiesConfig&lt;/param-name&gt;
+        &lt;param-value&gt;
+            classpath:cuba-web-app.properties
+            classpath:sales-web-app.properties
+            file:${catalina.home}/conf/app/local.app.properties
+        &lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+    &lt;listener&gt;
+        &lt;listener-class&gt;com.haulmont.cuba.web.sys.WebAppContextLoader&lt;/listener-class&gt;
+    &lt;/listener&gt;
+
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;app_servlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;com.haulmont.cuba.web.sys.CubaApplicationServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;application&lt;/param-name&gt;
+            &lt;param-value&gt;com.haulmont.sales.web.App&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;widgetset&lt;/param-name&gt;
+            &lt;param-value&gt;com.haulmont.cuba.toolkit.gwt.WidgetSet&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;app_servlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;filter&gt;
+        &lt;filter-name&gt;cuba_filter&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.haulmont.cuba.web.sys.CubaHttpFilter&lt;/filter-class&gt;
+    &lt;/filter&gt;
+
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;cuba_filter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+&lt;/web-app&gt;</programlisting></para>
+      <para>В данном файле определены два параметра: <literal>appPropertiesConfig</literal>, значением которого является список <link linkend="app_properties_files">файлов свойств приложения</link>, и <literal>productionMode</literal>, отключающий режим отладки фреймворка <application>Vaadin</application>.</para>
+      <para>В качестве <code>ServletContextListener</code> в блоке <structname>Web Client</structname> используется класс <code>WebAppContextLoader</code>.</para>
+      <para>Далее определяется сервлет <code>CubaApplicationServlet</code>, входящий в состав основанной на фреймворке <application>Vaadin</application> реализации <link linkend="gui_framework">универсального пользовательского интерфейса</link>. Сервлет имеет два параметра:<itemizedlist>
+          <listitem>
+            <para><literal>application</literal> - задает специфический для проекта класс клиентского приложения, который должен быть наследником <code>com.haulmont.cuba.web.App</code></para>
+          </listitem>
+          <listitem>
+            <para><literal>widgetset</literal> - задает набор <application>GWT</application> компонентов, используемых на стороне веб-браузера</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>После определения сервлетов  подключается фильтр <code>CubaHttpFilter</code>, необходимый для  функционирования блока <structname>Web Client</structname>.</para>
     </section>
   </appendix>
   <appendix id="app_properties_reference">
@@ -324,6 +584,16 @@
           <para>Задает <link linkend="transaction_timeout">таймаут транзакции</link> по умолчанию.</para>
           <para>Значение по умолчанию: <literal>0</literal>, означает что таймаут отсутствует.</para>
           <para>Интерфейс: <code>ServerConfig</code></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.disableOrmXmlGeneration">
+        <term>cuba.disableOrmXmlGeneration</term>
+        <listitem>
+          <para>Запрещает автоматическую генерацию файла <filename>orm.xml</filename> для <link linkend="extension">расширенных</link> сущностей. Дает возможность вручную создать такой файл и зарегистрировать в параметре <literal>openjpa.MetaDataFactory</literal> файла <filename>
+              <link linkend="persistence.xml">persistence.xml</link>
+            </filename>.</para>
+          <para>Значение по умолчанию: <literal>false</literal>, означает что <filename>orm.xml</filename> будет создан автоматически при наличии расширенных сущностей.</para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
@@ -413,7 +683,20 @@
           <para>Задает <link linkend="main_message_pack">главный пакет сообщений</link> данного блока приложения. </para>
           <para>Значением свойства может быть либо один пакет, либо список пакетов, разделенный пробелами. </para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
-          <para>Пример:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.abc.sales.web</programlisting></para>
+          <para>Пример:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.sample.sales.web</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.metadataConfig">
+        <term>cuba.metadataConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="metadata.xml">metadata.xml</link>
+            </filename>. </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+          <para>Пример:<programlisting>cuba.metadataConfig=cuba-metadata.xml sales-metadata.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.passwordEncryptionModule">
@@ -444,6 +727,45 @@
           <para>Это означает, что в пароль должен содержать от 6 до 20 символов, в нем можно использоваться цифры, символы и буквы латинского алфавита. При этом обязательно в пароле должна  быть хотя бы одна цифра, одна буква в нижнем регистре и одна буква в верхнем регистре. Более подробная информация о синтаксисе регулярных выражений можно найти на сайтах: <ulink url="http://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5_%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">http://ru.wikipedia.org/wiki/Регулярные_выражения</ulink> и <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html</ulink></para>
           <para>Интерфейс: <code>ClientConfig</code></para>
           <para>Используется в блоках клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.persistenceConfig">
+        <term>cuba.persistenceConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="persistence.xml">persistence.xml</link>
+            </filename> блока <structname>Middleware</structname>. </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+          <para>Пример:<programlisting>cuba.persistenceConfig=cuba-persistence.xml sales-persistence.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.remotingSpringContextConfig">
+        <term>cuba.remotingSpringContextConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="remoting-spring.xml">remoting-spring.xml</link>
+            </filename> в  блоке <structname>Middleware</structname>.  </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+          <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml sales-remoting-spring.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.springContextConfig">
+        <term>cuba.springContextConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="spring.xml">spring.xml</link>
+            </filename> в каждом стандартном блоке приложения.  </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+          <para>Пример:<programlisting>cuba.springContextConfig=cuba-spring.xml sales-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.trustedClientPassword">

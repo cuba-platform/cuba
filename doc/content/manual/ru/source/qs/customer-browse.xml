@@ -1,11 +1,11 @@
 <window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        messagesPack="com.haulmont.sales.gui.customer"
+        messagesPack="com.sample.sales.gui.customer"
         caption="msg://browserCaption"
         lookupComponent="customersTable">
 
     <dsContext>
         <collectionDatasource id="customersDs"
-                              class="com.haulmont.sales.entity.Customer"
+                              class="com.sample.sales.entity.Customer"
                               view="_local">
             <query>
                 select c from sales$Customer c order by c.name

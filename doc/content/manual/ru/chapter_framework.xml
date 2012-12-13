@@ -1579,7 +1579,7 @@ String formattedValue = format.format(value);</programlisting></para>
             </listitem>
           </itemizedlist></para>
         <para>Подробная структура XML-описателей изложена в <xref linkend="views.xml"/></para>
-        <para>Пример описателя представления для сущности Заказ, которое должно обеспечить загрузку всех локальных атрибутов, ассоциированного Покупателя и коллекции Пунктов заказа:<programlisting>&lt;view class=&quot;com.haulmont.sales.entity.Order&quot;
+        <para>Пример описателя представления для сущности Заказ, которое должно обеспечить загрузку всех локальных атрибутов, ассоциированного Покупателя и коллекции Пунктов заказа:<programlisting>&lt;view class=&quot;com.sample.sales.entity.Order&quot;
       name=&quot;orderWithCustomer&quot;
       extends=&quot;_local&quot;&gt;
     &lt;property name=&quot;customer&quot; view=&quot;_minimal&quot;/&gt;
@@ -2088,7 +2088,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
             <link linkend="configurationMBean">ConfigurationMBean</link>
           </code>. Методы этих интерфейсов работают по отдельности с параметрами конфигурации и развертывания (<code>*AppProperties</code>) и с параметрами времени выполнения (<code>*DbProperties</code>). Это обусловлено различием механизмов хранения этих категорий свойств.</para>
       </section>
-      <section>
+      <section id="app_properties_files">
         <title>Хранение свойств в файлах</title>
         <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый <link linkend="app_tiers">блок</link> приложения имеет набор таких файлов, включающий в себя файлы из <link linkend="base_projects">базовых проектов</link> платформы и файл текущего приложения. Набор файлов свойств  определяется следующим образом:</para>
         <itemizedlist>
@@ -2530,9 +2530,9 @@ executor.submit(new Runnable() {
         <procedure>
           <step>
             <para>Создать интерфейс в <link linkend="app_modules">модуле</link> <structname>global</structname> (т.к. интерфейс сервиса должен быть доступен на всех <link linkend="app_tiers">уровнях</link>) и задать в нем имя сервиса. Имя рекомендуется задавать в формате <literal>{имя_проекта}_{имя_интерфейса}</literal>. Например:</para>
-            <programlisting language="java">package com.haulmont.sales.core;
+            <programlisting language="java">package com.sample.sales.core;
 
-import com.haulmont.sales.entity.Order;
+import com.sample.sales.entity.Order;
 
 public interface OrderService {
     String NAME = &quot;sales_OrderService&quot;;
@@ -2542,9 +2542,9 @@ public interface OrderService {
           </step>
           <step>
             <para>Создать класс сервиса в модуле <structname>core</structname> и добавить ему аннотацию <code>@org.springframework.stereotype.Service</code> с именем, заданным в интерфейсе</para>
-            <programlisting>package com.haulmont.sales.core;
+            <programlisting>package com.sample.sales.core;
 
-import com.haulmont.sales.entity.Order;
+import com.sample.sales.entity.Order;
 import org.springframework.stereotype.Service;
 
 @Service(OrderService.NAME)
@@ -2555,7 +2555,7 @@ public class OrderServiceBean implements OrderService {
 }</programlisting>
             <para>Класс сервиса, как и класс любого другого <link linkend="managed_beans">управляемого бина</link>, должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
                 <link linkend="spring.xml">spring.xml</link>
-              </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.haulmont.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.haulmont.sales</code>.</para>
+              </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
           </step>
         </procedure>
         <warning>
@@ -2563,7 +2563,7 @@ public class OrderServiceBean implements OrderService {
           <para>Если некоторую бизнес-логику требуется вызывать из разных сервисов либо других компонентов <structname>Middleware</structname>, ее необходимо выделить и инкапсулировать внутри соответствующего <link linkend="managed_beans">Managed Bean</link>.</para>
         </warning>
       </section>
-      <section>
+      <section id="service_import">
         <title>Использование сервиса</title>
         <para>Для того чтобы вызывать сервис, в клиентском  блоке приложения для него должен быть создан соответствующий прокси-объект. Делается это путем объявления имени и интерфейса сервиса в параметрах фабрики прокси-объектов. Для блока <structname>Web Client</structname> это бин класса <code>WebRemoteProxyBeanCreator</code>, для <structname>Web Portal</structname> - <code>PortalRemoteProxyBeanCreator</code> , для <structname>Desktop Client</structname> - <code>RemoteProxyBeanCreator</code> .</para>
         <para>Фабрика прокси-объектов конфигурируется в файле <filename>
@@ -2574,7 +2574,7 @@ public class OrderServiceBean implements OrderService {
     &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
     &lt;property name=&quot;remoteServices&quot;&gt;
         &lt;map&gt;
-            &lt;entry key=&quot;sales_OrderService&quot; value=&quot;com.haulmont.sales.core.OrderService&quot;/&gt;
+            &lt;entry key=&quot;sales_OrderService&quot; value=&quot;com.sample.sales.core.OrderService&quot;/&gt;
         &lt;/map&gt;
     &lt;/property&gt;
 &lt;/bean&gt;</programlisting>
@@ -2593,9 +2593,9 @@ orderService.calculateTotals(order);</programlisting></para>
       </warning>
       <section>
         <title>Создание бина</title>
-        <para>Для создания  управляемого бина достаточно добавить классу  Java аннотацию  <literal>@javax.annotation.ManagedBean</literal>. Например:<programlisting>package com.haulmont.sales.core;
+        <para>Для создания  управляемого бина достаточно добавить классу  Java аннотацию  <literal>@javax.annotation.ManagedBean</literal>. Например:<programlisting>package com.sample.sales.core;
 
-import com.haulmont.sales.entity.Order;
+import com.sample.sales.entity.Order;
 import javax.annotation.ManagedBean;
 
 @ManagedBean(OrderWorker.NAME)
@@ -2608,20 +2608,20 @@ public class OrderWorker {
         <para>Рекомендуется присваивать бину уникальное имя вида <literal>{имя_проекта}_{имя_класса}</literal>, и определять его в константе <code>NAME</code>. </para>
         <para>Класс управляемого бина должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
             <link linkend="spring.xml">spring.xml</link>
-          </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.haulmont.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.haulmont.sales</code>.</para>
+          </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
         <para>Если нужно обеспечить возможность подмены реализации,  рекомендуется  выделять бизнес-интерфейс бина, например следующим образом:</para>
-        <programlisting>package com.haulmont.sales.core;
+        <programlisting>package com.sample.sales.core;
 
-import com.haulmont.sales.entity.Order;
+import com.sample.sales.entity.Order;
 
 public interface OrderWorker {
     String NAME = &quot;sales_OrderWorker&quot;;
 
     void calculateTotals(Order order);
 }</programlisting>
-        <programlisting>package com.haulmont.sales.core;
+        <programlisting>package com.sample.sales.core;
 
-import com.haulmont.sales.entity.Order;
+import com.sample.sales.entity.Order;
 import javax.annotation.ManagedBean;
 
 @ManagedBean(OrderWorker.NAME)
@@ -2634,10 +2634,10 @@ public class OrderWorkerBean implements OrderWorker {
       </section>
       <section>
         <title>Использование бина</title>
-        <para>Ссылку на бин можно получить с помощью инжекции или класса <code>AppBeans</code>. В качестве примера использования бина рассмотрим реализацию сервиса <code>OrderService</code>, делегирующего выполнение бину <code>OrderWorker</code>:<programlisting>package com.haulmont.sales.core;
+        <para>Ссылку на бин можно получить с помощью инжекции или класса <code>AppBeans</code>. В качестве примера использования бина рассмотрим реализацию сервиса <code>OrderService</code>, делегирующего выполнение бину <code>OrderWorker</code>:<programlisting>package com.sample.sales.core;
 
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.sales.entity.Order;
+import com.sample.sales.entity.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
@@ -2682,7 +2682,7 @@ public class OrderServiceBean implements OrderService {
         <para>Рассмотрим процесс создания JMX-бина на примере.</para>
         <itemizedlist>
           <listitem>
-            <para>Интерфейс JMX-бина:<programlisting>package com.haulmont.sales.core;
+            <para>Интерфейс JMX-бина:<programlisting>package com.sample.sales.core;
 
 import org.springframework.jmx.export.annotation.*;
 
@@ -2697,11 +2697,11 @@ public interface OrdersMBean {
             <para>Так как инструменты JMX поддерживают ограниченный набор типов данных,  параметры и результат метода желательно задавать типа <code>String</code>, и при необходимости выполнять конвертацию внутри метода.</para>
           </listitem>
           <listitem>
-            <para>Класс JMX-бина:<programlisting>package com.haulmont.sales.core;
+            <para>Класс JMX-бина:<programlisting>package com.sample.sales.core;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.*;
-import com.haulmont.sales.entity.Order;
+import com.sample.sales.entity.Order;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;

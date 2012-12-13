@@ -2,6 +2,119 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_development" lang="ru">
   <title>Разработка приложений</title>
+  <section>
+    <title>Рекомендуемый стиль кода</title>
+    <para role=""><emphasis role="bold">Форматирование кода</emphasis></para>
+    <itemizedlist>
+      <listitem>
+        <para>Для Java и Groovy кода рекомендуется придерживаться стандартного стиля, описанного в документе <ulink url="http://www.oracle.com/technetwork/java/codeconv-138413.html">Code Conventions for the Java Programming Language</ulink>. При программировании в <application>IntelliJ IDEA</application> для этого достаточно использовать стиль по умолчанию, а для переформатирования применять сочетание клавиш <keycap>Ctrl-Alt-L</keycap>.</para>
+        <para>Максимальная длина строки − 120 символов. Длина отступа - 4 символа, использование пробелов вместо символов табуляции включено.</para>
+      </listitem>
+      <listitem>
+        <para>XML код: длина отступа - 4 символа, использование пробелов вместо символов табуляции включено.</para>
+      </listitem>
+    </itemizedlist>
+    <para><emphasis role="bold">Соглашения по именованию</emphasis></para>
+    <informaltable frame="all" align="center">
+      <tgroup cols="3" align="center">
+        <colspec colname="c1"/>
+        <colspec colname="c2"/>
+        <colspec colname="c3"/>
+        <thead wordsize="16">
+          <row>
+            <entry colname="Имя атрибута" role="bord">Идентификатор</entry>
+            <entry colname="Тип атрибута" role="caption">Правило именования</entry>
+            <entry colname="Тип атрибута" role="caption">Пример</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry namest="c1" nameend="c3" align="center">
+              <emphasis role="bold">Java и Groovy классы </emphasis>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Класс контроллера экрана</entry>
+            <entry align="left">
+              <para>UpperCamelCase</para>
+              <para>Контроллер экрана  списка сущностей − <code>{КлассСущности}Browse</code></para>
+              <para>Контроллер экрана редактирования − <code>{КлассСущности}Edit</code></para>
+            </entry>
+            <entry align="left">
+              <para><code>CustomerBrowse</code></para>
+              <para><code>OrderEdit</code></para>
+            </entry>
+          </row>
+          <row>
+            <entry namest="c1" nameend="c3" align="center">
+              <emphasis role="bold">XML дескрипторы экранов</emphasis>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Идентификатор компонента, имена параметров в запросах</entry>
+            <entry align="left">
+              <para>lowerCamelCase, только буквы и цифры</para>
+            </entry>
+            <entry align="left">
+              <para><literal>attributesTable</literal></para>
+              <para><literal>:component$relevantTo</literal></para>
+              <para><literal>:ds$attributesDs</literal></para>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Идентификатор источника данных</entry>
+            <entry align="left">
+              <para>lowerCamelCase, только буквы и цифры, оканчивается на <code>Ds</code></para>
+            </entry>
+            <entry align="left">
+              <code>attributesDs</code>
+            </entry>
+          </row>
+          <row>
+            <entry namest="c1" nameend="c3" align="center">
+              <emphasis role="bold">SQL скрипты</emphasis>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Зарезервированные слова</entry>
+            <entry align="left">lowercase</entry>
+            <entry align="left">
+              <literal>create table</literal>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Таблицы</entry>
+            <entry align="left">UPPER_CASE. Название предваряется именем проекта для формирования пространства имен. В именах таблиц рекомендуется использовать единственное число.</entry>
+            <entry align="left">
+              <para><literal>SALES_CUSTOMER</literal></para>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Колонки</entry>
+            <entry align="left">UPPER_CASE</entry>
+            <entry align="left">
+              <para><literal>CUSTOMER</literal></para>
+              <para><literal>TOTAL_AMOUNT</literal></para>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Колонки внешних ключей</entry>
+            <entry align="left">UPPER_CASE. Состоит из имени таблицы, на которую ссылается колонка (без префикса проекта), и суффикса _ID.</entry>
+            <entry align="left">
+              <literal>CUSTOMER_ID</literal>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Индексы</entry>
+            <entry align="left">UPPER_CASE. Состоит из префикса IDX_, имени таблицы, для которой создается инлекс (с префиксом проекта), и имен полей, включенных в индекс.</entry>
+            <entry align="left">
+              <literal>IDX_SALES_CUSTOMER_NAME</literal>
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
   <section id="project_file_structure">
     <title>Файловая структура проекта</title>
     <para>Рассмотрим структуру классов и других файлов в проекте.</para>
@@ -115,106 +228,6 @@
   <section>
     <title>Создание проекта</title>
     <para>TODO</para>
-  </section>
-  <section>
-    <title>Соглашения по именованию</title>
-    <para>Ниже представлены соглашения, рекомендуемые для программирования на платформе <trademark>CUBA</trademark>.</para>
-    <para>При написании классов рекомендуем использовать стиль <application>IntelliJ IDEA</application> по умолчанию (это можно сделать с помощью сочетания клавиш <keycombo>
-        <keycap function="control">Ctrl</keycap>
-        <keycap function="alt">Alt</keycap>
-        <keycap>L</keycap>
-      </keycombo>). Стиль <application>IntelliJ IDEA</application> по умолчанию удовлетворяет Code Conventions for the Java Programming Language (<ulink url="http://www.oracle.com/technetwork/java/codeconv-138413.html">http://www.oracle.com/technetwork/java/codeconv-138413.html</ulink>)</para>
-    <para>Максимальная длина строки − 120 символов. Максимальная длина метода − 50 строк.</para>
-    <para>Правила использования прописных букв в идентификаторах:
-</para>
-    <informaltable frame="all" pgwide="0" align="center">
-      <tgroup cols="3" colsep="1" rowsep="1" align="center">
-        <colspec colname="c1"/>
-        <colspec colname="c2"/>
-        <colspec colname="c3"/>
-        <thead wordsize="16">
-          <row>
-            <entry colname="Имя атрибута" role="bord">Идентификатор</entry>
-            <entry colname="Тип атрибута" role="caption">Правило именования</entry>
-            <entry colname="Тип атрибута" role="caption">Пример</entry>
-          </row>
-        </thead>
-        <tbody>
-          <row>
-            <entry namest="c1" nameend="c3" align="center" role="left">
-              <emphasis role="bold">Java и Groovy классы </emphasis>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Название класса, тип перечисления, событие, класс исключения, интерфейс</entry>
-            <entry align="left">UpperCamelCase </entry>
-            <entry align="left"><code>Buyer</code>, <code>Unit</code>, <code>EditRoleAction</code>, <code>RuntimeException</code>, <code>Editor</code></entry>
-          </row>
-          <row>
-            <entry align="left" role="left">Название класса контроллера</entry>
-            <entry align="left" role="special">UpperCamelCase, контроллеры экранов со списком сущностей − <code>&lt;ИмяКлассаСущности&gt;Browser</code>, контроллеры экранов редактирования − <code>&lt;ИмяКлассаСущности&gt;Editor</code></entry>
-            <entry align="left" role="right">
-              <code>BuyerBrowser</code>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Статическое поле только для чтения</entry>
-            <entry align="left">UPPERCASE</entry>
-            <entry align="left">
-              <code>ENTITY_SPECIAL_KEY</code>
-            </entry>
-          </row>
-          <row>
-            <entry align="left" role="left">Метод, переменная</entry>
-            <entry align="left" role="special">lowerCamelCase</entry>
-            <entry align="left" role="right"><code>setItem</code>, <code>discountsTable</code></entry>
-          </row>
-          <row>
-            <entry namest="c1" nameend="c3" align="center">
-              <emphasis role="bold">XML-дескрипторы</emphasis>
-            </entry>
-          </row>
-          <row>
-            <entry align="left" role="left">Идентификатор компонента, имена параметров в запросах</entry>
-            <entry align="left" role="special">lowerCamelCase, только буквы и цифры</entry>
-            <entry align="left" role="right"><code>attributesTable</code>, <code>component$relevantTo</code></entry>
-          </row>
-          <row>
-            <entry align="left">Идентификатор источника данных</entry>
-            <entry align="left">lowerCamelCase, только буквы и цифры, оканчивается на <code>Ds</code></entry>
-            <entry align="left">
-              <code>attributesDs</code>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Имена параметров в запросах</entry>
-            <entry align="left">lowerCamelCase, только буквы и цифры</entry>
-            <entry align="left">
-              <code>component$relevantTo</code>
-            </entry>
-          </row>
-          <row>
-            <entry namest="c1" nameend="c3" align="center" role="left">
-              <emphasis role="bold">Объекты базы данных</emphasis>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Зарезервированные слова</entry>
-            <entry align="left">lowercase</entry>
-            <entry align="left">
-              <code>create table</code>
-            </entry>
-          </row>
-          <row>
-            <entry align="left" role="left">Идентификаторы</entry>
-            <entry align="left" role="special">UPPERCASE. Слова в названии разделяются подчеркиванием. В именах таблиц используется либо единственное число, либо множественное, но не оба сразу. Рекомендуем использовать единственное число.</entry>
-            <entry align="left" role="right">
-              <code>SYS_FTS_QUEUE</code>
-            </entry>
-          </row>
-        </tbody>
-      </tgroup>
-    </informaltable>
   </section>
   <section>
     <title>Отладка и тестирование</title>

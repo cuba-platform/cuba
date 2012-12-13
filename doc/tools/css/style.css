@@ -9,7 +9,7 @@ html {
 
 body {
     background-color: white;
-    line-height: 140%;
+    line-height: 120%;
 	font-size: 14px;
 	margin:0 auto;
     max-width:100em;
@@ -32,9 +32,9 @@ a {
 }
 
 p {
-   margin-top: 0;
-   margin-bottom: 1em;
-   text-align: justify; /* ������������ �� ������ */
+   margin-top: 0.5em;
+   margin-bottom: 0.5em;
+   /*text-align: justify;*/
 }
 
 h1, h2, h3, h4, h5, h6{
@@ -57,27 +57,18 @@ h2 {
 
 h3 {
 	font-size:1.6em;
-    padding-top:0em;
-    padding-bottom:0em;
 }
 
 h4 {
 	font-size:1.4em;
-    padding-top:0em;
-    padding-bottom:0em;
 }
 
 h5 {
 	font-size: 1.2em;
-	padding-top:0em;
-    padding-bottom:0em;
 }
 
 h6 {
 	font-size: 1em;
-	padding-top:0em;
-    padding-bottom:0em;
-	margin-bottom:0.5em;
 }
 
 code, pre {
@@ -103,7 +94,6 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited, h6 a:visit
 
 .titlepage h1.title {
     font-size: 3.5em;
-    margin-bottom: 0;
     color: #0b6ec7;
 	text-align: center; 
 }
@@ -122,25 +112,26 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited, h6 a:visit
  * Table of Contents
  */
 
-.toc dl {
-    margin-top: 0em;
-    margin-bottom: 0em;
-}
-
 .book .toc > dl > dt {
-    margin-top: 0em;
 	font-weight:normal;
 	text-decoration: none;
 }
 
 .book .toc {
-    margin-top: 0em;
 	margin-bottom: 1em;
 }
 
 .toc p{
 	font-size: 1.8em;
 	color: #0b6ec7;
+}
+
+.toc > dl > dt {
+    margin-top: 1.2em;
+}
+
+.toc > dl > dd > dl > dt {
+    margin-top: 0.5em;
 }
 
 /*
@@ -168,12 +159,9 @@ div.chapter, div.section {
  */
  
 .link {
-	/*font-style: italic;*/
-	
 }
 
 .ulink {
-	/*color: blue;*/
 }
 
 .glossterm {
@@ -186,6 +174,11 @@ div.chapter, div.section {
 
 .variablelist dt {
     font-weight: bold;
+    margin-top: 1.5em;
+}
+
+.variablelist dt:first-child {
+    margin-top: 0em;
 }
 
 .variablelist dt a {
@@ -194,8 +187,6 @@ div.chapter, div.section {
 
 ol li, ul li {
     padding-left:.2em;
-    padding-bottom:.2em;
-    margin:0em;
 }
 
 ul {
@@ -207,52 +198,8 @@ ul ul {
     list-style-type:circle;
 }
 
-dt {
-    /*font-weight:bold;*/
-    margin-bottom:0em;
-    padding-bottom:0em;
-}
-
 dd {
-    margin:0em;
     margin-left:2em;
-    padding-top:0em;
-}
-
-li p:first-child, dd p:first-child {
-    padding:0em;
-    margin-top:0em;
-}
-
-.variablelist, .itemizedlist, .orderedlist {
-	margin-top:0.2em;
-}
-
-div.orderedlist {
-  margin-top: .6em;
-}
-
-div.orderedlist li {
-  margin-top: .6em;
-}
-
-ul li p:first-child {
-	margin:0em;
-}
-
-ul li p:last-child {
-    margin-bottom:0em;
-    padding-bottom:0em;
-}
-
-li p:first-child {
-    margin:0em !important;
-    padding:0em !important;
-}
-
-li p:last-child {
-    margin:0em !important;
-    padding:0em !important;
 }
 
 /*
@@ -275,14 +222,12 @@ pre {
 }
 
 .example, .figure {
-    margin-top: 0;
     margin-bottom: 1em;
 }
 
 .example .title, .figure .title {
     white-space: nowrap;
     text-align:center;
-    margin-top: 0;
     margin-bottom: 0.6em;
 	font-family: 'Arial', 'Verdana', sans-serif;
 	font-size: 10pt;
@@ -290,13 +235,11 @@ pre {
 }
 
 .example pre, .figure pre {
-    margin: 0;
     margin-bottom: 0.6em;
 }
 
 .example-contents > p {
     display: block;
-    margin: 0;
     margin-bottom: 0.2em;
 }
 
@@ -342,7 +285,6 @@ pre {
 
 .note, .tip, .warning, .caution {
     padding-top: 1em;
-    padding-bottom: 0;
     padding-left: 1.2em;
     padding-right: 1.2em;
     margin-bottom: 1em;
@@ -481,14 +423,12 @@ div.informaltable {
 }
 
 .table {
-    margin-top: 0;
     margin-bottom: 1.8em;
 	padding-bottom: 2em;
 }
 
 .table .title {
     white-space: nowrap;
-    margin-top: 0;
     margin-bottom: 0.6em;
 	font-family: 'Arial', 'Verdana', sans-serif;
 	font-size: 13px;

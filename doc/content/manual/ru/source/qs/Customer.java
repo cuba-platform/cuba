@@ -1,4 +1,4 @@
-package com.haulmont.sales.entity;
+package com.sample.sales.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;

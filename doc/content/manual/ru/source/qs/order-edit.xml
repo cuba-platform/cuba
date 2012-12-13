@@ -2,12 +2,12 @@
         class="com.haulmont.cuba.gui.components.AbstractEditor"
         caption="msg://editorCaption"
         datasource="orderDs"
-        messagesPack="com.haulmont.sales.gui.order"
+        messagesPack="com.sample.sales.gui.order"
         focusComponent="orderFieldGroup">
 
     <dsContext>
         <datasource id="orderDs"
-                    class="com.haulmont.sales.entity.Order"
+                    class="com.sample.sales.entity.Order"
                     view="orderWithCustomer">
         </datasource>
     </dsContext>

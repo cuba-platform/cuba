@@ -1,10 +1,10 @@
 <window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        messagesPack="com.haulmont.sales.gui.order"
+        messagesPack="com.sample.sales.gui.order"
         caption="msg://browserCaption">
 
     <dsContext>
         <collectionDatasource id="ordersDs"
-                              class="com.haulmont.sales.entity.Order"
+                              class="com.sample.sales.entity.Order"
                               view="orderWithCustomer">
             <query>
                 select o from sales$Order o order by o.date
