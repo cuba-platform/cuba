@@ -42,7 +42,11 @@ class SelectAction implements Button.ClickListener {
             selected = Collections.singleton(((PickerField) lookupComponent).getValue());
         } else if (lookupComponent instanceof OptionsGroup) {
             final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
-            selected = optionsGroup.getValue();
+            Object value = optionsGroup.getValue();
+			if (value instanceof Collection)
+			    selected = (Collection)value;
+			else
+				selected = Collections.singleton(value);
         } else {
             throw new UnsupportedOperationException("Unsupported lookupComponent type: " + lookupComponent.getClass());
         }
