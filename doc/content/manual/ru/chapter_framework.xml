@@ -2063,7 +2063,11 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
             <para>Например: <property>cuba.security.EntityLog.enabled</property>, <property>cuba.email.smtpHost</property>.</para>
           </listitem>
         </itemizedlist>
-        <para>Как правило, некоторое свойство принадлежит только одному или нескольким <link linkend="app_tiers">блокам</link> приложения. Например, <property>cuba.persistenceConfig</property> имеет смысл только для <structname>Middleware</structname>, <property> cuba.web.useLightHeader</property> − только для <structname>Web Client</structname>, а <property>cuba.springContextConfig</property> − для всех блоков. </para>
+        <para>Как правило, некоторое свойство принадлежит только одному или нескольким <link linkend="app_tiers">блокам</link> приложения. Например, <property>
+            <link linkend="cuba.persistenceConfig">cuba.persistenceConfig</link>
+          </property> имеет смысл только для <structname>Middleware</structname>, <property> cuba.web.useLightHeader</property> − только для <structname>Web Client</structname>, а <property>
+            <link linkend="cuba.springContextConfig">cuba.springContextConfig</link>
+          </property> − для всех блоков. </para>
         <para>Принадлежность к блоку означает, что если нужно задать значение некоторому свойству, это необходимо сделать <emphasis>во всех блоках</emphasis>, которым данное свойство принадлежит (и которые используются в приложении). </para>
         <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
             <listitem>
@@ -2106,6 +2110,7 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <para>Здесь префикс <literal>classpath:</literal> означает, что данный файл нужно искать в Java classpath, префикс <literal>file:</literal> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <literal>catalina.home</literal> − путь к корню <application>Tomcat</application>.</para>
         <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
         <para>Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Он может использоваться для переопределения свойств приложения при развертывании. Если этого файла нет, он игнорируется. Если же во время инсталляции системы требуется переопределение некоторых параметров (как правило различных URL), достаточно создать этот файл и поместить в него переопределяемые свойства. При последующих обновлениях системы такой файл с локальными настройками легко сохранить.</para>
+        <para>Аналогом <filename>local.app.properties</filename> для <structname>Desktop Client</structname> служат аргументы командной строки запуска JVM. Загрузчик свойств данного блока воспринимает все аргументы, содержащие знак &quot;<literal>=</literal>&quot;, как пары ключ-значение, и заменяет ими соответствующие свойства приложения, заданные в файлах <filename>app.properties</filename>.</para>
         <tip>
           <para>Правила задания информации в файлах  <filename>*.properties</filename>:</para>
           <itemizedlist>
@@ -3530,8 +3535,8 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
       </section>
     </section>
   </section>
-  <section id="client">
-    <title>Компоненты клиента</title>
+  <section id="gui_framework">
+    <title>Универсальный пользовательский интерфейс</title>
     <figure>
       <title/>
       <mediaobject>
@@ -3540,14 +3545,6 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         </imageobject>
       </mediaobject>
     </figure>
-    <para>TODO</para>
-  </section>
-  <section id="portal">
-    <title>Компоненты портала</title>
-    <para>TODO</para>
-  </section>
-  <section id="gui_framework">
-    <title>Универсальный пользовательский интерфейс</title>
     <section>
       <title>Экраны</title>
       <section id="screen_controller">
@@ -8365,6 +8362,10 @@ taskHandler.execute();</programlisting>
       <para>TODO</para>
     </section>
   </section>
+  <section id="portal">
+    <title>Компоненты портала</title>
+    <para>TODO</para>
+  </section>
   <section>
     <title>Механизмы платформы</title>
     <section id="scheduled_tasks">
@@ -8399,7 +8400,7 @@ taskHandler.execute();</programlisting>
       <title>REST API</title>
       <para>TODO</para>
     </section>
-    <section>
+    <section id="file_storage">
       <title>Хранилище файлов</title>
       <para>TODO</para>
     </section>

@@ -4,7 +4,7 @@
   <title>Разработка приложений</title>
   <section>
     <title>Рекомендуемый стиль кода</title>
-    <para role=""><emphasis role="bold">Форматирование кода</emphasis></para>
+    <para><emphasis role="bold">Форматирование кода</emphasis></para>
     <itemizedlist>
       <listitem>
         <para>Для Java и Groovy кода рекомендуется придерживаться стандартного стиля, описанного в документе <ulink url="http://www.oracle.com/technetwork/java/codeconv-138413.html">Code Conventions for the Java Programming Language</ulink>. При программировании в <application>IntelliJ IDEA</application> для этого достаточно использовать стиль по умолчанию, а для переформатирования применять сочетание клавиш <keycap>Ctrl-Alt-L</keycap>.</para>
@@ -117,109 +117,96 @@
   </section>
   <section id="project_file_structure">
     <title>Файловая структура проекта</title>
-    <para>Рассмотрим структуру классов и других файлов в проекте.</para>
-    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
-    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <firstterm id="text_modules">модулей</firstterm> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. Модуль – это элемент проекта, в котором хранится программный код.</para>
-    <itemizedlist>
-      <listitem>
-        <para><structname>global</structname></para>
-      </listitem>
-      <listitem>
-        <para><structname>core</structname></para>
-      </listitem>
-      <listitem>
-        <para><structname>gui</structname></para>
-      </listitem>
-      <listitem>
-        <para><structname>client</structname></para>
-      </listitem>
-      <listitem>
-        <para><structname>web</structname></para>
-      </listitem>
-      <listitem>
-        <para><structname>web-portal</structname></para>
-      </listitem>
-      <listitem>
-        <para><structname>desktop</structname></para>
-      </listitem>
-    </itemizedlist>
-    <para>Модуль <structname>global</structname> определяет компоненты, доступные как среднему слою (Middleware), так и клиентскому коду.</para>
-    <itemizedlist>
-      <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="services">сервисов</link> среднего слоя (Middleware). </para>
-      </listitem>
-      <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="entity">сущностей</glossterm> и <link linkend="message_packs">файлы локализованных сообщений</link>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
-      </listitem>
-      <listitem>
-        <para>В файле <filename>shop-persistence.xml</filename>  регистрируются новые классы сущностей.</para>
-      </listitem>
-      <listitem>
-        <para>В файле <filename>shop-metadata.xml</filename>  может быть задано <link linkend="extension">замещение</link> стандартных сущностей новыми.</para>
-      </listitem>
-    </itemizedlist>
+    <para>Рассмотрим файловую структуру  проекта на примере простого приложения <application>Sales</application>, состоящего из <link linkend="app_tiers">блоков</link> Middleware и Web Client.</para>
     <figure>
-      <title>Структура каталогов и файлов проекта</title>
+      <title>Файловая структура проекта</title>
       <mediaobject>
         <imageobject>
-          <imagedata contentwidth="55%" align="center" fileref="img/ch2_structure.png"/>
+          <imagedata contentwidth="" align="center" fileref="img/project_structure.png"/>
         </imageobject>
       </mediaobject>
     </figure>
-    <para>Модуль <structname>core</structname> определяет компоненты среднего слоя (Middleware) системы.</para>
-    <itemizedlist>
-      <listitem>
-        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и <link linkend="db_update">изменения</link> базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
-      </listitem>
-      <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации <link linkend="services">сервисов (Services)</link> среднего слоя (Middleware), а также другие компоненты бизнес-логики приложения.</para>
-      </listitem>
-      <listitem>
-        <para>Файл <filename>shop-app.properties</filename> содержит конфигурационные параметры среднего слоя:</para>
-        <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов Spring-фреймворка;</para>
-        <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов ORM;</para>
-        <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <link linkend="views">представлений</link>;</para>
-      </listitem>
-      <listitem>
-        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком Spring компонентов, а также зарегистрировать создаваемые <glossterm linkend="jmx">JMX</glossterm>-компоненты.</para>
-      </listitem>
-      <listitem>
-        <para>Файл <filename>shop-views.xml</filename> содержит описание <link linkend="views">представлений</link>. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
-      </listitem>
-      <listitem>
-        <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
-      </listitem>
-      <listitem>
-        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя (Middleware). Среди прочего содержит список конфигурационных файлов <filename>*-app.properties</filename>, используемых данным приложением.</para>
-      </listitem>
-    </itemizedlist>
-    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm>, <glossterm linkend="screen_xml_glossentry">XML-дескрипторы</glossterm> экранов, файлы <link linkend="message_packs">локализованных сообщений</link>.</para>
-    <itemizedlist>
-      <listitem>
-        <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
-      </listitem>
-      <listitem>
-        <para>В файле <filename>shop-screens.xml</filename> регистрируются экраны приложения.</para>
-      </listitem>
-    </itemizedlist>
-    <para>Модуль <structname>web</structname> определяет компоненты веб-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или <glossterm>компаньоны</glossterm> и файлы конфигурации.</para>
-    <itemizedlist>
-      <listitem>
-        <para>Класс  <code>com.haulmont.shop.App.java</code> определяет главное окно приложения.</para>
-      </listitem>
-      <listitem>
-        <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры веб-клиента:</para>
-        <para><parameter>cuba.windowConfig</parameter> − в этом свойстве указывается набор файлов конфигурации экранов приложения;</para>
-        <para><parameter>cuba.menuConfig</parameter> содержит список файлов, описывающих меню приложения;</para>
-        <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <link linkend="message_packs">пакетов сообщений</link>, формирующих <link linkend="main_message_pack">главный пакет</link>, используемый главным меню и другими общими компонентами системы;</para>
-      </listitem>
-      <listitem>
-        <para>Файл <filename>shop-web-menu.xml</filename> содержит описание пунктов главного меню приложения.</para>
-      </listitem>
-      <listitem>
-        <para>В файле <filename>shop-web-screens.xml</filename> регистрируются экраны приложения.</para>
-      </listitem>
-    </itemizedlist>
+    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
+    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <link linkend="app_modules">модулей</link> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. </para>
+    <figure>
+      <title>Структура модуля global</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata contentwidth="" align="center" fileref="img/project_structure_global.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Модуль <structname>global</structname> содержит каталог исходных текстов <filename>src</filename>, в корне которого располагаются конфигурационные файлы <filename>
+        <link linkend="metadata.xml">sales-metadata.xml</link>
+      </filename> и <filename>
+        <link linkend="persistence.xml">sales-persistence.xml</link>
+      </filename>. Пакет <code>com.sample.sales.core</code> содержит интерфейсы сервисов Middleware, пакет <code>com.sample.sales.entity</code> - классы <link linkend="data_model">сущностей</link> и <link linkend="message_packs">файлы локализации</link> для них.</para>
+    <figure>
+      <title>Структура модуля core</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata contentwidth="" align="center" fileref="img/project_structure_core.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Модуль <structname>core</structname> содержит следующие каталоги:<itemizedlist>
+        <listitem>
+          <para><filename>db</filename> - каталог <link linkend="db_scripts">скриптов создания и обновления</link> базы данных.</para>
+        </listitem>
+        <listitem>
+          <para><filename>src</filename> - каталог исходных текстов, в корне которого расположены файл <link linkend="app_properties_files">свойств приложения</link> блока Middleware и конфигурационные файлы <filename>
+              <link linkend="spring.xml">sales-spring.xml</link>
+            </filename> и <filename>
+              <link linkend="views.xml">sales-views.xml</link>
+            </filename>. Пакет <code>com.samples.sales.core</code> содержит классы  Middleware: реализации <link linkend="services">сервисов</link>, <link linkend="managed_beans">управляемые бины</link>, <link linkend="jmx_beans">JMX-бины</link>.</para>
+        </listitem>
+        <listitem>
+          <para><filename>web</filename> - каталог с конфигурационными файлами веб-приложения, в которое собирается блок Middleware: <filename>
+              <link linkend="context.xml">context.xml</link>
+            </filename> и <filename>
+              <link linkend="web.xml">web.xml</link>
+            </filename>.</para>
+        </listitem>
+      </itemizedlist></para>
+    <figure>
+      <title>Структура модуля gui</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata contentwidth="" align="center" fileref="img/project_structure_gui.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Модуль <structname>gui</structname> содержит каталог исходных текстов <filename>src</filename>, в корне которого располагается конфигурационный файл <filename>
+        <link linkend="screens.xml">sales-screens.xml</link>
+      </filename>. Пакет <code>com.sample.sales.gui</code> содержит XML-дескрипторы и контроллеры экранов и  <link linkend="message_packs">файлы локализации</link> для них.</para>
+    <figure>
+      <title>Структура модуля web</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata contentwidth="" align="center" fileref="img/project_structure_web.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Модуль <structname>web</structname> содержит следующие каталоги:<itemizedlist>
+        <listitem>
+          <para><filename>src</filename> - каталог исходных текстов, в корне которого расположены файл <link linkend="app_properties_files">свойств приложения</link> блока Web Client и конфигурационные файлы <filename>
+              <link linkend="menu.xml">sales-web-menu.xml</link>
+            </filename>, <filename>
+              <link linkend="permissions.xml">sales-web-permissions.xml</link>
+            </filename>, <filename>
+              <link linkend="screens.xml">sales-web-screens.xml</link>
+            </filename> и <filename>
+              <link linkend="spring.xml">sales-web-spring.xml</link>
+            </filename>. Пакет <code>com.samples.sales.web</code> содержит главный класс блока Web Client (наследник <code>DefaultApp</code>) и <link linkend="main_message_pack">главный пакет локализованных сообщений</link>.</para>
+        </listitem>
+        <listitem>
+          <para><filename>web</filename> - каталог с конфигурационными файлами веб-приложения, в которое собирается блок Web Client: <filename>
+              <link linkend="context.xml">context.xml</link>
+            </filename> и <filename>
+              <link linkend="web.xml">web.xml</link>
+            </filename>.</para>
+        </listitem>
+      </itemizedlist></para>
   </section>
   <section>
     <title>Описание скриптов сборки</title>

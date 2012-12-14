@@ -74,7 +74,7 @@
         <emphasis role="bold">Источник данных</emphasis>
       </glossterm>
       <glossdef>
-        <para>См. <xref xrefstyle="" linkend="datasources"/></para>
+        <para>См. <xref linkend="datasources"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -94,8 +94,8 @@
         <emphasis role="bold">Контроллер экрана</emphasis>
       </glossterm>
       <glossdef>
-        <para><code>Java</code>  класс, содержащий логику инициализации и обработки событий экрана. Связан с <glossterm linkend="screen_xml_glossentry" arch="">XML-дескриптором</glossterm> экрана.</para>
-        <para>См. <xref xrefstyle="" linkend="screen_controller"/></para>
+        <para><code>Java</code>  класс, содержащий логику инициализации и обработки событий экрана. Связан с <glossterm linkend="screen_xml_glossentry">XML-дескриптором</glossterm> экрана.</para>
+        <para>См. <xref linkend="screen_controller"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -126,7 +126,7 @@
       </glossterm>
       <glossdef>
         <para>Набор экземпляров сущностей, загруженных из базы данных или только что созданных. Персистентный контекст является кэшем данных в рамках текущей транзакции. При коммите транзакции все изменения сущностей в персистентном контексте сохраняются в БД. </para>
-        <para>См. <xref xrefstyle="" linkend="entityManager"/></para>
+        <para>См. <xref linkend="entityManager"/></para>
       </glossdef>
     </glossentry>
     <glossentry>
@@ -134,7 +134,7 @@
         <emphasis role="bold">Представление</emphasis>
       </glossterm>
       <glossdef>
-        <para>См. <xref xrefstyle="" linkend="views"/></para>
+        <para>См. <xref linkend="views"/></para>
       </glossdef>
     </glossentry>
   </glossdiv>

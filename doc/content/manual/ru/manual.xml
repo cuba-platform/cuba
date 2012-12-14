@@ -108,7 +108,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_development.xml" encoding="UTF-8"/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_deployment.xml" encoding="UTF-8"/>
   <appendix>
-    <title>Описание конфигурационных файлов</title>
+    <title>Конфигурационные файлы</title>
     <section id="context.xml">
       <title>context.xml</title>
       <para>Файл <filename>context.xml</filename> является дескриптором развертывания приложения на сервере <application>Apache Tomcat</application>. В развернутом приложении этот файл располагается  в подкаталоге <filename>META-INF</filename> каталога веб-приложения или WAR-файла, например <filename>tomcat/webapps/app-core/META-INF/context.xml</filename>. В проекте файлы данного типа находятся в каталогах <filename>/web/META-INF</filename> модулей <structname>core</structname>, <structname>web</structname>, <structname>portal</structname>.</para>
@@ -192,6 +192,73 @@
 
 &lt;/datatypes&gt;</programlisting></para>
     </section>
+    <section id="menu.xml">
+      <title>menu.xml</title>
+      <para>Файлы данного типа используются в <link linkend="app_tiers">блоках</link> Web Client и Desktop Client, реализующих <link linkend="gui_framework">универсальный пользовательский интерфейс</link>, для описания структуры главного меню приложения.</para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.0/menu.xsd">http://schemas.haulmont.com/cuba/4.0/menu.xsd</ulink></para>
+      <para>Набор файлов <filename>menu.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.menuConfig">cuba.menuConfig</link>
+        </property>. </para>
+      <para>Рассмотрим структуру файла.</para>
+      <para><sgmltag>menu-config</sgmltag> - корневой элемент</para>
+      <para>Элементы <sgmltag>menu-config</sgmltag>, образующие древовидную структуру:<itemizedlist>
+          <listitem>
+            <para><sgmltag>menu</sgmltag> - раскрывающееся меню, содержащее пункты и другие раскрывающиеся меню</para>
+            <para>Атрибуты menu:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>id</sgmltag> - идентификатор элемента, использующийся для формирования локализованного  названия (см. ниже)</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>insertBefore</sgmltag>, <sgmltag>insertAfter</sgmltag> - идентификатор элемента меню, перед/после которого нужно вставить данный элемент. Используется в прикладном проекте для вставки элемента в нужное место меню, определенного в аналогичных файлах базовых проектов. Разумеется использовать для данного элемента нужно какой-нибудь один из этих атрибутов.</para>
+                </listitem>
+              </itemizedlist></para>
+            <para>Элементы menu:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>menu</sgmltag></para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>item</sgmltag> - пункт меню, см. далее</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para><sgmltag>item</sgmltag> - пункт меню</para>
+            <para>Атрибуты <sgmltag>item</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>id</sgmltag> - идентификатор элемента, использующийся для формирования локализованного названия (см. ниже), и для связи с элементом файла <filename>
+                      <link linkend="screens.xml">screens.xml</link>
+                    </filename>, в котором зарегистрированы экраны UI. При выборе пункта меню в главном окне приложения будет открыт соответствующий экран.</para>
+                  <para>Если в качестве идентификатора пункта используется символ &quot;<literal>-</literal>&quot;, то вместо пункта в меню отображается разделитель.</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>shortcut</sgmltag> - горячая клавиша для вызова данного пункта меню. Возможные модификаторы - <literal>ALT</literal>, <literal>CTRL</literal>, <literal>SHIFT</literal> - отделяются символом &quot;<literal>-</literal>&quot;. Например:<programlisting>shortcut=&quot;ALT-C&quot;
+shortcut=&quot;ALT-CTRL-C&quot;
+shortcut=&quot;ALT-CTRL-SHIFT-C&quot;</programlisting></para>
+                  <para>Горячие клавиши можно также задавать в <link linkend="app_properties">свойствах приложения</link> и использовать в <filename>menu.xml</filename> следующим образом:<programlisting>shortcut=&quot;${sales.menu.customer}&quot;</programlisting></para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>openType</sgmltag> - тип открытия экрана, возможные значения соответствуют перечислению <code>WindowManager.OpenType</code>: <code>NEW_TAB</code>, <code>THIS_TAB</code>, <code>DIALOG</code>, <code>NEW_WINDOW</code>.</para>
+                  <para>По умолчанию - <code>NEW_TAB</code>. </para>
+                  <para>Значение <code>NEW_WINDOW</code> поддерживается только в Desktop Client, в Web Client оно эквивалентно <code>NEW_TAB</code>.</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>resizable</sgmltag> - актуально для типа открытия экрана <code>DIALOG</code> - задает окну возможность изменения размера. Возможные значения: <code>true</code>, <code>false</code>.</para>
+                  <para>По умолчанию главное меню не влияет на возможность изменения размера диалоговых окон.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Пример файла меню:<programlisting>&lt;menu-config xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/menu.xsd&quot;&gt;
+
+    &lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
+        &lt;item id=&quot;sales$Customer.lookup&quot;/&gt;
+        &lt;item id=&quot;sales$Order.lookup&quot;/&gt;
+    &lt;/menu&gt;
+
+&lt;/menu-config&gt;</programlisting></para>
+      <para>Локализованное название элемента меню формируется следующим образом: к идентификатору элемента добавляется префикс <literal>menu-config</literal> с точкой на конце, и полученная строка используется как ключ в <link linkend="main_message_pack">главном пакете сообщений</link>. Например:<programlisting>menu-config.sales=Sales
+menu-config.sales$Customer.lookup=Customers</programlisting></para>
+    </section>
     <section id="metadata.xml">
       <title>metadata.xml</title>
       <para>Файлы данного типа используются для регистрации неперсистентных сущностей и присвоения <link linkend="meta_annotations">мета-аннотаций</link>, см. <xref linkend="metadata_framework"/></para>
@@ -267,6 +334,14 @@
 
 &lt;/metadata&gt;</programlisting></para>
     </section>
+    <section id="permissions.xml">
+      <title>permissions.xml</title>
+      <para>Файлы данного типа используются в блоках Web Client и Desktop Client для регистрации специфических разрешений пользователей. </para>
+      <para>Набор файлов <filename>permissions.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.permissionConfig">cuba.permissionConfig</link>
+        </property>. </para>
+      <para>Подробнее см. руководство <productname>Платформа CUBA. Подсистема безопасности</productname>.</para>
+    </section>
     <section id="persistence.xml">
       <title>persistence.xml</title>
       <para>Файлы данного типа являются стандартными для JPA и используются для регистрации персистентных сущностей и задания параметров функционирования фреймворка <link linkend="orm">ORM</link>.</para>
@@ -304,6 +379,72 @@
       <para>Основная задача контейнера удаленного доступа - сделать сервисы <structname>Middleware</structname> доступными клиентскому уровню с помощью механизма <application>Spring HttpInvoker</application>. Для этого в <filename>cuba-remoting-spring.xml</filename> базового проекта <structname>cuba</structname> определяется бин <literal>servicesExporter</literal> типа <code>RemoteServicesBeanCreator</code>, который получает из основного контейнера все классы сервисов и экспортирует их. В дополнение к обычным аннотированным сервисам контейнер удаленного доступа экспортирует некоторые специфические бины, такие как <code>LoginService</code>.</para>
       <para>Кроме того, <filename>cuba-remoting-spring.xml</filename> определяет базовый пакет, начиная с которого производится поиск аннотированных классов контроллеров <application>Spring MVC</application>, используемых для загрузки-выгрузки файлов.</para>
       <para>В прикладном проекте определять файл типа <filename>remoting-spring.xml</filename> необходимо только в том случае, если создаются специфические контроллеры <application>Spring MVC</application>. Сервисы прикладного проекта в любом случае будут импортированы стандартным бином <literal>servicesExporter</literal>, определенным в базовом проекте <structname>cuba</structname>.</para>
+    </section>
+    <section id="screens.xml">
+      <title>screens.xml</title>
+      <para>Файлы данного типа используются в <link linkend="app_tiers">блоках</link> Web Client и Desktop Client, реализующих <link linkend="gui_framework">универсальный пользовательский интерфейс</link>, для регистрации <link linkend="screen_xml">XML-дескрипторов</link> экранов.</para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.0/screens.xsd">http://schemas.haulmont.com/cuba/4.0/screens.xsd</ulink></para>
+      <para>Набор файлов <filename>screens.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.windowConfig">cuba.windowConfig</link>
+        </property>. </para>
+      <para>Рассмотрим структуру файла.</para>
+      <para><sgmltag>screen-config</sgmltag> - корневой элемент</para>
+      <para>Элементы <sgmltag>screen-config</sgmltag>:<itemizedlist>
+          <listitem>
+            <para><sgmltag>screen</sgmltag> - описатель экрана</para>
+            <para>Атрибуты <sgmltag>screen</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>id</sgmltag> - идентификатор экрана, по которому он доступен в программном коде (например в методах <code>IFrame.openWindow()</code> и т.п.) и в <filename>
+                      <link linkend="menu.xml">menu.xml</link>
+                    </filename>.</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>template</sgmltag> - путь к файлу <link linkend="screen_xml">XML-дескриптора</link> экрана. Загрузка производится по правилам интерфейса <code>
+                      <link linkend="resources">Resources</link>
+                    </code>.</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>class</sgmltag> - если атрибут <sgmltag>template</sgmltag> не указан, в данном атрибуте нужно указать имя класса, реализующего либо <code>Callable</code>, либо <code>Runnable</code>. </para>
+                  <para>В случае <code>Callable</code> метод <code>call()</code> должен возвращать экземпляр созданного <code>Window</code>, который будет возвращен вызывающему коду как результат <code>WindowManager.openWindow()</code>. Класс может содержать конструктор с параметрами для передачи ему строковых значений, заданных вложенным элементом <sgmltag>param</sgmltag> (см. ниже). </para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>multipleOpen</sgmltag> - опциональный атрибут, задающий возможность многократного открытия экрана. Если равен <literal>false</literal> или не задан, и в главном окне уже открыт экран с данным идентификатором, то вместо открытия нового экземпляра экрана отобразится имеющийся. Значение <literal>true</literal> позволяет открывать произвольное количество одинаковых экранов.</para>
+                </listitem>
+              </itemizedlist></para>
+            <para>Элементы <sgmltag>screen</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>param</sgmltag> - задает параметр экрана, передаваемый в мэп метода <code>init()</code> <link linkend="screen_controller">контроллера</link>. Параметры, передаваемые из вызывающего кода в методы <code>openWindow()</code>, переопределяют одноименные параметры, заданные в <filename>screens.xml</filename>.</para>
+                  <para>Атрибуты <sgmltag>param</sgmltag>:<itemizedlist>
+                      <listitem>
+                        <para><sgmltag>name</sgmltag> - имя параметра</para>
+                      </listitem>
+                      <listitem>
+                        <para><sgmltag>value</sgmltag> - значение параметра. Строки <literal>true</literal> и <literal>false</literal> автоматически преобразуются в значения типа <code>Boolean</code>.</para>
+                      </listitem>
+                    </itemizedlist></para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para><sgmltag>include</sgmltag> - включение другого файла типа <filename>screens.xml</filename></para>
+            <para><para>Атрибуты <sgmltag>include</sgmltag>:<itemizedlist>
+                  <listitem>
+                    <para><sgmltag>file</sgmltag> - путь к файлу по правилам интерфейса <code>
+                        <link linkend="resources">Resources</link>
+                      </code></para>
+                  </listitem>
+                </itemizedlist></para></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Пример файла <filename>screens.xml</filename>:<programlisting>&lt;screen-config xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/screens.xsd&quot;&gt;
+
+    &lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-browse.xml&quot;/&gt;
+    &lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-edit.xml&quot;/&gt;
+
+    &lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/haulmont/sales/gui/order/order-browse.xml&quot;/&gt;
+    &lt;screen id=&quot;sales$Order.edit&quot; template=&quot;/com/haulmont/sales/gui/order/order-edit.xml&quot;/&gt;
+
+&lt;/screen-config&gt;</programlisting></para>
     </section>
     <section id="spring.xml">
       <title>spring.xml</title>
@@ -520,7 +661,7 @@
     </section>
   </appendix>
   <appendix id="app_properties_reference">
-    <title>Описание свойств приложения</title>
+    <title>Свойства приложения</title>
     <variablelist>
       <varlistentry id="cuba.allowQueryFromSelected">
         <term>cuba.allowQueryFromSelected</term>
@@ -553,12 +694,32 @@
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.confDir">
+        <term>cuba.confDir</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий расположение <link linkend="conf_dir">каталога конфигурации</link> данного <link linkend="app_tiers">блока приложения</link>.</para>
+          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/conf/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/conf</filename> в подкаталоге с именем текущего веб-приложения, например <filename>tomcat/conf/app-core</filename>.</para>
+          <para>Значение по умолчанию для блока <structname>Desktop Client</structname>: <literal>${<link linkend="cuba.desktop.home">cuba.desktop.home</link>}/conf</literal>. </para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.dataSourceJndiName">
         <term>cuba.dataSourceJndiName</term>
         <listitem>
           <para>Задает имя источника данных в JNDI.</para>
           <para>Значение по умолчанию: <literal>java:comp/env/jdbc/CubaDS</literal></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.dataDir">
+        <term>cuba.dataDir</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий расположение <link linkend="work_dir">рабочего каталога</link>  данного <link linkend="app_tiers">блока приложения</link>.</para>
+          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/work/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/work</filename> в подкаталоге с именем текущего веб-приложения, например <filename>tomcat/work/app-core</filename>.</para>
+          <para>Значение по умолчанию для блока <structname>Desktop Client</structname>: <literal>${<link linkend="cuba.desktop.home">cuba.desktop.home</link>}/work</literal>. </para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.dbDir">
@@ -677,6 +838,16 @@
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.logDir">
+        <term>cuba.logDir</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий расположение <link linkend="log_dir">каталога журналов</link> данного <link linkend="app_tiers">блока приложения</link>.</para>
+          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/logs</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает  каталог <filename>tomcat/logs</filename>.</para>
+          <para>Значение по умолчанию для блока <structname>Desktop Client</structname>: <literal>${<link linkend="cuba.desktop.home">cuba.desktop.home</link>}/logs</literal>. </para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.mainMessagePack">
         <term>cuba.mainMessagePack</term>
         <listitem>
@@ -684,6 +855,19 @@
           <para>Значением свойства может быть либо один пакет, либо список пакетов, разделенный пробелами. </para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
           <para>Пример:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.sample.sales.web</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.menuConfig">
+        <term>cuba.menuConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="menu.xml">menu.xml</link>
+            </filename>. </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Пример:<programlisting>cuba.menuConfig=cuba-web-menu.xml sales-web-menu.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.metadataConfig">
@@ -729,6 +913,16 @@
           <para>Используется в блоках клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.permissionConfig">
+        <term>cuba.permissionConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="permissions.xml">permissions.xml</link>
+            </filename>. </para>
+          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Пример:<programlisting>cuba.permissionConfig=cuba-web-permissions.xml sales-web-permissions.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.persistenceConfig">
         <term>cuba.persistenceConfig</term>
         <listitem>
@@ -766,6 +960,16 @@
             </code>.</para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
           <para>Пример:<programlisting>cuba.springContextConfig=cuba-spring.xml sales-spring.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.tempDir">
+        <term>cuba.tempDir</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий расположение <link linkend="temp_dir">временного каталога</link>  данного <link linkend="app_tiers">блока приложения</link>.</para>
+          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/temp/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/temp</filename> в подкаталоге с именем текущего веб-приложения, например <filename>tomcat/temp/app-core</filename>.</para>
+          <para>Значение по умолчанию для блока <structname>Desktop Client</structname>: <literal>${<link linkend="cuba.desktop.home">cuba.desktop.home</link>}/temp</literal>. </para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.trustedClientPassword">
@@ -843,6 +1047,19 @@
           <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml sales-views.xml</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.windowConfig">
+        <term>cuba.windowConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="screens.xml">screens.xml</link>
+            </filename>. </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Пример:<programlisting>cuba.windowConfig=cuba-web-screens.xml sales-web-screens.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
       <varlistentry>
         <term>cuba.web.loginDialogDefaultUser</term>
         <listitem>
@@ -859,6 +1076,74 @@
           <para>Значение по умолчанию: <literal>admin</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.webContextName">
+        <term>cuba.webContextName</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий имя контекста веб-приложения. Как правило, эквивалентен имени каталога или WAR-файла, содержащего данный <link linkend="app_tiers">блок приложения</link>.</para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется в блоках<structname> Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
+          <para>Например, для блока Middleware, расположенного в каталоге <filename>tomcat/webapps/app-core</filename>, и доступного по URL <filename>http://somehost:8080/app-core</filename> данное свойство должно иметь задано следующим образом:<programlisting>cuba.webContextName=app-core</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.webHostName">
+        <term>cuba.webHostName</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий имя хоста, на котором  запущен данный <link linkend="app_tiers">блок приложения</link>.</para>
+          <para>Значение по умолчанию: <literal>localhost</literal></para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется в блоках<structname> Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
+          <para>Например, для блока Middleware,  доступного по URL <filename>http://somehost:8080/app-core</filename> данное свойство должно иметь задано следующим образом:<programlisting>cuba.webHostName=somehost</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.webPort">
+        <term>cuba.webPort</term>
+        <listitem>
+          <para>Конфигурационный параметр, задающий имя порта, на котором  запущен данный <link linkend="app_tiers">блок приложения</link>.</para>
+          <para>Значение по умолчанию: <literal>8080</literal></para>
+          <para>Интерфейс: <code>GlobalConfig</code></para>
+          <para>Используется в блоках<structname> Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
+          <para>Например, для блока Middleware,  доступного по URL <filename>http://somehost:8080/app-core</filename> данное свойство должно иметь задано следующим образом:<programlisting>cuba.webPort=8080</programlisting></para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </appendix>
+  <appendix>
+    <title>Системные свойства</title>
+    <para>Системные свойства задаются при запуске JVM с помощью аргумента командной строки <literal>-D</literal> и могут быть получены или установлены  методами <code>getProperty()</code>, <code>setProperty()</code> класса <code>System</code>.</para>
+    <variablelist>
+      <varlistentry id="log4j.configuration">
+        <term>log4j.configuration</term>
+        <listitem>
+          <para>Определяет местонахождение файла конфигурации фреймворка <application>
+              <ulink url="http://logging.apache.org/log4j/1.2/manual.html">Apache log4j</ulink>
+            </application>.</para>
+          <para>Для <link linkend="app_tiers">блоков приложения</link>, работающих на веб-сервере <application>Tomcat</application>, данное системное свойство задается в файлах <filename>tomcat/bin/setenv.bat</filename> и <filename>tomcat/bin/setenv.sh</filename>. По умолчанию оно указывает на конфигурационный файл <filename>tomcat/conf/log4j.xml</filename>.</para>
+          <para>Для <structname>Desktop Client</structname>, если данное свойство не задано при запуске JVM, оно задается в коде самого приложения и по умолчанию указывает на файл <filename>cuba-log4j.xml</filename>, расположенный в корне CLASSPATH. Задать другой файл конфигурации можно, переопределив метод <code>getDefaultLog4jConfig()</code> класса <code>com.haulmont.cuba.desktop.App</code>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.desktop.home">
+        <term>cuba.desktop.home</term>
+        <listitem>
+          <para>Для <link linkend="app_tiers">блока</link> <structname>Desktop Client</structname> задает расположение домашнего каталога, в котором по умолчанию находятся каталоги, определяемые свойствами приложения <property>
+              <link linkend="cuba.confDir">cuba.confDir</link>
+            </property>, <property>
+              <link linkend="cuba.logDir">cuba.logDir</link>
+            </property>, <property>
+              <link linkend="cuba.tempDir">cuba.tempDir</link>
+            </property>, <property>
+              <link linkend="cuba.dataDir">cuba.dataDir</link>
+            </property>.</para>
+          <para>Если данное свойство не задано при запуске JVM, то будет использовано значение <filename>${user.home}/.haulmont/cuba</filename>, которое можно изменить в прикладном проекте, переопределив метод <code>getDefaultHomeDir()</code> класса <code>com.haulmont.cuba.desktop.App</code>. </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.unitTestMode">
+        <term>cuba.unitTestMode</term>
+        <listitem>
+          <para>Данное системное свойство устанавливается в значение <code>true</code> в режиме выполнения интеграционных тестов базовым классом <code>CubaTestCase</code>.</para>
+          <para>Пример использования:<programlisting>if (!Boolean.valueOf(System.getProperty(&quot;cuba.unitTestMode&quot;)))
+    return &quot;Not in test mode&quot;;</programlisting></para>
         </listitem>
       </varlistentry>
     </variablelist>

@@ -17,15 +17,77 @@
     <para>В данном разделе описываются каталоги файловой системы, используемые различными <link linkend="app_tiers">блоками приложения</link> во время выполнения.</para>
     <section id="conf_dir">
       <title>Конфигурационный каталог</title>
-      <para>TODO</para>
+      <para>Каталог конфигурации предназначен для размещения ресурсов, дополняющих и переопределяющих свойства приложения, пользовательский интерфейс  и бизнес-логику после развертывания приложения. Переопределение обеспечивается механизмом загрузки интерфейса инфраструктуры <code>
+          <link linkend="resources">Resources</link>
+        </code>, который сначала выполняет поиск в конфигурационном каталоге, а потом в CLASSPATH, так что одноименные ресурсы в конфигурационном каталоге имеют приоритет над расположенными в JAR-файлах и каталогах классов.</para>
+      <para>Конфигурационный каталог может содержать следующие типы ресурсов:<itemizedlist>
+          <listitem>
+            <para>Файл <filename>
+                <link linkend="app_properties_files">local.app.properties</link>
+              </filename>, определяющий параметры развертывания блоков приложения, работающих под управлением веб-сервера</para>
+          </listitem>
+          <listitem>
+            <para>Конфигурационные файлы <filename>
+                <link linkend="metadata.xml">metadata.xml</link>
+              </filename>, <filename>
+                <link linkend="persistence.xml">persistence.xml</link>
+              </filename>, <filename>
+                <link linkend="remoting-spring.xml">remoting-spring.xml</link>
+              </filename>, <filename>
+                <link linkend="spring.xml">spring.xml</link>
+              </filename>, <filename>
+                <link linkend="views.xml">views.xml</link>
+              </filename></para>
+          </listitem>
+          <listitem>
+            <para><link linkend="screen_xml">XML-дескрипторы</link> экранов UI</para>
+          </listitem>
+          <listitem>
+            <para><link linkend="screen_controller">Контроллеры</link> экранов UI в виде исходных текстов Java или Groovy</para>
+          </listitem>
+          <listitem>
+            <para>Скрипты или классы Groovy, а также исходные тексты классов Java, используемые приложением через интерфейс <code>
+                <link linkend="scripting">Scripting</link>
+              </code>.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Расположение конфигурационного каталога определяется свойством приложения <property>
+          <link linkend="cuba.confDir">cuba.confDir</link>
+        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/conf</filename>.</para>
     </section>
     <section id="work_dir">
       <title>Рабочий каталог</title>
-      <para>TODO</para>
+      <para>Рабочий каталог используется приложением для хранения файлов данных и конфигурации.</para>
+      <para>Например, подкаталог <filename>filestorage</filename> рабочего каталога по умолчанию используется <link linkend="file_storage">хранилищем загруженных файлов</link>. Кроме того, блок Middleware на старте сохраняет в рабочем каталоге сгенерированные файлы <filename>
+          <link linkend="persistence.xml">persistence.xml</link>
+        </filename> и <filename>orm.xml</filename>.</para>
+      <para>Расположение рабочего каталога определяется свойством приложения <property>
+          <link linkend="cuba.dataDir">cuba.dataDir</link>
+        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/work</filename>.</para>
+    </section>
+    <section id="log_dir">
+      <title>Каталог журналов</title>
+      <para>В каталоге журналов создаются лог-файлы приложения.</para>
+      <para>Состав и настройка файлов журналов определяются конфигурацией фреймворка <application>Apache log4j</application>. Расположение файла конфигурации определяется системным свойством <literal>
+          <link linkend="log4j.configuration">log4j.configuration</link>
+        </literal>.</para>
+      <para>Данный каталог может быть также использован для сохранения произвольной информации о выполнении приложения. Путь к каталогу журналов определяется свойством приложения <property>
+          <link linkend="cuba.logDir">cuba.logDir</link>
+        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это каталог <filename>tomcat/logs</filename>.</para>
+    </section>
+    <section id="temp_dir">
+      <title>Временный каталог</title>
+      <para>Данный каталог может быть использован для создания произвольных временных файлов во время  выполнения приложения. Путь к временному каталогу определяется свойством приложения <property>
+          <link linkend="cuba.tempDir">cuba.tempDir</link>
+        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/temp</filename>.</para>
     </section>
     <section id="db_dir">
       <title>Каталог скриптов базы данных</title>
-      <para>TODO</para>
+      <para>В данном каталоге развернутого блока Middleware хранится набор SQL скриптов создания и обновления БД.</para>
+      <para>Структура каталога скриптов повторяет описанную в <xref linkend="db_scripts"/>, но имеет один дополнительный верхний уровень, разделяющий скрипты используемых <link linkend="base_projects">базовых проектов</link> и самого приложения. Нумерация каталогов верхнего уровня определяется во время сборки проекта.</para>
+      <para>Расположение рабочего каталога определяется свойством приложения <property>
+          <link linkend="cuba.dbDir">cuba.dbDir</link>
+        </property>. В стандартном варианте развертывания в <application>Tomcat</application> это подкаталог <filename>WEB-INF/db</filename>  каталога веб-приложения среднего слоя, например <filename>tomcat/webapps/app-core/WEB-INF/db</filename>.</para>
     </section>
   </section>
   <section>
