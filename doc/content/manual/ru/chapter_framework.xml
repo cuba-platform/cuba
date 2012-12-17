@@ -3537,46 +3537,209 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
   </section>
   <section id="gui_framework">
     <title>Универсальный пользовательский интерфейс</title>
+    <para>Подсистема универсального пользовательского интерфейса (Generic UI, GUI) позволяет разрабатывать экраны пользовательского интерфейса, используя  XML и Java. Созданные таким образом экраны одинаково работоспособны в двух
+стандартных клиентских <link linkend="app_tiers">блоках</link>: Web Client и Desktop Client. </para>
     <figure>
-      <title/>
+      <title>Структура универсального пользовательского интерфейса </title>
       <mediaobject>
         <imageobject>
           <imagedata align="center" fileref="img/ClientStructure.png"/>
         </imageobject>
       </mediaobject>
     </figure>
+    <para>Здесь в центре изображены основные составляющие  экранов универсального пользовательского интерфейса:<itemizedlist>
+        <listitem>
+          <para><link linkend="screen_xml">XML-дескрипторы</link> - файлы XML, содержащие информацию об источниках данных и компоновке
+экрана</para>
+        </listitem>
+        <listitem>
+          <para><link linkend="screen_controller">Контроллеры</link> - классы Java, содержащие логику инициализации экрана
+и обработки событий от элементов пользовательского интерфейса.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>Код экранов приложения, расположенный в <link linkend="app_modules">модуле</link> <structname>gui</structname>,  взаимодействует с интерфейсами визуальных
+компонентов (VCL Interfaces), реализованными по-отдельности в модулях <structname>web</structname>  и <structname>desktop</structname> <link linkend="base_projects">базового проекта</link> <structname>cuba</structname>. Для Web Client реализация основана на фреймворке <application>Vaadin</application>, для Desktop Client – на фреймворке <application>Java Swing</application>.</para>
+    <para><link linkend="gui_vcl">Библиотека визуальных компонентов</link> (Visual Components Library, VCL)
+содержит большой набор готовых компонентов для отображения данных.</para>
+    <para>Механизм <link linkend="datasources">источников данных</link>  (Datasources) предоставляет унифицированный
+интерфейс, обеспечивающий
+функционирование
+связанных
+с
+данными визуальных компонентов.</para>
+    <para>Инфраструктура клиента  (Infrastructure) включает в себя главное окно приложения,
+механизмы отображения и взаимодействия  экранов UI, а также средства
+взаимодействия со средним слоем.</para>
     <section>
       <title>Экраны</title>
+      <para>Экран универсального пользовательского интерфейса состоит из <link linkend="screen_xml">XML-дескриптора</link> и класса <link linkend="screen_controller">контроллера</link>. Дескриптор содержит ссылку на класс контроллера. </para>
+      <para>Для того, чтобы экран можно было вызывать из главного меню или из Java кода (например из контроллера другого экрана), XML-дескриптор должен быть зарегистрирован в файле <link linkend="screens.xml">
+          <filename>screens.xml</filename>
+        </link> проекта.</para>
+      <para>Главное меню приложения формируется отдельно для Web Client и Desktop Client на основе файлов <filename>
+          <link linkend="menu.xml">menu.xml</link>
+        </filename>, расположенных соответственно в модулях <structname>web</structname> и <structname>desktop</structname> проекта.</para>
+      <section id="screen_xml">
+        <title>XML-дескриптор</title>
+        <para>XML-дескриптор - это файл формата XML, описывающий <link linkend="datasources">источники данных</link> и расположение визуальных компонентов экрана.</para>
+        <para><para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.0/window.xsd">http://schemas.haulmont.com/cuba/4.0/window.xsd</ulink></para></para>
+        <para>Рассмотрим структуру дескриптора.</para>
+        <para><sgmltag>window</sgmltag> − корневой элемент.</para>
+        <para>Атрибуты <sgmltag>window</sgmltag>:<itemizedlist>
+            <listitem>
+              <para><property>
+                  <sgmltag>class</sgmltag>
+                </property> − имя класса <link linkend="screen_controller">контроллера</link></para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>messagesPack</sgmltag> −  <link linkend="message_packs">пакет сообщений</link> данного экрана, который будет использован при получении локализованных строк  без указания  пакета из XML-дескриптора и из контроллера методом <code>getMessage()</code></para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>caption</sgmltag> − заголовок экрана, может содержать <link linkend="messageTools.loadString">ссылку на сообщение</link> из вышеуказанного пакета, например, <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>focusComponent</sgmltag> − (необязательно) идентификатор компонента, который получит фокус ввода при отображении экрана.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Элементы <sgmltag>window</sgmltag>:<itemizedlist>
+            <listitem>
+              <para><sgmltag>metadataContext</sgmltag> − опциональный элемент для инициализации <link linkend="views">представлений</link> (views), необходимых данному экрану. Предпочтительным является определение всех представлений в одном общем файле <filename>
+                  <link linkend="views.xml">views.xml</link>
+                </filename>, так как все описатели представлений разворачиваются в один общий репозиторий, и при рассредоточении описателей по разным файлам трудно обеспечить уникальность имен.</para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>dsContext</sgmltag> − элемент, определяющий <link linkend="datasources">источники данных</link> данного экрана.</para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>companions</sgmltag> - опциональный элемент, задающий список классов-<link linkend="companions">компаньонов</link> данного контроллера</para>
+              <para>Элементы <sgmltag>companions</sgmltag>:<itemizedlist>
+                  <listitem>
+                    <para><sgmltag>web</sgmltag> - задает компаньон, реализованный в модуле <structname>web</structname></para>
+                  </listitem>
+                  <listitem>
+                    <para><sgmltag>desktop</sgmltag> - задает компаньон, реализованный в модуле <structname>desktop</structname></para>
+                  </listitem>
+                </itemizedlist></para>
+              <para>Каждый из этих элементов содержит атрибут <sgmltag>class</sgmltag>, задающий класс компаньона.</para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>layout</sgmltag> − корневой элемент компоновки экрана. Является сам по себе контейнером с вертикальным расположением компонентов, аналогичным <link linkend="gui_BoxLayout">
+                  <sgmltag>vbox</sgmltag>
+                </link>.</para>
+              <para>Атрибуты <sgmltag>layout</sgmltag>:<itemizedlist>
+                  <listitem>
+                    <para><link linkend="attr_spacing">
+                        <sgmltag>spacing</sgmltag>
+                      </link></para>
+                  </listitem>
+                  <listitem>
+                    <para><link linkend="attr_expand">
+                        <sgmltag>expand</sgmltag>
+                      </link></para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
       <section id="screen_controller">
         <title>Контроллер экрана</title>
-        <para><code>Java</code> или <code>Groovy</code> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>, с помощью различных событий. Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
+        <para>Контроллер экрана - это <code>Java</code> или <code>Groovy</code> класс, связанный с <link linkend="screen_xml">XML-дескриптором</link>, и содержащий логику инициализации и обработки событий экрана.</para>
+        <para>Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
         <itemizedlist>
           <listitem>
             <para><code>AbstractFrame</code> − реализует интерфейс <code>IFrame</code> и предназначен для реализации фреймов − многократно используемых компонентов экранов.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractWindow</code> − реализует интерфейc <code>Window</code> и предназначен для реализации любых экранов.</para>
+            <para><code>AbstractWindow</code> − реализует интерфейc <code>Window</code> и может быть использован для реализации любых экранов.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractLookup</code> − реализует интерфейс <code>Lookup</code> и предназначен для реализации <glossterm linkend="browser_glossentry">браузеров</glossterm> с возможностью выбора элемента списка для использования его в вызывающем экране.</para>
+            <para><code>AbstractLookup</code> − реализует интерфейс <code>Lookup</code> и предназначен для реализации <glossterm linkend="browser_glossentry">браузеров сущностей</glossterm> с возможностью выбора элемента списка для использования его в вызывающем экране.</para>
           </listitem>
           <listitem>
             <para><code>AbstractEditor</code> − реализует интерфейс <code>Editor</code> и предназначен для реализации экранов редактирования экземпляра сущности.</para>
           </listitem>
         </itemizedlist>
-        <para>Основной метод контроллера − <methodname>init()</methodname>. Этот метод вызывается после создания класса окна и всего дерева компонентов, описанного XML-дескриптором. Контроллер может в этом методе произвести инициализацию экрана перед его открытием (например, создать обработчики нажатий на кнопки и пр.).</para>
-        <para>В метод <methodname>init()</methodname> из вызывающего кода передается коллекция параметров, состоящая из пар «ключ − значение». Вызывающим кодом может быть как контроллер другого экрана, так и пункт главного меню, либо прямая ссылка на экран извне приложения. Каждый параметр передается в коллекции в двух экземплярах − с простым именем и с тем же именем с префиксом param$.</para>
-        <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <parameter>class</parameter> корневого элемента.</para>
+        <tip>
+          <para>Если экрану не нужна никакая дополнительная логика, то в качестве контроллера можно использовать сам базовый класс <code>AbstractWindow</code>, <code>AbstractLookup</code> или <code>AbstractEditor</code>, указав его в XML-дескрипторе (эти классы на самом деле не являются абстрактными в смысле невозможности создания экземпляров). Для фрейма класс контроллера можно не указывать вообще.</para>
+        </tip>
+        <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <sgmltag>class</sgmltag> корневого элемента <sgmltag>window</sgmltag>.</para>
+        <section>
+          <title>Зависимости контроллеров</title>
+          <para>В контроллерах можно использовать Dependency Injection для получения ссылок на используемые объекты. Для этого нужно объявить либо поле соответствующего типа, либо метод доступа на запись (setter) с соответствующим типом результата, и добавить ему одну из следующих аннотаций:<itemizedlist>
+              <listitem>
+                <para><code>@Inject</code> - простейший вариант, поиск объекта для инжекции будет произведен по типу поля/метода и по имени, эквивалентному имени поля либо имени атрибута (по правилам JavaBeans) для метода</para>
+              </listitem>
+              <listitem>
+                <para><code>@Named(&quot;someName&quot;)</code> - вариант с явным указанием имени искомого объекта</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Инжектировать в контроллеры можно следующие объекты: <itemizedlist>
+              <listitem>
+                <para>Визуальные компоненты данного экрана, определенные в XML-дескрипторе. Если тип атрибута унаследован от <code>Component</code>, в текущем экране будет произведен поиск компонента с соответствующим именем. </para>
+              </listitem>
+              <listitem>
+                <para>Действия, определенные в XML-дескрипторе - см. <xref linkend="gui_Action"/></para>
+              </listitem>
+              <listitem>
+                <para><link linkend="datasources">Источники данных</link>, определенные в XML-дескрипторе. Если тип атрибута унаследован от <code>Datasource</code>, в текущем экране будет произведен поиск источника данных с соответствующим именем. </para>
+              </listitem>
+              <listitem>
+                <para><code>UserSession</code>. Если тип атрибута - <code>
+                    <link linkend="userSession">UserSession</link>
+                  </code>, будет инжектирован объект текущей пользовательской сессии. </para>
+              </listitem>
+              <listitem>
+                <para><code>DsContext</code>. Если тип атрибута - <code>DsContext</code>, будет инжектирован <code>DsContext</code> текущего экрана. </para>
+              </listitem>
+              <listitem>
+                <para><code>WindowContext</code>. Если тип атрибута - <code>WindowContext</code>, будет инжектирован <code>WindowContext</code> текущего экрана. </para>
+              </listitem>
+              <listitem>
+                <para><code>DataService</code>. Если тип атрибута - <code>com.haulmont.cuba.gui.data.DataService</code>, будет инжектирован этот объект. </para>
+              </listitem>
+              <listitem>
+                <para>Любой бин, определенный в контексте данного клиентского блока приложения, в том числе:<itemizedlist>
+                    <listitem>
+                      <para>импортируемые клиентом <link linkend="services">сервисы</link> Middleware</para>
+                    </listitem>
+                    <listitem>
+                      <para><code>ComponentsFactory</code></para>
+                    </listitem>
+                    <listitem>
+                      <para><code>WindowConfig</code></para>
+                    </listitem>
+                    <listitem>
+                      <para><code>ExportDisplay</code></para>
+                    </listitem>
+                    <listitem>
+                      <para><code>
+                          <link linkend="background_tasks">BackgroundWorker</link>
+                        </code></para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+              <listitem>
+                <para>Если ничего из вышеперечисленного не подошло и контроллер имеет <link linkend="companions">компаньонов</link>, в случае совпадения типов будет инжектирован компаньон для текущего типа клиента.</para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
+        <section>
+          <title>Методы контроллеров</title>
+          <para>Общим методом контроллеров всех типов является метод  <methodname>init()</methodname>. Этот метод вызывается фреймворком после создания класса окна и всего дерева компонентов, описанного XML-дескриптором. Здесь контроллер может произвести инициализацию экрана перед его открытием (например, создать обработчики нажатий на кнопки).</para>
+          <para>В метод <methodname>init()</methodname> из вызывающего кода передается мэп параметров, которые могут быть использованы  внутри контроллера. Эти параметры могут быть переданы как из кода контроллера вызывающего экрана (в методе <code>openWindow()</code>), так и установлены в файле регистрации экранов <filename>
+              <link linkend="screens.xml">screens.xml</link>
+            </filename>.</para>
+        </section>
         <section id="abstractEditor">
           <title>AbstractEditor</title>
           <para><code>AbstractEditor</code> − базовый класс контроллеров экранов редактирования экземпляра сущности.</para>
           <para>При создании конкретного класса контроллера рекомендуется параметризовать <code>AbstractEditor</code> типом редактируемой сущности. При этом методы <methodname>getItem</methodname> и <methodname>initItem</methodname> будут работать с конкретным типом сущности и прикладному коду не потребуется дополнительных приведений типов. Например:</para>
-          <programlisting>public class UserEditor extends AbstractEditor&lt;User&gt; {
+          <programlisting>public class CustomerEdit extends AbstractEditor&lt;Customer&gt; {
 ...
     @Override
-    protected void initItem(User item) {
+    protected void initItem(Customer item) {
     ...</programlisting>
-          <para>Помимо общего для всех <glossterm linkend="screen_controller_glossentry">контроллеров</glossterm> метода <methodname>init</methodname> в контроллере экрана редактирования можно переопределить следующие:</para>
+          <para>Помимо общего для всех контроллеров метода <code>init()</code> в контроллере экрана редактирования можно переопределить следующие:</para>
           <itemizedlist>
             <listitem>
               <para>Методы инициализации:</para>
@@ -3638,93 +3801,12 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
             </mediaobject>
           </figure>
         </section>
-      </section>
-      <section id="screen_xml">
-        <title>XML-дескриптор</title>
-        <para>Описывает <link linkend="datasources">источники данных</link> и расположение визуальных компонентов экрана.</para>
-        <para>XML-дескриптор содержит следующие элементы:</para>
-        <itemizedlist>
-          <listitem>
-            <para><parameter>window</parameter> − корневой элемент. Атрибуты:</para>
-            <orderedlist>
-              <listitem>
-                <para><property>xmlns</property>=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot; − схема XML</para>
-              </listitem>
-              <listitem>
-                <para><property>class</property> − имя класса <glossterm linkend="screen_controller_glossentry">контроллера</glossterm></para>
-              </listitem>
-              <listitem>
-                <para><property>messagesPack</property> − имя <link linkend="message_packs">пакета сообщений</link>. Фактически это имя Java-пакета, содержащего файл  <filename>messages.properties</filename></para>
-              </listitem>
-              <listitem>
-                <para><property>caption</property> − заголовок экрана, должен содержать ссылку на сообщение из вышеуказанного пакета, например, <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
-              </listitem>
-              <listitem>
-                <para><property>focusComponent</property> − идентификатор компонента, который получит фокус ввода при отображениее экрана (необязательно).</para>
-              </listitem>
-            </orderedlist>
-          </listitem>
-          <listitem>
-            <para><parameter>metadataContext</parameter> − опциональный элемент для инициализации <link linkend="views">представлений</link> (views). Предпочтительным является определение всех представлений в одном общем файле <filename>ext-views.xml</filename>  модуля <structname>core</structname>. </para>
-          </listitem>
-          <listitem>
-            <para><parameter>dsContext</parameter> − элемент, определяющий <link linkend="datasources">источники данных</link> данного экрана. Источники данных предназначены для реализации связанных с данными  компонентов.</para>
-          </listitem>
-          <listitem>
-            <para><parameter>layout</parameter> − элемент, определяющий компоновку экрана.</para>
-          </listitem>
-        </itemizedlist>
-      </section>
-      <section id="screen_registration">
-        <title>Регистрация экранов</title>
-        <para>Все экраны, доступные в приложении, регистрируются в  файлах <filename>*-screens.xml</filename>.</para>
-        <para>Набор файлов <filename>*-screens.xml</filename> конкретного проекта указывается в <glossterm linkend="app_properties_glossentry">свойстве приложения</glossterm> <parameter>cuba.windowConfig</parameter>.</para>
-        <itemizedlist>
-          <title>Элементы XML</title>
-          <listitem>
-            <para><emphasis role="bold">screen-config</emphasis> − корневой элемент</para>
-          </listitem>
-          <listitem>
-            <para><emphasis role="bold">include</emphasis> − включение другого <filename>*-screens.xml</filename>. Вместо включения рекомендуется использовать комбинацию файлов в <glossterm linkend="app_properties_glossentry">свойстве приложения</glossterm> <parameter>cuba.windowConfig</parameter>. Атрибуты:</para>
-            <itemizedlist>
-              <listitem>
-                <para><emphasis role="bold">file</emphasis> − путь к файлу, начиная от каталога конфигурации приложения <filename>WEB-INF/conf</filename></para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-          <listitem>
-            <para><emphasis role="bold">screen</emphasis> − регистрация экрана. Атрибуты:</para>
-            <itemizedlist>
-              <listitem>
-                <para><emphasis role="bold">id</emphasis> − идентификатор  экрана, по которому   производится обращение</para>
-              </listitem>
-              <listitem>
-                <para><emphasis role="bold">template</emphasis> − путь к <glossterm linkend="screen_xml_glossentry">дескриптору</glossterm> экрана. Сначала будет произведена попытка найти дескриптор в каталоге конфигурации приложения <filename>WEB-INF/conf</filename>. Если его там нет, то будет произведен поиск в <filename>classpath</filename>.</para>
-              </listitem>
-              <listitem>
-                <para><emphasis role="bold">class</emphasis> − имя класса. Элемент может быть использован вместо <emphasis role="bold">template</emphasis>. Класс должен реализовывать либо интерфейс <interface>Callable</interface>, либо интерфейс <interface>Runnable</interface>. В случае реализации интерфейса <interface>Callable</interface> метод <methodname>call()</methodname> должен возвращать экземпляр созданного <code>Window</code>, который будет возвращен как результат вызова <methodname>WindowManager.openWindow()</methodname>. Класс может содержать конструктор с параметрами для передачи ему строковых значений, заданных атрибутом <emphasis role="bold">param</emphasis>.</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-          <listitem>
-            <para><emphasis role="bold">params</emphasis> − задает параметры вызова экрана. Элемент используется внутри элемента <emphasis role="bold">screen</emphasis>. Параметры вызова позволяют задать несколько идентификаторов одному дескриптору экрана. Параметры будут переданы <glossterm linkend="screen_controller_glossentry">контроллеру</glossterm> экрана в мапе на входе <methodname>init()</methodname>, либо в конструктор класса, если задан <emphasis role="bold">class</emphasis>.</para>
-          </listitem>
-          <listitem>
-            <para><emphasis role="bold">param</emphasis> − задает параметр внутри элемента <emphasis role="bold">params</emphasis>. Атрибуты:</para>
-            <itemizedlist>
-              <listitem>
-                <para><emphasis role="bold">name</emphasis> − имя параметра</para>
-              </listitem>
-              <listitem>
-                <para><emphasis role="bold">value</emphasis> − значение параметра. Если значение содержит строку &quot;true&quot; или &quot;false&quot;, в параметры экрана будет передано соответствующее значение типа <code>Boolean</code>.</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-        </itemizedlist>
-      </section>
-      <section>
-        <title>Главное меню</title>
-        <para>TODO</para>
+        <section id="companions">
+          <title>Реализация для разных типов клиентов</title>
+          <para>Базовые классы контроллеров расположены в <link linkend="app_modules">модуле</link> <structname>gui</structname> <link linkend="base_projects">базового проекта</link> <structname>cuba</structname> и не содержат ссылок на классы реализации визуальных компонентов (<application>Swing</application> или <application>Vaadin</application>), что дает возможность использовать их в клиентах обоих типов. Вместо этого базовые классы контроллеров реализуют дополнительный интерфейс <code>Window.Wrapper</code> и делегируют выполнение &quot;обернутому&quot; окну. </para>
+          <para>В то же время конкретные классы контроллеров могут быть расположены как в модуле <structname>gui</structname>, так и в <structname>web</structname> или <structname>desktop</structname>, в зависимости от применяемых в проекте клиентских <link linkend="app_tiers">блоков</link> и специфики экрана. Если контроллер является универсальным, но для разных типов клиента требуется дополнительная функциональность, ее можно определить в так называемых <firstterm>классах-компаньонах</firstterm>. </para>
+          <para>Класс-компаньон располагается в модуле клиента соответствующего типа (<structname>web</structname> или <structname>desktop</structname>) и реализует интерфейс, задаваемый в использующем его контроллере. Класс компаньона задается в элементе <sgmltag>companions</sgmltag> XML-дескриптора экрана. Контроллер может получить ссылку на экземпляр компаньона с помощью инжекции или вызовом <code>getCompanion()</code>, и в нужный момент передать ему управление, например для дополнительной инициализации визуальных компонентов специфичным для данного типа клиента способом. </para>
+        </section>
       </section>
     </section>
     <section id="gui_vcl">
@@ -7895,13 +7977,94 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         </section>
         <section id="gui_Table_presentations">
           <title>Presentation </title>
-        </section>
-        <section id="gui_themes">
-          <title>Создание темы приложения</title>
+          <para>TODO</para>
         </section>
       </section>
       <section>
-        <title>Атрибуты</title>
+        <title>Элементы XML</title>
+        <variablelist>
+          <varlistentry id="element_formatter">
+            <term>formatter</term>
+            <listitem>
+              <para>XML-элемент formatter задает класс, который будет применен для преобразования значения в строку.</para>
+              <para>Атрибуты:</para>
+              <itemizedlist>
+                <listitem>
+                  <para>class − имя класса, реализующего интерфейс <code>com.haulmont.cuba.gui.components.Formatter</code></para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+          </varlistentry>
+          <varlistentry id="element_validator">
+            <term>validator</term>
+            <listitem>
+              <para>XML-элемент для задания механизма валидации значений, введенных в визуальном компоненте.</para>
+              <para>Атрибуты:</para>
+              <itemizedlist>
+                <listitem>
+                  <para>script − путь к скрипту Groovy, осуществляющему валидацию</para>
+                </listitem>
+                <listitem>
+                  <para>class − имя класса Java, реализующего интерфейс <code>Field.Validator</code></para>
+                </listitem>
+                <listitem>
+                  <para>message − сообщение, выводимое пользователю в случае ошибки валидации. Атрибут должен содержать ключ сообщения в пакете, например, message=&quot;msg://infoTextField.validationMsg&quot;</para>
+                </listitem>
+              </itemizedlist>
+              <para>Выбор механизма валидации осуществляется следующим образом:</para>
+              <itemizedlist>
+                <listitem>
+                  <para>Если не указано значение атрибута script, и сам элемент validator не содержит текста выражения Groovy, то в качестве валидатора используется класс, указанный в атрибуте class.</para>
+                </listitem>
+                <listitem>
+                  <para>Если элемент validator содержит текст, то он будет использован как выражение Groovy и выполнен с помощью <link linkend="scripting">Scripting</link>.</para>
+                </listitem>
+                <listitem>
+                  <para>В противном случае с помощью <link linkend="scripting">Scripting</link> будет выполнен скрипт Groovy, указанный в атрибуте script.</para>
+                </listitem>
+              </itemizedlist>
+              <para>В выражение или скрипт Groovy будет передана одна переменная value, содержащая значение, введенное в визуальном компоненте.</para>
+              <para>Выражение или скрипт должны вернуть boolean значение: true − valid, false − not valid.</para>
+              <para>CUBA уже содержит несколько реализаций наиболее часто используемых валидаторов (см. пакет <code>com.haulmont.cuba.gui.components.validators</code>), которые можно применять в своих проектах:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><code>DateValidator</code></para>
+                </listitem>
+                <listitem>
+                  <para><code>DoubleValidator</code></para>
+                </listitem>
+                <listitem>
+                  <para><code>EmailValidator</code></para>
+                </listitem>
+                <listitem>
+                  <para><code>IntegerValidator</code></para>
+                </listitem>
+                <listitem>
+                  <para><code>LongValidator</code></para>
+                </listitem>
+                <listitem>
+                  <para><code>PatternValidator</code></para>
+                </listitem>
+                <listitem>
+                  <para><code>ScriptValidator</code></para>
+                </listitem>
+              </itemizedlist>
+              <para>Примеры использования:</para>
+              <programlisting>&lt;field id=&quot;imei&quot;&gt;
+    &lt;validator class=&quot;com.haulmont.cuba.gui.components.validators.PatternValidator&quot;
+               pattern=&quot;\d{15}&quot;
+               message=&quot;msg://general.imeiValidationFailed&quot;/&gt;
+&lt;/field&gt;
+
+&lt;field id=&quot;maxCountOfVisits&quot;&gt;
+    &lt;validator class=&quot;com.haulmont.cuba.gui.components.validators.IntegerValidator&quot;/&gt;
+&lt;/field&gt;</programlisting>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+      <section>
+        <title>Атрибуты XML</title>
         <variablelist>
           <varlistentry>
             <term>align</term>
@@ -8133,100 +8296,21 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
           </varlistentry>
         </variablelist>
       </section>
-      <section>
-        <title>Элементы</title>
-        <variablelist>
-          <varlistentry id="element_formatter">
-            <term>formatter</term>
-            <listitem>
-              <para>XML-элемент formatter задает класс, который будет применен для преобразования значения в строку.</para>
-              <para>Атрибуты:</para>
-              <itemizedlist>
-                <listitem>
-                  <para>class − имя класса, реализующего интерфейс <code>com.haulmont.cuba.gui.components.Formatter</code></para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-          </varlistentry>
-          <varlistentry id="element_validator">
-            <term>validator</term>
-            <listitem>
-              <para>XML-элемент для задания механизма валидации значений, введенных в визуальном компоненте.</para>
-              <para>Атрибуты:</para>
-              <itemizedlist>
-                <listitem>
-                  <para>script − путь к скрипту Groovy, осуществляющему валидацию</para>
-                </listitem>
-                <listitem>
-                  <para>class − имя класса Java, реализующего интерфейс <code>Field.Validator</code></para>
-                </listitem>
-                <listitem>
-                  <para>message − сообщение, выводимое пользователю в случае ошибки валидации. Атрибут должен содержать ключ сообщения в пакете, например, message=&quot;msg://infoTextField.validationMsg&quot;</para>
-                </listitem>
-              </itemizedlist>
-              <para>Выбор механизма валидации осуществляется следующим образом:</para>
-              <itemizedlist>
-                <listitem>
-                  <para>Если не указано значение атрибута script, и сам элемент validator не содержит текста выражения Groovy, то в качестве валидатора используется класс, указанный в атрибуте class.</para>
-                </listitem>
-                <listitem>
-                  <para>Если элемент validator содержит текст, то он будет использован как выражение Groovy и выполнен с помощью <link linkend="scripting">Scripting</link>.</para>
-                </listitem>
-                <listitem>
-                  <para>В противном случае с помощью <link linkend="scripting">Scripting</link> будет выполнен скрипт Groovy, указанный в атрибуте script.</para>
-                </listitem>
-              </itemizedlist>
-              <para>В выражение или скрипт Groovy будет передана одна переменная value, содержащая значение, введенное в визуальном компоненте.</para>
-              <para>Выражение или скрипт должны вернуть boolean значение: true − valid, false − not valid.</para>
-              <para>CUBA уже содержит несколько реализаций наиболее часто используемых валидаторов (см. пакет <package>com.haulmont.cuba.gui.components.validators</package>), которые можно применять в своих проектах:</para>
-              <itemizedlist>
-                <listitem>
-                  <para><code>DateValidator</code></para>
-                </listitem>
-                <listitem>
-                  <para><code>DoubleValidator</code></para>
-                </listitem>
-                <listitem>
-                  <para><code>EmailValidator</code></para>
-                </listitem>
-                <listitem>
-                  <para><code>IntegerValidator</code></para>
-                </listitem>
-                <listitem>
-                  <para><code>LongValidator</code></para>
-                </listitem>
-                <listitem>
-                  <para><code>PatternValidator</code></para>
-                </listitem>
-                <listitem>
-                  <para><code>ScriptValidator</code></para>
-                </listitem>
-              </itemizedlist>
-              <para>Примеры использования:</para>
-              <programlisting>&lt;field id=&quot;imei&quot;&gt;
-    &lt;validator class=&quot;com.haulmont.cuba.gui.components.validators.PatternValidator&quot;
-               pattern=&quot;\d{15}&quot;
-               message=&quot;msg://general.imeiValidationFailed&quot;/&gt;
-&lt;/field&gt;
-
-&lt;field id=&quot;maxCountOfVisits&quot;&gt;
-    &lt;validator class=&quot;com.haulmont.cuba.gui.components.validators.IntegerValidator&quot;/&gt;
-&lt;/field&gt;</programlisting>
-            </listitem>
-          </varlistentry>
-        </variablelist>
+      <section id="gui_themes">
+        <title>Создание темы приложения</title>
+        <para>TODO</para>
       </section>
     </section>
     <section id="datasources">
       <title>Источники данных</title>
-      <para>Предназначен для реализации связанных с данными компонентов.</para>
+      <para>Предназначены для реализации связанных с данными (data-aware) компонентов.</para>
       <para>Существуют следующие интерфейсы источников данных:</para>
       <itemizedlist>
         <listitem>
           <para><code>Datasource</code> − предназначен для работы с одним экземпляром сущности.</para>
           <itemizedlist>
             <listitem>
-              <para><code>RuntimePropsDatasource</code> − предназначен для работы с динамическими свойствами сущностей.</para>
+              <para><code>RuntimePropsDatasource</code> − предназначен для работы с <link linkend="runtime_properties">динамическими атрибутами</link> сущностей.</para>
             </listitem>
           </itemizedlist>
         </listitem>
@@ -8234,15 +8318,21 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
           <para><code>CollectionDatasource</code> − предназначен для работы с коллекцией сущностей</para>
           <itemizedlist>
             <listitem>
-              <para><code>HierarchicalDatasource</code> − предназначен для работы с компонентами <code>Tree</code>, <code>TreeTable</code>.</para>
+              <para><code>HierarchicalDatasource</code> − предназначен для работы с компонентами <code>
+                  <link linkend="gui_Tree">Tree</link>
+                </code>, <code>
+                  <link linkend="gui_TreeTable">TreeTable</link>
+                </code>.</para>
             </listitem>
             <listitem>
-              <para><code>GroupDatasource</code> − предназначен для работы с компонентом <code>GroupTable</code>.</para>
+              <para><code>GroupDatasource</code> − предназначен для работы с компонентом <code>
+                  <link linkend="gui_GroupTable">GroupTable</link>
+                </code>.</para>
             </listitem>
           </itemizedlist>
         </listitem>
       </itemizedlist>
-      <para>Как правило, источники данных объявляются декларативно в секции <parameter>dsContext</parameter> <glossterm linkend="screen_xml_glossentry">дескриптора экрана</glossterm>.</para>
+      <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
     </section>
     <section id="background_tasks">
       <title>Фоновые задачи</title>
@@ -8418,49 +8508,41 @@ taskHandler.execute();</programlisting>
     </section>
     <section id="folders_pane">
       <title>Панель папок</title>
-      <para>Папки поиска</para>
-      <para>Папки данной категории могут быть созданы и настроены пользователем (за
-исключением подкатегории &quot;Системные&quot;). Подкатегория &quot;Системные&quot; содержит
-предустановленные папки поиска, которые доступны всем
-пользователям системы.</para>
-      <para>Папки поиска обладают следующими особенностями:</para>
-      <itemizedlist>
-        <listitem>
-          <para>отображают экраны с generic-фильтром;</para>
-        </listitem>
-        <listitem>
-          <para>создаются пользователем из любого отображенного экрана с generic-фильтром;</para>
-        </listitem>
-        <listitem>
-          <para>пользователь может изменить иерархию, название, либо переопределить фильтр поиска. </para>
-        </listitem>
-      </itemizedlist>
-      <para>Папки приложения</para>
-      <para>Папки данной категории содержат задачи, по которым требуются
-действия пользователя.</para>
-      <para>Обладают следующими особенностями:</para>
-      <itemizedlist>
-        <listitem>
-          <para>отображают предопределенные экраны с фильтром или без;</para>
-        </listitem>
-        <listitem>
-          <para>набор папок зависит от ролей пользователя; </para>
-        </listitem>
-        <listitem>
-          <para>пользователь не может изменить настройки папок;</para>
-        </listitem>
-        <listitem>
-          <para>в заголовке папки может отображаться текущее количество входящих в нее записей;</para>
-        </listitem>
-        <listitem>
-          <para>периодически обновляются по таймеру.</para>
-        </listitem>
-      </itemizedlist>
       <section id="search_folder">
         <title>Папки поиска</title>
+        <para>Папки поиска обладают следующими особенностями:</para>
+        <itemizedlist>
+          <listitem>
+            <para>при выборе отображают экраны с <link linkend="gui_Filter">универсальным фильтром</link>;</para>
+          </listitem>
+          <listitem>
+            <para>создаются пользователем из любого отображенного экрана с <link linkend="gui_Filter">универсальным фильтром</link>;</para>
+          </listitem>
+          <listitem>
+            <para>пользователь может изменить иерархию, название, либо переопределить фильтр поиска. </para>
+          </listitem>
+        </itemizedlist>
       </section>
       <section id="application_folder">
         <title>Папки приложения</title>
+        <para>Обладают следующими особенностями:</para>
+        <itemizedlist>
+          <listitem>
+            <para>при выборе отображают предопределенные экраны с фильтром или без;</para>
+          </listitem>
+          <listitem>
+            <para>набор папок может зависеть от ролей пользователя; </para>
+          </listitem>
+          <listitem>
+            <para>пользователь не может изменить настройки папок;</para>
+          </listitem>
+          <listitem>
+            <para>в заголовке папки может отображаться текущее количество входящих в нее записей;</para>
+          </listitem>
+          <listitem>
+            <para>периодически обновляются по таймеру.</para>
+          </listitem>
+        </itemizedlist>
       </section>
     </section>
     <section>
