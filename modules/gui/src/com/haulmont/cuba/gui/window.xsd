@@ -665,8 +665,10 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasExpand"/>
         <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attribute name="providerClass" type="xs:string" use="optional"/>
+        <xs:attribute name="alwaysVisible" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- Table.Column -->
