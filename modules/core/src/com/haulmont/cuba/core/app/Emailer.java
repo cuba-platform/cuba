@@ -23,6 +23,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -167,6 +168,10 @@ public class Emailer implements EmailerAPI {
     }
 
     public void sendEmail(SendingMessage sendingMessage) {
+        Objects.requireNonNull(sendingMessage, "sendingMessage is null");
+        Objects.requireNonNull(sendingMessage.getAddress(), "sendingMessage.address is null");
+        Objects.requireNonNull(sendingMessage.getCaption(), "sendingMessage.caption is null");
+        Objects.requireNonNull(sendingMessage.getContentText(), "sendingMessage.contentText is null");
         try {
             String addr = sendingMessage.getAddress().trim();
             String fromEmail;
@@ -186,8 +191,13 @@ public class Emailer implements EmailerAPI {
         }
     }
 
-    public void sendEmail(String addresses, String caption, String body, String from, EmailAttachment... attachment)
-            throws EmailException {
+    public void sendEmail(String addresses, String caption, String body, @Nullable String from,
+                          @Nullable EmailAttachment... attachment) throws EmailException {
+
+        Objects.requireNonNull(addresses, "addresses are null");
+        Objects.requireNonNull(caption, "caption is null");
+        Objects.requireNonNull(body, "body is null");
+
         String[] addrArr = addresses.split("[,;]");
 
         List<String> failedAddresses = new ArrayList<>();
