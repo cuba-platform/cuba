@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 08.06.2010 14:19:07
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -19,6 +14,10 @@ import org.dom4j.Element;
 import java.util.Iterator;
 import java.lang.reflect.Constructor;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 public class PopupButtonLoader extends ComponentLoader {
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
@@ -37,6 +36,7 @@ public class PopupButtonLoader extends ComponentLoader {
         loadId(component, element);
         loadVisible(component, element);
         loadEnable(component, element);
+        loadAlign(component, element);
 
         loadStyleName(component, element);
 
