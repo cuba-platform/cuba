@@ -392,7 +392,7 @@
 
     <!-- CheckBox -->
     <xs:complexType name="checkBoxComponent">
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasCaption"/>
@@ -405,7 +405,7 @@
 
     <!-- BaseField -->
     <xs:complexType name="baseFieldComponent">
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasSize"/>
@@ -487,7 +487,7 @@
 
     <!-- Progress bar -->
     <xs:complexType name="progressBarComponent">
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
         <!--<xs:attributeGroup ref="hasCaption"/>-->
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
@@ -576,14 +576,14 @@
 
     <!-- FileUploadField -->
     <xs:complexType name="uploadComponent">
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasCaption"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->
     <xs:complexType name="multiuploadComponent">
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasCaption"/>
     </xs:complexType>
@@ -601,7 +601,7 @@
             </xs:element>
         </xs:sequence>
 
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
     </xs:complexType>
@@ -716,7 +716,7 @@
             <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
         </xs:sequence>
 
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
@@ -738,7 +738,7 @@
             <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
         </xs:sequence>
 
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
@@ -778,7 +778,7 @@
             </xs:element>
         </xs:sequence>
 
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="requiresDatasource"/>
 
         <xs:attributeGroup ref="hasStyle"/>
@@ -902,14 +902,14 @@
             </xs:element>
         </xs:sequence>
 
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasWidthProp"/>
     </xs:complexType>
 
     <!-- TwinColumn -->
     <xs:complexType name="twinColumnComponent">
-        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
