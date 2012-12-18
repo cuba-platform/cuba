@@ -22,8 +22,8 @@ import java.util.Map;
 /**
  * Window that indicates progress of the background task, shows progress bar and processed items' message.
  * <p/>
- * Background task should have Integer as the progress measure unit. Progress measure passed to the publish() method
- * is displayed in processed items' message. Total number of items should be specified before task execution.
+ * Background task should have &lt;T extends Number&gt; as the progress measure unit. Progress measure passed to the publish() method
+ * is displayed in processed items'/percents' message. Total number of items should be specified before task execution.
  * <p/>
  * <p>On error:
  * <ul>
@@ -33,11 +33,14 @@ import java.util.Map;
  * </ul>
  * <p/>
  *
+ * @param <T> measure unit which shows progress of task
+ * @param <V> result type
+ *
  * @author ovchinnikov
  * @version $Id$
  */
 @SuppressWarnings("unused")
-public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
+public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractWindow {
     private static final long serialVersionUID = -3073224246530486376L;
 
     @Inject
@@ -57,6 +60,30 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
      * Show modal window with message which will last until task completes.
      * Optionally cancel button can be displayed. By pressing cancel button user can cancel task execution.
      *
+     * @param task            background task containing long operation
+     * @param title           window title, optional
+     * @param message         window message, optional
+     * @param total           total number of items, that will be processed
+     * @param cancelAllowed   show or not cancel button
+     * @param percentProgress show progress in percents
+     * @param <V>             task result type
+     */
+    public static <T extends Number, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
+                                                  Number total, boolean cancelAllowed, boolean percentProgress) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("task", task);
+        params.put("title", title);
+        params.put("message", message);
+        params.put("total", total);
+        params.put("cancelAllowed", cancelAllowed);
+        params.put("percentProgress", percentProgress);
+        task.getOwnerWindow().openWindow("core$BackgroundWorkProgressWindow", WindowManager.OpenType.DIALOG, params);
+    }
+
+    /**
+     * Show modal window with message which will last until task completes.
+     * Optionally cancel button can be displayed. By pressing cancel button user can cancel task execution.
+     *
      * @param task          background task containing long operation
      * @param title         window title, optional
      * @param message       window message, optional
@@ -64,15 +91,9 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
      * @param cancelAllowed show or not cancel button
      * @param <V>           task result type
      */
-    public static <V> void show(BackgroundTask<Integer, V> task, @Nullable String title, @Nullable String message, Integer total,
-                                boolean cancelAllowed) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("task", task);
-        params.put("title", title);
-        params.put("message", message);
-        params.put("total", total);
-        params.put("cancelAllowed", cancelAllowed);
-        task.getOwnerWindow().openWindow("core$BackgroundWorkProgressWindow", WindowManager.OpenType.DIALOG, params);
+    public static <T extends Number, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
+                                                  Number total, boolean cancelAllowed) {
+        show(task, title, message, total, cancelAllowed, false);
     }
 
     /**
@@ -85,7 +106,7 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
      * @param total   total number of items, that will be processed
      * @param <V>     task result type
      */
-    public static <V> void show(BackgroundTask<Integer, V> task, String title, String message, Integer total) {
+    public static <T extends Number, V> void show(BackgroundTask<T, V> task, String title, String message, Number total) {
         show(task, title, message, total, false);
     }
 
@@ -98,7 +119,7 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
      * @param cancelAllowed show or not cancel button
      * @param <V>           task result type
      */
-    public static <V> void show(BackgroundTask<Integer, V> task, Integer total, boolean cancelAllowed) {
+    public static <T extends Number, V> void show(BackgroundTask<T, V> task, Number total, boolean cancelAllowed) {
         show(task, null, null, total, cancelAllowed);
     }
 
@@ -110,14 +131,14 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
      * @param total total number of items, that will be processed
      * @param <V>   task result type
      */
-    public static <V> void show(BackgroundTask<Integer, V> task, Integer total) {
+    public static <T extends Number, V> void show(BackgroundTask<T, V> task, Number total) {
         show(task, null, null, total, false);
     }
 
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams().setWidth(500);
-        final BackgroundTask<Integer, V> task = (BackgroundTask<Integer, V>) params.get("task");
+        final BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
         String title = (String) params.get("title");
         if (title != null) {
             setCaption(title);
@@ -130,18 +151,21 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
 
         Boolean cancelAllowedNullable = (Boolean) params.get("cancelAllowed");
         boolean cancelAllowed = BooleanUtils.isTrue(cancelAllowedNullable);
+
+        Boolean percentProgressNullable = (Boolean) params.get("percentProgress");
+        boolean percentProgress = BooleanUtils.isTrue(percentProgressNullable);
+
         cancelButton.setVisible(cancelAllowed);
         getDialogParams().setCloseable(cancelAllowed);
 
-        final Integer total = (Integer) params.get("total");
+        final T total = (T) params.get("total");
 
         taskProgress.setValue(0);
 
-        WrapperTask<V> wrapperTask = new WrapperTask<>(task, total);
+        WrapperTask<T, V> wrapperTask = new WrapperTask<>(task, total, percentProgress);
 
         taskHandler = backgroundWorker.handle(wrapperTask);
         taskHandler.execute();
-
     }
 
     private void closeBackgroundWindow() {
@@ -153,21 +177,35 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
             close(Window.CLOSE_ACTION_ID);
     }
 
-    private class WrapperTask<V> extends LocalizedTaskWrapper<Integer, V> {
+    private class WrapperTask<T extends Number, V> extends LocalizedTaskWrapper<T, V> {
 
-        private Integer total;
+        private Number total;
+        private boolean percentProgress = false;
 
-        private WrapperTask(BackgroundTask<Integer, V> wrappedTask, Integer total) {
+        private WrapperTask(BackgroundTask<T, V> wrappedTask, Number total, boolean percentProgress) {
             super(wrappedTask, BackgroundWorkProgressWindow.this);
             this.total = total;
+            this.percentProgress = percentProgress;
+
+            showProgressText(0, 0);
+        }
+
+        private void showProgressText(Number last, float progressValue) {
+            if (!percentProgress)
+                progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", last, total));
+            else {
+                int percentValue = (int)Math.ceil(progressValue * 100);
+                progressText.setValue(formatMessage("backgroundWorkProgress.progressPercentFormat", percentValue));
+            }
         }
 
         @Override
-        public void progress(List<Integer> changes) {
+        public void progress(List<T> changes) {
             if (!changes.isEmpty()) {
-                Integer last = changes.get(changes.size() - 1);
-                taskProgress.setValue(last / (float) total);
-                progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", last, total));
+                Number last = changes.get(changes.size() - 1);
+                float value = last.floatValue() / total.floatValue();
+                taskProgress.setValue(value);
+                showProgressText(last, value);
             }
         }
     }

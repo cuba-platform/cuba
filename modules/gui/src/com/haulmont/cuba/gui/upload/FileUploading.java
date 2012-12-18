@@ -9,6 +9,8 @@ package com.haulmont.cuba.gui.upload;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.gui.executors.TaskLifeCycle;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -19,9 +21,9 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -81,21 +83,15 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             if (file.exists()) {
                 throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
             }
-            FileOutputStream os = new FileOutputStream(file);
 
-            try {
-                boolean failed = false;
-                try {
-                    os.write(data);
-                } catch (Exception ex) {
-                    failed = true;
-                } finally {
-                    os.close();
-                    if (!failed)
-                        tempFiles.put(uuid, file);
-                }
-            } catch (IOException e) {
-                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
+            boolean failed = false;
+            try (FileOutputStream os = new FileOutputStream(file)) {
+                os.write(data);
+            } catch (Exception ex) {
+                failed = true;
+            } finally {
+                if (!failed)
+                    tempFiles.put(uuid, file);
             }
         } catch (Exception e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
@@ -116,9 +112,8 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
         }
         try {
-            FileOutputStream fileOutput = new FileOutputStream(file);
             boolean failed = false;
-            try {
+            try (FileOutputStream fileOutput = new FileOutputStream(file)) {
                 byte buffer[] = new byte[BUFFER_SIZE];
                 int bytesRead;
                 int totalBytes = 0;
@@ -128,12 +123,10 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                     if (listener != null)
                         listener.progressChanged(uuid, totalBytes);
                 }
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 failed = true;
                 throw ex;
             } finally {
-                fileOutput.close();
-
                 if (!failed)
                     tempFiles.put(uuid, file);
             }
@@ -191,23 +184,24 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         int fileSize = (int) file.length();
 
         FileDescriptor fDesc = new FileDescriptor();
-        String ext = "";
-        int extIndex = name.lastIndexOf('.');
-        if ((extIndex >= 0) && (extIndex < name.length()))
-            ext = name.substring(extIndex + 1);
 
         fDesc.setSize(fileSize);
-        fDesc.setExtension(ext);
+        fDesc.setExtension(getFileExt(name));
         fDesc.setName(name);
         fDesc.setCreateDate(timeSource.currentTimestamp());
 
         return fDesc;
     }
 
+    private String getFileExt(String fileName) {
+        int i = fileName.lastIndexOf('.');
+        return i > -1 ? StringUtils.substring(fileName, i + 1, i + 20) : "";
+    }
+
     @Override
     public InputStream loadFile(UUID fileId) throws FileNotFoundException {
-        if (tempFiles.containsKey(fileId)) {
-            File f = tempFiles.get(fileId);
+        File f = tempFiles.get(fileId);
+        if (f != null) {
             return new FileInputStream(f);
         } else
             return null;
@@ -215,9 +209,8 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public void deleteFile(UUID fileId) throws FileStorageException {
-        if (tempFiles.containsKey(fileId)) {
-            File file = tempFiles.get(fileId);
-            tempFiles.remove(fileId);
+        File file = tempFiles.remove(fileId);
+        if (file != null) {
             if (file.exists()) {
                 boolean res = file.delete();
                 if (!res)
@@ -228,7 +221,8 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public void deleteFileLink(String fileName) {
-        Iterator<Map.Entry<UUID, File>> iterator = tempFiles.entrySet().iterator();
+        Map<UUID, File> clonedFileMap = new ConcurrentHashMap<>(tempFiles);
+        Iterator<Map.Entry<UUID, File>> iterator = clonedFileMap.entrySet().iterator();
         UUID forDelete = null;
         while ((iterator.hasNext()) && (forDelete == null)) {
             Map.Entry<UUID, File> fileEntry = iterator.next();
@@ -242,6 +236,13 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException {
+        uploadFileIntoStorage(fileId, fileDescr, null);
+
+        deleteFile(fileId);
+    }
+
+    private void uploadFileIntoStorage(UUID fileId, FileDescriptor fileDescr,
+                                       @Nullable UploadToStorageProgressListener listener) throws FileStorageException {
         File file = getFile(fileId);
 
         for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
@@ -251,7 +252,13 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                     + "&f=" + fileDescr.toUrlParam();
 
             HttpPost method = new HttpPost(url);
-            method.setEntity(new FileEntity(file, "application/octet-stream"));
+            FileEntity entity;
+            if (listener != null)
+                entity = new FileStorageEntity(file, "application/octet-stream", fileId, listener);
+            else
+                entity = new FileEntity(file, "application/octet-stream");
+
+            method.setEntity(entity);
             HttpClient client = new DefaultHttpClient();
             try {
                 HttpResponse response = client.execute(method);
@@ -275,8 +282,31 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                 client.getConnectionManager().shutdown();
             }
         }
+    }
+
+    @Override
+    public FileDescriptor putFileIntoStorage(final TaskLifeCycle<Long> taskLifeCycle) throws FileStorageException {
+        checkNotNull(taskLifeCycle);
+
+        UUID fileId = (UUID) taskLifeCycle.getParams().get("fileId");
+        String fileName = (String) taskLifeCycle.getParams().get("fileName");
+
+        checkNotNull(fileId);
+        checkNotNull(fileName);
+
+        UploadToStorageProgressListener progressListener = new UploadToStorageProgressListener() {
+            @Override
+            public void progressChanged(UUID fileId, long uploadedBytes, long totalBytes) {
+                taskLifeCycle.publish(uploadedBytes);
+            }
+        };
+
+        FileDescriptor fileDescriptor = getFileDescriptor(fileId, fileName);
+        uploadFileIntoStorage(fileId, fileDescriptor, progressListener);
 
         deleteFile(fileId);
+
+        return fileDescriptor;
     }
 
     @Override
@@ -307,7 +337,8 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     @Override
     public String showTempFiles() {
         StringBuilder builder = new StringBuilder();
-        Iterator<Map.Entry<UUID, File>> iterator = tempFiles.entrySet().iterator();
+        Map<UUID, File> clonedFileMap = new ConcurrentHashMap<>(tempFiles);
+        Iterator<Map.Entry<UUID, File>> iterator = clonedFileMap.entrySet().iterator();
         while ((iterator.hasNext())) {
             Map.Entry<UUID, File> fileEntry = iterator.next();
             builder.append(fileEntry.getKey().toString()).append(" | ");

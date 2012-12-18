@@ -8,10 +8,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.entity.Entity;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 /**
  * DTO that contains information about currently committed entities.
@@ -27,11 +24,16 @@ public class CommitContext implements Serializable {
     protected Collection commitInstances = new HashSet();
     protected Collection removeInstances = new HashSet();
 
-    protected Map<Object, View> views = new HashMap<Object, View>();
+    protected Map<Object, View> views = new HashMap<>();
 
     protected boolean softDeletion = true;
 
     public CommitContext() {
+    }
+
+    @SafeVarargs
+    public <T extends Entity> CommitContext(T... commitInstances) {
+        this.commitInstances.addAll(Arrays.asList(commitInstances));
     }
 
     /**

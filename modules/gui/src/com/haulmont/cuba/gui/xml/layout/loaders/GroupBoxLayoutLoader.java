@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 17:57:24
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -16,13 +12,20 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
 
     public GroupBoxLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         final GroupBoxLayout component = factory.createComponent("groupBox");
 
         assignXmlDescriptor(component, element);
@@ -79,8 +82,10 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
 
     protected void loadOrientation(GroupBoxLayout component, Element element) {
         String orientation = element.attributeValue("orientation");
-        if (orientation == null)
+        if (orientation == null)  {
+            component.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
             return;
+        }
 
         if ("horizontal".equalsIgnoreCase(orientation)) {
             component.setOrientation(GroupBoxLayout.Orientation.HORIZONTAL);

@@ -12,6 +12,8 @@ import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Map;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -25,6 +27,11 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
         super(wrappedTask.getTimeoutSeconds(), window);
         this.wrappedTask = wrappedTask;
         this.window = window;
+    }
+
+    @Override
+    public Map<String, Object> getParams() {
+        return wrappedTask.getParams();
     }
 
     @Override

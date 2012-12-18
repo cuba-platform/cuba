@@ -29,9 +29,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
- * @author Alexander Budarov
+ * @author budarov
+ * @version $Id$
  */
 public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> implements FileUploadField {
 
@@ -47,9 +46,9 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     protected UUID fileId;
 
-   protected UUID tempFileId;
+    protected UUID tempFileId;
 
-    private List<Listener> listeners = new ArrayList<Listener>();
+    private List<Listener> listeners = new ArrayList<>();
 
     public DesktopFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);

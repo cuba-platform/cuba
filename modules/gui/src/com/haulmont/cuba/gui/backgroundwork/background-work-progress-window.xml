@@ -14,7 +14,7 @@
     <layout expandLayout="true" margin="true" spacing="true">
         <label id="text" value="msg://backgroundWorkProgress.defaultText"/>
         <progressBar id="taskProgress" width="100%"/>
-        <label id="progressText" value="msg://backgroundWorkProgress.progressText"/>
+        <label id="progressText"/>
         <hbox align="MIDDLE_RIGHT">
             <button id="cancelButton" invoke="cancel" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
         </hbox>

@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.gui.upload;
+
+import org.apache.http.entity.FileEntity;
+
+import java.io.*;
+import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * @author artamonov
+ * @version $Id$
+ */
+public class FileStorageEntity extends FileEntity {
+
+    private final long size;
+    private final UUID fileId;
+    private final FileUploadingAPI.UploadToStorageProgressListener listener;
+
+    public FileStorageEntity(File file, String contentType, UUID fileId,
+                             FileUploadingAPI.UploadToStorageProgressListener listener) {
+        super(file, contentType);
+
+        this.listener = listener;
+        this.size = file.length();
+        this.fileId = fileId;
+
+        checkNotNull(listener);
+        checkNotNull(fileId);
+    }
+
+    @Override
+    public void writeTo(OutputStream outstream) throws IOException {
+        long transferredBytes = 0L;
+
+        if (outstream == null) {
+            throw new IllegalArgumentException("Output stream may not be null");
+        }
+
+        try (InputStream instream = new FileInputStream(this.file)) {
+            byte[] tmp = new byte[4096];
+            int readedBytes;
+            while ((readedBytes = instream.read(tmp)) != -1) {
+                outstream.write(tmp, 0, readedBytes);
+
+                transferredBytes += readedBytes;
+                listener.progressChanged(fileId, transferredBytes, size);
+            }
+            outstream.flush();
+        }
+    }
+}
