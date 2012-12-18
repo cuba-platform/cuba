@@ -21,6 +21,8 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -106,32 +108,83 @@ public class MenuBuilder {
             }
         });
 
-        MenuItem prevItem = null;
+        List<MenuItemContainer> items = new ArrayList<>();
+
+        // prepare menu items
         for (MenuItem child : itemChildren) {
             if (child.getChildren().isEmpty()) {
                 if (child.isSeparator()) {
-                    // skip first and last separator
-                    if (child != itemChildren.get(0) &&
-                            child != itemChildren.get(itemChildren.size() - 1)) {
-                        // skip separator after separator
-                        if (prevItem == null || !prevItem.isSeparator())
-                            jMenu.addSeparator();
-                    }
+                    items.add(new MenuItemContainer());
                 } else {
                     JMenuItem jMenuItem = new JMenuItem(MenuConfig.getMenuItemCaption(child.getId()));
                     assignCommand(jMenuItem, child);
                     assignShortcut(jMenuItem, child);
-                    jMenu.add(jMenuItem);
+                    items.add(new MenuItemContainer(jMenuItem));
                 }
             } else {
                 JMenu jChildMenu = new JMenu(MenuConfig.getMenuItemCaption(child.getId()));
                 assignShortcut(jChildMenu, child);
                 createSubMenu(jChildMenu, child);
                 if (!isMenuEmpty(jChildMenu)) {
-                    jMenu.add(jChildMenu);
+                    items.add(new MenuItemContainer(jChildMenu));
                 }
             }
-            prevItem = child;
+        }
+
+        // remove unnecessary separators
+        if (!items.isEmpty()) {
+            Iterator<MenuItemContainer> iterator = items.iterator();
+            JMenuItem menuItem = getNextMenuItem(iterator);
+            boolean useSeparator = false;
+
+            while (menuItem != null) {
+                if (useSeparator)
+                    jMenu.addSeparator();
+
+                jMenu.add(menuItem);
+
+                useSeparator = false;
+                menuItem = null;
+
+                if (iterator.hasNext()) {
+                    MenuItemContainer itemContainer = iterator.next();
+                    if (!itemContainer.isSeparator())
+                        menuItem = itemContainer.getMenuItem();
+                    else {
+                        menuItem = getNextMenuItem(iterator);
+                        useSeparator = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private JMenuItem getNextMenuItem(Iterator<MenuItemContainer> iterator) {
+        JMenuItem item = null;
+        while (iterator.hasNext() && item == null) {
+            MenuItemContainer cMenuItem = iterator.next();
+            if (!cMenuItem.isSeparator())
+                item = cMenuItem.getMenuItem();
+        }
+        return item;
+    }
+
+    private static class MenuItemContainer {
+        private JMenuItem menuItem = null;
+
+        private MenuItemContainer() {
+        }
+
+        public MenuItemContainer(JMenuItem menuItem) {
+            this.menuItem = menuItem;
+        }
+
+        public JMenuItem getMenuItem() {
+            return menuItem;
+        }
+
+        public boolean isSeparator() {
+            return this.menuItem == null;
         }
     }
 
