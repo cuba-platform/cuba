@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -376,11 +377,12 @@ public abstract class AbstractMessages implements Messages {
             if (k.equals("@include")) {
                 String includesProperty = properties.getProperty(k);
                 // multiple includes separated by comma
-                String[] includes = StringUtils.split(includesProperty, ',');
+                String[] includes = StringUtils.split(includesProperty, " ,");
                 if (includes != null && includes.length > 0) {
+                    ArrayUtils.reverse(includes);
                     for (String includePath : includes) {
                         includePath = StringUtils.trimToNull(includePath);
-                        if (StringUtils.isNotEmpty(includePath))
+                        if (includePath != null)
                             getAllIncludes(list, includePath, locale, defaultLocale);
                     }
                 }

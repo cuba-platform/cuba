@@ -88,6 +88,9 @@ public class MessageProviderTest extends CubaTestCase {
 
         String msg2 = messages.getMessage("com.haulmont.cuba.core.mp_test.includes", "twoKey");
         assertEquals(msg2, "OK");
+
+        String msg3 = messages.getMessage("com.haulmont.cuba.core.mp_test.includes", "threeKey");
+        assertEquals(msg3, "overridden");
     }
 
     public void testCachingDefaultLoc() {
