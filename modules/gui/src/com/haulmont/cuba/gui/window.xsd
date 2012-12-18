@@ -49,7 +49,6 @@
 
     <xs:simpleType name="dateFieldResolution">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="MSEC"/>
             <xs:enumeration value="SEC"/>
             <xs:enumeration value="MIN"/>
             <xs:enumeration value="HOUR"/>
