@@ -1,7 +1,7 @@
-﻿public class SearchFieldSample extends AbstractWindow {
+﻿public class SearchPickerFieldSample extends AbstractWindow {
 
     @Inject
-    private SearchField searchField;
+    private SearchPickerField searchField;
 
     @Override
     public void init(Map<String, Object> params) {

@@ -1,10 +1,4 @@
 ﻿<flowbox margin="true" spacing="true" >
-	<button caption="Flow" width="${widthWithButton}"/>
-	<button caption="layout" width="${widthWithButton}"/>
-	<button caption="Flow" width="${widthWithButton}"/>
-	<button caption="layout" width="${widthWithButton}"/>
-	<button caption="Flow" width="${widthWithButton}"/>
-	<button caption="layout" width="${widthWithButton}"/>
-	<button caption="Flow" width="${widthWithButton}"/>
-	<button caption="layout" width="${widthWithButton}"/>
+   <button id="testButton" caption="msg://mouseOver"/>
+   <textField id="textFieldDescription" caption="msg://click"/>
 </flowbox>

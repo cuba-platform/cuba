@@ -1,18 +1,18 @@
 <table id="testTable" height="150" width="100%">
-	<actions>
-		<action id="refresh"/>
-		<action id="excel"/>
-		<action id="create"/>
-	</actions>
-	<buttonsPanel>
-		<button action="testTable.create"/>
-		<button action="testTable.refresh"/>
-		<button action="testTable.excel"/>
-	</buttonsPanel>
-	<columns>
-		<column id="name"/>
-		<column id="date"/>
-		<column id="unit"/>
-	</columns>
-	<rows datasource="sampleDs"/>
+   <actions>
+      <action id="refresh"/>
+      <action id="excel"/>
+      <action id="create"/>
+   </actions>
+   <buttonsPanel>
+      <button action="testTable.create"/>
+      <button action="testTable.refresh"/>
+      <button action="testTable.excel"/>
+   </buttonsPanel>
+   <columns>
+      <column id="name"/>
+      <column id="date"/>
+      <column id="unit"/>
+   </columns>
+   <rows datasource="sampleDs"/>
 </table>

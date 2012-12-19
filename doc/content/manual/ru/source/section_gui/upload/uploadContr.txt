@@ -10,8 +10,8 @@
 
     @Inject
     private FileUploading fileUploading;//класс,реализующий управление файлами в хранилище
-	
-	private FileDescriptor fd;
+
+    private FileDescriptor fd;
 
     @Override
     public void init(Map<String, Object> params) {

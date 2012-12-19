@@ -1,6 +1,6 @@
 ﻿<popupButton id="popupTextIconButton" caption="msg://saveAction" description="Press me" icon="icons/save.png">
-	<actions>
-		<action id="popupAction1" caption="msg://action1" invoke="saveActionTestComp"/>
-		<action id="popupAction2" caption="msg://action2" invoke="saveActionTestComp"/>
-	</actions>
+   <actions>
+      <action id="popupAction1" caption="msg://action1" invoke="saveActionTestComp"/>
+      <action id="popupAction2" caption="msg://action2" invoke="saveActionTestComp"/>
+   </actions>
 </popupButton>

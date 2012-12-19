@@ -1,4 +1,0 @@
-<actionsField id="parentCard" datasource="cardDs" property="parentCard"
-                         dropdown="true" open="false" width="${width}">
-    <button id="cardCreate" icon="icons/create.png"/>
-</actionsField>

@@ -7,8 +7,8 @@
 <table id="testTable" height="150" width="100%">
    <columns>
       <column id="name"/>
-	  <column id="date"/>
-	  <column id="unit"/>
+      <column id="date"/>
+      <column id="unit"/>
    </columns>
    <rows datasource="sampleDs"/>
 </table>

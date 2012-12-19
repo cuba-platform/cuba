@@ -8,8 +8,8 @@
 
     @Inject
     private FileMultiUploadField uploadTemplateAttachment;
-	
-	@Inject
+
+    @Inject
     private FileUploading fileUploading;//класс,реализующий управление файлами в хранилище
 
     private FileDescriptor fd;

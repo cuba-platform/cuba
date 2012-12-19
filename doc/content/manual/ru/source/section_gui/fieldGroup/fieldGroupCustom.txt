@@ -1,7 +1,7 @@
 ﻿fieldGroup1.addCustomField("units", new FieldGroup.CustomFieldGenerator() {
-	@Override
+    @Override
     public Component generateField(Datasource datasource, String propertyId) {
-		final TextField textField = componentsFactory.createComponent(TextField.NAME);
+        final TextField textField = componentsFactory.createComponent(TextField.NAME);
         textField.setSecret(true);
         return textField;
     }

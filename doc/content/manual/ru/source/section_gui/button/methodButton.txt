@@ -1,4 +1,4 @@
 ﻿public void lockButton() {
-	disabledButton.setEnabled(false);
-	textButton.setCaption(getMessage("unlock"));
+   disabledButton.setEnabled(false);
+   textButton.setCaption(getMessage("unlock"));
 }

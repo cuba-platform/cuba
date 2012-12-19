@@ -1,13 +1,13 @@
 ﻿<dsContext>
-	<hierarchicalDatasource id="sampleDs"
-							class="com.haulmont.refapp.core.entity.SampleHierarchicalEntity"
-							view="sample.browse" hierarchyProperty="parent" refreshMode="NEVER">
-		<query>
-			<![CDATA[select g from ref$SampleHierarchicalEntity g]]>
-		</query>
-	</hierarchicalDatasource>
+   <hierarchicalDatasource id="sampleDs"
+                           class="com.haulmont.refapp.core.entity.SampleHierarchicalEntity"
+                           view="sample.browse" hierarchyProperty="parent" refreshMode="NEVER">
+      <query>
+         <![CDATA[select g from ref$SampleHierarchicalEntity g]]>
+      </query>
+   </hierarchicalDatasource>
 </dsContext>
 <!--...-->
 <tree id="testTree" width="100%" height="100%" multiselect="true">
-	<treechildren datasource="sampleDs" captionProperty="name" hierarchyProperty="parent" />
+   <treechildren datasource="sampleDs" captionProperty="name" hierarchyProperty="parent" />
 </tree>

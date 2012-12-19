@@ -3987,18 +3987,6 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </row>
               <row>
                 <entry align="left">
-                  <link linkend="gui_SearchField">SearchField</link>
-                </entry>
-                <entry align="left">
-                  <mediaobject>
-                    <imageobject>
-                      <imagedata fileref="img/gui_searchField.png"/>
-                    </imageobject>
-                  </mediaobject>
-                </entry>
-              </row>
-              <row>
-                <entry align="left">
                   <link linkend="gui_SearchPickerField">SearchPickerField</link>
                 </entry>
                 <entry align="left">
@@ -4132,7 +4120,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса компонента <code>Label</code>: для веб-приложений  и для десктоп-приложений. </para>
+          <para>Компонент <code>Label</code> реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <figure>
             <title>Типы надписей</title>
             <mediaobject>
@@ -4222,7 +4210,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Классы кнопок существуют как для веб-приложений, так и для десктоп-приложений.</para>
+          <para>Компонент кнопки реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Кнопка может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
           <figure>
             <title>Типы кнопок</title>
@@ -4325,7 +4313,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса кнопок: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Кнопка с выпадающим списком действий может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
           <figure>
             <title>Типы кнопок</title>
@@ -4414,7 +4402,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса кнопок-ссылок: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент кнопки-ссылки реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Кнопка-ссылка  может содержать  текст или пиктограмму (или и то и другое). На рисунке ниже отражены разные виды кнопок.</para>
           <figure>
             <title>Типы кнопок-ссылок</title>
@@ -4492,7 +4480,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Классы текстовых полей существуют как для веб-приложений, так  и для десктоп-приложений.</para>
+          <para>Компонент текстового поля реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Текстовое поле служит для обеспечения возможности получить текстовую информацию от пользователя, а также для отображения атрибутов <glossterm linkend="entity">сущности</glossterm>.</para>
           <para>Для создания простого текстового поля достаточно в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> написать следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textField.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -4698,7 +4686,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Класс текстовой области существует только для веб-приложений.</para>
+          <para>Компонент текстовой области реализован только для блока <structname>Web Client</structname>.</para>
           <para>К тексту, вводимому в компоненте <code>TextArea</code>, можно применять средства для форматирования: изменять начертание шрифта, его размер, гарнитуру − с помощью элементов управления, расположенных в верхней части компонента.</para>
           <figure>
             <title/>
@@ -4802,7 +4790,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса полей для ввода даты и времени: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Для создания  поля даты, связанного с <link linkend="datasources">источником данных</link>, необходимо определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующим образом:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/dateField/dateField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Возможно изменить формат представления даты и времени с помощью атрибута  <sgmltag id="attr_dateFormat">dateFormat</sgmltag> по правилам  SimpleDateFormat (<ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">http://docs.oracle.com/javase/6/docs/ api/java/text/SimpleDateFormat.html</ulink>). Значением атрибута может быть либо строка формата, либо ключ в пакете сообщений (если строка начинается с msg://)</para>
@@ -4916,7 +4904,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса полей для ввода времени: для веб-приложений и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Для создания поля времени, связанного с <link linkend="datasources">источником данных</link>, необходимо указать атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link> в определении поля:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timeField/timeFieldDs.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Для создания простого  поля для ввода времени необходимо определить его в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующим образом:</para>
@@ -5017,7 +5005,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса групп полей: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Ниже представлено описание группы полей в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> экрана:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/fieldGroup/fieldGroup.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para><link linkend="datasources">Источник данных</link> (атрибут <link linkend="attr_datasource" id="attr_fG_datasource">datasource</link>) можно задать как для всего компонента целиком, так и для каждого поля в отдельности. Если для компонента <sgmltag>fieldGroup</sgmltag> атрибут не задан, то атрибут <sgmltag>datasource</sgmltag> должен быть задан для каждого <link linkend="attr_field">поля</link> в отдельности, либо представление полей должно задаваться разработчиком.</para>
@@ -5255,7 +5243,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Классы флажков существуют как для веб-приложений, так  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Для создания флажка достаточно в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> написать следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/checkBox/checkBox.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Сброс или установка флажка изменяет его состояние. Состояние − это свойство типа <code>Boolean</code>, может быть получено с помощью метода  <code>getValue()</code> и установлено с помощью метода <code>setValue()</code>. </para>
@@ -5336,7 +5324,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса полей ввода с дополнительными кнопками действий: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Для того чтобы создать компонент <code>PickerField</code>, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldMetaClass.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибут <sgmltag id="attr_metaclass">metaClass</sgmltag> задает тип <glossterm linkend="entity">сущности</glossterm>, экземпляр которой будет выбираться с помощью действия поиска (<literal>lookup</literal>). Для заданной сущности должен быть определен экран <literal>Название_сущности.lookup</literal> либо в атрибуте <sgmltag>lookupScreen</sgmltag> указан идентификатор экрана, который нужно открыть для выбора экземпляра сущности.</para>
@@ -5499,7 +5487,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса групп опций: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Если в качестве значений списка используются экземпляры <glossterm linkend="entity">сущностей</glossterm>, нужно использовать атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link> при описании компонента.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/optionsGroup/optionsGroupOptDs.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Если в качестве значений списка используются, например, значения перечисления (enum), то следует использовать атрибуты <link linkend="attr_datasource">datasource</link> и <link linkend="attr_property">property</link>. </para>
@@ -5602,7 +5590,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса раскрывающегося списка: для веб-приложений и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Если в качестве значений списка используются экземпляры <glossterm linkend="entity">сущностей</glossterm>, нужно использовать атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link> при описании компонента.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/lookupField/lookupFieldOptDs.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Ниже представлено описание раскрывающегося списка, значения которого заданы с помощью установки <link linkend="datasources">источника данных</link> и имени атрибута <glossterm linkend="entity">сущности</glossterm>. Атрибут сущности является перечислением (enum).</para>
@@ -5710,7 +5698,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса раскрывающегося списка c расширенной  функциональностью: для веб-приложений  и для десктоп-приложений. </para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Ниже представлено описание раскрывающегося списка с расширенной функциональностью.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/lookupPickerField/lookupPickerField.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Атрибуты <sgmltag>lookupPickerField</sgmltag>: </para>
@@ -5791,106 +5779,9 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
             </tgroup>
           </informaltable>
         </section>
-        <section id="gui_SearchField">
-          <title>SearchField</title>
-          <para>Поле поиска (<code>SearchField</code>) служит для поиска значения по заранее определенному условию. Для работы с полем достаточно ввести хотя бы один символ и нажать клавишу <keycap>Enter</keycap>. Если будут найдены несколько совпадений, значения будут отображены  в виде списка. </para>
-          <figure>
-            <title/>
-            <mediaobject>
-              <imageobject>
-                <imagedata contentwidth="190" align="center" fileref="img/gui_searchFieldOverlap.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <para>XML-имя компонента: <sgmltag>searchField</sgmltag>.</para>
-          <figure>
-            <title/>
-            <mediaobject>
-              <imageobject>
-                <imagedata contentwidth="180" align="center" fileref="img/gui_SearchField_dia.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <para>Класс поля поиска существует только для веб-приложений.</para>
-          <para>Для компонента <sgmltag>searchField</sgmltag> необходимо предварительно создать <link linkend="datasources">источник данных</link>, предназначенный для работы с коллекцией <glossterm linkend="entity">сущностей</glossterm>, и задать в нем запрос, содержащий условия поиска. Например:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchFieldDs.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>При описании компонента в <glossterm linkend="screen_xml_glossentry">XML-дескрипторе</glossterm> используйте атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link>. </para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchField.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Значение атрибута <sgmltag id="minSearchStringLength_attr">minSearchStringLength</sgmltag> − это минимальное количество символов, необходимых для поиска значения.</para>
-          <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана можно указать содержание нотификаций, которые будут выводиться на экран в двух случаях:</para>
-          <itemizedlist>
-            <listitem>
-              <para>если количество введенных символов меньше значения атрибута <link linkend="minSearchStringLength_attr">minSearchStringLength</link></para>
-            </listitem>
-            <listitem>
-              <para>если не найдено совпадений существующих в источнике данных значений и введенных символов.</para>
-            </listitem>
-          </itemizedlist>
-          <para>Пример задания нотификаций в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchFieldContr.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибуты <sgmltag>searchField</sgmltag>: </para>
-          <informaltable frame="none" pgwide="0" align="left">
-            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
-                <row><entry align="left">
-                    <link linkend="attr_caption">caption</link>
-                  </entry>editable<entry align="left">
-                    <link linkend="attr_enable">enable</link>
-                  </entry><entry align="left">nullName</entry><entry>
-                    <link linkend="attr_stylename">stylename</link>
-                  </entry></row>
-                <row><entry>
-                    <link linkend="attr_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
-                    <link linkend="attr_filterMode">filterMode</link>
-                  </entry>required<entry>
-                    <link linkend="attr_optionsDatasource">optionsDatasource</link>
-                  </entry><entry>
-                    <link linkend="attr_visible">visible</link>
-                  </entry></row>
-                <row>
-                  <entry align="left">
-                    <link linkend="attr_datasource">datasource</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="attr_height">height</link>
-                  </entry>
-                  <entry>
-                    <link linkend="attr_property">property</link>
-                  </entry>
-                  <entry>
-                    <link linkend="attr_width">width</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="attr_description">description</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="attr_id">id</link>
-                  </entry>
-                  <entry>
-                    <link linkend="attr_required">required</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry>
-                    <link linkend="attr_editable">editable</link>
-                  </entry>
-                  <entry>
-                    <link linkend="minSearchStringLength_attr">minSearchStringLength</link>
-                  </entry>
-                  <entry>
-                    <link linkend="attr_requiredMessage">requiredMessage</link>
-                  </entry>
-                  <entry/>
-                </row>
-              </tbody></tgroup>
-          </informaltable>
-        </section>
         <section id="gui_SearchPickerField">
           <title>SearchPickerField</title>
-          <para>Поле поиска с расширенной функциональностью (<code>SearchPickerField</code>) отличается от простого <link linkend="gui_SearchField">поля поиска</link> тем, что содержит дополнительные кнопки справа. С помощью кнопок можно открывать экземпляр выбранной в поле <glossterm linkend="entity">сущности</glossterm>, удалять экземпляр или выбирать экземпляр из экрана списка сущностей.</para>
+          <para>Поле поиска с расширенной функциональностью (<code>SearchPickerField</code>) служит для поиска значения по заранее определенному условию. Для работы с полем достаточно ввести хотя бы один символ и нажать клавишу <keycap>Enter</keycap>. Если будут найдены несколько совпадений, значения будут отображены  в виде списка. С помощью дополнительных кнопок можно открывать экземпляр выбранной в поле <glossterm linkend="entity">сущности</glossterm>, удалять экземпляр или выбирать экземпляр из экрана списка сущностей.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -5908,9 +5799,23 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Класса поля поиска c расширенной функциональностью существует только для веб-приложений.</para>
-          <para>Ниже представлено описание поля поиска с расширенной функциональностью в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Компонент реализован только для блока <structname>Web Client</structname>.</para>
+          <para>Для компонента <sgmltag>searchPickerField</sgmltag> необходимо предварительно создать <link linkend="datasources">источник данных</link>, предназначенный для работы с коллекцией <glossterm linkend="entity">сущностей</glossterm>, и задать в нем запрос, содержащий условия поиска. Например:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchPickerField/searchPickerField.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>При описании компонента в <glossterm linkend="screen_xml_glossentry">XML-дескрипторе</glossterm> используйте атрибут <link linkend="attr_optionsDatasource">optionsDatasource</link>. </para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchPickerField/searchPickerField.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Значение атрибута <sgmltag id="minSearchStringLength_attr_1">minSearchStringLength</sgmltag> − это минимальное количество символов, необходимых для поиска значения.</para>
+          <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана можно указать содержание нотификаций, которые будут выводиться на экран в двух случаях:</para>
+          <itemizedlist>
+            <listitem>
+              <para>если количество введенных символов меньше значения атрибута <link linkend="minSearchStringLength_attr">minSearchStringLength</link></para>
+            </listitem>
+            <listitem>
+              <para>если не найдено совпадений существующих в источнике данных значений и введенных символов.</para>
+            </listitem>
+          </itemizedlist>
+          <para>Пример задания нотификаций в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchField/searchFieldContr.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Если при объявлении компонента никаких <link linkend="gui_Action">действий</link> не задано,  загрузчик XML определит для него действия <literal>lookup</literal> и <literal>open</literal>.</para>
           <para>Стандартные действия определяются перечислением <code>PickerField.ActionType</code>: <literal>lookup</literal>, <literal>clear</literal>, <literal>open</literal>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/searchPickerField/searchPickerFieldActions.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -6025,7 +5930,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Класс сдвоенного списка существует только для веб-приложений.</para>
+          <para>Компонент реализован только для блока <structname>Web Client</structname>.</para>
           <para>Ниже представлено описание сдвоенного списка в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/twinColumn/twinColumnOptDs.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>В данном примере используется атрибут <sgmltag id="attr_columns_twin">columns</sgmltag> для задания количества колонок текста в списке и атрибут <sgmltag id="attr_rows_twin">rows</sgmltag> для задания количества строк текста в списке.</para>
@@ -6142,7 +6047,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса списка маркеров: для веб-приложений  и для десктоп-приложений. </para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Для создания списка маркеров необходимо задать описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tokenList/tokenList.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>С помощью атрибута <sgmltag id="attr_position">position</sgmltag> можно задавать позиционирование раскрывающегося списка. Атрибут может принимать два  значения:</para>
@@ -6340,7 +6245,8 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Классы простых таблиц существуют как для веб-приложений, так  и для десктоп-приложений.  Интерфейс <code>Table</code>,  наследуется от интерфейса  <code>ListComponent</code> − базового интерфейса компонентов, предназначенных для работы с коллекциями <glossterm linkend="entity">сущностей</glossterm>.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
+          <para>Интерфейс <code>Table</code>,  наследуется от интерфейса  <code>ListComponent</code> − базового интерфейса компонентов, предназначенных для работы с коллекциями <glossterm linkend="entity">сущностей</glossterm>.</para>
           <para>Для того чтобы создать простую таблицу, необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> задать <link linkend="datasources">источник данных</link> и определить описание таблицы:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/table.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
@@ -6584,7 +6490,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса иерархичных таблиц: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
           <para>Для того чтобы создать иерархическую таблицу, необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> задать иерархический <link linkend="datasources">источник данных</link> и определить описание таблицы:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/treeTable/treeTable.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
@@ -6623,7 +6529,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса таблиц с группировкой: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
           <para>Для правильного функционирования <code>GroupTable</code> должна быть соединена с <link linkend="datasources">GroupDatasource</link>.</para>
           <para>Пример использования:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/groupTable/groupTable.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -6649,7 +6555,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса деревьев: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
           <para>Для того чтобы создать компонент дерева, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tree/tree.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
@@ -6726,7 +6632,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса индикатора прогресса: для веб-приложений и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
           <para>Для создания индикатора необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> определить его описание:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/progressBar/progressBar.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>С помощью атрибута <sgmltag id="attr_indeterminate">indeterminate</sgmltag> можно задать отображение неопределенного состояния индикатора. Если значение атрибута равно <literal>true</literal>, то индикатор отображает неопределенное состояние. Значение атрибута по умолчанию равно <literal>true</literal>.</para>
@@ -6788,7 +6694,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса компонентов загрузки файлов: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
           <para>Ниже расположен пример, содержащий обработчик загрузки файла. В этом обработчике написан программный код, обеспечивающий вывод на экран сообщения об успешной или не успешной загрузке файла, а также вывод названия файла в компоненте  <link linkend="gui_Label">надписи</link>.</para>
           <para>Для начала определим описание компонента в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/upload/upload.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -6855,7 +6761,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Существует два класса компонентов множественной загрузки файлов: для веб-приложений  и для десктоп-приложений.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
           <para>Ниже расположен пример, содержащий обработчик загрузки файлов. В этом обработчике написан программный код, обеспечивающий вывод на экран сообщения об успешной или не успешной загрузке файлов, а также вывод названий файлов в <link linkend="gui_TextField">текстовое поле</link>.</para>
           <para>Для начала определим описание компонента в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/multipleUpload/multipleUpload.txt" encoding="UTF-8" parse="text"/></programlisting>

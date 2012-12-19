@@ -1,11 +1,7 @@
-﻿<groupBox spacing="true" caption="GroupBox"
-          orientation="vertical" collapsable="false" width="200" height="270">
-		  <button caption="Button" width="${widthWithButton}"/>
-		  <button caption="Button" width="${widthWithButton}"/>
-		  <button caption="Button" width="${widthWithButton}"/>
-		  <button caption="Button" width="${widthWithButton}"/>
-		  <button caption="Button" width="${widthWithButton}"/>
-		  <button caption="Button" width="${widthWithButton}"/>
-		  <button caption="Button" width="${widthWithButton}"/>
-		  <button caption="Button" width="${widthWithButton}"/>
+﻿<groupBox collapsable="false" caption="Buttons" expand="true" height="100%">
+   <vbox width="100%" height="20%" margin="true" spacing="true">
+      <hbox margin="false;true;false;false;" spacing="true"...>
+      <button id="withoutAction"/>
+      <button action="saveTestComp" align="BOTTOM_RIGHT"/>
+   </vbox>
 </groupBox>

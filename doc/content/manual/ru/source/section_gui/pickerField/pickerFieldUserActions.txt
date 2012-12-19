@@ -2,7 +2,7 @@
    <actions>
       <action id="pickerAction1" icon="icons/ok.png"
               invoke="pickerField1Disabled" caption=""/>
-	  <action id="pickerAction2" icon="icons/cancel.png"
+      <action id="pickerAction2" icon="icons/cancel.png"
               invoke="pickerField1Enabled" caption=""/>
-	</actions>
+   </actions>
 </pickerField>

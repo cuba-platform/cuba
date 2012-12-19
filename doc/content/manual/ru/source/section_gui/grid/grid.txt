@@ -1,24 +1,24 @@
 ﻿<layout>
-	<grid spacing="true" margin="true">
-		<columns>
-			<column flex="1"/>
-			<column flex="1"/>
-			<column flex="1"/>
-			<column flex="1"/>
-		</columns>
-		<rows>
-			<row>
-				<label value="msg://name1"/>
-				<textField id="name1" width="200px"/>
-				<label value="msg://name2"/>
-				<textField id="name2" width="200px"/>
-			</row>
-			<row>
-				<label value="msg://name3"/>
-				<textField id="name3" width="200px"/>
-				<label value="msg://name4"/>
-				<textField id="name4" width="200px"/>
-			</row>
-		</rows>
-	</grid>
+   <grid spacing="true" margin="true">
+      <columns>
+         <column flex="1"/>
+         <column flex="1"/>
+         <column flex="1"/>
+         <column flex="1"/>
+      </columns>
+      <rows>
+         <row>
+            <label value="msg://name1"/>
+            <textField id="name1" width="200px"/>
+            <label value="msg://name2"/>
+            <textField id="name2" width="200px"/>
+         </row>
+         <row>
+            <label value="msg://name3"/>
+            <textField id="name3" width="200px"/>
+            <label value="msg://name4"/>
+            <textField id="name4" width="200px"/>
+         </row>
+       </rows>
+   </grid>
 </layout>

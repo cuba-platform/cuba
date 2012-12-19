@@ -1,6 +1,6 @@
 ﻿<collectionDatasource id="coloursDs" class="com.haulmont.refapp.core.entity.Colour" view="_local">
-	<query>
-		select c from ref$Colour c order by c.name
+    <query>
+        select c from ref$Colour c order by c.name
     </query>
 </collectionDatasource>
 <!--..-->

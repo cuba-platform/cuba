@@ -12,7 +12,7 @@ public void init(Map<String, Object> params) {
          usersDs.addItem((User) item);
          usersssDs.excludeItem((User) item);
       }
-	  
+  
       @Override
       public void removeItem(Object item) {
           usersDs.removeItem((User) item);

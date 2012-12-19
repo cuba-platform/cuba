@@ -1,14 +1,14 @@
 ﻿@Override
 public void init(Map<String, Object> params) {
-	//Установка действия
-	withoutAction.setAction(
-			new AbstractAction("getTime") {
-				@Override
-				public void actionPerform(Component component) {
-					showNotification("Current time is  " + 
-						timeFormat.format(timeSource.currentTimestamp()), 
-						NotificationType.HUMANIZED);           
-				}
+   //Установка действия
+   withoutAction.setAction(
+      new AbstractAction("getTime") {
+         @Override
+         public void actionPerform(Component component) {
+            showNotification("Current time is  " + 
+               timeFormat.format(timeSource.currentTimestamp()), 
+                  NotificationType.HUMANIZED);           
+         }
    );
    //Установка названия
    withoutAction.setCaption(getMessage("getTime"));
