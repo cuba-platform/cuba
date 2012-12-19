@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class containing all views defined in XML and deployed at runtime.<br>
- * The reference to the ViewRepository can be obtained through {@link com.haulmont.cuba.core.global.MetadataProvider}
+ * The reference to the ViewRepository can be obtained through {@link com.haulmont.cuba.core.global.Metadata}.
  *
  * @author krivopustov
  * @version $Id$
