@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.ClientScriptHost;
 import com.haulmont.cuba.gui.components.ValueProvider;
 import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
@@ -19,7 +18,7 @@ import com.vaadin.ui.ClientWidget;
  */
 @ClientWidget(VScriptHost.class)
 @SuppressWarnings({"unused"})
-public class WebScriptHost extends WebAbstractComponent<JavaScriptHost> implements ClientScriptHost {
+public class WebScriptHost extends WebAbstractComponent<JavaScriptHost> {
 
     public WebScriptHost() {
         this.component = new JavaScriptHost();

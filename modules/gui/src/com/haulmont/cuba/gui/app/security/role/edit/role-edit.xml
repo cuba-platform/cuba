@@ -62,7 +62,7 @@
             </hbox>
         </hbox>
 
-        <tabsheet id="permissionsTabsheet">
+        <tabSheet id="permissionsTabsheet">
             <tab id="screenPermissionsTab" caption="msg://screen-permissions">
                 <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/screens-permission-tab.xml"
                         id="screensTabFrame" width="100%" height="100%"/>
@@ -83,7 +83,7 @@
                 <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/ui-permission-tab.xml"
                         id="uiTabFrame" width="100%" height="100%"/>
             </tab>
-        </tabsheet>
+        </tabSheet>
         <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

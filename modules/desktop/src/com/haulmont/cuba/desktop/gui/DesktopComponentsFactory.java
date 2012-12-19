@@ -17,9 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(ComponentsFactory.NAME)
 public class DesktopComponentsFactory implements ComponentsFactory {
@@ -61,7 +60,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(OptionsGroup.NAME, DesktopOptionsGroup.class);
         classes.put(FileUploadField.NAME, DesktopFileUploadField.class);
         classes.put(FileMultiUploadField.NAME, DesktopFileMultiUploadField.class);
-        classes.put(Tabsheet.NAME, DesktopTabsheet.class);
+        classes.put(TabSheet.NAME, DesktopTabSheet.class);
         classes.put(Embedded.NAME, DesktopEmbedded.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
         classes.put(GroupBoxLayout.NAME, DesktopGroupBox.class);

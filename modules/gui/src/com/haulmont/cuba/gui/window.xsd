@@ -1246,15 +1246,15 @@
             <xs:choice minOccurs="1" maxOccurs="unbounded">
                 <xs:element name="vbox" type="boxLayout"/>
                 <xs:element name="hbox" type="boxLayout"/>
-                <xs:element name="flowbox" type="boxLayout"/>
+                <xs:element name="flowBox" type="boxLayout"/>
 
-                <xs:element name="htmlbox" type="htmlBoxLayout"/>
+                <xs:element name="htmlBox" type="htmlBoxLayout"/>
                 <xs:element name="scrollBox" type="scrollBoxLayout"/>
                 <xs:element name="grid" type="gridLayout"/>
                 <xs:element name="groupBox" type="groupBoxLayout"/>
 
                 <xs:element name="split" type="splitContainer"/>
-                <xs:element name="tabsheet" type="tabsheetContainer"/>
+                <xs:element name="tabSheet" type="tabsheetContainer"/>
                 <xs:element name="iframe" type="iframeContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
@@ -1292,7 +1292,7 @@
                 <xs:element name="progressBar" type="progressBarComponent"/>
 
                 <xs:element name="upload" type="uploadComponent"/>
-                <xs:element name="multiupload" type="multiuploadComponent"/>
+                <xs:element name="multiUpload" type="multiuploadComponent"/>
 
                 <xs:element name="tree" type="treeComponent"/>
                 <xs:element name="table" type="tableComponent"/>

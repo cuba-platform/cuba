@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 11.03.2009 18:14:23
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -13,8 +9,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
-public class FileUploadFieldLoader extends ComponentLoader{
-    private static final long serialVersionUID = 5698387638929530175L;
+/**
+ * @author abramov
+ * @version $Id$
+ */
+public class FileUploadFieldLoader extends ComponentLoader {
 
     public FileUploadFieldLoader(Context context) {
         super(context);

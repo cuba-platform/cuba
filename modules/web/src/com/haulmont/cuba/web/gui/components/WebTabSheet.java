@@ -14,28 +14,27 @@ import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Tabsheet;
+import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.vaadin.ui.TabSheet;
 import org.dom4j.Element;
 
 import java.util.*;
 
-public class WebTabsheet
+public class WebTabSheet
     extends
-        WebAbstractComponent<TabSheet>
+        WebAbstractComponent<com.vaadin.ui.TabSheet>
     implements
-        Tabsheet, Component.Wrapper, Component.Container
+        TabSheet, Component.Wrapper, Component.Container
 {
     private boolean postInitTaskAdded;
     private boolean componentTabChangeListenerInitialized;
 
     private ComponentLoader.Context context;
 
-    public WebTabsheet() {
+    public WebTabSheet() {
         component = new TabSheetEx(this);
         component.setCloseHandler(new MyCloseHandler());
     }
@@ -85,7 +84,7 @@ public class WebTabsheet
         return ComponentsHelper.getComponents(this);
     }
 
-    protected class Tab implements com.haulmont.cuba.gui.components.Tabsheet.Tab {
+    protected class Tab implements TabSheet.Tab {
 
         private String name;
         private Component component;
@@ -108,43 +107,43 @@ public class WebTabsheet
 
         @Override
         public String getCaption() {
-            return WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).getCaption();
+            return WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).getCaption();
         }
 
         @Override
         public void setCaption(String caption) {
-            WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setCaption(caption);
+            WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setCaption(caption);
         }
 
         @Override
         public boolean isEnabled() {
-            return WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isEnabled();
+            return WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isEnabled();
         }
 
         @Override
         public void setEnabled(boolean enabled) {
-            WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setEnabled(enabled);
+            WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setEnabled(enabled);
         }
 
         @Override
         public boolean isVisible() {
-            return WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isVisible();
+            return WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isVisible();
         }
 
         @Override
         public void setVisible(boolean visible) {
-            WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setVisible(visible);
+            WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setVisible(visible);
         }
 
         @Override
         public boolean isClosable() {
-            TabSheet.Tab tab = WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+            com.vaadin.ui.TabSheet.Tab tab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
             return tab.isClosable();
         }
 
         @Override
         public void setClosable(boolean closable) {
-            TabSheet.Tab tab = WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+            com.vaadin.ui.TabSheet.Tab tab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
             tab.setClosable(closable);
         }
 
@@ -172,13 +171,13 @@ public class WebTabsheet
 
         @Override
         public void setCaptionStyleName(String styleName) {
-            TabSheet.Tab vaadinTab = WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+            com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
             vaadinTab.setCaptionStyle(styleName);
         }
     }
 
     @Override
-    public com.haulmont.cuba.gui.components.Tabsheet.Tab addTab(String name, Component component) {
+    public TabSheet.Tab addTab(String name, Component component) {
         final Tab tab = new Tab(name, component);
 
         this.tabs.put(name, tab);
@@ -193,7 +192,7 @@ public class WebTabsheet
     }
 
     @Override
-    public com.haulmont.cuba.gui.components.Tabsheet.Tab addLazyTab(String name,
+    public TabSheet.Tab addLazyTab(String name,
                                                                     Element descriptor,
                                                                     ComponentLoader loader)
     {
@@ -244,7 +243,7 @@ public class WebTabsheet
     }
 
     @Override
-    public void setTab(com.haulmont.cuba.gui.components.Tabsheet.Tab tab) {
+    public void setTab(TabSheet.Tab tab) {
         this.component.setSelectedTab(WebComponentsHelper.unwrap(((Tab) tab).getComponent()));
     }
 
@@ -257,12 +256,12 @@ public class WebTabsheet
     }
 
     @Override
-    public Tabsheet.Tab getTab(String name) {
+    public TabSheet.Tab getTab(String name) {
         return tabs.get(name);
     }
 
     @Override
-    public Collection<com.haulmont.cuba.gui.components.Tabsheet.Tab> getTabs() {
+    public Collection<TabSheet.Tab> getTabs() {
         return (Collection)tabs.values();
     }
 
@@ -276,9 +275,9 @@ public class WebTabsheet
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
-            component.addListener(new TabSheet.SelectedTabChangeListener() {
+            component.addListener(new com.vaadin.ui.TabSheet.SelectedTabChangeListener() {
                 @Override
-                public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
+                public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
                     // Fire GUI listener
                     fireTabChanged();
                     // Execute outstanding post init tasks after GUI listener.
@@ -302,7 +301,7 @@ public class WebTabsheet
         }
     }
 
-    private static class TabSheetEx extends TabSheet implements WebComponentEx {
+    private static class TabSheetEx extends com.vaadin.ui.TabSheet implements WebComponentEx {
         private Component component;
 
         private TabSheetEx(Component component) {
@@ -315,7 +314,7 @@ public class WebTabsheet
         }
     }
 
-    private class LazyTabChangeListener implements TabSheet.SelectedTabChangeListener {
+    private class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {
 
         private WebAbstractBox tabContent;
         private Element descriptor;
@@ -328,8 +327,8 @@ public class WebTabsheet
         }
 
         @Override
-        public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
-            com.vaadin.ui.Component selectedTab = WebTabsheet.this.component.getSelectedTab();
+        public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
+            com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
             if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
                 Component comp;
                 try {
@@ -344,7 +343,7 @@ public class WebTabsheet
                 com.vaadin.ui.Component impl = WebComponentsHelper.getComposition(comp);
                 impl.setSizeFull();
 
-                final Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabsheet.this);
+                final Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
                 if (window != null) {
                     com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
                             tabContent,
@@ -368,11 +367,11 @@ public class WebTabsheet
         }
     }
 
-    private class MyCloseHandler implements TabSheet.CloseHandler {
+    private class MyCloseHandler implements com.vaadin.ui.TabSheet.CloseHandler {
         private static final long serialVersionUID = -6766617382191585632L;
 
         @Override
-        public void onTabClose(TabSheet tabsheet, com.vaadin.ui.Component tabContent) {
+        public void onTabClose(com.vaadin.ui.TabSheet tabsheet, com.vaadin.ui.Component tabContent) {
             // have no other way to get tab from tab content
             for (Tab tab: tabs.values()) {
                 com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tab.getComponent());

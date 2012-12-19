@@ -16,7 +16,7 @@
     </timers>
 
     <layout expand="logsBox" spacing="true">
-        <tabsheet width="100%">
+        <tabSheet width="100%">
             <tab id="viewTab" caption="msg://viewTab" margin="true">
                 <hbox id="logSelectBox" spacing="true" expandable="false">
                     <label id="labelLogFile" value="msg://logFile"/>
@@ -37,7 +37,7 @@
                     <button id="controlLoggerButton" invoke="callControlLogger" caption="msg://control"/>
                 </hbox>
             </tab>
-        </tabsheet>
+        </tabSheet>
 
         <groupBox id="logsBox" width="100%" caption="msg://logs">
             <hbox id="logFieldBox" height="100%" width="100%">

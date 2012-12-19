@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 17.08.2009 17:18:59
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -18,15 +13,20 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-public class HtmlBoxLoader extends ContainerLoader implements ComponentLoader {
-    public HtmlBoxLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
+public class HtmlBoxLayoutLoader extends ContainerLoader implements ComponentLoader {
+
+    public HtmlBoxLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     public Component loadComponent(
             ComponentsFactory factory, Element element, Component parent
     ) throws InstantiationException, IllegalAccessException {
-        final HtmlBoxLayout component = factory.createComponent("htmlbox");
+        final HtmlBoxLayout component = factory.createComponent(HtmlBoxLayout.NAME);
 
         assignXmlDescriptor(component, element);
         loadId(component, element);

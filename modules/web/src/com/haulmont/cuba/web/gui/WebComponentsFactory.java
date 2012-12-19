@@ -14,6 +14,10 @@ import javax.annotation.ManagedBean;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean(ComponentsFactory.NAME)
 public class WebComponentsFactory implements ComponentsFactory {
 
@@ -30,7 +34,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(ScrollBoxLayout.NAME, WebScrollBoxLayout.class);
         classes.put(ToggleBoxLayout.NAME, WebToggleBoxLayout.class);
         classes.put(HtmlBoxLayout.NAME, WebHtmlBoxLayout.class);
-        classes.put("flowbox", WebFlowBoxLayout.class);
+        classes.put(FlowBoxLayout.NAME, WebFlowBoxLayout.class);
 
         classes.put(Button.NAME, WebButton.class);
         classes.put(LinkButton.NAME, WebLinkButton.class);
@@ -57,7 +61,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(FileMultiUploadField.NAME, WebFileMultiUploadField.class);
         classes.put(SplitPanel.NAME, WebSplitPanel.class);
         classes.put(Tree.NAME, WebTree.class);
-        classes.put(Tabsheet.NAME, WebTabsheet.class);
+        classes.put(TabSheet.NAME, WebTabSheet.class);
         classes.put(Embedded.NAME, WebEmbedded.class);
         classes.put(Filter.NAME, WebFilter.class);
         classes.put(AccessControl.NAME, WebAccessControl.class);

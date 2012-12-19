@@ -25,13 +25,12 @@ import java.awt.event.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopTabsheet
+public class DesktopTabSheet
         extends DesktopAbstractComponent<JTabbedPane>
-        implements Tabsheet, Component.Container, AutoExpanding {
+        implements TabSheet, Component.Container, AutoExpanding {
     protected Map<Component, String> components = new HashMap<Component, String>();
 
     protected List<TabImpl> tabs = new ArrayList<TabImpl>();
@@ -48,7 +47,7 @@ public class DesktopTabsheet
 
     protected Set<TabChangeListener> listeners = new HashSet<TabChangeListener>();
 
-    public DesktopTabsheet() {
+    public DesktopTabSheet() {
         impl = new JTabbedPane();
     }
 
@@ -283,7 +282,7 @@ public class DesktopTabsheet
         lti.tabContent.add(comp);
         lti.tabContent.expand(comp, "", "");
 
-        final Window window = ComponentsHelper.getWindow(DesktopTabsheet.this);
+        final Window window = ComponentsHelper.getWindow(DesktopTabSheet.this);
         if (window != null) {
             ComponentsHelper.walkComponents(
                     lti.tabContent,
@@ -355,7 +354,7 @@ public class DesktopTabsheet
         return false;
     }
 
-    protected class TabImpl implements Tabsheet.Tab {
+    protected class TabImpl implements TabSheet.Tab {
 
         private String name;
         private Component component;
@@ -395,7 +394,7 @@ public class DesktopTabsheet
         @Override
         public void setCaption(String caption) {
             this.caption = caption;
-            DesktopTabsheet.this.impl.setTitleAt(getTabIndex(), caption);
+            DesktopTabSheet.this.impl.setTitleAt(getTabIndex(), caption);
             getButtonTabComponent().setCaption(caption);
         }
 
@@ -430,7 +429,7 @@ public class DesktopTabsheet
         public void setVisible(boolean visible) {
             if (visible != this.visible) {
                 this.visible = visible;
-                DesktopTabsheet.this.updateTabVisibility(this);
+                DesktopTabSheet.this.updateTabVisibility(this);
             }
         }
 
@@ -475,7 +474,7 @@ public class DesktopTabsheet
         }
 
         public int getTabIndex() {
-            return DesktopTabsheet.this.impl.indexOfTabComponent(buttonTabComponent);
+            return DesktopTabSheet.this.impl.indexOfTabComponent(buttonTabComponent);
         }
 
         @Override

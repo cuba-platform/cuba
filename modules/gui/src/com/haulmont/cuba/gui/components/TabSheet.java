@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 16.01.2009 17:33:46
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -14,11 +10,13 @@ import org.dom4j.Element;
 
 import java.util.Collection;
 
-public interface Tabsheet 
-    extends
-        Component, Component.BelongToFrame
-{
-    String NAME = "tabsheet";
+/**
+ * @author abramov
+ * @version $Id$
+ */
+public interface TabSheet extends Component, Component.BelongToFrame {
+
+    String NAME = "tabSheet";
 
     Tab addTab(String name, Component component);
     Tab addLazyTab(String name, Element descriptor, ComponentLoader loader);

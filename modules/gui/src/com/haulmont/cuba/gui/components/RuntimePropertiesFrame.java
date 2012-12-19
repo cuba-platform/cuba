@@ -30,10 +30,9 @@ import java.util.*;
 /**
  * Universal frame for editing Runtime properties
  * of any {@link com.haulmont.cuba.core.entity.CategorizedEntity} subclass.
- * <p/>
- * <p>$Id$</p>
  *
  * @author devyatkin
+ * @version $Id$
  */
 
 public class RuntimePropertiesFrame extends AbstractWindow {
@@ -41,7 +40,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     private RuntimePropsDatasource rds;
     private CollectionDatasource categoriesDs;
 
-    public static final String NAME = "runtimePropertiesFrame";
+    public static final String NAME = "runtimeProperties";
+
     private static final String DEFAULT_FIELD_WIDTH = "100%";
     private String rows;
     private String cols;

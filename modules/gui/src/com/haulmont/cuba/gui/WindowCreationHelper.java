@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,9 +95,9 @@ public class WindowCreationHelper {
             final String subComponentId = matcher.group(2);
             final Component customComponent = window.getComponent(customComponentId);
             if (customComponent != null) {
-                if (customComponent instanceof Tabsheet) {
-                    final Tabsheet tabsheet = (Tabsheet) customComponent;
-                    final Tabsheet.Tab tab = tabsheet.getTab(subComponentId);
+                if (customComponent instanceof TabSheet) {
+                    final TabSheet tabsheet = (TabSheet) customComponent;
+                    final TabSheet.Tab tab = tabsheet.getTab(subComponentId);
                     if (tab != null) {
                         Integer permissionValue = permissionEntry.getValue();
                         if (permissionValue == UiPermissionValue.HIDE.getValue())

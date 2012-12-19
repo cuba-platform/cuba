@@ -1,21 +1,20 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 17.11.2010 18:04:54
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public interface FileMultiUploadField extends Component, Component.HasCaption, Component.BelongToFrame {
 
-    String NAME = "multiupload";
+    String NAME = "multiUpload";
 
     int QUEUE_LIMIT_EXCEEDED = -100;
     int FILE_EXCEEDS_SIZE_LIMIT = -110;

@@ -15,12 +15,10 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
- * <p>$Id$</p>
- *
  * @author Alexander Budarov
+ * @version $Id$
  */
 public class ProgressBarLoader extends AbstractFieldLoader {
-    private static final long serialVersionUID = 4465232545027614638L;
 
     public ProgressBarLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);

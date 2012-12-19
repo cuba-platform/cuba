@@ -66,7 +66,7 @@
                 </tree>
             </vbox>
             <vbox margin="false;false;false;true" height="100%" width="100%">
-                <tabsheet id="tabsheet" height="100%" width="100%">
+                <tabSheet id="tabsheet" height="100%" width="100%">
                     <tab id="usersTab" caption="msg://tabsheet.users">
                         <vbox expand="usersTable" spacing="true" margin="true" height="100%" width="100%">
                             <buttonsPanel>
@@ -135,7 +135,7 @@
                             </table>
                         </vbox>
                     </tab>
-                </tabsheet>
+                </tabSheet>
             </vbox>
         </split>
     </layout>

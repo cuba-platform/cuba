@@ -6,7 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Tabsheet;
+import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -19,8 +19,9 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public class TabsheetLoader extends ContainerLoader {
-    public TabsheetLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+public class TabSheetLoader extends ContainerLoader {
+
+    public TabSheetLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
@@ -28,7 +29,7 @@ public class TabsheetLoader extends ContainerLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException {
 
-        final Tabsheet component = factory.createComponent("tabsheet");
+        final TabSheet component = factory.createComponent(TabSheet.NAME);
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -46,7 +47,7 @@ public class TabsheetLoader extends ContainerLoader {
             boolean lazy = Boolean.valueOf(tabElement.attributeValue("lazy"));
 
             final ComponentLoader loader = getLoader("vbox");
-            final Tabsheet.Tab tab;
+            final TabSheet.Tab tab;
 
             if (lazy) {
                 tab = component.addLazyTab(name, tabElement, loader);

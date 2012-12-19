@@ -60,7 +60,7 @@ public class GroupBrowser extends AbstractWindow {
     protected Table usersTable;
 
     @Inject
-    protected Tabsheet tabsheet;
+    protected TabSheet tabsheet;
 
     @Inject
     protected UserSession userSession;
@@ -133,9 +133,9 @@ public class GroupBrowser extends AbstractWindow {
         });
 
         tabsheet.addListener(
-                new Tabsheet.TabChangeListener() {
+                new TabSheet.TabChangeListener() {
                     @Override
-                    public void tabChanged(Tabsheet.Tab newTab) {
+                    public void tabChanged(TabSheet.Tab newTab) {
                         if ("constraintsTab".equals(newTab.getName()))
                             initConstraintsTab();
                         else if ("attributesTab".equals(newTab.getName()))

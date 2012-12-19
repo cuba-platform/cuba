@@ -6,8 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.ComponentPalette;
-import com.haulmont.cuba.gui.components.ProgressBar;
-import com.haulmont.cuba.gui.components.SearchField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
 import java.util.HashMap;
@@ -45,55 +44,57 @@ public class LayoutLoaderConfig {
     }
 
     private static void registerComponents(LayoutLoaderConfig config) {
-        config.register("hbox", HBoxLoader.class);
-        config.register("vbox", VBoxLoader.class);
-        config.register("grid", GridLayoutLoader.class);
-        config.register("scrollBox", ScrollBoxLayoutLoader.class);
+        config.register(BoxLayout.HBOX, HBoxLoader.class);
+        config.register(BoxLayout.VBOX, VBoxLoader.class);
+        config.register(GridLayout.NAME, GridLayoutLoader.class);
+        config.register(ScrollBoxLayout.NAME, ScrollBoxLayoutLoader.class);
         config.register("scrollbox", ScrollBoxLayoutLoader.class); // for backward compatibility
-        config.register("togglebox", ToggleBoxLoader.class);
-        config.register("htmlbox", HtmlBoxLoader.class);
-        config.register("flowbox", FlowBoxLoader.class);
+        config.register(GroupBoxLayout.NAME, GroupBoxLayoutLoader.class);
+        config.register(ToggleBoxLayout.NAME, ToggleBoxLayoutLoader.class);
+        config.register("togglebox", ToggleBoxLayoutLoader.class); // for backward compatibility
+        config.register(HtmlBoxLayout.NAME, HtmlBoxLayoutLoader.class);
+        config.register("htmlbox", HtmlBoxLayoutLoader.class); // for backward compatibility
+        config.register(FlowBoxLayout.NAME, FlowBoxLayoutLoader.class);
+        config.register("flowbox", FlowBoxLayoutLoader.class); // for backward compatibility
 
-        config.register("button", ButtonLoader.class);
-        config.register("linkButton", ButtonLoader.class); // the same loader as for button
-        config.register("groupBox", GroupBoxLayoutLoader.class);
-        config.register("checkBox", AbstractFieldLoader.class);
-        config.register("label", LabelLoader.class);
-        config.register("textField", ResizableTextFieldLoader.class);
-        config.register("autoCompleteTextField", AutoCompleteTextFieldLoader.class);
-        config.register("textArea", TextAreaLoader.class);
-        config.register("dateField", DateFieldLoader.class);
-        config.register("timeField", TimeFieldLoader.class);
-        config.register("lookupField", LookupFieldLoader.class);
-        config.register("pickerField", PickerFieldLoader.class);
-        config.register("lookupPickerField", LookupPickerFieldLoader.class);
-        config.register("searchPickerField", SearchPickerFieldLoader.class);
-        config.register("optionsGroup", OptionsGroupLoader.class);
-        config.register("upload", FileUploadFieldLoader.class);
-        config.register("multiupload", FileUploadFieldLoader.class);
-        config.register("table", TableLoader.class);
-        config.register("treeTable", TreeTableLoader.class);
-        config.register("groupTable", GroupTableLoader.class);
-        config.register("iframe", IFrameLoader.class);
-        config.register("runtimeProperties", RuntimePropertiesFrameLoader.class);
-        config.register("split", SplitPanelLoader.class);
-        config.register("tree", TreeLoader.class);
-        config.register("tabsheet", TabsheetLoader.class);
-        config.register("embedded", EmbeddedLoader.class);
-        config.register("filter", FilterLoader.class);
-        config.register("accessControl", AccessControlLoader.class);
-        config.register("buttonsPanel", ButtonsPanelLoader.class);
-        config.register("actionsField", ActionsFieldLoader.class);
-        config.register("popupButton", PopupButtonLoader.class);
-        config.register("fieldGroup", FieldGroupLoader.class);
-        config.register("runtimeFieldGroup", FieldGroupRuntimeLoader.class);
-        config.register("tokenList", TokenListLoader.class);
-        config.register("widgetsTree", WidgetsTreeLoader.class);
-        config.register("twinColumn", TwinColumnLoader.class);
+        config.register(Button.NAME, ButtonLoader.class);
+        config.register(LinkButton.NAME, ButtonLoader.class);
+        config.register(CheckBox.NAME, AbstractFieldLoader.class);
+        config.register(Label.NAME, LabelLoader.class);
+        config.register(TextField.NAME, ResizableTextFieldLoader.class);
+        config.register(AutoCompleteTextField.NAME, AutoCompleteTextFieldLoader.class);
+        config.register(TextArea.NAME, TextAreaLoader.class);
+        config.register(DateField.NAME, DateFieldLoader.class);
+        config.register(TimeField.NAME, TimeFieldLoader.class);
+        config.register(LookupField.NAME, LookupFieldLoader.class);
+        config.register(PickerField.NAME, PickerFieldLoader.class);
+        config.register(LookupPickerField.NAME, LookupPickerFieldLoader.class);
+        config.register(SearchPickerField.NAME, SearchPickerFieldLoader.class);
+        config.register(OptionsGroup.NAME, OptionsGroupLoader.class);
+        config.register(FileUploadField.NAME, FileUploadFieldLoader.class);
+        config.register(FileMultiUploadField.NAME, FileUploadFieldLoader.class);
+        config.register("multiupload", FileUploadFieldLoader.class); // for backward compatibility
+        config.register(Table.NAME, TableLoader.class);
+        config.register(TreeTable.NAME, TreeTableLoader.class);
+        config.register(GroupTable.NAME, GroupTableLoader.class);
+        config.register(IFrame.NAME, IFrameLoader.class);
+        config.register(RuntimePropertiesFrame.NAME, RuntimePropertiesFrameLoader.class);
+        config.register(SplitPanel.NAME, SplitPanelLoader.class);
+        config.register(Tree.NAME, TreeLoader.class);
+        config.register(TabSheet.NAME, TabSheetLoader.class);
+        config.register("tabsheet", TabSheetLoader.class); // for backward compatibility
+        config.register(Embedded.NAME, EmbeddedLoader.class);
+        config.register(Filter.NAME, FilterLoader.class);
+        config.register(AccessControl.NAME, AccessControlLoader.class);
+        config.register(ButtonsPanel.NAME, ButtonsPanelLoader.class);
+        config.register(ActionsField.NAME, ActionsFieldLoader.class);
+        config.register(PopupButton.NAME, PopupButtonLoader.class);
+        config.register(FieldGroup.NAME, FieldGroupLoader.class);
+        config.register(TokenList.NAME, TokenListLoader.class);
+        config.register(WidgetsTree.NAME, WidgetsTreeLoader.class);
+        config.register(TwinColumn.NAME, TwinColumnLoader.class);
         config.register(ProgressBar.NAME, ProgressBarLoader.class);
         config.register(SearchField.NAME, SearchFieldLoader.class);
-
-        config.register("scriptHost", ScriptHostLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {
