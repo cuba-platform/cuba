@@ -7297,7 +7297,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         <para><link linkend="gui_ScrollBoxLayout">ScrollBoxLayout</link></para>
         <para><link linkend="gui_SplitPanel">SplitPanel</link></para>
         <para><link linkend="gui_GroupBoxLayout">GroupBoxLayout</link></para>
-        <para><link linkend="gui_Tabsheet">Tabsheet</link></para>
+        <para><link linkend="gui_TabSheet">TabSheet</link></para>
         <para><link linkend="gui_IFrame">IFrame</link></para>
         <section id="gui_BoxLayout">
           <title>BoxLayout</title>
@@ -7696,9 +7696,9 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </tbody></tgroup>
           </informaltable>
         </section>
-        <section id="gui_Tabsheet">
-          <title>Tabsheet</title>
-          <para>Панель с вкладками (<code>Tabsheet</code>) позволяет выводить на экран вкладки (<sgmltag>tabs</sgmltag>) − панели, имеющие название. При нажатии пользователем на названии вкладки <code>Tabsheet</code> выводит на экран соответствующие выбранной вкладке элементы пользовательского интерфейса.</para>
+        <section id="gui_TabSheet">
+          <title>TabSheet</title>
+          <para>Панель с вкладками (<code>TabSheet</code>) позволяет выводить на экран вкладки (<sgmltag>tabs</sgmltag>) − панели, имеющие название. При нажатии пользователем на названии вкладки <code>TabSheet</code> выводит на экран соответствующие выбранной вкладке элементы пользовательского интерфейса.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -7707,13 +7707,13 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>XML-имя компонента: <sgmltag>tabsheet</sgmltag>.</para>
+          <para>XML-имя компонента: <sgmltag>tabSheet</sgmltag>.</para>
           <para>Для создания панели с вкладками нужно определить ее описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tabsheet/tabsheet.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Как видно, компонент <sgmltag>tabsheet</sgmltag> состоит из элементов <sgmltag>tab</sgmltag>.</para>
+          <para>Как видно, компонент <sgmltag>tabSheet</sgmltag> состоит из элементов <sgmltag>tab</sgmltag>.</para>
           <para>Элемент <sgmltag>tab</sgmltag> может содержать как другой <link linkend="gui_layouts">контейнер</link>, так и <link linkend="gui_components">компонент</link>.</para>
-          <para>Атрибут <link linkend="attr_id" id="attr_tabsheet_id">id</link> является идентификатором вкладки. Следует отметить, что вкладка не является компонентом, и данный идентификатор используется только в рамках <code>Tabsheet</code>.</para>
-          <para>Атрибут <sgmltag id="attr_tabsheet_lazy">lazy</sgmltag> задает отложенную загрузку содержимого вкладки. При открытии экрана <sgmltag>lazy</sgmltag>-вкладки не загружают свое содержимое, что приводит к созданию меньшего количества компонентов в памяти и, как следствие, к меньшему количеству запросов к БД. Компоненты вкладки загружаются только в тот момент, когда пользователь выбирает данную вкладку. Значение по умолчанию равно <literal>false</literal>. Если компоненты <sgmltag>lazy</sgmltag>-вкладки требуют инициализации, проводить ее нужно не напрямую в методе <code>init()</code> <glossterm linkend="screen_controller_glossentry">контроллера</glossterm>, а в слушателе на переключение вкладок <code>Tabsheet.TabChangeListener.</code></para>
+          <para>Атрибут <link linkend="attr_id" id="attr_tabsheet_id">id</link> является идентификатором вкладки. Следует отметить, что вкладка не является компонентом, и данный идентификатор используется только в рамках <code>TabSheet</code>.</para>
+          <para>Атрибут <sgmltag id="attr_tabsheet_lazy">lazy</sgmltag> задает отложенную загрузку содержимого вкладки. При открытии экрана <sgmltag>lazy</sgmltag>-вкладки не загружают свое содержимое, что приводит к созданию меньшего количества компонентов в памяти и, как следствие, к меньшему количеству запросов к БД. Компоненты вкладки загружаются только в тот момент, когда пользователь выбирает данную вкладку. Значение по умолчанию равно <literal>false</literal>. Если компоненты <sgmltag>lazy</sgmltag>-вкладки требуют инициализации, проводить ее нужно не напрямую в методе <code>init()</code> <glossterm linkend="screen_controller_glossentry">контроллера</glossterm>, а в слушателе на переключение вкладок <code>TabSheet.TabChangeListener.</code></para>
           <para>В десктоп-приложении есть возможность открывать вкладки в новом окне. Для этого нужно атрибуту <sgmltag id="attr_detachable">detachable</sgmltag> присвоить значение <literal>true</literal>.</para>
           <figure>
             <title>Вид отделяемой вкладки</title>
@@ -7723,7 +7723,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Атрибуты <sgmltag>tabsheet</sgmltag>:</para>
+          <para>Атрибуты <sgmltag>tabSheet</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
