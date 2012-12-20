@@ -15,21 +15,10 @@
  */
 package com.vaadin.terminal.gwt.client;
 
-import java.util.*;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.*;
 import com.google.gwt.http.client.*;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -43,6 +32,8 @@ import com.vaadin.terminal.gwt.client.ui.VNotification.HideEvent;
 import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
 import com.vaadin.terminal.gwt.client.ui.layout.ChildComponentContainer;
 import com.vaadin.terminal.gwt.server.AbstractCommunicationManager;
+
+import java.util.*;
 
 /**
  * This is the client side communication "engine", managing client-server
@@ -146,11 +137,10 @@ public class ApplicationConnection {
 
     protected ApplicationTimer lastTimerAction = null;
 
-    protected int timerRequestTimeoutMillis = 5000;
+    protected final static int TIMER_REQUEST_TIMEOUT_MILLIS = 5000;
 
-    protected HashMap<Request, ApplicationTimer> timersMapping = new HashMap<Request, ApplicationTimer>();
+    protected final Set<ApplicationTimer> pendingTimers = new HashSet<ApplicationTimer>();
 
-        
     class ApplicationTimer extends Timer {
         private String id;
         private boolean repeat;
@@ -175,6 +165,8 @@ public class ApplicationConnection {
         }
 
         private void runTimerAction() {
+            pendingTimers.add(this);
+
             lastTimerAction = this;
             updateVariable(id, "timer", "", true);
             lastTimerAction = null;
@@ -197,13 +189,15 @@ public class ApplicationConnection {
        }
 
         public void requestTimeout() {
+            pendingTimers.remove(this);
             if (repeat)
-                schedule(delay);
+                startTimer();
         }
 
         public void requestSuccessful() {
+            pendingTimers.remove(this);
             if (repeat)
-                schedule(delay);
+                startTimer();
         }
     }
 
@@ -509,8 +503,7 @@ public class ApplicationConnection {
         if (!synchronous) {
             RequestCallback requestCallback = new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
-                    boolean timerRequestTimeout = timersMapping.containsKey(request) &&
-                                exception instanceof RequestTimeoutException;
+                    boolean timerRequestTimeout = exception instanceof RequestTimeoutException;
 
                     if (!timerRequestTimeout) {
                         showCommunicationError(exception.getMessage());
@@ -522,21 +515,20 @@ public class ApplicationConnection {
                         }
                     } else {
                         VConsole.error("Timer request timeout");
-                        endRequest();
-
-                        if (timersMapping.get(request) != null) {
-                            timersMapping.get(request).requestTimeout();
-                            timersMapping.remove(request);
+                        if (!pendingTimers.isEmpty()) {
+                            for (ApplicationTimer appTimer : new HashSet<ApplicationTimer>(pendingTimers))
+                                appTimer.requestTimeout();
                         }
+
+                        endRequest();
                     }
                 }
 
                 public void onResponseReceived(Request request,
                         Response response) {
-
-                    if (timersMapping.get(request) != null) {
-                        timersMapping.get(request).requestSuccessful();
-                        timersMapping.remove(request);
+                    if (!pendingTimers.isEmpty()) {
+                        for (ApplicationTimer appTimer : new HashSet<ApplicationTimer>(pendingTimers))
+                            appTimer.requestSuccessful();
                     }
 
                     VConsole.log("Server visit took "
@@ -649,16 +641,13 @@ public class ApplicationConnection {
         RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, uri);
         // TODO enable timeout
         if (isTimerRequest())
-            rb.setTimeoutMillis(timerRequestTimeoutMillis);
+            rb.setTimeoutMillis(TIMER_REQUEST_TIMEOUT_MILLIS);
 
         rb.setHeader("Content-Type", "text/plain;charset=utf-8");
         rb.setRequestData(payload);
         rb.setCallback(requestCallback);
 
-        Request r = rb.send();
-        if (isTimerRequest()) {
-            timersMapping.put(r, lastTimerAction);
-        }
+        rb.send();
     }
 
     private boolean isTimerRequest() {
@@ -2558,6 +2547,7 @@ public class ApplicationConnection {
                         timer.cancel();
                         if (timerUidl.getBooleanAttribute("stopped")) {
                             applicationTimers.remove(timerUidl.getId());
+                            pendingTimers.remove(timer);
                         } else {
                             timer.setRepeat(timerUidl.getBooleanAttribute("repeat"));
                             timer.setDelay(timerUidl.getIntAttribute("delay"));
