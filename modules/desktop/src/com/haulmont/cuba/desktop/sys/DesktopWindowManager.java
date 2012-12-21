@@ -159,6 +159,11 @@ public class DesktopWindowManager extends WindowManager {
             openType = OpenType.DIALOG;
             forciblyDialog = true;
         }
+
+        if (openType == OpenType.THIS_TAB && tabs.size() == 0) {
+            openType = OpenType.NEW_TAB;
+        }
+
         window.setCaption(caption);
         window.setDescription(description);
 

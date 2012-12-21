@@ -233,6 +233,11 @@ public class WebWindowManager extends WindowManager {
             type = OpenType.DIALOG;
             forciblyDialog = true;
         }
+
+        if (type == OpenType.THIS_TAB && getTabs().size() == 0) {
+            type = OpenType.NEW_TAB;
+        }
+
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
         Component component;
 
