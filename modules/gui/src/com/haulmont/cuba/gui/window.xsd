@@ -141,6 +141,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="fieldGroupCaptionAlignment">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TOP"/>
+            <xs:enumeration value="LEFT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -852,6 +859,8 @@
 
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasEditState"/>
+
+        <xs:attribute name="captionAlignment" type="fieldGroupCaptionAlignment"/>
 
         <xs:attribute name="datasource" type="xs:string" use="optional"/>
         <xs:attribute name="collapsable" type="xs:string" use="optional"/>
