@@ -14,17 +14,22 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractSelect;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebOptionsGroup
         extends
             WebAbstractOptionsField<OptionGroup>
         implements
-            OptionsGroup, Component.Wrapper
-{
+            OptionsGroup, Component.Wrapper {
+
     private static final String HORIZONTAL_STYLENAME = "horizontal";
 
     private Orientation orientation = Orientation.VERTICAL;
@@ -52,6 +57,7 @@ public class WebOptionsGroup
         attachListener(component);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
+        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -65,10 +71,11 @@ public class WebOptionsGroup
         }
     }
 
+    @Override
     @SuppressWarnings({"unchecked"})
     protected <T> T getValueFromKey(Object key) {
         if (key instanceof Collection) {
-            final Set<Object> set = new HashSet<Object>();
+            final Set<Object> set = new HashSet<>();
             for (Object o : (Collection) key) {
                 Object t = getValue(o);
                 set.add(t);
@@ -80,7 +87,7 @@ public class WebOptionsGroup
         }
     }
 
-    protected <T> Object getValue(Object o) {
+    protected Object getValue(Object o) {
         Object t;
         if (o instanceof Enum) {
             t = o;
@@ -99,11 +106,12 @@ public class WebOptionsGroup
         super.setValue(getKeyFromValue(value));
     }
 
+    @Override
     protected Object getKeyFromValue(Object value) {
         Object v;
         if (isMultiSelect()) {
             if (value instanceof Collection) {
-                final Set<Object> set = new HashSet<Object>();
+                final Set<Object> set = new HashSet<>();
                 for (Object o : (Collection) value) {
                     Object t = getKey(o);
                     set.add(t);

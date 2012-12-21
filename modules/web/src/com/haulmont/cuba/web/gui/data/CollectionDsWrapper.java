@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 29.12.2008 16:17:57
- * $Id$
  */
 package com.haulmont.cuba.web.gui.data;
 
@@ -18,26 +14,24 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
+
+    private static final long serialVersionUID = 1440434590495905389L;
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
 
     protected CollectionDatasource datasource;
 
-    protected Collection<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
-    private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
-
-//    private PersistenceManagerService persistenceManager;
-
-    private static Log log = LogFactory.getLog(CollectionDsWrapper.class);
-
-    private static final long serialVersionUID = 1440434590495905389L;
+    protected Collection<MetaPropertyPath> properties = new ArrayList<>();
+    private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
 
     public CollectionDsWrapper(CollectionDatasource datasource) {
         this(datasource, false);
@@ -58,7 +52,6 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     ) {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
-//        this.persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
 
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
@@ -96,13 +89,14 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         }
     }
 
+    @Override
     public Item getItem(Object itemId) {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         final Object item = datasource.getItem(itemId);
         return item == null ? null : getItemWrapper(item);
     }
 
-    protected Map<Object, ItemWrapper> itemsCache = new HashMap<Object, ItemWrapper>();
+    protected Map<Object, ItemWrapper> itemsCache = new HashMap<>();
 
     protected synchronized Item getItemWrapper(Object item) {
         ItemWrapper wrapper = itemsCache.get(item);
@@ -118,63 +112,77 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         return new ItemWrapper(item, properties);
     }
 
+    @Override
     public Collection getContainerPropertyIds() {
         return properties;
     }
 
-    public synchronized Collection getItemIds() {
+    @Override
+    public Collection getItemIds() {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return datasource.getItemIds();
     }
 
+    @Override
     public Property getContainerProperty(Object itemId, Object propertyId) {
         final Item item = getItem(itemId);
         return item == null ? null : item.getItemProperty(propertyId);
     }
 
+    @Override
     public Class getType(Object propertyId) {
         MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
         return propertyPath.getRangeJavaClass();
     }
 
-    public synchronized int size() {
+    @Override
+    public int size() {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return datasource.size();
     }
 
-    public synchronized boolean containsId(Object itemId) {
+    @Override
+    public boolean containsId(Object itemId) {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return datasource.containsItem(itemId);
     }
 
+    @Override
     public Item addItem(Object itemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object addItem() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeItem(Object itemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean addContainerProperty(Object propertyId, Class type, Object defaultValue) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
         return this.properties.remove(propertyId);
     }
 
+    @Override
     public boolean removeAllItems() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addListener(ItemSetChangeListener listener) {
         this.itemSetChangeListeners.add(listener);
     }
 
+    @Override
     public void removeListener(ItemSetChangeListener listener) {
         this.itemSetChangeListeners.remove(listener);
     }
@@ -191,8 +199,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
+        @Override
         public void itemChanged(Datasource ds, Entity prevItem, Entity item) {}
 
+        @Override
         public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
@@ -202,6 +212,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             }
         }
 
+        @Override
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             Item wrapper = getItemWrapper(source);
 
@@ -216,6 +227,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             }
         }
 
+        @Override
         public void collectionChanged(CollectionDatasource ds, Operation operation) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
@@ -228,12 +240,11 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
                 ignoreListeners = prevIgnoreListeners;
             }
         }
-
     }
 
     protected class LazyDataSourceRefreshListener extends DataSourceRefreshListener
-            implements LazyCollectionDatasourceListener<Entity>
-    {
+            implements LazyCollectionDatasourceListener<Entity> {
+        @Override
         public void completelyLoaded(CollectionDatasource.Lazy ds) {
             checkMaxFetchUI(ds);
         }

@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 29.12.2008 17:01:30
- * $Id$
  */
 package com.haulmont.cuba.web.gui.data;
 
@@ -14,24 +10,27 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
-    private Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<MetaPropertyPath, PropertyWrapper>();
-    private List<PropertySetChangeListener> listeners = new ArrayList<PropertySetChangeListener>();
+    private static final long serialVersionUID = -7298696379571470141L;
+
+    private Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<>();
+    private List<PropertySetChangeListener> listeners = new ArrayList<>();
 
     protected Object item;
-
-    private static final long serialVersionUID = -7298696379571470141L;
 
     public ItemWrapper(Object item, MetaClass metaClass) {
         this(item, AppBeans.get(MetadataTools.class).getPropertyPaths(metaClass));
@@ -45,13 +44,11 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
         }
 
         if (item instanceof CollectionDatasource) {
-            ((CollectionDatasource) item).addListener(new CollectionDatasourceListener<Entity>() {
-                public void collectionChanged(CollectionDatasource ds, Operation operation) {}
+            ((CollectionDatasource) item).addListener(new CollectionDsListenerAdapter<Entity>() {
+                @Override
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireItemProperySetChanged();
                 }
-                public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {}
-                public void valueChanged(Entity source, String property, Object prevValue, Object value) {}
             });
         }
     }
@@ -66,6 +63,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
         return new PropertyWrapper(item, propertyPath);
     }
 
+    @Override
     public Property getItemProperty(Object id) {
         if (id instanceof MetaPropertyPath) {
             return properties.get(id);
@@ -77,27 +75,33 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
         }
     }
 
+    @Override
     public Collection getItemPropertyIds() {
         return properties.keySet();
     }
 
+    @Override
     public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addListener(PropertySetChangeListener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
+    @Override
     public void removeListener(PropertySetChangeListener listener) {
         listeners.remove(listener);
     }
 
     private class PropertySetChangeEvent implements Item.PropertySetChangeEvent {
+        @Override
         public Item getItem() {
             return ItemWrapper.this;
         }
