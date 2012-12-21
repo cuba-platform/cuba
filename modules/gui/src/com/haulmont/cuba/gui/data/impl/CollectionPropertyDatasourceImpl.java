@@ -9,10 +9,7 @@ import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -38,11 +35,12 @@ import java.util.*;
  */
 public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         extends
-        PropertyDatasourceImpl<T>
+            PropertyDatasourceImpl<T>
         implements
-        CollectionDatasource<T, K>,
-        CollectionDatasource.Sortable<T, K>,
-        CollectionDatasource.Aggregatable<T, K> {
+            CollectionDatasource<T, K>,
+            CollectionDatasource.Sortable<T, K>,
+            CollectionDatasource.Aggregatable<T, K> {
+
     protected T item;
     protected boolean cascadeProperty;
 
@@ -52,12 +50,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     protected boolean listenersSuspended;
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
 
+    protected boolean allowCommit = true;
+
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
         public Object getItem(K itemId) {
             return CollectionPropertyDatasourceImpl.this.getItem(itemId);
         }
 
+        @Override
         public Object getItemValue(MetaPropertyPath property, K itemId) {
             return CollectionPropertyDatasourceImpl.this.getItemValue(property, itemId);
         }
@@ -75,6 +76,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     protected void initParentDsListeners() {
         masterDs.addListener(new DatasourceListener<Entity>() {
 
+            @Override
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                 log.trace("itemChanged: prevItem=" + prevItem + ", item=" + item);
 
@@ -95,6 +97,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
+            @Override
             public void stateChanged(Datasource<Entity> ds, State prevState, State state) {
                 for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                     dsListener.stateChanged(CollectionPropertyDatasourceImpl.this, prevState, state);
@@ -102,6 +105,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
+            @Override
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
                     log.trace("valueChanged: prop=" + property + ", prevValue=" + prevValue + ", value=" + value);
@@ -128,6 +132,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         });
     }
 
+    @Override
     public T getItem(K key) {
         if (key instanceof Entity)
             return (T) key;
@@ -143,6 +148,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public K getItemId(T item) {
         if (item instanceof Entity)
             return item.getId();
@@ -150,6 +156,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return (K) item;
     }
 
+    @Override
     public Collection<K> getItemIds() {
         if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
             return Collections.emptyList();
@@ -199,6 +206,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
+    @Override
     public int size() {
         if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
             return 0;
@@ -209,7 +217,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Collection<T> __getCollection() {
-        UserSession userSession = UserSessionProvider.getUserSession();
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         if (!userSession.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)
                 || !userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.VIEW))
             return new ArrayList<T>(); // Don't use Collections.emptyList() to avoid confusing UnsupportedOperationExceptions
@@ -225,11 +233,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     private void checkPermission() {
-        UserSession userSession = UserSessionProvider.getUserSession();
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         if (!userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY))
             throw new AccessDeniedException(PermissionType.ENTITY_ATTR, metaProperty.getDomain() + "." + metaProperty.getName());
     }
 
+    @Override
     public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
@@ -325,6 +334,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
@@ -341,6 +351,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    @Override
     public synchronized void includeItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
@@ -359,6 +370,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
+    @Override
     public synchronized void clear() throws UnsupportedOperationException {
         checkState();
         // Get items
@@ -382,10 +394,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public void revert() throws UnsupportedOperationException {
         refresh();
     }
 
+    @Override
     public void modifyItem(T item) {
         for (T t : __getCollection()) {
             if (t.equals(item)) {
@@ -403,6 +417,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
+    @Override
     public void updateItem(T item) {
         // this method must not change the "modified" state by contract
         boolean saveModified = modified;
@@ -435,6 +450,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
+    @Override
     public synchronized boolean containsItem(K itemId) {
         Collection<T> coll = __getCollection();
         if (coll == null)
@@ -452,6 +468,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public String getQuery() {
         return null;
     }
@@ -461,38 +478,58 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public QueryFilter getQueryFilter() {
         return null;
     }
 
+    @Override
     public void setQuery(String query) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setQuery(String query, QueryFilter filter) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setQueryFilter(QueryFilter filter) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getMaxResults() {
         return 0;
     }
 
+    @Override
     public void setMaxResults(int maxResults) {
     }
 
+    @Override
     public void refresh(Map<String, Object> parameters) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean getRefreshOnComponentValueChange() {
         return false;
     }
 
+    @Override
     public void setRefreshOnComponentValueChange(boolean refresh) {
+    }
+
+    @Override
+    public void commit() {
+        if (allowCommit)
+            super.commit();
+    }
+
+    @Override
+    public boolean isModified() {
+        return allowCommit && super.isModified();
     }
 
     @Override
@@ -553,15 +590,27 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         lastCollectionChangeOperation = null;
     }
 
+    @Override
     public boolean isSoftDeletion() {
         return false;
     }
 
+    @Override
     public void setSoftDeletion(boolean softDeletion) {
     }
 
+    @Override
+    public boolean isAllowCommit() {
+        return allowCommit;
+    }
+
+    @Override
+    public void setAllowCommit(boolean allowCommit) {
+        this.allowCommit = allowCommit;
+    }
 
     //Implementation of CollectionDatasource.Sortable<T, K> interface
+    @Override
     public void sort(SortInfo[] sortInfos) {
         if (sortInfos.length != 1)
             throw new UnsupportedOperationException("Supporting sort by one field only");
@@ -588,6 +637,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         collection.addAll(list);
     }
 
+    @Override
     public K firstItemId() {
         Collection<T> collection = __getCollection();
         if (collection != null && !collection.isEmpty()) {
@@ -596,6 +646,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @Override
     public K lastItemId() {
         Collection<T> collection = __getCollection();
         if (collection != null && !collection.isEmpty()) {
@@ -604,6 +655,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @Override
     public K nextItemId(K itemId) {
         if (itemId == null) return null;
         Collection<T> collection = __getCollection();
@@ -615,6 +667,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @Override
     public K prevItemId(K itemId) {
         if (itemId == null) return null;
         Collection<T> collection = __getCollection();
@@ -626,14 +679,17 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @Override
     public boolean isFirstId(K itemId) {
         return itemId != null && itemId.equals(firstItemId());
     }
 
+    @Override
     public boolean isLastId(K itemId) {
         return itemId != null && itemId.equals(lastItemId());
     }
 
+    @Override
     public Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
         return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
     }

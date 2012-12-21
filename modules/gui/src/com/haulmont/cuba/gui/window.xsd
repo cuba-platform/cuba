@@ -271,6 +271,18 @@
         <xs:attribute name="view" type="xs:string" use="required"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="isCollectionDatasource">
+        <xs:attributeGroup ref="isDatasource"/>
+
+        <xs:attribute name="allowCommit" type="xs:boolean" use="optional"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="isNestedCollectionDatasource">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="property" type="xs:string" use="required"/>
+        <xs:attribute name="allowCommit" type="xs:boolean" use="required"/>
+    </xs:attributeGroup>
+
     <!-- Utils -->
 
     <xs:complexType name="formatterType">
@@ -637,16 +649,6 @@
         <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attribute name="icon" type="xs:string" use="optional"/>
-
-        <!--<xs:complexContent>-->
-            <!--<xs:extension base="buttonComponent">-->
-                <!--<xs:choice minOccurs="0" maxOccurs="1">-->
-                    <!--<xs:group ref="component"/>-->
-                    <!--<xs:group ref="layout"/>-->
-                <!--</xs:choice>-->
-                <!--<xs:attribute name="menuWidth" type="xs:string" use="optional"/>-->
-            <!--</xs:extension>-->
-        <!--</xs:complexContent>-->
     </xs:complexType>
 
     <!-- ButtonsPanel -->
@@ -929,11 +931,6 @@
         <xs:attribute name="rows" type="xs:string" use="optional"/>
     </xs:complexType>
 
-    <!-- ScriptHost -->
-    <xs:complexType name="scriptHostComponent">
-        <xs:attributeGroup ref="requiresId"/>
-    </xs:complexType>
-
     <!-- Layouts && Containers -->
 
     <!-- HtmlBoxLayout -->
@@ -1126,7 +1123,7 @@
             <xs:group ref="nestedDatasources" minOccurs="0"/>
         </xs:sequence>
 
-        <xs:attributeGroup ref="isDatasource"/>
+        <xs:attributeGroup ref="isCollectionDatasource"/>
 
         <xs:attribute name="query" type="xs:string" use="optional"/>
         <xs:attribute name="fetchMode" type="fetchMode" use="optional"/>
@@ -1149,7 +1146,7 @@
             <xs:group ref="nestedDatasources" minOccurs="0"/>
         </xs:sequence>
 
-        <xs:attributeGroup ref="isDatasource"/>
+        <xs:attributeGroup ref="isCollectionDatasource"/>
 
         <xs:attribute name="query" type="xs:string" use="optional"/>
         <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
@@ -1173,7 +1170,7 @@
             <xs:group ref="nestedDatasources" minOccurs="0"/>
         </xs:sequence>
 
-        <xs:attributeGroup ref="isDatasource"/>
+        <xs:attributeGroup ref="isCollectionDatasource"/>
 
         <xs:attribute name="query" type="xs:string" use="optional"/>
         <xs:attribute name="refreshMode" type="refreshMode" use="optional"/>
@@ -1197,8 +1194,7 @@
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="collectionDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedCollectionDs"/>
-                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded"
-                            type="nestedHierarchicalDs"/>
+                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedHierarchicalDs"/>
                 <xs:element name="datasource">
                     <xs:complexType>
                         <xs:group ref="nestedDatasources"/>
@@ -1216,8 +1212,7 @@
             <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
-        <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="property" type="xs:string" use="required"/>
+        <xs:attributeGroup ref="isNestedCollectionDatasource"/>
     </xs:complexType>
 
     <!-- HierarchicalPropertyDatasource -->
@@ -1226,8 +1221,9 @@
             <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
-        <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="property" type="xs:string" use="required"/>
+
+        <xs:attributeGroup ref="isNestedCollectionDatasource"/>
+
         <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
     </xs:complexType>
 
@@ -1306,7 +1302,6 @@
                 <xs:element name="tokenList" type="tokenListComponent"/>
                 <xs:element name="widgetsTree" type="widgetsTreeComponent"/>
                 <xs:element name="twinColumn" type="twinColumnComponent"/>
-                <xs:element name="scriptHost" type="scriptHostComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>
@@ -1421,5 +1416,4 @@
             </xs:choice>
         </xs:sequence>
     </xs:complexType>
-
 </xs:schema>

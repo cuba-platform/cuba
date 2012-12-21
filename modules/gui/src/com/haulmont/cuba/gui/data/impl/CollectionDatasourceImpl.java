@@ -73,6 +73,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected int firstResult;
 
+    protected boolean allowCommit = true;
+
     protected boolean sortOnDb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
 
     protected LoadContext.Query lastQuery;
@@ -140,6 +142,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             return;
 
         if (refreshMode == RefreshMode.NEVER) {
+            savedParameters = parameters;
+
             invalidate();
 
             State prevState = state;
@@ -613,5 +617,26 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (!prevQueries.isEmpty()) {
             prevQueries.removeLast();
         }
+    }
+
+    @Override
+    public boolean isAllowCommit() {
+        return allowCommit;
+    }
+
+    @Override
+    public void setAllowCommit(boolean allowCommit) {
+        this.allowCommit = allowCommit;
+    }
+
+    @Override
+    public void commit() {
+        if (allowCommit)
+            super.commit();
+    }
+
+    @Override
+    public boolean isModified() {
+        return allowCommit && super.isModified();
     }
 }

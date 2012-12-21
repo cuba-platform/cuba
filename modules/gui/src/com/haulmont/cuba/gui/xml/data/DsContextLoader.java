@@ -2,9 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- * Author: Dmitry Abramov
- * Created: 25.12.2008 11:14:58
- * $Id$
  */
 
 package com.haulmont.cuba.gui.xml.data;
@@ -12,8 +9,7 @@ package com.haulmont.cuba.gui.xml.data;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
@@ -24,15 +20,23 @@ import org.dom4j.Element;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class DsContextLoader {
 
     private DsBuilder builder;
     private DataService dataservice;
+    private Scripting scripting;
+    private Metadata metadata;
 
     private DsContextImplementation context;
 
     public DsContextLoader(DataService dataservice) {
         this.dataservice = dataservice;
+        this.scripting = AppBeans.get(Scripting.class);
+        this.metadata = AppBeans.get(Metadata.class);
     }
 
     public DsContext loadDatasources(Element element, DsContext parent) {
@@ -84,6 +88,8 @@ public class DsContextLoader {
         for (Element ds : elements) {
             context.register(loadGroupDatasource(ds));
         }
+
+        //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
             context.register(loadRuntimePropsDataSource(ds));
@@ -98,7 +104,7 @@ public class DsContextLoader {
     protected DsContextImplementation createDsContext(String contextClass, Element element) {
         DsContextImplementation context;
 
-        final Class<Object> aClass = ScriptingProvider.loadClass(contextClass);
+        final Class<Object> aClass = scripting.loadClass(contextClass);
         try {
             final Constructor<Object> constructor = aClass.getConstructor(DataService.class);
             context = (DsContextImplementation) constructor.newInstance(dataservice);
@@ -128,13 +134,18 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            Class<HierarchicalDatasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
         } else {
             CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
             CollectionDatasource.RefreshMode refreshMode = getRefreshMode(element);
+            final boolean allowCommit = getAllowCommit(element);
 
-            datasource = builder.setFetchMode(fetchMode).setRefreshMode(refreshMode).buildHierarchicalDatasource();
+            datasource = builder
+                    .setFetchMode(fetchMode)
+                    .setRefreshMode(refreshMode)
+                    .setAllowCommit(allowCommit)
+                    .buildHierarchicalDatasource();
         }
 
         if (!StringUtils.isEmpty(hierarchyProperty)) {
@@ -180,13 +191,18 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            final Class<GroupDatasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildGroupDatasource();
         } else {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
             final CollectionDatasource.RefreshMode refreshMode = getRefreshMode(element);
+            final boolean allowCommit = getAllowCommit(element);
 
-            datasource = builder.setFetchMode(fetchMode).setRefreshMode(refreshMode).buildGroupDatasource();
+            datasource = builder
+                    .setFetchMode(fetchMode)
+                    .setRefreshMode(refreshMode)
+                    .setAllowCommit(allowCommit)
+                    .buildGroupDatasource();
         }
 
         if (datasource instanceof CollectionDatasource.Suspendable)
@@ -226,7 +242,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            final Class<Datasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            final Class<Datasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildDatasource();
         } else {
             datasource = builder.buildDatasource();
@@ -273,11 +289,11 @@ public class DsContextLoader {
             context.register(loadHierarchicalDatasource(ds, datasource, property));
         }
 
+        //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
-            context.register(loadRuntimePropsDataSource(element));
+            context.register(loadRuntimePropsDataSource(ds));
         }
-
     }
 
     private Datasource loadDatasource(Element element, Datasource ds, String property) {
@@ -322,7 +338,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            final Class<CollectionDatasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildCollectionDatasource();
         } else {
             datasource = builder.buildCollectionDatasource();
@@ -354,7 +370,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            final Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            final Class<HierarchicalDatasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
         } else {
             datasource = builder.buildHierarchicalDatasource();
@@ -387,7 +403,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            final Class<GroupDatasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildGroupDatasource();
         } else {
             datasource = builder.buildGroupDatasource();
@@ -404,7 +420,7 @@ public class DsContextLoader {
             return null;
 
         final Class<?> aClass = ReflectionHelper.getClass(className);
-        final MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
+        final MetaClass metaClass = metadata.getSession().getClass(aClass);
 
         if (metaClass == null)
             throw new IllegalStateException(String.format("Can't find metaClass '%s'", className));
@@ -430,15 +446,17 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            final Class<CollectionDatasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildCollectionDatasource();
         } else {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
             final CollectionDatasource.RefreshMode refreshMode = getRefreshMode(element);
+            final boolean allowCommit = getAllowCommit(element);
 
             datasource = builder
                     .setFetchMode(fetchMode)
                     .setRefreshMode(refreshMode)
+                    .setAllowCommit(allowCommit)
                     .buildCollectionDatasource();
         }
 
@@ -472,6 +490,14 @@ public class DsContextLoader {
         return refreshMode;
     }
 
+    private boolean getAllowCommit(Element element) {
+        final String allowCommitStr = element.attributeValue("allowCommit");
+        boolean allowCommit = true;
+        if (StringUtils.isNotEmpty(allowCommitStr))
+            allowCommit = Boolean.valueOf(allowCommitStr);
+        return allowCommit;
+    }
+
     protected CollectionDatasource.FetchMode getFetchMode(Element element) {
         CollectionDatasource.FetchMode mode = null;
 
@@ -503,7 +529,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
-            final Class<RuntimePropsDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            final Class<RuntimePropsDatasource> aClass = scripting.loadClass(datasourceClass);
             datasource = builder.setDsClass(aClass).buildRuntimePropsDataSource(mainDsId);
         } else {
             datasource = builder.buildRuntimePropsDataSource(mainDsId);

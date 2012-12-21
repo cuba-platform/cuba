@@ -2,10 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- * Author: Konstantin Krivopustov
- * Created: 01.10.2010 17:49:04
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.data;
 
@@ -37,6 +33,9 @@ import java.lang.reflect.Constructor;
  *
  * If you don't set <code>fetchMode</code> explicitly, lazy implementation may be chosen based on <code>PersistenceManager</code>
  * statistics.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class DsBuilder {
 
@@ -68,6 +67,8 @@ public class DsBuilder {
     private CollectionDatasource.FetchMode fetchMode;
 
     private CollectionDatasource.RefreshMode refreshMode;
+
+    private boolean allowCommit = true;
 
     public DsBuilder() {
         this(null);
@@ -105,6 +106,15 @@ public class DsBuilder {
 
     public DsBuilder setJavaClass(Class javaClass) {
         this.javaClass = javaClass;
+        return this;
+    }
+
+    public boolean isAllowCommit() {
+        return allowCommit;
+    }
+
+    public DsBuilder setAllowCommit(boolean allowCommit) {
+        this.allowCommit = allowCommit;
         return this;
     }
 
@@ -264,12 +274,14 @@ public class DsBuilder {
         CollectionDatasource datasource;
         if (master == null && property == null) {
             if (dsClass == null) {
-                if (CollectionDatasource.FetchMode.LAZY.equals(resolvedFetchMode()))
+                if (CollectionDatasource.FetchMode.LAZY.equals(resolvedFetchMode())) {
                     datasource = new LazyCollectionDatasource(dsContext, dataService, id, metaClass, view, softDeletion);
-                else {
+                    ((LazyCollectionDatasource) datasource).setRefreshMode(refreshMode);
+                } else {
                     datasource = new CollectionDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
                     ((CollectionDatasourceImpl) datasource).setRefreshMode(refreshMode);
                 }
+                datasource.setAllowCommit(allowCommit);
                 datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
             } else {
                 try {
@@ -278,6 +290,7 @@ public class DsBuilder {
                     datasource = (CollectionDatasource) constructor.newInstance(
                             dsContext, dataService, id, metaClass, view == null ? null : view.getName());
                     datasource.setSoftDeletion(softDeletion);
+                    datasource.setAllowCommit(allowCommit);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -322,6 +335,7 @@ public class DsBuilder {
             if (dsClass == null) {
                 datasource = new HierarchicalDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
                 ((HierarchicalDatasourceImpl) datasource).setRefreshMode(refreshMode);
+                datasource.setAllowCommit(allowCommit);
                 datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
             } else {
                 try {
@@ -330,6 +344,7 @@ public class DsBuilder {
                     datasource = (HierarchicalDatasource) constructor.newInstance(
                             dsContext, dataService, id, metaClass, view == null ? null : view.getName());
                     datasource.setSoftDeletion(softDeletion);
+                    datasource.setAllowCommit(allowCommit);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -358,6 +373,7 @@ public class DsBuilder {
             if (dsClass == null) {
                 datasource = new GroupDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
                 ((GroupDatasourceImpl) datasource).setRefreshMode(refreshMode);
+                datasource.setAllowCommit(allowCommit);
                 datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
             } else {
                 try {
@@ -366,6 +382,7 @@ public class DsBuilder {
                     datasource = (GroupDatasource) constructor.newInstance(
                             dsContext, dataService, id, metaClass, view == null ? null : view.getName());
                     datasource.setSoftDeletion(softDeletion);
+                    datasource.setAllowCommit(allowCommit);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

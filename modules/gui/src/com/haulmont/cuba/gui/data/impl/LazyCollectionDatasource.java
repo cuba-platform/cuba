@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 30.03.2009 11:50:28
- * $Id$
  */
 
 package com.haulmont.cuba.gui.data.impl;
@@ -26,14 +22,21 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
+/**
+ *
+ * @param <T>
+ * @param <K>
+ * @author abramov
+ * @version $Id$
+ */
 public class LazyCollectionDatasource<T extends Entity<K>, K>
     extends
         AbstractCollectionDatasource<T, K>
     implements
         CollectionDatasource.Sortable<T, K>,
         CollectionDatasource.Lazy<T, K>,
-        CollectionDatasource.Suspendable<T, K>
-{
+        CollectionDatasource.Suspendable<T, K> {
+
     protected LinkedMap data = new LinkedMap();
     protected Integer size;
 
@@ -48,6 +51,10 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     protected boolean refreshOnResumeRequired;
 
     protected boolean disableLoad;
+
+    protected boolean allowCommit = true;
+
+    protected RefreshMode refreshMode = RefreshMode.ALWAYS;
 
     public LazyCollectionDatasource(
             DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
@@ -79,6 +86,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         setSoftDeletion(softDeletion);
     }
 
+    @Override
     public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
@@ -100,6 +108,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
+    @Override
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
 
@@ -114,6 +123,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    @Override
     public synchronized void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
 
@@ -126,6 +136,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    @Override
     public synchronized void includeItem(T item) throws UnsupportedOperationException {
         checkState();
 
@@ -138,6 +149,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
+    @Override
     public synchronized void clear() throws UnsupportedOperationException {
         checkState();
         // Get items
@@ -156,10 +168,12 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public void revert() throws UnsupportedOperationException {
         refresh();
     }
 
+    @Override
     public void modifyItem(T item) {
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {
@@ -173,6 +187,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public void updateItem(T item) {
         checkState();
 
@@ -183,10 +198,22 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
+    public boolean isAllowCommit() {
+        return allowCommit;
+    }
+
+    @Override
+    public void setAllowCommit(boolean allowCommit) {
+        this.allowCommit = allowCommit;
+    }
+
+    @Override
     public synchronized boolean containsItem(K itemId) {
         return data.containsKey(itemId);
     }
 
+    @Override
     public void refreshIfNotSuspended() {
         if (suspended) {
             if (!state.equals(State.VALID)) {
@@ -206,10 +233,45 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             refresh(savedParameters);
     }
 
+    public RefreshMode getRefreshMode() {
+        return refreshMode;
+    }
+
+    public void setRefreshMode(RefreshMode refreshMode) {
+        this.refreshMode = refreshMode;
+    }
+
+    @Override
     public synchronized void refresh(Map<String, Object> parameters) {
         this.params = parameters;
         if (inRefresh)
             return;
+
+        if (refreshMode == RefreshMode.NEVER) {
+            savedParameters = parameters;
+
+            invalidate();
+
+            State prevState = state;
+            if (!prevState.equals(State.VALID)) {
+                valid();
+                fireStateChanged(prevState);
+            }
+            inRefresh = true;
+
+            setItem(getItem());
+
+            if (sortInfos != null && sortInfos.length > 0)
+                doSort();
+
+            suspended = false;
+            refreshOnResumeRequired = false;
+
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+
+            inRefresh = false;
+            return;
+        }
 
         inRefresh = true;
         try {
@@ -263,6 +325,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         return size;
     }
 
+    @Override
     public synchronized T getItem(K key) {
         if (State.NOT_INITIALIZED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
@@ -272,10 +335,12 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public K getItemId(T item) {
         return item == null ? null : item.getId();
     }
 
+    @Override
     public synchronized Collection<K> getItemIds() {
         if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
@@ -286,6 +351,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized int size() {
         if (State.NOT_INITIALIZED.equals(state)) {
             return 0;
@@ -294,6 +360,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized K nextItemId(K itemId) {
         @SuppressWarnings({"unchecked"})
         K nextId = (K) data.nextKey(itemId);
@@ -305,11 +372,13 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         return nextId;
     }
 
+    @Override
     public synchronized K prevItemId(K itemId) {
         //noinspection unchecked
         return (K) data.previousKey(itemId);
     }
 
+    @Override
     public synchronized K firstItemId() {
         if (suspended)
             return null;
@@ -325,6 +394,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public synchronized K lastItemId() {
         if (!isCompletelyLoaded())
             loadNextChunk(true);
@@ -337,15 +407,18 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public boolean isFirstId(K itemId) {
         return itemId != null && itemId.equals(firstItemId());
     }
 
+    @Override
     public boolean isLastId(K itemId) {
         //noinspection SimplifiableConditionalExpression
         return itemId != null && (isCompletelyLoaded() ? itemId.equals(lastItemId()) : false);
     }
 
+    @Override
     public boolean isCompletelyLoaded() {
         return data.size() == getSize();
     }
@@ -407,6 +480,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         sw.stop();
     }
 
+    @Override
     public synchronized void sort(SortInfo[] sortInfos) {
         if (sortInfos.length != 1)
             throw new UnsupportedOperationException("Supporting sort by one field only");
@@ -457,10 +531,12 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         clearCommitLists();
     }
 
+    @Override
     public boolean isSuspended() {
         return suspended;
     }
 
+    @Override
     public void setSuspended(boolean suspended) {
         boolean wasSuspended = this.suspended;
         this.suspended = suspended;
@@ -478,5 +554,16 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         } finally {
             disableLoad = false;
         }
+    }
+
+    @Override
+    public void commit() {
+        if (allowCommit)
+            super.commit();
+    }
+
+    @Override
+    public boolean isModified() {
+        return allowCommit && super.isModified();
     }
 }
