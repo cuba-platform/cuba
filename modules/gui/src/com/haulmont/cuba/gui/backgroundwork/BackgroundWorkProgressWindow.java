@@ -39,9 +39,7 @@ import java.util.Map;
  * @author ovchinnikov
  * @version $Id$
  */
-@SuppressWarnings("unused")
 public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractWindow {
-    private static final long serialVersionUID = -3073224246530486376L;
 
     @Inject
     private Label text;

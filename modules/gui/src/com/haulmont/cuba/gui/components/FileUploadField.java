@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.FileDescriptor;
+
 import java.util.UUID;
 
 public interface FileUploadField
@@ -60,10 +62,13 @@ public interface FileUploadField
         }
     }
 
-    String getFilePath();
+    /**
+     * Get id for uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}
+     * @return File Id
+     */
+    UUID getFileId();
     String getFileName();
-
-    boolean isUploading();
+    FileDescriptor getFileDescriptor();
 
     /**
      * Get content bytes for uploaded file
@@ -71,15 +76,6 @@ public interface FileUploadField
      * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.gui.upload.FileUploading}
      */
     byte[] getBytes();
-
-    /**
-     * Get id for uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}
-     * @return File Id
-     */
-    UUID getFileId();
-
-    long getBytesRead();
-    void release();
 
     void addListener(Listener listener);
     void removeListener(Listener listener);

@@ -6,10 +6,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -34,9 +35,9 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
     protected FileUploadingAPI fileUploading;
+    protected Messages messages;
 
     protected String fileName;
-    protected byte[] bytes;
 
     protected UUID fileId;
 
@@ -49,7 +50,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
 
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-        String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "Upload");
+        String caption = messages.getMessage(AppConfig.getMessagesPack(), "Upload");
         component = new Upload(
                 /* Fixes caption rendering.
                 * If caption == "", the VerticalLayout reserves an empty space */
@@ -75,14 +76,13 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
         component.addListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
-                final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+                final Integer maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
                 final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
                 if (event.getContentLength() > maxSize) {
                     component.interruptUpload();
-                    String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
+                    String warningMsg = messages.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
                     getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
                 } else {
-                    bytes = null;
                     final Listener.Event e = new Listener.Event(event.getFilename());
                     for (Listener listener : listeners) {
                         listener.uploadStarted(e);
@@ -144,34 +144,13 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 }
             }
         });
-        component.setButtonCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.submit"));
-    }
-
-    @Override
-    public String getFilePath() {
-        return fileName;
+        component.setButtonCaption(messages.getMessage(AppConfig.getMessagesPack(), "upload.submit"));
     }
 
     @Override
     public String getFileName() {
         String[] strings = fileName.split("[/\\\\]");
         return strings[strings.length - 1];
-    }
-
-    @Override
-    public boolean isUploading() {
-        return component.isUploading();
-    }
-
-    @Override
-    public long getBytesRead() {
-        return component.getBytesRead();
-    }
-
-    @Override
-    public void release() {
-        outputStream = null;
-        bytes = null;
     }
 
     @Override
@@ -192,18 +171,17 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
      */
     @Deprecated
     public byte[] getBytes() {
-        if (bytes == null) {
-            try {
-                if (fileId != null) {
-                    File file = fileUploading.getFile(fileId);
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                    IOUtils.copy(fileInputStream, byteOutput);
-                    bytes = byteOutput.toByteArray();
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        byte[] bytes = null;
+        try {
+            if (fileId != null) {
+                File file = fileUploading.getFile(fileId);
+                FileInputStream fileInputStream = new FileInputStream(file);
+                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                IOUtils.copy(fileInputStream, byteOutput);
+                bytes = byteOutput.toByteArray();
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return bytes;
@@ -243,5 +221,13 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
     @Override
     public UUID getFileId() {
         return fileId;
+    }
+
+    @Override
+    public FileDescriptor getFileDescriptor() {
+        if (fileId != null)
+            return fileUploading.getFileDescriptor(fileId, fileName);
+        else
+            return null;
     }
 }

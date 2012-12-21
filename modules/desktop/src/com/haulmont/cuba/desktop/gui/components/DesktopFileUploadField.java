@@ -7,11 +7,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -37,10 +34,11 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
     protected FileUploadingAPI fileUploading;
+    protected Messages messages;
 
-    protected boolean isUploadingState = false;
+    protected volatile boolean isUploadingState = false;
+
     protected String fileName;
-    protected byte[] bytes;
 
     protected String description;
 
@@ -54,7 +52,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
 
         final JFileChooser fileChooser = new JFileChooser();
-        String caption = MessageProvider.getMessage(getClass(), "export.selectFile");
+        String caption = messages.getMessage(getClass(), "export.selectFile");
         impl = new JButton();
         impl.setAction(new AbstractAction(caption) {
             @Override
@@ -67,11 +65,11 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     }
 
     private void uploadFile(File file) {
-        final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+        final Integer maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
         final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
 
         if (file.length() > maxSize) {
-            String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
+            String warningMsg = messages.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
             getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
         } else {
             boolean succcess = true;
@@ -136,35 +134,32 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     }
 
     @Override
-    public String getFilePath() {
-        return fileName;
-    }
-
-    @Override
     public String getFileName() {
         String[] strings = fileName.split("[/\\\\]");
         return strings[strings.length - 1];
     }
 
     @Override
-    public boolean isUploading() {
-        return isUploadingState;
+    public FileDescriptor getFileDescriptor() {
+        if (fileId != null)
+            return fileUploading.getFileDescriptor(fileId, fileName);
+        else
+            return null;
     }
 
     @Override
     public byte[] getBytes() {
-        if (bytes == null) {
-            try {
-                if (fileId != null) {
-                    File file = fileUploading.getFile(fileId);
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                    IOUtils.copy(fileInputStream, byteOutput);
-                    bytes = byteOutput.toByteArray();
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        byte[] bytes = null;
+        try {
+            if (fileId != null) {
+                File file = fileUploading.getFile(fileId);
+                FileInputStream fileInputStream = new FileInputStream(file);
+                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                IOUtils.copy(fileInputStream, byteOutput);
+                bytes = byteOutput.toByteArray();
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return bytes;
@@ -173,16 +168,6 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     @Override
     public UUID getFileId() {
         return fileId;
-    }
-
-    @Override
-    public long getBytesRead() {
-        return 0;
-    }
-
-    @Override
-    public void release() {
-        bytes = null;
     }
 
     @Override

@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.desktop.gui.executors.impl;
 
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
@@ -69,7 +70,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
-            userId = UserSessionProvider.getUserSession().getId();
+            userId = AppBeans.get(UserSessionSource.class).getUserSession().getId();
 
             //noinspection unchecked
             this.params = runnableTask.getParams();

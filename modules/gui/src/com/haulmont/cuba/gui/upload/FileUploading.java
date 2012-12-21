@@ -214,14 +214,14 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             if (file.exists()) {
                 boolean res = file.delete();
                 if (!res)
-                    throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
+                    log.warn("Could not delete temp file " + file.getAbsolutePath());
             }
         }
     }
 
     @Override
     public void deleteFileLink(String fileName) {
-        Map<UUID, File> clonedFileMap = new ConcurrentHashMap<>(tempFiles);
+        Map<UUID, File> clonedFileMap = new HashMap<>(tempFiles);
         Iterator<Map.Entry<UUID, File>> iterator = clonedFileMap.entrySet().iterator();
         UUID forDelete = null;
         while ((iterator.hasNext()) && (forDelete == null)) {
@@ -236,13 +236,18 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     @Override
     public void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException {
-        uploadFileIntoStorage(fileId, fileDescr, null);
+        try {
+            uploadFileIntoStorage(fileId, fileDescr, null);
+        } catch (InterruptedIOException e) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getFileName());
+        }
 
         deleteFile(fileId);
     }
 
     private void uploadFileIntoStorage(UUID fileId, FileDescriptor fileDescr,
-                                       @Nullable UploadToStorageProgressListener listener) throws FileStorageException {
+                                       @Nullable UploadToStorageProgressListener listener)
+            throws FileStorageException, InterruptedIOException {
         File file = getFile(fileId);
 
         for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
@@ -254,7 +259,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             HttpPost method = new HttpPost(url);
             FileEntity entity;
             if (listener != null)
-                entity = new FileStorageEntity(file, "application/octet-stream", fileId, listener);
+                entity = new FileStorageProgressEntity(file, "application/octet-stream", fileId, listener);
             else
                 entity = new FileEntity(file, "application/octet-stream");
 
@@ -272,6 +277,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                     else
                         throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fileDescr.getName());
                 }
+            } catch (InterruptedIOException e) {
+                log.trace("Uploading has been interrupted");
+                throw e;
             } catch (IOException e) {
                 log.debug("Unable to upload file to " + url + "\n" + e);
                 if (iterator.hasNext())
@@ -285,7 +293,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     }
 
     @Override
-    public FileDescriptor putFileIntoStorage(final TaskLifeCycle<Long> taskLifeCycle) throws FileStorageException {
+    public FileDescriptor putFileIntoStorage(final TaskLifeCycle<Long> taskLifeCycle)
+            throws FileStorageException, InterruptedIOException {
+
         checkNotNull(taskLifeCycle);
 
         UUID fileId = (UUID) taskLifeCycle.getParams().get("fileId");
@@ -337,10 +347,8 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     @Override
     public String showTempFiles() {
         StringBuilder builder = new StringBuilder();
-        Map<UUID, File> clonedFileMap = new ConcurrentHashMap<>(tempFiles);
-        Iterator<Map.Entry<UUID, File>> iterator = clonedFileMap.entrySet().iterator();
-        while ((iterator.hasNext())) {
-            Map.Entry<UUID, File> fileEntry = iterator.next();
+        Map<UUID, File> clonedFileMap = new HashMap<>(tempFiles);
+        for (Map.Entry<UUID, File> fileEntry : clonedFileMap.entrySet()) {
             builder.append(fileEntry.getKey().toString()).append(" | ");
             Date lastModified = new Date(fileEntry.getValue().lastModified());
             DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

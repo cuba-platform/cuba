@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.util.UUID;
 
 /**
@@ -68,5 +69,6 @@ public interface FileUploadingAPI {
      * @return file descriptor
      * @throws FileStorageException
      */
-    FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle) throws FileStorageException;
+    FileDescriptor putFileIntoStorage(TaskLifeCycle<Long> taskLifeCycle)
+            throws FileStorageException, InterruptedIOException;
 }

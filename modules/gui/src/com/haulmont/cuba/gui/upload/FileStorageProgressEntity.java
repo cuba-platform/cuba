@@ -17,14 +17,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-public class FileStorageEntity extends FileEntity {
+public class FileStorageProgressEntity extends FileEntity {
 
     private final long size;
     private final UUID fileId;
     private final FileUploadingAPI.UploadToStorageProgressListener listener;
 
-    public FileStorageEntity(File file, String contentType, UUID fileId,
-                             FileUploadingAPI.UploadToStorageProgressListener listener) {
+    public FileStorageProgressEntity(File file, String contentType, UUID fileId,
+                                     FileUploadingAPI.UploadToStorageProgressListener listener) {
         super(file, contentType);
 
         this.listener = listener;
@@ -47,6 +47,9 @@ public class FileStorageEntity extends FileEntity {
             byte[] tmp = new byte[4096];
             int readedBytes;
             while ((readedBytes = instream.read(tmp)) != -1) {
+                if (Thread.currentThread().isInterrupted())
+                    throw new InterruptedIOException();
+
                 outstream.write(tmp, 0, readedBytes);
 
                 transferredBytes += readedBytes;

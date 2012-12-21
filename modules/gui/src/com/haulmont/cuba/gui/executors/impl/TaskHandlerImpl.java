@@ -6,8 +6,9 @@
 
 package com.haulmont.cuba.gui.executors.impl;
 
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -44,7 +45,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     public TaskHandlerImpl(TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
         this.taskExecutor = taskExecutor;
         this.watchDog = watchDog;
-        this.userSession = UserSessionProvider.getUserSession();
+        this.userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
         BackgroundTask<T, V> task = taskExecutor.getTask();
         if (task.getOwnerWindow() != null) {
@@ -70,7 +71,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
             UUID userId = getUserSession().getId();
             Window ownerWindow = getTask().getOwnerWindow();
             String windowClass = ownerWindow.getClass().getCanonicalName();
-            log.debug("Window closed. User: " + userId + " Window: " + windowClass);
+            log.trace("Window closed. User: " + userId + " Window: " + windowClass);
 
             taskExecutor.cancelExecution();
         }
@@ -82,12 +83,12 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         this.started = true;
 
-        this.startTimeStamp = TimeProvider.currentTimestamp().getTime();
+        this.startTimeStamp = AppBeans.get(TimeSource.class).currentTimestamp().getTime();
 
         this.watchDog.manageTask(this);
 
         UUID userId = getUserSession().getId();
-        log.debug("Run task. User: " + userId);
+        log.trace("Run task. User: " + userId);
 
         taskExecutor.startExecution();
     }
@@ -149,9 +150,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
             if (ownerWindow != null) {
                 String windowClass = ownerWindow.getClass().getCanonicalName();
-                log.debug("Task killed. User: " + userId + " Window: " + windowClass);
+                log.trace("Task killed. User: " + userId + " Window: " + windowClass);
             } else
-                log.debug("Task killed. User: " + userId);
+                log.trace("Task killed. User: " + userId);
         }
 
         taskExecutor.cancelExecution();
