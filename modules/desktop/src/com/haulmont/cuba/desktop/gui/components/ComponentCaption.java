@@ -20,6 +20,7 @@ import javax.swing.*;
 public class ComponentCaption extends JPanel {
 
     private Component owner;
+    private JLabel label;
 
     public ComponentCaption(Component owner) {
         BoxLayoutAdapter.create(this);
@@ -28,8 +29,11 @@ public class ComponentCaption extends JPanel {
     }
 
     private void takeOwnerProperties() {
-        JLabel label = new JLabel();
-        add(label);
+        if (label == null) {
+            label = new JLabel();
+            add(label);
+        }
+
         label.setText(((Component.HasCaption) owner).getCaption());
         if (((Component.HasCaption) owner).getDescription() != null) {
             ToolTipButton btn = new ToolTipButton();
