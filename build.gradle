@@ -634,14 +634,3 @@ artifacts {
     if (Boolean.valueOf(System.getProperty("buildDoc")))
         archives buildDoc
 }
-
-// This is required until fixed in CubaPlugin by applying this configuration to all projects, not just modules
-uploadArchives.configure {
-    repositories.mavenDeployer {
-        name = 'httpDeployer'
-        configuration = configurations.deployerJars
-        repository(url: "$repositoryUrl/repositories/" + (isSnapshot ? 'snapshots' : 'releases')) {
-            authentication(userName: repositoryUser, password: repositoryPassword)
-        }
-    }
-}
