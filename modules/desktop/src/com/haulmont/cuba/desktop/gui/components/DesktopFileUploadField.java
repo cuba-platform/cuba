@@ -50,6 +50,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     public DesktopFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+        messages = AppBeans.get(Messages.class);
 
         final JFileChooser fileChooser = new JFileChooser();
         String caption = messages.getMessage(getClass(), "export.selectFile");

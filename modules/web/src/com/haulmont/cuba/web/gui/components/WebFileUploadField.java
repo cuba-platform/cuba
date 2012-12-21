@@ -50,6 +50,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
 
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+        messages = AppBeans.get(Messages.class);
         String caption = messages.getMessage(AppConfig.getMessagesPack(), "Upload");
         component = new Upload(
                 /* Fixes caption rendering.
