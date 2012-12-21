@@ -29,7 +29,7 @@
                 <button action="roles.remove" icon="icons/remove.png"/>
                 <button action="roles.refresh" icon="icons/refresh.png"/>
                 <button action="roles.excel" icon="icons/excel.png"/>
-                <button action="roles.assignToUsers"/>
+                <button action="roles.assignToUsers" icon="icons/user-group-ok.png"/>
             </buttonsPanel>
             <columns>
                 <column id="name" caption="msg://role.name"/>
