@@ -125,6 +125,12 @@
 .v-nativebutton .v-icon {
     vertical-align: middle;
     border: none;
+    margin-top: -1px;
+}
+
+.v-button-link .v-icon,
+.v-nativebutton-link .v-icon {
+    margin-top: 0px;
 }
 
 .v-button .v-errorindicator,
