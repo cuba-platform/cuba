@@ -48,7 +48,7 @@ public class LayoutLoader {
 
         Document document;
         try {
-            String template = IOUtils.toString(stream);
+            String template = IOUtils.toString(stream, "UTF-8");
 
             Map<String, Object> templateParams = new HashMap<>(params);
 
