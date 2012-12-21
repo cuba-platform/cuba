@@ -181,7 +181,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void setItem(T item) {
+    public void setItem(T item) {
         if (State.VALID.equals(getState())) {
             Object prevItem = this.item;
 
@@ -239,7 +239,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void addItem(T item) throws UnsupportedOperationException {
+    public void addItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
 
@@ -306,7 +306,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void removeItem(T item) throws UnsupportedOperationException {
+    public void removeItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
 
@@ -335,7 +335,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void excludeItem(T item) throws UnsupportedOperationException {
+    public void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
 
@@ -352,7 +352,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void includeItem(T item) throws UnsupportedOperationException {
+    public void includeItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
 
@@ -371,7 +371,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void clear() throws UnsupportedOperationException {
+    public void clear() throws UnsupportedOperationException {
         checkState();
         // Get items
         Collection<Object> collectionItems = new ArrayList<Object>(__getCollection());
@@ -430,7 +430,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
-    public synchronized void replaceItem(T item) {
+    public void replaceItem(T item) {
         Collection<T> collection = __getCollection();
         for (T t : collection) {
             if (t.equals(item)) {
@@ -451,7 +451,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized boolean containsItem(K itemId) {
+    public boolean containsItem(K itemId) {
         Collection<T> coll = __getCollection();
         if (coll == null)
             return false;

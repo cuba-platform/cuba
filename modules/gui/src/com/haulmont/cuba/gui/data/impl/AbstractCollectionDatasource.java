@@ -66,7 +66,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void setItem(T item) {
+    public void setItem(T item) {
         if (State.VALID.equals(state)) {
             Object prevItem = this.item;
 
@@ -100,7 +100,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void setQuery(String query) {
+    public void setQuery(String query) {
         setQuery(query, null);
     }
 

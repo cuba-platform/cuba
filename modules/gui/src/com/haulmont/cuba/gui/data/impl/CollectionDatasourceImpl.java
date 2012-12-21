@@ -112,7 +112,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void invalidate() {
+    public void invalidate() {
         super.invalidate();
     }
 
@@ -129,7 +129,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void refresh() {
+    public void refresh() {
         if (savedParameters == null)
             refresh(Collections.<String, Object>emptyMap());
         else
@@ -213,7 +213,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized T getItem(K key) {
+    public T getItem(K key) {
         if (State.NOT_INITIALIZED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
@@ -228,7 +228,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized Collection<K> getItemIds() {
+    public Collection<K> getItemIds() {
         if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
         } else {
@@ -237,7 +237,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized int size() {
+    public int size() {
         if (State.NOT_INITIALIZED.equals(state) || suspended) {
             return 0;
         } else {
@@ -319,7 +319,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void addItem(T item) throws UnsupportedOperationException {
+    public void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.put(item.getId(), item);
@@ -334,7 +334,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void removeItem(T item) throws UnsupportedOperationException {
+    public void removeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         if (item == this.item)
@@ -353,7 +353,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void includeItem(T item) throws UnsupportedOperationException {
+    public void includeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.put(item.getId(), item);
@@ -363,7 +363,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void excludeItem(T item) throws UnsupportedOperationException {
+    public void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.remove(item.getId());
@@ -377,7 +377,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void clear() throws UnsupportedOperationException {
+    public void clear() throws UnsupportedOperationException {
         // Get items
         List<Object> collectionItems = new ArrayList<Object>(data.values());
         // Clear container
@@ -432,7 +432,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized boolean containsItem(K itemId) {
+    public boolean containsItem(K itemId) {
         return data.containsKey(itemId);
     }
 

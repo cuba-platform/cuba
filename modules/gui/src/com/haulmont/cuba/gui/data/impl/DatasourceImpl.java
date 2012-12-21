@@ -2,17 +2,14 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 14:40:01
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
@@ -20,12 +17,18 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Set;
 
+/**
+ *
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public class DatasourceImpl<T extends Entity>
     extends
         AbstractDatasource<T>
     implements
-        DatasourceImplementation<T>
-{
+        DatasourceImplementation<T> {
+
     protected DsContext dsContext;
     protected DataService dataservice;
 
@@ -35,37 +38,31 @@ public class DatasourceImpl<T extends Entity>
     protected State state = State.NOT_INITIALIZED;
     protected T item;
 
-    private static final long serialVersionUID = -3022228782833455835L;
-
-    public DatasourceImpl(
-            DsContext dsContext, DataService dataservice,
-                String id, MetaClass metaClass, String viewName)
-    {
+    public DatasourceImpl(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
         this(dsContext, dataservice, id, metaClass,
-                StringUtils.isEmpty(viewName) ? null : MetadataProvider.getViewRepository().getView(metaClass, viewName));
+                StringUtils.isEmpty(viewName) ? null : AppBeans.get(Metadata.class).getViewRepository().getView(metaClass, viewName));
     }
 
-    public DatasourceImpl(
-            DsContext dsContext, DataService dataservice,
-                String id, MetaClass metaClass, View view)
-    {
+    public DatasourceImpl(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, View view) {
         super(id);
         this.dsContext = dsContext;
         this.dataservice = dataservice;
 
         this.metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
         this.view = view;
-
     }
 
+    @Override
     public DsContext getDsContext() {
         return dsContext;
     }
 
+    @Override
     public DataService getDataService() {
         return dataservice;
     }
 
+    @Override
     public void commit() {
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
             final DataService service = getDataService();
@@ -97,27 +94,33 @@ public class DatasourceImpl<T extends Entity>
         }
     }
 
+    @Override
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
+    @Override
     public View getView() {
         return view;
     }
 
+    @Override
     public State getState() {
         return state;
     }
 
+    @Override
     public T getItem() {
         return State.VALID.equals(state) ? item : null;
     }
 
+    @Override
     public void refresh() {
         // Do Nothing
     }
 
-    public synchronized void setItem(T item) {
+    @Override
+    public void setItem(T item) {
         if (State.NOT_INITIALIZED.equals(this.state)) {
             __setItem(item);
         } else {
@@ -157,6 +160,7 @@ public class DatasourceImpl<T extends Entity>
         }
     }
 
+    @Override
     public void invalidate() {
         if (State.NOT_INITIALIZED != state && State.INVALID != state) {
             State prevState = state;
@@ -167,14 +171,17 @@ public class DatasourceImpl<T extends Entity>
         clearCommitLists();
     }
 
+    @Override
     public void initialized() {
         state = State.INVALID;
     }
 
+    @Override
     public void valid() {
         state = State.VALID;
     }
 
+    @Override
     public void committed(Set<Entity> entities) {
         for (Entity entity : entities) {
             if (entity.equals(item)) {
@@ -187,9 +194,4 @@ public class DatasourceImpl<T extends Entity>
         modified = false;
         clearCommitLists();
     }
-
-    public DatasourceListener getParentDSListener() {
-        return null;
-    }
-
 }

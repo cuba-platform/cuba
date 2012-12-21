@@ -87,7 +87,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void addItem(T item) throws UnsupportedOperationException {
+    public void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
         attachListener(item);
@@ -109,7 +109,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void removeItem(T item) throws UnsupportedOperationException {
+    public void removeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.remove(item.getId());
@@ -124,7 +124,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void excludeItem(T item) throws UnsupportedOperationException {
+    public void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.remove(item.getId());
@@ -137,7 +137,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void includeItem(T item) throws UnsupportedOperationException {
+    public void includeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.put(item.getId(), item);
@@ -150,7 +150,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void clear() throws UnsupportedOperationException {
+    public void clear() throws UnsupportedOperationException {
         checkState();
         // Get items
         Collection<Object> collectionItems = new LinkedList<Object>(data.values());
@@ -209,7 +209,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized boolean containsItem(K itemId) {
+    public boolean containsItem(K itemId) {
         return data.containsKey(itemId);
     }
 
@@ -226,7 +226,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void refresh() {
+    public void refresh() {
         if (savedParameters == null)
             refresh(Collections.<String, Object>emptyMap());
         else
@@ -242,7 +242,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void refresh(Map<String, Object> parameters) {
+    public void refresh(Map<String, Object> parameters) {
         this.params = parameters;
         if (inRefresh)
             return;
@@ -306,7 +306,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void invalidate() {
+    public void invalidate() {
         super.invalidate();
     }
 
@@ -326,7 +326,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized T getItem(K key) {
+    public T getItem(K key) {
         if (State.NOT_INITIALIZED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
@@ -341,7 +341,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized Collection<K> getItemIds() {
+    public Collection<K> getItemIds() {
         if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
         } else {
@@ -352,7 +352,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized int size() {
+    public int size() {
         if (State.NOT_INITIALIZED.equals(state)) {
             return 0;
         } else {
@@ -361,7 +361,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized K nextItemId(K itemId) {
+    public K nextItemId(K itemId) {
         @SuppressWarnings({"unchecked"})
         K nextId = (K) data.nextKey(itemId);
         if (nextId == null && !isCompletelyLoaded()) {
@@ -373,13 +373,13 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized K prevItemId(K itemId) {
+    public K prevItemId(K itemId) {
         //noinspection unchecked
         return (K) data.previousKey(itemId);
     }
 
     @Override
-    public synchronized K firstItemId() {
+    public K firstItemId() {
         if (suspended)
             return null;
 
@@ -395,7 +395,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized K lastItemId() {
+    public K lastItemId() {
         if (!isCompletelyLoaded())
             loadNextChunk(true);
 
@@ -481,7 +481,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void sort(SortInfo[] sortInfos) {
+    public void sort(SortInfo[] sortInfos) {
         if (sortInfos.length != 1)
             throw new UnsupportedOperationException("Supporting sort by one field only");
 
@@ -519,7 +519,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void committed(Set<Entity> entities) {
+    public void committed(Set<Entity> entities) {
         for (Entity newEntity : entities) {
             if (newEntity.equals(item))
                 item = (T) newEntity;
