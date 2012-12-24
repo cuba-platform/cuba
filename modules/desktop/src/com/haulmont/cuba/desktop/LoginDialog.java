@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.LoginProperties;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
@@ -57,7 +56,7 @@ public class LoginDialog extends JDialog {
                 }
         );
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setTitle(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.caption", Locale.getDefault()));
+        setTitle(messages.getMainMessage("loginWindow.caption", Locale.getDefault()));
         setContentPane(createContentPane());
         setResizable(false);
         pack();
@@ -67,7 +66,7 @@ public class LoginDialog extends JDialog {
         MigLayout layout = new MigLayout("fillx, insets dialog", "[right][]");
         JPanel panel = new JPanel(layout);
 
-        panel.add(new JLabel(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginField", Locale.getDefault())));
+        panel.add(new JLabel(messages.getMainMessage("loginWindow.loginField", Locale.getDefault())));
 
         nameField = new JTextField();
         passwordField = new JPasswordField();
@@ -87,7 +86,7 @@ public class LoginDialog extends JDialog {
             nameField.setText(defaultName);
         panel.add(nameField, "width 150!, wrap");
 
-        panel.add(new JLabel(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.passwordField", Locale.getDefault())));
+        panel.add(new JLabel(messages.getMainMessage("loginWindow.passwordField", Locale.getDefault())));
         String defaultPassword = AppContext.getProperty("cuba.desktop.loginDialogDefaultPassword");
         if (!StringUtils.isBlank(defaultPassword))
             passwordField.setText(defaultPassword);
@@ -102,7 +101,7 @@ public class LoginDialog extends JDialog {
             panel.add(localeCombo, "width 150!, wrap");
         }
 
-        loginBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.okButton", Locale.getDefault()));
+        loginBtn = new JButton(messages.getMainMessage("loginWindow.okButton", Locale.getDefault()));
         loginBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
         loginBtn.addActionListener(
                 new ActionListener() {
@@ -131,7 +130,7 @@ public class LoginDialog extends JDialog {
             loginProperties.saveLogin(name);
             DesktopComponentsHelper.getTopLevelFrame(this).activate();
         } catch (LoginException ex) {
-            String caption = messages.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
+            String caption = messages.getMainMessage("loginWindow.loginFailed", locale);
             App.getInstance().getMainFrame().showNotification(
                     caption,
                     ex.getMessage(),

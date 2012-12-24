@@ -77,7 +77,8 @@ public class App implements ConnectionListener {
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                app = new App(args);
+                app = new App();
+                app.init(args);
                 app.show();
                 app.showLoginDialog();
             }
@@ -88,7 +89,7 @@ public class App implements ConnectionListener {
         return app;
     }
 
-    public App(String[] args) {
+    public void init(String[] args) {
         try {
             System.setSecurityManager(null);
             initHomeDir();
@@ -140,7 +141,7 @@ public class App implements ConnectionListener {
     }
 
     protected String getApplicationTitle() {
-        return "CUBA Application";
+        return messages.getMainMessage("application.caption");
     }
 
     protected String getDefaultAppPropertiesConfig() {

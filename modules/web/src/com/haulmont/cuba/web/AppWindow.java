@@ -549,7 +549,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
 
     protected String getLogoLabelCaption() {
-        return messages.getMessage(getMessagesPack(), "logoLabel");
+        return messages.getMessage(getMessagesPack(), "application.logoLabel");
     }
 
     /**
@@ -616,8 +616,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     @Nullable
     protected Embedded getLogoImage() {
-        String logoImagePath = webConfig.getAppLogoImagePath();
-        if (logoImagePath == null)
+        String logoImagePath = messages.getMainMessage("application.logoImage");
+        if ("application.logoImage".equals(logoImagePath))
             return null;
 
         return new Embedded(null, new ThemeResource(logoImagePath));

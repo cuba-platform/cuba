@@ -222,8 +222,8 @@ public class LoginWindow extends Window implements Action.Handler {
 
     @Nullable
     protected Embedded getLogoImage() {
-        final String loginLogoImagePath = webConfig.getLoginLogoImagePath();
-        if (loginLogoImagePath == null)
+        final String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", loc);
+        if ("loginWindow.logoImage".equals(loginLogoImagePath))
             return null;
 
         return new Embedded(null, new ThemeResource(loginLogoImagePath));
