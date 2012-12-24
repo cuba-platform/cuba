@@ -137,14 +137,6 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 }
             }
         });
-        component.addListener(new Upload.ProgressListener() {
-            @Override
-            public void updateProgress(long readBytes, long contentLength) {
-                for (Listener listener : listeners) {
-                    listener.updateProgress(readBytes, contentLength);
-                }
-            }
-        });
         component.setButtonCaption(messages.getMessage(AppConfig.getMessagesPack(), "upload.submit"));
     }
 

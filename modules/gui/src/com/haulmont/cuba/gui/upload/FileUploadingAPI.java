@@ -16,6 +16,8 @@ import java.io.InterruptedIOException;
 import java.util.UUID;
 
 /**
+ * Client API for uploading files and transfer it to middleware storage
+ *
  * @author krivopustov
  * @version $Id$
  */
@@ -45,7 +47,7 @@ public interface FileUploadingAPI {
     /**
      * Get new File() in temp directory without create them
      *
-     * @return
+     * @return id of temp file
      * @throws FileStorageException
      */
     UUID getNewDescriptor() throws FileStorageException;
@@ -63,8 +65,42 @@ public interface FileUploadingAPI {
     void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException;
 
     /**
-     * Upload file to middleware from {@link com.haulmont.cuba.gui.executors.BackgroundTask} <br/>
-     * Use in {@link com.haulmont.cuba.gui.executors.BackgroundTask#run(com.haulmont.cuba.gui.executors.TaskLifeCycle)}
+     * <p>Upload file to middleware from {@link com.haulmont.cuba.gui.executors.BackgroundTask} <br/>
+     * Use in {@link com.haulmont.cuba.gui.executors.BackgroundTask#run(com.haulmont.cuba.gui.executors.TaskLifeCycle)}</p>
+     *
+     * <p>Usage: </p>
+     * <pre>
+     * BackgroundTask&lt;Long, FileDescriptor&gt; uploadProgress = new BackgroundTask&lt;Long, FileDescriptor&gt;(2400, ownerWindow) {
+     *     &#64;Override
+     *     public Map&lt;String, Object&gt; getParams() {
+     *         // file parameters
+     *         Map&lt;String, Object&gt; params = new HashMap&lt;&gt;();
+     *         params.put("fileId", fileUpload.getFileId());
+     *         params.put("fileName", fileUpload.getFileName());
+     *         return params;
+     *     }
+     *
+     *     &#64;Override
+     *     public FileDescriptor run(final TaskLifeCycle&lt;Long&gt; taskLifeCycle) throws Exception {
+     *         // upload file to middleware and return FileDescriptor
+     *         return fileUploading.putFileIntoStorage(taskLifeCycle);
+     *     }
+     *
+     *     &#64;Override
+     *     public void done(FileDescriptor result) {
+     *         // commit FileDescriptor to DB
+     *         dataService.commit(new CommitContext(result));
+     *     }
+     * };
+     * </pre>
+     *
+     * <p>And then we can show upload progress window:</p>
+     *
+     * <pre>
+     *     long fileSize = fileUploading.getFile(fileUpload.getFileId()).length();
+           BackgroundWorkProgressWindow.show(uploadProgress, getMessage("uploadingFile"), null, fileSize, true, true);
+     * </pre>
+     *
      * @param taskLifeCycle task life cycle with specified params: fileId and fileName
      * @return file descriptor
      * @throws FileStorageException

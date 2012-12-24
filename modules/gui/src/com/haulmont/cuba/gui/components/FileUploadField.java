@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 11.03.2009 17:42:22
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -13,6 +9,10 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 
 import java.util.UUID;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public interface FileUploadField
         extends Component, Component.HasCaption, Component.BelongToFrame
 {
@@ -36,8 +36,6 @@ public interface FileUploadField
 
         void uploadSucceeded(Event event);
         void uploadFailed(Event event);
-
-        void updateProgress(long readBytes, long contentLength);
     }
 
     public class ListenerAdapter implements Listener {
@@ -55,10 +53,6 @@ public interface FileUploadField
 
         @Override
         public void uploadFailed(Event event) {
-        }
-
-        @Override
-        public void updateProgress(long readBytes, long contentLength) {
         }
     }
 
