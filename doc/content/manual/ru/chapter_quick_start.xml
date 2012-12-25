@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_quickStart" lang="ru">
   <title>Быстрый старт</title>
   <para>В качестве первого знакомства с платформой <trademark>CUBA</trademark> мы создадим простое приложение для управления информацией о покупателях и заказах. Задача − демонстрация основных шагов по созданию модели данных и пользовательского интерфейса, а также по развертыванию приложения на сервере.</para>
@@ -56,7 +56,161 @@
   </section>
   <section>
     <title>Создание приложения в CUBA Studio</title>
-    <para>TODO</para>
+    <section id="cubaStudioInstall">
+      <title>Установка и настройка CUBA Studio</title>
+      <orderedlist>
+        <listitem>
+          <para>Установите инструменты сборки и настройте окружение согласно <xref linkend="chapter_setup"/>.</para>
+        </listitem>
+        <listitem>
+          <para>Загрузите последнюю версию архива <filename>studio-X.Y.Z.zip</filename> из <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/snapshots/com/haulmont/studio/studio">http://repository.haulmont.com:8587/nexus/content/repositories/snapshots/com/haulmont/studio/studio</ulink></para>
+        </listitem>
+        <listitem>
+          <para>Распакуйте архив в локальный путь, не содержащий пробелов, например, <filename>c:/work/studio</filename></para>
+        </listitem>
+        <listitem>
+          <para>Запустите командную строку, перейдите в подкаталог <filename>bin</filename> и запустите <application>studio</application></para>
+        </listitem>
+        <listitem>
+          <para>В окне <guilabel>Studio Server</guilabel> введите следующие параметры:</para>
+          <itemizedlist>
+            <listitem>
+              <para><guilabel>Workspace</guilabel> − каталог, в котором будут создаваться проекты, например, <filename>c:/work</filename></para>
+            </listitem>
+            <listitem>
+              <para><guilabel>Gradle home</guilabel> − путь к установленному <application>Gradle</application></para>
+            </listitem>
+            <listitem>
+              <para><guilabel>Server port</guilabel> − порт, на котором будет запущен сервер <application>CUBA Studio</application></para>
+            </listitem>
+            <listitem>
+              <para><guilabel>IDE port</guilabel> − порт, на котором будет принимать подключения плагин к IDE</para>
+            </listitem>
+            <listitem>
+              <para><guilabel>Repository</guilabel> − URL репозитория бинарных артефактов</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>Запустите сервер <application>CUBA Studio</application>, нажав кнопку <guibutton>Start</guibutton>. В поле <guilabel>URL</guilabel> отобразится адрес, по которому доступен интерфейс <application>CUBA Studio</application>. Нажав <guibutton>-&gt;</guibutton>, можно открыть веб-браузер, нажав <guibutton>Copy</guibutton>, − скопировать адрес в буфер обмена.</para>
+        </listitem>
+        <listitem>
+          <para>Запустите веб-браузер  и перейдите по указанному адресу.</para>
+          <tip>
+            <title>Совет</title>
+            <para>Рекомендуемым браузером является <application>Google Chrome</application>, в других браузерах <application>CUBA Studio</application> может работать некорректно.</para>
+          </tip>
+        </listitem>
+      </orderedlist>
+    </section>
+    <section>
+      <title>Создание проекта</title>
+      <para>На Вашей рабочей машине уже должно быть установлена и настроена <application>CUBA Studio</application>, см.   <xref linkend="cubaStudioInstall"/>.</para>
+      <para>Необходимо запустить <application>CUBA Studio</application>  и создать пустой проект:</para>
+      <orderedlist>
+        <listitem>
+          <para>Запустите <application>CUBA Studio</application> (см. шаги 4-7, <xref linkend="cubaStudioInstall"/>).</para>
+        </listitem>
+        <listitem>
+          <para>В стартовом окне нажмите на кнопку <guibutton>Open project</guibutton>. </para>
+        </listitem>
+        <listitem>
+          <para>В отобразившемся окне <guilabel>Select project</guilabel> нажмите на кнопку <guibutton>New</guibutton>.</para>
+        </listitem>
+        <listitem>
+          <para>В окне <guilabel>New project</guilabel> нажмите на кнопку <guibutton>+</guibutton> и задайте имя каталога нового проекта, например, <filename>sales</filename>.</para>
+        </listitem>
+        <listitem>
+          <para>Выберите каталог <filename>sales</filename> в дереве. В полях ниже автоматически сгенерируются:</para>
+          <itemizedlist>
+            <listitem>
+              <para><guilabel>Project name</guilabel> − имя проекта. Должно содержать только латинские буквы, цифры и знак подчеркивания. Тщательно продумайте имя проекта на данном этапе, так как в дальнейшем его невозможно изменить без сложного ручного вмешательства.</para>
+            </listitem>
+            <listitem>
+              <para><guilabel>Root package</guilabel> − корневой пакет Java-классов. Может быть скорректирован позже, однако сгенерированные на этапе создания классы перемещены не будут.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>Нажмите на кнопку <guibutton>OK</guibutton>. В указанном каталоге будет создан пустой проект, и откроется главное окно студии.</para>
+        </listitem>
+        <listitem>
+          <para>Собираем проект. В главном меню студии перейдите в пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Assemble project</guimenu>. На этом этапе будут загружены все необходимые библиотеки.</para>
+        </listitem>
+        <listitem>
+          <para>Создаем базу данных на локальном сервере <application>PostgreSQL</application> с помощью пункта меню <guimenu>Run</guimenu> −&gt; <guimenu>Create database</guimenu>. Имя базы совпадает с именем проекта.</para>
+        </listitem>
+        <listitem>
+          <para>Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Deploy</guimenu>. В подкаталоге <filename>build</filename> проекта будет установлен <application>Tomcat</application> с собранным приложением.</para>
+        </listitem>
+        <listitem>
+          <para>Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Start application</guimenu>. Через несколько секунд ссылка рядом с надписью <guilabel>Web application</guilabel> станет доступной, и по ней можно осуществить переход непосредственно из студии.</para>
+          <para>Логин и пароль пользователя − admin / admin.</para>
+          <para>Запущенное приложение содержит два главных пункта меню (<guimenu>Администрирование</guimenu> и <guimenu>Помощь</guimenu>), функциональность подсистемы безопасности и администрирования системы.</para>
+        </listitem>
+      </orderedlist>
+    </section>
+    <section>
+      <title>Создание сущностей</title>
+      <para>Перейдите на вкладку <guilabel>Entities</guilabel> на панели управления и нажмите на кнопку <guibutton>New</guibutton>. На экране отобразится окно редактора сущностей.</para>
+      <para>Создадим класс <glossterm linkend="entity">сущности</glossterm> <code>Покупатель (Customer)</code>.</para>
+      <para>В поле <guilabel>Class Name</guilabel> введите название класса сущности − <code>Customer</code>.</para>
+      <para>В полях <guilabel>Name</guilabel> и <guilabel>Table</guilabel> автоматически сгенерируются имя сущности и имя таблицы в базе данных.</para>
+      <para>В поле  <guilabel>Parent class</guilabel> оставьте установленное значение − <link linkend="standardEntity">StandardEntity</link>. </para>
+      <para>Нажмите на изображение трех точек рядом с именем сущности. На экране отобразится окно <guilabel>Localized message</guilabel>, в нем следует задать <glossterm linkend="localization">локализацию</glossterm> имени сущности на доступных языках.</para>
+      <para>Далее создадим атрибуты сущности. Для этого нажмите на кнопку <guibutton>New</guibutton>, находящуюся под таблицей <guilabel>Attributes</guilabel>.</para>
+      <para>В отобразившемся окне <guilabel>Create attribute</guilabel> в поле <guilabel>Name</guilabel>  введите название атрибута сущности −  <userinput>name</userinput>,  в списке <guilabel>Attribute type</guilabel> выберите значение <link linkend="datatypeType">DATATYPE</link>, в поле <guilabel>Type</guilabel> укажите тип атрибута <userinput>String</userinput> и далее укажите длину текстового атрибута  в поле <guilabel>Length</guilabel>,  равной 100 символам. Установите галочку <guilabel>Mandatory</guilabel>. Установленная галочка означает, что атрибут является обязательным  к заполнению. В поле <guilabel>Column</guilabel> автоматически сгенерируется имя колонки в базе данных. Далее нажмите на изображение трех точек рядом с названием атрибута. На экране отобразится окно <guilabel>Localized message</guilabel>, в нем следует задать локализацию названия  атрибута на доступных языках.</para>
+      <para>Атрибут <code>email</code> создается таким же образом, за исключением того, что  в поле <guilabel>Length</guilabel> следует указать значение <userinput>50</userinput>.</para>
+      <para>После создания атрибутов перейдите на вкладку <guilabel>Instance name</guilabel> дизайнера сущностей для задания <link linkend="namePattern">Name pattern</link>. В списке <guilabel>Available attributes</guilabel> выделите атрибут <guilabel>name</guilabel> и нажмите на кнопку с изображением стрелки вправо.</para>
+      <para>На этом создание сущности <classname>Customer</classname> завершено. Нажмите на кнопку <guibutton>Apply</guibutton> в верхнем правом углу дизайнера сущностей для сохранения изменений.</para>
+      <para>Создадим сущность <code>Order (Заказ)</code>. Ее создание ничем не отличается от создания сущности <code>Customer</code>. Атрибуты сущности: </para>
+      <itemizedlist>
+        <listitem>
+          <para><guilabel>Name</guilabel> − <userinput>customer</userinput>, <guilabel>Attribute type</guilabel> − <link linkend="associationType">ASSOCIATION</link>, <guilabel>Type</guilabel> − <userinput>Customer</userinput>, <guilabel>Cardinality</guilabel> − <link linkend="manyToOne">MANY_TO_ONE</link>.</para>
+        </listitem>
+        <listitem>
+          <para><guilabel>Name</guilabel> − <userinput>date</userinput>, <guilabel>Attribute type</guilabel> − <link linkend="datatypeType">DATATYPE</link>, <guilabel>Type</guilabel> − <userinput>Date</userinput>. Для атрибута <code>date</code> установите галочку <guilabel>Mandatory</guilabel>.</para>
+        </listitem>
+        <listitem>
+          <para><guilabel>Name</guilabel> − <userinput>amount</userinput>, <guilabel>Attribute type</guilabel> − <link linkend="datatypeType">DATATYPE</link>, <guilabel>Type</guilabel> − <userinput>Decimal</userinput>.</para>
+        </listitem>
+      </itemizedlist>
+      <para>Для каждого атрибута укажите <glossterm linkend="localization">локализованные</glossterm> названия.</para>
+    </section>
+    <section>
+      <title>Создание таблиц базы данных</title>
+      <para>Для создания таблиц базы данных достаточно выделить название пакета <filename>com.company.sales.entity</filename> на вкладке <guilabel>Entities</guilabel> на панели управления и нажать на кнопку <guibutton>Generate DB scripts</guibutton>. После этого откроется панель <guilabel>Database update scripts</guilabel> с открытой вкладкой <guilabel>Update scripts</guilabel>. На вкладке будут сгенерированы скрипты обновления базы данных, отдельные для каждой из таблиц и ограничений. Эти же скрипты будут занесены в скрипт инициализации базы данных, который располагается на вкладке <guilabel>Init tables</guilabel>. Далее нажмите на кнопку <guibutton>Save scripts</guibutton> в верхнем правом углу экрана. Для запуска скриптов обновления в главном меню студии выберите пункт <guimenu>Run</guimenu> −&gt; <guimenu>Update database</guimenu>.</para>
+    </section>
+    <section>
+      <title>Создание пользовательского интерфейса приложения</title>
+      <section>
+        <title>Экраны управления Покупателями</title>
+        <para>Для создания экрана просмотра Покупателей и экрана редактирования Покупателя необходимо  выделить название класса <classname>com.company.sales.entity.Customer</classname> на вкладке <guilabel>Entities</guilabel> на панели управления и нажать на кнопку <guibutton>Create screens</guibutton>. После этого на экране отобразится окно <guilabel>Create standard screens</guilabel>. Все поля этого окна  заполнены значениями по умолчанию. В них ничего менять не нужно. Нажмите на кнопку <guibutton>Create</guibutton>. Во вкладке <guilabel>Screens</guilabel> в модуле GUI Module появятся файлы <filename>customer-edit.xml</filename> и <filename>customer-browse.xml</filename>. Для этих файлов следует задать <glossterm linkend="localization">локализацию</glossterm> заголовков. Для этого выделите один из файлов и нажмите на кнопку <guibutton>Edit</guibutton>. Отобразится окно <guilabel>Screen designer</guilabel>, вкладка <guilabel>Properties</guilabel>. Нажмите на изображение трех точек рядом с полем <guilabel>Caption</guilabel> и задайте локализованные названия экрана. Повторите те же действия для другого экрана.</para>
+      </section>
+      <section>
+        <title>Экраны управления Заказами</title>
+        <para>Сущность  <code>Заказ (Order)</code> имеет следующую особенность: так как среди прочих атрибутов существует <link linkend="associationType">ссылочный</link> атрибут <code>Order.customer</code>, требуется определить <glossterm linkend="views">представление</glossterm> сущности <code>Order</code>, включающее этот атрибут (стандартные представления <code>_local</code> и <code>_minimal</code> не включают ссылочных атрибутов). Для этого перейдите на вкладку <guilabel>Entities</guilabel>, выделите сущность <code>Order</code> и нажмите на кнопку <guibutton>New</guibutton>. Отобразится экран  <guilabel>View designer</guilabel>, в котором определяется представление. В качестве имени введите <userinput>orderWithCustomer</userinput>, в списке атрибутов нажмите два раза на атрибут <code>customer</code> и на отобразившейся справа панели выберите представление <code>_minimal</code> для сущности <code>Customer</code>. Нажмите на кнопку <guibutton>Apply</guibutton> в верхнем правом углу.</para>
+        <para>Далее выделите сущность <code>Order</code> и нажмите на кнопку <guibutton>Create screens</guibutton>. В отобразившемся окне <guilabel>Create standard screens</guilabel> в качестве <guilabel>Browse view</guilabel> и <guilabel>Edit view</guilabel> выберите значение <userinput>orderWithCustomer</userinput> и нажмите на кнопку <guibutton>Create</guibutton>. Студия сгенерирует файлы экранов в пакете GUI Module.</para>
+      </section>
+      <section>
+        <title>Создание новых пунктов меню</title>
+        <para>Чтобы вызывать экраны из главного меню приложения, добавьте новые пункты в меню. Для этого перейдите на вкладку <guilabel>Web menu</guilabel> на панели управления и нажмите на кнопку <guibutton>Edit</guibutton>. Отобразится экран <guilabel>Menu configuration</guilabel>. В списке найдите пункт меню <guilabel>application</guilabel> и выделите его в списке. Далее нажмите на кнопку <guibutton>New</guibutton>. Отобразится окно <guilabel>Create menu item</guilabel>. В поле <guilabel>Id</guilabel> выберите из списка первый экран, нажмите на кнопку <guibutton>edit</guibutton> и задайте локализованные названия для экрана. Далее нажмите на кнопку <guibutton>Add</guibutton>. Аналогичным образом создайте остальные три пункта меню.</para>
+        <para>После создания пунктов меню нажмите на кнопку <guibutton>Apply</guibutton> в верхнем правом углу.</para>
+      </section>
+      <section>
+        <title>Экран редактирования Покупателя со списком Заказов</title>
+        <para>Вернемся к задаче отображения списка Заказов в окне редактирования Покупателя.</para>
+        <para>Выделите файл <filename>customer-edit.xml</filename> и нажмите на кнопку <guibutton>Edit</guibutton>. Далее в окне <guilabel>Screens designer</guilabel> перейдите на вкладку <guilabel>Datasources</guilabel> и нажмите на кнопку <guibutton>New</guibutton>. После выделения созданного  <glossterm linkend="datasources">источника данных</glossterm> справа появятся его характеристики. В качестве типа укажите <userinput>collectionDatasource</userinput>, в поле <guilabel>Id</guilabel> укажите <userinput>ordersDs</userinput>, в списке <guilabel>Entity</guilabel> выберите сущность <userinput>com.company.studiosales.entity.Order</userinput>, в списке <guilabel>View</guilabel> выберите <userinput>_local</userinput>, в поле <guilabel>Query</guilabel> напишите следующий запрос: <code>select o from sales$Order o where o.customer.id = :ds$customerDs order by o.date</code>. Здесь запрос содержит условие отбора Заказов с параметром <code>ds$customerDs</code>. Значением параметра с именем вида <code>ds${datasource_name}</code> будет идентификатор сущности, установленной в данный момент в источнике данных <code>datasource_name</code>, в данном случае − идентификатор редактируемого Покупателя. Нажмите на кнопку <guibutton>Apply</guibutton> для сохранения изменений.</para>
+        <para>Далее перейдите на вкладку <guilabel>Layout</guilabel> в дизайнере экрана и в палитре компонентов найдите компонент <code>Label</code>. Перетащите этот компонент на панель иерархии компонентов экрана, между <code>fieldGroup</code> и <code>windowActions</code>. Далее перейдите на вкладку <guilabel>Properties</guilabel> на панели <guilabel>Properties</guilabel>. В качестве значения поля <guilabel>value</guilabel> введите <userinput>msg://orders</userinput>, нажмите на изображение трех точек рядом с полем. В отобразившемся окне укажите локализованные названия. </para>
+        <para>  После этого найдите компонент <code>Table</code> в палитре компонентов и перетащите его на панель иерархии компонентов между <code>label</code> и <code>windowActions</code>. Выделите компонент в иерархии и на панели <guilabel>Properties</guilabel> на вкладке <guilabel>Layout</guilabel> задайте размеры таблицы: в поле <guilabel>width</guilabel> укажите <userinput>100%</userinput>, в поле <guilabel>height</guilabel> просто уберите значение по умолчанию; после дезактивации поля <guilabel>height</guilabel> в нем установится значение <userinput>auto</userinput>. Далее перейдите на вкладку <guilabel>Properties</guilabel>. В качестве идентификатора укажите значение <userinput>ordersTable</userinput>, из списка доступных источников данных выберите <userinput>orderDs</userinput>. Далее нажмите на кнопку <guibutton>...</guibutton>, относящуюся к <guilabel>columns</guilabel>. На экране отобразится экран для управления колонками таблицы. В первой строке в колонке <guilabel>ID</guilabel> из выпадающего списка выберите значение <userinput>date</userinput>, во второй строке − <userinput>amount</userinput>. Далее нажмите на кнопку <guibutton>Ok</guibutton>.</para>
+        <para>Для сохранения изменений в экране редактирования Покупателя нажмите на кнопку <guibutton>Apply</guibutton> в верхнем правом углу редактора экрана.</para>
+        <para>Посмотрим, как созданные нами экраны выглядят в работающем приложении. Для этого пересоберите проект из пункта меню <guimenu>Run</guimenu> −&gt;  <guimenu>Restart application</guimenu>.</para>
+        <para>Зайдите в систему, выбрав русский язык в окне логина. Откройте пункт меню <guimenu>Продажи</guimenu> −&gt; <guimenu>Покупатели</guimenu>. Экран списка покупателей показан на  <xref linkend="figure_customerBrowse"/></para>
+        <para>Нажмите на кнопку <guibutton>Создать</guibutton>. Экран создания нового покупателя показан на <xref linkend="figure_customerEdit"/></para>
+        <para>Откройте пункт меню <guimenu>Продажи</guimenu> −&gt; <guimenu>Заказы</guimenu>. Экран списка заказов показан на <xref linkend="figure_orderBrowse"/></para>
+        <para>Нажмите на кнопку <guibutton>Создать</guibutton>. Экран создания нового заказа показан на <xref linkend="figure_orderEdit"/></para>
+      </section>
+    </section>
   </section>
   <section>
     <title>Создание приложения вручную</title>
@@ -150,7 +304,7 @@
             <keycap>Ins</keycap>
           </keycombo>, затем в меню выбрать <guimenu>Getter and Setter</guimenu>. В отобразившемся окне выберите требуемые поля и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
       </tip>
-      <para>Класс <code>Customer</code> унаследован от <code>StandardEntity</code>, обеспечивающего стандартную функциональность сущностей: первичный ключ, <glossterm linkend="optimistic_locking">оптимистичное блокирование</glossterm>, аудит создания и изменения экземпляра, поддержку <link linkend="soft_deletion">мягкого удаления</link>.</para>
+      <para>Класс <code>Customer</code> унаследован от <code id="standardEntity">StandardEntity</code>, обеспечивающего стандартную функциональность сущностей: первичный ключ, <glossterm linkend="optimistic_locking">оптимистичное блокирование</glossterm>, аудит создания и изменения экземпляра, поддержку <link linkend="soft_deletion">мягкого удаления</link>.</para>
       <para>Рассмотрим аннотации, использованные в классе сущности: <itemizedlist>
           <listitem>
             <para><code>@javax.persistence.Entity</code> − объявляет класс сущностью модели данных с именем <literal>sales$Customer</literal> (параметр <literal>name</literal>). Имя сущности обязательно должно начинаться с префикса, отделенного знаком <literal>$</literal>. Желательно использовать в качестве префикса короткое имя проекта для формирования отдельного пространства имен.</para>
@@ -242,7 +396,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>Посмотрим, как созданный нами экран выглядит в работающем приложении. Для этого пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>
         <para>и зайдите в систему, выбрав Русский язык в окне логина. Откройте пункт меню <guimenu>Продажи</guimenu> −&gt; <guimenu>Покупатели</guimenu>.</para>
-        <figure>
+        <figure id="figure_customerBrowse">
           <title>Экран списка покупателей</title>
           <mediaobject>
             <imageobject>
@@ -307,7 +461,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>Пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>
         <para>и зайдите в систему, выбрав Русский язык в окне логина. Откройте пункт меню <guimenu>Продажи</guimenu> −&gt; <guimenu>Заказы</guimenu>.</para>
-        <figure>
+        <figure id="figure_orderBrowse">
           <title>Окно списка Заказов</title>
           <mediaobject>
             <imageobject>
@@ -328,7 +482,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>Пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>
         <para>и зайдите в систему, выбрав Русский язык в окне логина. Откройте пункт меню <guimenu>Продажи</guimenu> −&gt; <guimenu>Заказы</guimenu> и нажмите кнопку <guibutton>Создать</guibutton>.</para>
-        <figure>
+        <figure id="figure_orderEdit">
           <title>Экран редактирования Заказа</title>
           <mediaobject>
             <imageobject>
@@ -382,7 +536,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>Пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>
         <para>Зайдите в систему и откройте на редактирование Покупателя, для которого имеются Заказы.</para>
-        <figure>
+        <figure id="figure_customerEdit">
           <title>Экран редактирования Покупателя со списком Заказов</title>
           <mediaobject>
             <imageobject>

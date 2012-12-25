@@ -529,7 +529,7 @@
                   </itemizedlist></para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="manyToOne">
               <term>
                 <code>
                   <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/ManyToOne.html">@javax.persistence.ManyToOne</ulink>
@@ -1210,7 +1210,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
                 </listitem>
                 <listitem id="metaProperty.getType">
                   <para><code>getType() </code>– тип свойства:<itemizedlist>
-                      <listitem>
+                      <listitem id="datatypeType">
                         <para>простой тип: <code>DATATYPE</code></para>
                       </listitem>
                       <listitem>
@@ -1219,7 +1219,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
                       <listitem>
                         <para>ссылочный тип двух видов:</para>
                         <itemizedlist>
-                          <listitem>
+                          <listitem id="associationType">
                             <para><code>ASSOCIATION</code> − простая ссылка на другую сущность. Например, отношение заказа и покупателя − ассоциация.</para>
                           </listitem>
                           <listitem>
