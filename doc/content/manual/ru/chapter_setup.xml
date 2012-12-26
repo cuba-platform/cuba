@@ -235,4 +235,73 @@
     </orderedlist>
     <para>Установка и настройка среды разработки  <application>IntelliJ IDEA</application> завершена.</para>
   </section>
+  <section id="cubaStudio_install">
+    <title>Установка и настройка CUBA Studio</title>
+    <para>Если Вы предполагаете вести разработку приложения на платформе <trademark>CUBA</trademark> при помощи студии, ее следует предварительно установить.</para>
+    <orderedlist>
+      <listitem>
+        <para>Установите инструменты сборки и настройте окружение согласно <xref linkend="chapter_setup"/>.</para>
+      </listitem>
+      <listitem>
+        <para>Загрузите последнюю версию архива <filename>studio-X.Y.Z.zip</filename> из <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/snapshots/com/haulmont/studio/studio">http://repository.haulmont.com:8587/nexus/content/repositories/snapshots/com/haulmont/studio/studio</ulink></para>
+      </listitem>
+      <listitem>
+        <para>Распакуйте архив в локальный путь, не содержащий пробелов, например, <filename>c:/work/studio</filename></para>
+      </listitem>
+      <listitem>
+        <para>Запустите командную строку, перейдите в подкаталог <filename>bin</filename> и запустите <application>studio</application></para>
+      </listitem>
+      <listitem>
+        <para>В окне <guilabel>Studio Server</guilabel> введите следующие параметры:</para>
+        <itemizedlist>
+          <listitem>
+            <para><guilabel>Workspace</guilabel> − каталог, в котором будут создаваться проекты, например, <filename>c:/work</filename></para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Gradle home</guilabel> − путь к установленному <application>Gradle</application></para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Server port</guilabel> − порт, на котором будет запущен сервер <application>CUBA Studio</application></para>
+          </listitem>
+          <listitem>
+            <para><guilabel>IDE port</guilabel> − порт, на котором будет принимать подключения плагин к IDE</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Repository</guilabel> − URL репозитория бинарных артефактов</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>Запустите сервер <application>CUBA Studio</application>, нажав кнопку <guibutton>Start</guibutton>. В поле <guilabel>URL</guilabel> отобразится адрес, по которому доступен интерфейс <application>CUBA Studio</application>. Нажав <guibutton>-&gt;</guibutton>, можно открыть веб-браузер, нажав <guibutton>Copy</guibutton>, − скопировать адрес в буфер обмена.</para>
+      </listitem>
+      <listitem>
+        <para>Запустите веб-браузер  и перейдите по указанному адресу.</para>
+        <tip>
+          <title>Совет</title>
+          <para>Рекомендуемым браузером является <application>Google Chrome</application>, в других браузерах <application>CUBA Studio</application> может работать некорректно.</para>
+        </tip>
+      </listitem>
+    </orderedlist>
+    <para>Для интеграции с IDE выполните следующие шаги:</para>
+    <orderedlist>
+      <listitem>
+        <para>В главном меню студии выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create IDEA project files</guimenu>. В каталоге проекта будут созданы файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
+      </listitem>
+      <listitem>
+        <para>Распакуйте содержимое архива <filename>c:/work/studio/ideplugins/cuba-idea-plugin-XYZ.zip</filename> в подкаталог <filename>plugins</filename> установленной <application>IntelliJ IDEA 11</application>.</para>
+      </listitem>
+      <listitem>
+        <para>Запустите <application>IntelliJ IDEA</application> и откройте проект c:/work/sales/sales.ipr</para>
+      </listitem>
+      <listitem>
+        <para>В <application>IntelliJ IDEA</application> в меню <guimenu>File</guimenu> выберите пункт меню <guimenu>Settings</guimenu>. Далее слева в группе <guilabel>Project Settings</guilabel> найдите строку <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите галочку <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
+      </listitem>
+      <listitem>
+        <para>Обратите внимание, что в главном окне студии загорелась надпись <guilabel>IDE: on</guilabel></para>
+      </listitem>
+      <listitem>
+        <para>При нажатии кнопок <guilabel>IDE</guilabel> в студии соответствующие файлы исходных кодов будут открываться редактором <application>IDEA</application>.</para>
+      </listitem>
+    </orderedlist>
+  </section>
 </chapter>

@@ -1210,7 +1210,7 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
                 </listitem>
                 <listitem id="metaProperty.getType">
                   <para><code>getType() </code>– тип свойства:<itemizedlist>
-                      <listitem id="datatypeType">
+                      <listitem>
                         <para>простой тип: <code>DATATYPE</code></para>
                       </listitem>
                       <listitem>
