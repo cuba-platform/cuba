@@ -28,22 +28,23 @@
 
     <!-- JMX control -->
     <screen id="jmxcontrol$DisplayMbeans"
-            template="/com/haulmont/cuba/web/ui/jmxcontrol/browse/display-mbeans.xml" multipleOpen="true"/>
+            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml" multipleOpen="true"/>
 
     <screen id="jmxcontrol$InspectMbean"
-            template="/com/haulmont/cuba/web/ui/jmxcontrol/inspect/mbean-inspect.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/mbean-inspect.xml"/>
 
     <screen id="jmxcontrol$EditAttribute"
-            template="/com/haulmont/cuba/web/ui/jmxcontrol/inspect/attribute/attribute-edit.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/attribute/attribute-edit.xml"/>
 
     <screen id="jmxcontrol$OperationResult"
-            template="/com/haulmont/cuba/web/ui/jmxcontrol/inspect/operation/operation-result.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/operation/operation-result.xml"/>
+    <!-- -->
 
     <screen id="sec$ScreenHistory.browse"
             template="/com/haulmont/cuba/web/app/ui/security/history/screen-history-browse.xml"/>
 
     <screen id="sys$SendingMessage.browse"
-            template="/com/haulmont/cuba/web/ui/sendingmessage/browse/sending-message-browse.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/sendingmessage/browse/sending-message-browse.xml"/>
 
     <screen id="sys$Categories.browse"
             template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>

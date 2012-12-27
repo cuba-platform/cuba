@@ -1,7 +1,7 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        class="com.haulmont.cuba.web.ui.jmxcontrol.inspect.attribute.AttributeEditWindow"
-        messagesPack="com.haulmont.cuba.web.ui.jmxcontrol.inspect.attribute"
+        class="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute.AttributeEditWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute"
         datasource="attrDs"
         caption="msg://editAttribute.title">
 

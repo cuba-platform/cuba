@@ -1,7 +1,7 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        class="com.haulmont.cuba.web.ui.jmxcontrol.inspect.MbeanInspectWindow"
-        messagesPack="com.haulmont.cuba.web.ui.jmxcontrol.inspect"
+        class="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.MbeanInspectWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect"
         datasource="mbeanDs"
         caption="msg://inspectMbean.title">
 
@@ -12,7 +12,7 @@
         <datasource id="mbeanDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo" view="_local"/>
         <collectionDatasource id="attrDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute"
                               view="_local">
-            <datasourceClass>com.haulmont.cuba.web.ui.jmxcontrol.ds.ManagedBeanAttributeDatasource</datasourceClass>
+            <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanAttributeDatasource</datasourceClass>
         </collectionDatasource>
     </dsContext>
     <actions>

@@ -2,13 +2,9 @@
  * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Alexander Budarov
- * Created: 24.08.2010 18:18:50
- * $Id$
  */
 
-package com.haulmont.cuba.web.ui.jmxcontrol.inspect.operation;
+package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.operation;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
@@ -18,8 +14,11 @@ import com.haulmont.cuba.web.gui.components.WebLabel;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 
+/**
+ * @author budarov
+ * @version $Id$
+ */
 public class OperationResultWindow extends AbstractWindow {
-    private static final long serialVersionUID = 4459991776700972089L;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -77,8 +76,7 @@ public class OperationResultWindow extends AbstractWindow {
 
         Button closeBtn = getComponent("close");
         closeBtn.setAction(new AbstractAction("close") {
-            private static final long serialVersionUID = 6727220338392459698L;
-
+            @Override
             public void actionPerform(Component component) {
                 close("");
             }

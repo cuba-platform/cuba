@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 04.12.2008 12:02:22
- *
- * $Id$
  */
 package com.haulmont.cuba.web;
 
@@ -36,7 +31,6 @@ import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
-import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
@@ -52,6 +46,9 @@ import java.util.*;
  * <p/>
  * Specific application should inherit from this class and create appropriate
  * instance in {@link com.haulmont.cuba.web.App#createAppWindow()} method
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @SuppressWarnings("unused")
 public class AppWindow extends Window implements UserSubstitutionListener {
@@ -471,7 +468,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         if (StringUtils.isBlank(searchTerm))
             return;
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("searchTerm", searchTerm);
 
         WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("fts$Search");
@@ -516,7 +513,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private void removeExtraSeparators(MenuBar menuBar) {
-        for (MenuBar.MenuItem item : new ArrayList<MenuBar.MenuItem>(menuBar.getItems())) {
+        for (MenuBar.MenuItem item : new ArrayList<>(menuBar.getItems())) {
             removeExtraSeparators(item);
             if (isMenuItemEmpty(item))
                 menuBar.removeItem(item);
@@ -531,7 +528,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         do {
             done = true;
             if (item.hasChildren()) {
-                List<MenuBar.MenuItem> children = new ArrayList<MenuBar.MenuItem>(item.getChildren());
+                List<MenuBar.MenuItem> children = new ArrayList<>(item.getChildren());
                 for (int i = 0; i < children.size(); i++) {
                     MenuBar.MenuItem child = children.get(i);
                     removeExtraSeparators(child);
@@ -820,7 +817,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     public void showRichNotification(RichNotification notification) {
         if (richNotifications == null) {
-            richNotifications = new LinkedList<RichNotification>();
+            richNotifications = new LinkedList<>();
         }
         if (notification.getLayout() != null) {
             notification.getLayout().setParent(this);
@@ -974,7 +971,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         public void setTabCloseHandler(Component tabContent, TabCloseHandler closeHandler) {
             if (closeHandlers == null) {
-                closeHandlers = new LinkedHashMap<Component, TabCloseHandler>();
+                closeHandlers = new LinkedHashMap<>();
             }
             closeHandlers.put(tabContent, closeHandler);
         }
@@ -1026,14 +1023,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         public void closeAllTabs() {
-            Set<Component> tabs = new HashSet<Component>(this.tabs.keySet());
+            Set<Component> tabs = new HashSet<>(this.tabs.keySet());
             for (final Component tab : tabs) {
                 closeTab(tab);
             }
         }
 
         public void closeOtherTabs(Component currentTab) {
-            Set<Component> tabs = new HashSet<Component>(this.tabs.keySet());
+            Set<Component> tabs = new HashSet<>(this.tabs.keySet());
             for (final Component tab : tabs) {
                 if (tab.equals(currentTab)) continue;
                 closeTab(tab);

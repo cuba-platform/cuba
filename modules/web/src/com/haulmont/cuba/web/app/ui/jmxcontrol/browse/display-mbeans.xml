@@ -1,7 +1,7 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        class="com.haulmont.cuba.web.ui.jmxcontrol.browse.MbeansDisplayWindow"
-        messagesPack="com.haulmont.cuba.web.ui.jmxcontrol.browse"
+        class="com.haulmont.cuba.web.app.ui.jmxcontrol.browse.MbeansDisplayWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol.browse"
         caption="msg://displayMbeans.title"
         focusComponent="objectNameField">
 
@@ -13,7 +13,7 @@
                 id="mbeanDs"
                 class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo"
                 view="_local">
-            <datasourceClass>com.haulmont.cuba.web.ui.jmxcontrol.ds.ManagedBeanInfoDatasource</datasourceClass>
+            <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource</datasourceClass>
         </collectionDatasource>
     </dsContext>
 

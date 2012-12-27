@@ -2,17 +2,10 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 12.12.2008 13:17:46
- *
- * $Id$
  */
-package com.haulmont.cuba.web.ui;
+package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.AppWindow;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -23,6 +16,10 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class WindowBreadCrumbs extends HorizontalLayout {
 
@@ -32,15 +29,15 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
     protected boolean tabbedMode;
 
-    protected LinkedList<Window> windows = new LinkedList<Window>();
+    protected LinkedList<Window> windows = new LinkedList<>();
 
     protected HorizontalLayout logoLayout;
     protected HorizontalLayout linksLayout;
     protected Button closeBtn;
 
-    protected Map<Button, Window> btn2win = new HashMap<Button, Window>();
+    protected Map<Button, Window> btn2win = new HashMap<>();
 
-    protected Set<Listener> listeners = new HashSet<Listener>();
+    protected Set<Listener> listeners = new HashSet<>();
 
     public WindowBreadCrumbs() {
         setMargin(true);

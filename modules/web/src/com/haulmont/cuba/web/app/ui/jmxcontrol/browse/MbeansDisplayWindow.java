@@ -2,13 +2,9 @@
  * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Alexander Budarov
- * Created: 17.08.2010 11:23:40
- * $Id$
  */
 
-package com.haulmont.cuba.web.ui.jmxcontrol.browse;
+package com.haulmont.cuba.web.app.ui.jmxcontrol.browse;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -25,8 +21,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @author budarov
+ * @version $Id$
+ */
 public class MbeansDisplayWindow extends AbstractWindow {
-    private static final long serialVersionUID = 360466485361065470L;
 
     @Inject
     private TextField objectNameField;
@@ -37,11 +36,6 @@ public class MbeansDisplayWindow extends AbstractWindow {
     @Resource(name = "mbeans")
     private TreeTable mbeansTable;
 
-
-    public MbeansDisplayWindow(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -51,8 +45,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
         mbeansTable.addAction(new RefreshAction(mbeansTable));
 
         Action inspectAction = new AbstractAction("inspect") {
-            private static final long serialVersionUID = 3804486579147680485L;
-
+            @Override
             public void actionPerform(Component component) {
                 Set<ManagedBeanInfo> selected = mbeansTable.getSelected();
                 if (!selected.isEmpty()) {
@@ -87,7 +80,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
     private class ObjectNameFieldListener implements ValueListener {
         @Override
         public void valueChanged(Object source, String property, Object prevValue, Object value) {
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("objectName", value);
             mbeanDs.refresh(params);
             if (StringUtils.isNotEmpty((String) value)) {

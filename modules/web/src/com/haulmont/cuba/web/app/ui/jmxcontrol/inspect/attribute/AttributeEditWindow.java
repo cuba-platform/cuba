@@ -2,32 +2,31 @@
  * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Alexander Budarov
- * Created: 23.08.2010 12:42:53
- * $Id$
  */
 
-package com.haulmont.cuba.web.ui.jmxcontrol.inspect.attribute;
+package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.jmxcontrol.app.JmxControlService;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
-import com.haulmont.cuba.web.ui.jmxcontrol.util.AttributeEditor;
+import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.inject.Inject;
+
+/**
+ * @author budarov
+ * @version $Id$
+ */
 public class AttributeEditWindow extends AbstractEditor {
-    private static final long serialVersionUID = -994735809393128156L;
 
     private AttributeEditor valueHolder;
 
-    public AttributeEditWindow(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected JmxControlService jmxControlService;
 
     @Override
     public void setItem(Entity item) {
@@ -61,8 +60,7 @@ public class AttributeEditWindow extends AbstractEditor {
             if (newValue != null) {
                 if (!ObjectUtils.equals(mba.getValue(), newValue)) {
                     mba.setValue(newValue);
-                    JmxControlService jcs = ServiceLocator.lookup(JmxControlService.NAME);
-                    jcs.saveAttributeValue(mba);
+                    jmxControlService.saveAttributeValue(mba);
                 }
                 return true;
             }
@@ -74,5 +72,4 @@ public class AttributeEditWindow extends AbstractEditor {
         showNotification(getMessage("editAttribute.conversionError"), IFrame.NotificationType.HUMANIZED);
         return false;
     }
-
 }

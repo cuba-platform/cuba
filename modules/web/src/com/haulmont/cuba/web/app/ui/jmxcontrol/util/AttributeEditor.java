@@ -2,13 +2,9 @@
  * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Alexander Budarov
- * Created: 25.08.2010 10:32:39
- * $Id$
  */
 
-package com.haulmont.cuba.web.ui.jmxcontrol.util;
+package com.haulmont.cuba.web.app.ui.jmxcontrol.util;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
@@ -17,6 +13,10 @@ import com.haulmont.cuba.web.gui.components.WebTextField;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
 import org.apache.commons.lang.BooleanUtils;
 
+/**
+ * @author budarov
+ * @version $Id$
+ */
 public class AttributeEditor {
 
     private CheckBox checkBox;
