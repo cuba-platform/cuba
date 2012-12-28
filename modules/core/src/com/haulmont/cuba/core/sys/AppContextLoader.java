@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -39,8 +40,16 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
     @Override
     protected void afterInitAppContext() {
+        // Start cluster
+        boolean isMaster = true;
+        if (Boolean.valueOf(AppContext.getProperty("cuba.cluster.enabled"))) {
+            ClusterManagerAPI clusterManager =
+                    (ClusterManagerAPI) AppContext.getApplicationContext().getBean(ClusterManagerAPI.NAME);
+            clusterManager.start();
+            isMaster = clusterManager.isMaster();
+        }
         // Init database
-        if (Boolean.valueOf(AppContext.getProperty("cuba.automaticDatabaseUpdate"))) {
+        if (isMaster && Boolean.valueOf(AppContext.getProperty("cuba.automaticDatabaseUpdate"))) {
             DbUpdater updater = (DbUpdater) AppContext.getApplicationContext().getBean(DbUpdater.NAME);
             updater.updateDatabase();
         }

@@ -7,8 +7,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.app.ClusterManagerAPI;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Scripting;
@@ -75,7 +74,8 @@ public class DbUpdaterImpl implements DbUpdater {
         });
     }
 
-    protected ClusterManagerAPI clusterManager;
+    @Inject
+    protected Persistence persistence;
 
     private Log log = LogFactory.getLog(DbUpdaterImpl.class);
 
@@ -86,18 +86,8 @@ public class DbUpdaterImpl implements DbUpdater {
             dbDir = new File(dbDirName);
     }
 
-    @Inject
-    public void setClusterManager(ClusterManagerAPI clusterManager) {
-        this.clusterManager = clusterManager;
-    }
-
     @Override
     public void updateDatabase() {
-        if (!clusterManager.isMaster()) {
-            log.info("Not a master node, exiting");
-            return;
-        }
-
         if (dbInitialized()) {
             doUpdate();
         } else {
@@ -133,7 +123,7 @@ public class DbUpdaterImpl implements DbUpdater {
     protected boolean dbInitialized() {
         Connection connection = null;
         try {
-            connection = PersistenceProvider.getDataSource().getConnection();
+            connection = persistence.getDataSource().getConnection();
             DatabaseMetaData dbMetaData = connection.getMetaData();
             ResultSet tables = dbMetaData.getTables(null, null, null, null);
             boolean found = false;
@@ -184,7 +174,7 @@ public class DbUpdaterImpl implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "update");
-                File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
+                File scriptDir = new File(initDir, persistence.getDbDialect().getName());
                 if (scriptDir.exists()) {
                     Collection list = FileUtils.listFiles(scriptDir, null, true);
                     URI scriptDirUri = scriptDir.toURI();
@@ -274,7 +264,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     protected Set<String> getExecutedScripts() {
-        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
             Set<String> scripts = runner.query("select SCRIPT_NAME from SYS_DB_CHANGELOG",
                     new ResultSetHandler<Set<String>>() {
@@ -294,7 +284,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     protected void createChangelogTable() {
-        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
             runner.update("create table SYS_DB_CHANGELOG(" +
                     "SCRIPT_NAME varchar(300) not null primary key, " +
@@ -313,10 +303,10 @@ public class DbUpdaterImpl implements DbUpdater {
             throw new RuntimeException(e);
         }
         StrTokenizer tokenizer = new StrTokenizer(script,
-                StrMatcher.charSetMatcher(PersistenceProvider.getDbDialect().getScriptSeparator()),
+                StrMatcher.charSetMatcher(persistence.getDbDialect().getScriptSeparator()),
                 StrMatcher.singleQuoteMatcher()
         );
-        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
             try {
@@ -362,7 +352,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     protected void markScript(String name, boolean init) {
-        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
             runner.update("insert into SYS_DB_CHANGELOG (SCRIPT_NAME, IS_INIT) values (?, ?)",
                     new Object[]{name, init ? 1 : 0}
@@ -380,7 +370,7 @@ public class DbUpdaterImpl implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "init");
-                File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
+                File scriptDir = new File(initDir, persistence.getDbDialect().getName());
                 if (scriptDir.exists()) {
                     File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
                         @Override

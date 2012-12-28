@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.Resources;
-import com.haulmont.cuba.core.jmx.ClusterManagerMBean;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.Deserializer;
 import org.apache.commons.io.IOUtils;
@@ -84,9 +83,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Override
     public void applicationStarted() {
-        String enabled = AppContext.getProperty("cuba.cluster.enabled");
-        if (Boolean.valueOf(enabled))
-            start();
+        // Cluster starts in AppContextLoader.afterInitAppContext()
     }
 
     @Override
