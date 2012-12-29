@@ -31,9 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * User sessions distributed cache.
  *
- * @version $Id$
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UserSessionsAPI.NAME)
 public class UserSessions implements UserSessionsAPI {
