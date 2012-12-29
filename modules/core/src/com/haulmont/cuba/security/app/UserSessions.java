@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -30,8 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * User sessions distributed cache.
  *
- * @author krivopustov
  * @version $Id$
+ *
+ * @author krivopustov
  */
 @ManagedBean(UserSessionsAPI.NAME)
 public class UserSessions implements UserSessionsAPI {
@@ -62,10 +64,13 @@ public class UserSessions implements UserSessionsAPI {
 
     private ClusterManagerAPI clusterManager;
 
+    private UserSession NO_USER_SESSION;
+
     @Inject
     protected TimeSource timeSource;
 
-    private UserSession NO_USER_SESSION;
+    @Inject
+    protected Metadata metadata;
 
     public UserSessions() {
         User noUser = new User();
@@ -196,21 +201,27 @@ public class UserSessions implements UserSessionsAPI {
     public Collection<UserSessionEntity> getUserSessionInfo() {
         ArrayList<UserSessionEntity> sessionInfoList = new ArrayList<UserSessionEntity>();
         for (UserSessionInfo nfo : cache.values()) {
-            UserSessionEntity use = new UserSessionEntity();
-            use.setId(nfo.session.getId());
-            use.setLogin(nfo.session.getUser().getLogin());
-            use.setUserName(nfo.session.getUser().getName());
-            use.setAddress(nfo.session.getAddress());
-            use.setClientInfo(nfo.session.getClientInfo());
-            Date since = timeSource.currentTimestamp();
-            since.setTime(nfo.since);
-            use.setSince(since);
-            Date last = new Date(nfo.lastUsedTs);
-            use.setLastUsedTs(last);
-            use.setSystem(nfo.session.isSystem());
+            UserSessionEntity use = createUserSessionEntity(nfo.session, nfo.since, nfo.lastUsedTs);
             sessionInfoList.add(use);
         }
         return sessionInfoList;
+    }
+
+    protected UserSessionEntity createUserSessionEntity(UserSession session, long since, long lastUsedTs) {
+        UserSessionEntity use = metadata.create(UserSessionEntity.class);
+        use.setId(session.getId());
+        use.setLogin(session.getUser().getLogin());
+        use.setUserName(session.getUser().getName());
+        use.setAddress(session.getAddress());
+        use.setClientInfo(session.getClientInfo());
+        Date currSince = timeSource.currentTimestamp();
+        currSince.setTime(since);
+        use.setSince(currSince);
+        Date last = timeSource.currentTimestamp();
+        last.setTime(lastUsedTs);
+        use.setLastUsedTs(last);
+        use.setSystem(session.isSystem());
+        return use;
     }
 
     public void killSession(UUID id){
