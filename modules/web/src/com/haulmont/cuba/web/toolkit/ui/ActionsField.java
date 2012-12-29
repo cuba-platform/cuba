@@ -62,4 +62,9 @@ public class ActionsField extends CustomField {
     public AbstractSelect getSelect() {
         return field;
     }
+
+    @Override
+    public void focus() {
+        field.focus();
+    }
 }
