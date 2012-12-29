@@ -2,7 +2,6 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <chapter id="chapter_framework" lang="ru">
   <title>Устройство платформы</title>
-  <para>Данная глава содержит подробное описание архитектуры, компонентов и механизмов платформы CUBA.</para>
   <section>
     <title>Архитектура</title>
     <para>В данной главе рассмотрена архитектура CUBA-приложений в различных разрезах: по уровням, блокам, модулям, и по используемым базовым проектам.</para>

@@ -158,7 +158,7 @@
     <para>В случае неудачного запуска команды вернитесь к <link linkend="path_setting">пункту 7</link> и проверьте правильность установки переменных среды <envar>JAVA_HOME</envar> и <envar>Path</envar>.</para>
     <para>Установка и настройка  <application>Java</application> завершена.</para>
   </section>
-  <section>
+  <section id="gradle_install">
     <title>Установка Gradle 1.0</title>
     <para>Сайт компании-разработчика: <ulink url="http://www.gradle.org/">http://www.gradle.org</ulink></para>
     <para>Дистрибутив: <ulink url="http://services.gradle.org/distributions/gradle-1.0-all.zip">http://services.gradle.org/distributions/gradle-1.0-all.zip</ulink></para>
@@ -236,14 +236,14 @@
     <para>Установка и настройка среды разработки  <application>IntelliJ IDEA</application> завершена.</para>
   </section>
   <section id="cubaStudio_install">
-    <title>Установка и настройка CUBA Studio</title>
-    <para>Если Вы предполагаете вести разработку приложения на платформе <trademark>CUBA</trademark> при помощи студии, ее следует предварительно установить.</para>
+    <title>Установка CUBA Studio</title>
+    <para>Данный этап необходим, если Вы предполагаете вести разработку приложения на платформе <trademark>CUBA</trademark> при помощи Студии.</para>
     <orderedlist>
       <listitem>
-        <para>Установите инструменты сборки и настройте окружение согласно <xref linkend="chapter_setup"/>.</para>
+        <para>Установите инструменты сборки и настройте окружение согласно предыдущим разделам данной главы.</para>
       </listitem>
       <listitem>
-        <para>Загрузите последнюю версию архива <filename>studio-X.Y.Z.zip</filename> из <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/snapshots/com/haulmont/studio/studio">http://repository.haulmont.com:8587/nexus/content/repositories/snapshots/com/haulmont/studio/studio</ulink></para>
+        <para>Загрузите архив <filename>studio-0.1.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.1/studio-0.1.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.1/studio-0.1.zip</ulink> (для доступа к репозиторию используйте имя <userinput>cuba</userinput> и пароль <userinput>cuba123</userinput>).</para>
       </listitem>
       <listitem>
         <para>Распакуйте архив в локальный путь, не содержащий пробелов, например, <filename>c:/work/studio</filename></para>
@@ -258,7 +258,9 @@
             <para><guilabel>Workspace</guilabel> − каталог, в котором будут создаваться проекты, например, <filename>c:/work</filename></para>
           </listitem>
           <listitem>
-            <para><guilabel>Gradle home</guilabel> − путь к установленному <application>Gradle</application></para>
+            <para><guilabel>Gradle home</guilabel> − путь к установленному <application>
+                <link linkend="gradle_install">Gradle</link>
+              </application></para>
           </listitem>
           <listitem>
             <para><guilabel>Server port</guilabel> − порт, на котором будет запущен сервер <application>CUBA Studio</application></para>
@@ -267,7 +269,7 @@
             <para><guilabel>IDE port</guilabel> − порт, на котором будет принимать подключения плагин к IDE</para>
           </listitem>
           <listitem>
-            <para><guilabel>Repository</guilabel> − URL репозитория бинарных артефактов</para>
+            <para><guilabel>Repository</guilabel> − URL <link linkend="artifact_repository">репозитория</link> бинарных артефактов. Нажмите кнопку <guibutton>Auth</guibutton> и укажите имя <userinput>cuba</userinput> и пароль <userinput>cuba123</userinput>.</para>
           </listitem>
         </itemizedlist>
       </listitem>
@@ -276,10 +278,6 @@
       </listitem>
       <listitem>
         <para>Запустите веб-браузер  и перейдите по указанному адресу.</para>
-        <tip>
-          <title>Совет</title>
-          <para>Рекомендуемым браузером является <application>Google Chrome</application>, в других браузерах <application>CUBA Studio</application> может работать некорректно.</para>
-        </tip>
       </listitem>
     </orderedlist>
     <para>Для интеграции с IDE выполните следующие шаги:</para>
@@ -288,16 +286,16 @@
         <para>В главном меню студии выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create IDEA project files</guimenu>. В каталоге проекта будут созданы файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
       </listitem>
       <listitem>
-        <para>Распакуйте содержимое архива <filename>c:/work/studio/ideplugins/cuba-idea-plugin-XYZ.zip</filename> в подкаталог <filename>plugins</filename> установленной <application>IntelliJ IDEA 11</application>.</para>
+        <para>Распакуйте содержимое архива <filename>c:/work/studio/ideplugins/cuba-idea-plugin-XYZ.zip</filename> в подкаталог <filename>plugins</filename> установленной <application>IntelliJ IDEA</application>.</para>
       </listitem>
       <listitem>
         <para>Запустите <application>IntelliJ IDEA</application> и откройте проект c:/work/sales/sales.ipr</para>
       </listitem>
       <listitem>
-        <para>В <application>IntelliJ IDEA</application> в меню <guimenu>File</guimenu> выберите пункт меню <guimenu>Settings</guimenu>. Далее слева в группе <guilabel>Project Settings</guilabel> найдите строку <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите галочку <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
+        <para>В <application>IntelliJ IDEA</application> в меню <guimenu>File</guimenu> выберите пункт меню <guimenu>Settings</guimenu>. Далее слева в группе <guilabel>Project Settings</guilabel> найдите строку <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите флажок <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
       </listitem>
       <listitem>
-        <para>Обратите внимание, что в главном окне студии загорелась надпись <guilabel>IDE: on</guilabel></para>
+        <para>Обратите внимание, что в  панели статуса Студии загорелась надпись <guilabel>IDE: on</guilabel></para>
       </listitem>
       <listitem>
         <para>При нажатии кнопок <guilabel>IDE</guilabel> в студии соответствующие файлы исходных кодов будут открываться редактором <application>IDEA</application>.</para>
