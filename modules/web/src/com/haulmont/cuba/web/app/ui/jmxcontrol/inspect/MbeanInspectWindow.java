@@ -11,14 +11,14 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.jmxcontrol.app.JmxControlService;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter;
 import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
-import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
+import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +40,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     protected Action editAttributeAction;
 
     @Inject
-    protected JmxControlService jmxService;
+    protected JmxControlAPI jmxControlAPI;
 
     @Inject
     protected BoxLayout operations;
@@ -94,7 +94,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     }
 
     private void reloadAttribute(ManagedBeanAttribute attribute) {
-        attribute = jmxService.loadAttributeValue(attribute);
+        attribute = jmxControlAPI.loadAttributeValue(attribute);
         attrTable.getDatasource().updateItem(attribute);
     }
 
@@ -201,7 +201,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         }
 
         try {
-            Object res = jmxService.invokeOperation(op, paramValues);
+            Object res = jmxControlAPI.invokeOperation(op, paramValues);
             if (res != null) {
                 params.put("result", res);
             }

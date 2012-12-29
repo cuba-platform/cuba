@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean("cuba_FileUploading")
+@ManagedBean(FileUploadingAPI.NAME)
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     protected Map<UUID, File> tempFiles = new ConcurrentHashMap<>();

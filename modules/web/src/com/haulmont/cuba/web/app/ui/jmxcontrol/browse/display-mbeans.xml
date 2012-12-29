@@ -9,6 +9,10 @@
     </metadataContext>
 
     <dsContext>
+        <collectionDatasource id="jmxInstancesDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local">
+            <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource</datasourceClass>
+        </collectionDatasource>
+        
         <collectionDatasource
                 id="mbeanDs"
                 class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo"
@@ -19,11 +23,28 @@
 
     <layout expand="mbeans" spacing="true">
         <groupBox width="100%">
-            <hbox width="-1" expandable="false" spacing="true">
-                <label value="msg://searchByObjectName" width="-1"/>
-                <textField id="objectNameField" width="400px"/>
-            </hbox>
+            <grid spacing="true">
+                <columns>
+                    <column/>
+                    <column/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://localJmxNode"/>
+                        <textField id="localJmxField" width="400px" datatype="string"/>
+                    </row>
+                    <row>
+                        <label value="msg://targetJmxNode"/>
+                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
+                    </row>
+                    <row>
+                        <label value="msg://searchByObjectName"/>
+                        <textField id="objectNameField" width="400px"/>
+                    </row>
+                </rows>
+            </grid>
         </groupBox>
+
         <treeTable id="mbeans" editable="false" width="100%">
             <buttonsPanel>
                 <button action="mbeans.refresh" icon="icons/refresh.png"/>

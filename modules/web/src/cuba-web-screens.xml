@@ -38,6 +38,12 @@
 
     <screen id="jmxcontrol$OperationResult"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/operation/operation-result.xml"/>
+
+    <screen id="sys$JmxInstance.lookup"
+            template="/com/haulmont/cuba/web/app/ui/jmxinstance/browse/jmxinstance-browse.xml"/>
+
+    <screen id="sys$JmxInstance.edit"
+            template="/com/haulmont/cuba/web/app/ui/jmxinstance/edit/jmxinstance-edit.xml"/>
     <!-- -->
 
     <screen id="sec$ScreenHistory.browse"

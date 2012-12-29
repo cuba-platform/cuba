@@ -13,6 +13,7 @@ package com.haulmont.cuba.jmxcontrol.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.JmxInstance;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class ManagedBeanInfo extends AbstractNotPersistentEntity {
 
     @MetaProperty
     private String propertyList;
+
+    private JmxInstance jmxInstance;
 
     private List<ManagedBeanAttribute> attributes;
 
@@ -93,5 +96,13 @@ public class ManagedBeanInfo extends AbstractNotPersistentEntity {
 
     public void setAttributes(List<ManagedBeanAttribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public JmxInstance getJmxInstance() {
+        return jmxInstance;
+    }
+
+    public void setJmxInstance(JmxInstance jmxInstance) {
+        this.jmxInstance = jmxInstance;
     }
 }

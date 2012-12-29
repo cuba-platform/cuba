@@ -564,15 +564,15 @@ create index IDX_SYS_FTS_QUEUE_CREATE_TS on SYS_FTS_QUEUE (CREATE_TS)^
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_SCREEN_HISTORY (
-	ID uuid,
-	CREATE_TS timestamp,
-	CREATED_BY varchar(50),
-	USER_ID uuid,
-	CAPTION varchar(255),
-	URL TEXT,
-	ENTITY_ID uuid,
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    USER_ID uuid,
+    CAPTION varchar(255),
+    URL TEXT,
+    ENTITY_ID uuid,
     --
-	primary key (ID),
+    primary key (ID),
     constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID)
 )^
 
@@ -589,16 +589,18 @@ create table SYS_SENDING_MESSAGE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
+    --
     ADDRESS_TO varchar(500),
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
-	CONTENT_TEXT text,
-	DEADLINE timestamp,
-	STATUS int,
-	DATE_SENT timestamp,
-	ATTEMPTS_COUNT int,
-	ATTEMPTS_MADE int,
-	ATTACHMENTS_NAME varchar(500),
+    CONTENT_TEXT text,
+    DEADLINE timestamp,
+    STATUS int,
+    DATE_SENT timestamp,
+    ATTEMPTS_COUNT int,
+    ATTEMPTS_MADE int,
+    ATTACHMENTS_NAME varchar(500),
+    --
     primary key (ID)
 )^
 
@@ -608,18 +610,18 @@ create index IDX_SYS_SENDING_MESSAGE_DATE_SENT on SYS_SENDING_MESSAGE (DATE_SENT
 
 ------------------------------------------------------------------------------------------------------------
 
-create table SYS_SENDING_ATTACHMENT(
-	ID uuid,
-	CREATE_TS timestamp,
-	CREATED_BY varchar(50),
-	--
-	MESSAGE_ID uuid,
-	CONTENT bytea,
-	CONTENT_ID varchar(50),
-	NAME varchar(500),
-	--
-	primary key (ID),
-	constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)
+create table SYS_SENDING_ATTACHMENT (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    --
+    MESSAGE_ID uuid,
+    CONTENT bytea,
+    CONTENT_ID varchar(50),
+    NAME varchar(500),
+    --
+    primary key (ID),
+    constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)
 )^
 
 create index SYS_SENDING_ATTACHMENT_MESSAGE_IDX on SYS_SENDING_ATTACHMENT (MESSAGE_ID)^
@@ -630,14 +632,15 @@ create table SYS_ENTITY_SNAPSHOT (
     ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
+    --
     ENTITY_META_CLASS varchar(50) not null,
     ENTITY_ID uuid not null,
     AUTHOR_ID uuid not null,
     VIEW_XML text not null,
     SNAPSHOT_XML text not null,
     SNAPSHOT_DATE timestamp not null,
-
-	primary key (ID),
+    --
+	  primary key (ID),
     constraint FK_SYS_ENTITY_SNAPSHOT_AUTHOR_ID foreign key (AUTHOR_ID) references SEC_USER(ID)
 )^
 
@@ -646,7 +649,7 @@ create index IDX_SYS_ENTITY_SNAPSHOT_ENTITY_ID on SYS_ENTITY_SNAPSHOT (ENTITY_ID
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_CATEGORY (
-	ID uuid not null,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -656,19 +659,19 @@ create table SYS_CATEGORY (
     DELETED_BY varchar(50),
     --
     NAME varchar(255),
-	SPECIAL varchar(50),
-	ENTITY_TYPE varchar(30),
-	IS_DEFAULT boolean,
-	DISCRIMINATOR integer,
-	--
-	primary key (ID)
+    SPECIAL varchar(50),
+    ENTITY_TYPE varchar(30),
+    IS_DEFAULT boolean,
+    DISCRIMINATOR integer,
+    --
+    primary key (ID)
 )^
 
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_CATEGORY_ATTR (
-	ID uuid not null,
-	CREATE_TS timestamp,
+    ID uuid not null,
+    CREATE_TS timestamp,
     CREATED_BY varchar(50),
     VERSION integer,
     UPDATE_TS timestamp,
@@ -678,32 +681,32 @@ create table SYS_CATEGORY_ATTR (
     --
     NAME varchar(255),
     CODE varchar(50),
-	CATEGORY_ID uuid,
-	IS_ENTITY boolean,
-	DATA_TYPE varchar(200),
-	DEFAULT_STRING varchar,
-	DEFAULT_INT integer,
-	DEFAULT_DOUBLE numeric,
-	DEFAULT_DATE timestamp,
-	DEFAULT_DATE_IS_CURRENT boolean,
-	DEFAULT_BOOLEAN boolean,
-	DEFAULT_ENTITY_VALUE uuid,
-	ENUMERATION varchar(500),
-	ORDER_NO integer,
-	SCREEN varchar(255),
-	REQUIRED boolean,
-	LOOKUP boolean,
-	--
-	primary key (ID),
-	constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
+    CATEGORY_ID uuid,
+    IS_ENTITY boolean,
+    DATA_TYPE varchar(200),
+    DEFAULT_STRING varchar,
+    DEFAULT_INT integer,
+    DEFAULT_DOUBLE numeric,
+    DEFAULT_DATE timestamp,
+    DEFAULT_DATE_IS_CURRENT boolean,
+    DEFAULT_BOOLEAN boolean,
+    DEFAULT_ENTITY_VALUE uuid,
+    ENUMERATION varchar(500),
+    ORDER_NO integer,
+    SCREEN varchar(255),
+    REQUIRED boolean,
+    LOOKUP boolean,
+    --
+    primary key (ID),
+    constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
 )^
 
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR (CATEGORY_ID)^
 -------------------------------------------------------------------------------------------------------------
 
-create table SYS_ATTR_VALUE(
-	ID uuid not null,
-	CREATE_TS timestamp,
+create table SYS_ATTR_VALUE (
+    ID uuid not null,
+    CREATE_TS timestamp,
     CREATED_BY varchar(50),
     VERSION integer,
     UPDATE_TS timestamp,
@@ -712,19 +715,40 @@ create table SYS_ATTR_VALUE(
     DELETED_BY varchar(50),
     --
     CATEGORY_ATTR_ID uuid,
-	ENTITY_ID uuid,
-	STRING_VALUE varchar,
-	INTEGER_VALUE integer,
-	DOUBLE_VALUE numeric,
-	DATE_VALUE timestamp,
-	BOOLEAN_VALUE boolean,
-	ENTITY_VALUE uuid,
-	--
-	primary key (ID),
-	constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)
+    ENTITY_ID uuid,
+    STRING_VALUE varchar,
+    INTEGER_VALUE integer,
+    DOUBLE_VALUE numeric,
+    DATE_VALUE timestamp,
+    BOOLEAN_VALUE boolean,
+    ENTITY_VALUE uuid,
+    --
+    primary key (ID),
+    constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)
 )^
 
 create index IDX_SYS_ATTR_VALUE_ENTITY on SYS_ATTR_VALUE (ENTITY_ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table SYS_JMX_INSTANCE (
+    ID uuid not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    CLUSTER_NODE_NAME varchar(255),
+    DESCRIPTION varchar(500),
+    ADDRESS varchar(500) not null,
+    LOGIN varchar(50) not null,
+    PASSWORD varchar(255) not null,
+    --
+    primary key (ID)
+)^
 
 ------------------------------------------------------------------------------------------------------------
 

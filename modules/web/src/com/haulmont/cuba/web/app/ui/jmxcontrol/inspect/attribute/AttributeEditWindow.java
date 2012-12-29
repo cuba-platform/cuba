@@ -10,9 +10,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.jmxcontrol.app.JmxControlService;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
+import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ public class AttributeEditWindow extends AbstractEditor {
     private AttributeEditor valueHolder;
 
     @Inject
-    protected JmxControlService jmxControlService;
+    protected JmxControlAPI jmxControlAPI;
 
     @Override
     public void setItem(Entity item) {
@@ -60,7 +60,7 @@ public class AttributeEditWindow extends AbstractEditor {
             if (newValue != null) {
                 if (!ObjectUtils.equals(mba.getValue(), newValue)) {
                     mba.setValue(newValue);
-                    jmxControlService.saveAttributeValue(mba);
+                    jmxControlAPI.saveAttributeValue(mba);
                 }
                 return true;
             }

@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 05.03.2009 12:33:12
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -33,11 +29,15 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebPickerField
         extends
-        WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
+            WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
         implements
-        PickerField, Component.Wrapper {
+            PickerField, Component.Wrapper {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -283,6 +283,8 @@ public class WebPickerField
         actionHandler.addAction(action);
         PickerButton pButton = new PickerButton();
         pButton.setAction(action);
+        // no captions for picker buttons
+        pButton.<Button>getComponent().setCaption("");
         component.addButton(pButton.<Button>getComponent());
         // apply Editable after action owner is set
         if (action instanceof StandardAction)

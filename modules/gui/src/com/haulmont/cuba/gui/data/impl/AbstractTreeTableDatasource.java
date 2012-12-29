@@ -1,23 +1,22 @@
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.TreeTableDatasource;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.bali.datastruct.Node;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.TreeTableDatasource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- * User: Nikolay Gorodnov
- * Date: 03.06.2009
+ * @author gorodnov
+ * @version $Id$
  */
 public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         extends AbstractTreeDatasource<T, K>
@@ -32,6 +31,7 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
             entityComparator = new EntityComparator<T>(propertyPath, asc);
         }
 
+        @Override
         public int compare(Node<T> n1, Node<T> n2) {
             T e1 = n1.getData();
             T e2 = n2.getData();

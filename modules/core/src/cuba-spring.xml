@@ -127,6 +127,8 @@
                        value-ref="cuba_ObjectsCacheManagerMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=PasswordEncryptionSupport"
                        value-ref="cuba_PasswordEncryptionSupportMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=JmxNodeIdentifier"
+                       value-ref="cuba_JmxNodeIdentifierMBean"/>
             </map>
         </property>
     </bean>

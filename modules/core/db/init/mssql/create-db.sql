@@ -569,10 +569,12 @@ create table SYS_FTS_QUEUE (
     ID uniqueidentifier,
     CREATE_TS datetime,
     CREATED_BY varchar(50),
+    --
     ENTITY_ID uniqueidentifier,
     ENTITY_NAME varchar(200),
     CHANGE_TYPE char(1),
     SOURCE_HOST varchar(100),
+    --
     primary key nonclustered (ID)
 )^
 
@@ -581,15 +583,16 @@ create clustered index IDX_SYS_FTS_QUEUE_CREATE_TS on SYS_FTS_QUEUE (CREATE_TS)^
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_SCREEN_HISTORY (
-	ID uniqueidentifier,
-	CREATE_TS datetime,
-	CREATED_BY varchar(50),
-	USER_ID uniqueidentifier,
-	CAPTION varchar(255),
-	URL varchar(max),
-	ENTITY_ID uniqueidentifier,
+    ID uniqueidentifier,
+    CREATE_TS datetime,
+    CREATED_BY varchar(50),
     --
-	primary key nonclustered (ID),
+    USER_ID uniqueidentifier,
+    CAPTION varchar(255),
+    URL varchar(max),
+    ENTITY_ID uniqueidentifier,
+      --
+    primary key nonclustered (ID),
     constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID)
 )^
 
@@ -608,16 +611,18 @@ create table SYS_SENDING_MESSAGE (
     UPDATED_BY varchar(50),
     DELETE_TS datetime,
     DELETED_BY varchar(50),
+    --
     ADDRESS_TO varchar(500),
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
-	CONTENT_TEXT varchar(max),
-	DEADLINE datetime,
-	STATUS int,
-	DATE_SENT datetime,
-	ATTEMPTS_COUNT int,
-	ATTEMPTS_MADE int,
-	ATTACHMENTS_NAME varchar(500),
+    CONTENT_TEXT varchar(max),
+    DEADLINE datetime,
+    STATUS int,
+    DATE_SENT datetime,
+    ATTEMPTS_COUNT int,
+    ATTEMPTS_MADE int,
+    ATTACHMENTS_NAME varchar(500),
+    --
     primary key nonclustered (ID)
 )^
 
@@ -630,17 +635,17 @@ create clustered index IDX_SYS_SENDING_MESSAGE_CREATE_TS on SYS_SENDING_MESSAGE 
  ------------------------------------------------------------------------------------------------------------
 
 create table SYS_SENDING_ATTACHMENT (
-	ID uniqueidentifier,
-	CREATE_TS datetime,
-	CREATED_BY varchar(50),
-	--
-	MESSAGE_ID uniqueidentifier,
-	CONTENT image,
-	CONTENT_ID varchar(50),
-	NAME varchar(500),
-	--
-	primary key nonclustered (ID),
-	constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)
+    ID uniqueidentifier,
+    CREATE_TS datetime,
+    CREATED_BY varchar(50),
+    --
+    MESSAGE_ID uniqueidentifier,
+    CONTENT image,
+    CONTENT_ID varchar(50),
+    NAME varchar(500),
+    --
+    primary key nonclustered (ID),
+    constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)
 )^
 
 create index SYS_SENDING_ATTACHMENT_MESSAGE_IDX on SYS_SENDING_ATTACHMENT (MESSAGE_ID)^
@@ -653,14 +658,15 @@ create table SYS_ENTITY_SNAPSHOT (
     ID uniqueidentifier not null,
     CREATE_TS datetime,
     CREATED_BY varchar(50),
+    --
     ENTITY_META_CLASS varchar(50) not null,
     ENTITY_ID uniqueidentifier not null,
     AUTHOR_ID uniqueidentifier not null,
     VIEW_XML varchar(max) not null,
     SNAPSHOT_XML varchar(max) not null,
     SNAPSHOT_DATE datetime not null,
-
-	primary key nonclustered (ID),
+    --
+    primary key nonclustered (ID),
     constraint FK_SYS_ENTITY_SNAPSHOT_AUTHOR_ID foreign key (AUTHOR_ID) references SEC_USER(ID)
 )^
 
@@ -671,7 +677,7 @@ create clustered index IDX_SYS_ENTITY_SNAPSHOT_CREATE_TS on SYS_ENTITY_SNAPSHOT 
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_CATEGORY(
-	ID uniqueidentifier not null,
+    ID uniqueidentifier not null,
     CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
@@ -682,19 +688,19 @@ create table SYS_CATEGORY(
     --
     NAME varchar(255),
     CODE varchar(50),
-	SPECIAL varchar(50),
-	ENTITY_TYPE varchar(30),
-	IS_DEFAULT tinyint,
-	DISCRIMINATOR integer,
-	--
-	primary key (ID)
+    SPECIAL varchar(50),
+    ENTITY_TYPE varchar(30),
+    IS_DEFAULT tinyint,
+    DISCRIMINATOR integer,
+    --
+    primary key (ID)
 )^
 
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_CATEGORY_ATTR (
-	ID uniqueidentifier not null,
-	CREATE_TS datetime,
+    ID uniqueidentifier not null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
     UPDATE_TS datetime,
@@ -703,24 +709,24 @@ create table SYS_CATEGORY_ATTR (
     DELETED_BY varchar(50),
     --
     NAME varchar(255),
-	CATEGORY_ID uniqueidentifier,
-	IS_ENTITY tinyint,
-	DATA_TYPE varchar(200),
-	DEFAULT_STRING varchar(max),
-	DEFAULT_INT integer,
-	DEFAULT_DOUBLE numeric,
-	DEFAULT_DATE datetime,
-	DEFAULT_DATE_IS_CURRENT tinyint,
-	DEFAULT_BOOLEAN tinyint,
-	DEFAULT_ENTITY_VALUE uniqueidentifier,
-	ENUMERATION varchar(500),
-	ORDER_NO integer,
-	SCREEN varchar(255),
-	REQUIRED tinyint,
-	LOOKUP tinyint,
-	--
-	primary key nonclustered (ID),
-	constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
+    CATEGORY_ID uniqueidentifier,
+    IS_ENTITY tinyint,
+    DATA_TYPE varchar(200),
+    DEFAULT_STRING varchar(max),
+    DEFAULT_INT integer,
+    DEFAULT_DOUBLE numeric,
+    DEFAULT_DATE datetime,
+    DEFAULT_DATE_IS_CURRENT tinyint,
+    DEFAULT_BOOLEAN tinyint,
+    DEFAULT_ENTITY_VALUE uniqueidentifier,
+    ENUMERATION varchar(500),
+    ORDER_NO integer,
+    SCREEN varchar(255),
+    REQUIRED tinyint,
+    LOOKUP tinyint,
+    --
+    primary key nonclustered (ID),
+    constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
 )^
 
 create clustered index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR (CATEGORY_ID)^
@@ -728,8 +734,8 @@ create clustered index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR (CATE
 -------------------------------------------------------------------------------------------------------------
 
 create table SYS_ATTR_VALUE (
-	ID uniqueidentifier not null,
-	CREATE_TS datetime,
+    ID uniqueidentifier not null,
+    CREATE_TS datetime,
     CREATED_BY varchar(50),
     VERSION integer,
     UPDATE_TS datetime,
@@ -738,28 +744,50 @@ create table SYS_ATTR_VALUE (
     DELETED_BY varchar(50),
     --
     CATEGORY_ATTR_ID uniqueidentifier,
-	ENTITY_ID uniqueidentifier,
-	STRING_VALUE varchar(max),
-	INTEGER_VALUE integer,
-	DOUBLE_VALUE numeric,
-	DATE_VALUE datetime,
-	BOOLEAN_VALUE tinyint,
-	ENTITY_VALUE uniqueidentifier,
-	--
-	primary key nonclustered (ID),
-	constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)
+    ENTITY_ID uniqueidentifier,
+    STRING_VALUE varchar(max),
+    INTEGER_VALUE integer,
+    DOUBLE_VALUE numeric,
+    DATE_VALUE datetime,
+    BOOLEAN_VALUE tinyint,
+    ENTITY_VALUE uniqueidentifier,
+    --
+    primary key nonclustered (ID),
+    constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)
 )^
 
 create clustered index IDX_SYS_ATTR_VALUE_ENTITY on SYS_ATTR_VALUE (ENTITY_ID)^
 
 --------------------------------------------------------------------------------------------------------------
 
+create table SYS_JMX_INSTANCE (
+    ID uniqueidentifier not null,
+    CREATE_TS datetime,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS datetime,
+    UPDATED_BY varchar(50),
+    DELETE_TS datetime,
+    DELETED_BY varchar(50),
+    --
+    CLUSTER_NODE_NAME varchar(255),
+    DESCRIPTION varchar(500),
+    ADDRESS varchar(500) not null,
+    LOGIN varchar(50) not null,
+    PASSWORD varchar(255) not null,
+    --
+    primary key (ID)
+)^
+
+--------------------------------------------------------------------------------------------------------------
+
 create table SYS_QUERY_RESULT (
     ID bigint identity not null,
-	SESSION_ID uniqueidentifier not null,
-	QUERY_KEY integer not null,
-	ENTITY_ID uniqueidentifier,
-	primary key (ID)
+    SESSION_ID uniqueidentifier not null,
+    QUERY_KEY integer not null,
+    ENTITY_ID uniqueidentifier,
+    --
+    primary key (ID)
 )^
 
 create index IDX_SYS_QUERY_RESULT_ENTITY_SESSION_KEY on SYS_QUERY_RESULT (ENTITY_ID, SESSION_ID, QUERY_KEY)^

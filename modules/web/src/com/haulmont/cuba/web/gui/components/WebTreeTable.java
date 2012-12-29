@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 06.04.2009 10:39:36
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -32,12 +28,16 @@ import com.vaadin.terminal.Resource;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebTreeTable
     extends
         WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.TreeTable>
     implements
-        TreeTable, Component.Wrapper
-{
+        TreeTable, Component.Wrapper {
+
     protected String hierarchyProperty;
     
     public WebTreeTable() {
@@ -59,39 +59,48 @@ public class WebTreeTable
         component.setItemCaptionPropertyId(metaProperty);
     }
 
+    @Override
     public String getHierarchyProperty() {
         return hierarchyProperty;
     }
 
+    @Override
     public void setDatasource(HierarchicalDatasource datasource) {
         setDatasource((CollectionDatasource) datasource);
     }
 
+    @Override
     protected CollectionDsWrapper createContainerDatasource(
             CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
     }
 
+    @Override
     public void expandAll() {
         component.expandAll();
     }
 
+    @Override
     public void expand(Object itemId) {
         component.setExpanded(itemId);
     }
 
+    @Override
     public void collapseAll() {
         component.collapseAll();
     }
 
+    @Override
     public void collapse(Object itemId) {
         component.setCollapsed(itemId);
     }
 
+    @Override
     public int getLevel(Object itemId) {
         return component.getLevel(itemId);
     }
 
+    @Override
     public boolean isExpanded(Object itemId) {
         return component.isExpanded(itemId);
     }
@@ -132,10 +141,12 @@ public class WebTreeTable
             };
         }
 
+        @Override
         public boolean isCaption(Object itemId) {
             return treeTableDatasource && ((TreeTableDatasource) datasource).isCaption(itemId);
         }
 
+        @Override
         public String getCaption(Object itemId) {
             if (treeTableDatasource) {
                 return ((TreeTableDatasource) datasource).getCaption(itemId);
@@ -143,10 +154,12 @@ public class WebTreeTable
             return null;
         }
 
+        @Override
         public boolean setCaption(Object itemId, String caption) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public int getLevel(Object itemId) {
             return getItemLevel(itemId);
         }
@@ -159,6 +172,7 @@ public class WebTreeTable
             return getItemLevel(parentId) + 1;
         }
 
+        @Override
         public void sort(Object[] propertyId, boolean[] ascending) {
             List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<CollectionDatasource.Sortable.SortInfo>();
             for (int i = 0; i < propertyId.length; i++) {
@@ -174,42 +188,52 @@ public class WebTreeTable
             ((CollectionDatasource.Sortable) datasource).sort(infos.toArray(new CollectionDatasource.Sortable.SortInfo[infos.size()]));
         }
 
+        @Override
         public Collection getSortableContainerPropertyIds() {
             return properties;
         }
 
+        @Override
         public Object nextItemId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).nextItemId(itemId);
         }
 
+        @Override
         public Object prevItemId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).prevItemId(itemId);
         }
 
+        @Override
         public Object firstItemId() {
             return ((CollectionDatasource.Sortable) datasource).firstItemId();
         }
 
+        @Override
         public Object lastItemId() {
             return ((CollectionDatasource.Sortable) datasource).lastItemId();
         }
 
+        @Override
         public boolean isFirstId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).isFirstId(itemId);
         }
 
+        @Override
         public boolean isLastId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).isLastId(itemId);
         }
 
+        @Override
         public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Collection getAggregationPropertyIds() {
             if (aggregationProperties != null) {
                 return Collections.unmodifiableList(aggregationProperties);
@@ -217,10 +241,12 @@ public class WebTreeTable
             return Collections.emptyList();
         }
 
+        @Override
         public Type getContainerPropertyAggregation(Object propertyId) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
                 aggregationProperties = new LinkedList<Object>();
@@ -230,6 +256,7 @@ public class WebTreeTable
             aggregationProperties.add(propertyId);
         }
 
+        @Override
         public void removeContainerPropertyAggregation(Object propertyId) {
             if (aggregationProperties != null) {
                 aggregationProperties.remove(propertyId);
@@ -239,6 +266,7 @@ public class WebTreeTable
             }
         }
 
+        @Override
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }

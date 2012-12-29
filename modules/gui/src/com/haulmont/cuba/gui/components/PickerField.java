@@ -167,6 +167,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
                                 if (!items.isEmpty()) {
                                     final Object item = items.iterator().next();
                                     pickerField.setValue(item);
+                                    afterSelect(items);
                                 }
                             }
                         },
@@ -174,6 +175,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         lookupScreenParams != null ? lookupScreenParams : Collections.<String, Object>emptyMap()
                 );
             }
+        }
+
+        public void afterSelect(Collection items) {
         }
 
         @Override

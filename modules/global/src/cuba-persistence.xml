@@ -53,6 +53,8 @@
         <class>com.haulmont.cuba.core.entity.CategoryAttribute</class>
         <class>com.haulmont.cuba.core.entity.CategoryAttributeValue</class>
 
+        <class>com.haulmont.cuba.core.entity.JmxInstance</class>
+
         <properties>
             <property name="openjpa.Log" value="log4j"/>
 

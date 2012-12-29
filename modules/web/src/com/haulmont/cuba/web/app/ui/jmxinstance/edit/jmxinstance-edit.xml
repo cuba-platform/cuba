@@ -1,0 +1,28 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor"
+        messagesPack="com.haulmont.cuba.web.app.ui.jmxinstance"
+        datasource="jmxInstanceDs"
+        caption="msg://editorCaption">
+    <dsContext>
+        <datasource id="jmxInstanceDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local"/>
+    </dsContext>
+
+    <layout expand="windowActions">
+        <fieldGroup id="jmxFieldGroup" datasource="jmxInstanceDs">
+            <column width="350px">
+                <field id="clusterNodeName" editable="false"/>
+                <field id="description"/>
+                <field id="address"/>
+                <field id="login"/>
+                <field id="password" custom="true"/>
+            </column>
+        </fieldGroup>
+        <iframe id="windowActions" screen="editWindowActions"/>
+    </layout>
+</window>

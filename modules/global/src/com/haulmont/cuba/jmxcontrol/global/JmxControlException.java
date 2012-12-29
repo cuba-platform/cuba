@@ -16,14 +16,6 @@ import com.haulmont.cuba.core.global.SupportedByClient;
 public class JmxControlException extends RuntimeException {
     private static final long serialVersionUID = -7683677050143447151L;
 
-    public JmxControlException(String message) {
-        super(message);
-    }
-
-    public JmxControlException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public JmxControlException(Throwable cause) {
         super(cause);
     }

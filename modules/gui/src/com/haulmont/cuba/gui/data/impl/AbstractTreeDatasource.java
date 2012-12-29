@@ -30,6 +30,7 @@ import java.util.*;
 public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         extends CollectionDatasourceImpl<T, K>
         implements HierarchicalDatasource<T, K> {
+
     protected Tree<T> tree;
     protected Map<K, Node<T>> nodes;
 
@@ -46,7 +47,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
         this.tree = loadTree(params);
 
-        Map<K, Node<T>> targetNodes = new HashMap<K, Node<T>>();
+        Map<K, Node<T>> targetNodes = new HashMap<>();
 
         clear();
         if (tree != null) {
