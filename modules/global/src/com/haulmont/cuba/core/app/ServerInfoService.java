@@ -17,9 +17,8 @@ import java.util.TimeZone;
  * Service interface to provide initial information for clients. Can be invoked before login when user session
  * is not yet established.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ServerInfoService {
 
@@ -42,4 +41,9 @@ public interface ServerInfoService {
      * @return server time zone
      */
     TimeZone getTimeZone();
+
+    /**
+     * @return current time on the server in milliseconds
+     */
+    long getTimeMillis();
 }

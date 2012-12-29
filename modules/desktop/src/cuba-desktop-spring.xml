@@ -28,6 +28,8 @@
         <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
     </bean>
 
+    <bean id="cuba_TimeSource" class="com.haulmont.cuba.desktop.sys.DesktopTimeSource"/>
+
     <!-- Remote stubs -->
 
     <bean id="cuba_clusterInvocationSupport" class="com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport"

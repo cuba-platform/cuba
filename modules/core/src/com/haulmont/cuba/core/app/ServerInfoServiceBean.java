@@ -6,10 +6,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataBuildInfo;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewNotFoundException;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport;
 
 import javax.annotation.ManagedBean;
@@ -33,6 +30,9 @@ public class ServerInfoServiceBean implements ServerInfoService {
 
     @Inject
     private MetadataBuildSupport metadataBuildSupport;
+
+    @Inject
+    protected TimeSource timeSource;
 
     @Override
     public String getReleaseNumber() {
@@ -70,5 +70,10 @@ public class ServerInfoServiceBean implements ServerInfoService {
     @Override
     public TimeZone getTimeZone() {
         return TimeZone.getDefault();
+    }
+
+    @Override
+    public long getTimeMillis() {
+        return timeSource.currentTimeMillis();
     }
 }

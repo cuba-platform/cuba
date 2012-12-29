@@ -12,9 +12,8 @@ import java.util.Date;
  * Global time source interface. Must be used everywhere instead of <code>new Date()</code> and
  * <code>System.currentTimeMillis()</code>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface TimeSource {
 

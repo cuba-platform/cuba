@@ -12,11 +12,10 @@ import javax.annotation.ManagedBean;
 import java.util.Date;
 
 /**
- * Standard middleware implementation of {@link TimeSource} interface.
- *
- * <p>$Id$</p>
+ * Standard implementation of {@link TimeSource} interface.
  *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(TimeSource.NAME)
 public class TimeSourceImpl implements TimeSource {
