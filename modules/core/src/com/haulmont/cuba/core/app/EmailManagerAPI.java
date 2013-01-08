@@ -21,8 +21,4 @@ public interface EmailManagerAPI {
     List<SendingMessage> addEmailsToQueue(List<SendingMessage> sendingMessageList);
 
     void queueEmailsToSend();
-
-    int getMessageQueueCapacity();
-
-    int getDelayCallCount();
 }

@@ -149,23 +149,6 @@
 
     <!-- Email setup -->
 
-    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="${cuba.email.smtpHost}"/>
-        <property name="port" value="${cuba.email.smtpPort}"/>
-        <property name="username" value="${cuba.email.username}"/>
-        <property name="password" value="${cuba.email.password}"/>
-        <property name="javaMailProperties">
-            <props>
-                <prop key="mail.smtp.auth">${cuba.email.authRequired}</prop>
-                <prop key="mail.smtp.starttls.enable">${cuba.email.starttlsEnable}</prop>
-            </props>
-        </property>
-    </bean>
-
-    <bean id="mailSenderPostProcessor" class="com.haulmont.cuba.core.app.JavaMailSenderPostProcessor">
-        <property name="authRequired" value="${cuba.email.authRequired}"/>
-    </bean>
-
     <bean id="mailSendTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="5"/>
         <property name="maxPoolSize" value="10"/>

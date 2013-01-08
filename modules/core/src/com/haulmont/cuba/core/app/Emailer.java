@@ -5,16 +5,19 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.CubaMailSender;
 import com.haulmont.cuba.security.app.Authentication;
 import com.haulmont.cuba.security.global.LoginException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.QCodec;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +27,7 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -69,12 +73,7 @@ public class Emailer implements EmailerAPI {
     @Inject
     protected Authentication authentication;
 
-    private static final String EMAIL_SMTP_HOST_PROPERTY_NAME = "cuba.email.smtpHost";
-    private static final String EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME = "cuba.email.fromAddress";
-    private static final String SEND_ALL_TO_ADMIN_PROPERTY_NAME = "cuba.email.sendAllToAdmin";
-    private static final String ADMIN_ADDRESS_PROPERTY_NAME = "cuba.email.adminAddress";
-
-    @Inject
+    @Resource(name = CubaMailSender.NAME)
     public void setMailSender(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -335,26 +334,16 @@ public class Emailer implements EmailerAPI {
         return msg;
     }
 
-    @Override
-    public String getFromAddress() {
-        String fromAddress = AppContext.getProperty(EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME);
-        return fromAddress != null ? fromAddress : config.getFromAddress();
+    protected String getFromAddress() {
+        return config.getFromAddress();
     }
 
-    @Override
-    public String getSmtpHost() {
-        String smtpHost = AppContext.getProperty(EMAIL_SMTP_HOST_PROPERTY_NAME);
-        return smtpHost != null ? smtpHost : config.getSmtpHost();
-    }
-    
-    private String getAdminAddress() {
-        final String adminAddress = AppContext.getProperty(ADMIN_ADDRESS_PROPERTY_NAME);
-        return adminAddress != null ? adminAddress : config.getAdminAddress();
+    protected String getAdminAddress() {
+        return config.getAdminAddress();
     }
 
-    private boolean getSendAllToAdmin() {
-        final Boolean sendAllToAdmin = BooleanUtils.toBooleanObject(AppContext.getProperty(SEND_ALL_TO_ADMIN_PROPERTY_NAME));
-        return sendAllToAdmin != null ? sendAllToAdmin : config.getSendAllToAdmin();
+    protected boolean getSendAllToAdmin() {
+        return config.getSendAllToAdmin();
     }
 
     private static class ByteArrayDataSource implements DataSource {

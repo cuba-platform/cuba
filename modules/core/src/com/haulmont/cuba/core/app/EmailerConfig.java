@@ -30,12 +30,27 @@ public interface EmailerConfig extends Config
     String getFromAddress();
     void setFromAddress(String fromAddress);
 
-    /**
-     * @return SMTP host name
-     */
     @Property("cuba.email.smtpHost")
     @Default("test.host")
     String getSmtpHost();
+
+    @Property("cuba.email.smtpPort")
+    @Default("25")
+    int getSmtpPort();
+
+    @Property("cuba.email.smtpAuthRequired")
+    @DefaultBoolean(false)
+    boolean getSmtpAuthRequired();
+
+    @Property("cuba.email.smtpStarttlsEnable")
+    @DefaultBoolean(false)
+    boolean getSmtpStarttlsEnable();
+
+    @Property("cuba.email.smtpUser")
+    String getSmtpUser();
+
+    @Property("cuba.email.smtpPassword")
+    String getSmtpPassword();
 
     /**
      * Used in server startup.

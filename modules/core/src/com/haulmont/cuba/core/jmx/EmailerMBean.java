@@ -24,6 +24,14 @@ public interface EmailerMBean {
 
     String getSmtpHost();
 
+    int getSmtpPort();
+
+    String getSmtpUser();
+
+    boolean getSmtpAuthRequired();
+
+    boolean getStarttlsEnable();
+
     @ManagedOperationParameters({@ManagedOperationParameter(name = "addresses", description = "")})
     String sendTestEmail(String addresses);
 }

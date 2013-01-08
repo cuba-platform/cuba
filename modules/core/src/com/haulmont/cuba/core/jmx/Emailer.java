@@ -26,29 +26,49 @@ public class Emailer implements EmailerMBean {
     @Inject
     protected EmailerAPI emailer;
 
-    protected EmailerConfig emailerConfig;
+    protected EmailerConfig config;
 
     @Inject
     public void setConfiguration(Configuration configuration) {
-        this.emailerConfig = configuration.getConfig(EmailerConfig.class);
+        this.config = configuration.getConfig(EmailerConfig.class);
     }
 
     @Override
     public String getFromAddress() {
-        return emailer.getFromAddress();
+        return config.getFromAddress();
     }
 
     @Authenticated
     @Override
     public void setFromAddress(String address) {
         if (address != null) {
-            emailerConfig.setFromAddress(address);
+            config.setFromAddress(address);
         }
     }
 
     @Override
     public String getSmtpHost() {
-        return emailer.getSmtpHost();
+        return config.getSmtpHost();
+    }
+
+    @Override
+    public int getSmtpPort() {
+        return config.getSmtpPort();
+    }
+
+    @Override
+    public String getSmtpUser() {
+        return config.getSmtpUser();
+    }
+
+    @Override
+    public boolean getSmtpAuthRequired() {
+        return config.getSmtpAuthRequired();
+    }
+
+    @Override
+    public boolean getStarttlsEnable() {
+        return config.getSmtpStarttlsEnable();
     }
 
     @Override

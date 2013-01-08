@@ -6,11 +6,13 @@
 
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.jmx.EmailManagerMBean;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -20,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
@@ -35,10 +38,8 @@ public class EmailManager implements EmailManagerAPI {
 
     protected Set<SendingMessage> messageQueue;
     protected static int callCount = 0;
-    protected static final String EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME = "cuba.email.delayCallCount";
-    protected static final String EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME = "cuba.email.messageQueueCapacity";
 
-    @Inject
+    @Resource(name = "mailSendTaskExecutor")
     protected ThreadPoolTaskExecutor mailSendTaskExecutor;
 
     @Inject
@@ -67,7 +68,7 @@ public class EmailManager implements EmailManagerAPI {
     @Override
     public void queueEmailsToSend() {
         try {
-            int delay = getDelayCallCount();
+            int delay = config.getDelayCallCount();
             if (callCount >= delay) {
                 log.debug("Queueing Emails");
 
@@ -174,7 +175,7 @@ public class EmailManager implements EmailManagerAPI {
                     .setParameter("statusQueue", SendingStatus.QUEUE.getId())
                     .setParameter("time", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()))
                     .setParameter("statusSending", SendingStatus.SENDING.getId());
-            List<SendingMessage> res = query.setMaxResults(getMessageQueueCapacity()).getResultList();
+            List<SendingMessage> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
             tx.commit();
             return res;
         } finally {
@@ -262,33 +263,5 @@ public class EmailManager implements EmailManagerAPI {
                 tx.end();
             }
         }
-    }
-
-    @Override
-    public int getMessageQueueCapacity() {
-        String messageQueueCapacity = AppContext.getProperty(EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME);
-        int capacity = 0;
-        if (messageQueueCapacity != null)
-            try {
-                capacity = Integer.valueOf(messageQueueCapacity);
-            } catch (Exception e) {
-                capacity = config.getMessageQueueCapacity();
-            }
-        capacity = capacity == 0 ? config.getMessageQueueCapacity() : capacity;
-        return capacity;
-    }
-
-    @Override
-    public int getDelayCallCount() {
-        String delayCallCountStr = AppContext.getProperty(EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME);
-        int delayCallCount = 0;
-        if (delayCallCountStr != null)
-            try {
-                delayCallCount = Integer.valueOf(delayCallCountStr);
-            } catch (Exception e) {
-                delayCallCount = config.getDelayCallCount();
-            }
-        delayCallCount = delayCallCount == 0 ? config.getDelayCallCount() : delayCallCount;
-        return delayCallCount;
     }
 }

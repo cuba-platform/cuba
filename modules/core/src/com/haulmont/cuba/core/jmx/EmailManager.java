@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.core.app.EmailManagerAPI;
+import com.haulmont.cuba.core.app.EmailerConfig;
+import com.haulmont.cuba.core.global.Configuration;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -18,16 +19,20 @@ import javax.inject.Inject;
 @ManagedBean("cuba_EmailManagerMBean")
 public class EmailManager implements EmailManagerMBean {
 
+    protected EmailerConfig config;
+
     @Inject
-    protected EmailManagerAPI emailManager;
+    public void setConfig(Configuration configuration) {
+        this.config = configuration.getConfig(EmailerConfig.class);
+    }
 
     @Override
     public int getDelayCallCount() {
-        return emailManager.getDelayCallCount();
+        return config.getDelayCallCount();
     }
 
     @Override
     public int getMessageQueueCapacity() {
-        return emailManager.getMessageQueueCapacity();
+        return config.getMessageQueueCapacity();
     }
 }
