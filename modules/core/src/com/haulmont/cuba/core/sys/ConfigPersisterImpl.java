@@ -9,13 +9,13 @@ import com.haulmont.cuba.core.app.ConfigStorageAPI;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.global.AppBeans;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ConfigPersisterImpl implements ConfigPersister
 {
@@ -32,7 +32,9 @@ public class ConfigPersisterImpl implements ConfigPersister
                 value = AppContext.getProperty(name);
                 break;
             case DATABASE:
-                value = getConfigStorageAPI().getDbProperty(name);
+                value = AppContext.getProperty(name);
+                if (StringUtils.isEmpty(value))
+                    value = getConfigStorageAPI().getDbProperty(name);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);

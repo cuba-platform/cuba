@@ -10,12 +10,14 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.config.TestConfig;
 import com.haulmont.cuba.core.entity.Config;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.AppContext;
 
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 public class ConfigProviderTest extends CubaTestCase
 {
@@ -25,9 +27,9 @@ public class ConfigProviderTest extends CubaTestCase
     }
 
     public void test() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            TestConfig config = ConfigProvider.getConfig(TestConfig.class);
+            TestConfig config = AppBeans.get(Configuration.class).getConfig(TestConfig.class);
 
             // String property
 
@@ -122,10 +124,29 @@ public class ConfigProviderTest extends CubaTestCase
         }
     }
 
+    public void testDatabaseOverride() throws Exception {
+        TestConfig config = AppBeans.get(Configuration.class).getConfig(TestConfig.class);
+
+        String dbProp = config.getDatabaseProp();
+        assertNull(dbProp);
+
+        config.setDatabaseProp("test_value");
+        dbProp = config.getDatabaseProp();
+        assertEquals("test_value", dbProp);
+
+        AppContext.setProperty("cuba.test.databaseProp", "overridden_value");
+        dbProp = config.getDatabaseProp();
+        assertEquals("overridden_value", dbProp);
+
+        AppContext.setProperty("cuba.test.databaseProp", "");
+        dbProp = config.getDatabaseProp();
+        assertEquals("test_value", dbProp);
+    }
+
     private void cleanup() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("select c from sys$Config c where c.name like ?1");
             query.setParameter(1, "cuba.test.%");
             List<Config> list = query.getResultList();

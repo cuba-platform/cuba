@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,9 +18,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ConfigPersisterClientImpl implements ConfigPersister {
 
@@ -40,8 +40,11 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 value = AppContext.getProperty(name);
                 break;
             case DATABASE:
-                loadCache();
-                value = cache.get(name);
+                value = AppContext.getProperty(name);
+                if (StringUtils.isEmpty(value)) {
+                    loadCache();
+                    value = cache.get(name);
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
