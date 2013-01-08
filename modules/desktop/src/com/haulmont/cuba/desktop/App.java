@@ -236,6 +236,7 @@ public class App implements ConnectionListener {
                 recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
                     @Override
                     public void run() {
+                        connection.logout();
                         forceExit();
                     }
                 });
