@@ -189,10 +189,19 @@ public class ConfigUtil
                 getMethod = configInterface.getMethod("get" + prop);
             } catch (NoSuchMethodException ex) {
                 Class<?> methodType = getMethodType(method);
-                if (Boolean.TYPE.equals(methodType)) {
-                    try {
-                        getMethod = configInterface.getMethod("is" + prop);
-                    } catch (NoSuchMethodException ex2) {
+                try {
+                    getMethod = configInterface.getMethod("get" + prop, methodType);
+                } catch (NoSuchMethodException ex2) {
+                    if (Boolean.TYPE.equals(methodType)) {
+                        try {
+                            getMethod = configInterface.getMethod("is" + prop);
+                        } catch (NoSuchMethodException ex3) {
+                            try {
+                                getMethod = configInterface.getMethod("is" + prop, methodType);
+                            } catch (NoSuchMethodException ex4) {
+                                // nothing
+                            }
+                        }
                     }
                 }
             }
