@@ -1137,6 +1137,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void delete() {
+        if (required && select.getOptionsList().size() == 1) {
+            getFrame().showNotification(
+                    messages.getMessage(MESSAGES_PACK, "deleteRequired.caption"),
+                    messages.getMessage(MESSAGES_PACK, "deleteRequired.msg"),
+                    IFrame.NotificationType.HUMANIZED);
+            return;
+        }
         getFrame().showOptionDialog(
                 messages.getMessage(MESSAGES_PACK, "deleteDlg.title"),
                 messages.getMessage(MESSAGES_PACK, "deleteDlg.msg"),
@@ -1148,6 +1155,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                                 deleteFilterEntity();
                                 filterEntity = null;
                                 select.getOptionsList().remove(select.getValue());
+                                select.setOptionsList(select.getOptionsList()); // to update DesktopLookupField properly
                                 if (!select.getOptionsList().isEmpty()) {
                                     select.setValue(select.getOptionsList().iterator().next());
                                 } else {

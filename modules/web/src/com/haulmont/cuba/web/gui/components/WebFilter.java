@@ -767,7 +767,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             updateControls();
         }
 
-        updateComponentRequired(required);
+        if (required)
+            updateComponentRequired();
     }
 
     @Override
@@ -1401,6 +1402,20 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     }
 
     private void delete() {
+        if (required) {
+            int size = 0;
+            for (Object itemId : select.getItemIds()) {
+                if (itemId != noFilter)
+                    size++;
+            }
+            if (size == 1) {
+                getFrame().showNotification(
+                        messages.getMessage(MESSAGES_PACK, "deleteRequired.caption"),
+                        messages.getMessage(MESSAGES_PACK, "deleteRequired.msg"),
+                        IFrame.NotificationType.HUMANIZED);
+                return;
+            }
+        }
         getFrame().showOptionDialog(
                 messages.getMessage(MESSAGES_PACK, "deleteDlg.title"),
                 messages.getMessage(MESSAGES_PACK, "deleteDlg.msg"),
@@ -1412,10 +1427,14 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                                 deleteFilterEntity();
                                 filterEntity = null;
                                 select.removeItem(select.getValue());
-                                if (!select.getItemIds().isEmpty()) {
-                                    select.select(select.getItemIds().iterator().next());
+                                if (required) {
+                                    updateComponentRequired();
                                 } else {
-                                    select.select(null);
+                                    if (!select.getItemIds().isEmpty()) {
+                                        select.select(select.getItemIds().iterator().next());
+                                    } else {
+                                        select.select(null);
+                                    }
                                 }
                             }
                         },
@@ -1469,15 +1488,16 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     @Override
     public void setRequired(boolean required) {
-        updateComponentRequired(required);
+        if (required)
+            updateComponentRequired();
 
         if (this.required != required)
             select.setNullSelectionAllowed(!required);
         this.required = required;
     }
 
-    private void updateComponentRequired(boolean required) {
-        if (required && (select.getValue() == null)) {
+    private void updateComponentRequired() {
+        if (select.getValue() == null) {
             // select first item
             Collection<?> itemIds = select.getItemIds();
             if ((itemIds != null) && (!itemIds.isEmpty())) {
