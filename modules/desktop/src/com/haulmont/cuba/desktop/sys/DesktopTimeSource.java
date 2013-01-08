@@ -39,7 +39,9 @@ public class DesktopTimeSource implements TimeSource, ConnectionListener {
     protected ServerInfoService serverInfo;
 
     public DesktopTimeSource() {
-        App.getInstance().getConnection().addListener(this);
+        App app = App.getInstance();
+        if (app != null) // can be null in tests
+            app.getConnection().addListener(this);
     }
 
     @Inject
