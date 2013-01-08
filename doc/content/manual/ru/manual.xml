@@ -748,6 +748,26 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry>
+        <term>cuba.desktop.useServerTime</term>
+        <listitem>
+          <para>Включает корректировку времени, выдаваемого интерфейсом <code>
+              <link linkend="timeSource">TimeSource</link>
+            </code> блока DesktopClient - оно становится примерно равным времени Middleware, к которому подключен данный клиент.</para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
+          <para>Интерфейс: <code>DesktopConfig</code></para>
+          <para>Используется в блоке <structname>DesktopClient</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>cuba.desktop.useServerTimeZone</term>
+        <listitem>
+          <para>Устанавливает в JVM блока DesktopClient timezone  Middleware, к которому подключен данный клиент.</para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
+          <para>Интерфейс: <code>DesktopConfig</code></para>
+          <para>Используется в блоке <structname>DesktopClient</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.disableOrmXmlGeneration">
         <term>cuba.disableOrmXmlGeneration</term>
         <listitem>

@@ -1962,7 +1962,7 @@ Class calculatorClass = scripting.loadClass(&quot;com.abc.sales.PriceCalculator&
         <title>Security</title>
         <para>Обеспечивает авторизацию - проверку прав пользователя на различные объекты системы. Большинство методов просто получают текущую пользовательскую сессию через <link linkend="userSessionSource">UserSessionSource</link> и делегируют ей выполнение авторизации. Подробнее см. <xref linkend="authentication"/></para>
       </section>
-      <section>
+      <section id="timeSource">
         <title>TimeSource</title>
         <para>Обеспечивает получение текущего времени. Применение <code>new Date()</code> и т.п. в прикладном коде не рекомендуется.</para>
         <para>Примеры:<programlisting>@Inject
