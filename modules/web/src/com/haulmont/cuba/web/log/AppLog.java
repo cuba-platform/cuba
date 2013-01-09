@@ -80,7 +80,8 @@ public class AppLog {
         }
 
         Logging annotation = t.getClass().getAnnotation(Logging.class);
-        if (annotation.value() == Logging.Type.NONE)
+        Logging.Type loggingType = annotation == null ? Logging.Type.FULL : annotation.value();
+        if (loggingType == Logging.Type.NONE)
             return;
 
         // Finds the original source of the error/exception
@@ -101,7 +102,7 @@ public class AppLog {
             msg.append(" in ").append(owner.getClass().getName());
         msg.append(": ");
 
-        if (annotation.value() == Logging.Type.BRIEF) {
+        if (loggingType == Logging.Type.BRIEF) {
             error(msg + t.toString());
         } else {
             LogItem item = new LogItem(LogLevel.ERROR, msg.toString(), t);

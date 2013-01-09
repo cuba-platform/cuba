@@ -454,8 +454,9 @@ public class App implements ConnectionListener {
     public void handleException(Thread thread, Throwable throwable) {
         if (!(throwable instanceof SilentException)) {
             Logging annotation = throwable.getClass().getAnnotation(Logging.class);
-            if (annotation.value() != Logging.Type.NONE) {
-                if (annotation.value() == Logging.Type.BRIEF)
+            Logging.Type loggingType = annotation == null ? Logging.Type.FULL : annotation.value();
+            if (loggingType != Logging.Type.NONE) {
+                if (loggingType == Logging.Type.BRIEF)
                     log.error("Uncaught exception in thread " + thread + ": " + throwable.toString());
                 else
                     log.error("Uncaught exception in thread " + thread, throwable);
