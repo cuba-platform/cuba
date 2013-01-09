@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -23,11 +21,9 @@ import com.haulmont.cuba.gui.components.ListComponent;
  * List action to clear all fields in the specific container.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class FilterClearAction extends AbstractAction {
 
@@ -55,7 +51,7 @@ public class FilterClearAction extends AbstractAction {
         super(id);
         this.owner = owner;
         this.containerName = containerName;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Clear");
+        this.caption = messages.getMainMessage("actions.Clear");
     }
 
     @Override

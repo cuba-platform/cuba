@@ -16,10 +16,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -29,7 +26,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -97,7 +93,7 @@ public class AddAction extends AbstractAction {
         this.owner = owner;
         this.handler = handler;
         this.openType = openType;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Add");
+        this.caption = messages.getMainMessage("actions.Add");
         this.icon = "icons/add.png";
     }
 
@@ -109,7 +105,6 @@ public class AddAction extends AbstractAction {
         if (!super.isEnabled())
             return false;
 
-        UserSession userSession = UserSessionProvider.getUserSession();
         if (owner.getDatasource() instanceof PropertyDatasource) {
             MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
             return userSession.isEntityAttrPermitted(

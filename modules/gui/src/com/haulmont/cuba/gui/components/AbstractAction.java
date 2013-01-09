@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 06.02.2009 12:21:48
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.beans.PropertyChangeListener;
@@ -20,7 +19,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Base class for actions
+ * Base class for GUI actions.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public abstract class AbstractAction implements Action {
 
@@ -38,8 +40,14 @@ public abstract class AbstractAction implements Action {
 
     protected PropertyChangeSupport changeSupport;
 
+    protected Messages messages;
+
+    protected UserSession userSession;
+
     protected AbstractAction(String id) {
         this.id = id;
+        messages = AppBeans.get(Messages.class);
+        userSession = AppBeans.get(UserSessionSource.class).getUserSession();
     }
 
     @Override
@@ -49,7 +57,7 @@ public abstract class AbstractAction implements Action {
 
     @Override
     public String getCaption() {
-        return caption == null ? MessageProvider.getMessage(getClass(), id) : caption;
+        return caption == null ? messages.getMessage(getClass(), id) : caption;
     }
 
     @Override

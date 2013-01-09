@@ -12,15 +12,11 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Set;
 
@@ -28,9 +24,8 @@ import java.util.Set;
  * The <code>RemoveAction</code> variant that excludes instances from the list, but doesn't delete them from DB.
  * Makes sense for removing items from non-aggregating OneToMany collections.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ExcludeAction extends RemoveAction {
 
@@ -66,7 +61,7 @@ public class ExcludeAction extends RemoveAction {
     public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm, String id) {
         super(owner, autocommit, id);
         this.confirm = confirm;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Exclude");
+        this.caption = messages.getMainMessage("actions.Exclude");
     }
 
     /**
@@ -77,7 +72,6 @@ public class ExcludeAction extends RemoveAction {
         if (!enabled)
             return false;
 
-        UserSession userSession = UserSessionProvider.getUserSession();
         if (owner.getDatasource() instanceof PropertyDatasource) {
             MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
             return userSession.isEntityAttrPermitted(

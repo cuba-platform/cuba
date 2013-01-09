@@ -10,10 +10,12 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 
@@ -24,11 +26,9 @@ import java.util.Map;
  * Standard table action to export the list of entities to XLS.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class ExcelAction extends AbstractAction {
 
@@ -81,7 +81,7 @@ public class ExcelAction extends AbstractAction {
         this.table = table;
         this.display = display;
         this.parameterized = parameterized;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Excel");
+        this.caption = messages.getMainMessage("actions.Excel");
         this.icon = "icons/excel.png";
     }
 

@@ -12,16 +12,12 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,11 +28,9 @@ import java.util.Map;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class CreateAction extends AbstractAction {
 
@@ -76,7 +70,7 @@ public class CreateAction extends AbstractAction {
         super(id);
         this.owner = owner;
         this.openType = openType;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Create");
+        this.caption = messages.getMainMessage("actions.Create");
         this.icon = "icons/create.png";
     }
 
@@ -88,7 +82,6 @@ public class CreateAction extends AbstractAction {
         if (!super.isEnabled())
             return false;
 
-        UserSession userSession = UserSessionProvider.getUserSession();
         if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE))
             return false;
 

@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -20,11 +18,9 @@ import com.haulmont.cuba.gui.components.ListComponent;
  * List action to apply current filter by refreshing the underlying datasource.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class FilterApplyAction extends AbstractAction {
 
@@ -48,7 +44,7 @@ public class FilterApplyAction extends AbstractAction {
     public FilterApplyAction(ListComponent owner, String id) {
         super(id);
         this.owner = owner;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Apply");
+        this.caption = messages.getMainMessage("actions.Apply");
     }
 
     @Override

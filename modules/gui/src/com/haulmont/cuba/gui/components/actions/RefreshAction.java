@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
@@ -23,11 +21,9 @@ import java.util.Map;
  * Standard list action to refresh a list of entities.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class RefreshAction extends AbstractAction {
 
@@ -53,7 +49,7 @@ public class RefreshAction extends AbstractAction {
     public RefreshAction(ListComponent owner, String id) {
         super(id);
         this.owner = owner;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Refresh");
+        this.caption = messages.getMainMessage("actions.Refresh");
         this.icon = "icons/refresh.png";
     }
 

@@ -12,15 +12,12 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Set;
 
@@ -29,11 +26,9 @@ import java.util.Set;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * method {@link #afterRemove(java.util.Set)} )}
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class RemoveAction extends ItemTrackingAction {
 
@@ -72,7 +67,7 @@ public class RemoveAction extends ItemTrackingAction {
         super(id);
         this.owner = owner;
         this.autocommit = autocommit;
-        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Remove");
+        this.caption = messages.getMainMessage("actions.Remove");
         this.icon = "icons/remove.png";
     }
 
@@ -84,7 +79,6 @@ public class RemoveAction extends ItemTrackingAction {
         if (!super.isEnabled())
             return false;
 
-        UserSession userSession = UserSessionProvider.getUserSession();
         if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.DELETE))
             return false;
 
@@ -155,7 +149,7 @@ public class RemoveAction extends ItemTrackingAction {
         if (confirmationMessage != null)
             return confirmationMessage;
         else
-            return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
+            return messages.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
     }
 
     /**
@@ -174,7 +168,7 @@ public class RemoveAction extends ItemTrackingAction {
         if (confirmationTitle != null)
             return confirmationTitle;
         else
-            return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation");
+            return messages.getMessage(messagesPackage, "dialogs.Confirmation");
     }
 
     /**

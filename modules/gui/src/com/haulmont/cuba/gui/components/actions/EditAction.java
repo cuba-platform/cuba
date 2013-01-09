@@ -12,8 +12,6 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
@@ -33,11 +31,9 @@ import java.util.Set;
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
  * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class EditAction extends ItemTrackingAction {
 
@@ -85,16 +81,16 @@ public class EditAction extends ItemTrackingAction {
             return caption;
 
         final String messagesPackage = AppConfig.getMessagesPack();
-        if (UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
-            return MessageProvider.getMessage(messagesPackage, "actions.Edit");
+        if (userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
+            return messages.getMessage(messagesPackage, "actions.Edit");
         else
-            return MessageProvider.getMessage(messagesPackage, "actions.View");
+            return messages.getMessage(messagesPackage, "actions.View");
     }
 
     @Override
     public boolean isEnabled() {
         return super.isEnabled() &&
-                UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
+                userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
     }
 
     /**
