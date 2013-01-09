@@ -55,7 +55,7 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
 
     @Override
     public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        super.setEnabled(isApplicableTo(ds.getState(), ds.getItem()));
+        super.setEnabled(isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
     }
 
     @Override

@@ -5,9 +5,6 @@
         caption="msg://displayMbeans.title"
         focusComponent="objectNameField">
 
-    <metadataContext>
-    </metadataContext>
-
     <dsContext>
         <collectionDatasource id="jmxInstancesDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local">
             <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource</datasourceClass>
@@ -22,7 +19,7 @@
     </dsContext>
 
     <layout expand="mbeans" spacing="true">
-        <groupBox width="100%">
+        <groupBox>
             <grid spacing="true">
                 <columns>
                     <column/>

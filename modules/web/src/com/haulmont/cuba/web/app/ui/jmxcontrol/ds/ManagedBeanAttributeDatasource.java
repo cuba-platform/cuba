@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.jmx.JmxControlException;
@@ -47,6 +48,7 @@ public class ManagedBeanAttributeDatasource extends CollectionDatasourceImpl<Man
         if (mbean != null) {
             try {
                 mbean = jmxControlAPI.loadAttributes(mbean);
+                ((DatasourceImpl)mbeanDs).setModified(false);
             } catch (JmxControlException e) {
                 log.error(e);
             }
