@@ -10,19 +10,29 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,11 +40,9 @@ import java.util.Map;
  * Standard list action adding an entity instance to list from a lookup screen.
  * <p>
  * Action's behaviour can be customized by providing arguments to constructor or setting properties.
- * </p>
- *
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class AddAction extends AbstractAction {
 
@@ -49,7 +57,9 @@ public class AddAction extends AbstractAction {
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
-     * Lookup handler must be set by subsequent call to {@link #setHandler(com.haulmont.cuba.gui.components.Window.Lookup.Handler)}
+     * Lookup handler can be set by subsequent call to {@link #setHandler(com.haulmont.cuba.gui.components.Window.Lookup.Handler)}.
+     * If it is not set, an instance of {@link DefaultHandler} will be used.
+     *
      * @param owner    component containing this action
      */
     public AddAction(ListComponent owner) {
@@ -59,30 +69,30 @@ public class AddAction extends AbstractAction {
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
      * @param owner    component containing this action
-     * @param handler   lookup handler
+     * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      */
-    public AddAction(ListComponent owner, Window.Lookup.Handler handler) {
+    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler) {
         this(owner, handler, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify how the lookup screen opens. The action has default name.
      * @param owner    component containing this action
-     * @param handler   lookup handler
+     * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      * @param openType  how to open the editor screen
      */
-    public AddAction(ListComponent owner, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         this(owner, handler, openType, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name and how the lookup screen opens.
      * @param owner    component containing this action
-     * @param handler   lookup handler
+     * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      * @param openType  how to open the editor screen
      * @param id        action's name
      */
-    public AddAction(ListComponent owner, Window.Lookup.Handler handler, WindowManager.OpenType openType, String id) {
+    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler, WindowManager.OpenType openType, String id) {
         super(id);
         this.owner = owner;
         this.handler = handler;
@@ -118,15 +128,15 @@ public class AddAction extends AbstractAction {
         if (params == null)
             params = new HashMap<String, Object>();
 
-        if (handler == null)
-            throw new IllegalStateException("Lookup handler is not set");
+        Window.Lookup.Handler h = handler != null ? handler : new DefaultHandler();
 
-        owner.getFrame().openLookup(getWindowId(), handler, openType, params);
+        owner.getFrame().openLookup(getWindowId(), h, openType, params);
     }
 
     /**
      * @return  handler to pass to lookup screen
      */
+    @Nullable
     public Window.Lookup.Handler getHandler() {
         return handler;
     }
@@ -181,5 +191,69 @@ public class AddAction extends AbstractAction {
      */
     public void setWindowParams(Map<String, Object> windowParams) {
         this.windowParams = windowParams;
+    }
+
+    /**
+     * The default implementation of <code>Lookup.Handler</code>, adding items to owner's datasource if they are not
+     * there yet.
+     * <p/> It assumes that a lookup screen returns a collection of entities of the same type as owner's datasource.
+     */
+    protected class DefaultHandler implements Window.Lookup.Handler {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void handleLookup(Collection items) {
+            if (items == null || items.isEmpty())
+                return;
+
+            final CollectionDatasource ds = owner.getDatasource();
+            if (ds == null)
+                return;
+
+            Session session = AppBeans.get(Metadata.class).getSession();
+
+            Entity masterEntity = null;
+            MetaClass masterMetaClass = null;
+            Window window = ComponentsHelper.getWindow(owner);
+            if (window instanceof Window.Editor) {
+                masterEntity = ((Window.Editor) window).getItem();
+                masterMetaClass = session.getClassNN(masterEntity.getClass());
+            }
+
+            ds.suspendListeners();
+            try {
+                for (Object item : items) {
+                    if (item instanceof Entity) {
+                        Entity entity = (Entity) item;
+                        if (!ds.containsItem(entity.getId())) {
+                            if (masterEntity != null) {
+                                // try to assign the master entity to some attribute of added entity
+                                MetaClass metaClass = session.getClassNN(entity.getClass());
+                                String propertyName = null;
+                                for (MetaProperty metaProperty : metaClass.getProperties()) {
+                                    Range range = metaProperty.getRange();
+                                    if (range.isClass()
+                                            && !range.getCardinality().isMany()
+                                            && range.asClass().equals(masterMetaClass)) {
+                                        if (propertyName == null)
+                                            propertyName = metaProperty.getName();
+                                        else {
+                                            // more than one property of master's type, don't assign automatically
+                                            propertyName = null;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (propertyName != null)
+                                    entity.setValue(propertyName, masterEntity);
+                            }
+                        }
+                        ds.addItem(entity);
+                    }
+                }
+            } finally {
+                ds.resumeListeners();
+            }
+        }
     }
 }
