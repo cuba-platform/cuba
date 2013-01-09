@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.global.ClusterNodeIdentifier;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.jmx.JmxNodeIdentifier;
 import com.haulmont.cuba.jmxcontrol.entity.*;
-import com.haulmont.cuba.jmxcontrol.global.JmxControlException;
+import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;

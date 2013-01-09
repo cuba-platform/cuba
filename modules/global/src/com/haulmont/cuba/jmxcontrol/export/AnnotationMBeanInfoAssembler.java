@@ -425,6 +425,4 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     private String resolveStringDescriptor(String getter, String setter) {
         return (StringUtils.hasLength(getter) ? getter : setter);
     }
-
-
 }

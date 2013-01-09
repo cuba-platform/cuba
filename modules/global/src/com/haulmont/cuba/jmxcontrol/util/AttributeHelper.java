@@ -23,37 +23,30 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class AttributeHelper {
+
     public static Object convert(String type, String str) {
         if (str == null)
             return null;
 
         if (String.class.getName().equals(type)) {
             return str;
-        }
-        else if ("int".equals(type) || Integer.class.getName().equals(type)) {
+        } else if ("int".equals(type) || Integer.class.getName().equals(type)) {
             return Integer.valueOf(str);
-        }
-        else if ("long".equals(type) || Long.class.getName().equals(type)) {
+        } else if ("long".equals(type) || Long.class.getName().equals(type)) {
             return Long.valueOf(str);
-        }
-        else if ("double".equals(type) || Double.class.getName().equals(type)) {
+        } else if ("double".equals(type) || Double.class.getName().equals(type)) {
             return Double.valueOf(str);
-        }
-        else if ("float".equals(type) || Float.class.getName().equals(type)) {
+        } else if ("float".equals(type) || Float.class.getName().equals(type)) {
             return Float.valueOf(str);
-        }
-        else if ("boolean".equals(type) || Boolean.class.getName().equals(type)) {
+        } else if ("boolean".equals(type) || Boolean.class.getName().equals(type)) {
             return Boolean.valueOf(str);
-        }
-        else if (ObjectName.class.getName().equals(type)) {
+        } else if (ObjectName.class.getName().equals(type)) {
             try {
                 return new ObjectName(str);
-            }
-            catch (MalformedObjectNameException e) {
+            } catch (MalformedObjectNameException e) {
                 throw new IllegalArgumentException(e);
             }
-        }
-        else if (UUID.class.getName().equals(type)) {
+        } else if (UUID.class.getName().equals(type)) {
             return UUID.fromString(str);
         }
         return null;
@@ -115,7 +108,7 @@ public class AttributeHelper {
 
         StringBuilder b = new StringBuilder();
         b.append("[");
-        List<String> keys = new ArrayList<String>(type.keySet());
+        List<String> keys = new ArrayList<>(type.keySet());
         Collections.sort(keys); // alphabetically
         for (String key: keys) {
             b.append(key).append(": ");
@@ -142,17 +135,7 @@ public class AttributeHelper {
                 return method.invoke(null, compositeData);
             }
             return null;
-        }
-        catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-        catch (IllegalAccessException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -167,13 +150,10 @@ public class AttributeHelper {
                     && method.getReturnType() == _class) {
                 return true;
             }
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
             return false;
         }
-        catch (NoSuchMethodException e) {
-            return false;
-        }
+
         return false;
     }
 }

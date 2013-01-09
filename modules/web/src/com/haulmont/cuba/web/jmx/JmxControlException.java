@@ -4,15 +4,12 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.jmxcontrol.global;
-
-import com.haulmont.cuba.core.global.SupportedByClient;
+package com.haulmont.cuba.web.jmx;
 
 /**
  * @author budarov
  * @version $Id$
  */
-@SupportedByClient
 public class JmxControlException extends RuntimeException {
     private static final long serialVersionUID = -7683677050143447151L;
 

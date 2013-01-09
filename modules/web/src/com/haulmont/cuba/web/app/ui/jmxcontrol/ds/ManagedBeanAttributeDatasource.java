@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
-import com.haulmont.cuba.jmxcontrol.global.JmxControlException;
+import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
