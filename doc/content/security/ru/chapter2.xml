@@ -12,7 +12,7 @@
   <section>
     <title>Окно входа в систему</title>
     <para><firstterm>Окно входа в систему (Login screen)</firstterm> представляет собой окно входа в систему, посредством которого пользователь получает доступ к системе. В этом окне производится аутентификация пользователя по имени учетной записи и паролю, а также дальнейшая авторизация. Пароль в целях его безопасности хранится в базе данных в хэшированном виде.</para>
-    <para>Класс окна входа в систему − <classname>LoginWindow</classname>. </para>
+    <para>Класс окна входа в систему − <code>LoginWindow</code>. </para>
   </section>
   <section id="section_session_id">
     <title>Пользовательская сессия</title>
@@ -20,18 +20,18 @@
 объект,  ассоциированный с аутентифицированным в данный момент в системе 
 пользователем,  и содержащий информацию о правах доступа пользователя к
 данным.</para>
-    <para>Для контроля прав доступа пользователей к данным код системы всегда должен иметь возможность узнать, какой пользователь в данный момент работает и каковы его права. Например, перед сохранением сущности в БД в специальных полях сущности проставляется имя пользователя, выполняющего сохранение. Кроме того, <classname>DataService</classname> (универсальное средство для загрузки сущностей из базы данных и передачи их клиенту) всегда проверяет права пользователя на извлечение или сохранение определенных сущностей.</para>
-    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="text_middleware_id">Middleware</glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link>.</para>
+    <para>Для контроля прав доступа пользователей к данным код системы всегда должен иметь возможность узнать, какой пользователь в данный момент работает и каковы его права. Например, перед сохранением сущности в БД в специальных полях сущности проставляется имя пользователя, выполняющего сохранение. Кроме того, <code>DataService</code> (универсальное средство для загрузки сущностей из базы данных и передачи их клиенту) всегда проверяет права пользователя на извлечение или сохранение определенных сущностей.</para>
+    <para>Информация о текущем пользователе и его правах хранится в объекте <code>UserSession</code>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="text_middleware_id">Middleware</glossterm>, а также передается клиенту в результате метода <code>LoginService.login()</code>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link>.</para>
     <para>Текущая пользовательская сессия всегда привязывается к потоку выполнения и может быть получена следующими способами:<itemizedlist>
         <listitem>
-          <para>через интерфейс инфраструктуры <classname>UserSessionSource</classname></para>
+          <para>через интерфейс инфраструктуры <code>UserSessionSource</code></para>
         </listitem>
         <listitem>
-          <para>через статический фасад <classname>UserSessionProvider</classname></para>
+          <para>через статический фасад <code>UserSessionProvider</code></para>
         </listitem>
       </itemizedlist></para>
-    <para>Кроме получения информации о пользователе объект сессии позволяет проверить наличие прав на некоторый объект системы. Делается это вызовом методов <methodname>isScreenPermitted()</methodname>, <methodname>isEntityOpPermitted()</methodname> и другими.</para>
-    <para>Список активных пользовательских сессий можно получить на клиенте через сервис <classname>UserSessionService</classname>,  в JMX интерфейсе через МБин <classname>app.cuba:service=UserSessions</classname>, а также с помощью подпункта меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользовательские сессии</guimenu>.</para>
+    <para>Кроме получения информации о пользователе объект сессии позволяет проверить наличие прав на некоторый объект системы. Делается это вызовом методов <code>isScreenPermitted()</code>, <code>isEntityOpPermitted()</code> и другими.</para>
+    <para>Список активных пользовательских сессий можно получить на клиенте через сервис <code>UserSessionService</code>,  в JMX интерфейсе через МБин <code>app.cuba:service=UserSessions</code>, а также с помощью подпункта меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользовательские сессии</guimenu>.</para>
   </section>
   <section id="section_roles">
     <title>Роли</title>
@@ -95,8 +95,8 @@
           </figure>
         </listitem>
         <listitem id="specific_permissions">
-          <para>Разрешение на некоторую именованную функциональность (Specific Permissions). Эти разрешения задаются в файлах, которые указаны в свойстве <parameter>cuba.permissionConfig</parameter> <glossterm linkend="glossary_app_properties_id">файла свойств</glossterm> приложения. Пример файла <filename>cuba-web-permissions.xml</filename>:</para>
-          <para><programlisting>&lt;permission-config&gt;
+          <para>Разрешение на некоторую именованную функциональность (Specific Permissions). Эти разрешения задаются в файлах, которые указаны в свойстве <property>cuba.permissionConfig</property> <glossterm linkend="glossary_app_properties_id">файла свойств</glossterm> приложения. Пример файла <filename>cuba-web-permissions.xml</filename>:</para>
+          <programlisting>&lt;permission-config&gt;
     &lt;specific&gt;
         &lt;category id=&quot;cuba&quot;&gt;
             &lt;category id=&quot;cuba.gui&quot;&gt;
@@ -113,9 +113,9 @@
             &lt;/category&gt;
         &lt;/category&gt;        
     &lt;/specific&gt;
-&lt;/permission-config&gt;</programlisting></para>
-          <para>Названия свойств задаются в главном файле локализации соответствующего проекта. Например, для указанного выше файла <glossterm linkend="glossary_localized_folders_id">локализация</glossterm> названий на русский язык задается в файле <filename>messages_ru.properties</filename> пакета <package>com.haulmont.cuba.gui</package></para>
-          <para><programlisting>permission-config.cuba=CUBA
+&lt;/permission-config&gt;</programlisting>
+          <para>Названия свойств задаются в главном файле локализации соответствующего проекта. Например, для указанного выше файла <glossterm linkend="glossary_localized_folders_id">локализация</glossterm> названий на русский язык задается в файле <filename>messages_ru.properties</filename> пакета <code>com.haulmont.cuba.gui</code></para>
+          <programlisting>permission-config.cuba=CUBA
 permission-config.cuba.gui=Generic UI
 permission-config.cuba.gui.showInfo=Системная информация
 permission-config.cuba.gui.filter=Фильтр
@@ -126,7 +126,7 @@ permission-config.cuba.gui.filter.maxResults=Неограниченное чис
 permission-config.cuba.gui.searchFolder.global=Создание/изменение глобальных папок поиска
 permission-config.cuba.gui.presentations.global=Создание/изменение глобальных представлений
 permission-config.cuba.gui.appFolder.global=Создание/изменение папок приложения
-</programlisting></para>
+</programlisting>
           <figure>
             <title>Изменение специфических разрешений</title>
             <mediaobject>
@@ -155,16 +155,16 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
     <para id="constraints_id">Ограничения задаются с помощью фрагментов выражений на языке <link linkend="glossary_jpql_id">JPQL</link>. </para>
     <para>В параметрах ограничений  можно использовать следующие предопределенные константы:<itemizedlist>
         <listitem>
-          <para><varname>session$userLogin</varname> − имя учетной записи текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − имя учетной записи замещаемого пользователя).</para>
+          <para><literal>session$userLogin</literal> − имя учетной записи текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − имя учетной записи замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$userId</varname> − ID текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − ID замещаемого пользователя).</para>
+          <para><literal>session$userId</literal> − ID текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − ID замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$userGroupId</varname> − ID группы текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − ID группы замещаемого пользователя).</para>
+          <para><literal>session$userGroupId</literal> − ID группы текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − ID группы замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$XXX</varname> − атрибут текущей <link linkend="section_session_id">пользовательской сессии</link>, где XXX - имя атрибута</para>
+          <para><literal>session$XXX</literal> − атрибут текущей <link linkend="section_session_id">пользовательской сессии</link>, где XXX − имя атрибута</para>
         </listitem>
       </itemizedlist></para>
     <figure>
@@ -177,21 +177,21 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
     </figure>
     <para>Следует иметь в виду следующие моменты:<itemizedlist>
         <listitem>
-          <para>при задании только оператора Where в нем заменяется алиас основной сущности;</para>
+          <para>при задании только оператора <literal>Where</literal> в нем заменяется алиас основной сущности;</para>
         </listitem>
         <listitem>
-          <para>при задании и оператора Join, и оператора Where, в операторе Join алиас заменяется, а в операторе Where нет.</para>
+          <para>при задании и оператора <literal>Join</literal>, и оператора <literal>Where</literal> в операторе <literal>Join</literal> алиас заменяется, а в операторе <literal>Where</literal> − нет.</para>
         </listitem>
       </itemizedlist></para>
-    <para>В обоих случаях в текст оператора Join и оператора Where можно помещать метку {E}, которая будет заменена на алиас основной сущности запроса. Если в тексте встречается метка {E}, то никаких других алиасов, кроме указанных меткой, заменяться не будет.</para>
-    <para>Пример создания ограничений находится в <link linkend="example_access_group">главе 4</link>.</para>
+    <para>В обоих случаях в текст оператора <literal>Join</literal> и оператора <literal>Where</literal> можно помещать метку <literal>{E}</literal>, которая будет заменена на алиас основной сущности запроса. Если в тексте встречается метка <literal>{E}</literal>, то никаких других алиасов, кроме указанных меткой, заменяться не будет.</para>
+    <para>Пример создания ограничений находится в <xref linkend="example_access_group"/>.</para>
     <para id="detail_session_attr"><firstterm>Атрибуты пользовательской сессии (Session Attributes)</firstterm> могут быть заданы при настройке системы. Это может понадобиться при настройке <link linkend="constraints_id">ограничений</link>, а также для любой другой прикладной функциональности.</para>
-    <para>В <link linkend="section_session_id">пользовательскую сессию</link> при входе в систему будут помещены все атрибуты, заданные для группы, в которой находится пользователь, и для всех родительских групп вверх по иерархии. При этом если атрибут встречается в иерархии групп несколько раз, значение он получит от самой верхней группы, то есть переопределение значений атрибутов на нижнем уровне невозможно. При попытке переопределения в журнал сообщений сервера будет выведено сообщение с уровнем WARN.</para>
+    <para>В <link linkend="section_session_id">пользовательскую сессию</link> при входе в систему будут помещены все атрибуты, заданные для группы, в которой находится пользователь, и для всех родительских групп вверх по иерархии. При этом если атрибут встречается в иерархии групп несколько раз, значение он получит от самой верхней группы, то есть переопределение значений атрибутов на нижнем уровне невозможно. При попытке переопределения в журнал сообщений сервера будет выведено сообщение с уровнем <literal>WARN</literal>.</para>
   </section>
   <section id="section_IP">
     <title>Ограничение входа по IP</title>
     <para>Для пользователя может быть задана маска допустимых IP-адресов, с которых возможен вход в систему.</para>
-    <para>Маска представляет собой список адресов через запятую. Каждый адрес должен обязательно состоять из четырех чисел, разделенных точками (обычный формат IPv4). При этом любая часть вместо числа может содержать знак &quot;*&quot;, что означает &quot;любое число&quot;. </para>
+    <para>Маска представляет собой список адресов через запятую. Каждый адрес должен обязательно состоять из четырех чисел, разделенных точками (обычный формат <literal>IPv4</literal>). При этом любая часть вместо числа может содержать знак <literal>&quot;*&quot;</literal>, что означает &quot;любое число&quot;. </para>
     <figure>
       <title>Задание маски разрешенных IP в экране редактирования пользователя</title>
       <mediaobject>
@@ -200,7 +200,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
         </imageobject>
       </mediaobject>
     </figure>
-    <para>Если маска задана неправильно или для данного соединения не может быть определен адрес в формате IPv4, в журнал сообщений выводится сообщение от регистратора <classname>IpMatcher</classname>, и вход при этом разрешается.</para>
+    <para>Если маска задана неправильно или для данного соединения не может быть определен адрес в формате <literal>IPv4</literal>, в журнал сообщений выводится сообщение от регистратора <code>IpMatcher</code>, и вход при этом разрешается.</para>
   </section>
   <section id="section_AD">
     <title>Интеграция с Active Directory</title>
@@ -236,7 +236,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
             <para>Клиент по доменному имени веб-сервера выясняет у <link linkend="domainController">Domain Controller</link> имя соответствующей веб-службы.</para>
           </listitem>
           <listitem>
-            <para>Клиент выполняет процедуру получения <link linkend="text_kerberos_ticket_id">билета</link> для <application>Kerberos</application> аутентификации, для этого обращаясь к сервису <application>Kerberos</application> на <link linkend="domainController">Domain Controller</link>  или отдельному центру распределения ключей (Key Distribution Center) − серверу паролей Kerberos.</para>
+            <para>Клиент выполняет процедуру получения <link linkend="text_kerberos_ticket_id">билета</link> для <application>Kerberos</application> аутентификации, для этого обращаясь к сервису <application>Kerberos</application> на <link linkend="domainController">Domain Controller</link>  или отдельному центру распределения ключей (Key Distribution Center) − серверу паролей <application>Kerberos</application>.</para>
           </listitem>
           <listitem>
             <para>Клиент вновь выполняет запрос, помещая в заголовки строку <userinput>Authorization: Negotiate &lt;Тикет Kerberos&gt;</userinput>.</para>
@@ -325,11 +325,11 @@ useTicketCache=false;};</programlisting>
           </listitem>
           <listitem>
             <para>Настройки приложения <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm>.  По умолчанию для <application>Active Directory</application> используются следующие настройки:</para>
-            <para><programlisting># Использовать Kerberos
+            <programlisting># Использовать Kerberos
 cuba.web.activeDirectoryAuthClass=com.haulmont.cuba.web.sys.auth.KerberosAuthProvider
 # Файлы конфигурации расположены в каталоге conf приложения
 cuba.web.kerberosConf=${catalina.home}/conf/${cuba.webContextName}/krb5.ini
-cuba.web.kerberosJaasConf=${catalina.home}/conf/${cuba.webContextName}/jaas.conf   </programlisting></para>
+cuba.web.kerberosJaasConf=${catalina.home}/conf/${cuba.webContextName}/jaas.conf   </programlisting>
             <para>Для использования <application>Kerberos</application> необходимо задать следующее:</para>
             <programlisting># Разрешить использование Active Directory
 cuba.web.useActiveDirectory=false
@@ -359,7 +359,7 @@ cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting>
         </itemizedlist>
         <para>Для входа под доменной учетной записью необходимо ввести имя в одном из форматов: <userinput>&lt;DOMAIN.ZONE&gt;\&lt;USER&gt;</userinput> или <userinput>&lt;USER&gt;@&lt;DOMAIN.ZONE&gt;</userinput>. В поле <guilabel>Пароль</guilabel> − свой доменный пароль, он не хранится в системе, используется только при входе. </para>
         <para>Для <userinput>&lt;DOMAIN.ZONE&gt;</userinput> могут быть настроены псевдонимы (например, если имя домена длинное или незапоминающееся)</para>
-        <para><programlisting>cuba.web.activeDirectoryAliases=haulmont|HAULMONT.COM;dc|SOMEDOMAIN.ZONE</programlisting></para>
+        <programlisting>cuba.web.activeDirectoryAliases=haulmont|HAULMONT.COM;dc|SOMEDOMAIN.ZONE</programlisting>
         <para>Если для какого-то домена задан псевдоним <userinput>alias</userinput>, то в форме входа достаточно ввести <userinput>alias/&lt;USER&gt;</userinput> или <userinput>&lt;USER&gt;@alias</userinput></para>
       </section>
       <section>
@@ -397,10 +397,10 @@ cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting>
         <para>Разрешение типов шифрования для рабочих станций с операционной системой <application>Windows 7</application>.</para>
         <para>Данные действия требуются в том случае, если на рабочей станции заданы требуемые типы шифрования. По умолчанию разрешены все.
 Используется <userinput>logon</userinput> скрипт, добавляющий разрешения на типы шифрования в реестр:</para>
-        <para><programlisting>@echo off
+        <programlisting>@echo off
 reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\
 Kerberos\Parameters&quot; 
-/v SupportedEncryptionTypes /t REG_DWORD /d 0x7fffffff /f</programlisting></para>
+/v SupportedEncryptionTypes /t REG_DWORD /d 0x7fffffff /f</programlisting>
         <para>Также этот параметр можно настроить в настройках: 
 <guimenu>Панель управления</guimenu> −&gt;<guimenu>Администрирование</guimenu> −&gt; <guimenu>Локальная политика безопасности</guimenu> −&gt; <guimenu>Локальные политики</guimenu> −&gt; <guimenu>Параметры безопасности</guimenu> −&gt; <guimenu>Сетевая безопасность: настройка типов шифрования, разрешенных Kerberos</guimenu></para>
         <para><emphasis role="bold">Настройка Internet Explorer и Chrome</emphasis></para>
@@ -439,11 +439,10 @@ Kerberos\Parameters&quot;
         <para><emphasis role="bold">Включение полной отладочной информации на сервере</emphasis></para>
         <itemizedlist>
           <listitem>
-            <para>Для включения отладочной информации <application>Kerberos</application> на сервере в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> задайте параметр </para>
-            <para><programlisting>cuba.web.activeDirectoryDebug = true</programlisting></para>
+            <para>Для включения отладочной информации <application>Kerberos</application> на сервере в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> задайте параметр <property>cuba.web.activeDirectoryDebug</property> = <literal>true</literal></para>
           </listitem>
           <listitem>
-            <para>В параметрах журналирования  <emphasis role="bold">log4j</emphasis> выставите группе <emphasis role="bold">com.haulmont.cuba.web.sys</emphasis> уровень <emphasis role="bold">DEBUG</emphasis></para>
+            <para>В параметрах журналирования  <literal role="bold">log4j</literal> выставите группе <literal role="bold">com.haulmont.cuba.web.sys</literal> уровень <emphasis role="bold">DEBUG</emphasis></para>
           </listitem>
         </itemizedlist>
         <para><emphasis role="bold">Белый экран в браузере</emphasis></para>
@@ -463,20 +462,20 @@ Kerberos\Parameters&quot;
         </itemizedlist>
         <para><emphasis role="bold">Ошибка 400</emphasis></para>
         <para>В сервере <application>Tomcat</application> по умолчанию задан максимальный размер заголовков запроса: 8192 байт. <link linkend="text_kerberos_ticket_id">Билет</link> <application>Kerberos</application> для отдельных пользователей может превышать этот размер.</para>
-        <para>В <filename>server.xml</filename> необходимо установить для <parameter>Connector</parameter> значение <parameter>maxHttpHeaderSize</parameter> в большее значение, 16536 или  32768.</para>
+        <para>В <filename>server.xml</filename> необходимо установить для <literal>Connector</literal> значение <literal>maxHttpHeaderSize</literal> в большее значение, <literal>16536</literal> или  <literal>32768</literal>.</para>
         <warning>
-          <para>Если Вы используете <application>NIO Connector</application> и <application>Tomcat 6</application>, то Вы не сможете настроить <parameter>maxHttpHeaderSize</parameter>. Решение − перейти на <application>Tomcat 7</application>.</para>
+          <para>Если Вы используете <application>NIO Connector</application> и <application>Tomcat 6</application>, то Вы не сможете настроить <literal>maxHttpHeaderSize</literal>. Решение − перейти на <application>Tomcat 7</application>.</para>
         </warning>
         <para><emphasis role="bold">Неверный SPN</emphasis></para>
         <para>Следует очень аккуратно подходить к назначению <application>SPN</application> для сервиса, много проблем связано с неверным <application>SPN</application>. </para>
         <itemizedlist>
           <listitem>
-            <para><application>SPN</application> можно назначать и удалять утилитой <application>setspn</application>, при помощи нее можно находить дубликаты <application>SPN</application> при помощи ключа <parameter>-X</parameter>. </para>
+            <para><application>SPN</application> можно назначать и удалять утилитой <application>setspn</application>, при помощи нее можно находить дубликаты <application>SPN</application> при помощи ключа <literal>-X</literal>. </para>
           </listitem>
           <listitem>
-            <para>Также <parameter>SPN</parameter> можно редактировать напрямую в <application>Active Directory</application> через <application>LDAP</application> интерфейс, например <application>LDAP Browser</application>.  
-Множество параметров <parameter>servicePrincipalName</parameter> задают записи <application>SPN</application> для учетной записи  пользователя. 
-Параметр <parameter>userPrincipalName</parameter> задает имя пользователя как службы. </para>
+            <para>Также <literal>SPN</literal> можно редактировать напрямую в <application>Active Directory</application> через <application>LDAP</application> интерфейс, например <application>LDAP Browser</application>.  
+Множество параметров <literal>servicePrincipalName</literal> задают записи <application>SPN</application> для учетной записи  пользователя. 
+Параметр <literal>userPrincipalName</literal> задает имя пользователя как службы. </para>
           </listitem>
         </itemizedlist>
         <para><emphasis role="bold">Агрессивное кэширование тикетов на клиентских машинах</emphasis></para>
@@ -490,7 +489,7 @@ Kerberos\Parameters&quot;
           </imageobject>
         </mediaobject>
         <para><emphasis role="bold">Клиентская машина высылает тикет, начинающийся с TIRMT</emphasis></para>
-        <para>При ошибке аутентификации в журнала сообщений остается отметка с уровнем WARN и распечаткой билета. По нему можно определить тип аутентификации, который использует клиент. </para>
+        <para>При ошибке аутентификации в журнала сообщений остается отметка с уровнем <literal>WARN</literal> и распечаткой билета. По нему можно определить тип аутентификации, который использует клиент. </para>
         <para>Билеты <application>NTLM</application> начинаются с приставки <emphasis role="bold">TIRMT</emphasis>.</para>
         <para>Билеты <application>Kerberos</application> начинаются с приставки <emphasis role="bold">YI</emphasis>.</para>
         <itemizedlist>
@@ -512,7 +511,7 @@ Kerberos\Parameters&quot;
         </itemizedlist>
         <para><emphasis role="bold">Используется не Windows клиент</emphasis></para>
         <para>Для таких клиентских рабочих станций автоматический вход не поддерживается. 
-Пользователю будет выведена стандартное окно входа в приложение, а в переменные сессии будет добавлен параметр <parameter>ADIntegrationSupport</parameter> со значением <parameter>false</parameter>.</para>
+Пользователю будет выведена стандартное окно входа в приложение, а в переменные сессии будет добавлен параметр <literal>ADIntegrationSupport</literal> со значением <literal>false</literal>.</para>
       </section>
       <section>
         <title>Дополнительные материалы</title>
@@ -551,7 +550,7 @@ Kerberos\Parameters&quot;
         </listitem>
         <listitem>
           <para>Создать и запустить скрипт <filename>SetComputerPass.vbs</filename> и задать пароль</para>
-          <para><programlisting>Option Explicit
+          <programlisting>Option Explicit
 
 Dim strDn, objPassword, strPassword, objComputer
 
@@ -570,27 +569,27 @@ Set objComputer = GetObject(&quot;LDAP://&quot; &amp; strDn)
 objComputer.SetPassword strPassword
 
 WScript.Quit
-</programlisting></para>
+</programlisting>
           <para>либо отредактировать <filename>SetComputerPassSimple.vbs</filename> и запустить.</para>
-          <para><programlisting>Set objComputer = GetObject(&quot;LDAP://CN=JESPA,CN=Computers,DC=haulmont,DC=com&quot;)
+          <programlisting>Set objComputer = GetObject(&quot;LDAP://CN=JESPA,CN=Computers,DC=haulmont,DC=com&quot;)
 objComputer.SetPassword &quot;put_your_passsword_here&quot;
 
-WScript.Quit</programlisting></para>
+WScript.Quit</programlisting>
           <para>Если скрипт не работает на сервере, войдите через учетную запись администратора на  компьютер под управлением операционной системы <application>Windows XP</application> и запустите скрипт там.</para>
           <para><prompt>cscript SetComputerPass.vbs CN=JESPA,CN=Computers,DC=haulmont,DC=com</prompt></para>
         </listitem>
         <listitem>
-          <para>Задать параметры доменов в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат </para>
+          <para>Задать параметры доменов в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> в переменной <property>cuba.web.activeDirectoryDomains</property>. Каждый описатель домена имеет формат </para>
           <para><code>domain_name|full_domain_name|service_account_name| service_account_password</code>. </para>
           <para>Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
-          <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com| JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM| password2</prompt></para>
+          <para><code>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com| JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM| password2</code></para>
         </listitem>
         <listitem>
           <para>Задать в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
-          <para><prompt>jespa.log.level=3</prompt></para>
+          <para><code>jespa.log.level=3</code></para>
         </listitem>
         <listitem>
-          <para>Установить в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
+          <para>Установить в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> переменную <property>cuba.web.useActiveDirectory</property>=<literal>true</literal></para>
         </listitem>
         <listitem>
           <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>
