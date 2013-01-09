@@ -24,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -96,7 +98,19 @@ class MappingFileCreator {
         for (Field field : aClass.getDeclaredFields()) {
             Attr.Type type = getAttrType(field);
             if (type != null) {
-                Class extClass = extendedClasses.get(field.getType());
+                Class<?> fieldType = field.getType();
+                Class extClass = null;
+                if (Collection.class.isAssignableFrom(fieldType)) {
+                    Type genericType = field.getGenericType();
+                    if (genericType instanceof ParameterizedType) {
+                        Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+                        if (typeArguments.length == 1) {
+                            extClass = extendedClasses.get((Class) typeArguments[0]);
+                        }
+                    }
+                } else {
+                    extClass = extendedClasses.get(fieldType);
+                }
                 if (extClass != null) {
                     Attr attr = new Attr(type, field, extClass.getName());
                     list.add(attr);
