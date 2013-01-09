@@ -242,8 +242,8 @@ public class AddAction extends AbstractAction {
                                 if (propertyName != null)
                                     entity.setValue(propertyName, masterEntity);
                             }
+                            ds.addItem(entity);
                         }
-                        ds.addItem(entity);
                     }
                 }
             } finally {
