@@ -24,27 +24,22 @@ import java.util.UUID;
  */
 @ManagedBean(LoginService.NAME)
 public class LoginServiceBean implements LoginService {
-    private Log log = LogFactory.getLog(LoginServiceBean.class);
 
-    private LoginWorker loginWorker;
+    protected Log log = LogFactory.getLog(getClass());
 
     @Inject
-    public void setLoginWorker(LoginWorker loginWorker) {
-        this.loginWorker = loginWorker;
-    }
+    protected LoginWorker loginWorker;
 
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
         try {
             return loginWorker.login(login, password, locale);
-        } catch (Exception e) {
+        } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
+            throw e;
+        } catch (RuntimeException | Error e) {
             log.error("Login error", e);
-            if (e instanceof LoginException)
-                throw ((LoginException) e);
-            else if (e instanceof RuntimeException)
-                throw ((RuntimeException) e);
-            else
-                throw new RuntimeException(e);
+            throw e;
         }
     }
 
@@ -52,14 +47,12 @@ public class LoginServiceBean implements LoginService {
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
         try {
             return loginWorker.loginTrusted(login, password, locale);
-        } catch (Exception e) {
+        } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
+            throw e;
+        } catch (RuntimeException | Error e) {
             log.error("Login error", e);
-            if (e instanceof LoginException)
-                throw ((LoginException) e);
-            else if (e instanceof RuntimeException)
-                throw ((RuntimeException) e);
-            else
-                throw new RuntimeException(e);
+            throw e;
         }
     }
 
@@ -67,9 +60,9 @@ public class LoginServiceBean implements LoginService {
     public void logout() {
         try {
             loginWorker.logout();
-        } catch (Exception e) {
+        } catch (RuntimeException | Error e) {
             log.error("Logout error", e);
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.log;
 
+import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
 import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.terminal.Terminal;
@@ -78,6 +79,10 @@ public class AppLog {
             return;
         }
 
+        Logging annotation = t.getClass().getAnnotation(Logging.class);
+        if (annotation.value() == Logging.Type.NONE)
+            return;
+
         // Finds the original source of the error/exception
         Object owner = null;
         if (event instanceof VariableOwner.ErrorEvent) {
@@ -91,12 +96,17 @@ public class AppLog {
         }
 
         StringBuilder msg = new StringBuilder();
+        msg.append("Uncaught exception");
         if (owner != null)
-            msg.append("[").append(owner.getClass().getName()).append("] ");
-        msg.append("Uncaught throwable:");
+            msg.append(" in ").append(owner.getClass().getName());
+        msg.append(": ");
 
-        LogItem item = new LogItem(LogLevel.ERROR, msg.toString(), t);
-        log(item);
+        if (annotation.value() == Logging.Type.BRIEF) {
+            error(msg + t.toString());
+        } else {
+            LogItem item = new LogItem(LogLevel.ERROR, msg.toString(), t);
+            log(item);
+        }
     }
 
     public List<LogItem> getItems() {

@@ -18,6 +18,7 @@ public class HttpServiceExporter extends HttpInvokerServiceExporter implements B
 
     public HttpServiceExporter() {
         super();
+        setRegisterTraceInterceptor(false);
         setRemoteInvocationExecutor(new CubaRemoteInvocationExecutor());
     }
 

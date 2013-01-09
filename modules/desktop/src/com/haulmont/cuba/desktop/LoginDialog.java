@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,6 +31,8 @@ import java.util.Map;
  * @version $Id$
  */
 public class LoginDialog extends JDialog {
+
+    protected Log log = LogFactory.getLog(getClass());
 
     protected Connection connection;
     protected Map<String,Locale> locales;
@@ -130,6 +134,7 @@ public class LoginDialog extends JDialog {
             loginProperties.saveLogin(name);
             DesktopComponentsHelper.getTopLevelFrame(this).activate();
         } catch (LoginException ex) {
+            log.info("Login failed: " + ex.toString());
             String caption = messages.getMainMessage("loginWindow.loginFailed", locale);
             App.getInstance().getMainFrame().showNotification(
                     caption,

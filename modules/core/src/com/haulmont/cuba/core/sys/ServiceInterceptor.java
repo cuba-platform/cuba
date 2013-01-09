@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -48,7 +49,7 @@ public class ServiceInterceptor {
             Object res = ctx.proceed();
             return res;
         } catch (Throwable e) {
-            log.error("ServiceInterceptor caught exception: ", e);
+            logException(e, ctx);
             // Propagate the special exception to avoid serialization errors on remote clients
             throw new RemoteException(e);
         }
@@ -65,5 +66,14 @@ public class ServiceInterceptor {
             throw new NoUserSessionException(securityContext.getSessionId());
 
         return userSession;
+    }
+
+    private void logException(Throwable e, ProceedingJoinPoint ctx) {
+        Logging annotation = e.getClass().getAnnotation(Logging.class);
+        if (annotation == null || annotation.value() == Logging.Type.FULL) {
+            log.error("Uncaught exception: ", e);
+        } else if (annotation.value() == Logging.Type.BRIEF) {
+            log.error("Uncaught exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
+        }
     }
 }

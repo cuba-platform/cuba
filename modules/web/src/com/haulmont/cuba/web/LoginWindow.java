@@ -20,6 +20,8 @@ import com.vaadin.ui.*;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
@@ -47,6 +49,8 @@ public class LoginWindow extends Window implements Action.Handler {
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
+
+    protected Log log = LogFactory.getLog(getClass());
 
     // must be 8 symbols
     private static final String PASSWORD_KEY = "25tuThUw";
@@ -347,6 +351,7 @@ public class LoginWindow extends Window implements Action.Handler {
                 login(login, passwd, locale);
             }
         } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
             // todo Fix notification about exception while AD Auth
             showNotification(
                     messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc),

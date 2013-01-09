@@ -10,11 +10,16 @@
  */
 package com.haulmont.cuba.security.global;
 
+import com.haulmont.cuba.core.global.Logging;
+import com.haulmont.cuba.core.global.SupportedByClient;
+
 /**
  * Login error. Contains message localized accordingly to the current user locale. 
  */
-public class LoginException extends Exception
-{
+@SupportedByClient
+@Logging(Logging.Type.BRIEF)
+public class LoginException extends Exception {
+
     private static final long serialVersionUID = 6144194102176774627L;
 
     public LoginException(String message) {

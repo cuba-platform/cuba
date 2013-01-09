@@ -358,8 +358,8 @@ public abstract class App extends Application
         if (event instanceof AbstractApplicationServlet.RequestError) {
             log.error("RequestError:", event.getThrowable());
         } else {
-            exceptionHandlers.handle(event);
             getAppLog().log(event);
+            exceptionHandlers.handle(event);
         }
     }
 

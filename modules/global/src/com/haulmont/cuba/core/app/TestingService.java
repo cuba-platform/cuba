@@ -6,14 +6,14 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SupportedByClient;
 
 /**
  * Service interface for integration testing. Don't use it in application code!
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface TestingService {
 
@@ -39,6 +39,7 @@ public interface TestingService {
     void clearScheduledTasks();
 
     @SupportedByClient
+    @Logging(Logging.Type.BRIEF)
     public static class TestException extends Exception {
 
         public TestException(String message) {

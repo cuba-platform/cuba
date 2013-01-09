@@ -452,7 +452,16 @@ public class App implements ConnectionListener {
     }
 
     public void handleException(Thread thread, Throwable throwable) {
-        log.error("Exception in thread " + thread, throwable);
+        if (!(throwable instanceof SilentException)) {
+            Logging annotation = throwable.getClass().getAnnotation(Logging.class);
+            if (annotation.value() != Logging.Type.NONE) {
+                if (annotation.value() == Logging.Type.BRIEF)
+                    log.error("Uncaught exception in thread " + thread + ": " + throwable.toString());
+                else
+                    log.error("Uncaught exception in thread " + thread, throwable);
+            }
+        }
+
         ExceptionHandlers handlers = AppBeans.get("cuba_ExceptionHandlers", ExceptionHandlers.class);
         handlers.handle(thread, throwable);
     }
