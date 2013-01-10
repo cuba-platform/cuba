@@ -37,6 +37,8 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        getDialogParams().setWidth(490);
+
         jmxFieldGroup.addCustomField("password", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
@@ -79,7 +81,7 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
     }
 
     public void testConnection() {
-        if (validateConnection()) {
+        if (validateAll() && validateConnection()) {
             showNotification(getMessage("successfulConnection"), NotificationType.HUMANIZED);
         }
     }

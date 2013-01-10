@@ -2,10 +2,6 @@
  * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Alexander Budarov
- * Created: 17.08.2010 10:47:26
- * $Id$
  */
 
 package com.haulmont.cuba.jmxcontrol.entity;
@@ -17,6 +13,10 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 
 import java.util.List;
 
+/**
+ * @author budarov
+ * @version $Id$
+ */
 @MetaClass(name = "jmxcontrol$ManagedBeanInfo")
 public class ManagedBeanInfo extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = 7397761789851370883L;

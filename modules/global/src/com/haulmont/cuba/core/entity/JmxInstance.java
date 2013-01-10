@@ -20,7 +20,7 @@ import javax.persistence.Table;
  */
 @Entity(name = "sys$JmxInstance")
 @Table(name = "SYS_JMX_INSTANCE")
-@NamePattern("#getCaption|nodeName,address,description")
+@NamePattern("#getCaption|nodeName,address")
 @SystemLevel
 public class JmxInstance extends StandardEntity {
 
