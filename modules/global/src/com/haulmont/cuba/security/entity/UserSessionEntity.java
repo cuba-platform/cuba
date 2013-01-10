@@ -105,7 +105,8 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
         this.system = system;
     }
 
+    @Override
     public String toString() {
-        return "User session: id-"+id+" login-"+login+" user-"+userName+" since-"+since+" last-"+lastUsedTs;
+        return "id-"+id+" login-"+login+" user-"+userName+" since-"+since+" last-"+lastUsedTs;
     }
 }

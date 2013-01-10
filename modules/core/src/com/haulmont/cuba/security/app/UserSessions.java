@@ -11,14 +11,11 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.jmx.UserSessionsMBean;
-import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,7 +54,7 @@ public class UserSessions implements UserSessionsAPI {
 
     private Log log = LogFactory.getLog(UserSessions.class);
 
-    private Map<UUID, UserSessionInfo> cache = new ConcurrentHashMap<UUID, UserSessionInfo>();
+    private Map<UUID, UserSessionInfo> cache = new ConcurrentHashMap<>();
 
     private volatile int expirationTimeout = 1800;
 
@@ -97,6 +94,7 @@ public class UserSessions implements UserSessionsAPI {
                 UserSessionInfo.class,
                 new ClusterListener<UserSessionInfo>() {
 
+                    @Override
                     public void receive(UserSessionInfo message) {
                         UUID id = message.session.getId();
                         if (message.lastUsedTs == 0) {
@@ -109,6 +107,7 @@ public class UserSessions implements UserSessionsAPI {
                         }
                     }
 
+                    @Override
                     public byte[] getState() {
                         if (cache.isEmpty())
                             return new byte[0];
@@ -126,6 +125,7 @@ public class UserSessions implements UserSessionsAPI {
                         return bos.toByteArray();
                     }
 
+                    @Override
                     public void setState(byte[] state) {
                         if (state == null || state.length == 0)
                             return;
@@ -138,9 +138,7 @@ public class UserSessions implements UserSessionsAPI {
                                 UserSessionInfo usi = (UserSessionInfo) ois.readObject();
                                 receive(usi);
                             }
-                        } catch (IOException e) {
-                            log.error("Error receiving state", e);
-                        } catch (ClassNotFoundException e) {
+                        } catch (IOException | ClassNotFoundException e) {
                             log.error("Error receiving state", e);
                         }
                     }
@@ -148,6 +146,7 @@ public class UserSessions implements UserSessionsAPI {
         );
     }
 
+    @Override
     public void add(UserSession session) {
         UserSessionInfo usi = new UserSessionInfo(session, timeSource.currentTimeMillis());
         cache.put(session.getId(), usi);
@@ -155,6 +154,7 @@ public class UserSessions implements UserSessionsAPI {
             clusterManager.send(usi);
     }
 
+    @Override
     public void remove(UserSession session) {
         UserSessionInfo usi = cache.remove(session.getId());
 
@@ -189,16 +189,19 @@ public class UserSessions implements UserSessionsAPI {
         }
     }
 
+    @Override
     public int getExpirationTimeoutSec() {
         return expirationTimeout;
     }
 
+    @Override
     public void setExpirationTimeoutSec(int value) {
         expirationTimeout = value;
     }
 
+    @Override
     public Collection<UserSessionEntity> getUserSessionInfo() {
-        ArrayList<UserSessionEntity> sessionInfoList = new ArrayList<UserSessionEntity>();
+        ArrayList<UserSessionEntity> sessionInfoList = new ArrayList<>();
         for (UserSessionInfo nfo : cache.values()) {
             UserSessionEntity use = createUserSessionEntity(nfo.session, nfo.since, nfo.lastUsedTs);
             sessionInfoList.add(use);
@@ -223,6 +226,7 @@ public class UserSessions implements UserSessionsAPI {
         return use;
     }
 
+    @Override
     public void killSession(UUID id){
         UserSessionInfo usi = cache.remove(id);
 
@@ -232,6 +236,7 @@ public class UserSessions implements UserSessionsAPI {
         }
     }
 
+    @Override
     public void processEviction() {
         if (!AppContext.isStarted())
             return;
