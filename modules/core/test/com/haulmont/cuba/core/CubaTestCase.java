@@ -19,6 +19,7 @@ import com.haulmont.cuba.testsupport.TestTransactionManager;
 import com.haulmont.cuba.testsupport.TestUserTransaction;
 import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -56,13 +57,21 @@ import java.util.UUID;
  */
 public abstract class CubaTestCase extends TestCase
 {
-    private Log log = LogFactory.getLog(CubaTestCase.class);
+    private Log log;
 
     protected static boolean initialized;
 
     protected Persistence persistence;
     protected Metadata metadata;
     protected PasswordEncryption passwordEncryption;
+
+    protected CubaTestCase() {
+        String property = System.getProperty("log4j.configuration");
+        if (StringUtils.isBlank(property)) {
+            System.setProperty("log4j.configuration", getTestLog4jConfig());
+        }
+        log = LogFactory.getLog(CubaTestCase.class);
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -168,6 +177,10 @@ public abstract class CubaTestCase extends TestCase
 
     protected String getTestSpringConfig() {
         return "test-spring.xml";
+    }
+
+    protected String getTestLog4jConfig() {
+        return "test-log4j.xml";
     }
 
     protected void initTxManager() throws NamingException {
