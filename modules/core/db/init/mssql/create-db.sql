@@ -770,8 +770,7 @@ create table SYS_JMX_INSTANCE (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    CLUSTER_NODE_NAME varchar(255),
-    DESCRIPTION varchar(500),
+    NODE_NAME varchar(255),
     ADDRESS varchar(500) not null,
     LOGIN varchar(50) not null,
     PASSWORD varchar(255) not null,
@@ -800,12 +799,12 @@ insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null)^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
-values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 'admin', 'admin',
+values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin',
 'cc2229d1b8a052423d9e1c9ef0113b850086586a',
-'Administrator', 0, '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
+'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
-values ('60885987-1b61-4247-94c7-dff348347f94', current_timestamp, 'emailer', 'emailer', null,
+values ('60885987-1b61-4247-94c7-dff348347f94', current_timestamp, 0, 'emailer', 'emailer', null,
 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)

@@ -808,8 +808,7 @@ create table SYS_JMX_INSTANCE (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    CLUSTER_NODE_NAME varchar(255),
-    DESCRIPTION varchar(500),
+    NODE_NAME varchar(255),
     ADDRESS varchar(500) not null,
     LOGIN varchar(50) not null,
     PASSWORD varchar(255) not null,

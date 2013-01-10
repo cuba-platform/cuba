@@ -20,15 +20,12 @@ import javax.persistence.Table;
  */
 @Entity(name = "sys$JmxInstance")
 @Table(name = "SYS_JMX_INSTANCE")
-@NamePattern("#getCaption|clusterNodeName,address,description")
+@NamePattern("#getCaption|nodeName,address,description")
 @SystemLevel
 public class JmxInstance extends StandardEntity {
 
-    @Column(name = "CLUSTER_NODE_NAME", length = 255, nullable = false)
-    protected String clusterNodeName;
-
-    @Column(name = "DESCRIPTION", length = 500)
-    protected String description;
+    @Column(name = "NODE_NAME", length = 255)
+    protected String nodeName;
 
     @Column(name = "ADDRESS", length = 500, nullable = false)
     protected String address;
@@ -43,15 +40,15 @@ public class JmxInstance extends StandardEntity {
     }
 
     public JmxInstance(String clusterNodeName) {
-        this.clusterNodeName = clusterNodeName;
+        this.nodeName = clusterNodeName;
     }
 
-    public String getClusterNodeName() {
-        return clusterNodeName;
+    public String getNodeName() {
+        return nodeName;
     }
 
-    public void setClusterNodeName(String clusterNodeName) {
-        this.clusterNodeName = clusterNodeName;
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     public String getAddress() {
@@ -78,20 +75,10 @@ public class JmxInstance extends StandardEntity {
         this.password = password;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getCaption() {
         StringBuilder sb = new StringBuilder();
-        if (StringUtils.isNotEmpty(description))
-            sb.append(description);
-        else
-            sb.append(clusterNodeName);
+        if (StringUtils.isNotEmpty(nodeName))
+            sb.append(nodeName);
 
         if (StringUtils.isNotEmpty(address))
             sb.append(" (").append(address).append(")");

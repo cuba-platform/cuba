@@ -11,6 +11,7 @@ import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLabel;
 
+import javax.inject.Inject;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 
@@ -19,6 +20,9 @@ import java.util.Map;
  * @version $Id$
  */
 public class OperationResultWindow extends AbstractWindow {
+
+    @Inject
+    protected Label resultLabel;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -33,10 +37,6 @@ public class OperationResultWindow extends AbstractWindow {
 
         ScrollBoxLayout container = (ScrollBoxLayout) getComponent("container");
         if (ex != null) {
-            Label title = new WebLabel();
-            title.setStyleName("h2");
-            title.setValue(getMessage("operationResult.exception"));
-
             if (ex instanceof UndeclaredThrowableException)
                 ex = ex.getCause();
 
@@ -50,28 +50,18 @@ public class OperationResultWindow extends AbstractWindow {
             Label trace = new WebLabel();
             trace.setValue(msg);
 
-            container.add(title);
+            resultLabel.setValue(getMessage("operationResult.exception"));
             container.add(trace);
-        }
-        else if (result != null) {
-            Label title = new WebLabel();
-            title.setStyleName("h2");
-            title.setValue(getMessage("operationResult.result"));
-
+        } else if (result != null) {
             Label valueHolder = new WebLabel();
             com.vaadin.ui.Label vaadinLbl = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(valueHolder);
             vaadinLbl.setContentMode(com.vaadin.ui.Label.CONTENT_PREFORMATTED);
             valueHolder.setValue(AttributeHelper.convertToString(result));
 
-            container.add(title);
+            resultLabel.setValue(getMessage("operationResult.result"));
             container.add(valueHolder);
-        }
-        else {
-            Label title = new WebLabel();
-            title.setStyleName("h2");
-            title.setValue(getMessage("operationResult.void"));
-
-            container.add(title);
+        } else {
+            resultLabel.setValue(getMessage("operationResult.void"));
         }
 
         Button closeBtn = getComponent("close");

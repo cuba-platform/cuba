@@ -26,6 +26,10 @@
             </columns>
             <rows>
                 <row>
+                    <label value="msg://mbean.jmxConnection"/>
+                    <label datasource="mbeanDs" property="jmxInstance" stylename="h2"/>
+                </row>
+                <row>
                     <label value="msg://mbean.name"/>
                     <label datasource="mbeanDs" property="objectName" id="domain" stylename="h2"/>
                 </row>

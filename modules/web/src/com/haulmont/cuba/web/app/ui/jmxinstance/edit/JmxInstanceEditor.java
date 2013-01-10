@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -64,7 +65,11 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
         // try to connect to instance and assign cluster node name
         try {
             String remoteNodeName = jmxControlAPI.getRemoteNodeName(getItem());
-            getItem().setClusterNodeName(remoteNodeName);
+            if (StringUtils.isEmpty(getItem().getNodeName()))
+                getItem().setNodeName(remoteNodeName);
+        } catch (SecurityException e) {
+            showNotification(getMessage("invalidCredentials"), NotificationType.WARNING);
+            return false;
         } catch (Exception e) {
             showNotification(getMessage("unableToConnectToInterface"), NotificationType.WARNING);
             return false;

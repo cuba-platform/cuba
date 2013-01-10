@@ -7,10 +7,13 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -94,8 +97,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     public static abstract class StandardAction extends AbstractAction implements ShortcutAction{
 
-        private static final long serialVersionUID = 8103707056784950383L;
-
         protected PickerField pickerField;
 
         public StandardAction(String id, PickerField pickerField) {
@@ -159,7 +160,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         throw new IllegalStateException("Please specify metaclass or property for PickerField");
                     windowAlias = metaClass.getName() + ".lookup";
                 }
-                pickerField.getFrame().openLookup(
+                Window lookupWindow = pickerField.getFrame().openLookup(
                         windowAlias,
                         new Window.Lookup.Handler() {
                             @Override
@@ -174,10 +175,19 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         lookupScreenOpenType,
                         lookupScreenParams != null ? lookupScreenParams : Collections.<String, Object>emptyMap()
                 );
+                lookupWindow.addListener(new Window.CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        afterCloseLookup(actionId);
+                    }
+                });
             }
         }
 
         public void afterSelect(Collection items) {
+        }
+
+        public void afterCloseLookup(String actionId) {
         }
 
         @Override
@@ -257,7 +267,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 pickerField.getFrame().showNotification(
-                        MessageProvider.getMessage(ActionsFieldHelper.class, "ActionsFieldHelper.openMsg"),
+                        messages.getMessage(ActionsFieldHelper.class, "ActionsFieldHelper.openMsg"),
                         IFrame.NotificationType.HUMANIZED);
                 return;
             }
@@ -265,7 +275,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             LoadContext ctx = new LoadContext(entity.getClass());
             ctx.setId(entity.getId());
             ctx.setView(View.MINIMAL);
-            entity = ServiceLocator.getDataService().load(ctx);
+            entity = AppBeans.get(DataService.class).load(ctx);
 
             if (entity != null) {
                 String windowAlias = editScreen;

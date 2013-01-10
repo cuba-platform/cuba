@@ -9,7 +9,7 @@
         <collectionDatasource id="jmxInstancesDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local">
             <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource</datasourceClass>
         </collectionDatasource>
-        
+
         <collectionDatasource
                 id="mbeanDs"
                 class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo"
@@ -28,25 +28,23 @@
                 <rows>
                     <row>
                         <label value="msg://localJmxNode"/>
-                        <textField id="localJmxField" width="400px" datatype="string"/>
+                        <label id="localJmxField" stylename="h2" width="400px"/>
                     </row>
                     <row>
                         <label value="msg://targetJmxNode"/>
                         <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
                     </row>
-                    <row>
-                        <label value="msg://searchByObjectName"/>
-                        <textField id="objectNameField" width="400px"/>
-                    </row>
                 </rows>
             </grid>
         </groupBox>
 
+        <hbox spacing="true">
+            <button action="mbeans.refresh" icon="icons/refresh.png"/>
+            <button action="mbeans.inspect" icon="icons/edit.png"/>
+            <label value="msg://searchByObjectName"/>
+            <textField id="objectNameField" width="400px"/>
+        </hbox>
         <treeTable id="mbeans" editable="false" width="100%">
-            <buttonsPanel>
-                <button action="mbeans.refresh" icon="icons/refresh.png"/>
-                <button action="mbeans.inspect" icon="icons/edit.png"/>
-            </buttonsPanel>
             <columns>
                 <column id="domain" caption="msg://mbean.domain"/>
                 <column id="objectName" caption="msg://mbean.name"/>

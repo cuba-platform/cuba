@@ -4,14 +4,9 @@
         messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.operation"
         caption="msg://operationResult.title">
 
-    <metadataContext>
-    </metadataContext>
-    <dsContext>
-
-    </dsContext>
-
     <layout expand="container" spacing="true">
-        <scrollBox id="container">
+        <label id="resultLabel" stylename="h2"/>
+        <scrollBox id="container" width="100%">
         </scrollBox>
         <button id="close" icon="icons/ok.png"/>
     </layout>

@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.impl.AbstractTreeTableDatasource;
+import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanDomain;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
@@ -28,7 +28,7 @@ import java.util.*;
  * @author budarov
  * @version $Id$
  */
-public class ManagedBeanInfoDatasource extends AbstractTreeTableDatasource<ManagedBeanInfo, UUID> {
+public class ManagedBeanInfoDatasource extends AbstractTreeDatasource<ManagedBeanInfo, UUID> {
 
     private JmxInstance jmxInstance = null;
 
@@ -98,18 +98,6 @@ public class ManagedBeanInfoDatasource extends AbstractTreeTableDatasource<Manag
         }
 
         return managedBeans;
-    }
-
-    @Override
-    public boolean isCaption(UUID itemId) {
-        ManagedBeanInfo mbi = (ManagedBeanInfo) data.get(itemId);
-        return mbi.getObjectName() == null;
-    }
-
-    @Override
-    public String getCaption(UUID itemId) {
-        ManagedBeanInfo mbi = (ManagedBeanInfo) data.get(itemId);
-        return mbi.getDomain();
     }
 
     public JmxInstance getJmxInstance() {

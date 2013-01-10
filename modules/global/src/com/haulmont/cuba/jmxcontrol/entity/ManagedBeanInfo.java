@@ -36,6 +36,7 @@ public class ManagedBeanInfo extends AbstractNotPersistentEntity {
     @MetaProperty
     private String propertyList;
 
+    @MetaProperty
     private JmxInstance jmxInstance;
 
     private List<ManagedBeanAttribute> attributes;

@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.util.*;
@@ -41,7 +42,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
     protected TextField objectNameField;
 
     @Inject
-    protected TextField localJmxField;
+    protected Label localJmxField;
 
     @Resource(name = "mbeans")
     protected TreeTable mbeansTable;
@@ -83,7 +84,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
             @Override
             public boolean isApplicableTo(Datasource.State state, Entity item) {
                 return super.isApplicableTo(state, item) &&
-                        ((ManagedBeanInfo)item).getObjectName() != null;
+                        ((ManagedBeanInfo) item).getObjectName() != null;
             }
 
             @Override
@@ -114,7 +115,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
 
         jmxConnectionField.addAction(new PickerField.LookupAction(jmxConnectionField) {
             @Override
-            public void afterSelect(Collection items) {
+            public void afterCloseLookup(String actionId) {
                 jmxInstancesDs.refresh();
             }
         });
@@ -145,6 +146,25 @@ public class MbeansDisplayWindow extends AbstractWindow {
 
         localJmxField.setValue(jmxControlAPI.getLocalNodeName());
         localJmxField.setEditable(false);
+
+        mbeansTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(@Nullable Entity entity, @Nullable String property) {
+                if (entity != null) {
+                    if (entity instanceof ManagedBeanInfo &&
+                            ((ManagedBeanInfo) entity).getObjectName() == null)
+                        return "cuba-jmx-tree-table-domain";
+                }
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public String getItemIcon(@Nullable Entity entity) {
+                return null;
+            }
+        });
     }
 
     private class ObjectNameFieldListener implements ValueListener {

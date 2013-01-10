@@ -80,7 +80,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             return;
         }
 
-        final Window.Editor w = openEditor("jmxcontrol$EditAttribute", mba, WindowManager.OpenType.THIS_TAB);
+        final Window.Editor w = openEditor("jmxcontrol$EditAttribute", mba, WindowManager.OpenType.DIALOG);
         w.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {

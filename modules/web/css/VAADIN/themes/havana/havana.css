@@ -635,6 +635,20 @@
 }
 
 /*
+ * JMX
+ */
+
+.v-table-cell-cuba-jmx-tree-table-domain,
+.v-table-cell-content-cuba-jmx-tree-table-domain,
+.v-table-row-cuba-jmx-tree-table-domain {
+    background-color: #c6cbcd;
+}
+
+.v-table-table td.v-table-cell-cuba-jmx-tree-table-domain {
+    border-right-color: #c6cbcd;
+}
+
+/*
 * Menu separator
 */
 

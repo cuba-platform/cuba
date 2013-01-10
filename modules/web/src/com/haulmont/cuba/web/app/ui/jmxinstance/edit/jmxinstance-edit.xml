@@ -16,11 +16,10 @@
     <layout expand="windowActions">
         <fieldGroup id="jmxFieldGroup" datasource="jmxInstanceDs">
             <column width="350px">
-                <field id="clusterNodeName" editable="false"/>
-                <field id="description"/>
                 <field id="address"/>
                 <field id="login"/>
                 <field id="password" custom="true"/>
+                <field id="nodeName"/>
             </column>
         </fieldGroup>
         <iframe id="windowActions" screen="editWindowActions"/>
