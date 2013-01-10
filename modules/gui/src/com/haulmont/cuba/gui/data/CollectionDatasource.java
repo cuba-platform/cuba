@@ -118,10 +118,10 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /** Switch on/off soft deletion functionality. Corresponds to EntityManager.setSoftDeletion(boolean) */
     void setSoftDeletion(boolean softDeletion);
 
-    /** True if this datasource allow commit data to storage **/
+    /** True if this datasource allows to commit data to storage **/
     boolean isAllowCommit();
 
-    /** Switch on/off commit functionality. If enabled isModified returns false, commit() call has no effect */
+    /** Switch on/off commit functionality. If disabled, isModified() always returns false, commit() has no effect */
     void setAllowCommit(boolean allowCommit);
 
     /** True if the underlying collection contains an item with the specified ID */

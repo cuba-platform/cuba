@@ -492,10 +492,7 @@ public class DsContextLoader {
 
     private boolean getAllowCommit(Element element) {
         final String allowCommitStr = element.attributeValue("allowCommit");
-        boolean allowCommit = true;
-        if (StringUtils.isNotEmpty(allowCommitStr))
-            allowCommit = Boolean.valueOf(allowCommitStr);
-        return allowCommit;
+        return StringUtils.isNotEmpty(allowCommitStr) && Boolean.valueOf(allowCommitStr);
     }
 
     protected CollectionDatasource.FetchMode getFetchMode(Element element) {
