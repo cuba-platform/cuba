@@ -34,17 +34,19 @@
                         <label value="msg://targetJmxNode"/>
                         <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
                     </row>
+                    <row>
+                        <label value="msg://searchByObjectName"/>
+                        <textField id="objectNameField" width="400px"/>
+                    </row>
                 </rows>
             </grid>
         </groupBox>
 
-        <hbox spacing="true">
-            <button action="mbeans.refresh" icon="icons/refresh.png"/>
-            <button action="mbeans.inspect" icon="icons/edit.png"/>
-            <label value="msg://searchByObjectName"/>
-            <textField id="objectNameField" width="400px"/>
-        </hbox>
         <treeTable id="mbeans" editable="false" width="100%">
+            <buttonsPanel>
+                <button action="mbeans.refresh" icon="icons/refresh.png"/>
+                <button action="mbeans.inspect" icon="icons/edit.png"/>
+            </buttonsPanel>
             <columns>
                 <column id="domain" caption="msg://mbean.domain"/>
                 <column id="objectName" caption="msg://mbean.name"/>

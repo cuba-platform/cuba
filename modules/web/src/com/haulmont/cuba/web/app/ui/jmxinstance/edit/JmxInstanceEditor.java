@@ -7,10 +7,7 @@
 package com.haulmont.cuba.web.app.ui.jmxinstance.edit;
 
 import com.haulmont.cuba.core.entity.JmxInstance;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
@@ -61,6 +58,10 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
 
     @Override
     protected boolean preCommit() {
+        return validateConnection() && super.preCommit();
+    }
+
+    private boolean validateConnection() {
         getItem().setPassword(passwordField.<String>getValue());
         // try to connect to instance and assign cluster node name
         try {
@@ -74,7 +75,12 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
             showNotification(getMessage("unableToConnectToInterface"), NotificationType.WARNING);
             return false;
         }
+        return true;
+    }
 
-        return super.preCommit();
+    public void testConnection() {
+        if (validateConnection()) {
+            showNotification(getMessage("successfulConnection"), NotificationType.HUMANIZED);
+        }
     }
 }
