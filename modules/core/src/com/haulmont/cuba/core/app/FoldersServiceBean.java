@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.SearchFolder;
@@ -154,7 +155,8 @@ public class FoldersServiceBean implements FoldersService {
         Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select f from sec$SearchFolder f " +
+            MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(SearchFolder.class);
+            Query q = em.createQuery("select f from "+ effectiveMetaClass.getName() +" f " +
                     "left join fetch f.user " +
                     "left join fetch f.presentation " +
                     "where (f.user.id = ?1 or f.user is null) " +

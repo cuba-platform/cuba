@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
@@ -112,6 +113,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
+
+    protected Metadata metadata = AppBeans.get(Metadata.class);
 
     public DesktopFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
@@ -803,14 +806,15 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private void loadFilterEntities() {
         DataService ds = AppBeans.get(DataService.class);
-        LoadContext ctx = new LoadContext(FilterEntity.class);
+        LoadContext ctx = new LoadContext(metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class));
         ctx.setView("app");
 
         User user = userSessionSource.getUserSession().getSubstitutedUser();
         if (user == null)
             user = userSessionSource.getUserSession().getUser();
 
-        ctx.setQueryString("select f from sec$Filter f " +
+        MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
+        ctx.setQueryString("select f from " +effectiveMetaClass.getName() + " f " +
                 "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
                 .addParameter("component", getComponentPath())
                 .addParameter("userId", user.getId());

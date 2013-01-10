@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Metadata;
@@ -31,11 +32,10 @@ import java.util.UUID;
 /**
  * Service providing current user settings functionality:
  * an application can save/load some "setting" (plain or XML string) for current user.
- * <br>Ususally used by UI forms and components. 
+ * <br>Ususally used by UI forms and components.
  */
 @Service(UserSettingService.NAME)
-public class UserSettingServiceBean implements UserSettingService
-{
+public class UserSettingServiceBean implements UserSettingService {
     @Inject
     private UserSessionSource userSessionSource;
 
@@ -205,11 +205,12 @@ public class UserSettingServiceBean implements UserSettingService
     private void copyUserFolders(User fromUser, User toUser, Map<UUID, Presentation> presentationsMap) {
         Transaction tx = Locator.createTransaction();
         try {
+            MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query deleteSettingsQuery = em.createQuery("delete from sec$SearchFolder s where s.user.id = ?1");
+            Query deleteSettingsQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
             deleteSettingsQuery.setParameter(1, toUser);
             deleteSettingsQuery.executeUpdate();
-            Query q = em.createQuery("select s from sec$SearchFolder s where s.user.id = ?1");
+            Query q = em.createQuery("select s from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
             q.setParameter(1, fromUser);
             List<SearchFolder> fromUserFolders = q.getResultList();
             Map<SearchFolder, SearchFolder> copiedFolders = new HashMap<SearchFolder, SearchFolder>();
@@ -280,11 +281,13 @@ public class UserSettingServiceBean implements UserSettingService
         Map<UUID, FilterEntity> filtersMap = new HashMap<UUID, FilterEntity>();
         Transaction tx = Locator.createTransaction();
         try {
+            MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
+
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query deleteFiltersQuery = em.createQuery("delete from sec$Filter f where f.user.id = ?1");
+            Query deleteFiltersQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
             deleteFiltersQuery.setParameter(1, toUser);
             deleteFiltersQuery.executeUpdate();
-            Query q = em.createQuery("select f from sec$Filter f where f.user.id = ?1");
+            Query q = em.createQuery("select f from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
             q.setParameter(1, fromUser);
             List<FilterEntity> fromUserFilters = q.getResultList();
 

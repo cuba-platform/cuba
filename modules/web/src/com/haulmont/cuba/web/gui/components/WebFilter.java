@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
@@ -121,6 +122,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     private String defaultFilterCaption;
 
     protected HorizontalLayout topLayout = null;
+
+    protected Metadata metadata = AppBeans.get(Metadata.class);
 
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
@@ -481,7 +484,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     }
 
     private void createFilterEntity() {
-        filterEntity = new FilterEntity();
+        filterEntity = metadata.create(FilterEntity.class);
 
         filterEntity.setComponentId(getComponentPath());
         filterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
@@ -502,7 +505,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     private void copyFilterEntity() {
 
-        FilterEntity newFilterEntity = new FilterEntity();
+        FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
         newFilterEntity.setComponentId(filterEntity.getComponentId());
         newFilterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
         newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
@@ -887,7 +890,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     private void loadFilterEntities() {
         DataService ds = AppBeans.get(DataService.class);
-        LoadContext ctx = new LoadContext(FilterEntity.class);
+        LoadContext ctx = new LoadContext(metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class));
         ctx.setView("app");
 
         UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
@@ -895,8 +898,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         User user = userSessionSource.getUserSession().getSubstitutedUser();
         if (user == null)
             user = userSessionSource.getUserSession().getUser();
+        MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
 
-        ctx.setQueryString("select f from sec$Filter f " +
+        ctx.setQueryString("select f from " + effectiveMetaClass.getName() + " f " +
                 "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
                 .addParameter("component", getComponentPath())
                 .addParameter("userId", user.getId());
@@ -1269,9 +1273,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     private void saveAsFolder(boolean isAppFolder) {
         final AbstractSearchFolder folder;
         if (isAppFolder)
-            folder = (AppBeans.get(Metadata.class).create(AppFolder.class));
+            folder = (metadata.create(AppFolder.class));
         else
-            folder = (new SearchFolder());
+            folder = (metadata.create(SearchFolder.class));
 
         if (filterEntity.getCode() == null) {
             folder.setName(filterEntity.getName());

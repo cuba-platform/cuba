@@ -825,7 +825,7 @@ public class FoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
-            final Folder newFolder = isAppFolder ? metadata.create(AppFolder.class) : (new SearchFolder());
+            final Folder newFolder = isAppFolder ? metadata.create(AppFolder.class) : metadata.create(SearchFolder.class);
             newFolder.setName("");
             newFolder.setTabName("");
             newFolder.setParent(folder);

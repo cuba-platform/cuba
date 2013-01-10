@@ -25,32 +25,32 @@ import javax.persistence.Entity;
 public class FilterEntity extends StandardEntity {
 
     @Column(name = "COMPONENT")
-    private String componentId;
+    protected String componentId;
 
     @Column(name = "NAME", length = 255)
-    private String name;
+    protected String name;
 
     @Column(name = "CODE", length = 200)
-    private String code;
+    protected String code;
 
     @Column(name = "XML")
-    private String xml;
+    protected String xml;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @Transient
-    private Boolean isDefault;
+    protected Boolean isDefault;
 
     @Transient
-    private Boolean applyDefault;
+    protected Boolean applyDefault;
 
     @Transient
-    private AbstractSearchFolder folder;
+    protected AbstractSearchFolder folder;
 
     @Transient
-    private Boolean isSet;
+    protected Boolean isSet;
 
     public String getComponentId() {
         return componentId;

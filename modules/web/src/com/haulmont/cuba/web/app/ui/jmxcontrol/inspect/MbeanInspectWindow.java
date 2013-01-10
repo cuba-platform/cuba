@@ -216,4 +216,8 @@ public class MbeanInspectWindow extends AbstractEditor {
             }
         });
     }
+
+    public void close(Component component) {
+        super.close("close",true);
+    }
 }

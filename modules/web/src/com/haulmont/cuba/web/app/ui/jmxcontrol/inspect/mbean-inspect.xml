@@ -63,6 +63,6 @@
 
             </vbox>
         </scrollBox>
-        <button action="close"/>
+        <button id="close" caption="msg://close" icon="icons/ok.png" invoke="close"/>
     </layout>
 </window>
