@@ -1,43 +1,62 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.01.2009 13:05:26
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.DeletePolicyException;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Metadata;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Scope;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.*;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+@ManagedBean(DeletePolicyProcessor.NAME)
+@Scope("prototype")
+public class DeletePolicyProcessor {
 
-public class DeletePolicyHelper
-{
-    private Log log = LogFactory.getLog(DeletePolicyHelper.class);
+    public static final String NAME = "cuba_DeletePolicyProcessor";
 
-    private BaseEntity entity;
-    private MetaClass metaClass;
+    protected Log log = LogFactory.getLog(getClass());
 
-    public DeletePolicyHelper(BaseEntity entity) {
+    protected BaseEntity entity;
+    protected MetaClass metaClass;
+
+    protected EntityManager entityManager;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    public void setPersistence(Persistence persistence) {
+        entityManager = persistence.getEntityManager();
+    }
+
+    public BaseEntity getEntity() {
+        return entity;
+    }
+
+    public void setEntity(BaseEntity entity) {
         this.entity = entity;
-        this.metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+        this.metaClass = metadata.getSession().getClass(entity.getClass());
     }
 
     public void process() {
@@ -52,7 +71,7 @@ public class DeletePolicyHelper
             processOnDelete(properties);
     }
 
-    private void fillProperties(List<MetaProperty> properties, String annotationName) {
+    protected void fillProperties(List<MetaProperty> properties, String annotationName) {
         properties.clear();
         MetaProperty[] metaProperties = (MetaProperty[]) metaClass.getAnnotations().get(annotationName);
         if (metaProperties != null)
@@ -64,7 +83,7 @@ public class DeletePolicyHelper
         }
     }
 
-    private void processOnDeleteInverse(List<MetaProperty> properties) {
+    protected void processOnDeleteInverse(List<MetaProperty> properties) {
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getDomain();
             OnDeleteInverse annotation = property.getAnnotatedElement().getAnnotation(OnDeleteInverse.class);
@@ -84,9 +103,7 @@ public class DeletePolicyHelper
         }
     }
 
-    private void processOnDelete(List<MetaProperty> properties) {
-        EntityManager em = PersistenceProvider.getEntityManager();
-
+    protected void processOnDelete(List<MetaProperty> properties) {
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getRange().asClass();
             OnDelete annotation = property.getAnnotatedElement().getAnnotation(OnDelete.class);
@@ -107,13 +124,13 @@ public class DeletePolicyHelper
                         Collection<Entity> value = getCollection(property);
                         if (value != null && !value.isEmpty()) {
                             for (Entity e : value) {
-                                em.remove(e);
+                                entityManager.remove(e);
                             }
                         }
                     } else {
                         BaseEntity value = entity.getValue(property.getName());
                         if (value != null && checkIfEntityBelongsToMaster(property, value)) {
-                            em.remove(value);
+                            entityManager.remove(value);
                         }
                     }
                     break;
@@ -128,7 +145,7 @@ public class DeletePolicyHelper
         }
     }
 
-    private boolean checkIfEntityBelongsToMaster(MetaProperty property, BaseEntity entityToRemove) {
+    protected boolean checkIfEntityBelongsToMaster(MetaProperty property, BaseEntity entityToRemove) {
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty != null) {
             Entity master = entityToRemove.getValue(inverseProperty.getName());
@@ -138,7 +155,7 @@ public class DeletePolicyHelper
         }
     }
 
-    private boolean isCollectionEmpty(MetaProperty property) {
+    protected boolean isCollectionEmpty(MetaProperty property) {
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty == null) {
             log.warn("Inverse property not found for property " + property);
@@ -149,8 +166,7 @@ public class DeletePolicyHelper
         String invPropName = inverseProperty.getName();
         String qlStr = "select e.id from " + property.getRange().asClass().getName() + " e where e." + invPropName + ".id = ?1";
 
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query query = em.createQuery(qlStr);
+        Query query = entityManager.createQuery(qlStr);
         query.setParameter(1, entity.getId());
         query.setMaxResults(1);
         List<Entity> list = query.getResultList();
@@ -158,7 +174,7 @@ public class DeletePolicyHelper
         return list.isEmpty();
     }
 
-    private Collection<Entity> getCollection(MetaProperty property) {
+    protected Collection<Entity> getCollection(MetaProperty property) {
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty == null) {
             log.warn("Inverse property not found for property " + property);
@@ -169,8 +185,7 @@ public class DeletePolicyHelper
         String invPropName = inverseProperty.getName();
         String qlStr = "select e from " + property.getRange().asClass().getName() + " e where e." + invPropName + ".id = ?1";
 
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query query = em.createQuery(qlStr);
+        Query query = entityManager.createQuery(qlStr);
         query.setParameter(1, entity.getId());
         List<Entity> list = query.getResultList();
 
@@ -186,7 +201,7 @@ public class DeletePolicyHelper
         return result;
     }
 
-    private boolean referenceExists(MetaProperty property) {
+    protected boolean referenceExists(MetaProperty property) {
         MetaClass metaClass = property.getDomain();
         List<MetaClass> classes = new ArrayList<MetaClass>();
         if (isPersistent(metaClass))
@@ -199,8 +214,7 @@ public class DeletePolicyHelper
         for (MetaClass persistentMetaClass : classes) {
             String qstr = String.format("select e.id from %s e where e.%s.id = ?1",
                     persistentMetaClass.getName(), property.getName());
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery(qstr);
+            Query query = entityManager.createQuery(qstr);
             query.setParameter(1, entity.getId());
             query.setMaxResults(1);
             List list = query.getResultList();
@@ -210,29 +224,27 @@ public class DeletePolicyHelper
         return false;
     }
 
-    private boolean isPersistent(MetaClass metaClass) {
+    protected boolean isPersistent(MetaClass metaClass) {
         return metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class);
     }
 
-    private void cascade(MetaProperty property) {
+    protected void cascade(MetaProperty property) {
         MetaClass metaClass = property.getDomain();
         String qstr = String.format("select e from %s e where e.%s.id = ?1",
                 metaClass.getName(), property.getName());
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query query = em.createQuery(qstr);
+        Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
         List<BaseEntity> list = query.getResultList();
         for (BaseEntity e : list) {
-            em.remove(e);
+            entityManager.remove(e);
         }
     }
 
-    private void unlink(MetaProperty property) {
+    protected void unlink(MetaProperty property) {
         MetaClass metaClass = property.getDomain();
         String qstr = String.format("select e from %s e where e.%s.id = ?1",
                 metaClass.getName(), property.getName());
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query query = em.createQuery(qstr);
+        Query query = entityManager.createQuery(qstr);
         query.setParameter(1, entity.getId());
         List<BaseEntity> list = query.getResultList();
         for (BaseEntity e : list) {

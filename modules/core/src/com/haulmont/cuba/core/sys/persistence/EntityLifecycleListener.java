@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 11.11.2008 18:14:37
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys.persistence;
 
@@ -16,10 +11,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.FtsChangeType;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FtsConfig;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -34,22 +26,36 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Date;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean("cuba_EntityLifecycleListener")
-public class EntityLifecycleListener extends AbstractLifecycleListener
-{
-    private static Log log = LogFactory.getLog(EntityLifecycleListener.class);
+public class EntityLifecycleListener extends AbstractLifecycleListener {
+
+    protected Log log = LogFactory.getLog(getClass());
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
     @Inject
-    private EntityListenerManager manager;
+    protected EntityListenerManager manager;
 
     @Inject
-    private EntityLogAPI entityLog;
+    protected EntityLogAPI entityLog;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected TimeSource timeSource;
+
+    private FtsConfig ftsConfig;
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        ftsConfig = configuration.getConfig(FtsConfig.class);
+    }
 
     public void beforePersist(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
@@ -132,18 +138,17 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         manager.fireListener(entity, EntityListenerType.AFTER_DELETE);
     }
 
-    private boolean justDeleted(SoftDelete dd) {
+    protected boolean justDeleted(SoftDelete dd) {
         if (!dd.isDeleted()) {
             return false;
-        }
-        else {
+        } else {
             return persistence.getTools().getDirtyFields((BaseEntity) dd).contains("deleteTs");
         }
     }
 
-    private void __beforePersist(BaseEntity entity) {
+    protected void __beforePersist(BaseEntity entity) {
         entity.setCreatedBy(userSessionSource.getUserSession().getUser().getLogin());
-        Date ts = TimeProvider.currentTimestamp();
+        Date ts = timeSource.currentTimestamp();
         entity.setCreateTs(ts);
 
         if (entity instanceof Updatable) {
@@ -151,18 +156,19 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         }
     }
 
-    private void __beforeUpdate(Updatable entity) {
+    protected void __beforeUpdate(Updatable entity) {
         entity.setUpdatedBy(userSessionSource.getUserSession().getUser().getLogin());
-        entity.setUpdateTs(TimeProvider.currentTimestamp());
+        entity.setUpdateTs(timeSource.currentTimestamp());
     }
 
-    private void processDeletePolicy(BaseEntity entity) {
-        DeletePolicyHelper helper = new DeletePolicyHelper(entity);
-        helper.process();
+    protected void processDeletePolicy(BaseEntity entity) {
+        DeletePolicyProcessor processor = AppBeans.get(DeletePolicyProcessor.NAME);
+        processor.setEntity(entity);
+        processor.process();
     }
 
-    private void enqueueForFts(BaseEntity entity, FtsChangeType changeType) {
-        if (!ConfigProvider.getConfig(FtsConfig.class).getEnabled())
+    protected void enqueueForFts(BaseEntity entity, FtsChangeType changeType) {
+        if (!ftsConfig.getEnabled())
             return;
         try {
             if (AppContext.getApplicationContext().containsBean(FtsSender.NAME)) {
