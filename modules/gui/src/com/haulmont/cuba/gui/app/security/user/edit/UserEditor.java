@@ -319,6 +319,11 @@ public class UserEditor extends AbstractEditor<User> {
                     userSession.isEntityOpPermitted(
                             metadata.getSession().getClass(UserRole.class), EntityOp.CREATE);
         }
+
+        @Override
+        public String getCaption() {
+            return getMessage("actions.Add");
+        }
     }
 
     private class EditRoleAction extends ItemTrackingAction {
