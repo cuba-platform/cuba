@@ -75,7 +75,8 @@ public class MessageTools {
             } else if (strings.length == 2) {
                 ref = messages.getMessage(strings[0], strings[1]);
             } else {
-                throw new UnsupportedOperationException("Unsupported resource string format: " + ref);
+                throw new UnsupportedOperationException("Unsupported resource string format: '" + ref
+                        + "', messagesPack=" + messagesPack);
             }
         }
         return ref;

@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
 import com.haulmont.cuba.gui.components.filter.AbstractPropertyConditionDescriptor;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -25,11 +27,12 @@ import java.util.List;
 /**
  * Root of properties branch.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RootPropertyModelItem implements ModelItem {
+
+    protected Log log = LogFactory.getLog(getClass());
 
     private MetaClass metaClass;
     private List<AbstractConditionDescriptor> propertyDescriptors;
@@ -57,7 +60,11 @@ public class RootPropertyModelItem implements ModelItem {
         for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
             if (descriptor instanceof AbstractPropertyConditionDescriptor) {
                 MetaPropertyPath mpp = metaClass.getPropertyPath(descriptor.getName());
-                MetaProperty metaProperty = mpp.getMetaProperties()[0];
+                if (mpp == null) {
+                    log.error("Invalid property name: " + descriptor.getName());
+                    continue;
+                }
+                MetaProperty metaProperty = mpp.getMetaProperty();
                 if (userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))
                     list.add(new PropertyModelItem(null, metaProperty, descriptor, descriptorBuilder));
             }

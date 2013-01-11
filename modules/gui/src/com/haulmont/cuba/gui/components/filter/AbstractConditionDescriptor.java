@@ -95,4 +95,11 @@ public abstract class AbstractConditionDescriptor<T extends AbstractParam> {
     public abstract String getEntityParamWhere();
 
     public abstract String getEntityParamView();
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }
