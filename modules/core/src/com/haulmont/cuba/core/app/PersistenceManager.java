@@ -5,6 +5,8 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
 import com.haulmont.cuba.core.global.Configuration;
@@ -15,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.persistence.JoinTable;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -22,8 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Class that caches database metadata information and entity statistics. Also delegates some funtionality
@@ -35,13 +36,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @ManagedBean(PersistenceManagerAPI.NAME)
 public class PersistenceManager implements PersistenceManagerAPI {
 
-    protected static Log log = LogFactory.getLog(PersistenceManager.class);
+    protected Log log = LogFactory.getLog(getClass());
 
-    protected boolean metadataLoaded;
+    protected volatile Set<String> softDeleteTables;
 
-    protected Set<String> softDeleteTables = new HashSet<>();
-
-    protected ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected volatile Set<String> manyToManyLinkTables;
 
     protected Map<String, EntityStatistics> statisticsCache;
 
@@ -64,71 +63,83 @@ public class PersistenceManager implements PersistenceManagerAPI {
         config = configuration.getConfig(PersistenceConfig.class);
     }
 
-    protected void initDbMetadata() {
-        log.info("Initializing DB metadata");
-        DataSource datasource = persistence.getDataSource();
-        Connection conn = null;
-        try {
-            conn = datasource.getConnection();
-            DatabaseMetaData metaData = conn.getMetaData();
-            lock.writeLock().lock();
-            try {
-                softDeleteTables.clear();
-
-                ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
-                while (tables.next()) {
-                    String table = tables.getString("TABLE_NAME");
-                    if (table != null) {
-                        ResultSet columns = metaData.getColumns(
-                                null, null, table, persistence.getDbDialect().getDeleteTsColumn());
-                        if (columns.next()) {
-                            softDeleteTables.add(table.toLowerCase());
-                        }
-                    }
-                }
-            } finally {
-                lock.writeLock().unlock();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException ignored) {
-            }
-        }
-        metadataLoaded = true;
-    }
-
     @Override
     public boolean isSoftDeleteFor(String table) {
-        lock.readLock().lock();
-        if (!metadataLoaded) {
-            lock.readLock().unlock();
-            initDbMetadata();
-            lock.readLock().lock();
+        if (softDeleteTables == null) {
+            initSoftDeleteTables();
         }
-        try {
-            return softDeleteTables.contains(table.toLowerCase());
-        } finally {
-            lock.readLock().unlock();
-        }
+        return softDeleteTables.contains(table.toLowerCase());
     }
 
     @Override
     public List<String> getSoftDeleteTables() {
-        lock.readLock().lock();
-        if (!metadataLoaded) {
-            lock.readLock().unlock();
-            initDbMetadata();
-            lock.readLock().lock();
+        if (softDeleteTables == null) {
+            initSoftDeleteTables();
         }
-        try {
-            ArrayList<String> list = new ArrayList<>(softDeleteTables);
-            Collections.sort(list);
-            return list;
-        } finally {
-            lock.readLock().unlock();
+        ArrayList<String> list = new ArrayList<>(softDeleteTables);
+        Collections.sort(list);
+        return list;
+    }
+
+    @Override
+    public boolean isManyToManyLinkTable(String table) {
+        if (manyToManyLinkTables == null) {
+            initManyToManyLinkTables();
+        }
+        return manyToManyLinkTables.contains(table);
+    }
+
+    protected synchronized void initSoftDeleteTables() {
+        if (softDeleteTables == null) { // double checked locking
+            log.debug("Searching for soft delete tables");
+            HashSet<String> set = new HashSet<>();
+
+            DataSource datasource = persistence.getDataSource();
+            Connection conn = null;
+            try {
+                conn = datasource.getConnection();
+                DatabaseMetaData metaData = conn.getMetaData();
+
+                    ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
+                    while (tables.next()) {
+                        String table = tables.getString("TABLE_NAME");
+                        if (table != null) {
+                            ResultSet columns = metaData.getColumns(
+                                    null, null, table, persistence.getDbDialect().getDeleteTsColumn());
+                            if (columns.next()) {
+                                set.add(table.toLowerCase());
+                            }
+                        }
+                    }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    if (conn != null) conn.close();
+                } catch (SQLException ignored) {
+                }
+            }
+
+            softDeleteTables = set;
+        }
+    }
+
+    protected synchronized void initManyToManyLinkTables() {
+        if (manyToManyLinkTables == null) { // double checked locking
+            log.debug("Searching for ManyToMany link tables");
+            HashSet<String> set = new HashSet<>();
+
+            Collection<MetaClass> metaClasses = metadata.getTools().getAllPersistentMetaClasses();
+            for (MetaClass metaClass : metaClasses) {
+                for (MetaProperty metaProperty : metaClass.getProperties()) {
+                    JoinTable joinTable = metaProperty.getAnnotatedElement().getAnnotation(JoinTable.class);
+                    if (joinTable != null) {
+                        set.add(joinTable.name());
+                    }
+                }
+            }
+
+            manyToManyLinkTables = set;
         }
     }
 

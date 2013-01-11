@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 22.05.2009 14:43:03
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -18,12 +13,11 @@ import java.util.SortedMap;
 /**
  * API to {@link PersistenceManager}.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public interface PersistenceManagerAPI
-{
+public interface PersistenceManagerAPI {
+
     String NAME = "cuba_PersistenceManager";
 
     /**
@@ -33,7 +27,17 @@ public interface PersistenceManagerAPI
      */
     boolean isSoftDeleteFor(String table);
 
+    /**
+     * @return all soft delete tables sorted in alphabetical order
+     */
     List<String> getSoftDeleteTables();
+
+    /**
+     * Checks whether the table provided is a ManyToMany link table.
+     * @param table table name
+     * @return      true/false
+     */
+    boolean isManyToManyLinkTable(String table);
 
     /**
      * Whether to use a lazy collection datasource for this entity, based on current statistics.
