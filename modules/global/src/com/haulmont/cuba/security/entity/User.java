@@ -236,7 +236,10 @@ public class User extends StandardEntity {
             pattern = "{1} [{0}]";
         }
         MessageFormat fmt = new MessageFormat(pattern);
-        return StringUtils.trimToEmpty(fmt.format(new Object[]{login, name}));
+        return StringUtils.trimToEmpty(fmt.format(new Object[]{
+                StringUtils.trimToEmpty(login),
+                StringUtils.trimToEmpty(name)
+        }));
     }
 
     public Boolean getChangePasswordAtNextLogon() {
