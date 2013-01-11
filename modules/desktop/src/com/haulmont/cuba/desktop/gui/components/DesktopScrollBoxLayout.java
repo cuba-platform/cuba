@@ -19,25 +19,31 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
- * @author Alexander Budarov
+ * @author budarov
+ * @version $Id$
  */
 public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane> implements ScrollBoxLayout, AutoExpanding {
 
     protected List<Component> components = new ArrayList<>();
     private Orientation orientation = Orientation.VERTICAL;
+    private ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
     private DesktopAbstractBox content;
 
     public DesktopScrollBoxLayout() {
         impl = new JScrollPane();
         // by default it is turned off
-        impl.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        impl.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         impl.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         impl.setBorder(null);
 
         content = new DesktopVBox();
-        impl.setViewportView(DesktopComponentsHelper.getComposition(content));
+
+        DesktopVBox contentPane = new DesktopVBox();
+        contentPane.add(content);
+
+        impl.setViewportView(DesktopComponentsHelper.getComposition(contentPane));
+
+        applyScrollBarPolicy(scrollBarPolicy);
 
         // support tables with 100% width like in web
         impl.addComponentListener(new ComponentAdapter() {
@@ -51,8 +57,27 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     private void adjustViewPreferredSize() {
         JComponent view = DesktopComponentsHelper.getComposition(content);
         Dimension minimumSize = view.getMinimumSize();
-        int width = Math.max(minimumSize.width, impl.getViewport().getWidth());
-        view.setPreferredSize(new Dimension(width, minimumSize.height));
+        Dimension preferredSize = null;
+        switch (scrollBarPolicy) {
+            case VERTICAL:
+                int width = Math.max(minimumSize.width, impl.getViewport().getWidth());
+                preferredSize = new Dimension(width, minimumSize.height);
+                break;
+
+            case HORIZONTAL:
+                int height = Math.max(minimumSize.height, impl.getViewport().getHeight());
+                preferredSize = new Dimension(minimumSize.width, height);
+                break;
+
+            case NONE:
+                preferredSize = new Dimension(impl.getViewport().getWidth(), impl.getViewport().getHeight());
+                break;
+
+            case BOTH:
+                preferredSize = new Dimension(minimumSize.width, minimumSize.height);
+                break;
+        }
+        view.setPreferredSize(preferredSize);
     }
 
     @Override
@@ -66,7 +91,13 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
 
         if (newContent != null) {
             content = newContent;
-            impl.setViewportView(DesktopComponentsHelper.getComposition(content));
+
+            DesktopVBox contentPane = new DesktopVBox();
+            contentPane.add(content);
+
+            impl.setViewportView(DesktopComponentsHelper.getComposition(contentPane));
+
+            applyScrollBarPolicy(scrollBarPolicy);
         }
 
         content.add(component);
@@ -121,6 +152,55 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
                 throw new IllegalStateException("Unable to change scrollbox orientation after adding components to it");
 
             this.orientation = orientation;
+        }
+    }
+
+    @Override
+    public ScrollBarPolicy getScrollBarPolicy() {
+        return scrollBarPolicy;
+    }
+
+    @Override
+    public void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy) {
+        if (this.scrollBarPolicy != scrollBarPolicy) {
+            applyScrollBarPolicy(scrollBarPolicy);
+        }
+        this.scrollBarPolicy = scrollBarPolicy;
+    }
+
+    private void applyScrollBarPolicy(ScrollBarPolicy scrollBarPolicy) {
+        switch (scrollBarPolicy) {
+            case BOTH:
+                impl.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                impl.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+                content.setWidth("-1px");
+                content.setHeight("-1px");
+                break;
+
+            case HORIZONTAL:
+                impl.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                impl.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+                content.setWidth("-1px");
+                content.setHeight("100%");
+                break;
+
+            case VERTICAL:
+                impl.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                impl.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+                content.setWidth("100%");
+                content.setHeight("-1px");
+                break;
+
+            case NONE:
+                impl.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                impl.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+                content.setWidth("100%");
+                content.setHeight("100%");
+                break;
         }
     }
 

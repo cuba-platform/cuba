@@ -9,6 +9,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public interface ScrollBoxLayout
         extends Component.Container, Component.BelongToFrame, Component.Margin, Component.Spacing {
 
@@ -19,6 +23,16 @@ public interface ScrollBoxLayout
         HORIZONTAL
     }
 
+    enum ScrollBarPolicy {
+        VERTICAL,
+        HORIZONTAL,
+        BOTH,
+        NONE
+    }
+
     Orientation getOrientation();
     void setOrientation(Orientation orientation);
+
+    ScrollBarPolicy getScrollBarPolicy();
+    void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy);
 }

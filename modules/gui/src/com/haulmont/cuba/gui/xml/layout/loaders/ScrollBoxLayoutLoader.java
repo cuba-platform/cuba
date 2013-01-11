@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.04.2009 15:33:04
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -18,6 +14,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
 
     private Log log = LogFactory.getLog(getClass());
@@ -26,7 +26,10 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         final ScrollBoxLayout component = factory.createComponent(ScrollBoxLayout.NAME);
 
         assignXmlDescriptor(component, element);
@@ -37,6 +40,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
 
         loadAlign(component, element);
         loadOrientation(component, element);
+        loadScrollBars(component, element);
 
         loadSpacing(component, element);
         loadMargin(component, element);
@@ -75,6 +79,24 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
             component.setOrientation(ScrollBoxLayout.Orientation.VERTICAL);
         } else {
             throw new IllegalStateException("Invalid scrollbox orientation value: " + orientation);
+        }
+    }
+
+    protected void loadScrollBars(ScrollBoxLayout component, Element element) {
+        String scrollBars = element.attributeValue("scrollBars");
+        if (scrollBars == null)
+            return;
+
+        if ("horizontal".equalsIgnoreCase(scrollBars)) {
+            component.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.HORIZONTAL);
+        } else if ("vertical".equalsIgnoreCase(scrollBars)) {
+            component.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.VERTICAL);
+        } else if ("both".equalsIgnoreCase(scrollBars)) {
+            component.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.BOTH);
+        } else if ("none".equalsIgnoreCase(scrollBars)) {
+            component.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.NONE);
+        } else {
+            throw new IllegalStateException("Invalid scrollbox scrollBars value: " + scrollBars);
         }
     }
 }

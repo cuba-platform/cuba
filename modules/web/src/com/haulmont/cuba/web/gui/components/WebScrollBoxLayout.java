@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -30,28 +31,29 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     protected List<Component> components = new ArrayList<>();
     private Alignment alignment = Alignment.TOP_LEFT;
     private Orientation orientation = Orientation.VERTICAL;
+    private ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 
     private IFrame frame;
 
     public WebScrollBoxLayout() {
         ((AbstractOrderedLayout) getContent()).setMargin(false);
         setScrollable(true);
-        getContent().setSizeUndefined();
     }
 
     @Override
     public void add(Component component) {
         AbstractOrderedLayout newContent = null;
-        if (orientation == Orientation.VERTICAL && !(getContent() instanceof VerticalLayout)) {
+        if (orientation == Orientation.VERTICAL && !(getContent() instanceof VerticalLayout))
             newContent = new VerticalLayout();
-            newContent.setSizeUndefined();
-        } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof HorizontalLayout))
+        else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof HorizontalLayout))
             newContent = new HorizontalLayout();
 
         if (newContent != null) {
             newContent.setMargin(((AbstractOrderedLayout) getContent()).getMargin());
             newContent.setSpacing(((AbstractOrderedLayout) getContent()).isSpacing());
             setContent(newContent);
+
+            applyScrollBarsPolicy(scrollBarPolicy);
         }
 
         getContent().addComponent(WebComponentsHelper.getComposition(component));
@@ -149,6 +151,41 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
                 throw new IllegalStateException("Unable to change scrollBox orientation after adding components to it");
 
             this.orientation = orientation;
+        }
+    }
+
+    @Override
+    public ScrollBarPolicy getScrollBarPolicy() {
+        return scrollBarPolicy;
+    }
+
+    @Override
+    public void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy) {
+        if (this.scrollBarPolicy != scrollBarPolicy) {
+            applyScrollBarsPolicy(scrollBarPolicy);
+        }
+        this.scrollBarPolicy = scrollBarPolicy;
+    }
+
+    private void applyScrollBarsPolicy(ScrollBarPolicy scrollBarPolicy) {
+        switch (scrollBarPolicy) {
+            case VERTICAL:
+                getContent().setHeight(SIZE_UNDEFINED, Sizeable.UNITS_PIXELS);
+                getContent().setWidth(100, Sizeable.UNITS_PERCENTAGE);
+                break;
+
+            case HORIZONTAL:
+                getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
+                getContent().setWidth(SIZE_UNDEFINED, Sizeable.UNITS_PIXELS);
+                break;
+
+            case BOTH:
+                getContent().setSizeUndefined();
+                break;
+
+            case NONE:
+                getContent().setSizeFull();
+                break;
         }
     }
 

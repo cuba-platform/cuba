@@ -89,6 +89,15 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="scrollBars">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="horizontal"/>
+            <xs:enumeration value="vertical"/>
+            <xs:enumeration value="both"/>
+            <xs:enumeration value="none"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="align">
         <xs:restriction base="xs:string">
             <xs:enumeration value="TOP_RIGHT"/>
@@ -974,6 +983,7 @@
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
         <xs:attribute name="orientation" default="vertical" type="orientation"/>
+        <xs:attribute name="scrollBars" default="vertical" type="scrollBars"/>
     </xs:complexType>
 
     <!-- SplitPanel -->

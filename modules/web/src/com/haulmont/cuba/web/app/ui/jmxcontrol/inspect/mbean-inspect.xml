@@ -43,7 +43,7 @@
                 </row>
             </rows>
         </grid>
-        <scrollBox id="scrollbox" spacing="true" margin="true" stylename="edit-area">
+        <scrollBox id="scrollbox" spacing="true" margin="true" stylename="edit-area" scrollBars="vertical">
             <label value="msg://mbean.attributes" stylename="h2"/>
             <table id="attributes" width="100%" height="300px">
                 <actions>
