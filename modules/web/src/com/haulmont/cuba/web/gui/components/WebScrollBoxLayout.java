@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.04.2009 15:26:55
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -22,6 +18,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayout {
 
     private static final long serialVersionUID = 2724785666636087457L;
@@ -36,12 +36,15 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     public WebScrollBoxLayout() {
         ((AbstractOrderedLayout) getContent()).setMargin(false);
         setScrollable(true);
+        getContent().setSizeUndefined();
     }
 
+    @Override
     public void add(Component component) {
         AbstractOrderedLayout newContent = null;
         if (orientation == Orientation.VERTICAL && !(getContent() instanceof VerticalLayout)) {
             newContent = new VerticalLayout();
+            newContent.setSizeUndefined();
         } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof HorizontalLayout))
             newContent = new HorizontalLayout();
 
@@ -53,21 +56,25 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
 
         getContent().addComponent(WebComponentsHelper.getComposition(component));
         components.add(component);
-}
+    }
 
+    @Override
     public void remove(Component component) {
         getContent().removeComponent(WebComponentsHelper.getComposition(component));
         components.remove(component);
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public void requestFocus() {
         if (getComponentIterator().hasNext()) {
             com.vaadin.ui.Component component = getComponentIterator().next();
@@ -77,6 +84,7 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
         }
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         for (Component component : components) {
             if (ObjectUtils.equals(component.getId(), id))
@@ -85,6 +93,7 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
         return null;
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
         for (Component component : getComponents()) {
             if (ObjectUtils.equals(component.getId(), id))
@@ -93,18 +102,22 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
         return null;
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(components);
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
 
+    @Override
     public Alignment getAlignment() {
         return alignment;
     }
 
+    @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
         final com.vaadin.ui.Component component = getParent();
@@ -113,10 +126,12 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
         }
     }
 
+    @Override
     public <A extends IFrame> A getFrame() {
         return (A) frame;
     }
 
+    @Override
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
