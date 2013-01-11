@@ -96,8 +96,7 @@ public class DeletePolicyHelper
                     if (property.getRange().getCardinality().isMany()) {
                         if (!isCollectionEmpty(property))
                             throw new DeletePolicyException(metaClass.getName());
-                    }
-                    else {
+                    } else {
                         Object value = entity.getValue(property.getName());
                         if (value != null)
                             throw new DeletePolicyException(metaClass.getName());
@@ -111,10 +110,9 @@ public class DeletePolicyHelper
                                 em.remove(e);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         BaseEntity value = entity.getValue(property.getName());
-                        if (value != null) {
+                        if (value != null && checkIfEntityBelongsToMaster(property, value)) {
                             em.remove(value);
                         }
                     }
@@ -122,12 +120,21 @@ public class DeletePolicyHelper
                 case UNLINK:
                     if (property.getRange().getCardinality().isMany()) {
                         throw new UnsupportedOperationException("Unable to unlink nested collection items");
-                    }
-                    else {
+                    } else {
                         entity.setValue(property.getName(), null);
                     }
                     break;
             }
+        }
+    }
+
+    private boolean checkIfEntityBelongsToMaster(MetaProperty property, BaseEntity entityToRemove) {
+        MetaProperty inverseProperty = property.getInverse();
+        if (inverseProperty != null) {
+            Entity master = entityToRemove.getValue(inverseProperty.getName());
+            return entity.equals(master);
+        } else {
+            return true;
         }
     }
 
