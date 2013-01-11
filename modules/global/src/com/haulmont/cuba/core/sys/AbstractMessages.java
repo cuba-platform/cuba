@@ -41,19 +41,18 @@ public abstract class AbstractMessages implements Messages {
     public static final String EXT = ".properties";
     public static final String ENCODING = "UTF-8";
 
+    protected Log log = LogFactory.getLog(getClass());
+
     @Inject
     protected MessageTools messageTools;
 
-    @Inject
-    protected Configuration configuration;
-
     protected Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected GlobalConfig globalConfig;
 
     protected String confDir;
 
-    private String mainMessagePack;
+    protected String mainMessagePack;
 
     protected Map<String, String> strCache = new ConcurrentHashMap<>();
 
@@ -64,6 +63,12 @@ public abstract class AbstractMessages implements Messages {
 
     protected abstract String searchRemotely(String pack, String key, Locale locale);
 
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+        confDir = globalConfig.getConfDir().replaceAll("\\\\", "/");
+    }
+
     @PostConstruct
     protected void init() {
         mainMessagePack = AppContext.getProperty("cuba.mainMessagePack");
@@ -71,7 +76,7 @@ public abstract class AbstractMessages implements Messages {
             throw new IllegalStateException("Property cuba.messagePack is not set");
         log.debug("Main message pack: " + mainMessagePack);
 
-        for (Locale locale : configuration.getConfig(GlobalConfig.class).getAvailableLocales().values()) {
+        for (Locale locale : globalConfig.getAvailableLocales().values()) {
             Datatypes.setFormatStrings(
                     locale,
                     new FormatStrings(
@@ -186,6 +191,9 @@ public abstract class AbstractMessages implements Messages {
         if (key == null)
             throw new IllegalArgumentException("Message key is null");
 
+        if (globalConfig.getUseLocaleLanguageOnly())
+            locale = Locale.forLanguageTag(locale.getLanguage());
+
         String cacheKey = makeCacheKey(packs, key, locale, false);
 
         String msg = strCache.get(cacheKey);
@@ -277,13 +285,9 @@ public abstract class AbstractMessages implements Messages {
 
         log.trace("searchFiles: " + cacheKey);
 
-        File file;
-        if (confDir == null)
-            confDir = configuration.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
-
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
         while (packPath != null && !packPath.equals(confDir)) {
-            file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT);
+            File file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT);
             if (file.exists()) {
                 try {
                     FileInputStream stream = new FileInputStream(file);
@@ -338,14 +342,10 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private void getAllIncludes(List<Properties> list, String pack, Locale locale, boolean defaultLocale) {
-        File file;
-        if (confDir == null)
-            confDir = configuration.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
-
         log.trace("include: " + pack);
 
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
-        file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT);
+        File file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT);
         InputStream stream;
         try {
             if (file.exists()) {

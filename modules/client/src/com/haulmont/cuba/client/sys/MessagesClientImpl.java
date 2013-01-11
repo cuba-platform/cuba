@@ -8,6 +8,7 @@ package com.haulmont.cuba.client.sys;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LocalizedMessageService;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AbstractMessages;
@@ -29,12 +30,21 @@ import java.util.Locale;
 public class MessagesClientImpl extends AbstractMessages {
 
     @Inject
-    private LocalizedMessageService localizedMessageService;
+    protected LocalizedMessageService localizedMessageService;
 
     @Inject
     protected UserSessionSource userSessionSource;
 
-    private volatile boolean remoteSearch;
+    protected volatile boolean remoteSearch;
+
+    protected ClientConfig clientConfig;
+
+    @Inject
+    @Override
+    public void setConfiguration(Configuration configuration) {
+        super.setConfiguration(configuration);
+        clientConfig = configuration.getConfig(ClientConfig.class);
+    }
 
     @Override
     protected Locale getUserLocale() {
@@ -73,6 +83,6 @@ public class MessagesClientImpl extends AbstractMessages {
     }
 
     public void setRemoteSearch(boolean remoteSearch) {
-        this.remoteSearch = remoteSearch && configuration.getConfig(ClientConfig.class).getRemoteMessagesSearchEnabled();
+        this.remoteSearch = remoteSearch && clientConfig.getRemoteMessagesSearchEnabled();
     }
 }
