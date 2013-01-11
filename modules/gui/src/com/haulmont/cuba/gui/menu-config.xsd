@@ -28,7 +28,7 @@
 
     <xs:complexType name="itemType">
         <xs:sequence>
-            <xs:element type="paramType" name="param" minOccurs="0"/>
+            <xs:element type="paramType" name="param" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element type="permissionsType" name="permissions" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
