@@ -9,13 +9,11 @@ package com.haulmont.cuba.gui.components.filter.addcondition;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
 import com.haulmont.cuba.gui.components.filter.AbstractPropertyConditionDescriptor;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,7 +53,7 @@ public class RootPropertyModelItem implements ModelItem {
     public List<ModelItem> getChildren() {
         List<ModelItem> list = new ArrayList<>();
 
-        UserSession userSession = UserSessionProvider.getUserSession();
+        ModelPropertiesFilter modelPropertiesFilter = new ModelPropertiesFilter();
 
         for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
             if (descriptor instanceof AbstractPropertyConditionDescriptor) {
@@ -65,7 +63,8 @@ public class RootPropertyModelItem implements ModelItem {
                     continue;
                 }
                 MetaProperty metaProperty = mpp.getMetaProperty();
-                if (userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))
+
+                if (modelPropertiesFilter.isPropertyFilterAllowed(metaProperty))
                     list.add(new PropertyModelItem(null, metaProperty, descriptor, descriptorBuilder));
             }
         }
@@ -76,7 +75,7 @@ public class RootPropertyModelItem implements ModelItem {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.attributes");
+        return AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.attributes");
     }
 
     @Override

@@ -26,7 +26,7 @@
 
     <layout expand="usersTable" spacing="true">
         <filter id="genericFilter" datasource="usersDs" applyTo="usersTable">
-            <properties include=".*" exclude="(password)|(loginLowerCase)"/>
+            <properties include=".*"/>
             <custom name="customByGroup" caption="msg://genericFilter.customByGroup"
                     join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">
                 (h.parent.id = ? or h.group.id = ?) or (u.group.id = ? and h.parent is null)

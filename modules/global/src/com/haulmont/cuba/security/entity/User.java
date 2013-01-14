@@ -15,6 +15,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -42,9 +43,11 @@ public class User extends StandardEntity {
     @Column(name = "LOGIN", length = LOGIN_FIELD_LEN, nullable = false)
     protected String login;
 
+    @SystemLevel
     @Column(name = "LOGIN_LC", length = LOGIN_FIELD_LEN, nullable = false)
     protected String loginLowerCase;
 
+    @SystemLevel
     @Column(name = "PASSWORD", length = 255)
     protected String password;
 

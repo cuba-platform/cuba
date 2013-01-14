@@ -12,12 +12,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that annotated entity is low-level and should not be available for end-user in various entity lists.
+ * Indicates that annotated entity/field is low-level and should not be available for end-user in various entity/field lists.<br/>
+ * For field indicates that attribute should not be available for dynamic filters in UI.
  *
  * @author krivopustov
  * @version $Id$
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SystemLevel {
 

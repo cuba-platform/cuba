@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: FIRSTNAME LASTNAME
- * Created: 06.11.2008 9:49:55
- * $Id: JPAAnnotationsLoader.java 5981 2011-09-20 07:35:58Z krivopustov $
  */
 package com.haulmont.chile.jpa.loader;
 
@@ -17,6 +13,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -35,6 +32,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements ClassMetadataLoader {
 
     private Log log = LogFactory.getLog(JPAMetadataLoader.class);
@@ -235,6 +236,11 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         Temporal temporal = field.getAnnotation(Temporal.class);
         if (temporal != null) {
             metaProperty.getAnnotations().put("temporal", temporal.value());
+        }
+
+        SystemLevel systemLevel = field.getAnnotation(SystemLevel.class);
+        if (systemLevel != null) {
+            metaProperty.getAnnotations().put("system", true);
         }
     }
 
