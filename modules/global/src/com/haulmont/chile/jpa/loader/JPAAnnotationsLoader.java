@@ -9,15 +9,11 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.loader.ChileAnnotationsLoader;
 import com.haulmont.chile.core.loader.ClassMetadataLoader;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
@@ -31,6 +27,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * @author krivopustov
