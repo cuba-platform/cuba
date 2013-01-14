@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.loader;
 
 import com.haulmont.bali.util.ReflectionHelper;
@@ -7,6 +13,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.*;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +34,10 @@ import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ChileAnnotationsLoader implements ClassMetadataLoader {
 
     private Log log = LogFactory.getLog(ChileAnnotationsLoader.class);
@@ -41,11 +52,12 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         this.session = session;
     }
 
+    @Override
     public Session loadPackage(String modelName, final String packageName) {
         this.packageName = packageName;
 
         List<MetadataObjectInitTask> tasks =
-                new ArrayList<MetadataObjectInitTask>();
+                new ArrayList<>();
 
         final String packagePrefix = packageName.replace(".", "/") + "/**/*.class";
         String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packagePrefix;
@@ -72,7 +84,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     protected List<Class<?>> getClasses(Resource[] resources) {
-        List<Class<?>> annotated = new ArrayList<Class<?>>();
+        List<Class<?>> annotated = new ArrayList<>();
 
         for (Resource resource : resources) {
             if (resource.isReadable()) {
@@ -173,7 +185,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         if (metaClass == null)
             return null;
 
-        Collection<MetadataObjectInitTask> tasks = new ArrayList<MetadataObjectInitTask>();
+        Collection<MetadataObjectInitTask> tasks = new ArrayList<>();
 
         Collection<MetaClass> ancestors = metaClass.getAncestors();
         for (MetaClass ancestor : ancestors) {
@@ -239,6 +251,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         }
     }
 
+    @Override
     public Session loadClass(String modelName, Class<?> clazz) {
         final MetadataObjectInfo<MetaClass> info = __loadClass(modelName, clazz);
         checkWarnings(info);
@@ -254,6 +267,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         }
     }
 
+    @Override
     public Session loadClass(String modelName, String className) {
         final Class<?> clazz = ReflectionHelper.getClass(className);
 
@@ -263,6 +277,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return session;
     }
 
+    @Override
     public Session getSession() {
         return session;
     }
@@ -270,6 +285,10 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
+        SystemLevel systemLevel = field.getAnnotation(SystemLevel.class);
+        if (systemLevel != null) {
+            metaProperty.getAnnotations().put("system", true);
+        }
     }
 
     private void onPropertyLoaded(MetaProperty metaProperty, Method method) {
@@ -279,11 +298,11 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     protected MetadataObjectInfo<MetaProperty> __loadProperty(MetaClassImpl metaClass, Field field) {
-        Collection<MetadataObjectInitTask> tasks = new ArrayList<MetadataObjectInitTask>();
+        Collection<MetadataObjectInitTask> tasks = new ArrayList<>();
 
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, field.getName());
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("cardinality", Range.Cardinality.ONE_TO_ONE);
         final boolean mandatory = isMandatory(field);
         map.put("mandatory", mandatory);
@@ -330,11 +349,11 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
 
     protected MetadataObjectInfo<MetaProperty> __loadProperty(MetaClassImpl metaClass,
                                                               Method method, String name) {
-        Collection<MetadataObjectInitTask> tasks = new ArrayList<MetadataObjectInitTask>();
+        Collection<MetadataObjectInitTask> tasks = new ArrayList<>();
 
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, name);
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("cardinality", Range.Cardinality.ONE_TO_ONE);
         map.put("mandatory", false);
 
@@ -408,7 +427,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                 final Class<Enum> returnType = (Class<Enum>) method.getReturnType();
                 if (returnType.isEnum()) {
                     return new MetadataObjectInfo<Range>(
-                            new EnumerationRange(new EnumerationImpl<Enum>(returnType)));
+                            new EnumerationRange(new EnumerationImpl<>(returnType)));
                 }
             } catch (NoSuchMethodException e) {
                 // Do noting
@@ -423,7 +442,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
             if (rangeClass != null) {
                 return new MetadataObjectInfo<Range>(new ClassRange(rangeClass));
             } else {
-                return new MetadataObjectInfo<Range>(null, Collections.singletonList(new RangeInitTask(metaProperty, type, map)));
+                return new MetadataObjectInfo<>(null, Collections.singletonList(new RangeInitTask(metaProperty, type, map)));
             }
         }
     }
@@ -471,7 +490,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     protected MetadataObjectInfo<MetaProperty> __loadCollectionProperty(MetaClassImpl metaClass, Field field) {
-        Collection<MetadataObjectInitTask> tasks = new ArrayList<MetadataObjectInitTask>();
+        Collection<MetadataObjectInitTask> tasks = new ArrayList<>();
 
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, field.getName());
 
@@ -482,7 +501,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         final boolean mandatory = isMandatory(field);
         final String inverseField = getInverseField(field);
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("cardinality", cardinality);
         map.put("ordered", ordered);
         map.put("mandatory", mandatory);
@@ -562,12 +581,14 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
             this.map = map;
         }
 
+        @Override
         public String getWarning() {
             return String.format(
                     "Range for propery '%s' wasn't initialized (range class '%s')",
                     metaProperty.getName(), rangeClass.getName());
         }
 
+        @Override
         public void execute() {
             final MetaClass rangeClass = session.getClass(this.rangeClass);
             if (rangeClass == null) {

@@ -225,6 +225,8 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
 
     @Override
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
+        super.onPropertyLoaded(metaProperty, field);
+
         if (isPersistent(field))
             metaProperty.getAnnotations().put("persistent", true);
 
@@ -236,11 +238,6 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         Temporal temporal = field.getAnnotation(Temporal.class);
         if (temporal != null) {
             metaProperty.getAnnotations().put("temporal", temporal.value());
-        }
-
-        SystemLevel systemLevel = field.getAnnotation(SystemLevel.class);
-        if (systemLevel != null) {
-            metaProperty.getAnnotations().put("system", true);
         }
     }
 
