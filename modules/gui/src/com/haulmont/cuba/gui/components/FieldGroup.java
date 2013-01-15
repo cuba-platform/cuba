@@ -57,6 +57,12 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     Object getFieldValue(String fieldId);
     void setFieldValue(String fieldId, Object value);
 
+    /**
+     * Try to acquire focus on field
+     * @param fieldId field id
+     */
+    void requestFocus(String fieldId);
+
     void setFieldCaption(String fieldId, String caption);
 
     void setCaptionAlignment(FieldCaptionAlignment captionAlignment);

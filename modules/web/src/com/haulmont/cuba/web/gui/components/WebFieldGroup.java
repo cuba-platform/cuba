@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 23.06.2010 11:46:30
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -44,18 +39,21 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements com.haulmont.cuba.gui.components.FieldGroup {
 
     private static final String BORDER_STYLE_NAME = "edit-area";
 
-    private Map<String, Field> fields = new LinkedHashMap<String, Field>();
-    private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
-    private Map<Integer, List<Field>> columnFields = new HashMap<Integer, List<Field>>();
+    private Map<String, Field> fields = new LinkedHashMap<>();
+    private Map<Field, Integer> fieldsColumn = new HashMap<>();
+    private Map<Integer, List<Field>> columnFields = new HashMap<>();
 
-    private Set<Field> readOnlyFields = new HashSet<Field>();
+    private Set<Field> readOnlyFields = new HashSet<>();
 
-    private Map<Field, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators =
-            new HashMap<Field, List<com.haulmont.cuba.gui.components.Field.Validator>>();
+    private Map<Field, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators = new HashMap<>();
 
     private Datasource<Entity> datasource;
 
@@ -74,6 +72,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     protected Security security = AppBeans.get(Security.class);
 
     protected MessageTools messageTools = AppBeans.get(MessageTools.class);
+    protected Messages messages = AppBeans.get(Messages.class);
 
     public WebFieldGroup() {
         component = new FieldGroup(fieldFactory) {
@@ -115,7 +114,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public List<Field> getFields() {
-        return new ArrayList<Field>(fields.values());
+        return new ArrayList<>(fields.values());
     }
 
     @Override
@@ -149,7 +148,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     private void fillColumnFields(int col, Field field) {
         List<Field> fields = columnFields.get(col);
         if (fields == null) {
-            fields = new ArrayList<Field>();
+            fields = new ArrayList<>();
 
             columnFields.put(col, fields);
         }
@@ -295,7 +294,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (this.fields.isEmpty() && datasource != null) {//collects fields by entity view
             fieldsMetaProps = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
 
-            final ArrayList<MetaPropertyPath> propertyPaths = new ArrayList<MetaPropertyPath>(fieldsMetaProps);
+            final ArrayList<MetaPropertyPath> propertyPaths = new ArrayList<>(fieldsMetaProps);
             for (final MetaPropertyPath propertyPath : propertyPaths) {
                 MetaProperty property = propertyPath.getMetaProperty();
                 if (property.getRange().getCardinality().isMany() || metadataTools.isSystem(property)) {
@@ -307,8 +306,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         } else {
             if (datasource != null) {
-                final List<String> fieldIds = new ArrayList<String>(this.fields.keySet());
-                fieldsMetaProps = new ArrayList<MetaPropertyPath>();
+                final List<String> fieldIds = new ArrayList<>(this.fields.keySet());
+                fieldsMetaProps = new ArrayList<>();
                 for (final String id : fieldIds) {
                     final Field field = getField(id);
                     final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
@@ -330,7 +329,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
             if (!this.fields.isEmpty()) {
                 //Removes custom fieldsMetaProps from the list. We shouldn't to create components for custom fieldsMetaProps
-                for (MetaPropertyPath propertyPath : new ArrayList<MetaPropertyPath>(fieldsMetaProps)) {
+                for (MetaPropertyPath propertyPath : new ArrayList<>(fieldsMetaProps)) {
                     final Field field = getField(propertyPath.toString());
                     if (field.isCustom()) {
                         fieldsMetaProps.remove(propertyPath);
@@ -461,9 +460,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
             if (datatype != null) {
                 try {
-                    return datatype.parse((String) value, UserSessionProvider.getLocale());
+                    return datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
                 } catch (ParseException ignored) {
-                    String message = MessageProvider.getMessage(WebWindow.class, "invalidValue");
+                    String message = messages.getMessage(WebWindow.class, "invalidValue");
                     String fieldCaption = messageTools.getPropertyCaption(propertyPath.getMetaProperty());
                     message = String.format(message, fieldCaption);
                     throw new ValidationException(message);
@@ -477,7 +476,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     public void addValidator(final Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
         if (validators == null) {
-            validators = new ArrayList<com.haulmont.cuba.gui.components.Field.Validator>();
+            validators = new ArrayList<>();
             fieldValidators.put(field, validators);
         }
         if (!validators.contains(validator))
@@ -723,6 +722,16 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
+    public void requestFocus(String fieldId) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        com.vaadin.ui.Field componentField = component.getField(field.getId());
+        if (componentField != null)
+            componentField.focus();
+    }
+
+    @Override
     public void setFieldCaption(String fieldId, String caption) {
         Field field = getField(fieldId);
         if (field == null)
@@ -739,7 +748,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     @Override
     public void addListener(ExpandListener listener) {
         if (expandListeners == null) {
-            expandListeners = new ArrayList<ExpandListener>();
+            expandListeners = new ArrayList<>();
         }
         expandListeners.add(listener);
     }
@@ -765,7 +774,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     @Override
     public void addListener(CollapseListener listener) {
         if (collapseListeners == null) {
-            collapseListeners = new ArrayList<CollapseListener>();
+            collapseListeners = new ArrayList<>();
         }
         collapseListeners.add(listener);
     }
@@ -826,7 +835,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void validate() throws ValidationException {
-        final Map<Object, Exception> problems = new HashMap<Object, Exception>();
+        final Map<Object, Exception> problems = new HashMap<>();
 
         for (Field field : getFields()) {
             com.vaadin.ui.Field f = component.getField(field.getId());
@@ -851,7 +860,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         if (!problems.isEmpty()) {
-            Map<Field, Exception> problemFields = new HashMap<Field, Exception>();
+            Map<Field, Exception> problemFields = new HashMap<>();
             for (Map.Entry<Object, Exception> entry : problems.entrySet()) {
                 problemFields.put(getField(entry.getKey().toString()), entry.getValue());
             }
@@ -1091,11 +1100,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                                 IFrame controllerFrame = WebComponentsHelper.getControllerFrame(frame);
                                 Method method = controllerFrame.getClass().getMethod(methodName, Object.class);
                                 method.invoke(controllerFrame, value);
-                            } catch (NoSuchMethodException e) {
-                                throw new RuntimeException("Unable to invoke clickAction", e);
-                            } catch (InvocationTargetException e) {
-                                throw new RuntimeException("Unable to invoke clickAction", e);
-                            } catch (IllegalAccessException e) {
+                            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                                 throw new RuntimeException("Unable to invoke clickAction", e);
                             }
 
