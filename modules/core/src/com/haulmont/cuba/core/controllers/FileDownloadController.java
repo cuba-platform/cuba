@@ -33,9 +33,16 @@ import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.UUID;
 
+/**
+ * Handles file download requests to the middleware.
+ * <p/> This controller is deployed in Spring context defined by <code>cuba.dispatcherSpringContextConfig</code>
+ * app property.
+ *
+ * @author gorodnov
+ * @version $Id$
+ */
 @Controller
 public class FileDownloadController {
-    private static final int HTTP_NOT_FOUND = 468;
 
     private static Log log = LogFactory.getLog(FileDownloadController.class);
 
@@ -145,11 +152,14 @@ public class FileDownloadController {
         return null;
     }
 
-    protected boolean isPermittedDirectory(String directory) {
+    protected boolean isPermittedDirectory(String filePath) {
         String directories = AppContext.getProperty("cuba.download.directories");
-        if (directories != null && directory != null ) {
+        if (directories != null && filePath != null ) {
+            filePath = filePath.replace("\\", "/");
             for (String d : directories.split(";")) {
-                if (directory.startsWith(directory)) {
+                if (!d.endsWith("/"))
+                    d = d + "/";
+                if (filePath.startsWith(d)) {
                     return true;
                 }
             }
