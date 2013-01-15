@@ -4,7 +4,7 @@
 * Use is subject to license terms.
 */
 
-def defaultVersion = '0.1.DEV'
+def defaultVersion = '4.0'
 
 def BUILD_VERSION = 'buildVersion'
 def BUILD_RELEASE = 'buildRelease'
