@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -16,6 +16,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface Convertor {
     public MimeType getMimeType();
 
@@ -31,5 +35,4 @@ public interface Convertor {
     CommitRequest parseCommitRequest(String content);
 
     void write(HttpServletResponse response, Object o) throws IOException;
-
 }

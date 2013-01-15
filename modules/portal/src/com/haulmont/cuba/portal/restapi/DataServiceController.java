@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -13,7 +13,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.restapi.template.MetaClassRepresentation;
+import com.haulmont.cuba.portal.restapi.template.MetaClassRepresentation;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import freemarker.template.Configuration;
@@ -37,27 +37,28 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- * Author: Alexander Chevelev
- * Date: 19.04.2011
- * Time: 22:03:25
- *
+ * @author chevelev
  * @version $Id$
  */
 @Controller
 public class DataServiceController {
+
     private static Log log = LogFactory.getLog(DataServiceController.class);
-    private DataService svc;
+
     //todo wire
     private ConversionFactory conversionFactory = new ConversionFactory();
-    private Collection availableBasicTypes;
 
     @Inject
     private MetadataTools metadataTools;
 
     @Inject
-    public DataServiceController(DataService svc) {
-        this.svc = svc;
-    }
+    private DataService dataService;
+
+    @Inject
+    private UserSessionSource userSessionSource;
+
+    @Inject
+    private Metadata metadata;
 
     @RequestMapping(value = "/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,
@@ -91,7 +92,7 @@ public class DataServiceController {
             if (loadInfo.getViewName() != null)
                 loadCtx.setView(loadInfo.getViewName());
 
-            Entity entity = svc.load(loadCtx);
+            Entity entity = dataService.load(loadCtx);
             if (entity == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             } else {
@@ -165,7 +166,7 @@ public class DataServiceController {
             }
 
             loadCtx.setView(view == null ? View.LOCAL : view);
-            List<Entity> entities = svc.loadList(loadCtx);
+            List<Entity> entities = dataService.loadList(loadCtx);
             Convertor convertor = conversionFactory.getConvertor(type);
             Object result = convertor.process(entities, metaClass, request.getRequestURI());
             convertor.write(response, result);
@@ -213,7 +214,7 @@ public class DataServiceController {
             commitContext.setRemoveInstances(removeInstances);
             commitContext.setSoftDeletion(commitRequest.isSoftDeletion());
             commitContext.setNewInstanceIds(newInstanceIds);
-            Map<Entity, Entity> result = svc.commitNotDetached(commitContext);
+            Map<Entity, Entity> result = dataService.commitNotDetached(commitContext);
 
             Object converted = convertor.process(result, request.getRequestURI());
             convertor.write(response, converted);
@@ -236,7 +237,7 @@ public class DataServiceController {
         }
 
         response.addHeader("Access-Control-Allow-Origin", "*");
-        ViewRepository viewRepository = MetadataProvider.getViewRepository();
+        ViewRepository viewRepository = metadata.getViewRepository();
         try {
             viewRepository.deployViews(new StringReader(requestContent));
         } finally {
@@ -258,29 +259,29 @@ public class DataServiceController {
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
-        response.setLocale(UserSessionProvider.getLocale());
+        response.setLocale(userSessionSource.getLocale());
         PrintWriter writer = response.getWriter();
 
         try {
-            ViewRepository viewRepository = MetadataProvider.getViewRepository();
+            ViewRepository viewRepository = metadata.getViewRepository();
             List<View> views = viewRepository.getAll();
-            Map<MetaClass, List<View>> meta2views = new HashMap<MetaClass, List<View>>();
+            Map<MetaClass, List<View>> meta2views = new HashMap<>();
             for (View view : views) {
-                MetaClass metaClass = MetadataProvider.getSession().getClass(view.getEntityClass());
+                MetaClass metaClass = metadata.getSession().getClass(view.getEntityClass());
                 if (!readPermitted(metaClass))
                     continue;
 
                 List<View> viewList = meta2views.get(metaClass);
                 if (viewList == null) {
-                    viewList = new ArrayList<View>();
+                    viewList = new ArrayList<>();
                     meta2views.put(metaClass, viewList);
                 }
                 viewList.add(view);
             }
 
-            List<MetaClassRepresentation> classes = new ArrayList<MetaClassRepresentation>();
+            List<MetaClassRepresentation> classes = new ArrayList<>();
 
-            Set<MetaClass> metas = new HashSet<MetaClass>(metadataTools.getAllPersistentMetaClasses());
+            Set<MetaClass> metas = new HashSet<>(metadataTools.getAllPersistentMetaClasses());
             metas.addAll(metadataTools.getAllEmbeddableMetaClasses());
             for (MetaClass meta : metas) {
                 if (!readPermitted(meta))
@@ -294,7 +295,7 @@ public class DataServiceController {
                 }
             });
 
-            Map<String, Object> values = new HashMap<String, Object>();
+            Map<String, Object> values = new HashMap<>();
             values.put("knownEntities", classes);
 
             String[] availableTypes = getAvailableBasicTypes();
@@ -454,7 +455,7 @@ public class DataServiceController {
     }
 
     private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = UserSessionProvider.getUserSession();
+        UserSession session = userSessionSource.getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
     }
 
@@ -486,7 +487,7 @@ public class DataServiceController {
 
     public String[] getAvailableBasicTypes() {
         Set<String> allAvailableTypes = Datatypes.getNames();
-        TreeSet<String> availableTypes = new TreeSet<String>();
+        TreeSet<String> availableTypes = new TreeSet<>();
 
         //byteArray is not supported as a GET parameter
         for (String type : allAvailableTypes)

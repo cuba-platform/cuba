@@ -4,25 +4,25 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
-import com.haulmont.cuba.core.global.UuidProvider;
+import com.haulmont.cuba.core.global.UuidSource;
 
 import java.util.*;
 
 /**
- * Author: Alexander Chevelev
- * Date: 27.04.2011
- * Time: 0:55:10
- * $Id$
+ * @author chevelev
+ * @version $Id$
  */
 public class CommitRequest {
+
     private Collection commitInstances;
     private Collection removeInstances;
     private boolean softDeletion = true;
-    private HashSet<String> newInstanceIds = new HashSet<String>();
-    private Map<String, InstanceRef> instanceRefs = new HashMap<String, InstanceRef>();
+    private HashSet<String> newInstanceIds = new HashSet<>();
+    private Map<String, InstanceRef> instanceRefs = new HashMap<>();
     private Set<String> commitIds = new HashSet<>();
 
     public Collection getCommitInstances() {
@@ -76,7 +76,7 @@ public class CommitRequest {
         EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
         if (loadInfo == null) {
             if (isNew) {
-                UUID uuid = UuidProvider.createUuid();
+                UUID uuid = AppBeans.get(UuidSource.class).createUuid();
                 id = id + "-" + uuid;
                 loadInfo = EntityLoadInfo.parse(id);
                 if (loadInfo == null) {

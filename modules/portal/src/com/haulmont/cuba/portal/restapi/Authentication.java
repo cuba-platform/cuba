@@ -4,20 +4,19 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
-import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.sys.UserSessionManager;
 
 import java.util.UUID;
 
 /**
- * Author: Alexander Chevelev
- * Date: 25.04.2011
- * Time: 15:36:34
+ * @author chevelev
+ * @version $Id$
  */
 public class Authentication {
     public static Authentication me(String sessionId) {
@@ -40,7 +39,6 @@ public class Authentication {
         } catch (Exception e) {
             return null;
         }
-        return ((UserSessionManager) Locator.lookup(UserSessionManager.NAME)).getSession(sessionId);
+        return AppBeans.get(UserSessionService.class).getUserSession(sessionId);
     }
-
 }

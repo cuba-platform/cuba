@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
@@ -13,9 +13,8 @@ import com.haulmont.cuba.core.global.EntityLoadInfo;
 import java.util.UUID;
 
 /**
- * Author: Alexander Chevelev
- * Date: 14.05.2011
- * Time: 1:18:58
+ * @author chevelev
+ * @version $Id$
  */
 public class InstanceRef {
     private EntityLoadInfo loadInfo;

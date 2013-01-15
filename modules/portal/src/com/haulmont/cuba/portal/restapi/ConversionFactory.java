@@ -4,19 +4,18 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
 import javax.activation.MimeType;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.04.2011
- * Time: 2:00:09
+ * @author chevelev
+ * @version $Id$
  */
 public class ConversionFactory {
-    private Map<String, Convertor> convertors = new HashMap<String, Convertor>();
+    private Map<String, Convertor> convertors = new HashMap<>();
 
     public ConversionFactory() {
         convertors.put("xml", new XMLConvertor());

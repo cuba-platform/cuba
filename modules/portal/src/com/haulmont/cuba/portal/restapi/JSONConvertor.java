@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
@@ -45,7 +45,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- *
+ * @author krivopustov
  * @version $Id$
  */
 public class JSONConvertor implements Convertor {
@@ -60,15 +60,18 @@ public class JSONConvertor implements Convertor {
         }
     }
 
+    @Override
     public MimeType getMimeType() {
         return MIME_TYPE_JSON;
     }
 
+    @Override
     public MyJSONObject process(Entity entity, MetaClass metaclass, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return encodeInstance(entity, new HashSet<Entity>(), metaclass);
     }
 
+    @Override
     public MyJSONObject.Array process(List<Entity> entities, MetaClass metaClass, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         MyJSONObject.Array result = new MyJSONObject.Array();
@@ -79,6 +82,7 @@ public class JSONConvertor implements Convertor {
         return result;
     }
 
+    @Override
     public MyJSONObject.Array process(Map<Entity, Entity> entityMap, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         MyJSONObject.Array result = new MyJSONObject.Array();
@@ -100,6 +104,7 @@ public class JSONConvertor implements Convertor {
         return MetadataProvider.getSession().getClass(entity.getClass());
     }
 
+    @Override
     public void write(HttpServletResponse response, Object o) {
         response.setContentType(MIME_STR);
         try {
@@ -111,6 +116,7 @@ public class JSONConvertor implements Convertor {
         }
     }
 
+    @Override
     public CommitRequest parseCommitRequest(String content) {
         try {
             JSONObject jsonContent = new JSONObject(content);

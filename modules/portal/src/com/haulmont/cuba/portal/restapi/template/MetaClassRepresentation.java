@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi.template;
+package com.haulmont.cuba.portal.restapi.template;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -20,10 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.05.2011
- * Time: 0:11:34
- *
+ * @author chevelev
  * @version $Id$
  */
 public class MetaClassRepresentation {

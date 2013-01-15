@@ -1,5 +1,15 @@
-package com.haulmont.cuba.core.sys.restapi;
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
 
+package com.haulmont.cuba.portal.restapi;
+
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface MyJSON {
     /**
      * Render into a string buffer.
@@ -25,5 +35,4 @@ public interface MyJSON {
     public static final String REF_MARKER     = "ref";
     public static final String ID_MARKER      = "id";
     public static final String ARRAY_EMPTY    = "[]";
-
 }

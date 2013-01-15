@@ -4,11 +4,11 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys.restapi;
+package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
@@ -82,8 +82,8 @@ public class LoginServiceController {
         }
 
         try {
-            LoginWorker svc = AppBeans.get(LoginWorker.NAME);
-            UserSession userSession = svc.login(username, passwordEncryption.getPlainHash(password), locale);
+            LoginService loginService = AppBeans.get(LoginService.NAME);
+            UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());
@@ -103,9 +103,9 @@ public class LoginServiceController {
         response.addHeader("Access-Control-Allow-Origin", "*");
         Locale locale = StringUtils.isBlank(localeStr) ? new Locale("en") : new Locale(localeStr);
         try {
-            LoginWorker svc = AppBeans.get(LoginWorker.NAME);
+            LoginService loginService = AppBeans.get(LoginService.NAME);
 
-            UserSession userSession = svc.login(username,  passwordEncryption.getPlainHash(password), locale);
+            UserSession userSession = loginService.login(username,  passwordEncryption.getPlainHash(password), locale);
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());
