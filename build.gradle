@@ -13,7 +13,7 @@ def BUILD_VCS_NUMBER = 'buildVcsNumber'
 allprojects {
     ext.artifactGroup = 'com.haulmont.cuba'
     ext.artifactVersion = rootProject.hasProperty(BUILD_VERSION) ? rootProject[BUILD_VERSION] : defaultVersion
-    ext.isSnapshot = !rootProject.hasProperty(BUILD_RELEASE)
+    ext.isSnapshot = !(rootProject.hasProperty(BUILD_RELEASE) && Boolean.valueOf(rootProject[BUILD_RELEASE]))
     //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
 
