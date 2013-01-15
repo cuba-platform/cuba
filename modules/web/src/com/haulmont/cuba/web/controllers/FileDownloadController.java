@@ -1,60 +1,78 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Nikolay Gorodnov
- * Created: 04.03.2011 10:57:41
- *
- * $Id$
  */
 package com.haulmont.cuba.web.controllers;
 
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
-import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
 
+/**
+ * Handles file download requests to the web client.
+ * <p/> This controller is deployed in Spring context defined by <code>cuba.dispatcherSpringContextConfig</code>
+ * app property.
+ *
+ * @author gorodnov
+ * @version $Id$
+ */
 @Controller
 public class FileDownloadController {
 
     private static Log log = LogFactory.getLog(FileDownloadController.class);
 
-    @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public ModelAndView download(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+    @Inject
+    protected DataService dataService;
 
+    @Inject
+    protected UserSessionService userSessionService;
+
+    @Resource(name = ClusterInvocationSupport.NAME)
+    protected ClusterInvocationSupport clusterInvocationSupport;
+
+    protected String fileDownloadContext;
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        fileDownloadContext = configuration.getConfig(ClientConfig.class).getFileDownloadContext();
+    }
+
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
+    public ModelAndView download(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserSession userSession = getSession(request, response);
         if (userSession == null) {
             error(response);
@@ -67,21 +85,20 @@ public class FileDownloadController {
             try {
                 fileId = UUID.fromString(request.getParameter("f"));
             } catch (Exception e) {
+                log.error(e.toString());
                 error(response);
                 return null;
             }
 
-            boolean attach = Boolean.valueOf(request.getParameter("a"));
-
-            FileDescriptor fd = ServiceLocator.getDataService().load(
-                    new LoadContext(FileDescriptor.class).setId(fileId)
-            );
+            FileDescriptor fd = dataService.load(new LoadContext(FileDescriptor.class).setId(fileId));
 
             String fileName;
             try {
                 fileName = URLEncoder.encode(fd.getName(), "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
+                log.error(e.toString());
+                error(response);
+                return null;
             }
 
             response.setHeader("Cache-Control", "no-cache");
@@ -89,39 +106,70 @@ public class FileDownloadController {
             response.setDateHeader("Expires", 0);
             response.setHeader("Content-Type", getContentType(fd));
             response.setHeader("Pragma", "no-cache");
+
+            boolean attach = Boolean.valueOf(request.getParameter("a"));
             response.setHeader("Content-Disposition", (attach ? "attachment" : "inline")
                     + "; filename=" + fileName);
 
-            InputStream is = null;
-            ServletOutputStream os = null;
-            try {
-                is = openInputStream(userSession, fileId);
-                os = response.getOutputStream();
-                IOUtils.copy(is, os);
-                os.flush();
-            } catch (Exception e) {
-                log.error("Unable to download file", e);
-                error(response);
-            } finally {
-                if (is != null) is.close();
-                if (os != null) os.close();
-            }
+            writeResponse(response, userSession, fd);
 
         } finally {
             AppContext.setSecurityContext(null);
         }
-
         return null;
     }
 
-    private InputStream openInputStream(UserSession userSession, UUID fileId) throws IOException {
-        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+    private void writeResponse(HttpServletResponse response, UserSession userSession, FileDescriptor fd)
+            throws IOException {
+        InputStream is = null;
+        ServletOutputStream os = response.getOutputStream();
+        try {
+            for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
+                String url = iterator.next() + fileDownloadContext +
+                        "?s=" + userSession.getId() +
+                        "&f=" + fd.getId().toString();
 
-        String connectionUrl = clientConfig.getConnectionUrl();
-        String fileDownloadContext = clientConfig.getFileDownloadContext();
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url);
 
-        URL url = new URL(connectionUrl + fileDownloadContext + "?s=" + userSession.getId() + "&f=" + fileId.toString());
-        return url.openStream();
+                try {
+                    HttpResponse httpResponse = httpClient.execute(httpGet);
+                    int httpStatus = httpResponse.getStatusLine().getStatusCode();
+                    if (httpStatus == HttpStatus.SC_OK) {
+                        HttpEntity httpEntity = httpResponse.getEntity();
+                        if (httpEntity != null) {
+                            is = httpEntity.getContent();
+                            IOUtils.copy(is, os);
+                            os.flush();
+                            break;
+                        } else {
+                            log.debug("Unable to download file from " + url + "\nHttpEntity is null");
+                            if (iterator.hasNext())
+                                log.debug("Trying next URL");
+                            else
+                                error(response);
+                        }
+                    } else {
+                        log.debug("Unable to download file from " + url + "\n" + httpResponse.getStatusLine());
+                        if (iterator.hasNext())
+                            log.debug("Trying next URL");
+                        else
+                            error(response);
+                    }
+                } catch (IOException ex) {
+                    log.debug("Unable to download file from " + url + "\n" + ex);
+                    if (iterator.hasNext())
+                        log.debug("Trying next URL");
+                    else
+                        error(response);
+                } finally {
+                    IOUtils.closeQuietly(is);
+                    httpClient.getConnectionManager().shutdown();
+                }
+            }
+        } finally {
+            IOUtils.closeQuietly(os);
+        }
     }
 
     protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) {
@@ -133,8 +181,7 @@ public class FileDownloadController {
         }
         AppContext.setSecurityContext(new SecurityContext(sessionId));
         try {
-            UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
-            UserSession userSession = uss.getUserSession(sessionId);
+            UserSession userSession = userSessionService.getUserSession(sessionId);
             return userSession;
         } finally {
             AppContext.setSecurityContext(null);
@@ -146,6 +193,7 @@ public class FileDownloadController {
     }
 
     private void error(HttpServletResponse response) throws IOException {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        if (!response.isCommitted())
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 }
