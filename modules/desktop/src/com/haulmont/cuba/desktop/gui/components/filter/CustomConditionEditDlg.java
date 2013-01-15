@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -23,9 +24,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDialog> {
 
@@ -85,6 +85,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
     }
 
     private class EditDlg extends JDialog {
+
         public EditDlg() {
             super(DesktopComponentsHelper.getTopLevelFrame(component));
             setLocationRelativeTo(App.getInstance().getMainFrame());
@@ -92,16 +93,19 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
             setResizable(false);
             setTitle(condition.getLocCaption());
 
+            Messages messages = AppBeans.get(Messages.class);
+
             MigLayout layout = new MigLayout("wrap 1");
             setLayout(layout);
             entityAlias = condition.getEntityAlias();
-            JLabel eaLab = new JLabel("<html>" + MessageProvider.formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias) + "</html>");
+            JLabel eaLab = new JLabel("<html>" +
+                    messages.formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias) + "</html>");
             add(eaLab, "wrap");
             MigLayout mainLayout = new MigLayout("wrap 2");
             JPanel mainPanel = new JPanel(mainLayout);
             add(mainPanel);
             if (StringUtils.isBlank(condition.getCaption())) {
-                mainPanel.add(DesktopComponentsHelper.unwrap(nameLab));
+                mainPanel.add(DesktopComponentsHelper.unwrap(nameLab), new CC().alignX("right"));
                 JTextField nameTextField = (JTextField) DesktopComponentsHelper.unwrap(nameText);
                 Dimension nameSize = nameTextField.getSize();
                 nameSize.width = COMPONENT_WIDTH;
@@ -120,8 +124,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
             mainPanel.add(DesktopComponentsHelper.unwrap(whereText),
                     new CC().width(COMPONENT_WIDTH + ":" + COMPONENT_WIDTH + ":" + COMPONENT_WIDTH));
 
-            JLabel typeLab = new JLabel(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.paramTypeLabel"));
-            mainPanel.add(typeLab);
+            mainPanel.add(DesktopComponentsHelper.unwrap(typeLab), new CC().alignX("right"));
 
             JPanel typePanel = new JPanel(new MigLayout(new LC().insetsAll("0")));
             Dimension size = typePanel.getSize();
