@@ -277,6 +277,7 @@ public class DsBuilder {
                     datasource = (CollectionDatasource) dsClass.newInstance();
                 }
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
+                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
@@ -292,7 +293,6 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
-        datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         return datasource;
     }
 
@@ -323,6 +323,7 @@ public class DsBuilder {
                     datasource = (HierarchicalDatasource) dsClass.newInstance();
                 }
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
+                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
@@ -338,7 +339,6 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
-        datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         return datasource;
     }
 
@@ -353,6 +353,7 @@ public class DsBuilder {
                     datasource = (GroupDatasource) dsClass.newInstance();
                 }
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
+                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
@@ -368,7 +369,6 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
-        datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         return datasource;
     }
 
