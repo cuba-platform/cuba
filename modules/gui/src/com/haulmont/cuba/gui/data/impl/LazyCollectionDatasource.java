@@ -7,13 +7,14 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.gui.data.LazyCollectionDatasourceListener;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.log4j.Logger;
@@ -23,9 +24,6 @@ import org.perf4j.log4j.Log4JStopWatch;
 import java.util.*;
 
 /**
- *
- * @param <T>
- * @param <K>
  * @author abramov
  * @version $Id$
  */
@@ -53,38 +51,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     protected boolean disableLoad;
 
     protected boolean allowCommit = true;
-
-    protected RefreshMode refreshMode = RefreshMode.ALWAYS;
-
-    public LazyCollectionDatasource(
-            DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
-                String id, MetaClass metaClass, String viewName)
-    {
-        super(dsContext, dataservice, id, metaClass, viewName);
-    }
-
-    public LazyCollectionDatasource(
-            DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
-                String id, MetaClass metaClass, View view)
-    {
-        super(dsContext, dataservice, id, metaClass, view);
-    }
-
-    public LazyCollectionDatasource(
-            DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
-                String id, MetaClass metaClass, String viewName, boolean softDeletion)
-    {
-        super(dsContext, dataservice, id, metaClass, viewName);
-        setSoftDeletion(softDeletion);
-    }
-
-    public LazyCollectionDatasource(
-            DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
-                String id, MetaClass metaClass, View view, boolean softDeletion)
-    {
-        super(dsContext, dataservice, id, metaClass, view);
-        setSoftDeletion(softDeletion);
-    }
 
     @Override
     public void addItem(T item) throws UnsupportedOperationException {
@@ -233,14 +199,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             refresh(savedParameters);
     }
 
-    public RefreshMode getRefreshMode() {
-        return refreshMode;
-    }
-
-    public void setRefreshMode(RefreshMode refreshMode) {
-        this.refreshMode = refreshMode;
-    }
-
     @Override
     public void refresh(Map<String, Object> parameters) {
         this.params = parameters;
@@ -305,11 +263,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
-    @Override
-    public void invalidate() {
-        super.invalidate();
-    }
-
     private int getSize() {
         if (suspended)
             return 0;
@@ -326,18 +279,13 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public T getItem(K key) {
+    public T getItem(K id) {
         if (State.NOT_INITIALIZED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
-            T item = (T) data.get(key);
+            T item = (T) data.get(id);
             return item;
         }
-    }
-
-    @Override
-    public K getItemId(T item) {
-        return item == null ? null : item.getId();
     }
 
     @Override
@@ -451,7 +399,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
                 dataLoadError = null;
                 List<T> res = null;
                 try {
-                    res = dataservice.loadList(ctx);
+                    res = dataSupplier.loadList(ctx);
                     for (T t : res) {
                         data.put(t.getId(), t);
                         attachListener(t);

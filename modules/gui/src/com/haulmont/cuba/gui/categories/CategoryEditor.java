@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -34,7 +34,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
 
     private Category category;
     private CheckBox cb;
-    private DataService dataService;
+    private DataSupplier dataSupplier;
 
     @Inject
     protected MetadataTools metadataTools;
@@ -43,7 +43,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
     protected MessageTools messageTools;
 
     public void init(Map<String, Object> params) {
-        dataService = getDsContext().getDataService();
+        dataSupplier = getDsContext().getDataService();
         cb = getComponent("isDefault");
 
     }
@@ -91,12 +91,12 @@ public class CategoryEditor extends AbstractEditor<Category> {
                     categoriesContext.setView("category.defaultEdit");
                     query.addParameter("entityType", category.getEntityType());
                     query.addParameter("id", category.getId());
-                    List<Category> categories = dataService.loadList(categoriesContext);
+                    List<Category> categories = dataSupplier.loadList(categoriesContext);
                     for(Category cat : categories){
                         cat.setIsDefault(false);
                     }
                     CommitContext commitContext = new CommitContext(categories);
-                    dataService.commit(commitContext);
+                    dataSupplier.commit(commitContext);
                     category.setIsDefault(true);
                 }
                 else if(Boolean.FALSE.equals(value)){

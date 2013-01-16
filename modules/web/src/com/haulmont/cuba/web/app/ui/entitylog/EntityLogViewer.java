@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.FilterApplyAction;
 import com.haulmont.cuba.gui.components.actions.FilterClearAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.LoggedEntity;
 import org.apache.commons.lang.time.DateUtils;
@@ -68,10 +68,10 @@ public class EntityLogViewer extends AbstractWindow {
     }
 
     protected List<LoggedEntity> loadEntities() {
-        DataService service = getDsContext().getDataService();
+        DataSupplier supplier = getDsContext().getDataService();
         LoadContext lc = new LoadContext(LoggedEntity.class);
         lc.setQuery(new LoadContext.Query("select e from sec$LoggedEntity e"));
         lc.setView(new View(LoggedEntity.class).addProperty("name"));
-        return service.loadList(lc);
+        return supplier.loadList(lc);
     }
 }

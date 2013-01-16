@@ -8,11 +8,8 @@ package com.haulmont.cuba.web.app.ui.jmxcontrol.ds;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanDomain;
@@ -33,11 +30,6 @@ public class ManagedBeanInfoDatasource extends AbstractTreeDatasource<ManagedBea
     private JmxInstance jmxInstance = null;
 
     private JmxControlAPI jmxControlAPI = AppBeans.get(JmxControlAPI.NAME);
-
-    public ManagedBeanInfoDatasource(DsContext context, DataService dataservice, String id,
-                                     MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     protected Tree<ManagedBeanInfo> loadTree(Map<String, Object> params) {

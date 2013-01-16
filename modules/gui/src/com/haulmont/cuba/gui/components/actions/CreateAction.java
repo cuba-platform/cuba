@@ -100,7 +100,7 @@ public class CreateAction extends AbstractAction {
      */
     public void actionPerform(Component component) {
         final CollectionDatasource datasource = owner.getDatasource();
-        final DataService dataservice = datasource.getDataService();
+        final DataSupplier dataservice = datasource.getDataSupplier();
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());
 

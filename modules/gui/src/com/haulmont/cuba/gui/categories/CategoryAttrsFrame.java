@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
@@ -49,7 +49,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
     protected ComponentsFactory factory;
 
     @Inject
-    protected DataService dataService;
+    protected DataSupplier dataSupplier;
 
     @Inject
     private Table categoryAttrsTable;
@@ -201,7 +201,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
                             query.addParameter("e", attribute.getDefaultEntityId());
                             entitiesContext.setView("_local");
-                            Entity entity = dataService.load(entitiesContext);
+                            Entity entity = dataSupplier.load(entitiesContext);
                             defaultValue = InstanceUtils.getInstanceName(entity);
                         } else defaultValue = "";
                     } catch (ClassNotFoundException ex) {

@@ -13,8 +13,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.impl.*;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.lang.reflect.Constructor;
-
 /**
  * Datasources builder.
  * <p/>
@@ -39,7 +37,7 @@ import java.lang.reflect.Constructor;
  */
 public class DsBuilder {
 
-    private DataService dataService;
+    private DataSupplier dataSupplier;
     private Metadata metadata;
     private ViewRepository viewRepository;
     private PersistenceManagerService persistenceManager;
@@ -79,9 +77,9 @@ public class DsBuilder {
         this.id = "ds";
 
         if (dsContext != null)
-            this.dataService = dsContext.getDataService();
+            this.dataSupplier = dsContext.getDataService();
         else
-            this.dataService = new GenericDataService();
+            this.dataSupplier = new GenericDataSupplier();
 
         this.metadata = AppBeans.get(Metadata.class);
         this.viewRepository = metadata.getViewRepository();
@@ -90,6 +88,15 @@ public class DsBuilder {
 
     public DsContext getDsContext() {
         return dsContext;
+    }
+
+    public DataSupplier getDataSupplier() {
+        return dataSupplier;
+    }
+
+    public DsBuilder setDataSupplier(DataSupplier dataSupplier) {
+        this.dataSupplier = dataSupplier;
+        return this;
     }
 
     public String getId() {
@@ -230,41 +237,30 @@ public class DsBuilder {
     public Datasource buildDatasource() {
         init();
         Datasource datasource;
-        if (master == null && property == null) {
-            if (dsClass == null) {
-                datasource = new DatasourceImpl(dsContext, dataService, id, metaClass, view);
-            } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
-                    datasource = (Datasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+        try {
+            if (master == null && property == null) {
+                if (dsClass == null) {
+                    datasource = new DatasourceImpl();
+                } else {
+                    datasource = dsClass.newInstance();
                 }
-            }
-        } else {
-            if (dsClass == null) {
+                datasource.setup(dsContext, dataSupplier, id, metaClass, view);
+            } else {
                 boolean isEmbedded = false;
                 if (master != null) {
                     MetaClass metaClass = master.getMetaClass();
                     MetaProperty metaProperty = metaClass.getProperty(property);
                     isEmbedded = AppBeans.get(MetadataTools.class).isEmbedded(metaProperty);
                 }
-                if (isEmbedded)
-                    datasource = new EmbeddedDatasourceImpl(id, master, property);
-                else
-                    datasource = new PropertyDatasourceImpl(id, master, property);
-            } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            String.class, Datasource.class, String.class);
-                    datasource = (Datasource) constructor.newInstance(
-                            id, master, property);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                if (dsClass == null) {
+                    datasource = isEmbedded ? new EmbeddedDatasourceImpl() : new PropertyDatasourceImpl();
+                } else {
+                    datasource = dsClass.newInstance();
                 }
+                ((NestedDatasource) datasource).setup(id, master, property);
             }
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
         }
         return datasource;
     }
@@ -272,43 +268,31 @@ public class DsBuilder {
     public CollectionDatasource buildCollectionDatasource() {
         init();
         CollectionDatasource datasource;
-        if (master == null && property == null) {
-            if (dsClass == null) {
-                if (CollectionDatasource.FetchMode.LAZY.equals(resolvedFetchMode())) {
-                    datasource = new LazyCollectionDatasource(dsContext, dataService, id, metaClass, view, softDeletion);
-                    ((LazyCollectionDatasource) datasource).setRefreshMode(refreshMode);
+        try {
+            if (master == null && property == null) {
+                if (dsClass == null) {
+                    datasource = CollectionDatasource.FetchMode.LAZY.equals(resolvedFetchMode()) ?
+                            new LazyCollectionDatasource() : new CollectionDatasourceImpl();
                 } else {
-                    datasource = new CollectionDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
-                    ((CollectionDatasourceImpl) datasource).setRefreshMode(refreshMode);
+                    datasource = (CollectionDatasource) dsClass.newInstance();
                 }
-                datasource.setAllowCommit(allowCommit);
-                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
+                datasource.setup(dsContext, dataSupplier, id, metaClass, view);
+                if (datasource instanceof AbstractCollectionDatasource)
+                    ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
-                    datasource = (CollectionDatasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
-                    datasource.setSoftDeletion(softDeletion);
-                    datasource.setAllowCommit(allowCommit);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                if (dsClass == null) {
+                    datasource = new CollectionPropertyDatasourceImpl();
+                } else {
+                    datasource = (CollectionDatasource) dsClass.newInstance();
                 }
+                ((NestedDatasource) datasource).setup(id, master, property);
             }
-        } else {
-            if (dsClass == null) {
-                datasource = new CollectionPropertyDatasourceImpl(id, master, property);
-            } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            String.class, Datasource.class, String.class);
-                    datasource = (CollectionDatasource) constructor.newInstance(
-                            id, master, property);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
+        datasource.setSoftDeletion(softDeletion);
+        datasource.setAllowCommit(allowCommit);
+        datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         return datasource;
     }
 
@@ -331,83 +315,67 @@ public class DsBuilder {
     public HierarchicalDatasource buildHierarchicalDatasource() {
         init();
         HierarchicalDatasource datasource;
-        if (master == null && property == null) {
-            if (dsClass == null) {
-                datasource = new HierarchicalDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
-                ((HierarchicalDatasourceImpl) datasource).setRefreshMode(refreshMode);
-                datasource.setAllowCommit(allowCommit);
-                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
-            } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
-                    datasource = (HierarchicalDatasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
-                    datasource.setSoftDeletion(softDeletion);
-                    datasource.setAllowCommit(allowCommit);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+        try {
+            if (master == null && property == null) {
+                if (dsClass == null) {
+                    datasource = new HierarchicalDatasourceImpl();
+                } else {
+                    datasource = (HierarchicalDatasource) dsClass.newInstance();
                 }
-            }
-        } else {
-            if (dsClass == null) {
-                datasource = new HierarchicalPropertyDatasourceImpl(id, master, property);
+                datasource.setup(dsContext, dataSupplier, id, metaClass, view);
+                if (datasource instanceof AbstractCollectionDatasource)
+                    ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            String.class, Datasource.class, String.class);
-                    datasource = (HierarchicalDatasource) constructor.newInstance(
-                            id, master, property);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                if (dsClass == null) {
+                    datasource = new HierarchicalPropertyDatasourceImpl();
+                } else {
+                    datasource = (HierarchicalDatasource) dsClass.newInstance();
                 }
+                ((NestedDatasource) datasource).setup(id, master, property);
             }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
+        datasource.setSoftDeletion(softDeletion);
+        datasource.setAllowCommit(allowCommit);
+        datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         return datasource;
     }
 
     public GroupDatasource buildGroupDatasource() {
         init();
         GroupDatasource datasource;
-        if (master == null && property == null) {
-            if (dsClass == null) {
-                datasource = new GroupDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
-                ((GroupDatasourceImpl) datasource).setRefreshMode(refreshMode);
-                datasource.setAllowCommit(allowCommit);
-                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
-            } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
-                    datasource = (GroupDatasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
-                    datasource.setSoftDeletion(softDeletion);
-                    datasource.setAllowCommit(allowCommit);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+        try {
+            if (master == null && property == null) {
+                if (dsClass == null) {
+                    datasource = new GroupDatasourceImpl();
+                } else {
+                    datasource = (GroupDatasource) dsClass.newInstance();
                 }
-            }
-        } else {
-            if (dsClass == null) {
-                datasource = new GroupPropertyDatasourceImpl(id, master, property);
+                datasource.setup(dsContext, dataSupplier, id, metaClass, view);
+                if (datasource instanceof AbstractCollectionDatasource)
+                    ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
-                try {
-                    Constructor constructor = dsClass.getConstructor(
-                            String.class, Datasource.class, String.class);
-                    datasource = (GroupDatasource) constructor.newInstance(
-                            id, master, property);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                if (dsClass == null) {
+                    datasource = new GroupPropertyDatasourceImpl();
+                } else {
+                    datasource = (GroupDatasource) dsClass.newInstance();
                 }
+                ((NestedDatasource) datasource).setup(id, master, property);
             }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
+        datasource.setSoftDeletion(softDeletion);
+        datasource.setAllowCommit(allowCommit);
+        datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         return datasource;
     }
 
     public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId) {
         init();
         RuntimePropsDatasourceImpl datasource;
-        datasource = new RuntimePropsDatasourceImpl(dsContext, dataService, id, viewName, mainDsId);
+        datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId);
         return datasource;
     }
 }

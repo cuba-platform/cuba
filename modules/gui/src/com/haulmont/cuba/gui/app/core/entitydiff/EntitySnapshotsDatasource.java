@@ -6,14 +6,11 @@
 
 package com.haulmont.cuba.gui.app.core.entitydiff;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.EntitySnapshotService;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 
 import java.util.List;
@@ -28,11 +25,6 @@ public class EntitySnapshotsDatasource extends CollectionDatasourceImpl<EntitySn
 
     private BaseEntity entity;
     private List<EntitySnapshot> snapshots;
-
-    public EntitySnapshotsDatasource(DsContext context, DataService dataservice,
-                                     String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     public boolean isModified() {

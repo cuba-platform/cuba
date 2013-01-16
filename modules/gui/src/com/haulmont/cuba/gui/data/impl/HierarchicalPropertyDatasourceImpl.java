@@ -1,32 +1,28 @@
 /*
-* Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
-* Haulmont Technology proprietary and confidential.
-* Use is subject to license terms.
-
-* Author: Dmitry Odobescu
-* Created: 28.01.2011 18:30:36
-*
-* $Id$
-*/
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K> extends CollectionPropertyDatasourceImpl<T, K> implements HierarchicalDatasource<T, K> {
+/**
+ * @author Odobescu
+ * @version $Id$
+ */
+public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
+        extends CollectionPropertyDatasourceImpl<T, K>
+        implements HierarchicalDatasource<T, K> {
 
     protected String hierarchyPropertyName;
 
     protected String sortPropertyName;
-
-    public HierarchicalPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
-        super(id, ds, property);
-    }
 
     @Override
     public String getHierarchyPropertyName() {
@@ -97,9 +93,9 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K> extends 
         if (hierarchyPropertyName != null) {
             Set<K> result = new LinkedHashSet<K>();
             for (K id : ids) {
-                Entity<K> item = getItem(id);
+                Entity<K> item = getItemNN(id);
                 Object value = item.getValue(hierarchyPropertyName);
-                if (value == null || !containsItem(getItemId((T) value))) result.add(item.getId());
+                if (value == null || !containsItem(((T) value).getId())) result.add(item.getId());
             }
             return result;
         } else {
@@ -114,7 +110,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K> extends 
 
         if (hierarchyPropertyName != null) {
             Object value = item.getValue(hierarchyPropertyName);
-            return (value == null || !containsItem(getItemId((T) value)));
+            return (value == null || !containsItem(((T) value).getId()));
         } else {
             return true;
         }

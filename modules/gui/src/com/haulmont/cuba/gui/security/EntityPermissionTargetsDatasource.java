@@ -7,14 +7,11 @@
 package com.haulmont.cuba.gui.security;
 
 import com.google.common.base.Predicate;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
@@ -38,12 +35,6 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
     private Predicate<OperationPermissionTarget> filter;
 
     private CollectionDatasource<Permission, UUID> permissionDs;
-
-    public EntityPermissionTargetsDatasource(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     public boolean isModified() {

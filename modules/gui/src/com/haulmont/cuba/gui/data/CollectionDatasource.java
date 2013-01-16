@@ -1,28 +1,29 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 11:06:58
- * $Id$
  */
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.components.AggregationInfo;
+import com.haulmont.cuba.gui.filter.QueryFilter;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 
 /**
  * Datasource containing a collection of entity instances.
- * <br>Usually loaded by query defined in XML descriptor, see {@link #setQuery(String)} for the
- * list of possible query parameters.
+ *
  * @param <T> type of entity
  * @param <K> type of entity ID
+ *
+ * @see #setQuery(String)
+ *
+ * @author Abramov
+ * @version $Id$
  */
 public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource<T> {
 
@@ -32,7 +33,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         ALL,
         /** Datasource will try to load data by chunks per UI component request */
         LAZY,
-        /** ALL or LAZY will be choosen on the basis of PersistenceManager statistics */
+        /** ALL or LAZY will be choosen on the basis of <code>PersistenceManager<code/> statistics */
         AUTO
     }
 
@@ -40,48 +41,70 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     enum RefreshMode{
         /** Datasource will load data for each refresh */
         ALWAYS,
-
-        /** Datasource doesn't change data in container */
+        /** Datasource will never load data from database */
         NEVER
     }
 
-    /** Get item by ID */
-    T getItem(K key);
+    /**
+     * @return item by ID, can be null
+     */
+    @Nullable
+    T getItem(K id);
 
-    /** Get item ID */
-    K getItemId(T item);
+    /**
+     * @return item by ID. Throws exception if not found.
+     */
+    T getItemNN(K id);
 
-    /** Get all item IDs */
+    /**
+     * @return  all item IDs
+     */
     Collection<K> getItemIds();
 
     /**
-     * Size of the underlying collection. For {@link FetchMode#LAZY} datasource it is not equal
+     * @return size of the underlying collection. For {@link FetchMode#LAZY} datasource it is not equal
      * to the size of currently loaded data. 
      */
     int size();
 
-    /** Add item to the collection. The datasource becomes modified. */
-    void addItem(T item) throws UnsupportedOperationException;
+    /**
+     * Add an item to the collection. The datasource becomes modified.
+     */
+    void addItem(T item);
 
-    /** Remove item from the collection. The datasource becomes modified. */
-    void removeItem(T item) throws UnsupportedOperationException;
+    /**
+     * Remove an item from the collection. The datasource becomes modified.
+     */
+    void removeItem(T item);
 
-    /** Exclude item from the collection. The datasource "modified" state doesn't change. */
-    void excludeItem(T item) throws UnsupportedOperationException;
+    /**
+     * Exclude an item from the collection. The datasource "modified" state doesn't change.
+     */
+    void excludeItem(T item);
 
-    /** Include item from the collection. The datasource "modified" state doesn't change. */
-    void includeItem(T item) throws UnsupportedOperationException;
+    /**
+     * Include an item into the collection. The datasource "modified" state doesn't change.
+     */
+    void includeItem(T item);
 
-    /** Clear data collection. The datasource "modified" state doesn't change. */
-    void clear() throws UnsupportedOperationException;
+    /**
+     * Clear the underlying collection. The datasource "modified" state doesn't change.
+     */
+    void clear();
 
-    /** */
-    void revert() throws UnsupportedOperationException;
+    /**
+     * Revert the datasource to its initial state before data modification.
+     */
+    void revert();
 
-    /** Updates item in the collection if it is already there. The datasource becomes modified. */
+    /**
+     * Update an item in the collection if it is already there. The datasource becomes modified.
+     */
     void modifyItem(T item);
 
-    /** Updates item in the collection if it is already there. Does not affect the "modified" state */
+    /**
+     * Update an item in the collection if it is already there. Does not affect the "modified" state.
+     */
     void updateItem(T item);
 
     /**
@@ -112,33 +135,52 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
      */
     void resumeListeners();
 
-    /** True if this datasource supports soft deletion functionality. Corresponds to EntityManager.setSoftDeletion(boolean) */
+    /**
+     * @return true if this datasource is in Soft Delete mode.
+     */
     boolean isSoftDeletion();
 
-    /** Switch on/off soft deletion functionality. Corresponds to EntityManager.setSoftDeletion(boolean) */
+    /**
+     * Switch on/off Soft Deletion.
+     */
     void setSoftDeletion(boolean softDeletion);
 
-    /** True if this datasource allows to commit data to storage **/
+    /**
+     * @return true if this datasource can commit data to the database
+     */
     boolean isAllowCommit();
 
-    /** Switch on/off commit functionality. If disabled, isModified() always returns false, commit() has no effect */
+    /**
+     * Switch on/off ability to commit.
+     * If disabled, {@link #isModified()} always returns false and {@link #commit()} has no effect.
+     */
     void setAllowCommit(boolean allowCommit);
 
-    /** True if the underlying collection contains an item with the specified ID */
+    /**
+     * @return true if the underlying collection contains an item with the specified ID
+     */
     boolean containsItem(K itemId);
 
-    /** Query string which is used to load data. Implementation-dependent (JPQL, Groovy, etc.). */
+    /**
+     * @return Query string which is used to load data. Implementation-dependent (JPQL, Groovy, etc.).
+     * Can be null.
+     */
     String getQuery();
 
-    /** Create load context with jpql query and filter */
-    LoadContext getCompiledLoadContext() throws UnsupportedOperationException;
+    /**
+     * @return load context that can be used to load the same data as contained in the datasource.
+     * Can be null.
+     */
+    LoadContext getCompiledLoadContext();
 
-    /** Query filter associated with {@link #getQuery()} */
+    /**
+     * @return Current query filter. Can be null.
+     */
     QueryFilter getQueryFilter();
 
     /**
      * Set query string which is used to load data. Implementation-dependent (JPQL, Groovy, etc.).
-     * <br>The query may use the following parameters, distiguished by prefix:
+     * <p/> The query may use the following parameters, distinguished by prefix:
      * <ul>
      * <li><code>ds$</code> - current item in the specified datasource
      * <li><code>component$</code> - value of the specified UI component
@@ -166,14 +208,13 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void setQueryFilter(QueryFilter filter);
 
     /**
-     * Max number of rows. 0 in case of no limits.<br>
-     * Implementations may or may not take this parameter into account.
+     * @return Max number of rows. 0 in case of no limits.
      */
     int getMaxResults();
 
     /**
-     * Set max number of rows. 0 in case of no limits.<br>
-     * Implementations may or may not take this parameter into account.
+     * Set max number of rows. 0 in case of no limits.
+     * <p/> Implementations may or may not take this parameter into account.
      */
     void setMaxResults(int maxResults);
 
@@ -203,10 +244,14 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
      * @param <K> type of entity ID
      */
     interface Ordered<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+        @Nullable
         K firstItemId();
+        @Nullable
         K lastItemId();
 
+        @Nullable
         K nextItemId(K itemId);
+        @Nullable
         K prevItemId(K itemId);
 
         boolean isFirstId(K itemId);
@@ -248,12 +293,14 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
             }
         }
 
-        /** Perform sort */
+        /**
+         * Perform sorting
+         */
         void sort(SortInfo[] sortInfos);
     }
 
     /**
-     * CollectionDatasource which supports an aggregation of data
+     * CollectionDatasource which supports data aggregation.
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
@@ -266,7 +313,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     /**
-     * CollectionDatasource with lazy loading
+     * CollectionDatasource with lazy loading.
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
@@ -276,7 +323,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     /**
-     * CollectionDatasource that supports counting records in database and loading by pages
+     * CollectionDatasource that supports counting records in database and loading by pages.
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
@@ -290,6 +337,11 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         void setFirstResult(int startPosition);
     }
 
+    /**
+     * CollectionDatasource that supports defferred refresh.
+     * When it is in suspended state, it doesn't actually refresh on refreshIfNotSuspended() calls, but refreshes
+     * once after switch to not supended.
+     */
     interface Suspendable<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
         boolean isSuspended();
@@ -298,6 +350,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         void refreshIfNotSuspended();
     }
 
+    /**
+     * CollectionDatasource that supports applying filter to previously selected data.
+     */
     interface SupportsApplyToSelected<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
         void pinQuery();

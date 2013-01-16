@@ -9,24 +9,20 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
 public class SimpleLookup extends AbstractLookup {
-
-    public SimpleLookup(IFrame frame) {
-        super(frame);
-    }
 
     public enum ComponentType {
         TABLE,
@@ -37,10 +33,13 @@ public class SimpleLookup extends AbstractLookup {
 
     private static Log log = LogFactory.getLog(SimpleLookup.class);
 
+    @Inject
+    protected Metadata metadata;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        lookupConfig = (LookupConfig)params.get("param$lookupConfig"); 
+        lookupConfig = (LookupConfig)params.get("lookupConfig");
 
         checkValid();
 
@@ -52,12 +51,13 @@ public class SimpleLookup extends AbstractLookup {
         String lookupTitle = lookupConfig.getLookupTitle();
         Map<String, Object> queryParams = lookupConfig.getQueryParams();
 
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
-        if (metaClass == null)
-            throw new RuntimeException("Can't find MetaClass for " + entityName);
+        MetaClass metaClass = metadata.getSession().getClassNN(entityName);
 
-        CollectionDatasource datasource = new CollectionDatasourceImpl(getDsContext(), new GenericDataService(),
-                metaClass.getName(), metaClass, view);
+        CollectionDatasource datasource = new DsBuilder(getDsContext())
+                .setId(metaClass.getName())
+                .setMetaClass(metaClass)
+                .setViewName(view)
+                .buildCollectionDatasource();
 
         if (query != null)
             datasource.setQuery(query);

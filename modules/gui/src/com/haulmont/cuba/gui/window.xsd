@@ -1414,7 +1414,7 @@
             <xs:attribute name="lookupComponent" type="xs:string"/>
 
             <xs:attribute name="datasource" type="xs:string"/>
-            <xs:attribute name="dataservice" type="xs:string"/>
+            <xs:attribute name="dataSupplier" type="xs:string"/>
             <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
             <xs:attribute name="focusComponent" type="xs:string" use="optional"/>
         </xs:complexType>

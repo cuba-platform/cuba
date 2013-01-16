@@ -27,7 +27,7 @@ public interface DsContext {
     WindowContext getWindowContext();
     void setWindowContext(WindowContext context);
 
-    DataService getDataService();
+    DataSupplier getDataService();
 
     /** Get datasource by name */
     <T extends Datasource> T get(String name);

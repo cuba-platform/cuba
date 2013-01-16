@@ -1,37 +1,31 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 21.05.2010 12:39:16
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author Gorodnov
+ * @version $Id$
+ */
 public class GroupPropertyDatasourceImpl<T extends Entity<K>, K>
         extends CollectionPropertyDatasourceImpl<T, K> 
-        implements GroupDatasource<T, K>
-{
+        implements GroupDatasource<T, K> {
+
     protected GroupDelegate<T, K> groupDelegate = new GroupDelegate<T, K>(this) {
         protected void doSort(SortInfo<MetaPropertyPath>[] sortInfo) {
             GroupPropertyDatasourceImpl.super.doSort();
         }
     };
-
-    public GroupPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
-        super(id, ds, property);
-    }
 
     public void groupBy(Object[] properties) {
         groupDelegate.groupBy(properties, sortInfos);

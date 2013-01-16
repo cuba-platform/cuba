@@ -24,27 +24,27 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @param <T> Entity
- * @param <K> Key
+ * @param <T> type of entity
+ * @param <K> type of entity ID
+ *
  * @author abramov
  * @version $Id$
  */
 public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
-        extends DatasourceImpl<T> implements CollectionDatasource<T, K> {
+        extends DatasourceImpl<T>
+        implements CollectionDatasource<T, K> {
 
     protected String query;
     protected QueryFilter filter;
     protected int maxResults;
     protected ParameterInfo[] queryParameters;
-    protected boolean softDeletion;
+    protected boolean softDeletion = true;
     protected ComponentValueListener componentValueListener;
     protected boolean refreshOnComponentValueChange;
     protected Sortable.SortInfo<MetaPropertyPath>[] sortInfos;
@@ -52,17 +52,15 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected Throwable dataLoadError;
     protected boolean listenersSuspended;
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
+    protected RefreshMode refreshMode = RefreshMode.ALWAYS;
 
-    private static Log log = LogFactory.getLog(AbstractCollectionDatasource.class);
-
-    public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
-        super(dsContext, dataservice, id, metaClass, viewName);
-        this.softDeletion = true;
-    }
-
-    public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, View view) {
-        super(dsContext, dataservice, id, metaClass, view);
-        this.softDeletion = true;
+    @Override
+    public T getItemNN(K id) {
+        T it = getItem(id);
+        if (it != null)
+            return it;
+        else
+            throw new NullPointerException("Item with id=" + id + " is not found in datasource " + this.id);
     }
 
     @Override
@@ -91,7 +89,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public LoadContext getCompiledLoadContext() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
@@ -395,7 +393,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     @Override
     public void commit() {
         if (CommitMode.DATASTORE.equals(getCommitMode())) {
-            final DataService service = getDataService();
+            final DataSupplier supplier = getDataSupplier();
             Set<Entity> commitInstances = new HashSet<Entity>();
             Set<Entity> deleteInstances = new HashSet<Entity>();
 
@@ -412,7 +410,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 context.getViews().put(entity, getView());
             }
 
-            final Set<Entity> committed = service.commit(context);
+            final Set<Entity> committed = supplier.commit(context);
 
             committed(committed);
         } else {
@@ -496,7 +494,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
         dataLoadError = null;
         try {
-            List res = dataservice.loadList(context);
+            List res = dataSupplier.loadList(context);
             return res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
         } catch (Throwable e) {
             dataLoadError = e;
@@ -541,6 +539,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             String jpqlQuery = transformer.getResult();
             q.setQueryString(jpqlQuery);
         }
+    }
+
+    public RefreshMode getRefreshMode() {
+        return refreshMode;
+    }
+
+    public void setRefreshMode(RefreshMode refreshMode) {
+        this.refreshMode = refreshMode;
     }
 
     private class ComponentValueListener implements ValueListener {

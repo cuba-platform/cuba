@@ -1,62 +1,26 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 16.03.2009 10:38:29
- * $Id$
  */
 
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import java.util.*;
 
+/**
+ * @author Abramov
+ * @version $Id$
+ */
 public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
-    extends
-        CollectionDatasourceImpl<T, K>
-    implements
-        HierarchicalDatasource<T, K>
-{
+        extends CollectionDatasourceImpl<T, K>
+        implements HierarchicalDatasource<T, K> {
+
     protected String hierarchyPropertyName;
-
-    public HierarchicalDatasourceImpl(
-            DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, String viewName)
-    {
-        super(context, dataservice, id, metaClass, viewName);
-    }
-
-    public HierarchicalDatasourceImpl(
-            DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, View view)
-    {
-        super(context, dataservice, id, metaClass, view);
-    }
-
-    public HierarchicalDatasourceImpl(
-            DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, String viewName, boolean softDeletion)
-    {
-        super(context, dataservice, id, metaClass, viewName);
-        setSoftDeletion(softDeletion);
-    }
-
-    public HierarchicalDatasourceImpl(
-            DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, View view, boolean softDeletion)
-    {
-        super(context, dataservice, id, metaClass, view);
-        setSoftDeletion(softDeletion);
-    }
 
     public String getHierarchyPropertyName() {
         return hierarchyPropertyName;
@@ -106,9 +70,10 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         if (hierarchyPropertyName != null) {
             Set<K> result = new LinkedHashSet<K>();
             for (K id : ids) {
-                Entity<K> item = getItem(id);
+                Entity<K> item = getItemNN(id);
                 Object value = item.getValue(hierarchyPropertyName);
-                if (value == null || !containsItem(getItemId((T) value))) result.add(item.getId());
+                if (value == null || !containsItem(((T) value).getId()))
+                    result.add(item.getId());
             }
             return result;
         } else {
@@ -122,7 +87,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
 
         if (hierarchyPropertyName != null) {
             Object value = item.getValue(hierarchyPropertyName);
-            return (value == null || !containsItem(getItemId((T) value)));
+            return (value == null || !containsItem(((T) value).getId()));
         } else {
             return true;
         }

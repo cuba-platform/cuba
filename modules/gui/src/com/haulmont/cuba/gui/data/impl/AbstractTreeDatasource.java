@@ -8,11 +8,8 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
@@ -24,6 +21,7 @@ import java.util.*;
 /**
  * @param <T> Entity
  * @param <K> Key
+ *
  * @author abramov
  * @version $Id$
  */
@@ -33,12 +31,6 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     protected Tree<T> tree;
     protected Map<K, Node<T>> nodes;
-
-    public AbstractTreeDatasource(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     protected void loadData(Map<String, Object> params) {

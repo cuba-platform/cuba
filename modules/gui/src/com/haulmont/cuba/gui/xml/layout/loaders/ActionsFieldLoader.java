@@ -14,8 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
@@ -87,7 +86,10 @@ public class ActionsFieldLoader extends AbstractFieldLoader {
             ds = context.getDsContext().get(datasource);
         } else {
             MetaClass metaClass = component.getMetaProperty().getRange().asClass();
-            ds = new CollectionDatasourceImpl(null, new GenericDataService(), null, metaClass, View.MINIMAL);
+            ds = new DsBuilder()
+                    .setMetaClass(metaClass)
+                    .setViewName(View.MINIMAL)
+                    .buildCollectionDatasource();
             ds.setQuery("select e from " + metaClass.getName() + " e where e.id is null");
             ds.refresh();
         }

@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 15:18:26
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
@@ -24,21 +20,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class PropertyDatasourceImpl<T extends Entity>
-        extends
-        AbstractDatasource<T>
-        implements
-        Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T> {
+        extends AbstractDatasource<T>
+        implements Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T> {
 
     protected Datasource masterDs;
     protected MetaProperty metaProperty;
     protected volatile MetaClass metaClass;
     protected volatile View view;
 
-    public PropertyDatasourceImpl(String id, Datasource ds, String property) {
-        super(id);
-        this.masterDs = ds;
-        metaProperty = ds.getMetaClass().getProperty(property);
+    @Override
+    public void setup(String id, Datasource masterDs, String property) {
+        this.id = id;
+        this.masterDs = masterDs;
+        metaProperty = masterDs.getMetaClass().getProperty(property);
         initParentDsListeners();
     }
 
@@ -115,8 +114,8 @@ public class PropertyDatasourceImpl<T extends Entity>
         return masterDs.getDsContext();
     }
 
-    public DataService getDataService() {
-        return masterDs.getDataService();
+    public DataSupplier getDataSupplier() {
+        return masterDs.getDataSupplier();
     }
 
     public void commit() {

@@ -6,11 +6,8 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.ds;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
@@ -28,11 +25,6 @@ import java.util.UUID;
 public class JmxInstancesDatasource extends CollectionDatasourceImpl<JmxInstance, UUID> {
 
     private JmxControlAPI jmxControlAPI = AppBeans.get(JmxControlAPI.NAME);
-
-    public JmxInstancesDatasource(DsContext context, DataService dataservice, String id,
-                                  MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     protected void loadData(Map<String, Object> params) {

@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 public class DsContextTest extends CubaClientTestCase {
 
     private Session metadataSession;
-    private TestDataService dataService;
+    private TestDataSupplier dataService;
 
     private DsContextImplementation masterDsContext;
     private DsContextImplementation detailDsContext;
@@ -77,7 +77,7 @@ public class DsContextTest extends CubaClientTestCase {
         setupInfrastructure();
 
         metadataSession = metadata.getSession();
-        dataService = new TestDataService();
+        dataService = new TestDataSupplier();
 
         dataService.commitCount = 0;
 
@@ -130,7 +130,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals("Commit Detail DsContext", 0, dataService.commitCount);
 
         // Commit Master editor
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
@@ -169,7 +169,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals("Commit Detail DsContext", 0, dataService.commitCount);
 
         // Commit Master editor
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail.getId()));
@@ -229,7 +229,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals("Commit Detail DsContext", 0, dataService.commitCount);
 
         // Commit Master editor
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail.getId()));
@@ -300,7 +300,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals("Commit Detail DsContext", 0, dataService.commitCount);
 
         // Commit Master editor
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
@@ -358,7 +358,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals("Commit Detail", 0, dataService.commitCount);
 
         // Commit Master editor
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part1.getId()));
@@ -477,7 +477,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals("Commit Detail", 0, dataService.commitCount);
 
         // Commit Master editor
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part1.getId()));

@@ -8,29 +8,29 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.data.*;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
  *
  * @param <T>
+ *
  * @author abramov
  * @version $Id$
  */
 public class DatasourceImpl<T extends Entity>
-    extends
-        AbstractDatasource<T>
-    implements
-        DatasourceImplementation<T> {
+        extends AbstractDatasource<T>
+        implements DatasourceImplementation<T> {
 
     protected DsContext dsContext;
-    protected DataService dataservice;
+    protected DataSupplier dataSupplier;
 
     protected MetaClass metaClass;
     protected View view;
@@ -38,18 +38,22 @@ public class DatasourceImpl<T extends Entity>
     protected State state = State.NOT_INITIALIZED;
     protected T item;
 
-    public DatasourceImpl(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
-        this(dsContext, dataservice, id, metaClass,
-                StringUtils.isEmpty(viewName) ? null : AppBeans.get(Metadata.class).getViewRepository().getView(metaClass, viewName));
-    }
-
-    public DatasourceImpl(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, View view) {
-        super(id);
+    @Override
+    public void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
+                      MetaClass metaClass, @Nullable View view) {
+        this.id = id;
         this.dsContext = dsContext;
-        this.dataservice = dataservice;
-
+        this.dataSupplier = dataSupplier;
         this.metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
         this.view = view;
+    }
+
+    public void setView(View view) {
+        this.view = view;
+    }
+
+    public void setView(String viewName) {
+        this.view = metadata.getViewRepository().getView(metaClass, viewName);
     }
 
     @Override
@@ -57,16 +61,24 @@ public class DatasourceImpl<T extends Entity>
         return dsContext;
     }
 
+    public void setDsContext(DsContext dsContext) {
+        this.dsContext = dsContext;
+    }
+
     @Override
-    public DataService getDataService() {
-        return dataservice;
+    public DataSupplier getDataSupplier() {
+        return dataSupplier;
+    }
+
+    public void setDataSupplier(DataSupplier dataservice) {
+        this.dataSupplier = dataservice;
     }
 
     @Override
     public void commit() {
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
-            final DataService service = getDataService();
-            item = service.commit(item, getView());
+            final DataSupplier supplier = getDataSupplier();
+            item = supplier.commit(item, getView());
 
             clearCommitLists();
             modified = false;
@@ -99,10 +111,15 @@ public class DatasourceImpl<T extends Entity>
         return metaClass;
     }
 
+    public void setMetaClass(MetaClass metaClass) {
+        this.metaClass = metaClass;
+    }
+
     @Override
     public View getView() {
         return view;
     }
+
 
     @Override
     public State getState() {
@@ -149,8 +166,6 @@ public class DatasourceImpl<T extends Entity>
         }
 
         this.item = item;
-
-        // TODO (abramov) should we clear modified state there?
         this.modified = false;
         clearCommitLists();
 

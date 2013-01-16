@@ -12,8 +12,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.EntitySnapshotService;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -31,11 +29,6 @@ import java.util.UUID;
 public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDiff, UUID> {
 
     private EntityDiff entityDiff;
-
-    public DiffTreeDatasource(DsContext context, DataService dataservice, String id,
-                              MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     protected Tree<EntityPropertyDiff> loadTree(Map params) {

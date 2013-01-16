@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.filter.Condition;
 import com.haulmont.cuba.gui.filter.DenyingClause;
@@ -28,12 +28,17 @@ import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
+ * Most commonly used {@link CollectionDatasource} implementation.
+ * Contains collection of standalone (not property) entities, and can request data from database and commit changes.
+ * <p/>
+ * Can be used as a base class for custom datasources that override e.g. {@link #loadData(java.util.Map)} method.
  *
- * @param <T> Enity
- * @param <K> Key
+ * @param <T> type of entity
+ * @param <K> type of entity ID
  *
  * @author abramov
  * @version $Id$
@@ -51,7 +56,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected LinkedMap data = new LinkedMap();
 
     private boolean inRefresh;
-    protected RefreshMode refreshMode = RefreshMode.ALWAYS;
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
@@ -80,41 +84,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected LoadContext.Query lastQuery;
     protected LinkedList<LoadContext.Query> prevQueries = new LinkedList<>();
     protected Integer queryKey;
-
-    /**
-     * This constructor is invoked by DsContextLoader, so inheritors must contain a constructor
-     * with the same signature
-     */
-    public CollectionDatasourceImpl(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
-
-    public CollectionDatasourceImpl(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, View view) {
-        super(context, dataservice, id, metaClass, view);
-    }
-
-    public CollectionDatasourceImpl(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, String viewName, boolean softDeletion) {
-        super(context, dataservice, id, metaClass, viewName);
-        setSoftDeletion(softDeletion);
-    }
-
-    public CollectionDatasourceImpl(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, View view, boolean softDeletion) {
-        super(context, dataservice, id, metaClass, view);
-        setSoftDeletion(softDeletion);
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-    }
 
     @Override
     public void refreshIfNotSuspended() {
@@ -204,32 +173,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
-    public RefreshMode getRefreshMode() {
-        return refreshMode;
-    }
-
-    public void setRefreshMode(RefreshMode refreshMode) {
-        this.refreshMode = refreshMode;
-    }
-
     @Override
-    public T getItem(K key) {
-        if (State.NOT_INITIALIZED.equals(state)) {
+    public T getItem(K id) {
+        if (state == State.NOT_INITIALIZED) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
-            final T item = (T) data.get(key);
+            T item = (T) data.get(id);
             return item;
         }
     }
 
     @Override
-    public K getItemId(T item) {
-        return item == null ? null : item.getId();
-    }
-
-    @Override
     public Collection<K> getItemIds() {
-        if (State.NOT_INITIALIZED.equals(state)) {
+        if (state == State.NOT_INITIALIZED) {
             return Collections.emptyList();
         } else {
             return (Collection<K>) data.keySet();
@@ -238,7 +194,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public int size() {
-        if (State.NOT_INITIALIZED.equals(state) || suspended) {
+        if ((state == State.NOT_INITIALIZED) || suspended) {
             return 0;
         } else {
             return data.size();
@@ -319,7 +275,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void addItem(T item) throws UnsupportedOperationException {
+    public void addItem(T item) {
         checkState();
 
         data.put(item.getId(), item);
@@ -334,7 +290,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void removeItem(T item) throws UnsupportedOperationException {
+    public void removeItem(T item) {
         checkState();
 
         if (item == this.item)
@@ -353,7 +309,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void includeItem(T item) throws UnsupportedOperationException {
+    public void includeItem(T item) {
         checkState();
 
         data.put(item.getId(), item);
@@ -363,7 +319,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void excludeItem(T item) throws UnsupportedOperationException {
+    public void excludeItem(T item) {
         checkState();
 
         data.remove(item.getId());
@@ -377,7 +333,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void clear() throws UnsupportedOperationException {
+    public void clear() {
         // Get items
         List<Object> collectionItems = new ArrayList<Object>(data.values());
         // Clear container
@@ -392,7 +348,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void revert() throws UnsupportedOperationException {
+    public void revert() {
         if (refreshMode != RefreshMode.NEVER)
             refresh();
         else {
@@ -478,6 +434,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             setSortDirection(q);
         }
         context.setView(view);
+        context.setSoftDeletion(softDeletion);
         return context;
     }
 
@@ -522,7 +479,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
             dataLoadError = null;
             try {
-                final Collection<T> entities = dataservice.loadList(context);
+                final Collection<T> entities = dataSupplier.loadList(context);
 
                 detachListener(data.values());
                 data.clear();

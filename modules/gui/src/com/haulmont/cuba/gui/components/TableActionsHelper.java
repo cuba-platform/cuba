@@ -14,10 +14,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -104,7 +104,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
 
         public void actionPerform(Component component) {
             final CollectionDatasource datasource = TableActionsHelper.this.component.getDatasource();
-            final DataService dataservice = datasource.getDataService();
+            final DataSupplier dataservice = datasource.getDataSupplier();
             final String windowID = datasource.getMetaClass().getName() + ".edit";
 
             final Entity item = dataservice.newInstance(datasource.getMetaClass());

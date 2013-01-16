@@ -21,15 +21,10 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
 /**
- * @param <T>
- * @param <K>
- *
  * @author abramov
  * @version $Id$
  */
@@ -43,8 +38,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected T item;
     protected boolean cascadeProperty;
-
-    private static Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
     protected boolean listenersSuspended;
@@ -64,11 +57,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     };
 
-    public CollectionPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
-        super(id, ds, property);
-
-        final MetaClass metaClass = ds.getMetaClass();
-        final MetaProperty metaProperty = metaClass.getProperty(property);
+    @Override
+    public void setup(String id, Datasource masterDs, String property) {
+        super.setup(id, masterDs, property);
         cascadeProperty = metadata.getTools().isCascade(metaProperty);
     }
 
@@ -133,14 +124,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public T getItem(K key) {
-        if (key instanceof Entity)
-            return (T) key;
+    public T getItem(K id) {
+        if (id instanceof Entity)
+            return (T) id;
         else {
             Collection<T> collection = __getCollection();
             if (collection != null) {
                 for (T t : collection) {
-                    if (t.getId().equals(key))
+                    if (t.getId().equals(id))
                         return t;
                 }
             }
@@ -149,11 +140,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public K getItemId(T item) {
-        if (item instanceof Entity)
-            return item.getId();
+    public T getItemNN(K id) {
+        T it = getItem(id);
+        if (it != null)
+            return it;
         else
-            return (K) item;
+            throw new NullPointerException("Item with id=" + id + " is not found in datasource " + this.id);
     }
 
     @Override
@@ -475,7 +467,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public LoadContext getCompiledLoadContext() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override

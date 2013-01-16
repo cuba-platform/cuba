@@ -9,17 +9,16 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
-* <p>$Id$</p>
-*
 * @author krivopustov
+ * @version $Id$
 */
-public class TestDataService implements DataService {
+public class TestDataSupplier implements DataSupplier {
 
     public interface CommitValidator {
         void validate(CommitContext context);

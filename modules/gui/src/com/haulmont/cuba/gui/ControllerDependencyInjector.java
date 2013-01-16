@@ -11,7 +11,7 @@ import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.apache.commons.lang.ClassUtils;
@@ -152,7 +152,7 @@ public class ControllerDependencyInjector {
             // Injecting the DsContext
             return frame.getDsContext();
 
-        } else if (DataService.class.isAssignableFrom(type)) {
+        } else if (DataSupplier.class.isAssignableFrom(type)) {
             // Injecting the DataService
             return frame.getDsContext().getDataService();
 

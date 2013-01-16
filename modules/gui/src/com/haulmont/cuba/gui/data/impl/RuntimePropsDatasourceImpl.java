@@ -15,24 +15,23 @@ import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
  * Specific datasource for runtime properties.
  * It will be initialized only when main datasource will be valid.
  *
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
-
-public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimePropertiesEntity>
+public class RuntimePropsDatasourceImpl
+        extends AbstractDatasource<RuntimePropertiesEntity>
         implements RuntimePropsDatasource<RuntimePropertiesEntity> {
 
     private DsContext dsContext;
-    private DataService dataService;
+    private DataSupplier dataSupplier;
     private MetaClass metaClass;
-    private String viewName;
     private View view;
     private Datasource mainDs;
     private boolean inittedBefore = false;
@@ -42,13 +41,10 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
 
     private RuntimePropertiesEntity item;
 
-
-    public RuntimePropsDatasourceImpl(DsContext dsContext, DataService dataService,
-                                      String id, String viewName, String mainDsId) {
-        super(id);
+    public RuntimePropsDatasourceImpl(DsContext dsContext, DataSupplier dataSupplier, String id, String mainDsId) {
+        this.id = id;
         this.dsContext = dsContext;
-        this.dataService = dataService;
-        this.viewName = viewName;
+        this.dataSupplier = dataSupplier;
         this.metaClass = new RuntimePropertiesMetaClass();
         this.setMainDs(mainDsId);
 
@@ -64,9 +60,13 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         });
     }
 
+    @Override
+    public void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
+                      MetaClass metaClass, @Nullable View view) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
 
     protected void initMetaClass() {
-
         for (MetaProperty property : metaClass.getProperties()) {
             itemToCreate.clear();
             itemToUpdate.clear();
@@ -86,14 +86,14 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         query.addParameter("e", entity.getUuid());
         query.addParameter("cat", entity.getCategory());
         valuesContext.setView("categoryAttributeValue");
-        List<CategoryAttributeValue> entityValues = dataService.loadList(valuesContext);
+        List<CategoryAttributeValue> entityValues = dataSupplier.loadList(valuesContext);
 
         LoadContext attributesContext = new LoadContext(CategoryAttribute.class);
         LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a " +
                 "where a.category.id=:cat order by a.orderNo");
         attributeQuery.addParameter("cat", entity.getCategory());
         valuesContext.setView("_local");
-        List<CategoryAttribute> attributes = dataService.loadList(attributesContext);
+        List<CategoryAttribute> attributes = dataSupplier.loadList(attributesContext);
 
         Map<String, Object> variables = new HashMap<String, Object>();
         Map<String, CategoryAttributeValue> categoryValues = new HashMap<String, CategoryAttributeValue>();
@@ -274,7 +274,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
             query.addParameter("e", uuid);
             entitiesContext.setView("_local");
-            entity = dataService.load(entitiesContext);
+            entity = dataSupplier.load(entitiesContext);
 
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("can't parse entity " + entityType + " " + uuid, e);
@@ -287,14 +287,14 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         return dsContext;
     }
 
-    public DataService getDataService() {
-        return dataService;
+    public DataSupplier getDataSupplier() {
+        return dataSupplier;
     }
 
     public void commit() {
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
-            final DataService service = getDataService();
-            item = service.commit(item, getView());
+            final DataSupplier supplier = getDataSupplier();
+            item = supplier.commit(item, getView());
             clearCommitLists();
             modified = false;
 
@@ -338,7 +338,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
     }
 
     public View getView() {
-        return null;
+        return view;
     }
 
     public void initialized() {
@@ -392,7 +392,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
                 "select c from sys$Category c where c.isDefault = true and c.entityType=:type ");
         query.addParameter("type", MetadataProvider.getSession().getClass(entity.getClass()).getName());
         categoryContext.setView("_minimal");
-        List<Category> categories = dataService.loadList(categoryContext);
+        List<Category> categories = dataSupplier.loadList(categoryContext);
         if (!categories.isEmpty())
             return categories.iterator().next();
         else

@@ -1,44 +1,31 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Nikolay Gorodnov
- * Created: 02.03.2011 19:58:42
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class CustomGroupDatasource<T extends Entity<K>, K> 
         extends CustomCollectionDatasource<T, K>
-        implements GroupDatasource<T, K>
-{
+        implements GroupDatasource<T, K> {
+
     protected GroupDelegate<T,K> groupDelegate = new GroupDelegate<T, K>(this) {
         protected void doSort(SortInfo<MetaPropertyPath>[] sortInfo) {
             CustomGroupDatasource.super.doSort();
         }
     };
-
-    private static final long serialVersionUID = 2997943125043253322L;
-
-    public CustomGroupDatasource(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, String viewName
-    ) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     public void groupBy(Object[] properties) {
         groupDelegate.groupBy(properties, sortInfos);

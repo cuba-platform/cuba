@@ -9,9 +9,8 @@ package com.haulmont.cuba.gui.data;
 import com.haulmont.cuba.core.entity.Entity;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public interface RuntimePropsDatasource<T extends Entity> extends Datasource<T> {
 

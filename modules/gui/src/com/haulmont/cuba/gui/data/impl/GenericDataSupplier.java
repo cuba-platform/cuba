@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 12.02.2009 12:06:15
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class GenericDataService implements DataService {
+/**
+ * @author abramov
+ * @version $Id$
+ */
+public class GenericDataSupplier implements DataSupplier {
 
     private Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);
 
-    private com.haulmont.cuba.core.app.DataService dataService = AppBeans.get(
-            com.haulmont.cuba.core.app.DataService.NAME, com.haulmont.cuba.core.app.DataService.class);
+    private DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
 
     public <A extends Entity> A newInstance(MetaClass metaClass) {
         return (A) metadata.create(metaClass);

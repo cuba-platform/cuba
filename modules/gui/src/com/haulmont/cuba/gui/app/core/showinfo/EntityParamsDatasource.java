@@ -10,8 +10,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.KeyValueEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 
 import java.text.SimpleDateFormat;
@@ -26,10 +24,6 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
 
     private Entity instance;
     private MetaClass instanceMetaClass;
-
-    public EntityParamsDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     protected void loadData(Map<String, Object> params) {

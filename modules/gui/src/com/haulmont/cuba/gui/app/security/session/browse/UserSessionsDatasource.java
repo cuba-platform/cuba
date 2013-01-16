@@ -6,11 +6,8 @@
 
 package com.haulmont.cuba.gui.app.security.session.browse;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
@@ -25,11 +22,6 @@ import java.util.UUID;
  * @version $Id$
  */
 public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntity, UUID> {
-
-    public UserSessionsDatasource(DsContext dsContext, DataService dataservice, String id,
-                                  MetaClass metaClass, String viewName) {
-        super(dsContext, dataservice, id, metaClass, viewName);
-    }
 
     private Date updateTs;
 

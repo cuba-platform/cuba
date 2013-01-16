@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public class DsContextApplyChangesTest extends CubaClientTestCase {
 
     private Session metadataSession;
-    private TestDataService dataService;
+    private TestDataSupplier dataService;
 
     private DsContextImplementation masterDsContext;
 
@@ -57,7 +57,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
         setupInfrastructure();
 
         metadataSession = metadata.getSession();
-        dataService = new TestDataService();
+        dataService = new TestDataSupplier();
 
         dataService.commitCount = 0;
 
@@ -134,7 +134,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
 
         embeddableDs.getItem().setName("embeddable1_1");
 
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
@@ -150,7 +150,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
 
         detailDs.getItem().setDetailName("detail1_1");
 
-        dataService.commitValidator = new TestDataService.CommitValidator() {
+        dataService.commitValidator = new TestDataSupplier.CommitValidator() {
             @Override
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));

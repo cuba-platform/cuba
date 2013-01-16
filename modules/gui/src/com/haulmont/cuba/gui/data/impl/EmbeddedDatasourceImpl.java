@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Artamonov Yuryi
- * Created: 28.03.11 16:11
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
@@ -23,17 +18,20 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
-        extends
-        AbstractDatasource<T>
-        implements
-        Datasource<T>, DatasourceImplementation<T>, EmbeddedDatasource<T> {
+        extends AbstractDatasource<T>
+        implements Datasource<T>, DatasourceImplementation<T>, EmbeddedDatasource<T> {
 
     protected Datasource masterDs;
     protected MetaProperty metaProperty;
 
-    public EmbeddedDatasourceImpl(String id, Datasource masterDs, String property) {
-        super(id);
+    @Override
+    public void setup(String id, Datasource masterDs, String property) {
+        this.id = id;
         this.masterDs = masterDs;
         metaProperty = masterDs.getMetaClass().getProperty(property);
         initParentDsListeners();
@@ -75,8 +73,8 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
         return masterDs.getDsContext();
     }
 
-    public DataService getDataService() {
-        return masterDs.getDataService();
+    public DataSupplier getDataSupplier() {
+        return masterDs.getDataSupplier();
     }
 
     public void commit() {

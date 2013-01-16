@@ -6,7 +6,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -67,7 +67,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
         public void actionPerform(Component component) {
             final CollectionDatasource datasource = TreeActionsHelper.this.component.getDatasource();
             final String hierarchyProperty = TreeActionsHelper.this.component.getHierarchyProperty();
-            final DataService dataservice = datasource.getDataService();
+            final DataSupplier dataservice = datasource.getDataSupplier();
 
             Entity parentItem = datasource.getItem();
 

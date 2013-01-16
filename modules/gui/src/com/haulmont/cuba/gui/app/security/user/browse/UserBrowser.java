@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -54,7 +54,7 @@ public class UserBrowser extends AbstractLookup {
     protected Metadata metadata;
 
     @Inject
-    protected DataService dataService;
+    protected DataSupplier dataSupplier;
 
     @Inject
     protected UserManagementService userManagementService;
@@ -89,12 +89,12 @@ public class UserBrowser extends AbstractLookup {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
             User selectedUser = selected.iterator().next();
-            selectedUser = dataService.reload(selectedUser, "user.edit");
+            selectedUser = dataSupplier.reload(selectedUser, "user.edit");
             User newUser = metadata.create(User.class);
             if (selectedUser.getUserRoles() != null) {
                 List<UserRole> userRoles = new ArrayList<>();
                 for (UserRole oldUserRole : selectedUser.getUserRoles()) {
-                    Role oldRole = dataService.reload(oldUserRole.getRole(), "_local");
+                    Role oldRole = dataSupplier.reload(oldUserRole.getRole(), "_local");
                     if (BooleanUtils.isTrue(oldRole.getDefaultRole()))
                         continue;
                     UserRole role = new UserRole();

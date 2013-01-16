@@ -119,7 +119,7 @@ public class WebLookupField
                 if (Datasource.State.INVALID == optionsDatasource.getState()) {
                     optionsDatasource.refresh();
                 }
-                return optionsDatasource.getItemId((Entity) value);
+                return (value instanceof Entity) ? ((Entity) value).getId() : value;
             } else {
                 if ((optionsList != null) || (optionsMap != null))
                     return value;

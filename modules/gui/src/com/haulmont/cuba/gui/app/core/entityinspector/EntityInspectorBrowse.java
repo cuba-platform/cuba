@@ -18,9 +18,8 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -163,9 +162,12 @@ public class EntityInspectorBrowse extends AbstractLookup {
         for (Table.Column column : systemPropertyColumns)
             entitiesTable.addColumn(column);
 
-        View view = createView(meta);
-        entitiesDs = new CollectionDatasourceImpl<Entity<UUID>, UUID>(getDsContext(),
-                new GenericDataService(), "entitiesDs", meta, view);
+        entitiesDs = new DsBuilder(getDsContext())
+                .setId("entitiesDs")
+                .setMetaClass(meta)
+                .setView(createView(meta))
+                .buildCollectionDatasource();
+
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
         entitiesDs.refresh();
         entitiesTable.setDatasource(entitiesDs);

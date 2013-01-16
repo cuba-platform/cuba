@@ -19,10 +19,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.AddAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -54,7 +51,7 @@ public class EntityInspectorEditor extends AbstractEditor {
     protected Metadata metadata;
 
     @Inject
-    protected DataService dataService;
+    protected DataSupplier dataSupplier;
 
     @Inject
     protected BoxLayout buttonsBox;
@@ -138,10 +135,10 @@ public class EntityInspectorEditor extends AbstractEditor {
         categorizedEntity = item instanceof CategorizedEntity;
 
 
-        dsContext = new DsContextImpl(dataService);
+        dsContext = new DsContextImpl(dataSupplier);
         if (datasource == null) {
-            datasource = new DatasourceImpl<Entity>
-                    (dsContext, dataService, meta.getName() + "Ds", item.getMetaClass(), view);
+            datasource = new DatasourceImpl<Entity>();
+            datasource.setup(dsContext, dataSupplier, meta.getName() + "Ds", item.getMetaClass(), view);
             ((DatasourceImpl) datasource).valid();
         }
 
@@ -193,11 +190,10 @@ public class EntityInspectorEditor extends AbstractEditor {
     }
 
     private void initRuntimePropertiesDatasources(View view) {
-        rDS = new RuntimePropsDatasourceImpl(dsContext, dataService, "rDS",
-                view.getName(), datasource.getId());
+        rDS = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, "rDS", datasource.getId());
         MetaClass categoriesMeta = metadata.getSession().getClass(Category.class);
-        categories = new CollectionDatasourceImpl(dsContext, dataService,
-                "categories", categoriesMeta, View.LOCAL);
+        categories = new CollectionDatasourceImpl();
+        categories.setup(dsContext, dataSupplier, "categories", categoriesMeta, view);
         categories.setQuery(String.format("select c from sys$Category c where c.entityType='%s'", meta.getName()));
         categories.refresh();
         dsContext.register(rDS);
@@ -299,7 +295,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         String query = String.format("select e from %s e where e.id = :id", meta.getName());
         LoadContext.Query q = ctx.setQueryString(query);
         q.addParameter("id", id);
-        return dataService.load(ctx);
+        return dataSupplier.load(ctx);
     }
 
     /**
@@ -421,19 +417,17 @@ public class EntityInspectorEditor extends AbstractEditor {
             switch (metaProperty.getType()) {
                 case COMPOSITION:
                 case ASSOCIATION:
-                    Datasource propertyDs;
+                    NestedDatasource propertyDs;
                     if (metaProperty.getRange().getCardinality().isMany()) {
-                        propertyDs = new CollectionPropertyDatasourceImpl(metaProperty.getName() + "Ds",
-                                masterDs, metaProperty.getName());
+                        propertyDs = new CollectionPropertyDatasourceImpl();
                     } else {
                         if (isEmbedded(metaProperty)) {
-                            propertyDs = new EmbeddedDatasourceImpl(metaProperty.getName() + "Ds",
-                                    masterDs, metaProperty.getName());
+                            propertyDs = new EmbeddedDatasourceImpl();
                         } else {
-                            propertyDs = new PropertyDatasourceImpl(metaProperty.getName() + "Ds",
-                                    masterDs, metaProperty.getName());
+                            propertyDs = new PropertyDatasourceImpl();
                         }
                     }
+                    propertyDs.setup(metaProperty.getName() + "Ds", masterDs, metaProperty.getName());
                     datasources.put(metaProperty.getName(), propertyDs);
                     dsContext.register(propertyDs);
                     break;

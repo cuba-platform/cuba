@@ -27,13 +27,13 @@ import java.util.List;
 public class DsContextLoader {
 
     private DsBuilder builder;
-    private DataService dataservice;
+    private DataSupplier dataservice;
     private Scripting scripting;
     private Metadata metadata;
 
     private DsContextImplementation context;
 
-    public DsContextLoader(DataService dataservice) {
+    public DsContextLoader(DataSupplier dataservice) {
         this.dataservice = dataservice;
         this.scripting = AppBeans.get(Scripting.class);
         this.metadata = AppBeans.get(Metadata.class);
@@ -106,7 +106,7 @@ public class DsContextLoader {
 
         final Class<Object> aClass = scripting.loadClass(contextClass);
         try {
-            final Constructor<Object> constructor = aClass.getConstructor(DataService.class);
+            final Constructor<Object> constructor = aClass.getConstructor(DataSupplier.class);
             context = (DsContextImplementation) constructor.newInstance(dataservice);
         } catch (Throwable e) {
             throw new RuntimeException(e);

@@ -10,12 +10,12 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
@@ -72,7 +72,7 @@ public abstract class WindowManager {
         void onWindowClose(Window window, boolean anyOpenWindowExist);
     }
 
-    private transient DataService defaultDataService;
+    protected DataSupplier defaultDataSupplier;
 
     protected Messages messages = AppBeans.get(Messages.class);
 
@@ -88,17 +88,7 @@ public abstract class WindowManager {
 
     protected WindowManager() {
         dialogParams = createDialogParams();
-    }
-
-    public synchronized DataService getDefaultDataService() {
-        if (defaultDataService == null) {
-            defaultDataService = createDefaultDataService();
-        }
-        return defaultDataService;
-    }
-
-    protected DataService createDefaultDataService() {
-        return new GenericDataService();
+        defaultDataSupplier = new GenericDataSupplier();
     }
 
     public abstract Collection<Window> getOpenWindows();
@@ -217,42 +207,22 @@ public abstract class WindowManager {
     }
 
     protected DsContext loadDsContext(Element element) {
-        DataService dataService;
+        DataSupplier dataSupplier;
 
-        String dataserviceClass = element.attributeValue("dataservice");
-        if (StringUtils.isEmpty(dataserviceClass)) {
-            final Element dataserviceElement = element.element("dataservice");
-            if (dataserviceElement != null) {
-                dataserviceClass = dataserviceElement.getText();
-                if (StringUtils.isEmpty(dataserviceClass)) {
-                    throw new IllegalStateException("Can't find dataservice class name");
-                }
-                dataService = createDataservice(dataserviceClass, dataserviceElement);
-            } else {
-                dataService = getDefaultDataService();
-            }
+        String dataSupplierClass = element.attributeValue("dataSupplier");
+        if (StringUtils.isEmpty(dataSupplierClass)) {
+            dataSupplier = defaultDataSupplier;
         } else {
-            dataService = createDataservice(dataserviceClass, null);
+            Class<Object> aClass = ReflectionHelper.getClass(dataSupplierClass);
+            try {
+                dataSupplier = (DataSupplier) aClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        final DsContextLoader dsContextLoader = new DsContextLoader(dataService);
-        final DsContext dsContext = dsContextLoader.loadDatasources(element.element("dsContext"), null);
-
+        DsContext dsContext = new DsContextLoader(dataSupplier).loadDatasources(element.element("dsContext"), null);
         return dsContext;
-    }
-
-    @SuppressWarnings({"UnusedDeclaration"})
-    protected DataService createDataservice(String dataserviceClass, Element element) {
-        DataService dataService;
-
-        final Class<Object> aClass = ReflectionHelper.getClass(dataserviceClass);
-        try {
-            dataService = (DataService) aClass.newInstance();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-
-        return dataService;
     }
 
     protected Window createWindow(WindowInfo windowInfo, Map params) {

@@ -1,14 +1,15 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.bali.datastruct.Node;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,9 +21,7 @@ import java.util.List;
  */
 public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         extends AbstractTreeDatasource<T, K>
-        implements TreeTableDatasource<T, K>
-{
-    private static Log log = LogFactory.getLog(AbstractTreeTableDatasource.class);
+        implements TreeTableDatasource<T, K> {
 
     private class TreeTableNodeComparator<T extends Entity> implements Comparator<Node<T>> {
         private final EntityComparator<T> entityComparator;
@@ -37,16 +36,6 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
             T e2 = n2.getData();
             return entityComparator.compare(e1, e2);
         }
-    }
-
-    protected AbstractTreeTableDatasource(
-            DsContext context,
-            DataService dataservice,
-            String id,
-            MetaClass metaClass,
-            String viewName
-    ) {
-        super(context, dataservice, id, metaClass, viewName);
     }
 
     @Override

@@ -6,11 +6,8 @@
 
 package com.haulmont.cuba.gui.security;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.ui.UiPermissionTarget;
@@ -21,18 +18,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTarget, String> {
 
     private CollectionDatasource<Permission, UUID> permissionDs;
-
-    public UiPermissionsDatasource(DsContext context, DataService dataservice,
-                                   String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     public boolean isModified() {

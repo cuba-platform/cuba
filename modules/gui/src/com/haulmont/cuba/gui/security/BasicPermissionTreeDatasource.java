@@ -8,11 +8,8 @@ package com.haulmont.cuba.gui.security;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
@@ -25,19 +22,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasource<BasicPermissionTarget, String> {
 
     private Tree<BasicPermissionTarget> permissionsTree;
     private CollectionDatasource<Permission, UUID> permissionDs;
-
-    public BasicPermissionTreeDatasource(DsContext context, DataService dataservice,
-                                         String id, MetaClass metaClass, String viewName) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
 
     @Override
     public boolean isModified() {

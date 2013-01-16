@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -63,6 +62,8 @@ import org.dom4j.Element;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
+import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 /**
  * @param <T>
@@ -319,12 +320,18 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             CollectionDatasource ds = optionsDatasources.get(metaClass);
             if (ds != null) return ds;
 
-            final DataService dataservice = datasource.getDataService();
+            final DataSupplier dataSupplier = datasource.getDataSupplier();
 
             final String id = metaClass.getName();
             final String viewName = null; //metaClass.getName() + ".lookup";
 
-            ds = new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
+            ds = new DsBuilder(dsContext)
+                    .setDataSupplier(dataSupplier)
+                    .setId(id)
+                    .setMetaClass(metaClass)
+                    .setViewName(viewName)
+                    .buildCollectionDatasource();
+
             ds.refresh();
 
             optionsDatasources.put(metaClass, ds);

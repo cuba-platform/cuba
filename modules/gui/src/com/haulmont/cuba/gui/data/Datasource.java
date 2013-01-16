@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 11:06:47
- * $Id$
  */
 package com.haulmont.cuba.gui.data;
 
@@ -18,31 +14,17 @@ import javax.annotation.Nullable;
 /**
  * Root of datasources abstraction layer. Contains one entity instance.
  * @param <T> type of entity this datasource is working with
+ *
+ * @author abramov
+ * @version $Id$
  */
 public interface Datasource<T extends Entity> {
-
-    /** Datasource ID as defined in XML descriptor */
-    String getId();
-
-    /** Enclosing DsContext  */
-    DsContext getDsContext();
-
-    DataService getDataService();
-
-    /** True if the datasource contains uncommitted changes */
-    boolean isModified();
 
     /** Where to commit changes */
     enum CommitMode {
         DATASTORE,
         PARENT
     }
-
-    /** Where to commit changes */
-    CommitMode getCommitMode();
-
-    /** Performs commit */
-    void commit();
 
     /** Possible states of datasource: {@link State#NOT_INITIALIZED}, {@link State#INVALID}, {@link State#VALID} */
     enum State {
@@ -54,13 +36,65 @@ public interface Datasource<T extends Entity> {
         VALID
     }
 
-    /** Current state */
+    /**
+     * Setup the datasource right after creation.
+     * This method should be called only once.
+     *
+     * @param dsContext     DsContext instance
+     * @param dataSupplier  DataSupplier instance
+     * @param id            datasource ID
+     * @param metaClass     MetaClass of an entity that will be stored in this datasource
+     * @param view          a view that will be used to load entities form DB, can be null
+     * @throws UnsupportedOperationException    if an implementation doesn't support this method. This is the case
+     * for example for {@link NestedDatasource} implementors, that have their own setup method.
+     */
+    void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
+               MetaClass metaClass, @Nullable View view) throws UnsupportedOperationException;
+
+    /**
+     * @return this datasource ID as defined in XML descriptor
+     */
+    String getId();
+
+    /**
+     * @return enclosing DsContext
+     */
+    DsContext getDsContext();
+
+    /**
+     * @return a DataSupplier that is used to work with Middleware
+     */
+    DataSupplier getDataSupplier();
+
+    /**
+     * @return true if the datasource contains uncommitted changes
+     */
+    boolean isModified();
+
+    /**
+     * @return where to commit changes
+     */
+    CommitMode getCommitMode();
+
+    /**
+     * Performs commit
+     */
+    void commit();
+
+    /**
+     * @return current state
+     */
     State getState();
 
-    /** Current item */
+    /**
+     * @return current entity contained in the datasource
+     */
     T getItem();
 
-    /** Set current item */
+    /**
+     * Set current entity in the datasource.
+     * @param item  entity instance
+     */
     void setItem(@Nullable T item);
 
     /**
@@ -74,14 +108,24 @@ public interface Datasource<T extends Entity> {
      */
     void refresh();
 
-    /** MetaClass of the enclosed entity */
+    /**
+     * @return MetaClass of an entity contained in the datasource
+     */
     MetaClass getMetaClass();
 
-    /** View which was used to load the data */
+    /**
+     * @return View that is used to load entities form DB, can be null
+     */
+    @Nullable
     View getView();
 
-    /** Add listener to datasource events */
+    /**
+     * Add listener to datasource events
+     */
     void addListener(DatasourceListener<T> listener);
-    /** Remove listener to datasource events */
+
+    /**
+     * Remove listener to datasource events
+     */
     void removeListener(DatasourceListener<T> listener);
 }

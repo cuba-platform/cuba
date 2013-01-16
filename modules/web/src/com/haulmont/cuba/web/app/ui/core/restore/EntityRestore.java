@@ -10,11 +10,14 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
-import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
+import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.WebConfig;
 import org.apache.commons.lang.BooleanUtils;
@@ -47,7 +50,7 @@ public class EntityRestore extends AbstractWindow {
     @Inject
     protected MessageTools messageTools;
 
-    protected GroupDatasourceImpl entitiesDs;
+    protected GroupDatasource entitiesDs;
 
     protected Table entitiesTable;
 
@@ -129,8 +132,11 @@ public class EntityRestore extends AbstractWindow {
                 for (Table.Column column : systemPropertyColumns)
                     entitiesTable.addColumn(column);
 
-                entitiesDs = new GroupDatasourceImpl(getDsContext(),
-                        new GenericDataService(), "entitiesDs", metaClass, "_local");
+                entitiesDs = new DsBuilder(getDsContext())
+                        .setId("entitiesDs")
+                        .setMetaClass(metaClass)
+                        .setViewName(View.LOCAL)
+                        .buildGroupDatasource();
 
                 entitiesDs.setQuery("select e from " + metaClass.getName() + " e " +
                         "where e.deleteTs is not null order by e.deleteTs");

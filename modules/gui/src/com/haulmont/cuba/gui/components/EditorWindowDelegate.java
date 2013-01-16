@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.*;
@@ -115,7 +115,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                 Collection justChangedItems = new HashSet(((AbstractDatasource) parentDs).getItemsToCreate());
                 justChangedItems.addAll(((AbstractDatasource) parentDs).getItemsToUpdate());
 
-                DataService dataservice = ds.getDataService();
+                DataSupplier dataservice = ds.getDataSupplier();
                 if ((parentDs instanceof CollectionDatasourceImpl) && !(justChangedItems.contains(item)) && ((CollectionDatasourceImpl) parentDs).containsItem(item)) {
                     item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
                     ((CollectionDatasourceImpl) parentDs).updateItem(item);
@@ -132,7 +132,7 @@ public class EditorWindowDelegate extends WindowDelegate {
             if (!PersistenceHelper.isNew(item)) {
                 String useSecurityConstraintsParam = (String) window.getContext().getParams().get("useSecurityConstraints");
                 boolean useSecurityConstraints = !("false".equals(useSecurityConstraintsParam));
-                final DataService dataservice = ds.getDataService();
+                final DataSupplier dataservice = ds.getDataSupplier();
                 item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecurityConstraints);
             }
         }
@@ -144,7 +144,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         if (PersistenceHelper.isNew(item)
                 && !ds.getMetaClass().equals(item.getMetaClass()))
         {
-            Entity newItem = ds.getDataService().newInstance(ds.getMetaClass());
+            Entity newItem = ds.getDataSupplier().newInstance(ds.getMetaClass());
             InstanceUtils.copy(item, newItem);
             item = newItem;
         }
@@ -196,8 +196,8 @@ public class EditorWindowDelegate extends WindowDelegate {
                 final Datasource ds = (Datasource) item;
                 ds.commit();
             } else {
-                DataService service = getDataService();
-                item = service.commit(item, null);
+                DataSupplier supplier = getDataService();
+                item = supplier.commit(item, null);
             }
             committed = true;
         }
@@ -205,7 +205,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         return !(wrapper instanceof AbstractEditor) || ((AbstractEditor) wrapper).postCommit(committed, close);
     }
 
-    protected DataService getDataService() {
+    protected DataSupplier getDataService() {
         final DsContext context = window.getDsContext();
         if (context == null) {
             throw new UnsupportedOperationException();

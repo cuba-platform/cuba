@@ -24,7 +24,7 @@ import java.util.*;
 public class DsContextImpl implements DsContextImplementation {
 
     private WindowContext windowContext;
-    private DataService dataservice;
+    private DataSupplier dataservice;
 
     private DsContext parent;
     private List<DsContext> children = new ArrayList<DsContext>();
@@ -41,7 +41,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     private Set<CommitListener> commitListeners = new LinkedHashSet<CommitListener>();
 
-    public DsContextImpl(DataService dataservice) {
+    public DsContextImpl(DataSupplier dataservice) {
         this.dataservice = dataservice;
     }
 
@@ -128,16 +128,16 @@ public class DsContextImpl implements DsContextImplementation {
         }
         commitToParent(datasourceMap.values());
 
-        final Map<DataService, Collection<Datasource<Entity>>> commitData = collectCommitData();
+        final Map<DataSupplier, Collection<Datasource<Entity>>> commitData = collectCommitData();
 
         if (commitData.isEmpty())
             return false;
 
-        final DataService dataservice = getDataService();
-        final Set<DataService> services = commitData.keySet();
+        final DataSupplier dataservice = getDataService();
+        final Set<DataSupplier> suppliers = commitData.keySet();
 
-        if (services.size() == 1 &&
-                ObjectUtils.equals(services.iterator().next(), dataservice))
+        if (suppliers.size() == 1 &&
+                ObjectUtils.equals(suppliers.iterator().next(), dataservice))
         {
             final CommitContext context = createCommitContext(dataservice, commitData);
 
@@ -176,17 +176,17 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    private void notifyAllDsCommited(DataService dataservice, Set<Entity> committedEntities) {
+    private void notifyAllDsCommited(DataSupplier dataservice, Set<Entity> committedEntities) {
         // Notify all datasources in context
         Collection<Datasource> datasources = new LinkedList<Datasource>();
         for (DsContext childDsContext : children) {
             for (Datasource ds : childDsContext.getAll()) {
-                if (ObjectUtils.equals(ds.getDataService(), dataservice))
+                if (ObjectUtils.equals(ds.getDataSupplier(), dataservice))
                     datasources.add(ds);
             }
         }
         for (Datasource ds : datasourceMap.values())
-            if (ObjectUtils.equals(ds.getDataService(), dataservice))
+            if (ObjectUtils.equals(ds.getDataSupplier(), dataservice))
                 datasources.add(ds);
 
         for (Datasource datasource : datasources) {
@@ -206,8 +206,8 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    protected CommitContext createCommitContext(DataService dataservice,
-                                                        Map<DataService, Collection<Datasource<Entity>>> commitData)
+    protected CommitContext createCommitContext(DataSupplier dataservice,
+                                                        Map<DataSupplier, Collection<Datasource<Entity>>> commitData)
     {
         CommitContext context = new CommitContext();
 
@@ -263,7 +263,7 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    protected Map<DataService, Collection<Datasource<Entity>>> collectCommitData() {
+    protected Map<DataSupplier, Collection<Datasource<Entity>>> collectCommitData() {
         Collection<Datasource> datasources = new ArrayList<Datasource>();
 
         for (DsContext childDsContext : children) {
@@ -271,14 +271,14 @@ public class DsContextImpl implements DsContextImplementation {
         }
         datasources.addAll(datasourceMap.values());
 
-        final Map<DataService,Collection<Datasource<Entity>>> commitDatasources =
-                new HashMap<DataService,Collection<Datasource<Entity>>>();
+        final Map<DataSupplier,Collection<Datasource<Entity>>> commitDatasources =
+                new HashMap<DataSupplier,Collection<Datasource<Entity>>>();
 
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.DATASTORE.equals(datasource.getCommitMode()) &&
                     datasource.isModified())
             {
-                final DataService dataservice = datasource.getDataService();
+                final DataSupplier dataservice = datasource.getDataSupplier();
                 Collection<Datasource<Entity>> collection = commitDatasources.get(dataservice);
                 if (collection == null) {
                     collection = new ArrayList<Datasource<Entity>>();
@@ -332,7 +332,7 @@ public class DsContextImpl implements DsContextImplementation {
         commitListeners.remove(listener);
     }
 
-    public DataService getDataService() {
+    public DataSupplier getDataService() {
         return dataservice;
     }
 

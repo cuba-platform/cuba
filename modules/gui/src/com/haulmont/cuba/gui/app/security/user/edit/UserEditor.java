@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -39,7 +39,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected DsContext dsContext;
 
     @Inject
-    protected DataService dataService;
+    protected DataSupplier dataSupplier;
 
     @Inject
     protected Datasource<User> userDs;
@@ -133,7 +133,7 @@ public class UserEditor extends AbstractEditor<User> {
     private void addDefaultRoles(User user) {
         LoadContext ctx = new LoadContext(Role.class);
         ctx.setQueryString("select r from sec$Role r where r.defaultRole = true");
-        List<Role> defaultRoles = dataService.loadList(ctx);
+        List<Role> defaultRoles = dataSupplier.loadList(ctx);
 
         List<UserRole> newRoles = new ArrayList<>();
         if (user.getUserRoles() != null)
@@ -141,7 +141,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         for (Role role : defaultRoles) {
             final MetaClass metaClass = rolesDs.getMetaClass();
-            UserRole userRole = dataService.newInstance(metaClass);
+            UserRole userRole = dataSupplier.newInstance(metaClass);
             userRole.setRole(role);
             userRole.setUser(user);
             newRoles.add(userRole);
@@ -209,7 +209,7 @@ public class UserEditor extends AbstractEditor<User> {
             DatasourceImplementation rolesDsImpl = (DatasourceImplementation) rolesDs;
 
             CommitContext ctx = new CommitContext(Collections.emptyList(), rolesDsImpl.getItemsToDelete());
-            dataService.commit(ctx);
+            dataSupplier.commit(ctx);
 
             ArrayList modifiedRoles = new ArrayList(rolesDsImpl.getItemsToCreate());
             modifiedRoles.addAll(rolesDsImpl.getItemsToUpdate());
@@ -282,7 +282,7 @@ public class UserEditor extends AbstractEditor<User> {
                             if (existingRoleNames.contains(role.getName())) continue;
 
                             final MetaClass metaClass = rolesDs.getMetaClass();
-                            UserRole userRole = dataService.newInstance(metaClass);
+                            UserRole userRole = dataSupplier.newInstance(metaClass);
                             userRole.setRole(role);
                             userRole.setUser(userDs.getItem());
 
