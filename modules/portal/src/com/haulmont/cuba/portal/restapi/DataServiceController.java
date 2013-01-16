@@ -66,6 +66,7 @@ public class DataServiceController {
                      @RequestParam(value = "s") String sessionId,
                      HttpServletRequest request,
                      HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+
         Authentication authentication = Authentication.me(sessionId);
         if (authentication == null) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);

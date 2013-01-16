@@ -8,7 +8,9 @@ package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.portal.security.PortalSession;
+import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
+import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 
@@ -24,7 +26,11 @@ public class Authentication {
         if (userSession == null) {
             return null;
         }
-        AppContext.setSecurityContext(new SecurityContext(userSession));
+
+        PortalSessionFactory portalSessionFactory = AppBeans.get(PortalSessionFactory.class);
+        PortalSession portalSession = portalSessionFactory.createPortalSession(userSession, null);
+        AppContext.setSecurityContext(new PortalSecurityContext(portalSession));
+
         return new Authentication();
     }
 

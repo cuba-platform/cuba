@@ -56,7 +56,7 @@ public class SecurityContextHandlerInterceptor extends HandlerInterceptorAdapter
             AppContext.setSecurityContext(portalSecurityContext);
             // ping only authenticated sessions
             if (session != null && session.isAuthenticated()) {
-                UserSessionService userSessionSource = AppContext.getBean(UserSessionService.NAME);
+                UserSessionService userSessionSource = AppBeans.get(UserSessionService.NAME);
                 try {
                     userSessionSource.getMessages();
                 } catch (NoUserSessionException e) {
