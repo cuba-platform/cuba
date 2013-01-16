@@ -6877,8 +6877,9 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
             </mediaobject>
           </figure>
           <para><sgmltag id="useMaxResults_attr">useMaxResults</sgmltag> − необязательный атрибут, при указании значения <literal>false</literal> фильтр не будет отображать флажок <guilabel>Показывать N строк</guilabel>. По умолчанию флажок отображается, если есть специфическое разрешение <property>cuba.gui.filter.maxResults</property> (подробнее о специфических разрешениях смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink>)). Если атрибут <sgmltag>useMaxResults</sgmltag> не указан или значение атрибута равно <literal>true</literal>, а разрешение <property>cuba.gui.filter.maxResults</property> запрещено, фильтр будет принудительно отбирать только первые N строк без возможности пользователя отключить это. Число N определяется параметрами <literal>FetchUI</literal>, <literal>DefaultFetchUI</literal>, задаваемыми в <code>PersistenceManager</code>.</para>
+          <para>На рисунке далее показан вид фильтра со значением атрибута <code>useMaxResults=&quot;true&quot;</code>, запретом специфического разрешения <property>cuba.gui.filter.maxResults</property> и параметром <code>DefaultFetchUI=2</code></para>
           <figure>
-            <title>Вид фильтра со значением атрибута <code>useMaxResults=&quot;true&quot;</code>, запретом специфического разрешения <property>cuba.gui.filter.maxResults</property> и параметром <code>DefaultFetchUI=2</code></title>
+            <title/>
             <mediaobject>
               <imageobject>
                 <imagedata align="center" fileref="img/gui_filter_useMaxRezult.png"/>
