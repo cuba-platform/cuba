@@ -9,7 +9,7 @@ package com.haulmont.cuba.web.jmx.impl;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
-import com.haulmont.cuba.core.global.ClusterNodeIdentifier;
+import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.jmx.JmxNodeIdentifier;
 import com.haulmont.cuba.jmxcontrol.entity.*;
@@ -39,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @version $Id$
  */
 @ManagedBean(JmxControlAPI.NAME)
-public class JmxControl implements JmxControlAPI {
+public class JmxControlBean implements JmxControlAPI {
 
     private static final String CLUSTER_NODE_NAME_ATTRIBUTE = "ClusterNodeName";
 
@@ -51,7 +51,7 @@ public class JmxControl implements JmxControlAPI {
     private DataService dataService;
 
     @Inject
-    private ClusterNodeIdentifier clusterNodeIdentifier;
+    private NodeIdentifier nodeIdentifier;
 
     /**
      * Constant identifier for the role field in a JMX {@link Descriptor}.
@@ -93,7 +93,7 @@ public class JmxControl implements JmxControlAPI {
 
     @Override
     public String getLocalNodeName() {
-        return clusterNodeIdentifier.getClusterNodeName();
+        return nodeIdentifier.getNodeName();
     }
 
     @Override

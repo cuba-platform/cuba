@@ -7,7 +7,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ClusterNodeIdentifier;
+import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 
@@ -17,10 +17,10 @@ import javax.annotation.ManagedBean;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(ClusterNodeIdentifier.NAME)
-public class ClusterNodeIdentifierImpl implements ClusterNodeIdentifier {
+@ManagedBean(NodeIdentifier.NAME)
+public class NodeIdentifierImpl implements NodeIdentifier {
     @Override
-    public String getClusterNodeName() {
+    public String getNodeName() {
         GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
         return globalConfig.getWebHostName() + ":" + globalConfig.getWebPort();
     }

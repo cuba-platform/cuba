@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.core.global.ClusterNodeIdentifier;
+import com.haulmont.cuba.core.global.NodeIdentifier;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -19,10 +19,10 @@ import javax.inject.Inject;
 public class JmxNodeIdentifier implements JmxNodeIdentifierMBean {
 
     @Inject
-    private ClusterNodeIdentifier clusterNodeIdentifier;
+    private NodeIdentifier nodeIdentifier;
 
     @Override
     public String getClusterNodeName() {
-        return clusterNodeIdentifier.getClusterNodeName();
+        return nodeIdentifier.getNodeName();
     }
 }

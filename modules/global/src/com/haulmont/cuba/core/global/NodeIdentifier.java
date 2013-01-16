@@ -10,9 +10,9 @@ package com.haulmont.cuba.core.global;
  * @author artamonov
  * @version $Id$
  */
-public interface ClusterNodeIdentifier {
+public interface NodeIdentifier {
 
-    String NAME = "cuba_ClusterNodeIdentifier";
+    String NAME = "cuba_NodeIdentifier";
 
-    String getClusterNodeName();
+    String getNodeName();
 }
