@@ -92,7 +92,7 @@ public interface Scripting {
      * @return      class or null if not found
      */
     @Nullable
-    Class loadClass(String name);
+    <T> Class<T> loadClass(String name);
 
     /**
      * DEPRECATED - use {@link Resources#getResourceAsStream(String)}

@@ -37,9 +37,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractScripting implements Scripting {
 
@@ -227,6 +226,7 @@ public abstract class AbstractScripting implements Scripting {
     @Override
     public <T> T runGroovyScript(String name, Map<String, Object> context) {
         Binding binding = createBinding(context);
+        //noinspection unchecked
         return (T) runGroovyScript(name, binding);
     }
 
@@ -236,8 +236,9 @@ public abstract class AbstractScripting implements Scripting {
     }
 
     @Override
-    public Class loadClass(String name) {
+    public <T> Class<T> loadClass(String name) {
         try {
+            //noinspection unchecked
             return getGroovyClassLoader().loadClass(name, true, false);
         } catch (ClassNotFoundException e) {
             return null;
