@@ -35,7 +35,7 @@ import java.util.Map;
  * @version $Id$
  */
 @Controller
-@RequestMapping(value = "/login")
+@RequestMapping(value = "/api/login")
 public class LoginServiceController {
 
     @Inject
@@ -54,9 +54,11 @@ public class LoginServiceController {
 
     @RequestMapping(method = RequestMethod.POST)
     public void loginByPost(@RequestBody String requestBody,
-                      @RequestHeader(value = "Content-Type") MimeType contentType,
-                      HttpServletResponse response) throws IOException, JSONException {
+                            @RequestHeader(value = "Content-Type") MimeType contentType,
+                            HttpServletResponse response) throws IOException, JSONException {
+
         response.addHeader("Access-Control-Allow-Origin", "*");
+
         String username;
         String password;
         Locale locale;
@@ -98,8 +100,9 @@ public class LoginServiceController {
     @RequestMapping(method = RequestMethod.GET)
     public void loginByGet(@RequestParam(value = "u") String username,
                            @RequestParam(value = "p") String password,
-                           @RequestParam(value = "l") String localeStr,
+                           @RequestParam(value = "l", required=false) String localeStr,
                            HttpServletResponse response) throws IOException, JSONException {
+
         response.addHeader("Access-Control-Allow-Origin", "*");
         Locale locale = StringUtils.isBlank(localeStr) ? new Locale("en") : new Locale(localeStr);
         try {

@@ -17,7 +17,6 @@
 
     <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
 
-    <mvc:annotation-driven/>
     <mvc:interceptors>
         <bean class="com.haulmont.cuba.portal.sys.security.SecurityContextHandlerInterceptor"/>
     </mvc:interceptors>

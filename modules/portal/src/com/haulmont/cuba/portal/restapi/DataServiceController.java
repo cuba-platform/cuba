@@ -60,7 +60,7 @@ public class DataServiceController {
     @Inject
     private Metadata metadata;
 
-    @RequestMapping(value = "/find.{type}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,
                      @RequestParam(value = "e") String entityRef,
                      @RequestParam(value = "s") String sessionId,
@@ -105,7 +105,7 @@ public class DataServiceController {
         }
     }
 
-    @RequestMapping(value = "/query.{type}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/query.{type}", method = RequestMethod.GET)
     public void query(@PathVariable String type,
                       @RequestParam(value = "e") String entityName,
                       @RequestParam(value = "q") String queryStr,
@@ -175,7 +175,7 @@ public class DataServiceController {
         }
     }
 
-    @RequestMapping(value = "/commit", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/commit", method = RequestMethod.POST)
     public void commit(@RequestParam(value = "s") String sessionId,
                        @RequestHeader(value = "Content-Type") MimeType contentType,
                        @RequestBody String requestContent,
@@ -223,7 +223,7 @@ public class DataServiceController {
         }
     }
 
-    @RequestMapping(value = "/deployViews", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/deployViews", method = RequestMethod.POST)
     public void deployViews(@RequestParam(value = "s") String sessionId,
                             @RequestBody String requestContent,
                             HttpServletRequest request,
@@ -245,7 +245,7 @@ public class DataServiceController {
         }
     }
 
-    @RequestMapping(value = "/printDomain", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/printDomain", method = RequestMethod.GET)
     public void printDomain(@RequestParam(value = "s") String sessionId,
                             HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, TemplateException {
