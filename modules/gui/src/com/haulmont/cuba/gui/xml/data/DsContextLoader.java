@@ -105,6 +105,8 @@ public class DsContextLoader {
         DsContextImplementation context;
 
         final Class<Object> aClass = scripting.loadClass(contextClass);
+        if (aClass == null)
+            throw new IllegalStateException("DsContext class " + contextClass + " is not found");
         try {
             final Constructor<Object> constructor = aClass.getConstructor(DataSupplier.class);
             context = (DsContextImplementation) constructor.newInstance(dataservice);
@@ -135,6 +137,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             Class<HierarchicalDatasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
         } else {
             CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
@@ -192,6 +196,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<GroupDatasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildGroupDatasource();
         } else {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
@@ -243,6 +249,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<Datasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildDatasource();
         } else {
             datasource = builder.buildDatasource();
@@ -339,6 +347,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<CollectionDatasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildCollectionDatasource();
         } else {
             datasource = builder.buildCollectionDatasource();
@@ -371,6 +381,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<HierarchicalDatasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
         } else {
             datasource = builder.buildHierarchicalDatasource();
@@ -404,6 +416,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<GroupDatasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildGroupDatasource();
         } else {
             datasource = builder.buildGroupDatasource();
@@ -447,6 +461,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<CollectionDatasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildCollectionDatasource();
         } else {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
@@ -530,6 +546,8 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<RuntimePropsDatasource> aClass = scripting.loadClass(datasourceClass);
+            if (aClass == null)
+                throw new IllegalStateException("Datasource class " + datasourceClass + " is not found");
             datasource = builder.setDsClass(aClass).buildRuntimePropsDataSource(mainDsId);
         } else {
             datasource = builder.buildRuntimePropsDataSource(mainDsId);
