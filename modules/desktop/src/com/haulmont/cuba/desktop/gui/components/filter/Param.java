@@ -354,7 +354,6 @@ public class Param extends AbstractParam<JComponent> {
             CollectionDatasource ds = new DsBuilder(datasource.getDsContext())
                     .setMetaClass(metaClass)
                     .setViewName(entityView)
-                    .setFetchMode(CollectionDatasource.FetchMode.AUTO)
                     .buildCollectionDatasource();
 
             ds.setRefreshOnComponentValueChange(true);

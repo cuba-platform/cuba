@@ -168,7 +168,6 @@ public class RuntimePropsDatasourceImpl
         final CollectionDatasource datasource;
 
         datasource = builder
-                .setFetchMode(CollectionDatasource.FetchMode.ALL)
                 .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
                 .buildCollectionDatasource();
         List<SetValueEntity> options = getOptions(attribute, attributeValue);

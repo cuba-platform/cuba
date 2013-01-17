@@ -27,16 +27,6 @@ import java.util.Map;
  */
 public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource<T> {
 
-    /** Mode of fetching data from database: {@link #ALL}, {@link #LAZY} */
-    enum FetchMode {
-        /** Datasource will load all data at once */
-        ALL,
-        /** Datasource will try to load data by chunks per UI component request */
-        LAZY,
-        /** ALL or LAZY will be choosen on the basis of <code>PersistenceManager<code/> statistics */
-        AUTO
-    }
-
     /** Mode of load data from database: {@link #ALWAYS}, {@link #NEVER} */
     enum RefreshMode{
         /** Datasource will load data for each refresh */
@@ -346,5 +336,16 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
         void pinQuery();
         void unpinLastQuery();
+    }
+
+    /** Mode of fetching data from database: {@link #ALL}, {@link #LAZY} */
+    @Deprecated
+    enum FetchMode {
+        /** Datasource will load all data at once */
+        ALL,
+        /** Datasource will try to load data by chunks per UI component request */
+        LAZY,
+        /** ALL or LAZY will be choosen on the basis of <code>PersistenceManager<code/> statistics */
+        AUTO
     }
 }

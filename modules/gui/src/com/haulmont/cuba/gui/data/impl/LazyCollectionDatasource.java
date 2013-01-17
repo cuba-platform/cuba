@@ -24,9 +24,13 @@ import org.perf4j.log4j.Log4JStopWatch;
 import java.util.*;
 
 /**
+ * DEPRECATED. To restrict data loading use {@link com.haulmont.cuba.gui.components.SearchPickerField} and
+ * {@link com.haulmont.cuba.gui.components.RowsCount} components with usual {@link CollectionDatasourceImpl}.
+ *
  * @author abramov
  * @version $Id$
  */
+@Deprecated
 public class LazyCollectionDatasource<T extends Entity<K>, K>
     extends
         AbstractCollectionDatasource<T, K>

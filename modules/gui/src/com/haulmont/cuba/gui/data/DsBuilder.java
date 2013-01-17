@@ -29,9 +29,6 @@ import org.apache.commons.lang.ObjectUtils;
  * If you set <code>master</code> and <code>property</code> properties you will get a <code>PropertyDatasource</code>
  * implementation.
  *
- * If you don't set <code>fetchMode</code> explicitly, lazy implementation may be chosen based on <code>PersistenceManager</code>
- * statistics.
- *
  * @author krivopustov
  * @version $Id$
  */
@@ -185,10 +182,12 @@ public class DsBuilder {
         return this;
     }
 
+    @Deprecated
     public CollectionDatasource.FetchMode getFetchMode() {
         return fetchMode;
     }
 
+    @Deprecated
     public DsBuilder setFetchMode(CollectionDatasource.FetchMode fetchMode) {
         this.fetchMode = fetchMode;
         return this;

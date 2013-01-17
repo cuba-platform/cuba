@@ -209,7 +209,6 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                 CollectionDatasource optionsDs = new DsBuilder(datasource.getDsContext())
                                         .setMetaClass(property.getRange().asClass())
                                         .setViewName(View.MINIMAL)
-                                        .setFetchMode(CollectionDatasource.FetchMode.AUTO)
                                         .buildCollectionDatasource();
                                 optionsDs.refresh();
                                 Action action = pickerField.getAction(PickerField.LookupAction.NAME);

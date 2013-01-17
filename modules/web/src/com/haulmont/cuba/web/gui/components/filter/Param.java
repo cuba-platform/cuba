@@ -358,7 +358,6 @@ public class Param extends AbstractParam<Component> {
             CollectionDatasource ds = new DsBuilder(datasource.getDsContext())
                     .setMetaClass(metaClass)
                     .setViewName(entityView)
-                    .setFetchMode(CollectionDatasource.FetchMode.AUTO)
                     .buildCollectionDatasource();
 
             ds.setRefreshOnComponentValueChange(true);
