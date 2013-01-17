@@ -76,6 +76,9 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public void commit() {
+        if (!allowCommit)
+            return;
+
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
             final DataSupplier supplier = getDataSupplier();
             item = supplier.commit(item, getView());

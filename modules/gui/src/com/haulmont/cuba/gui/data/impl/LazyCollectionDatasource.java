@@ -50,8 +50,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
     protected boolean disableLoad;
 
-    protected boolean allowCommit = true;
-
     @Override
     public void addItem(T item) throws UnsupportedOperationException {
         checkState();
@@ -162,16 +160,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             attachListener(item);
             fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
-    }
-
-    @Override
-    public boolean isAllowCommit() {
-        return allowCommit;
-    }
-
-    @Override
-    public void setAllowCommit(boolean allowCommit) {
-        this.allowCommit = allowCommit;
     }
 
     @Override
@@ -502,16 +490,5 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         } finally {
             disableLoad = false;
         }
-    }
-
-    @Override
-    public void commit() {
-        if (allowCommit)
-            super.commit();
-    }
-
-    @Override
-    public boolean isModified() {
-        return allowCommit && super.isModified();
     }
 }

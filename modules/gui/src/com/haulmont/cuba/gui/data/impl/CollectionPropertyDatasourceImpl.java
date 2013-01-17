@@ -43,8 +43,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     protected boolean listenersSuspended;
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
 
-    protected boolean allowCommit = true;
-
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
         public Object getItem(K itemId) {
@@ -514,17 +512,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void commit() {
-        if (allowCommit)
-            super.commit();
-    }
-
-    @Override
-    public boolean isModified() {
-        return allowCommit && super.isModified();
-    }
-
-    @Override
     public void committed(Set<Entity> entities) {
         if (!State.VALID.equals(masterDs.getState()))
             return;
@@ -589,16 +576,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void setSoftDeletion(boolean softDeletion) {
-    }
-
-    @Override
-    public boolean isAllowCommit() {
-        return allowCommit;
-    }
-
-    @Override
-    public void setAllowCommit(boolean allowCommit) {
-        this.allowCommit = allowCommit;
     }
 
     //Implementation of CollectionDatasource.Sortable<T, K> interface

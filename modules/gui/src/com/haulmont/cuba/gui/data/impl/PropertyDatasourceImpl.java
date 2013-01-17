@@ -119,6 +119,9 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public void commit() {
+        if (!allowCommit)
+            return;
+
         if (Datasource.CommitMode.PARENT.equals(getCommitMode())) {
             if (parentDs == null)
                 throw new IllegalStateException("parentDs is null while commitMode=PARENT");

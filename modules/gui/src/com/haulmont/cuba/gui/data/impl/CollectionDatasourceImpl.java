@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
@@ -15,8 +14,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.DataSupplier;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.filter.Condition;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.LogicalCondition;
@@ -28,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -76,8 +72,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected boolean refreshOnResumeRequired;
 
     protected int firstResult;
-
-    protected boolean allowCommit = true;
 
     protected boolean sortOnDb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
 
@@ -574,26 +568,5 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (!prevQueries.isEmpty()) {
             prevQueries.removeLast();
         }
-    }
-
-    @Override
-    public boolean isAllowCommit() {
-        return allowCommit;
-    }
-
-    @Override
-    public void setAllowCommit(boolean allowCommit) {
-        this.allowCommit = allowCommit;
-    }
-
-    @Override
-    public void commit() {
-        if (allowCommit)
-            super.commit();
-    }
-
-    @Override
-    public boolean isModified() {
-        return allowCommit && super.isModified();
     }
 }

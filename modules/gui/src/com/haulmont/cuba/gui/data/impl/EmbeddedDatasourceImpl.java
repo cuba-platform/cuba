@@ -78,6 +78,9 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     }
 
     public void commit() {
+        if (!allowCommit)
+            return;
+
         clearCommitLists();
         modified = false;
     }

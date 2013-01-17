@@ -220,7 +220,9 @@ public class DsBuilder {
         master = null;
         property = null;
         softDeletion = true;
+        allowCommit = true;
         fetchMode = null;
+        refreshMode = null;
         dsClass = null;
         return this;
     }
@@ -262,6 +264,7 @@ public class DsBuilder {
         } catch (IllegalAccessException | InstantiationException e) {
             throw new RuntimeException(e);
         }
+        datasource.setAllowCommit(allowCommit);
         return datasource;
     }
 

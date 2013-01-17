@@ -8,7 +8,6 @@ package com.haulmont.cuba.gui.xml.data;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
@@ -125,9 +124,6 @@ public class DsContextLoader {
 
         HierarchicalDatasource datasource = builder
                 .setDsClass(getDatasourceClass(element))
-                .setFetchMode(getFetchMode(element))
-                .setRefreshMode(getRefreshMode(element))
-                .setAllowCommit(getAllowCommit(element))
                 .buildHierarchicalDatasource();
 
         String hierarchyProperty = element.attributeValue("hierarchyProperty");
@@ -169,9 +165,6 @@ public class DsContextLoader {
 
         GroupDatasource datasource = builder
                 .setDsClass(getDatasourceClass(element))
-                .setFetchMode(getFetchMode(element))
-                .setRefreshMode(getRefreshMode(element))
-                .setAllowCommit(getAllowCommit(element))
                 .buildGroupDatasource();
 
         if (datasource instanceof CollectionDatasource.Suspendable)
@@ -208,7 +201,11 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
 
-        builder.reset().setMetaClass(metaClass).setId(id).setViewName(viewName);
+        builder.reset()
+                .setMetaClass(metaClass)
+                .setId(id)
+                .setViewName(viewName)
+                .setAllowCommit(getAllowCommit(element));
     }
 
     private void loadDatasources(Element element, Datasource datasource) {
@@ -261,13 +258,14 @@ public class DsContextLoader {
         String id = element.attributeValue("id");
 
         MetaClass metaClass = ds.getMetaClass();
-        MetaProperty metaProperty = metaClass.getProperty(property);
-        if (metaProperty == null) {
-            throw new IllegalStateException(
-                    String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
-        }
+        metaClass.getPropertyNN(property); // check property existense
 
-        builder.reset().setMetaClass(metaClass).setId(id).setMaster(ds).setProperty(property);
+        builder.reset()
+                .setMetaClass(metaClass)
+                .setId(id)
+                .setMaster(ds)
+                .setProperty(property)
+                .setAllowCommit(getAllowCommit(element));
     }
 
     private Datasource loadCollectionDatasource(Element element, Datasource ds, String property) {
@@ -331,9 +329,6 @@ public class DsContextLoader {
 
         CollectionDatasource datasource = builder
                 .setDsClass(getDatasourceClass(element))
-                .setFetchMode(getFetchMode(element))
-                .setRefreshMode(getRefreshMode(element))
-                .setAllowCommit(getAllowCommit(element))
                 .buildCollectionDatasource();
 
         if (datasource instanceof CollectionDatasource.Suspendable)
@@ -368,34 +363,31 @@ public class DsContextLoader {
         String deletion = element.attributeValue("softDeletion");
         boolean softDeletion = deletion == null || Boolean.valueOf(deletion);
 
-        builder.reset().setMetaClass(metaClass).setId(id).setViewName(viewName).setSoftDeletion(softDeletion);
+        builder.reset()
+                .setMetaClass(metaClass)
+                .setId(id)
+                .setViewName(viewName)
+                .setSoftDeletion(softDeletion)
+                .setFetchMode(getFetchMode(element))
+                .setRefreshMode(getRefreshMode(element))
+                .setAllowCommit(getAllowCommit(element));
     }
 
     private CollectionDatasource.RefreshMode getRefreshMode(Element element) {
         final String refreshModeName = element.attributeValue("refreshMode");
-        CollectionDatasource.RefreshMode refreshMode = CollectionDatasource.RefreshMode.ALWAYS;
-        if (StringUtils.isNotEmpty(refreshModeName)) {
-            refreshMode = CollectionDatasource.RefreshMode.valueOf(refreshModeName);
-        }
-        return refreshMode;
+        return StringUtils.isEmpty(refreshModeName) ?
+                CollectionDatasource.RefreshMode.ALWAYS : CollectionDatasource.RefreshMode.valueOf(refreshModeName);
     }
 
     private boolean getAllowCommit(Element element) {
         final String allowCommitStr = element.attributeValue("allowCommit");
-        boolean allowCommit = true;
-        if (StringUtils.isNotEmpty(allowCommitStr))
-            allowCommit = Boolean.valueOf(allowCommitStr);
-        return allowCommit;
+        return StringUtils.isEmpty(allowCommitStr) || Boolean.valueOf(allowCommitStr);
     }
 
     protected CollectionDatasource.FetchMode getFetchMode(Element element) {
-        CollectionDatasource.FetchMode mode = null;
-
         final String fetchMode = element.attributeValue("fetchMode");
-        if (!StringUtils.isEmpty(fetchMode)) {
-            mode = CollectionDatasource.FetchMode.valueOf(fetchMode);
-        }
-        return mode;
+        return StringUtils.isEmpty(fetchMode) ?
+                null : CollectionDatasource.FetchMode.valueOf(fetchMode);
     }
 
     protected RuntimePropsDatasource loadRuntimePropsDataSource(Element element){

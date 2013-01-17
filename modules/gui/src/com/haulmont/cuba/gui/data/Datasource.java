@@ -72,6 +72,17 @@ public interface Datasource<T extends Entity> {
     boolean isModified();
 
     /**
+     * @return true if this datasource can commit data to the database
+     */
+    boolean isAllowCommit();
+
+    /**
+     * Switch on/off ability to commit.
+     * If disabled, {@link #isModified()} always returns false and {@link #commit()} has no effect.
+     */
+    void setAllowCommit(boolean allowCommit);
+
+    /**
      * @return where to commit changes
      */
     CommitMode getCommitMode();

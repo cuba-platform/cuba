@@ -146,17 +146,6 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void setSoftDeletion(boolean softDeletion);
 
     /**
-     * @return true if this datasource can commit data to the database
-     */
-    boolean isAllowCommit();
-
-    /**
-     * Switch on/off ability to commit.
-     * If disabled, {@link #isModified()} always returns false and {@link #commit()} has no effect.
-     */
-    void setAllowCommit(boolean allowCommit);
-
-    /**
      * @return true if the underlying collection contains an item with the specified ID
      */
     boolean containsItem(K itemId);

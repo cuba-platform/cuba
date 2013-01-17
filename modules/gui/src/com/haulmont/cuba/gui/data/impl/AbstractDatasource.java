@@ -31,6 +31,7 @@ public abstract class AbstractDatasource<T extends Entity>
 
     protected String id;
     protected boolean modified;
+    protected boolean allowCommit = true;
     protected CommitMode commitMode = CommitMode.DATASTORE;
     protected Datasource parentDs;
     protected Metadata metadata = AppBeans.get(Metadata.class);
@@ -56,11 +57,21 @@ public abstract class AbstractDatasource<T extends Entity>
 
     @Override
     public boolean isModified() {
-        return modified;
+        return allowCommit && modified;
     }
 
     public void setModified(boolean modified) {
         this.modified = modified;
+    }
+
+    @Override
+    public boolean isAllowCommit() {
+        return allowCommit;
+    }
+
+    @Override
+    public void setAllowCommit(boolean allowCommit) {
+        this.allowCommit = allowCommit;
     }
 
     @Override

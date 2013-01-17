@@ -392,6 +392,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     @Override
     public void commit() {
+        if (!allowCommit)
+            return;
+
         if (CommitMode.DATASTORE.equals(getCommitMode())) {
             final DataSupplier supplier = getDataSupplier();
             Set<Entity> commitInstances = new HashSet<Entity>();
