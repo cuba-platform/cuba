@@ -10,9 +10,10 @@
 
     <dsContext>
         <datasource id="mbeanDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo" view="_local"/>
-        <collectionDatasource id="attrDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute"
-                              view="_local">
-            <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanAttributeDatasource</datasourceClass>
+        <collectionDatasource id="attrDs"
+                              class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute"
+                              view="_local"
+                              datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanAttributeDatasource">
         </collectionDatasource>
     </dsContext>
     <actions>

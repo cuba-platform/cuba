@@ -13,8 +13,9 @@
         >
 
     <dsContext>
-        <collectionDatasource id="locksDs" class="com.haulmont.cuba.core.global.LockInfo" view="_local">
-            <datasourceClass>com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource</datasourceClass>
+        <collectionDatasource id="locksDs" class="com.haulmont.cuba.core.global.LockInfo"
+                              view="_local"
+                              datasourceClass="com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource">
             <query>
                 <![CDATA[
                 def service = com.haulmont.cuba.gui.ServiceLocator.lookup(com.haulmont.cuba.core.app.LockService.NAME)

@@ -12,16 +12,20 @@
 
     <dsContext>
         <collectionDatasource id="snapshotsDs" class="com.haulmont.cuba.core.entity.EntitySnapshot"
-                              view="entitySnapshot.browse">
-            <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.EntitySnapshotsDatasource</datasourceClass>
+                              view="entitySnapshot.browse"
+                              datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.EntitySnapshotsDatasource">
         </collectionDatasource>
 
-        <datasource id="entityDiffDs" class="com.haulmont.cuba.core.global.EntityDiff" view="_local">
-            <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffDatasource</datasourceClass>
+        <datasource id="entityDiffDs"
+                    class="com.haulmont.cuba.core.global.EntityDiff"
+                    view="_local"
+                    datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffDatasource">
         </datasource>
 
-        <collectionDatasource id="diffDs" class="com.haulmont.cuba.core.global.EntityPropertyDiff" view="_local">
-            <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource</datasourceClass>
+        <collectionDatasource id="diffDs"
+                              class="com.haulmont.cuba.core.global.EntityPropertyDiff"
+                              view="_local"
+                              datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource">
         </collectionDatasource>
     </dsContext>
 

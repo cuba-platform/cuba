@@ -283,8 +283,9 @@
 
     <xs:attributeGroup name="isDatasource">
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="class" type="xs:string" use="required"/>
-        <xs:attribute name="view" type="xs:string" use="required"/>
+        <xs:attribute name="class" type="xs:string" use="optional"/>
+        <xs:attribute name="view" type="xs:string" use="optional"/>
+        <xs:attribute name="datasourceClass" type="xs:string" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isCollectionDatasource">
@@ -1130,7 +1131,6 @@
     <!-- CollectionDatasource -->
     <xs:complexType name="collectionDatasourceType">
         <xs:sequence>
-            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:element name="dataserviceClass" minOccurs="0" maxOccurs="1"/>
             <xs:element name="query" minOccurs="0" maxOccurs="1">
                 <xs:complexType mixed="true">
@@ -1153,7 +1153,6 @@
     <!-- HierarchicalDatasource -->
     <xs:complexType name="hierarchicalDatasourceType">
         <xs:sequence>
-            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:element name="dataserviceClass" minOccurs="0" maxOccurs="1"/>
             <xs:element name="query" minOccurs="0" maxOccurs="1">
                 <xs:complexType mixed="true">
@@ -1176,7 +1175,6 @@
     <!-- GroupDatasource -->
     <xs:complexType name="groupDatasourceType">
         <xs:sequence>
-            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:element name="dataserviceClass" minOccurs="0" maxOccurs="1"/>
             <xs:element name="query" minOccurs="0" maxOccurs="1">
                 <xs:complexType mixed="true">
@@ -1199,7 +1197,6 @@
     <!-- RuntimePropsDatasource -->
     <xs:complexType name="runtimePropsDatasourceType">
         <xs:sequence>
-            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
 
@@ -1228,7 +1225,6 @@
     <!-- CollectionPropertyDatasource -->
     <xs:complexType name="nestedCollectionDs">
         <xs:sequence>
-            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
         <xs:attributeGroup ref="isNestedCollectionDatasource"/>
@@ -1237,7 +1233,6 @@
     <!-- HierarchicalPropertyDatasource -->
     <xs:complexType name="nestedHierarchicalDs">
         <xs:sequence>
-            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
 
@@ -1249,7 +1244,6 @@
     <!-- Datasource -->
     <xs:complexType name="datasourceType">
         <xs:sequence>
-            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
         <xs:attributeGroup ref="isDatasource"/>

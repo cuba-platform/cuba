@@ -6,15 +6,16 @@
         focusComponent="objectNameField">
 
     <dsContext>
-        <collectionDatasource id="jmxInstancesDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local">
-            <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource</datasourceClass>
+        <collectionDatasource id="jmxInstancesDs"
+                              class="com.haulmont.cuba.core.entity.JmxInstance"
+                              view="_local"
+                              datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource">
         </collectionDatasource>
 
-        <collectionDatasource
-                id="mbeanDs"
-                class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo"
-                view="_local">
-            <datasourceClass>com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource</datasourceClass>
+        <collectionDatasource id="mbeanDs"
+                              class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo"
+                              view="_local"
+                              datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource">
         </collectionDatasource>
     </dsContext>
 

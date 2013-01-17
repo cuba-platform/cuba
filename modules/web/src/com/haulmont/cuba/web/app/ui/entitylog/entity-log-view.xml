@@ -40,9 +40,10 @@
             </query>
         </collectionDatasource>
 
-        <collectionDatasource id="valuesDs" class="com.haulmont.cuba.security.entity.EntityLogAttrWrapper"
-                              view="">
-            <datasourceClass>com.haulmont.cuba.web.app.ui.entitylog.EntityLogDatasource</datasourceClass>
+        <collectionDatasource id="valuesDs"
+                              class="com.haulmont.cuba.security.entity.EntityLogAttrWrapper"
+                              view=""
+                              datasourceClass="com.haulmont.cuba.web.app.ui.entitylog.EntityLogDatasource">
         </collectionDatasource>
 
     </dsContext>
