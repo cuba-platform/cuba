@@ -18,6 +18,8 @@ allprojects {
 }
 
 buildscript {
+	ext.cubaPlugin = [group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT']
+	
     repositories {
         mavenLocal()
         maven {
@@ -29,7 +31,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT' // see also cuba-plugin in global module dependencies
+        classpath cubaPlugin
         classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: '1.2.0-SNAPSHOT'
     }
 }
@@ -133,7 +135,7 @@ configure(globalModule) {
     dependencies {
         provided(servletApi)
         // This dependency is required by CubaEnhancing task
-        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT')
+        provided(cubaPlugin)
     }
 
     task enhance(type: CubaEnhancing) {
