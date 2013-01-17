@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
@@ -25,10 +26,16 @@ public class ServiceInterceptor {
 
     private UserSessionsAPI userSessions;
 
+    private Persistence persistence;
+
     private Log log = LogFactory.getLog(getClass());
 
     public void setUserSessions(UserSessionsAPI userSessions) {
         this.userSessions = userSessions;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
     }
 
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
@@ -47,6 +54,10 @@ public class ServiceInterceptor {
                 log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
 
             Object res = ctx.proceed();
+
+            if (persistence.isInTransaction())
+                log.warn("Open transaction left in " + ctx.getSignature().toShortString());
+
             return res;
         } catch (Throwable e) {
             logException(e, ctx);

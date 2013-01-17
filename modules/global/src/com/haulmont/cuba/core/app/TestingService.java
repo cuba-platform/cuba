@@ -38,6 +38,10 @@ public interface TestingService {
      */
     void clearScheduledTasks();
 
+    Object leaveOpenTransaction();
+
+    void declarativeTransaction();
+
     @SupportedByClient
     @Logging(Logging.Type.BRIEF)
     public static class TestException extends Exception {

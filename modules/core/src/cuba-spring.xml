@@ -41,7 +41,7 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <tx:annotation-driven/>
+    <tx:annotation-driven order="10"/>
 
     <!-- Annotation-based beans -->
 
@@ -64,6 +64,7 @@
 
     <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">
         <property name="userSessions" ref="cuba_UserSessions"/>
+        <property name="persistence" ref="cuba_Persistence"/>
     </bean>
 
     <bean id="authenticationInterceptor" class="com.haulmont.cuba.security.sys.AuthenticationInterceptor">
@@ -73,7 +74,7 @@
     <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
 
     <aop:config proxy-target-class="false">
-        <aop:aspect id="serviceAspect" ref="serviceInterceptor">
+        <aop:aspect id="serviceAspect" ref="serviceInterceptor" order="1">
             <aop:around method="aroundInvoke" pointcut="@within(org.springframework.stereotype.Service)"/>
         </aop:aspect>
 

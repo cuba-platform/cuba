@@ -17,18 +17,11 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.mp_test.MpTestObj;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
+import com.haulmont.cuba.testsupport.TestAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.ErrorHandler;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 public class MessageProviderTest extends CubaTestCase {
@@ -96,13 +89,13 @@ public class MessageProviderTest extends CubaTestCase {
     public void testCachingDefaultLoc() {
         Messages messages = prepareCachingTest();
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         String msg = messages.getMessage(MpTestNestedObj.class, "key0");
         assertEquals("Message0", msg);
 
         assertEquals(2,
-                Iterables.size(Iterables.filter(appender.messages, new Predicate<String>() {
+                Iterables.size(Iterables.filter(appender.getMessages(), new Predicate<String>() {
                     @Override
                     public boolean apply(@Nullable String input) {
                         return input != null && input.contains("searchFiles:");
@@ -110,7 +103,7 @@ public class MessageProviderTest extends CubaTestCase {
                 }))
         );
         assertEquals(2,
-                Iterables.size(Iterables.filter(appender.messages, new Predicate<String>() {
+                Iterables.size(Iterables.filter(appender.getMessages(), new Predicate<String>() {
                     @Override
                     public boolean apply(@Nullable String input) {
                         return input != null && input.contains("searchClasspath:");
@@ -118,7 +111,7 @@ public class MessageProviderTest extends CubaTestCase {
                 }))
         );
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         msg = messages.getMessage(MpTestNestedObj.class, "key0");
         assertEquals("Message0", msg);
@@ -131,13 +124,13 @@ public class MessageProviderTest extends CubaTestCase {
     public void testCachingFrenchLoc() {
         Messages messages = prepareCachingTest();
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         String msg = messages.getMessage(MpTestNestedObj.class, "key0", Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
         assertEquals(2, getSearchMessagesCount());
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         msg = messages.getMessage(MpTestNestedObj.class, "key0", Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
@@ -156,13 +149,13 @@ public class MessageProviderTest extends CubaTestCase {
     public void testCachingDefaultLocSeveralPacks() {
         Messages messages = prepareCachingTest();
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0");
         assertEquals("Message0", msg);
         assertEquals(8, getSearchMessagesCount());
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0");
         assertEquals("Message0", msg);
@@ -172,14 +165,14 @@ public class MessageProviderTest extends CubaTestCase {
     public void testCachingFrenchLocSeveralPacks() {
         Messages messages = prepareCachingTest();
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0",
                 Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
         assertEquals(4, getSearchMessagesCount());
 
-        appender.messages.clear();
+        appender.getMessages().clear();
 
         msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0",
                 Locale.forLanguageTag("fr"));
@@ -188,7 +181,7 @@ public class MessageProviderTest extends CubaTestCase {
     }
 
     private int getSearchMessagesCount() {
-        return Iterables.size(Iterables.filter(appender.messages, new Predicate<String>() {
+        return Iterables.size(Iterables.filter(appender.getMessages(), new Predicate<String>() {
             @Override
             public boolean apply(@Nullable String input) {
                 return input != null && (input.contains("searchFiles:") || input.contains("searchClasspath:"));
@@ -196,62 +189,4 @@ public class MessageProviderTest extends CubaTestCase {
         }));
     }
 
-    private static class TestAppender implements Appender {
-
-        private List<String> messages = Collections.synchronizedList(new ArrayList<String>());
-
-        @Override
-        public void addFilter(Filter newFilter) {
-        }
-
-        @Override
-        public Filter getFilter() {
-            return null;
-        }
-
-        @Override
-        public void clearFilters() {
-        }
-
-        @Override
-        public void close() {
-        }
-
-        @Override
-        public void doAppend(LoggingEvent event) {
-            messages.add(event.getMessage() == null ? "" : event.getMessage().toString());
-        }
-
-        @Override
-        public String getName() {
-            return "TestAppender";
-        }
-
-        @Override
-        public void setErrorHandler(ErrorHandler errorHandler) {
-        }
-
-        @Override
-        public ErrorHandler getErrorHandler() {
-            return null;
-        }
-
-        @Override
-        public void setLayout(Layout layout) {
-        }
-
-        @Override
-        public Layout getLayout() {
-            return null;
-        }
-
-        @Override
-        public void setName(String name) {
-        }
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
-    }
 }

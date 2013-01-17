@@ -10,12 +10,14 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 /**
  * Service for integration testing. Don't use it in application code!
@@ -47,8 +49,7 @@ public class TestingServiceBean implements TestingService {
     @Override
     @Transactional(timeout = 2)
     public String executeUpdateSql(String sql) {
-        if (!Boolean.valueOf(System.getProperty("cuba.unitTestMode")))
-            return "Not in test mode";
+        checkTestMode();
 
         log.info("started: " + sql);
         EntityManager em = persistence.getEntityManager();
@@ -61,8 +62,7 @@ public class TestingServiceBean implements TestingService {
     @Override
     @Transactional(timeout = 2)
     public String executeSelectSql(String sql) {
-        if (!Boolean.valueOf(System.getProperty("cuba.unitTestMode")))
-            return "Not in test mode";
+        checkTestMode();
 
         log.info("started: " + sql);
         EntityManager em = persistence.getEntityManager();
@@ -110,5 +110,25 @@ public class TestingServiceBean implements TestingService {
         } finally {
             tx.end();
         }
+    }
+
+    @Override
+    public Object leaveOpenTransaction() {
+        checkTestMode();
+        Transaction tx = persistence.createTransaction();
+        persistence.getEntityManager().find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+        return tx;
+    }
+
+    @Transactional
+    @Override
+    public void declarativeTransaction() {
+        checkTestMode();
+        persistence.getEntityManager().find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+    }
+
+    private void checkTestMode() {
+        if (!Boolean.valueOf(System.getProperty("cuba.unitTestMode")))
+            throw new IllegalStateException("Not in test mode");
     }
 }
