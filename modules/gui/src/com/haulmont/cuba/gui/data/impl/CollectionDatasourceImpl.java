@@ -287,17 +287,14 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     public void removeItem(T item) {
         checkState();
 
-        if (item == this.item)
+        if (this.item != null && this.item.equals(item)) {
             setItem(null);
+        }
 
         data.remove(item.getId());
         detachListener(item);
 
         deleted(item);
-
-        if (this.item != null && this.item.equals(item)) {
-            setItem(null);
-        }
 
         fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
@@ -370,14 +367,14 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     public void updateItem(T item) {
         checkState();
 
+        if (this.item != null && this.item.equals(item)) {
+            this.item = item;
+        }
+
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
             attachListener(item);
             fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
-        }
-
-        if (this.item != null && this.item.equals(item)) {
-            this.item = item;
         }
     }
 
