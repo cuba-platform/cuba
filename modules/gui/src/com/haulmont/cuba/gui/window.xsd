@@ -285,16 +285,15 @@
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="class" type="xs:string" use="optional"/>
         <xs:attribute name="view" type="xs:string" use="optional"/>
+        <xs:attribute name="allowCommit" type="xs:boolean" use="optional"/>
         <xs:attribute name="datasourceClass" type="xs:string" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isCollectionDatasource">
         <xs:attributeGroup ref="isDatasource"/>
-
-        <xs:attribute name="allowCommit" type="xs:boolean" use="optional"/>
     </xs:attributeGroup>
 
-    <xs:attributeGroup name="isNestedCollectionDatasource">
+    <xs:attributeGroup name="isNestedDatasource">
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="property" type="xs:string" use="required"/>
         <xs:attribute name="allowCommit" type="xs:boolean" use="optional"/>
@@ -1209,25 +1208,20 @@
     <xs:group name="nestedDatasources">
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element name="collectionDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedCollectionDs"/>
+                <xs:element name="datasource" minOccurs="0" maxOccurs="unbounded" type="nestedDs"/>
+                <xs:element name="collectionDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedDs"/>
+                <xs:element name="groupDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedDs"/>
                 <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedHierarchicalDs"/>
-                <xs:element name="datasource">
-                    <xs:complexType>
-                        <xs:group ref="nestedDatasources"/>
-                        <xs:attribute name="id" type="xs:string" use="required"/>
-                        <xs:attribute name="property" type="xs:string" use="required"/>
-                    </xs:complexType>
-                </xs:element>
             </xs:choice>
         </xs:sequence>
     </xs:group>
 
     <!-- CollectionPropertyDatasource -->
-    <xs:complexType name="nestedCollectionDs">
+    <xs:complexType name="nestedDs">
         <xs:sequence>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
-        <xs:attributeGroup ref="isNestedCollectionDatasource"/>
+        <xs:attributeGroup ref="isNestedDatasource"/>
     </xs:complexType>
 
     <!-- HierarchicalPropertyDatasource -->
@@ -1235,9 +1229,7 @@
         <xs:sequence>
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
-
-        <xs:attributeGroup ref="isNestedCollectionDatasource"/>
-
+        <xs:attributeGroup ref="isNestedDatasource"/>
         <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
     </xs:complexType>
 
