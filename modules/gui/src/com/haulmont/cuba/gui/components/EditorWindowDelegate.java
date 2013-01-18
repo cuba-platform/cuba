@@ -13,9 +13,8 @@ import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.data.DataSupplier;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -24,10 +23,9 @@ import java.util.Date;
 import java.util.HashSet;
 
 /**
-* <p>$Id$</p>
-*
-* @author krivopustov
-*/
+ * @author krivopustov
+ * @version $Id$
+ */
 public class EditorWindowDelegate extends WindowDelegate {
 
     protected Entity item;
@@ -104,36 +102,37 @@ public class EditorWindowDelegate extends WindowDelegate {
         return item;
     }
 
+    @SuppressWarnings("unchecked")
     public void setItem(Entity item) {
-        final Datasource ds = getDatasource();
+        Datasource ds = getDatasource();
+        DataSupplier dataservice = ds.getDataSupplier();
 
-        if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)) {
-            Datasource parentDs = ((DatasourceImpl) ds).getParent();
-            //We have to reload items in parent datasource because when item in child datasource is commited,
-            //item in parant datasource must already have all item fields loaded.
+        if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)
+                && ds instanceof DatasourceImplementation
+                && ((DatasourceImplementation) ds).getParent() instanceof DatasourceImplementation) {
+            DatasourceImplementation parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
+            // We have to reload items in parent datasource because when item in child datasource is committed,
+            // an item in parent datasource must already have all item fields loaded.
             if (parentDs != null) {
-                Collection justChangedItems = new HashSet(((AbstractDatasource) parentDs).getItemsToCreate());
-                justChangedItems.addAll(((AbstractDatasource) parentDs).getItemsToUpdate());
+                Collection<Object> justChangedItems = new HashSet<Object>(parentDs.getItemsToCreate());
+                justChangedItems.addAll(parentDs.getItemsToUpdate());
 
-                DataSupplier dataservice = ds.getDataSupplier();
-                if ((parentDs instanceof CollectionDatasourceImpl) && !(justChangedItems.contains(item)) && ((CollectionDatasourceImpl) parentDs).containsItem(item)) {
+                if (!justChangedItems.contains(item)
+                        && parentDs instanceof CollectionDatasource
+                        && ((CollectionDatasource) parentDs).containsItem(item)) {
                     item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                    ((CollectionDatasourceImpl) parentDs).updateItem(item);
-                } else if ((parentDs instanceof LazyCollectionDatasource) && !(justChangedItems.contains(item)) && ((LazyCollectionDatasource) parentDs).containsItem(item)) {
-                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                    ((LazyCollectionDatasource) parentDs).updateItem(item);
-                } else if ((parentDs instanceof CollectionPropertyDatasourceImpl) && !(justChangedItems.contains(item)) && ((CollectionPropertyDatasourceImpl) parentDs).containsItem(item)) {
-                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                    ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
+                    if (parentDs instanceof CollectionPropertyDatasourceImpl) {
+                        ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
+                    } else {
+                        ((CollectionDatasource) parentDs).updateItem(item);
+                    }
                 }
             }
             item = (Entity) InstanceUtils.copy(item);
         } else {
-            if (!PersistenceHelper.isNew(item)) {
-                String useSecurityConstraintsParam = (String) window.getContext().getParams().get("useSecurityConstraints");
-                boolean useSecurityConstraints = !("false".equals(useSecurityConstraintsParam));
-                final DataSupplier dataservice = ds.getDataSupplier();
-                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecurityConstraints);
+            if (!PersistenceHelper.isNew(item)
+                    && WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext())) {
+                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), false);
             }
         }
 
@@ -150,9 +149,9 @@ public class EditorWindowDelegate extends WindowDelegate {
         }
 
         this.item = item;
-        //noinspection unchecked
         ds.setItem(item);
-        ((DatasourceImplementation) ds).setModified(false);
+        if (ds instanceof DatasourceImplementation)
+            ((DatasourceImplementation) ds).setModified(false);
 
         if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
             LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());

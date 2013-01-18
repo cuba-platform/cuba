@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 11:18:21
- * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
@@ -21,6 +17,10 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class DsContextImpl implements DsContextImplementation {
 
     private WindowContext windowContext;
@@ -207,26 +207,27 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     protected CommitContext createCommitContext(DataSupplier dataservice,
-                                                        Map<DataSupplier, Collection<Datasource<Entity>>> commitData)
-    {
+                                                Map<DataSupplier, Collection<Datasource<Entity>>> commitData) {
         CommitContext context = new CommitContext();
 
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
-            final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
+            if (datasource instanceof DatasourceImplementation) {
+                final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
 
-            boolean listenersEnabled = implementation.enableListeners(false);
-            try {
-                for (Entity entity : implementation.getItemsToCreate()) {
-                    addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
+                boolean listenersEnabled = implementation.enableListeners(false);
+                try {
+                    for (Entity entity : implementation.getItemsToCreate()) {
+                        addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
+                    }
+                    for (Entity entity : implementation.getItemsToUpdate()) {
+                        addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
+                    }
+                    for (Entity entity : implementation.getItemsToDelete()) {
+                        addToContext(entity, datasource, context.getRemoveInstances(), context.getViews());
+                    }
+                } finally {
+                    implementation.enableListeners(listenersEnabled);
                 }
-                for (Entity entity : implementation.getItemsToUpdate()) {
-                    addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
-                }
-                for (Entity entity : implementation.getItemsToDelete()) {
-                    addToContext(entity, datasource, context.getRemoveInstances(), context.getViews());
-                }
-            } finally {
-                implementation.enableListeners(listenersEnabled);
             }
         }
         return context;

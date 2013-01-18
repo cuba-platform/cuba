@@ -56,7 +56,12 @@ public enum WindowParams {
     /**
      * Disables suspendable datasources resuming after showing a window.
      */
-    DISABLE_RESUME_SUSPENDED;
+    DISABLE_RESUME_SUSPENDED,
+
+    /**
+     * Makes edit windows to reload an item without applying security constraints.
+     */
+    DISABLE_SECURITY_CONSTRAINTS;
 
     /**
      * Get boolean value from the WindowContext.
