@@ -2478,6 +2478,83 @@ executor.submit(new Runnable() {
 });</programlisting></para>
       </section>
     </section>
+    <section>
+      <title>Обработка исключений</title>
+      <section>
+        <title>Классы исключений</title>
+        <para>При создании собственных классов исключений следует придерживаться следующих правил:<itemizedlist>
+            <listitem>
+              <para>Если исключение является нормальной частью бизнес-логики и при его возникновении требуется предпринимать некоторые нетривиальные действия, то класс исключения следует делать декларируемым (наследником <code>Exception</code>). Обработка таких исключений производится вызывающим кодом.</para>
+            </listitem>
+            <listitem>
+              <para>Если исключение сигнализирует об  ошибочной ситуации, и реакцией на него должно быть прерывание хода выполнения и простое действие типа отображения информации об ошибке пользователю, то класс исключения следует делать недекларируемым (наследником <code>RuntimeException</code>). Обработка таких исключений производится специальными классами-обработчиками, зарегистрированными в клиентских блоках приложения.</para>
+            </listitem>
+            <listitem>
+              <para>Если исключение выбрасывается и обрабатывается в рамках одного <link linkend="app_tiers">блока</link> приложения, то класс исключения следует объявлять в соответствующем <link linkend="app_modules">модуле</link>. Если же исключение выбрасывается на Middleware, а обрабатывается на клиентском уровне, то класс исключения необходимо объявлять в модуле <structname>global</structname>.</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section>
+        <title>Передача исключений Middleware</title>
+        <para>Если при выполнении запроса от клиента на Middleware возникает исключение, выполнение прерывается и на клиента возвращается объект исключения, как правило включающий цепочку порождающих друг друга исключений. Так как цепочка исключений может содержать классы, недоступные клиентскому блоку (например, исключения JDBC-драйвера), на клиента передается не сама эта цепочка, а ее представление внутри специального создаваемого исключения <code>RemoteException</code>. </para>
+        <para>Информация об исключениях-причинах сохраняется в виде списка объектов <code>RemoteException.Cause</code>. Каждый объект <code>Cause</code> хранит обязательно имя класса исключения и его сообщение. Кроме того, если класс исключения &quot;поддерживается клиентом&quot;, то <code>Cause</code> содержит также и сам объект исключения. Это дает возможность передать на клиента информацию в полях исключения. </para>
+        <para>Класс исключения, объекты которого нужно передавать на клиентский уровень именно в виде Java-объектов, нужно аннотировать <code>@SupportedByClient</code>, например: <programlisting>@SupportedByClient
+public class WorkflowException extends RuntimeException {
+...</programlisting></para>
+        <para>Таким образом, при возникновении на Middleware исключения, не аннотированного <code>@SupportedByClient</code>, вызывающий клиентский код получит <code>RemoteException</code>, внутри которого будет находится исходное исключение  в виде строки. Если же исходное исключение аннотировано <code>@SupportedByClient</code>, то вызывающий код получит именно его. Это дает возможность в прикладном коде организовывать обработку декларируемых <link linkend="services">сервисами</link> Middleware исключений традиционным образом - с помощью блоков <code>try...catch</code>.</para>
+        <para>Упаковку объектов исключений в <code>RemoteException</code> перед передачей на клиентский уровень выполняет перехватчик вызовов <link linkend="services">сервисов</link> - класс <code>ServiceInterceptor</code>. Кроме того, он же выполняет логгирование исключений. По умолчанию в журнал выводится вся информация об исключении, включая полный stacktrace. Если это нежелательно, можно добавить классу исключения аннотацию <code>@Logging</code>, указав в ней тип логгирования:<itemizedlist>
+            <listitem>
+              <para><code>FULL</code> - (по умолчанию) полная информация, включая stacktrace</para>
+            </listitem>
+            <listitem>
+              <para><code>BRIEF</code> - только имя класса исключения и сообщение</para>
+            </listitem>
+            <listitem>
+              <para><code>NONE</code> - не выводить ничего</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Например:<programlisting>@SupportedByClient
+@Logging(Logging.Type.BRIEF)
+public class FinancialTransactionException extends Exception {
+...</programlisting></para>
+      </section>
+      <section>
+        <title>Обработчики исключений клиентского уровня</title>
+        <para>Необработанные исключения в <link linkend="app_tiers">блоках</link> Web Client и Desktop Client, возникшие на клиентском уровне или переданные с Middleware, попадают в специальный механизм обработчиков. Этот механизм схож для обоих блоков, однако использует разные (хотя и в основном одноименные) классы реализации. </para>
+        <para>Рассмотрим механизм на примере блока Web Client. </para>
+        <para>В файле <filename>
+            <link linkend="spring.xml">spring.xml</link>
+          </filename> блока объявляется бин класса <code>ExceptionHandlersConfiguration</code>, в свойстве <code>handlerClasses</code> которого задается список имен классов обработчиков. Например: <programlisting>&lt;bean id=&quot;sales_exceptionHandlersConf&quot; class=&quot;com.haulmont.cuba.web.exception.ExceptionHandlersConfiguration&quot;&gt;
+    &lt;property name=&quot;handlerClasses&quot;&gt;
+        &lt;list&gt;
+            &lt;value&gt;com.sample.sales.web.exception.ZeroBalanceExceptionHandler&lt;/value&gt;
+            &lt;value&gt;com.sample.sales.web.exception.InvalidCustomerStateExceptionHandler&lt;/value&gt;
+        &lt;/list&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;</programlisting></para>
+        <para>Идентификатор бина должен быть уникальным и не совпадать ни с одним из бинов <link linkend="base_projects">базовых проектов</link>, так как базовые проекты в свою очередь могут содержать аналогичные конфигурационные бины с собственными идентификаторами. </para>
+        <para>Обработчик должен реализовывать интерфейс <code>ExceptionHandler</code>, в методе <code>handle()</code> которого производить обработку и возвращать <code>true</code>, либо сразу возвращать <code>false</code>, если данный обработчик не может обработать переданное ему исключение. Такое поведение позволяет организовать &quot;цепочку ответственности&quot; обработчиков. </para>
+        <para>Рекомендуется наследовать класс своего обработчика от базового класса <code>AbstractExceptionHandler</code>, который умеет разбирать цепочку исключений (с учетом упакованных внутри <code>RemoteException</code>) и реагировать на конкретные типы исключений. Типы исключений, для которых предназначен данный обработчик, указываются в массиве строк, передаваемом в конструкторе обработчика базовому конструктору. Каждая строка массива должна содержать одно полное имя класса обрабатываемого исключения, например:<programlisting>public class ReportExceptionHandler extends AbstractExceptionHandler {
+
+    public ReportExceptionHandler() {
+        super(ReportingException.class.getName(),
+              FailedToConnectToOpenOfficeException.class.getName(),
+              UnsupportedFormatException.class.getName());
+    }
+...</programlisting></para>
+        <para>Если класс исключения недоступен на клиенте, следует указывать его имя строковым литералом:<programlisting>public class OptimisticExceptionHandler extends AbstractExceptionHandler {
+
+    public OptimisticExceptionHandler() {
+        super(&quot;org.springframework.orm.jpa.JpaOptimisticLockingFailureException&quot;);
+    }
+...</programlisting></para>
+        <para>В случае использования в качестве базового класса <code>AbstractExceptionHandler</code> логика обработки располагается в методе <code>doHandle()</code>, и для блока Web Client может выглядеть следующим образом:<programlisting>@Override
+protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
+    String msg = messages.getMainMessage(&quot;zeroBalance.message&quot;);
+    app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+}</programlisting></para>
+      </section>
+    </section>
   </section>
   <section id="middleware">
     <title>Компоненты среднего слоя</title>
