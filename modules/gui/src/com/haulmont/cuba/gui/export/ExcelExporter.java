@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 
+import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -249,19 +250,30 @@ public class ExcelExporter {
             HSSFCell cell = row.createCell(c);
 
             Table.Column column = columns.get(c);
+            Object cellValue = null;
+            boolean isFull = true;
+
             if (column.getId() instanceof MetaPropertyPath) {
-                Object val = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
-                if (column.getFormatter() != null)
-                    val = column.getFormatter().format(val);
-
-                TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
-                boolean isFull = true;
-                if (tt != null && tt == TemporalType.DATE)
-                    isFull = false;
-                formatValueCell(cell, val, c, rowNumber, level, isFull);
+                Table.Printable printable = table.getPrintable(column);
+                if (printable != null) {
+                    cellValue = printable.getValue();
+                } else {
+                    cellValue = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
+                    if (column.getFormatter() != null)
+                        cellValue = column.getFormatter().format(cellValue);
+                    TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
+                    if (tt != null && tt == TemporalType.DATE)
+                        isFull = false;
+                }
+            } else {
+                Table.Printable printable = table.getPrintable(column);
+                if (printable != null) {
+                    cellValue = printable.getValue();
+                }
             }
-        }
 
+            formatValueCell(cell, cellValue, c, rowNumber, level, isFull);
+        }
     }
 
     protected String createSpaceString(int level) {
@@ -276,11 +288,13 @@ public class ExcelExporter {
         return sb.toString();
     }
 
-    protected void formatValueCell(HSSFCell cell, Object val, int sizersIndex, int notificationReqiured, int level, boolean isFull) {
-        if (val == null)
+    protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue,
+                                   int sizersIndex, int notificationReqiured, int level, boolean isFull) {
+        if (cellValue == null)
             return;
-        if (val instanceof Number) {
-            Number n = (Number) val;
+
+        if (cellValue instanceof Number) {
+            Number n = (Number) cellValue;
             final Datatype datatype = Datatypes.get(n.getClass());
             String str;
             if (sizersIndex == 0) {
@@ -303,8 +317,8 @@ public class ExcelExporter {
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
-        } else if (val instanceof Date) {
-            cell.setCellValue(((Date) val));
+        } else if (cellValue instanceof Date) {
+            cell.setCellValue(((Date) cellValue));
 
             final HSSFCellStyle cellStyle = wb.createCellStyle();
             if (isFull)
@@ -314,37 +328,37 @@ public class ExcelExporter {
             cell.setCellStyle(cellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                String str = Datatypes.get(Date.class).format((Date) val);
+                String str = Datatypes.get(Date.class).format((Date) cellValue);
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
-        } else if (val instanceof Boolean) {
+        } else if (cellValue instanceof Boolean) {
             String str = "";
             if (sizersIndex == 0) {
                 str += createSpaceString(level);
             }
-            str += ((Boolean) val) ? trueStr : falseStr;
+            str += ((Boolean) cellValue) ? trueStr : falseStr;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
-        } else if (val instanceof EnumClass) {
-            String nameKey = val.getClass().getSimpleName() + "." + val.toString();
-            final String message = sizersIndex == 0 ? createSpaceString(level) + messages.getMessage(val.getClass(), nameKey)
-                    : messages.getMessage(val.getClass(), nameKey);
+        } else if (cellValue instanceof EnumClass) {
+            String nameKey = cellValue.getClass().getSimpleName() + "." + cellValue.toString();
+            final String message = sizersIndex == 0 ? createSpaceString(level) + messages.getMessage(cellValue.getClass(), nameKey)
+                    : messages.getMessage(cellValue.getClass(), nameKey);
 
             cell.setCellValue(message);
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(message, stdFont);
             }
-        } else if (val instanceof Entity){
-            Entity entityVal = (Entity) val;
+        } else if (cellValue instanceof Entity){
+            Entity entityVal = (Entity) cellValue;
             String instanceName = entityVal.getInstanceName();
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
-        } else if (val instanceof Collection){
+        } else if (cellValue instanceof Collection){
             String str = "";
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
@@ -352,7 +366,7 @@ public class ExcelExporter {
             }
         }
         else {
-            String str = sizersIndex == 0 ? createSpaceString(level) + val.toString() : val.toString();
+            String str = sizersIndex == 0 ? createSpaceString(level) + cellValue.toString() : cellValue.toString();
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);

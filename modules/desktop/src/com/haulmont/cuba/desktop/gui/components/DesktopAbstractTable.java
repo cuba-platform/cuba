@@ -44,6 +44,7 @@ import org.jdesktop.swingx.table.TableColumnExt;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -93,6 +94,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected int defaultRowHeight = 24;
 
     protected Set selectionBackup;
+
+    protected Map<String, Printable> printables = new HashMap<>();
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -843,6 +846,29 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             tableModel.removeGeneratedColumn(col);
             generatedColumnsCount--;
         }
+    }
+
+    @Override
+    public void addPrintable(String columnId, Printable printable) {
+        printables.put(columnId, printable);
+    }
+
+    @Override
+    public void removePrintable(String columnId) {
+        printables.remove(columnId);
+    }
+
+    @Override
+    @Nullable
+    public Printable getPrintable(Column column) {
+        TableColumn tableColumn = getColumn(column);
+        TableCellEditor cellEditor = tableColumn.getCellEditor();
+        if (cellEditor instanceof DesktopTableCellEditor) {
+            ColumnGenerator columnGenerator = ((DesktopTableCellEditor) cellEditor).getColumnGenerator();
+            if (columnGenerator instanceof Printable)
+                return (Printable) columnGenerator;
+        }
+        return printables.get(column.getId().toString());
     }
 
     /**

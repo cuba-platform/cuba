@@ -102,6 +102,10 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         this.editable = editable;
     }
 
+    public Table.ColumnGenerator getColumnGenerator() {
+        return columnGenerator;
+    }
+
     protected Component getCellComponent(int row) {
         Entity item = desktopAbstractTable.getTableModel().getItem(row);
 

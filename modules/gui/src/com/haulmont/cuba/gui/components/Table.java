@@ -139,6 +139,18 @@ public interface Table
         Component generateCell(E entity);
     }
 
+    public interface Printable<P> {
+        P getValue();
+    }
+
+    /**
+     * Column generator, which support print to Excel
+     * @param <E> entity type
+     * @param <P> printable value type
+     */
+    public interface PrintableColumnGenerator<E extends Entity, P> extends ColumnGenerator<E>, Printable<P>  {
+    }
+
     /**
      * Add a generated column to the table.
      *
@@ -159,6 +171,13 @@ public interface Table
     void addGeneratedColumn(String columnId, ColumnGenerator generator, Class<? extends Component> componentClass);
 
     void removeGeneratedColumn(String columnId);
+
+    void addPrintable(String columnId, Printable printable);
+
+    void removePrintable(String columnId);
+
+    @Nullable
+    Printable getPrintable(Table.Column column);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

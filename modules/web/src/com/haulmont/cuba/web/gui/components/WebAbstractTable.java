@@ -42,7 +42,6 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
-import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
@@ -59,11 +58,10 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 /**
  * @param <T>
@@ -100,12 +98,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Map<Table.Column, Object> aggregationCells = null;
 
-    private boolean usePresentations;
+    protected boolean usePresentations;
 
     protected Presentations presentations;
     protected TablePresentations tablePresentations;
 
-    private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
+    protected List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
+
+    protected Map<String, Printable> printables = new HashMap<>();
 
     private String customStyle;
 
@@ -147,6 +147,28 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected void removeGeneratedColumn(Object id) {
         component.removeGeneratedColumn(id);
+    }
+
+    @Override
+    public void addPrintable(String columnId, Printable printable) {
+        printables.put(columnId, printable);
+    }
+
+    @Override
+    public void removePrintable(String columnId) {
+        printables.remove(columnId);
+    }
+
+    @Override
+    @Nullable
+    public Printable getPrintable(Table.Column column) {
+        com.vaadin.ui.Table.ColumnGenerator vColumnGenerator = component.getColumnGenerator(column.getId());
+        if (vColumnGenerator instanceof UserColumnGenerator) {
+            ColumnGenerator columnGenerator = ((UserColumnGenerator) vColumnGenerator).getColumnGenerator();
+            if (columnGenerator instanceof Printable)
+                return (Printable) columnGenerator;
+        }
+        return printables.get(column.getId().toString());
     }
 
     @Override
@@ -890,7 +912,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, final ColumnGenerator generator) {
+    public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");
         if (generator == null)
@@ -905,11 +927,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         component.addGeneratedColumn(
                 generatedColumnId,
-                new com.vaadin.ui.Table.ColumnGenerator() {
+                new UserColumnGenerator(generator) {
                     @Override
                     public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Entity entity = getDatasource().getItem(itemId);
-                        com.haulmont.cuba.gui.components.Component component = generator.generateCell(entity);
+                        com.haulmont.cuba.gui.components.Component component = getColumnGenerator().generateCell(entity);
                         if (component == null)
                             return null;
                         else {
@@ -1074,7 +1096,20 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    private interface SystemTableColumnGenerator extends com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+    private interface SystemTableColumnGenerator extends com.vaadin.ui.Table.ColumnGenerator {
+    }
+
+    protected static abstract class UserColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+
+        private ColumnGenerator columnGenerator;
+
+        protected UserColumnGenerator(ColumnGenerator columnGenerator) {
+            this.columnGenerator = columnGenerator;
+        }
+
+        public ColumnGenerator getColumnGenerator() {
+            return columnGenerator;
+        }
     }
 
     protected abstract class LinkGenerator implements SystemTableColumnGenerator {
@@ -1125,11 +1160,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                                 IFrame controllerFrame = WebComponentsHelper.getControllerFrame(frame);
                                 Method method = controllerFrame.getClass().getMethod(methodName, Object.class);
                                 method.invoke(controllerFrame, getItem(item, property));
-                            } catch (NoSuchMethodException e) {
-                                throw new RuntimeException("Unable to invoke clickAction", e);
-                            } catch (InvocationTargetException e) {
-                                throw new RuntimeException("Unable to invoke clickAction", e);
-                            } catch (IllegalAccessException e) {
+                            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                                 throw new RuntimeException("Unable to invoke clickAction", e);
                             }
 
@@ -1145,11 +1176,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell(((AbstractSelect) source), itemId, columnId);
-        }
-
-        @Override
-        public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
 
@@ -1178,14 +1204,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    private class ReadOnlyBooleanDatatypeGenerator implements SystemTableColumnGenerator {
+    protected class ReadOnlyBooleanDatatypeGenerator implements SystemTableColumnGenerator {
         @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell((AbstractSelect) source, itemId, columnId);
-        }
-
-        @Override
-        public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
@@ -1204,14 +1225,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    private class CalculatableColumnGenerator implements SystemTableColumnGenerator {
+    protected class CalculatableColumnGenerator implements SystemTableColumnGenerator {
         @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell((AbstractSelect) source, itemId, columnId);
-        }
-
-        @Override
-        public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
@@ -1238,7 +1254,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    private static class CalculatablePropertyValueChangeListener implements Property.ValueChangeListener {
+    protected static class CalculatablePropertyValueChangeListener implements Property.ValueChangeListener {
         private Label component;
         private Formatter formatter;
 
