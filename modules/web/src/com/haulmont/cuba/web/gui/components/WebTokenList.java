@@ -486,6 +486,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                         if (isMultiSelect()) {
                             params.put("multiSelect", "true");
                         }
+                        if (lookupScreenParams != null)
+                            params.putAll(lookupScreenParams);
 
                         WindowManager wm = App.getInstance().getWindowManager();
                         wm.openLookup(windowInfo, new Window.Lookup.Handler() {

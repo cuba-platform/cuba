@@ -551,6 +551,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             if (isMultiSelect()) {
                 params.put("multiSelect", "true");
             }
+            if (lookupScreenParams != null)
+                params.putAll(lookupScreenParams);
 
             WindowManager wm = DesktopComponentsHelper.getTopLevelFrame(DesktopTokenList.this).getWindowManager();
             wm.openLookup(windowInfo, new Window.Lookup.Handler() {
