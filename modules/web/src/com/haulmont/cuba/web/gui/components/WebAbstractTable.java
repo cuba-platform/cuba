@@ -163,8 +163,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     @Nullable
     public Printable getPrintable(Table.Column column) {
         com.vaadin.ui.Table.ColumnGenerator vColumnGenerator = component.getColumnGenerator(column.getId());
-        if (vColumnGenerator instanceof UserColumnGenerator) {
-            ColumnGenerator columnGenerator = ((UserColumnGenerator) vColumnGenerator).getColumnGenerator();
+        if (vColumnGenerator instanceof CustomColumnGenerator) {
+            ColumnGenerator columnGenerator = ((CustomColumnGenerator) vColumnGenerator).getColumnGenerator();
             if (columnGenerator instanceof Printable)
                 return (Printable) columnGenerator;
         }
@@ -927,7 +927,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         component.addGeneratedColumn(
                 generatedColumnId,
-                new UserColumnGenerator(generator) {
+                new CustomColumnGenerator(generator) {
                     @Override
                     public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Entity entity = getDatasource().getItem(itemId);
@@ -1099,11 +1099,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     private interface SystemTableColumnGenerator extends com.vaadin.ui.Table.ColumnGenerator {
     }
 
-    protected static abstract class UserColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
+    protected static abstract class CustomColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
 
         private ColumnGenerator columnGenerator;
 
-        protected UserColumnGenerator(ColumnGenerator columnGenerator) {
+        protected CustomColumnGenerator(ColumnGenerator columnGenerator) {
             this.columnGenerator = columnGenerator;
         }
 
