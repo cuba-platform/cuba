@@ -139,8 +139,8 @@ public interface Table
         Component generateCell(E entity);
     }
 
-    public interface Printable<P> {
-        P getValue();
+    public interface Printable<E extends Entity, P> {
+        P getValue(E item);
     }
 
     /**
@@ -148,7 +148,7 @@ public interface Table
      * @param <E> entity type
      * @param <P> printable value type
      */
-    public interface PrintableColumnGenerator<E extends Entity, P> extends ColumnGenerator<E>, Printable<P>  {
+    public interface PrintableColumnGenerator<E extends Entity, P> extends ColumnGenerator<E>, Printable<E, P>  {
     }
 
     /**

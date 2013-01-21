@@ -256,7 +256,7 @@ public class ExcelExporter {
             if (column.getId() instanceof MetaPropertyPath) {
                 Table.Printable printable = table.getPrintable(column);
                 if (printable != null) {
-                    cellValue = printable.getValue();
+                    cellValue = printable.getValue((Entity) instance);
                 } else {
                     cellValue = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
                     if (column.getFormatter() != null)
@@ -268,7 +268,7 @@ public class ExcelExporter {
             } else {
                 Table.Printable printable = table.getPrintable(column);
                 if (printable != null) {
-                    cellValue = printable.getValue();
+                    cellValue = printable.getValue((Entity) instance);
                 }
             }
 
