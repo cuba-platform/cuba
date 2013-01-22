@@ -3657,6 +3657,90 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
       <para>Главное меню приложения формируется отдельно для Web Client и Desktop Client на основе файлов <filename>
           <link linkend="menu.xml">menu.xml</link>
         </filename>, расположенных соответственно в модулях <structname>web</structname> и <structname>desktop</structname> проекта.</para>
+      <section>
+        <title>Типы экранов</title>
+        <section id="frame">
+          <title>Фрейм</title>
+          <para>Фреймы представляют собой части экранов, которые можно использовать для декомпозиции и многократного использования.</para>
+          <para>Для подключения фрейма в XML экрана используется элемент <link linkend="gui_IFrame">
+              <sgmltag>iframe</sgmltag>
+            </link> c указанием либо пути к файлу XML фрейма, либо идентификатора фрейма, если он зарегистрирован в  <link linkend="screens.xml">
+              <filename>screens.xml</filename>
+            </link>.</para>
+          <para>Контроллер фрейма должен быть унаследован от класса <code>AbstractFrame</code>.</para>
+          <para>Правила взаимодействия экрана и вложенного в него фрейма:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Из экрана обращаться к компонентам фрейма можно через точку: <code>frame_id.component_id</code></para>
+            </listitem>
+            <listitem>
+              <para>Из контроллера фрейма получить компонент экрана  можно обычным вызовом <code>getComponent(component_id)</code>, но только в том случае, если компонент с таким именем не объявлен в самом фрейме. То есть компоненты фрейма маскируют компоненты экрана.</para>
+            </listitem>
+            <listitem>
+              <para>Из фрейма получить <link linkend="datasources">источник данных</link> экрана можно простым вызовом <code>getDsContext().get(ds_id)</code> либо в запросе <code>ds$ds_id</code>, но только в том случае, если источник данных с таким именем не объявлен в самом фрейме (аналогично компонентам).</para>
+            </listitem>
+            <listitem>
+              <para>Из экрана получить источник данных фрейма можно только через итерацию по <code>getDsContext().getChildren()</code></para>
+            </listitem>
+          </itemizedlist>
+          <para>При коммите экрана вызывается также коммит измененных источников  данных фрейма.</para>
+        </section>
+        <section id="screen_simple">
+          <title>Простой экран</title>
+          <para>Простой экран предназначен для отображения и редактирования произвольной информации, в том числе отдельных экемпляров и списков сущностей. Данный тип экрана имеет только базовую функциональность, позволяющую отобразить его в главном окне системы, закрыть, а также работать с <link linkend="datasources">источниками данных</link>.</para>
+          <para>Идентификатор экрана в файле <link linkend="screens.xml">
+              <filename>screens.xml</filename>
+            </link> может быть произвольного вида.</para>
+          <para>Контроллер простого экрана должен быть унаследован от класса <code>AbstractWindow</code>. </para>
+        </section>
+        <section id="screen_lookup">
+          <title>Экран выбора</title>
+          <para>Экран выбора (lookup) отличается от простого экрана тем, что при вызове методом <code>openLookup()</code> отображает внизу панель с кнопками, позволяющими передать вызывающему коду экземпляр выбранной в данный момент в списке сущности. При вызове методом <code>openWindow()</code> или, например, из главного меню, панель с кнопками выбора не отображается.</para>
+          <para>Экраны  выбора рекомендуется использовать для отображения списков сущностей. Визуальные компоненты, предназначенные для отображения и редактирования ссылок между сущностями (такие как <code>
+              <link linkend="gui_PickerField">PickerField</link>
+            </code>, <code>
+              <link linkend="gui_LookupPickerField">LookupPickerField</link>
+            </code>, <code>
+              <link linkend="gui_SearchPickerField">SearchPickerField</link>
+            </code>), вызывают экраны выбора для поиска связанных сущностей. </para>
+          <para>Для корректной работы <link linkend="standard_actions">стандартных действий</link> идентификатор экрана выбора  в файле <link linkend="screens.xml">
+              <filename>screens.xml</filename>
+            </link> должен иметь вид <literal>{имя_сущности}.lookup</literal>, например <literal>sales$Customer.lookup</literal>.</para>
+          <para>Контроллер экрана выбора должен быть унаследован от класса <code>AbstractLookup</code>. В XML экрана в атрибуте <sgmltag>lookupComponent</sgmltag> должен быть указан компонент (например, <code>
+              <link linkend="gui_Table">Table</link>
+            </code>), из которого будет взят экземпляр сущности при выборе.</para>
+        </section>
+        <section id="screen_edit">
+          <title>Экран редактирования</title>
+          <para>Экран редактирования предназначен для отображения и редактирования  экземпляра сущности. Поддерживает функциональность установки редактируемого экземпляра и <link linkend="gui_Action">действия</link> по  коммиту изменений в базу данных. Экран редактирования должен вызываться методом <code>openEditor()</code> с передачей экземпляра сущности.</para>
+          <para>Для корректной работы <link linkend="standard_actions">стандартных действий</link> идентификатор экрана редактирования в файле <link linkend="screens.xml">
+              <filename>screens.xml</filename>
+            </link> должен иметь вид <literal>{имя_сущности}.edit</literal>, например <literal>sales$Customer.edit</literal>.</para>
+          <para>Контроллер экрана редактирования  должен быть унаследован от класса <code>AbstractEditor</code>. В XML экрана в атрибуте <sgmltag>datasource</sgmltag> указывается источник данных, в который проставляется редактируемый экземпляр сущности. Для отображения действий, выполняющих коммит или отмену изменений, в XML можно использовать следующие стандартные фреймы с кнопками:<itemizedlist>
+              <listitem>
+                <para><literal>editWindowActions</literal> (файл <filename>com/haulmont/cuba/gui/edit-window.actions.xml</filename>) - содержит кнопки <guibutton>OK</guibutton> и <guibutton>Cancel</guibutton></para>
+              </listitem>
+              <listitem>
+                <para><literal>extendedEditWindowActions</literal> (файл <filename>com/haulmont/cuba/gui/extended-edit-window.actions.xml</filename>) - содержит кнопки <guibutton>OK &amp; Close</guibutton>, <guibutton>OK</guibutton> и <guibutton>Cancel</guibutton></para>
+              </listitem>
+            </itemizedlist></para>
+          <para>В экране редактирования неявно создаются следующие действия:<itemizedlist>
+              <listitem>
+                <para><literal>windowCommitAndClose</literal> (соответствует константе <code>Window.Editor.WINDOW_COMMIT_AND_CLOSE</code>) - действие, выполняющее коммит изменений в базу данных и закрывающее экран. Создается  при наличии в экране визуального компонента с идентификатором <literal>windowCommitAndClose</literal>, в частности, при использовании вышеописанного стандартного фрейма <literal>extendedEditWindowActions</literal> отображается кнопкой <guibutton>OK &amp; Close</guibutton>.</para>
+              </listitem>
+              <listitem>
+                <para><literal>windowCommit</literal> (соответствует константе <code>Window.Editor.WINDOW_COMMIT</code>) - действие, выполняющее коммит изменений в базу данных. При отсутствии действия <literal>windowCommitAndClose</literal> после коммита закрывает экран. Создается всегда, и при наличии в экране  вышеописанных стандартных фреймов отображается кнопкой <guibutton>OK</guibutton>.</para>
+              </listitem>
+              <listitem>
+                <para><literal>windowClose</literal> (соответствует константе <code>Window.Editor.WINDOW_CLOSE</code>) - действие, закрывающее экран без коммита изменений. Создается всегда, и при наличии в экране  вышеописанных стандартных фреймов отображается кнопкой <guibutton>Cancel</guibutton>.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Таким образом, если  в экран добавлен фрейм <literal>editWindowActions</literal>, то кнопка <guibutton>OK</guibutton> коммитит изменения и закрывает экран, а кнопка <guibutton>Cancel</guibutton> - закрывает без коммита. Если же добавлен фрейм <literal>extendedEditWindowActions</literal>, то кнопка <guibutton>OK</guibutton> только коммитит изменения, оставляя экран открытым, кнопка <guibutton>OK &amp; Close</guibutton> коммитит и закрывает экран, кнопка <guibutton>Cancel</guibutton> - закрывает без коммита.</para>
+          <para>Вместо стандартных фреймов для отображения действий можно использовать произвольные компоненты, например <code>
+              <link linkend="gui_LinkButton">LinkButton</link>
+            </code>.</para>
+        </section>
+      </section>
       <section id="screen_xml">
         <title>XML-дескриптор</title>
         <para>XML-дескриптор - это файл формата XML, описывающий <link linkend="datasources">источники данных</link> и расположение визуальных компонентов экрана.</para>
@@ -3676,20 +3760,48 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
               <para><sgmltag>caption</sgmltag> − заголовок экрана, может содержать <link linkend="messageTools.loadString">ссылку на сообщение</link> из вышеуказанного пакета, например, <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
             </listitem>
             <listitem>
-              <para><sgmltag>focusComponent</sgmltag> − (необязательно) идентификатор компонента, который получит фокус ввода при отображении экрана.</para>
+              <para><sgmltag>focusComponent</sgmltag> − идентификатор компонента, который получит фокус ввода при отображении экрана</para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>lookupComponent</sgmltag> - обязательный для <link linkend="screen_lookup">экрана выбора</link> атрибут, задающий идентификатор визуального компонента, из которого будет выбран экземпляр сущности. Поддерживаются компоненты следующих типов (и их наследников):<itemizedlist>
+                  <listitem>
+                    <para><code>Table</code></para>
+                  </listitem>
+                  <listitem>
+                    <para><code>Tree</code></para>
+                  </listitem>
+                  <listitem>
+                    <para><code>LookupField</code></para>
+                  </listitem>
+                  <listitem>
+                    <para><code>PickerField</code></para>
+                  </listitem>
+                  <listitem>
+                    <para><code>OptionsGroup</code></para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>datasource</sgmltag> - обязательный для <link linkend="screen_edit">экрана редактирования</link> атрибут, задающий идентификатор <link linkend="datasources">источника данных</link>, в который будет проставлен экземпляр редактируемой сущности.</para>
             </listitem>
           </itemizedlist></para>
         <para>Элементы <sgmltag>window</sgmltag>:<itemizedlist>
             <listitem>
-              <para><sgmltag>metadataContext</sgmltag> − опциональный элемент для инициализации <link linkend="views">представлений</link> (views), необходимых данному экрану. Предпочтительным является определение всех представлений в одном общем файле <filename>
+              <para><sgmltag>metadataContext</sgmltag> −  элемент для инициализации <link linkend="views">представлений</link> (views), необходимых данному экрану. Предпочтительным является определение всех представлений в одном общем файле <filename>
                   <link linkend="views.xml">views.xml</link>
                 </filename>, так как все описатели представлений разворачиваются в один общий репозиторий, и при рассредоточении описателей по разным файлам трудно обеспечить уникальность имен.</para>
             </listitem>
             <listitem>
-              <para><sgmltag>dsContext</sgmltag> − элемент, определяющий <link linkend="datasources">источники данных</link> данного экрана.</para>
+              <para><sgmltag>dsContext</sgmltag> −  определяет <link linkend="datasources">источники данных</link> данного экрана.</para>
             </listitem>
             <listitem>
-              <para><sgmltag>companions</sgmltag> - опциональный элемент, задающий список классов-<link linkend="companions">компаньонов</link> данного контроллера</para>
+              <para><sgmltag>actions</sgmltag> -  определяет список <link linkend="gui_Action">действий</link> данного экрана.</para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>timers</sgmltag> -  определяет список таймеров данного экрана.</para>
+            </listitem>
+            <listitem>
+              <para><sgmltag>companions</sgmltag> -  определяет список классов-<link linkend="companions">компаньонов</link> данного контроллера</para>
               <para>Элементы <sgmltag>companions</sgmltag>:<itemizedlist>
                   <listitem>
                     <para><sgmltag>web</sgmltag> - задает компаньон, реализованный в модуле <structname>web</structname></para>
@@ -3711,8 +3823,28 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
                       </link></para>
                   </listitem>
                   <listitem>
+                    <para><link linkend="attr_margin">
+                        <sgmltag>margin</sgmltag>
+                      </link></para>
+                  </listitem>
+                  <listitem>
                     <para><link linkend="attr_expand">
                         <sgmltag>expand</sgmltag>
+                      </link></para>
+                  </listitem>
+                  <listitem>
+                    <para><link linkend="attr_stylename">
+                        <sgmltag>stylename</sgmltag>
+                      </link></para>
+                  </listitem>
+                  <listitem>
+                    <para><link linkend="attr_height">
+                        <sgmltag>height</sgmltag>
+                      </link></para>
+                  </listitem>
+                  <listitem>
+                    <para><link linkend="attr_width">
+                        <sgmltag>width</sgmltag>
                       </link></para>
                   </listitem>
                 </itemizedlist></para>
@@ -3725,16 +3857,16 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         <para>Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
         <itemizedlist>
           <listitem>
-            <para><code>AbstractFrame</code> − реализует интерфейс <code>IFrame</code> и предназначен для реализации фреймов − многократно используемых компонентов экранов.</para>
+            <para><code>AbstractFrame</code> − предназначен для реализации <link linkend="frame">фреймов</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractWindow</code> − реализует интерфейc <code>Window</code> и может быть использован для реализации любых экранов.</para>
+            <para><code>AbstractWindow</code> − предназначен для реализации <link linkend="screen_simple">простых экранов</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractLookup</code> − реализует интерфейс <code>Lookup</code> и предназначен для реализации <glossterm linkend="browser_glossentry">браузеров сущностей</glossterm> с возможностью выбора элемента списка для использования его в вызывающем экране.</para>
+            <para><code>AbstractLookup</code> − предназначен для реализации <link linkend="screen_lookup">экранов выбора</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractEditor</code> − реализует интерфейс <code>Editor</code> и предназначен для реализации экранов редактирования экземпляра сущности.</para>
+            <para><code>AbstractEditor</code> − предназначен для реализации <link linkend="screen_edit">экранов редактирования</link>.</para>
           </listitem>
         </itemizedlist>
         <tip>
@@ -3803,7 +3935,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         </section>
         <section>
           <title>Методы контроллеров</title>
-          <para>Общим методом контроллеров всех типов является метод  <methodname>init()</methodname>. Этот метод вызывается фреймворком после создания класса окна и всего дерева компонентов, описанного XML-дескриптором. Здесь контроллер может произвести инициализацию экрана перед его открытием (например, создать обработчики нажатий на кнопки).</para>
+          <para>Общим методом контроллеров всех типов является метод  <methodname>init()</methodname>. Этот метод вызывается фреймворком после создания класса окна и всего дерева компонентов, описанного XML-дескриптором, но до отображения экрана.</para>
           <para>В метод <methodname>init()</methodname> из вызывающего кода передается мэп параметров, которые могут быть использованы  внутри контроллера. Эти параметры могут быть переданы как из кода контроллера вызывающего экрана (в методе <code>openWindow()</code>), так и установлены в файле регистрации экранов <filename>
               <link linkend="screens.xml">screens.xml</link>
             </filename>.</para>
@@ -7765,51 +7897,29 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         </section>
         <section id="gui_IFrame">
           <title>IFrame</title>
-          <para>Фреймы предназначены для декомпозиции и многократного использования частей экранов.</para>
-          <para>Фрейм включается в экран с помощью элемента <sgmltag>iframe</sgmltag>.</para>
-          <para>Для включения фрейма в экран необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> определить его описание:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/iframe/iframe.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибут <sgmltag id="attr_frame_src">src</sgmltag> − путь к <glossterm linkend="screen_xml_glossentry">XML-дескриптору</glossterm> фрейма. </para>
-          <para>Если фрейм зарегистрирован в файле <filename>screens.xml</filename>, то можно указать идентификатор фрейма в атрибуте <sgmltag id="attr_frame_screen">screen</sgmltag>.</para>
-          <warning>
-            <para>Обязательно должен быть указан один из атрибутов: <link linkend="attr_frame_src">src</link> или <link linkend="attr_frame_screen">screen</link>.</para>
-          </warning>
-          <para>Дескриптор фрейма идентичен <glossterm linkend="screen_xml_glossentry">xml-дескриптору</glossterm> экрана и может содержать собственный <sgmltag>metadataContext</sgmltag>, <sgmltag>dsContext</sgmltag>, <sgmltag>messagesPack</sgmltag>. Кроме того, фрейм может иметь собственный <glossterm linkend="screen_controller_glossentry">контроллер</glossterm>.</para>
-          <para>Правила взаимодействия экрана и вложенного в него фрейма:</para>
-          <itemizedlist>
-            <listitem>
-              <para>Из экрана обращаться к компонентам фрейма можно через точку: <code>frame_id.component_id</code></para>
-            </listitem>
-            <listitem>
-              <para>Из контроллера фрейма получить компонент экрана  можно обычным вызовом <code>getComponent(component_id)</code>, но только в том случае, если компонент с таким именем не объявлен в самом фрейме. То есть компоненты фрейма маскируют компоненты экрана.</para>
-            </listitem>
-            <listitem>
-              <para>Из фрейма получить <link linkend="datasources">источник данных</link> экрана можно простым вызовом <code>getDsContext().get(ds_id)</code> либо в запросе <code>ds$ds_id</code>, но только в том случае, если источник данных с таким именем не объявлен в самом фрейме (аналогично компонентам).</para>
-            </listitem>
-            <listitem>
-              <para>Из экрана получить источник данных фрейма можно только через итерацию по <code>getDsContext().getChildren()</code></para>
-            </listitem>
-          </itemizedlist>
-          <para>При коммите экрана вызывается также коммит измененных источников  данных фрейма.</para>
-          <para>Атрибуты <sgmltag>iframe</sgmltag>:</para>
+          <para>Элемент <sgmltag>iframe</sgmltag> предназначен для включения в экран <link linkend="frame">фрейма</link>.</para>
+          <para>Атрибуты:<itemizedlist>
+              <listitem>
+                <para><sgmltag id="attr_frame_src">src</sgmltag> − путь к XML-дескриптору фрейма</para>
+              </listitem>
+              <listitem>
+                <para><sgmltag>screen</sgmltag> - идентификатор фрейма в <filename>screens.xml</filename> (если имеется)</para>
+              </listitem>
+            </itemizedlist> Должен быть указан один из этих атрибутов. Если указано оба, фрейм будет загружен из явно указанного в <sgmltag>src</sgmltag> файла. </para>
+          <para>Другие атрибуты <sgmltag>iframe</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
-            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+            <tgroup cols="3" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
                     <link linkend="attr_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_frame_screen">screen</link>
-                  </entry><entry>
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="attr_stylename">stylename</link>
                   </entry></row>
                 <row>
                   <entry>
                     <link linkend="attr_height">height</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_frame_src">src</link>
-                  </entry>
-                  <entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="attr_visible">visible</link>
                   </entry>
                 </row>
                 <row>
@@ -7817,7 +7927,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
                     <link linkend="attr_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="attr_width">width</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7909,7 +8019,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example4.txt" encoding="UTF-8" parse="text"/></programlisting>
             <para>При этом Button возьмет значения атрибутов caption, icon, enable, visible из назначенного действия.</para>
           </section>
-          <section>
+          <section id="standard_actions">
             <title>Стандартные действия</title>
             <para>Для наследников ListComponent (это Table и Tree) существует набор стандартных действий, определяемых перечислением ListActionType. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
