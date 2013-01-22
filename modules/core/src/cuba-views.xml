@@ -122,16 +122,19 @@
 
     <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse">
         <property name="address"/>
-        <property name="attachments"/>
         <property name="attachmentsName"/>
         <property name="attemptsCount"/>
         <property name="attemptsMade"/>
         <property name="caption"/>
-        <property name="contentText"/>
         <property name="dateSent"/>
         <property name="deadline"/>
         <property name="from"/>
         <property name="status"/>
+        <property name="updateTs"/>
+    </view>
+
+    <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse.detail" extends="sendingMessage.browse">
+        <property name="contentText"/>
     </view>
 
     <view class="com.haulmont.cuba.core.entity.CategoryAttributeValue" name="categoryAttributeValue" extends="_local">

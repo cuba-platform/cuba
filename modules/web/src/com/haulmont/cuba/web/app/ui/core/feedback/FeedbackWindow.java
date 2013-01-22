@@ -100,9 +100,6 @@ public class FeedbackWindow extends AbstractWindow {
                                 + (otherReason.equals(((LookupField) getComponent("reason")).getValue())
                                     ? (String) ((TextField) getComponent("reasonFreeText")).getValue()
                                     : (String) ((LookupField) getComponent("reason")).getValue()),
-                        null,
-                        null,
-                        null,
                         infoHeader
                         );
                 emailService.sendEmail(emailInfo);

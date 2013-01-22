@@ -6,11 +6,12 @@
 
 package com.haulmont.cuba.core.global;
 
-import java.util.Map;
+import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
- * Contains information about email sending.<br>
+ * Contains email details: list of recipients, from address, caption, body and attachments.
  * Used by {@link com.haulmont.cuba.core.app.EmailService#sendEmail(EmailInfo)} method.
  *
  * @author degtyarjov
@@ -28,9 +29,14 @@ public class EmailInfo implements Serializable {
     private String body;
     private EmailAttachment[] attachment;
 
+    /**
+     * @deprecated Please use one of other constructors:
+     * one which uses template path and parameters,
+     * or another which uses pre-formed body.
+     */
+    @Deprecated
     public EmailInfo(String addresses, String caption, String from, String templatePath,
                      Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
-
         this.addresses = addresses;
         this.caption = caption;
         this.templatePath = templatePath;
@@ -39,6 +45,34 @@ public class EmailInfo implements Serializable {
         this.templateParameters = templateParameters;
         this.from = from;
     }
+
+    public EmailInfo(String addresses, String caption, @Nullable String from, String templatePath,
+                     Map<String, Serializable> templateParameters, EmailAttachment... attachment) {
+        this.addresses = addresses;
+        this.caption = caption;
+        this.templatePath = templatePath;
+        this.attachment = attachment;
+        this.templateParameters = templateParameters;
+        this.from = from;
+    }
+
+    public EmailInfo(String addresses, String caption, @Nullable String from, String body, EmailAttachment... attachment) {
+        this.addresses = addresses;
+        this.caption = caption;
+        this.body = body;
+        this.attachment = attachment;
+        this.from = from;
+    }
+
+    /**
+     * Take "from" value from system settings.
+     */
+    public EmailInfo(String addresses, String caption, String body) {
+        this.addresses = addresses;
+        this.caption = caption;
+        this.body = body;
+    }
+
 
     public String getAddresses() {
         return addresses;

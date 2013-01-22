@@ -36,7 +36,6 @@ public class EmailManager implements EmailManagerAPI {
 
     protected Log log = LogFactory.getLog(getClass());
 
-    protected Set<SendingMessage> messageQueue;
     protected static int callCount = 0;
 
     @Resource(name = "mailSendTaskExecutor")
@@ -66,7 +65,8 @@ public class EmailManager implements EmailManagerAPI {
     }
 
     @Override
-    public void queueEmailsToSend() {
+    public String queueEmailsToSend() {
+        String resultMessage =  null;
         try {
             int delay = config.getDelayCallCount();
             if (callCount >= delay) {
@@ -77,8 +77,7 @@ public class EmailManager implements EmailManagerAPI {
                     List<SendingMessage> loadedMessages = loadEmailsToSend();
                     List<SendingMessage> updatedMessages = updateSendingMessagesStatus(loadedMessages);
 
-                    if (messageQueue == null)
-                        messageQueue = new LinkedHashSet<>();
+                    Set<SendingMessage> messageQueue = new LinkedHashSet<>();
                     messageQueue.addAll(updatedMessages);
 
                     List<SendingMessage> processedMessages = new ArrayList<>();
@@ -95,6 +94,9 @@ public class EmailManager implements EmailManagerAPI {
                     if (!notSentMessageIds.isEmpty())
                         updateSendingMessagesStatus(notSentMessageIds, SendingStatus.NOTSENT);
 
+                    if (!processedMessages.isEmpty()) {
+                        resultMessage = String.format("Processed %d emails", processedMessages.size());
+                    }
                 } finally {
                     authentication.end();
                 }
@@ -104,7 +106,9 @@ public class EmailManager implements EmailManagerAPI {
             }
         } catch (Throwable e) {
             log.error(EmailManagerAPI.NAME + " error:" + ExceptionUtils.getStackTrace(e));
+            resultMessage = e.getMessage();
         }
+        return resultMessage;
     }
 
     private void updateSendingMessagesStatus(List<UUID> messages, SendingStatus status) {

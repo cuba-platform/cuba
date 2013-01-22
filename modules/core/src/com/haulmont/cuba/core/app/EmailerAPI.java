@@ -20,13 +20,21 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * API of {@link Emailer} MBean.<br>
+ * Provides application with emailing functionality.
+ * <br/>
+ * Sending email can be synchronous (caller's thread is blocked until email is delivered to SMTP server)
+ * or asynchronous (email is persisted in a DB queue and sent later by scheduled task).
+ * <br/>
+ * In order to send emails asynchronously, you should register a scheduled task that periodically invokes
+ * {@link com.haulmont.cuba.core.app.EmailManagerAPI#queueEmailsToSend()} method.
+ *
+ * @see EmailManagerAPI
  */
 public interface EmailerAPI {
     String NAME = "cuba_Emailer";
 
     /**
-     * Sends email
+     * Send email synchronously.
      *
      * @param address    comma or semicolon separated list of addresses
      * @param caption    email subject
@@ -38,41 +46,48 @@ public interface EmailerAPI {
             throws EmailException;
 
     /**
-     * Sends email
+     * Send email synchronously.
      *
-     * @param info object containing information about sending
+     * @param info email details
      * @throws EmailException in case of any errors
+     * @see EmailInfo
      */
     void sendEmail(EmailInfo info) throws EmailException;
 
     /**
+     * Send email synchronously.
      *
-     * @param info
-     * @param sync  - synchronous sending if true
-     * @throws EmailException
+     * @param info email details
+     * @param sync synchronous sending if true
+     * @throws EmailException in case of error
+     * @see EmailInfo
      */
     void sendEmail(EmailInfo info, boolean sync) throws EmailException;
 
 
     /**
-     * @param info
-     * @param attemptsCount  -  count of attempts to send (1 attempt = 1 emailer cron tick)
-     * @param deadline  -  Emailer tries to send message till deadline.
-     *              If deadline has come and message has not been sent, status of this message will changed to SendingStatus.NOTSENT
-     * @throws EmailException
+     * Send email asynchronously, with limited number of attempts.
+     *
+     * @param info email details
+     * @param attemptsCount  count of attempts to send (1 attempt = 1 emailer cron tick)
+     * @param deadline Emailer tries to send message till deadline.
+     *              If deadline has come and message has not been sent, status of this message will changed to
+     *              {@link com.haulmont.cuba.core.global.SendingStatus#NOTSENT}
+     * @see EmailInfo
      */
-    void sendEmailAsync(EmailInfo info, Integer attemptsCount,Date deadline);
+    void sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline);
 
     /**
+     * Send email asynchronously.
      *
-     * @param info EmailInfo of mail to send
+     * @param info email details
      * @return List of created SendingMessage
-     * @throws EmailException
+     * @see EmailInfo
      */
     List<SendingMessage> sendMessagesAsync(EmailInfo info);
 
     /**
-     * Don't use
+     * Used internally, don't invoke it from application code.
      */
     void scheduledSendEmail(SendingMessage sendingMessage) throws LoginException, EmailException;
 }

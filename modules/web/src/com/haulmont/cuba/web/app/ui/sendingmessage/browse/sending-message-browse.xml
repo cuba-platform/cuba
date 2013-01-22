@@ -1,5 +1,11 @@
+<!--
+  ~ Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
 <window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        class="com.haulmont.cuba.gui.components.AbstractWindow"
+        class="com.haulmont.cuba.web.app.ui.sendingmessage.browse.SendingMessageBrowser"
         messagesPack="com.haulmont.cuba.web.app.ui.sendingmessage"
         lookupComponent="table"
         caption="msg://sendingMessage.browser.caption">
@@ -12,6 +18,8 @@
                 <![CDATA[select sm from sys$SendingMessage sm order by sm.dateSent desc]]>
             </query>
         </collectionDatasource>
+        <datasource id="selectedMessageDs" class="com.haulmont.cuba.core.entity.SendingMessage"
+                    view="sendingMessage.browse.detail"/>
     </dsContext>
     <layout>
         <split id="split" orientation="horizontal" pos="70" width="100%" height="100%">
@@ -36,8 +44,8 @@
                     <rows datasource="sendingMessageDs"/>
                 </table>
             </vbox>
-            <vbox expand="fg" margin="5px">
-                <fieldGroup id="fg" datasource="sendingMessageDs" stylename="edit-area" width="500px" editable="false">
+            <vbox expand="fg" margin="true">
+                <fieldGroup id="fg" datasource="selectedMessageDs" width="500px" editable="false" border="visible">
                     <column width="100%">
                         <field id="address"/>
                         <field id="from"/>
