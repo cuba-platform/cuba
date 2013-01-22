@@ -1,0 +1,25 @@
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.core.feedback.FeedbackWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.core.feedback"
+        focusComponent="reason"
+        >
+
+    <dsContext/>
+
+    <layout expand="buttons">
+        <groupBox stylename="edit-area">
+            <label value="msg://theme"/>
+            <lookupField id="reason" required="true" width="200px" requiredMessage="msg://themeMsg"/>
+            <textField id="reasonFreeText" required="true" width="400px" requiredMessage="msg://themeMsg"/>
+            <label value="msg://body"/>
+            <textField id="mainBody" required="true" rows="15" width="600px" requiredMessage="msg://bodyMsg"/>
+        </groupBox>
+        <vbox id="buttons" margin="true;false;false;false">
+            <buttonsPanel>
+                <button id="ok" icon="icons/ok.png"/>
+                <button id="cancel" icon="icons/cancel.png"/>
+            </buttonsPanel>
+        </vbox>
+    </layout>
+</window> 

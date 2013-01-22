@@ -1,0 +1,66 @@
+<!--
+  ~ Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.sendingmessage.browse.SendingMessageBrowser"
+        messagesPack="com.haulmont.cuba.web.app.ui.sendingmessage"
+        lookupComponent="table"
+        caption="msg://sendingMessage.browser.caption">
+    <dsContext>
+        <collectionDatasource
+                id="sendingMessageDs"
+                class="com.haulmont.cuba.core.entity.SendingMessage"
+                view="sendingMessage.browse" fetchMode="AUTO">
+            <query>
+                <![CDATA[select sm from sys$SendingMessage sm order by sm.dateSent desc]]>
+            </query>
+        </collectionDatasource>
+        <datasource id="selectedMessageDs" class="com.haulmont.cuba.core.entity.SendingMessage"
+                    view="sendingMessage.browse.detail"/>
+    </dsContext>
+    <layout>
+        <split id="split" orientation="horizontal" pos="70" width="100%" height="100%">
+            <vbox expand="table" spacing="true" width="100%" height="100%">
+                <filter id="genericFilter" datasource="sendingMessageDs">
+                    <properties include=".*"/>
+                </filter>
+                <table id="table" width="100%">
+                    <rowsCount/>
+                    <columns>
+                        <column id="address"/>
+                        <column id="from"/>
+                        <column id="caption"/>
+                        <column id="status"/>
+                        <column id="dateSent"/>
+                        <column id="updateTs"/>
+                        <column id="attachmentsName"/>
+                        <column id="attemptsCount"/>
+                        <column id="deadline"/>
+                        <column id="attemptsMade"/>
+                    </columns>
+                    <rows datasource="sendingMessageDs"/>
+                </table>
+            </vbox>
+            <vbox expand="fg" margin="true">
+                <fieldGroup id="fg" datasource="selectedMessageDs" width="500px" editable="false" border="visible">
+                    <column width="100%">
+                        <field id="address"/>
+                        <field id="from"/>
+                        <field id="caption"/>
+                        <field id="contentText" rows="20"/>
+                        <field id="status"/>
+                        <field id="attachmentsName"/>
+                        <field id="dateSent"/>
+                        <field id="updateTs"/>
+                        <field id="deadline"/>
+                        <field id="attemptsCount"/>
+                        <field id="attemptsMade"/>
+                    </column>
+                </fieldGroup>
+            </vbox>
+        </split>
+    </layout>
+</window>

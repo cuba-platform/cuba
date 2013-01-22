@@ -1,0 +1,40 @@
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.core.settings.SettingsWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.core.settings"
+        focusComponent="mainWindowTheme"
+        >
+
+    <dsContext/>
+
+    <layout expand="buttons">
+        <groupBox stylename="edit-area">
+            <grid spacing="true">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://mainWindowMode"/>
+                        <optionsGroup id="mainWindowMode"/>
+                    </row>
+                    <row>
+                        <label value="msg://mainWindowTheme"/>
+                        <lookupField id="mainWindowTheme" required="true" width="150"
+                                     requiredMessage="msg://mainWindowThemeMsg"/>
+                    </row>
+                    <row>
+                        <button id="changePassw" icon="icons/change-pass.png"/>
+                    </row>
+                </rows>
+            </grid>
+        </groupBox>
+        <vbox id="buttons" margin="true;false;false;false">
+            <buttonsPanel>
+                <button id="okBtn" icon="icons/ok.png"/>
+                <button id="cancelBtn" icon="icons/cancel.png"/>
+            </buttonsPanel>
+        </vbox>
+    </layout>
+</window>

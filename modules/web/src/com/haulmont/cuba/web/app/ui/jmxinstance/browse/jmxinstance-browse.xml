@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.jmxinstance.browse.JmxInstanceBrowser"
+        messagesPack="com.haulmont.cuba.web.app.ui.jmxinstance"
+        lookupComponent="jmxInstancesTable"
+        caption="msg://browserCaption"
+        focusComponent="jmxInstancesTable">
+    <dsContext>
+        <collectionDatasource id="jmxInstancesDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local">
+            <query><![CDATA[
+                select jmx from sys$JmxInstance jmx
+                ]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="jmxInstancesTable" spacing="true">
+        <table id="jmxInstancesTable" width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <buttonsPanel alwaysVisible="true">
+                <button action="jmxInstancesTable.create"/>
+                <button action="jmxInstancesTable.edit"/>
+                <button action="jmxInstancesTable.remove"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="nodeName"/>
+                <column id="description"/>
+                <column id="address"/>
+                <column id="login"/>
+            </columns>
+            <rows datasource="jmxInstancesDs"/>
+        </table>
+    </layout>
+</window>

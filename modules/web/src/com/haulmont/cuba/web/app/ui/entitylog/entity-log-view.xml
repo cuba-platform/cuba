@@ -1,0 +1,82 @@
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        caption="msg://caption"
+        class="com.haulmont.cuba.web.app.ui.entitylog.EntityLogViewer"
+        messagesPack="com.haulmont.cuba.web.app.ui.entitylog"
+        >
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/entitylog/entity-log-views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource
+                id="events"
+                class="com.haulmont.cuba.security.entity.EntityLogItem"
+                view="entityLog.view"
+                >
+            <query><![CDATA[select el from sec$EntityLog el
+                order by el.eventTs desc
+                ]]>
+                <filter>
+                    <and>
+                        <c>el.entityId = :param$entityUUID</c>
+                        <c>el.createTs >= :component$filter.createdFrom</c>
+                        <c>el.createTs &lt;= :component$filter.createdTo</c>
+                        <c>el.entity = :component$filter.object</c>
+                    </and>
+                </filter>
+            </query>
+        </collectionDatasource>
+
+        <collectionDatasource
+                id="values"
+                class="com.haulmont.cuba.security.entity.EntityLogAttr"
+                view="entityLogAttr.view"
+                >
+            <query><![CDATA[select ea from sec$EntityLogAttr ea
+                 where
+                    ea.logItem.id = :ds$events
+                ]]>
+            </query>
+        </collectionDatasource>
+
+        <collectionDatasource id="valuesDs"
+                              class="com.haulmont.cuba.security.entity.EntityLogAttrWrapper"
+                              view=""
+                              datasourceClass="com.haulmont.cuba.web.app.ui.entitylog.EntityLogDatasource">
+        </collectionDatasource>
+
+    </dsContext>
+
+    <layout expand="split">
+        <vbox margin="false;false;true;false">
+            <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/entitylog/entity-log-view-filter.xml"/>
+        </vbox>
+
+        <split id="split" orientation="horizontal" pos="30">
+            <vbox>
+                <table id="events" editable="false">
+                    <columns>
+                        <column id="eventTs" caption="msg://eventTs">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="dd/MM/yyyy HH:mm"/>
+                        </column>
+                        <column id="createdBy" caption="msg://createdBy"/>
+                        <column id="entity" caption="msg://entity">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.ClassNameFormatter"/>
+                        </column>
+                    </columns>
+                    <rows datasource="events"/>
+                </table>
+            </vbox>
+            <vbox>
+                <table id="values" editable="false">
+                    <columns>
+                        <column id="entityLogAttr.displayName" caption="msg://name"/>
+                        <column id="displayValue" caption="msg://value"/>
+                    </columns>
+                    <rows datasource="valuesDs"/>
+                </table>
+            </vbox>
+        </split>
+    </layout>
+</window>

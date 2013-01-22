@@ -1,0 +1,24 @@
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.core.restore.EntityRestore"
+        messagesPack="com.haulmont.cuba.web.app.ui.core.restore"
+        caption="msg://entityRestore.caption"
+        focusComponent="entities"
+        >
+
+    <dsContext/>
+
+    <layout expand="tablePanel" spacing="true">
+        <hbox spacing="true">
+            <lookupField id="entities" width="250px"/>
+            <button id="refreshButton" icon="icons/refresh.png"/>
+        </hbox>
+
+        <filter id="primaryFilter">
+            <properties include=".*" exclude=""/>
+        </filter>
+
+        <vbox id="tablePanel" spacing="true">
+        </vbox>
+    </layout>
+</window>
