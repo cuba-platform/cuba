@@ -8,6 +8,7 @@
         class="com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor"
         messagesPack="com.haulmont.cuba.web.app.ui.jmxinstance"
         datasource="jmxInstanceDs"
+        focusComponent="jmxFieldGroup"
         caption="msg://editorCaption">
     <dsContext>
         <datasource id="jmxInstanceDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local"/>
