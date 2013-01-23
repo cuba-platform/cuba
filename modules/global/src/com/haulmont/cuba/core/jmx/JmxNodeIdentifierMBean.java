@@ -12,5 +12,5 @@ package com.haulmont.cuba.core.jmx;
  */
 public interface JmxNodeIdentifierMBean {
 
-    String getClusterNodeName();
+    String getNodeName();
 }

@@ -22,7 +22,7 @@ public class JmxNodeIdentifier implements JmxNodeIdentifierMBean {
     private NodeIdentifier nodeIdentifier;
 
     @Override
-    public String getClusterNodeName() {
+    public String getNodeName() {
         return nodeIdentifier.getNodeName();
     }
 }

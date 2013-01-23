@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ManagedBean(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
 
-    private static final String CLUSTER_NODE_NAME_ATTRIBUTE = "ClusterNodeName";
+    private static final String CLUSTER_NODE_NAME_ATTRIBUTE = "NodeName";
 
     private final JmxInstance LOCAL_JMX_INSTANCE = new JmxInstance("Local");
 
