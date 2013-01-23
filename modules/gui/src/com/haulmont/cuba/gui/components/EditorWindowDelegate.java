@@ -130,9 +130,9 @@ public class EditorWindowDelegate extends WindowDelegate {
             }
             item = (Entity) InstanceUtils.copy(item);
         } else {
-            if (!PersistenceHelper.isNew(item)
-                    && WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext())) {
-                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), false);
+            if (!PersistenceHelper.isNew(item)) {
+                boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());
+                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints);
             }
         }
 
