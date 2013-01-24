@@ -483,7 +483,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             Window window = ComponentsHelper.getWindow(WebAbstractTable.this);
             if (!(window instanceof Window.Lookup))
                 action.actionPerform(WebAbstractTable.this);
-            else if (action.getId().equals(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+            else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
                 action.actionPerform(WebAbstractTable.this);
             }
         }

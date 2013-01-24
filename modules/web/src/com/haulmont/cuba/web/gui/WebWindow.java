@@ -7,8 +7,12 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
@@ -27,13 +31,9 @@ import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -44,49 +44,46 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class WebWindow
-        implements
-        Window,
-        Component.Wrapper,
-        Component.HasXmlDescriptor,
-        WrappedWindow {
+public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow {
 
-    private boolean closing = false;
+    protected Log log = LogFactory.getLog(getClass());
 
-    private String id;
-    private String debugId;
+    protected String id;
+    protected String debugId;
 
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new HashSet<>();
-
     protected Map<String, Component> allComponents = new HashMap<>();
 
-    private String messagePack;
+    protected String messagePack;
+
+    protected String focusComponentId;
 
     protected com.vaadin.ui.Component component;
-    private Element element;
 
-    private DsContext dsContext;
-    private WindowContext context;
+    protected Element element;
 
-    private String caption;
-    private String description;
+    protected DsContext dsContext;
+    protected WindowContext context;
 
-    private List<CloseListener> listeners = new ArrayList<CloseListener>();
+    protected String caption;
+    protected String description;
 
-    private boolean forceClose;
+    protected List<CloseListener> listeners = new ArrayList<CloseListener>();
 
-    private static Log log = LogFactory.getLog(WebWindow.class);
+    protected boolean forceClose;
+    protected boolean closing = false;
 
-    private Runnable doAfterClose;
+    protected Runnable doAfterClose;
 
-    private WebWindowManager windowManager;
+    protected WebWindowManager windowManager;
 
     protected WindowDelegate delegate;
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
-    private String focusComponentId = null;
+    protected Configuration configuration = AppBeans.get(Configuration.class);
+    protected Messages messages = AppBeans.get(Messages.class);
 
     public WebWindow() {
         component = createLayout();
@@ -129,13 +126,6 @@ public class WebWindow
     @Override
     public void setMessagesPack(String name) {
         messagePack = name;
-    }
-
-    @Override
-    public String getMessage(String key) {
-        if (messagePack == null)
-            throw new IllegalStateException("MessagePack is not set");
-        return MessageProvider.getMessage(messagePack, key);
     }
 
     @Override
@@ -653,7 +643,11 @@ public class WebWindow
     @Override
     public void closeAndRun(String actionId, Runnable runnable) {
         this.doAfterClose = runnable;
-        close(actionId);
+//        Window wrapper = delegate.getWrapper();
+//        if (wrapper != null)
+//            wrapper.close(actionId);
+//        else
+            close(actionId);
     }
 
     @Override
@@ -664,35 +658,70 @@ public class WebWindow
 
     @Override
     public boolean close(final String actionId) {
+        if (!forceClose) {
+            if (!delegate.preClose(actionId))
+                return false;
+        }
+
         if (closing)
             return true;
-        closing = true;
-        WebWindowManager windowManager = getWindowManager();
-
-        Messages messages = AppBeans.get(Messages.NAME);
 
         if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
-            windowManager.showOptionDialog(
-                    messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                    messages.getMessage(WebWindow.class, "closeUnsaved"),
-                    MessageType.WARNING,
-                    new Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    forceClose = true;
-                                    close(actionId);
+            if (configuration.getConfig(ClientConfig.class).getUseSaveConfirmation()) {
+                windowManager.showOptionDialog(
+                        messages.getMainMessage("closeUnsaved.caption"),
+                        messages.getMainMessage("saveUnsaved"),
+                        MessageType.WARNING,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.YES) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        getDsContext().commit();
+                                        close(COMMIT_ACTION_ID, true);
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.NO) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        close(actionId, true);
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.CANCEL) {
+                                    @Override
+                                    public String getIcon() {
+                                        return null;
+                                    }
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        doAfterClose = null;
+                                    }
                                 }
-                            },
-                            new DialogAction(DialogAction.Type.NO) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    doAfterClose = null;
+                        }
+                );
+            } else {
+                closing = true;
+                windowManager.showOptionDialog(
+                        messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
+                        messages.getMessage(WebWindow.class, "closeUnsaved"),
+                        MessageType.WARNING,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.YES) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        forceClose = true;
+                                        close(actionId);
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.NO) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        doAfterClose = null;
+                                    }
                                 }
-                            }
-                    }
-            );
-            closing = false;
+                        }
+                );
+                closing = false;
+            }
             return false;
         }
 
@@ -874,7 +903,7 @@ public class WebWindow
 
         public Lookup() {
             super();
-            addAction(new AbstractShortcutAction(LOOKUP_SELECTED_ACTION_ID,
+            addAction(new AbstractShortcutAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID,
                     new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
@@ -895,13 +924,13 @@ public class WebWindow
             if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
                 com.haulmont.cuba.gui.components.Table table = (com.haulmont.cuba.gui.components.Table) lookupComponent;
                 table.setEnterPressAction(
-                        new AbstractAction(LOOKUP_ENTER_PRESSED_ACTION_ID) {
+                        new AbstractAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID) {
                             @Override
                             public void actionPerform(Component component) {
                                 fireSelectAction();
                             }
                         });
-                table.setItemClickAction(new AbstractAction(LOOKUP_ITEM_CLICK_ACTION_ID) {
+                table.setItemClickAction(new AbstractAction(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID) {
                     @Override
                     public void actionPerform(Component component) {
                         fireSelectAction();

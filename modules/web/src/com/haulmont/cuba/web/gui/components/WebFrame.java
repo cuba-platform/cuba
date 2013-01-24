@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
@@ -158,13 +157,6 @@ public class WebFrame extends WebVBoxLayout
     @Override
     public void setMessagesPack(String name) {
         messagePack = name;
-    }
-
-    @Override
-    public String getMessage(String key) {
-        if (messagePack == null)
-            throw new IllegalStateException("MessagePack is not set");
-        return AppBeans.get(Messages.class).getMessage(messagePack, key);
     }
 
     @Override

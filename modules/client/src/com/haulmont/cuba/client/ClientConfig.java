@@ -141,4 +141,8 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.pickerShortcut.clear")
     @DefaultString("CTRL-ALT-C")
     String getPickerClearShortcut();
+
+    @Property("cuba.gui.useSaveConfirmation")
+    @DefaultBoolean(true)
+    boolean getUseSaveConfirmation();
 }

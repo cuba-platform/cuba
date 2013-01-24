@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.gui.backgroundwork;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -22,6 +24,7 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
 
     protected BackgroundTask<T, V> wrappedTask;
     protected Window window;
+    protected Messages messages = AppBeans.get(Messages.class);
 
     protected LocalizedTaskWrapper(BackgroundTask<T, V> wrappedTask, Window window) {
         super(wrappedTask.getTimeoutSeconds(), window);
@@ -50,10 +53,10 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
                     public void run() {
                         String localizedMessage = ex.getLocalizedMessage();
                         if (StringUtils.isNotBlank(localizedMessage))
-                            ownerWindow.showNotification(window.getMessage("backgroundWorkProgress.executionError"),
+                            ownerWindow.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
                                     localizedMessage, IFrame.NotificationType.WARNING);
                         else
-                            ownerWindow.showNotification(window.getMessage("backgroundWorkProgress.executionError"),
+                            ownerWindow.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
                                     IFrame.NotificationType.WARNING);
                     }
                 });
@@ -75,8 +78,8 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
                     @Override
                     public void run() {
                         ownerWindow.showNotification(
-                                window.getMessage("backgroundWorkProgress.timeout"),
-                                window.getMessage("backgroundWorkProgress.timeoutMessage"),
+                                messages.getMessage(getClass(), "backgroundWorkProgress.timeout"),
+                                messages.getMessage(getClass(), "backgroundWorkProgress.timeoutMessage"),
                                 IFrame.NotificationType.WARNING);
                     }
                 });

@@ -979,7 +979,7 @@ public class FoldersPane extends VerticalLayout {
                             foldersService.importFolder(folder, data);
                         } catch (Exception ex) {
                             dialog.showNotification(
-                                    dialog.getMessage("notification.importFailed"),
+                                    messages.getMainMessage("folders.importFailedNotification"),
                                     ex.getMessage(),
                                     IFrame.NotificationType.ERROR
                             );

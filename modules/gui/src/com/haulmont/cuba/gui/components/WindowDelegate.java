@@ -33,6 +33,10 @@ import java.util.UUID;
  */
 public class WindowDelegate {
 
+    public static final String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
+    public static final String LOOKUP_ENTER_PRESSED_ACTION_ID = "lookupEnterPressed";
+    public static final String LOOKUP_SELECTED_ACTION_ID = "lookupAction";
+
     protected Window window;
     protected Window wrapper;
     protected Settings settings;
@@ -179,6 +183,13 @@ public class WindowDelegate {
     public void postValidate(ValidationErrors errors) {
         if (wrapper instanceof AbstractWindow)
             ((AbstractWindow) wrapper).postValidate(errors);
+    }
+
+    public boolean preClose(String actionId) {
+        if (wrapper instanceof AbstractWindow)
+            return ((AbstractWindow) wrapper).preClose(actionId);
+        else
+            return true;
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {

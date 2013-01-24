@@ -6,6 +6,15 @@
 package com.haulmont.cuba.gui;
 
 /**
+ * Parameters that will be used for opening next window in modal mode.
+ * <p/> E.g. to open an edit screen as modal dialog and set its width, use the following code in calling screen
+ * controller:
+ * <pre>
+ * getDialogParams().setWidth(500);
+ * openEditor("sales$Customer.edit", customer, WindowManager.OpenType.DIALOG, params);
+ * </pre>
+ * Parameters are reset to default values by the framework after opening of each modal dialog.
+ *
  * @author degtyarjov
  * @version $Id$
  */
