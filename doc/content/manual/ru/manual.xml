@@ -790,6 +790,17 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.groovyEvaluatorImport=com.haulmont.cuba.core.global.PersistenceHelper,com.abc.sales.CommonUtils</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.gui.useSaveConfirmation">
+        <term>cuba.gui.useSaveConfirmation</term>
+        <listitem>
+          <para>Определяет форму диалога, возникающего при попытке закрытия <link linkend="screens">экрана</link>, имеющего несохраненные изменения в источниках данных.</para>
+          <para>Значение <literal>true</literal> задает форму с тремя варантами выбора: сохранить изменения, не сохранять, либо не закрывать экран.</para>
+          <para>Значение <literal>false</literal> задает форму с двумя варантами: закрыть экран не сохраняя изменений, либо не закрывать экран.</para>
+          <para>Значение по умолчанию: <code>true</code></para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
+          <para>Используется в блоках <structname>Web Client</structname> и   <structname>Desktop Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.httpSessionExpirationTimeoutSec">
         <term>cuba.httpSessionExpirationTimeoutSec</term>
         <listitem>

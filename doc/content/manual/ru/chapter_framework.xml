@@ -3648,7 +3648,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
     <para>Инфраструктура клиента  (Infrastructure) включает в себя главное окно приложения,
 механизмы отображения и взаимодействия  экранов UI, а также средства
 взаимодействия со средним слоем.</para>
-    <section>
+    <section id="screens">
       <title>Экраны</title>
       <para>Экран универсального пользовательского интерфейса состоит из <link linkend="screen_xml">XML-дескриптора</link> и класса <link linkend="screen_controller">контроллера</link>. Дескриптор содержит ссылку на класс контроллера. </para>
       <para>Для того, чтобы экран можно было вызывать из главного меню или из Java кода (например из контроллера другого экрана), XML-дескриптор должен быть зарегистрирован в файле <link linkend="screens.xml">
@@ -3857,22 +3857,312 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         <para>Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
         <itemizedlist>
           <listitem>
-            <para><code>AbstractFrame</code> − предназначен для реализации <link linkend="frame">фреймов</link>.</para>
+            <para><code>
+                <link linkend="abstractFrame">AbstractFrame</link>
+              </code> − предназначен для реализации <link linkend="frame">фреймов</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractWindow</code> − предназначен для реализации <link linkend="screen_simple">простых экранов</link>.</para>
+            <para><code>
+                <link linkend="abstractWindow">AbstractWindow</link>
+              </code> − предназначен для реализации <link linkend="screen_simple">простых экранов</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractLookup</code> − предназначен для реализации <link linkend="screen_lookup">экранов выбора</link>.</para>
+            <para><code>
+                <link linkend="abstractLookup">AbstractLookup</link>
+              </code> − предназначен для реализации <link linkend="screen_lookup">экранов выбора</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractEditor</code> − предназначен для реализации <link linkend="screen_edit">экранов редактирования</link>.</para>
+            <para><code>
+                <link linkend="abstractEditor">AbstractEditor</link>
+              </code> − предназначен для реализации <link linkend="screen_edit">экранов редактирования</link>.</para>
           </listitem>
         </itemizedlist>
         <tip>
           <para>Если экрану не нужна никакая дополнительная логика, то в качестве контроллера можно использовать сам базовый класс <code>AbstractWindow</code>, <code>AbstractLookup</code> или <code>AbstractEditor</code>, указав его в XML-дескрипторе (эти классы на самом деле не являются абстрактными в смысле невозможности создания экземпляров). Для фрейма класс контроллера можно не указывать вообще.</para>
         </tip>
         <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <sgmltag>class</sgmltag> корневого элемента <sgmltag>window</sgmltag>.</para>
+        <figure>
+          <title>Базовые классы контроллеров</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/Controllers.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <section id="abstractFrame">
+          <title>AbstractFrame</title>
+          <para><code>AbstractFrame</code> является корнем иерархии классов контроллеров. Рассмотрим его основные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>init()</code> - вызывается фреймворком после создания всего дерева компонентов, описанного XML-дескриптором, но до отображения экрана.</para>
+              <para>В метод <methodname>init()</methodname> из вызывающего кода передается мэп параметров, которые могут быть использованы  внутри контроллера. Эти параметры могут быть переданы как из кода контроллера вызывающего экрана (в методе <code>openWindow()</code>, <code>openLookup()</code> или <code>openEditor()</code>), так и установлены в файле регистрации экранов <filename>
+                  <link linkend="screens.xml">screens.xml</link>
+                </filename>.</para>
+              <para>Метод <code>init()</code> следует имплементировать при необходимости  инициализации компонентов экрана, например:<programlisting>@Inject
+private Table someTable;
+
+@Override
+public void init(Map&lt;String, Object&gt; params) {
+    someTable.addGeneratedColumn(&quot;someColumn&quot;, new Table.ColumnGenerator&lt;Colour&gt;() {
+        @Override
+        public Component generateCell(Colour entity) {
+            ...
+        }
+    });
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>getMessage()</code>, <code>formatMessage()</code> - методы получения локализованных сообщений из <link linkend="message_packs">пакета</link>, заданного для экрана в XML-дескрипторе. Представляют собой просто короткие варианты вызова одноименных методов интерфейса <code>
+                  <link linkend="messages">Messages</link>
+                </code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>getDialogParams()</code> - получить объект <code>DialogParams</code> для установки параметров отображения диалоговых окон (высота, ширина и пр.). Значения, установленные в этом объекте, влияют на следующий экран, открываемый в режиме модального диалога (<code>WindowManager.OpenType.DIALOG</code>). После отображения диалога они сбрасываются в значения по умолчанию.</para>
+              <para>Таким образом, при устанавливать значения в <code>DialogParams</code> необходимо непосредственно перед вызовом другого экрана в режиме диалога методами <code>openWindow()</code>, <code>openLookup()</code>, <code>openEditor()</code>. Например:<programlisting>getDialogParams().setWidth(400);
+openEditor(&quot;sales$Customer.edit&quot;, customer, WindowManager.OpenType.DIALOG);</programlisting></para>
+              <para>Если же сам текущий экран открывается в режиме модального диалога, то можно управлять параметрами его отображения, устанавливая параметры <code>DialogParams</code>  в его методе <code>init()</code>. При этом установленные в <code>init()</code> параметры имеют приоритет над установленными в вызывающем коде.</para>
+            </listitem>
+            <listitem>
+              <para><code>openFrame()</code> - загрузить фрейм по идентификатору, зарегистрированному в <filename>
+                  <link linkend="screens.xml">screens.xml</link>
+                </filename>, и, если в метод передан компонент-контейнер, отобразить его внутри контейнера. Возвращается контроллер фрейма. Например:<programlisting>@Inject
+private BoxLayout container;
+
+@Override
+public void init(Map&lt;String, Object&gt; params) {
+    SomeFrame frame = openFrame(container, &quot;someFrame&quot;);
+    frame.setHeight(&quot;100%&quot;);
+    frame.someInitMethod();
+}</programlisting></para>
+              <para>Контейнер не обязательно сразу передавать в метод <code>openFrame()</code>, вместо этого можно загрузить фрейм, а затем добавить его  в нужный контейнер:<programlisting>@Inject
+private BoxLayout container;
+
+@Override
+public void init(Map&lt;String, Object&gt; params) {
+    SomeFrame frame = openFrame(null, &quot;someFrame&quot;);
+    frame.setHeight(&quot;100%&quot;);
+    frame.someInitMethod();
+    container.add(frame);
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>openWindow()</code>, <code>openLookup()</code>, <code>openEditor()</code> - открыть соответственно простой экран, экран выбора или редактирования. Методы возвращают контроллер созданного экрана.</para>
+              <para>Для выполнения действий после закрытия вызываемого экрана необходимо добавить слушатель типа <code>CloseListener</code>, например:<programlisting>CustomerEdit editor = openEditor(&quot;sales$Customer.edit&quot;, customer, WindowManager.OpenType.THIS_TAB);
+editor.addListener(new CloseListener() {
+    @Override
+    public void windowClosed(String actionId) {
+        // do something
+    }
+});</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>showMessageDialog()</code> - отобразить диалоговое окно с сообщением.</para>
+            </listitem>
+            <listitem>
+              <para><code>showOptionDialog()</code> - отобразить диалоговое окно с сообщением и возможностью выбора пользователем некоторых действий. Действия задаются массивом объектов типа <code>
+                  <link linkend="gui_Action">Action</link>
+                </code>, которые в диалоге отображаются посредством соответствующих кнопок.</para>
+              <para>Для отображения стандартных кнопок типа <guibutton>OK</guibutton>, <guibutton>Cancel</guibutton> и других рекомендуется использовать объекты типа <code>DialogAction</code>, например:<programlisting>showOptionDialog(&quot;PLease confirm&quot;, &quot;Are you sure?&quot;, 
+        MessageType.CONFIRMATION,
+        new Action[] {
+                new DialogAction(DialogAction.Type.YES) {
+                    @Override
+                    public void actionPerform(Component component) {
+                        // do something
+                    }
+                },
+                new DialogAction(DialogAction.Type.NO);
+        });</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>showNotification()</code> - отобразить всплывающее окно с сообщением.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="abstractWindow">
+          <title>AbstractWindow</title>
+          <para><code>AbstractWindow</code> является наследником <code>
+              <link linkend="abstractFrame">AbstractFrame</link>
+            </code>, и определяет следующие собственные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>validateAll()</code> - валидация экрана. Реализация по умолчанию вызывает метод <code>validate()</code> у всех компонентов экрана, реализующих интерфейс <code>Component.Validatable</code>, накапливает информацию об исключениях, и если таковые имеются, выводит соответствующее сообщение и возвращает <code>false</code>, иначе возвращает <code>true</code>.</para>
+              <para>Данный метод следует переопределять только в том случае, если необходимо полностью заменить стандартную процедуру валидации экрана. Если же нужно только дополнить ее, достаточно определить специальный шаблонный метод <code>postValidate()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>postValidate()</code> - шаблонный метод, который можно имплементировать в контроллере для дополнительной валидации экрана. Получаемый методом объект <code>ValidationErrors</code> используется для добавления информации об ошибках валидации, которая будет отображена совместно с ошибками стандартной валидации. Например:<programlisting>private Pattern pattern = Pattern.compile(&quot;\\d&quot;);
+
+@Override
+protected void postValidate(ValidationErrors errors) {
+    if (getItem().getAddress().getCity() != null) {
+        if (pattern.matcher(getItem().getAddress().getCity()).find()) {
+            errors.add(&quot;City name can&apos;t contain digits&quot;);
+        }
+    }
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>close()</code> - закрыть данный экран. </para>
+              <para>Метод принимает строковое значение, передаваемое далее  в шаблонный метод <code>preClose()</code> и слушателям <code>CloseListener</code>. Таким образом заинтересованный код может получить информацию о причине закрытия экрана от кода, инициирующего закрытие. В частности, в экранах редактирования сущностей при закрытии экрана после коммита изменений рекомендуется использовать константу <code>Window.COMMIT_ACTION_ID</code>, без коммита изменений - константу <code>Window.CLOSE_ACTION_ID</code>.</para>
+              <para>Если какой-либо из источников данных содержит несохраненные изменения, перед закрытием экрана будет выдано диалоговое окно с соответствующим предупреждением. Тип предупреждения можно выбрать с помощью свойства приложения <property>
+                  <link linkend="cuba.gui.useSaveConfirmation">cuba.gui.useSaveConfirmation</link>
+                </property>.</para>
+              <para>Вариант  метода <code>close()</code> с параметром <code>force = false</code> закрывает экран без вызова <code>preClose()</code> и без предупреждения, независимо от наличия несохраненных изменений.</para>
+              <para>Метод <code>close()</code> возвращает <code>true</code>, если экран был успешно закрыт, и <code>false</code> - если закрытие было прервано.</para>
+            </listitem>
+            <listitem>
+              <para><code>preClose()</code> - шаблонный метод, который можно имплементировать в контроллере для перехвата момента закрытия экрана. Метод получает строковое значение, указанное инициатором закрытия при вызове метода <code>close()</code>.</para>
+              <para>Если метод <code>preClose()</code> возвращает <code>false</code>, то процесс закрытия экрана прерывается.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="abstractLookup">
+          <title>AbstractLookup</title>
+          <para><code>AbstractLookup</code> является наследником <code>
+              <link linkend="abstractWindow">AbstractWindow</link>
+            </code>, и определяет следующие собственные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>setLookupComponent()</code> - установить компонент, из которого будет производиться выбор экземпляров сущности. </para>
+              <para>Как правило,  компонент выбора устанавливается в XML-дескрипторе экрана, и вызывать данный метод в прикладном коде нет необходимости.</para>
+            </listitem>
+            <listitem>
+              <para><code>setLookupValidator()</code> - установить для экрана объект типа <code>Window.Lookup.Validator</code>, метод <code>validate()</code> которого вызывается фреймворком перед тем как вернуть выбранные экземпляры сущностей. Если <code>validate()</code> возвращает <code>false</code>, процесс выбора и закрытия экрана прерывается.</para>
+              <para>По умолчанию валидатор не установлен.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="abstractEditor">
+          <title>AbstractEditor</title>
+          <para><code>AbstractEditor</code> − базовый класс контроллеров экранов редактирования, является наследником <code>
+              <link linkend="abstractWindow">AbstractWindow</link>
+            </code>.</para>
+          <para>При создании конкретного класса контроллера рекомендуется параметризовать <code>AbstractEditor</code> типом редактируемой сущности. При этом методы <code>getItem()</code> и <code>initItem()</code> будут работать с конкретным типом сущности и прикладному коду не потребуется дополнительных приведений типов. Например:</para>
+          <programlisting>public class CustomerEdit extends AbstractEditor&lt;Customer&gt; {
+
+    @Override
+    protected void initItem(Customer item) {
+    ...</programlisting>
+          <para><code>AbstractEditor</code> определяет следующие собственные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>getItem()</code> - возвращает экземпляр редактируемой сущности, установленный в главном источнике данных экрана (т.е. указанном в атрибуте <sgmltag>datasource</sgmltag> корневого элемента XML-дескриптора).</para>
+              <para>Если редактируется не новый экземпляр, то в момент открытия экрана он перезагружается из базы данных с необходимым <link linkend="views">представлением</link>, указанным для главного источника данных. </para>
+              <para>Изменения, вносимые в экземпляр, возвращаемый <code>getItem()</code>,  отражаются на состоянии источника данных, и будут отправлены на Middleware при коммите экрана.</para>
+              <warning>
+                <para>Следует иметь в виду, что <code>getItem()</code> возвращает значение только после инициализации экрана методом <code>setItem()</code>. До этого момента, например в методах <code>init()</code> и <code>initItem()</code>, данный метод возвращает <code>null</code>.</para>
+                <para>Однако в методе <code>init()</code> экземпляр сущности, переданный в <code>openEditor()</code>, можно получить из  параметров следующим образом:<programlisting>@Override
+public void init(Map&lt;String, Object&gt; params) {
+    Customer item = WindowParams.ITEM.getEntity(params);
+    // do something
+}</programlisting></para>
+                <para>В метод <code>initItem()</code> экземпляр передается явно и нужного типа.</para>
+                <para>В обоих случаях полученный экземпляр сущности, если он не новый, будет впоследствии перезагружен, и вносить в него изменения или сохранять в поле для последующего использования не имеет смысла.</para>
+              </warning>
+            </listitem>
+            <listitem>
+              <para><code>setItem()</code> - вызывается фреймворком при открытии экрана методом <code>openEditor()</code> для установки редактируемого экземпляра сущности в главном источнике данных. В момент вызова   созданы все компоненты и источники данных экрана, и отработал метод <code>init()</code> контроллера.</para>
+              <para>Для инициализации экрана редактирования вместо переопределения <code> setItem()</code> рекомендуется имплементировать специальные шаблонные методы <code>initItem()</code> и <code>postInit()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>initItem()</code> - шаблонный метод, вызываемый фреймворком перед установкой редактируемого экземпляра сущности в главном источнике данных.</para>
+              <para>Данный метод можно имплементировать в контроллере при необходимости инициализации экземпляра сущности перед его установкой в источник данных, например:<programlisting>@Override
+protected void initItem(Driver item) {
+    if (PersistenceHelper.isNew(item)){
+        item.setAddress(new Address());
+    }
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>postInit()</code> - шаблонный метод, вызываемый фреймворком сразу после  установки редактируемого экземпляра сущности в главном источнике данных. Во время выполнения данного метода можно вызывать <code>getItem()</code>, который будет возвращать новый или перезагруженный при инициализации экрана  экземпляр сущности.</para>
+              <para>Данный метод можно имплементировать в контроллере для окончательной инициализации экрана, например:<programlisting>@Inject
+protected EntityDiffViewer diffFrame;
+
+@Override
+protected void postInit() {
+    if (!PersistenceHelper.isNew(getItem())) {
+        diffFrame.loadVersions(getItem());
+    }
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>commit()</code> - валидировать экран и отправить изменения через <code>DataSupplier</code> на Middleware.</para>
+              <para>Если используется вариант метода с параметром <code>validate = false</code>, то валидация перед коммитом не производится.</para>
+              <para>Данный метод не рекомендуется переопределять, лучше использовать специальные шаблонные методы <code>postValidate()</code>, <code>preCommit()</code> и <code>postCommit()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>commitAndClose()</code> - валидировать экран, отправить изменения  на Middleware и закрыть экран. В метод <code>preClose()</code> и зарегистрированные слушатели <code>CloseListener</code> будет передано значение константы <code>Window.COMMIT_ACTION_ID</code>.</para>
+              <para>Данный метод не рекомендуется переопределять, лучше использовать специальные шаблонные методы <code>postValidate()</code>, <code>preCommit()</code> и <code>postCommit()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>preCommit()</code> - шаблонный метод, вызываемый фреймворком в процессе коммита изменений, после того как когда валидация завершена успешно и перед отправкой данных на Middleware.</para>
+              <para>Данный метод можно имплементировать в контроллере. Если метод возвращает <code>false</code>, процесс коммита (и закрытия экрана, если был вызван <code>commitAndClose()</code>), прерывается. Например:<programlisting>@Override
+protected boolean preCommit() {
+    if (somethingWentWrong) {
+        showNotification(&quot;Something went wrong&quot;, NotificationType.WARNING);
+        return false;
+    }
+    return true;
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>postCommit()</code> - шаблонный метод, вызываемый фреймворком на финальной стадии коммита изменений. Параметры метода:<itemizedlist>
+                  <listitem>
+                    <para><code>committed</code> - установлен в <code>true</code>, если в экране действительно были изменения, и они отправлены на Middleware;</para>
+                  </listitem>
+                  <listitem>
+                    <para><code>close</code> - установлен в <code>true</code>, если экран после коммита будет закрыт.</para>
+                  </listitem>
+                </itemizedlist></para>
+              <para>Реализация метода по умолчанию, если экран не закрывается, отображает сообщение об успешном коммите изменений и вызывает метод <code>postInit()</code>.</para>
+              <para>Данный метод можно переопределить в контроллере для выполнения некоторых действий после успешного коммита, например:<programlisting>@Inject
+private Datasource&lt;Driver&gt; driverDs;
+@Inject
+private EntitySnapshotService entitySnapshotService;
+
+@Override
+protected boolean postCommit(boolean committed, boolean close) {
+    if (committed) {
+        entitySnapshotService.createSnapshot(driverDs.getItem(), driverDs.getView());
+    }
+    return super.postCommit(committed, close);
+}</programlisting></para>
+            </listitem>
+          </itemizedlist>
+          <para>Далее приведены диаграммы последовательностей инициализации и различных вариантов коммита экрана редактирования.</para>
+          <figure>
+            <title>Инициализация экрана редактирования</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/EditorInit.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <figure>
+            <title>Коммит и закрытие экрана с фреймом editWindowActions</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/EditorCommit.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <figure>
+            <title>Коммит экрана с фреймом extendedEditWindowActions</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/ExtendedEditorCommit.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <figure>
+            <title>Коммит и закрытие экрана с фреймом extendedEditWindowActions</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/ExtendedEditorCommitAndClose.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+        </section>
         <section>
           <title>Зависимости контроллеров</title>
           <para>В контроллерах можно использовать Dependency Injection для получения ссылок на используемые объекты. Для этого нужно объявить либо поле соответствующего типа, либо метод доступа на запись (setter) с соответствующим типом результата, и добавить ему одну из следующих аннотаций:<itemizedlist>
@@ -3932,84 +4222,6 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
                 <para>Если ничего из вышеперечисленного не подошло и контроллер имеет <link linkend="companions">компаньонов</link>, в случае совпадения типов будет инжектирован компаньон для текущего типа клиента.</para>
               </listitem>
             </itemizedlist></para>
-        </section>
-        <section>
-          <title>Методы контроллеров</title>
-          <para>Общим методом контроллеров всех типов является метод  <methodname>init()</methodname>. Этот метод вызывается фреймворком после создания класса окна и всего дерева компонентов, описанного XML-дескриптором, но до отображения экрана.</para>
-          <para>В метод <methodname>init()</methodname> из вызывающего кода передается мэп параметров, которые могут быть использованы  внутри контроллера. Эти параметры могут быть переданы как из кода контроллера вызывающего экрана (в методе <code>openWindow()</code>), так и установлены в файле регистрации экранов <filename>
-              <link linkend="screens.xml">screens.xml</link>
-            </filename>.</para>
-        </section>
-        <section id="abstractEditor">
-          <title>AbstractEditor</title>
-          <para><code>AbstractEditor</code> − базовый класс контроллеров экранов редактирования экземпляра сущности.</para>
-          <para>При создании конкретного класса контроллера рекомендуется параметризовать <code>AbstractEditor</code> типом редактируемой сущности. При этом методы <methodname>getItem</methodname> и <methodname>initItem</methodname> будут работать с конкретным типом сущности и прикладному коду не потребуется дополнительных приведений типов. Например:</para>
-          <programlisting>public class CustomerEdit extends AbstractEditor&lt;Customer&gt; {
-...
-    @Override
-    protected void initItem(Customer item) {
-    ...</programlisting>
-          <para>Помимо общего для всех контроллеров метода <code>init()</code> в контроллере экрана редактирования можно переопределить следующие:</para>
-          <itemizedlist>
-            <listitem>
-              <para>Методы инициализации:</para>
-              <itemizedlist>
-                <listitem>
-                  <para><methodname>initItem</methodname></para>
-                </listitem>
-                <listitem>
-                  <para><methodname>postInit</methodname></para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-            <listitem>
-              <para>Методы завершения:</para>
-              <itemizedlist>
-                <listitem>
-                  <para><methodname>postValidate</methodname></para>
-                </listitem>
-                <listitem>
-                  <para><methodname>preCommit</methodname></para>
-                </listitem>
-                <listitem>
-                  <para><methodname>postCommit</methodname></para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-          </itemizedlist>
-          <para><emphasis role="bold">Диаграммы последовательностей</emphasis></para>
-          <figure>
-            <title>Инициализация экрана</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/EditorInit.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <figure>
-            <title>Коммит и закрытие экрана с фреймом editWindowActions</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/EditorCommit.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <figure>
-            <title>Коммит экрана с фреймом extendedEditWindowActions</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/ExtendedEditorCommit.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <figure>
-            <title>Коммит и закрытие экрана с фреймом extendedEditWindowActions</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/ExtendedEditorCommitAndClose.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
         </section>
         <section id="companions">
           <title>Реализация для разных типов клиентов</title>
