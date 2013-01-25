@@ -73,5 +73,6 @@ public interface DataService {
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          a list of detached instances, or empty list if nothing found
      */
+    @Nonnull
     <A extends Entity> List<A> loadList(LoadContext context);
 }

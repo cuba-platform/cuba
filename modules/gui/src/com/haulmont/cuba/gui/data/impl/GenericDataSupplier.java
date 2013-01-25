@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.DataSupplier;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -24,24 +25,29 @@ public class GenericDataSupplier implements DataSupplier {
 
     private DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
 
+    @Override
     public <A extends Entity> A newInstance(MetaClass metaClass) {
         return (A) metadata.create(metaClass);
     }
 
+    @Override
     public <A extends Entity> A reload(A entity, String viewName) {
         Objects.requireNonNull(viewName, "viewName is null");
 
         return reload(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
     }
 
+    @Override
     public <A extends Entity> A reload(A entity, View view) {
         return reload(entity, view, null);
     }
 
+    @Override
     public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass) {
         return reload(entity, view, metaClass, true);
     }
 
+    @Override
     public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
@@ -54,6 +60,7 @@ public class GenericDataSupplier implements DataSupplier {
         return (A) load(context);
     }
 
+    @Override
     public <A extends Entity> A commit(A instance, @Nullable View view) {
         final CommitContext context = new CommitContext(
                         Collections.singleton((Entity) instance),
@@ -70,6 +77,7 @@ public class GenericDataSupplier implements DataSupplier {
         return null;
     }
 
+    @Override
     public void remove(Entity entity) {
         final CommitContext context = new CommitContext(
                         Collections.<Entity>emptyList(),
@@ -77,23 +85,29 @@ public class GenericDataSupplier implements DataSupplier {
         commit(context);
     }
 
+    @Override
     public DbDialect getDbDialect() {
         return dataService.getDbDialect();
     }
 
+    @Override
     public Set<Entity> commit(CommitContext context) {
         return dataService.commit(context);
     }
 
+    @Override
     public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
         return dataService.commitNotDetached(context);
     }
 
+    @Override
     @Nullable
     public <A extends Entity> A load(LoadContext context) {
         return dataService.<A>load(context);
     }
 
+    @Override
+    @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
         return dataService.<A>loadList(context);
     }
