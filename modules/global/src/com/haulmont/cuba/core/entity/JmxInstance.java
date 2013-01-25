@@ -39,8 +39,8 @@ public class JmxInstance extends StandardEntity {
     public JmxInstance() {
     }
 
-    public JmxInstance(String clusterNodeName) {
-        this.nodeName = clusterNodeName;
+    public JmxInstance(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     public String getNodeName() {

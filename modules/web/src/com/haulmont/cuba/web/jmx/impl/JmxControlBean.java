@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ManagedBean(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
 
-    private static final String CLUSTER_NODE_NAME_ATTRIBUTE = "NodeName";
+    private static final String NODE_NAME_ATTRIBUTE = "NodeName";
 
     private final JmxInstance LOCAL_JMX_INSTANCE = new JmxInstance("Local");
 
@@ -78,8 +78,7 @@ public class JmxControlBean implements JmxControlAPI {
         jmxInstances.add(getLocalInstance());
 
         List<JmxInstance> clusterInstances = dataService.loadList(loadContext);
-        if (clusterInstances != null)
-            jmxInstances.addAll(clusterInstances);
+        jmxInstances.addAll(clusterInstances);
 
         return jmxInstances;
     }
@@ -120,9 +119,9 @@ public class JmxControlBean implements JmxControlAPI {
             });
 
             if (nodeIdentifierBeanInfo != null) {
-                Object clusterNodeName = connection.getAttribute(nodeIdentifierBeanInfo, CLUSTER_NODE_NAME_ATTRIBUTE);
-                if (clusterNodeName != null)
-                    remoteNodeName = clusterNodeName.toString();
+                Object nodeName = connection.getAttribute(nodeIdentifierBeanInfo, NODE_NAME_ATTRIBUTE);
+                if (nodeName != null)
+                    remoteNodeName = nodeName.toString();
                 else
                     remoteNodeName = getDefaultNodeName(instance);
             } else {
