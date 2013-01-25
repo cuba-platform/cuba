@@ -255,6 +255,10 @@ public class JmxControlBean implements JmxControlAPI {
 
             connection.setAttribute(name, a);
         } catch (Exception e) {
+            log.info(String.format("Unable to set value '%s' to attribute '%s' in '%s' on '%s'",
+                    attribute.getValue(), attribute.getName(), attribute.getMbean().getObjectName(),
+                    attribute.getMbean().getJmxInstance().getNodeName()), e);
+
             throw new JmxControlException(e);
         }
     }
@@ -279,6 +283,10 @@ public class JmxControlBean implements JmxControlAPI {
             return connection.invoke(name, operation.getName(), parameterValues, types);
         } catch (IOException | MalformedObjectNameException | ReflectionException
                 | MBeanException | InstanceNotFoundException e) {
+
+            log.warn(String.format("Error in method invocation '%s' from '%s' on '%s'",
+                    operation.getName(), operation.getMbean().getObjectName(),
+                    operation.getMbean().getJmxInstance().getNodeName()), e);
             throw new JmxControlException(e);
         }
     }
