@@ -38,6 +38,8 @@
 
     <screen id="sec$Role.browse"
             template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"/>
+    <screen id="sec$Role.lookup"
+            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"/>
     <screen id="sec$Role.edit"
             template="/com/haulmont/cuba/gui/app/security/role/edit/role-edit.xml"/>
 

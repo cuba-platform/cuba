@@ -271,7 +271,7 @@ public class UserEditor extends AbstractEditor<User> {
         @Override
         public void actionPerform(Component component) {
             Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
-            Lookup roleLookupWindow = openLookup("sec$Role.browse", new Lookup.Handler() {
+            Lookup roleLookupWindow = openLookup("sec$Role.lookup", new Lookup.Handler() {
                 @Override
                 public void handleLookup(Collection items) {
                     Collection<String> existingRoleNames = getExistingRoleNames();
