@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource;
@@ -72,19 +71,12 @@ public class MbeansDisplayWindow extends AbstractWindow {
                     } else { // expand / collapse fake root node
                         TreeTable treeTable = mbeansTable;
                         UUID itemId = mbi.getId();
-                        if (treeTable.isExpanded(itemId)) {
+                        if (treeTable.isExpanded(itemId))
                             treeTable.collapse(itemId);
-                        } else {
+                        else
                             treeTable.expand(itemId);
-                        }
                     }
                 }
-            }
-
-            @Override
-            public boolean isApplicableTo(Datasource.State state, Entity item) {
-                return super.isApplicableTo(state, item) &&
-                        ((ManagedBeanInfo) item).getObjectName() != null;
             }
 
             @Override
