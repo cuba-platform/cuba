@@ -118,16 +118,18 @@ public class ExceptionFilter extends Filter implements UnrecognizedElementHandle
         }
         String message = exception.getMessage();
         String className = exception.getClass().getName();
-        for (Pattern pattern : excluded.get(GLOBAL)) {
-            if (pattern.matcher(message).matches()) {
-                return DENY;
+        if (message != null) {
+            for (Pattern pattern : excluded.get(GLOBAL)) {
+                if (pattern.matcher(message).matches()) {
+                    return DENY;
+                }
             }
         }
         if (excluded.containsKey(className)) {
             List<Pattern> messagePatterns = excluded.get(className);
             if (messagePatterns.isEmpty()) {
                 return DENY;
-            } else {
+            } else if (message != null) {
                 for (Pattern pattern : messagePatterns) {
                     if (pattern.matcher(message).matches()) {
                         return DENY;
