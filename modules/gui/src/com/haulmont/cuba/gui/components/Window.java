@@ -161,7 +161,8 @@ public interface Window extends IFrame, Component.HasCaption {
         void setParentDs(Datasource parentDs);
 
         /**
-         * Called by the framework to set an edited entity when the screen is opened.
+         * Called by the framework to set an edited entity after creation of all components and datasources, and
+         * after <code>init()</code>.
          * @param item  entity instance
          */
         void setItem(Entity item);

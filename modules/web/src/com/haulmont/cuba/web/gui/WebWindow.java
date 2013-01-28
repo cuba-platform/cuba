@@ -643,11 +643,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     @Override
     public void closeAndRun(String actionId, Runnable runnable) {
         this.doAfterClose = runnable;
-//        Window wrapper = delegate.getWrapper();
-//        if (wrapper != null)
-//            wrapper.close(actionId);
-//        else
-            close(actionId);
+        close(actionId);
     }
 
     @Override

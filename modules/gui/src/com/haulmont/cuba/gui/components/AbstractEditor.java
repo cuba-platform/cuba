@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -40,7 +39,8 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     /**
-     * Called by the framework to set an edited entity after opening the screen.
+     * Called by the framework to set an edited entity after creation of all components and datasources, and after
+     * {@link #init(java.util.Map)}.
      * <p>Don't override this method in subclasses, use hooks {@link #initItem(com.haulmont.cuba.core.entity.Entity)}
      * and {@link #postInit()} instead.</p>
      * @param item  entity instance
@@ -125,7 +125,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      */
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed && !close) {
-            frame.showNotification(MessageProvider.formatMessage(AppConfig.getMessagesPack(),
+            frame.showNotification(messages.formatMessage(AppConfig.getMessagesPack(),
                     "info.EntitySave", ((Editor) frame).getItem().getInstanceName()),
                     NotificationType.HUMANIZED);
             postInit();
