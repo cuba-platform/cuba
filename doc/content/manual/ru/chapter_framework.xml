@@ -8750,6 +8750,7 @@ select o.customer from sales$Order o /* неверно - тип from (Order) о�
 &lt;collectionDatasource id=&quot;ordersDs&quot; class=&quot;com.sample.sales.entity.Order&quot; view=&quot;_local&quot;&gt;
     &lt;query&gt;select o from sales$Order o where o.customer.id = :ds$customersDs&lt;/query&gt;
 &lt;/collectionDatasource&gt;</programlisting></para>
+                <para>В данном случае параметром запроса источника данных <code>ordersDs</code> будет текущий экземпляр сущности, находящийся в источнике данных <code>customersDs</code>. </para>
               </listitem>
             </itemizedlist></para>
         </section>
