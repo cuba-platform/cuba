@@ -8610,36 +8610,144 @@ protected boolean postCommit(boolean committed, boolean close) {
     </section>
     <section id="datasources">
       <title>Источники данных</title>
-      <para>Предназначены для реализации связанных с данными (data-aware) компонентов.</para>
-      <para>Существуют следующие интерфейсы источников данных:</para>
-      <itemizedlist>
-        <listitem>
-          <para><code>Datasource</code> − предназначен для работы с одним экземпляром сущности.</para>
-          <itemizedlist>
-            <listitem>
-              <para><code>RuntimePropsDatasource</code> − предназначен для работы с <link linkend="runtime_properties">динамическими атрибутами</link> сущностей.</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-        <listitem>
-          <para><code>CollectionDatasource</code> − предназначен для работы с коллекцией сущностей</para>
-          <itemizedlist>
-            <listitem>
-              <para><code>HierarchicalDatasource</code> − предназначен для работы с компонентами <code>
-                  <link linkend="gui_Tree">Tree</link>
-                </code>, <code>
-                  <link linkend="gui_TreeTable">TreeTable</link>
-                </code>.</para>
-            </listitem>
-            <listitem>
-              <para><code>GroupDatasource</code> − предназначен для работы с компонентом <code>
-                  <link linkend="gui_GroupTable">GroupTable</link>
-                </code>.</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-      </itemizedlist>
-      <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
+      <section>
+        <title>Общие сведения</title>
+        <para>Источники данных обеспечивают работу связанных с данными (data-aware) компонентов.</para>
+        <para>Визуальные компоненты сами не обращаются к Middleware, а получают экземпляры сущностей  из связанных источников данных. При этом один источник данных может обслуживать несколько визуальных компонентов, если им нужен один и тот же экземпляр или набор экземпляров.</para>
+        <para>Источники данных также отслеживают изменения содержащихся в них сущностей, и могут отправлять измененные экземпляры обратно на Middleware для сохранения в базе данных.</para>
+        <para>Рассмотрим основные интерфейсы источников.</para>
+        <figure>
+          <title>Интерфейсы источников данных</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/Datasources.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <itemizedlist>
+          <listitem>
+            <para><code>Datasource</code> − простейший источник данных, предназначенный для работы с одним экземпляром сущности. Экземпляр устанавливается методом <code>setItem()</code> и  доступен через <code>getItem()</code>. </para>
+            <para>Стандартной реализацией такого источника является класс <code>DatasourceImpl</code>, который используется, например, как главный источник данных в <link linkend="screen_edit">экранах редактирования</link> сущностей.</para>
+          </listitem>
+          <listitem>
+            <para><code>CollectionDatasource</code> − источник данных, предназначенный для работы с коллекцией экземпляров сущности. Коллекция загружается при вызове метода <code>refresh()</code>, ключи экземпляров доступны через метод <code>getItemIds()</code>. Метод <code>setItem()</code> устанавливает, а <code>getItem()</code> возвращает  &quot;текущий&quot; экземпляр коллекции, т.е. например соответствующий выбранной в данный момент строке таблицы.</para>
+            <para>Способ загрузки коллекции сущностей определяется реализацией. Наиболее типичный - загрузка с Middleware через <code>
+                <link linkend="dataService">DataService</link>
+              </code>, при этом для формирования JPQL запроса используются методы <code>setQuery()</code>, <code>setQueryFilter()</code>.</para>
+            <para>Стандартной реализацией такого источника является класс <code>CollectionDatasourceImpl</code>, который используется в экранах, отображающих списки сущностей.</para>
+            <itemizedlist>
+              <listitem>
+                <para><code>GroupDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентом <code>
+                    <link linkend="gui_GroupTable">GroupTable</link>
+                  </code>.</para>
+                <para>Стандартной реализацией является класс <code>GroupDatasourceImpl</code>.</para>
+              </listitem>
+              <listitem>
+                <para><code>HierarchicalDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентами <code>
+                    <link linkend="gui_Tree">Tree</link>
+                  </code> и  <code>
+                    <link linkend="gui_TreeTable">TreeTable</link>
+                  </code>.</para>
+                <para>Стандартной реализацией является класс <code>HierarchicalDatasourceImpl</code>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para><code>NestedDatasource</code> - источник данных, предназначенный для работы с экземплярами, загруженными в атрибуте другой сущности. При этом источник, содержащий сущность-хозяина, доступен методом <code>getMaster()</code>, а <link linkend="metaProperty">мета-свойство</link>, соответствующее атрибуту хозяина, содержащему экземпляры данного источника, доступно через метод <code>getProperty()</code>.</para>
+            <para>Например,  в источнике <code>dsOrder</code> установлен экземпляр сущности <code>Order</code>, содержащий ссылку на экземпляр <code>Customer</code>. Тогда для связи экземпляра <code>Customer</code> с визуальными компонентами достаточно создать <code>NestedDatasource</code>, у которого хозяином является <code>dsOrder</code>, а мета-свойство указывает на атрибут <code>Order.customer</code>.</para>
+            <itemizedlist>
+              <listitem>
+                <para><code>PropertyDatasource</code> - подвид <code>NestedDatasource</code>, предназначенный для работы с одним экземпляром или коллекцией связанных сущностей, не являющихся встроенными (embedded).</para>
+                <para>Стандартные реализации: для работы с одним экземпляром - <code>PropertyDatasourceImpl</code>, для работы с коллекцией - <code>CollectionPropertyDatasourceImpl</code>, <code>GroupPropertyDatasourceImpl</code>, <code>HierarchicalPropertyDatasourceImpl</code>. Последние реализуют также интерфейс <code>CollectionDatasource</code>, однако некоторые его нерелевантные методы, связанные с загрузкой, например <code>setQuery()</code>, выбрасывают <code>UnsupportedOperationException</code>.</para>
+              </listitem>
+              <listitem>
+                <para><code>EmbeddedDatasource</code> - подвид <code>NestedDatasource</code>, содержащий экземпляр встроенной сущности.</para>
+                <para>Стандартной реализацией является класс <code>EmbeddedDatasourceImpl</code>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para><code>RuntimePropsDatasource</code> − специфический источник, предназначенный для работы с <link linkend="runtime_properties">динамическими атрибутами</link> сущностей.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
+      </section>
+      <section>
+        <title>Создание источников данных</title>
+        <section>
+          <title>Декларативное создание</title>
+          <para>Как правило источники данных объявляются декларативно в элементе <sgmltag>dsContext</sgmltag> дескриптора экрана. В зависимости от взаимного расположения элементов объявлений создаются источники двух разновидностей:<itemizedlist>
+              <listitem>
+                <para>если элемент расположен непосредственно в <sgmltag>dsContext</sgmltag>, создается обычный <code>Datasource</code> или <code>CollectionDatasource</code>, который содержит независимо загруженную сущность или коллекцию;</para>
+              </listitem>
+              <listitem>
+                <para>если элемент расположен внутри элемента другого источника, создается <code>NestedDatasource</code>, при этом  внешний источник становится его хозяином. </para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Все созданные декларативно источники данных  регистрируются в объекте <code>DsContext</code> экрана. <code>DsContext</code> решает следующие задачи:<itemizedlist>
+              <listitem>
+                <para>Позволяет организовать зависимости между источниками данных, когда при навигации по одному источнику (т.е. при изменении &quot;текущего&quot; экземпляра методом <code>setItem()</code>) обновляется связанный источник. Такие зависимости дают возможность в экранах легко организовывать master-detail связи между компонентами.</para>
+              </listitem>
+              <listitem>
+                <para>Позволяет собрать все измененные экземпляры сущностей и отправить их на Middleware в одном вызове <code>DataService.commit()</code>, т.е. сохранить в базе данных в одной транзакции.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Класс реализации источника выбирается неявно на основе имени элемента XML и, как было сказано выше, взаимного расположения элементов. Однако если необходимо применить нестандартный источник данных, его класс может быть явно указан в атрибуте <code>datasourceClass</code>. </para>
+        </section>
+        <section>
+          <title>Прораммное создание</title>
+          <para>При необходимости создать источник данных в Java коде рекомендуется воспользоваться специальным классом <code>DsBuilder</code>. </para>
+          <para>Экземпляр <code>DsBuilder</code> параметризуется цепочкой вызовов его методов в стиле текучего (fluent) интерфейса. Если установлены параметры <code>master</code> и <code>property</code>, то в результате будет создан <code>NestedDatasource</code>, в противном случае - <code>Datasource</code> или <code>CollectionDatasource</code>.</para>
+          <para>Пример:<programlisting>CollectionDatasource ds = new DsBuilder(getDsContext())
+        .setJavaClass(Order.class)
+        .setViewName(View.LOCAL)
+        .setId(&quot;ordersDs&quot;)
+        .buildCollectionDatasource();</programlisting></para>
+        </section>
+      </section>
+      <section>
+        <title>Собственные классы реализации</title>
+        <para>Как правило, нестандартная реализация источника данных требуется для изменения процесса загрузки коллекции сущностей. При создании класса такого источника рекомендуется унаследовать его от <code>CollectionDatasourceImpl</code>, либо от <code>GroupDatasourceImpl</code> или <code>HierarchicalDatasourceImpl</code>, и переопределить метод <code>loadData()</code>.</para>
+        <para>Пример:<programlisting>public class MyDatasource extends CollectionDatasourceImpl&lt;SomeEntity, UUID&gt; {
+
+    private SomeService someService = AppBeans.get(SomeService.NAME);
+
+    @Override
+    protected void loadData(Map&lt;String, Object&gt; params) {
+        detachListener(data.values());
+        data.clear();
+
+        for (SomeEntity entity : someService.getEntities()) {
+            data.put(entity.getId(), entity);
+            attachListener(entity);
+        }
+    }
+}</programlisting></para>
+        <para>Здесь <code>data</code> - поле базового класса, хранящее коллекцию загруженных экземпляров. Методы базового класса <code>detachListener()</code> и <code>attachListener()</code> управляют назначением на загруженные сущности слушателя, который оповещает источник данных об изменениях в полях экземпляров.</para>
+        <para>Для создания нестандартного источника данных декларативным способом необходимо указать класс в атрибуте <sgmltag>datasourceClass</sgmltag> элемента XML. При программном содании через <code>DsBuilder</code> класс источника указывается вызовом <code>setDsClass()</code>.</para>
+      </section>
+      <section>
+        <title>Запросы в CollectionDatasourceImpl</title>
+        <para>Класс <code> CollectionDatasourceImpl</code> и его наследники <code>GroupDatasourceImpl</code>, <code>HierarchicalDatasourceImpl</code> являются стандартной реализацией источников данных, работающих с коллекциями независимых экземпляров сущностей. Эти источники загружают данные через <code>DataService</code>, отправляя на Middleware запрос на языке JPQL. Далее рассмтриваются особенности формирования таких запросов.</para>
+        <section>
+          <title>Возвращаемые значения</title>
+          <para>Запрос должен возвращать сущности того типа, который указан при создании источника данных. Тип сущности при декларативном создании указывается в атрибуте <sgmltag>class</sgmltag> элемента XML, при создании через <code>DsBuilder</code> - в методе <code>setJavaClass()</code> или <code>setMetaClass()</code>.</para>
+          <para>Кроме того, тип объекта в предложении <code>from</code> запроса должен соответствовать типу источника. Это необходимо для проведения автоматических транформаций запроса при наложении ограничений безопасности и др.</para>
+          <para>Например, запрос источника данных типа <code>Customer</code> может выглядеть следующим образом:<programlisting>select c from sales$Customer c</programlisting></para>
+          <para>Примеры недопустимых для источника типа <code>Customer</code> запросов:<programlisting>select c.id, c.name from sales$Customer c /* неверно - возвращает отдельные поля, а не весь объект Customer */
+
+select o.customer from sales$Order o /* неверно - тип from (Order) отличается от типа результата (Customer) */</programlisting></para>
+        </section>
+        <section>
+          <title>Параметры запроса</title>
+          <para>JPQL запрос в источнике данных может содержать параметры нескольких видов. Вид параметра определяется по префиксу имени параметра. Префиксом является часть имени до знака &quot;$&quot;. <itemizedlist>
+              <listitem>
+                <para>Префикс <code>ds</code>. </para>
+                <para>Значением параметра являются данные другого источника данных, имя которого указано после символа &quot;$&quot;. </para>
+              </listitem>
+            </itemizedlist></para>
+        </section>
+      </section>
     </section>
     <section id="background_tasks">
       <title>Фоновые задачи</title>
