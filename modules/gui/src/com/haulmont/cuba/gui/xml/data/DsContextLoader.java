@@ -70,31 +70,31 @@ public class DsContextLoader {
         //noinspection unchecked
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
-            context.register(loadDatasource(ds));
+            loadDatasource(ds);
         }
 
         //noinspection unchecked
         elements = element.elements("hierarchicalDatasource");
         for (Element ds : elements) {
-            context.register(loadHierarchicalDatasource(ds));
+            loadHierarchicalDatasource(ds);
         }
 
         //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
-            context.register(loadCollectionDatasource(ds));
+            loadCollectionDatasource(ds);
         }
 
         //noinspection unchecked
         elements = element.elements("groupDatasource");
         for (Element ds : elements) {
-            context.register(loadGroupDatasource(ds));
+            loadGroupDatasource(ds);
         }
 
         //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
-            context.register(loadRuntimePropsDataSource(ds));
+            loadRuntimePropsDataSource(ds);
         }
 
         context.executeLazyTasks();
@@ -213,34 +213,34 @@ public class DsContextLoader {
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
-            context.register(loadDatasource(ds, datasource, property));
+            loadDatasource(ds, datasource, property);
         }
 
         //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
-            context.register(loadCollectionDatasource(ds, datasource, property));
+            loadCollectionDatasource(ds, datasource, property);
         }
 
         //noinspection unchecked
         elements = element.elements("groupDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
-            context.register(loadGroupDatasource(ds, datasource, property));
+            loadGroupDatasource(ds, datasource, property);
         }
 
         //noinspection unchecked
         elements = element.elements("hierarchicalDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
-            context.register(loadHierarchicalDatasource(ds, datasource, property));
+            loadHierarchicalDatasource(ds, datasource, property);
         }
 
         //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
-            context.register(loadRuntimePropsDataSource(ds));
+            loadRuntimePropsDataSource(ds);
         }
     }
 

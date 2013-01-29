@@ -264,6 +264,9 @@ public class DsBuilder {
             throw new RuntimeException(e);
         }
         datasource.setAllowCommit(allowCommit);
+        if (dsContext != null && id != null) {
+            ((DsContextImplementation) dsContext).register(datasource);
+        }
         return datasource;
     }
 
@@ -295,6 +298,9 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
+        if (dsContext != null && id != null) {
+            ((DsContextImplementation) dsContext).register(datasource);
+        }
         return datasource;
     }
 
@@ -341,6 +347,9 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
+        if (dsContext != null && id != null) {
+            ((DsContextImplementation) dsContext).register(datasource);
+        }
         return datasource;
     }
 
@@ -371,6 +380,9 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
+        if (dsContext != null && id != null) {
+            ((DsContextImplementation) dsContext).register(datasource);
+        }
         return datasource;
     }
 
@@ -378,6 +390,9 @@ public class DsBuilder {
         init();
         RuntimePropsDatasourceImpl datasource;
         datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId);
+        if (dsContext != null && id != null) {
+            ((DsContextImplementation) dsContext).register(datasource);
+        }
         return datasource;
     }
 }
