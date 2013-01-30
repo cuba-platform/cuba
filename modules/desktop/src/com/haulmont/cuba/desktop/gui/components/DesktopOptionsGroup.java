@@ -20,9 +20,8 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopOptionsGroup
         extends DesktopAbstractOptionsField<JPanel>
@@ -30,7 +29,7 @@ public class DesktopOptionsGroup
 {
     private boolean multiselect;
     private boolean optionsInitialized;
-    private Map<ValueWrapper, JToggleButton> items = new HashMap<ValueWrapper, JToggleButton>();
+    private Map<ValueWrapper, JToggleButton> items = new HashMap<>();
     private ButtonGroup buttonGroup;
 
     private Orientation orientation = Orientation.VERTICAL;
@@ -77,7 +76,7 @@ public class DesktopOptionsGroup
             optionsDatasource.addListener(
                     new CollectionDsListenerAdapter<Entity<Object>>() {
                         @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity<Object>> items) {
                             removeAllItems();
                             for (Object id : ds.getItemIds()) {
                                 addItem(new EntityWrapper(ds.getItem(id)));
@@ -197,7 +196,7 @@ public class DesktopOptionsGroup
     @Override
     public <T> T getValue() {
         if (multiselect) {
-            Set<Object> set = new HashSet<Object>();
+            Set<Object> set = new HashSet<>();
             for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
                 if (entry.getValue().isSelected()) {
                     set.add(entry.getKey().getValue());

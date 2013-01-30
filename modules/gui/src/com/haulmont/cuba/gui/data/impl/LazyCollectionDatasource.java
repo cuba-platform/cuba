@@ -73,7 +73,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
 
         modified = true;
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
         deleted(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (size != null && size > 0)
             size--;
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (size != null && size > 0)
             size++;
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -132,7 +132,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             if (size != null && size > 0)
                 size--;
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
         }
     }
 
@@ -162,7 +162,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
             attachListener(item);
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>singletonList(item));
         }
     }
 
@@ -217,7 +217,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             suspended = false;
             refreshOnResumeRequired = false;
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
 
             inRefresh = false;
             return;
@@ -247,7 +247,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             if (sortInfos != null && sortInfos.length > 0 && isCompletelyLoaded())
                 sortInMemory();
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
 
             checkDataLoadError();
         } finally {
@@ -487,10 +487,10 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation) {
+    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation, List<Entity> items) {
         disableLoad = true;
         try {
-            super.fireCollectionChanged(operation);
+            super.fireCollectionChanged(operation, items);
         } finally {
             disableLoad = false;
         }

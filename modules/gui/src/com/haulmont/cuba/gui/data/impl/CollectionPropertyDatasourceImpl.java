@@ -42,6 +42,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     protected SortInfo<MetaPropertyPath>[] sortInfos;
     protected boolean listenersSuspended;
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
+    protected List<Entity> lastCollectionChangeItems;
 
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -83,7 +84,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                     }
                 }
 
-                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
             }
 
             @Override
@@ -91,7 +92,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                     dsListener.stateChanged(CollectionPropertyDatasourceImpl.this, prevState, state);
                 }
-                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+                fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
             }
 
             @Override
@@ -101,7 +102,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
                     reattachListeners((Collection) prevValue, (Collection) value);
 
-                    fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+                    fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
                 }
             }
 
@@ -193,7 +194,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void refresh() {
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
     }
 
     @Override
@@ -260,7 +261,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             modified(item);
         }
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
     }
 
     /**
@@ -320,7 +321,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
         }
     }
 
@@ -338,7 +339,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         // detach listener only after setting value to the link property
         detachListener(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -357,7 +358,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         // attach listener only after setting value to the link property
         attachListener(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -379,9 +380,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
             // detach listener only after setting value to the link property
             detachListener(item);
-
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
+
+        fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
     }
 
     @Override
@@ -404,7 +405,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
             }
         }
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -417,7 +418,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             }
         }
         modified = saveModified;
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
     }
 
     public void replaceItem(T item) {
@@ -437,7 +438,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (sortInfos != null)
             doSort();
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -545,14 +546,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         clearCommitLists();
     }
 
-    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation) {
+    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation, List<Entity> items) {
         if (listenersSuspended) {
             lastCollectionChangeOperation = operation;
+            lastCollectionChangeItems = items;
             return;
         }
-        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
             if (dsListener instanceof CollectionDatasourceListener) {
-                ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);
+                ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation, items);
             }
         }
     }
@@ -565,8 +567,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public void resumeListeners() {
         listenersSuspended = false;
-        fireCollectionChanged(lastCollectionChangeOperation);
+        fireCollectionChanged(lastCollectionChangeOperation,
+                lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+
         lastCollectionChangeOperation = null;
+        lastCollectionChangeItems = null;
     }
 
     @Override

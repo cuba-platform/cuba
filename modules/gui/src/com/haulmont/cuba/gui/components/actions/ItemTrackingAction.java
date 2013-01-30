@@ -13,11 +13,13 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import java.util.List;
+
 /**
  * @author artamonov
  * @version $Id$
  */
-public class ItemTrackingAction extends AbstractAction implements CollectionDatasourceListener {
+public class ItemTrackingAction extends AbstractAction implements CollectionDatasourceListener<Entity> {
 
     protected boolean enabledFlag = true;
 
@@ -30,7 +32,7 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
     }
 
     @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
     }
 
     @Override
@@ -59,6 +61,6 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
     }
 
     @Override
-    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
     }
 }

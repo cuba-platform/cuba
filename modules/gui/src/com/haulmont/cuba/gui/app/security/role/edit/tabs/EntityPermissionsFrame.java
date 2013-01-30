@@ -30,9 +30,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class EntityPermissionsFrame extends AbstractFrame {
 

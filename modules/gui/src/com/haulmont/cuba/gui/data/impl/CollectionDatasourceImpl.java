@@ -124,7 +124,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             suspended = false;
             refreshOnResumeRequired = false;
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
 
             inRefresh = false;
             return;
@@ -159,7 +159,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             suspended = false;
             refreshOnResumeRequired = false;
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
 
             checkDataLoadError();
         } finally {
@@ -280,7 +280,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         modified = true;
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -296,7 +296,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         deleted(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -306,7 +306,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         data.put(item.getId(), item);
         attachListener(item);
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -320,7 +320,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             this.item = null;
         }
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -333,9 +333,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         for (Object obj : collectionItems) {
             T item = (T) obj;
             detachListener(item);
-            if (state == State.VALID)
-                fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
+        if (state == State.VALID)
+            fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
     }
 
     @Override
@@ -374,7 +374,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
             attachListener(item);
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
         }
     }
 

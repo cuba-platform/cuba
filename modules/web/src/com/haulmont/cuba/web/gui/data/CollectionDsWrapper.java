@@ -228,7 +228,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         }
 
         @Override
-        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
                 itemsCache.clear();

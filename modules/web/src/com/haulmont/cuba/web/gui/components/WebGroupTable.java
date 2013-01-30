@@ -586,10 +586,10 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
 
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 Collection groupProperties = component.getGroupProperties();
                 component.groupBy(groupProperties.toArray());
-                super.collectionChanged(ds, operation);
+                super.collectionChanged(ds, operation, items);
             }
         }
 

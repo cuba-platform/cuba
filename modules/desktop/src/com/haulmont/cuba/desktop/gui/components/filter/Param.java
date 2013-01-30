@@ -38,11 +38,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.ParseException;
 import java.util.*;
+import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class Param extends AbstractParam<JComponent> {
 
@@ -384,9 +384,9 @@ public class Param extends AbstractParam<JComponent> {
                 lookup.setOptionsDatasource(ds);
 
                 ds.addListener(
-                        new CollectionDsListenerAdapter() {
+                        new CollectionDsListenerAdapter<Entity>() {
                             @Override
-                            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                                 Entity currentValue = lookup.getValue();
                                 if (currentValue == null)
                                     return;
@@ -425,7 +425,7 @@ public class Param extends AbstractParam<JComponent> {
                 }
         );
         if (value != null) {
-            Map<Object, String> values = new HashMap<Object, String>();
+            Map<Object, String> values = new HashMap<>();
             for (Object v : (java.util.List) value) {
                 values.put(v, getValueCaption(v));
             }

@@ -9,6 +9,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.core.entity.Entity;
 
+import java.util.List;
+
 /**
  * @param <T>
  * @author tulupov
@@ -17,6 +19,6 @@ import com.haulmont.cuba.core.entity.Entity;
 public class CollectionDsListenerAdapter<T extends Entity> extends DsListenerAdapter<T> implements CollectionDatasourceListener<T> {
 
     @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+    public void collectionChanged(CollectionDatasource ds, Operation operation, List<T> items) {
     }
 }

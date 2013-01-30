@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Table;
@@ -33,11 +32,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     private static final long serialVersionUID = -3892470031734710618L;
 
     protected CollectionDatasource<Entity<Object>, Object> datasource;
-    protected List<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
+    protected List<MetaPropertyPath> properties = new ArrayList<>();
     protected List<Table.Column> columns;
-    protected List<Table.Column> generatedColumns = new ArrayList<Table.Column>();
+    protected List<Table.Column> generatedColumns = new ArrayList<>();
     protected boolean autoRefresh;
-    protected List<DataChangeListener> changeListeners = new ArrayList<DataChangeListener>();
+    protected List<DataChangeListener> changeListeners = new ArrayList<>();
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
@@ -62,26 +61,56 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         }
 
         datasource.addListener(
-                new CollectionDsListenerAdapter() {
+                new CollectionDsListenerAdapter<Entity>() {
                     @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                        onDataChanged();
+                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                        switch (operation) {
+                            case ADD:
+                                fireBeforeChangeListeners();
+                                for (Entity e : items) {
+                                    int rowIndex = getRowIndex(e);
+                                    fireTableRowsInserted(rowIndex, rowIndex);
+                                }
+                                fireAfterChangeListeners();
+                                break;
+
+                            case UPDATE:
+                                fireBeforeChangeListeners();
+                                for (Entity e : items) {
+                                    int rowIndex = getRowIndex(e);
+                                    fireTableRowsUpdated(rowIndex, rowIndex);
+                                }
+                                fireAfterChangeListeners();
+                                break;
+
+                            case REMOVE:
+                            case CLEAR:
+                            case REFRESH:
+                                fireBeforeChangeListeners();
+                                fireTableDataChanged();
+                                fireAfterChangeListeners();
+                                break;
+                        }
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        onDataChanged();
+                        int rowIndex = getRowIndex(source);
+
+                        fireBeforeChangeListeners();
+                        fireTableRowsUpdated(rowIndex, rowIndex);
+                        fireAfterChangeListeners();
                     }
                 }
         );
     }
 
-    private void onDataChanged() {
+    private void fireBeforeChangeListeners() {
         for (DataChangeListener changeListener : changeListeners)
             changeListener.beforeChange();
+    }
 
-        fireTableDataChanged();
-
+    private void fireAfterChangeListeners() {
         for (DataChangeListener changeListener : changeListeners)
             changeListener.afterChange();
     }

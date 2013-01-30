@@ -8,8 +8,8 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -277,7 +278,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
-    public Collection getValidators() {
+    public Collection<Validator> getValidators() {
         return field.getValidators();
     }
 
@@ -393,13 +394,16 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         private static final String COMPONENT_WIDTH = "140";
         private VerticalLayout listLayout;
         private Map<Object, String> values;
+        private Messages messages;
 
         private ListEditWindow(Map<Object, String> values) {
-            super(MessageProvider.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
+            super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
             setWidth(200, Sizeable.UNITS_PIXELS);
             setModal(true);
 
-            this.values = new HashMap<Object, String>(values);
+            this.messages = AppBeans.get(Messages.class);
+
+            this.values = new HashMap<>(values);
 
             VerticalLayout contentLayout = new VerticalLayout();
 
@@ -419,9 +423,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 lookup.setOptionsDatasource(collectionDatasource);
 
                 collectionDatasource.addListener(
-                        new CollectionDsListenerAdapter() {
+                        new CollectionDsListenerAdapter<Entity>() {
                             @Override
-                            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                                 lookup.setValue(null);
                             }
                         }
@@ -480,9 +484,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
                 field = lookup.getComponent();
             } else if (itemClass.isEnum()) {
-                Map<String, Object> options = new HashMap<String, Object>();
+                Map<String, Object> options = new HashMap<>();
                 for (Object obj : itemClass.getEnumConstants()) {
-                    options.put(MessageProvider.getMessage((Enum) obj), obj);
+                    options.put(messages.getMessage((Enum) obj), obj);
                 }
 
                 final WebLookupField lookup = new WebLookupField();
@@ -510,10 +514,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 String dateFormat;
                 if (itemClass.equals(java.sql.Date.class)) {
                     resolution = DateField.Resolution.DAY;
-                    dateFormat = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
                 } else {
                     resolution = DateField.Resolution.MIN;
-                    dateFormat = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
                 }
                 dateField.setResolution(resolution);
                 dateField.setDateFormat(dateFormat);
@@ -537,7 +541,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             bottomLayout.setMargin(true, false, true, false);
             bottomLayout.setSpacing(true);
 
-            Button okBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+            Button okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
             okBtn.setIcon(new ThemeResource("icons/ok.png"));
             okBtn.setStyleName(WebButton.ICON_STYLE);
             okBtn.addListener(
@@ -550,7 +554,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             );
             bottomLayout.addComponent(okBtn);
 
-            Button cancelBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+            Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
             cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
             cancelBtn.addListener(
@@ -574,7 +578,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private String addEnumValue(Enum en) {
-            String str = MessageProvider.getMessage(en);
+            String str = messages.getMessage(en);
             values.put(en, str);
             return str;
         }
@@ -613,7 +617,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private String addDate(Date date) {
-            String str = Datatypes.get(itemClass).format(date, UserSessionProvider.getUserSession().getLocale());
+            String str = Datatypes.get(itemClass).format(date, AppBeans.get(UserSessionSource.class).getUserSession().getLocale());
 
             values.put(date, str);
             return str;

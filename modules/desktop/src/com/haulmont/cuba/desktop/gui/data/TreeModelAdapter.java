@@ -25,9 +25,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class TreeModelAdapter implements TreeModel {
 
@@ -35,7 +34,7 @@ public class TreeModelAdapter implements TreeModel {
 
     protected Object rootNode = "Root";
 
-    private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
+    private List<TreeModelListener> listeners = new ArrayList<>();
 
     private CaptionMode captionMode;
     private String captionProperty;
@@ -50,9 +49,9 @@ public class TreeModelAdapter implements TreeModel {
         this.autoRefresh = autoRefresh;
 
         datasource.addListener(
-                new CollectionDsListenerAdapter() {
+                new CollectionDsListenerAdapter<Entity>() {
                     @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                         for (TreeModelListener listener : listeners) {
                             TreeModelEvent ev = new TreeModelEvent(this, new Object[]{getRoot()});
                             listener.treeStructureChanged(ev);
@@ -159,7 +158,7 @@ public class TreeModelAdapter implements TreeModel {
     }
 
     public TreePath getTreePath(Object object) {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         if (object instanceof Entity) {
             TreeModelAdapter.Node node = createNode((Entity) object);
             list.add(node);

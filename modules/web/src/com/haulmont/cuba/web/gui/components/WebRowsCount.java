@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.RowsCount;
@@ -12,6 +13,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.vaadin.ui.Button;
+
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -41,9 +44,9 @@ public class WebRowsCount
         this.datasource = datasource;
         if (datasource != null) {
             this.datasource.addListener(
-                    new CollectionDsListenerAdapter() {
+                    new CollectionDsListenerAdapter<Entity>() {
                         @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                             onCollectionChanged();
                         }
                     }

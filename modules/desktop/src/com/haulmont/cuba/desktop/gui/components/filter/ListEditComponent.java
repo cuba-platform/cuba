@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
@@ -151,9 +152,9 @@ public class ListEditComponent extends Picker {
                 lookup.setOptionsDatasource(collectionDatasource);
 
                 collectionDatasource.addListener(
-                        new CollectionDsListenerAdapter() {
+                        new CollectionDsListenerAdapter<Entity>() {
                             @Override
-                            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                                 lookup.setValue(null);
                             }
                         }

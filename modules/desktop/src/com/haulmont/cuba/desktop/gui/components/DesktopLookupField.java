@@ -200,7 +200,7 @@ public class DesktopLookupField
             optionsDatasource.addListener(
                     new CollectionDsListenerAdapter<Entity<Object>>() {
                         @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity<Object>> dsItems) {
                             items.clear();
                             for (Object id : optionsDatasource.getItemIds()) {
                                 items.add(new EntityWrapper(optionsDatasource.getItem(id)));

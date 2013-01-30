@@ -116,9 +116,9 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        datasource.addListener(new CollectionDsListenerAdapter() {
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 if (lookupPickerField != null) {
                     if (isLookup()) {
                         if (getLookupScreen() != null)

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -176,7 +177,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         // Ability to configure fonts in table
         // Add action to column control
-        String configureFontsLabel = MessageProvider.getMessage(
+        String configureFontsLabel = AppBeans.get(Messages.class).getMessage(
                 DesktopTable.class, "DesktopTable.configureFontsLabel");
         impl.getActionMap().put(ColumnControlButton.COLUMN_CONTROL_MARKER + "fonts",
                 new AbstractAction(configureFontsLabel) {
@@ -198,7 +199,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     }
                 });
 
-        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
         addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
 
@@ -465,9 +466,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
 
         datasource.addListener(
-                new CollectionDsListenerAdapter() {
+                new CollectionDsListenerAdapter<Entity>() {
                     @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                         onDataChange();
                         packRows();
                     }
@@ -532,40 +533,70 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         tableModel.addChangeListener(new AnyTableModelAdapter.DataChangeListener() {
 
             private boolean focused = false;
+            private volatile boolean triggered = false;
 
             @Override
             public void beforeChange() {
-                // ignore selection change while data changing
-                isRowsAjusting = true;
-                focused = impl.isFocusOwner();
+                if (!triggered) {
+                    // ignore selection change while data changing
+                    isRowsAjusting = true;
+                    focused = impl.isFocusOwner();
+                }
             }
 
             @Override
             public void afterChange() {
+                if (!triggered) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            applyNewSelection();
+                            triggered = false;
+                        }
+                    });
+                    triggered = true;
+                }
+            }
+
+            private void applyNewSelection() {
                 Set<Entity> newSelection = null;
                 if (selectionBackup != null) {
                     newSelection = new HashSet<>();
                     // filter selection
                     for (Object item : selectionBackup) {
-                        int rowIndex = tableModel.getRowIndex((Entity) item);
-
-                        if (rowIndex >= 0)
-                            newSelection.add(tableModel.getItem(rowIndex));
+                        Entity entity = (Entity) item;
+                        if (datasource.containsItem(entity.getId()))
+                            newSelection.add(datasource.getItem(entity.getId()));
                     }
                 }
                 // enable selection change listener
                 isRowsAjusting = false;
                 if (focused && newSelection != null && !newSelection.isEmpty()) {
                     int minimalSelectionRowIndex = Integer.MAX_VALUE;
-                    for (Entity entity : newSelection) {
-                        int rowIndex = tableModel.getRowIndex(entity);
-                        if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0)
-                            minimalSelectionRowIndex = rowIndex;
+
+                    if (datasource instanceof CollectionDatasource.Ordered) {
+                        CollectionDatasource.Ordered orderedDs = (CollectionDatasource.Ordered) datasource;
+                        Object itemId = orderedDs.firstItemId();
+
+                        int entityIndex = 0;
+                        while (itemId != null && minimalSelectionRowIndex == Integer.MAX_VALUE) {
+                            if (newSelection.contains(datasource.getItem(itemId)))
+                                minimalSelectionRowIndex = entityIndex;
+                            itemId = orderedDs.nextItemId(itemId);
+                            entityIndex++;
+                        }
+                    } else {
+                        for (Entity entity : newSelection) {
+                            int rowIndex = tableModel.getRowIndex(entity);
+                            if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0)
+                                minimalSelectionRowIndex = rowIndex;
+                        }
                     }
 
                     TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
-                    if (focusManager != null)
+                    if (focusManager != null) {
                         focusManager.focusSelectedRow(minimalSelectionRowIndex);
+                    }
                 }
                 setSelected(newSelection);
             }
@@ -1017,10 +1048,51 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         if (items == null)
             items = Collections.emptyList();
         impl.getSelectionModel().clearSelection();
-        for (Entity item : items) {
-            int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
-            impl.getSelectionModel().addSelectionInterval(rowIndex, rowIndex);
+        if (!items.isEmpty()) {
+            Pair<Integer, Integer> selectionBounds = getSelectionBounds(items);
+            if (selectionBounds.getFirst() != null && selectionBounds.getSecond() != null) {
+                impl.getSelectionModel().addSelectionInterval(selectionBounds.getFirst(), selectionBounds.getSecond());
+            }
         }
+    }
+
+    private Pair<Integer, Integer> getSelectionBounds(Collection<Entity> items) {
+        Integer minIndex = null;
+        Integer maxIndex = null;
+
+        if (datasource instanceof CollectionDatasource.Ordered) {
+            HashSet<Entity> itemSet = new HashSet<>(items);
+            int itemIndex = 0;
+            CollectionDatasource.Ordered orderedDs = (CollectionDatasource.Ordered) datasource;
+            Object id = orderedDs.firstItemId();
+            while (id != null && !itemSet.isEmpty()) {
+                int rowIndex = impl.convertRowIndexToView(itemIndex);
+                Entity itemById = datasource.getItem(id);
+                if (itemSet.contains(itemById)) {
+                    if (minIndex == null)
+                        minIndex = rowIndex;
+                    maxIndex = rowIndex;
+                    itemSet.remove(itemById);
+                }
+                id = orderedDs.nextItemId(id);
+                itemIndex++;
+            }
+        } else {
+            for (Entity item : items) {
+                int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
+                if (minIndex == null || maxIndex == null) {
+                    minIndex = rowIndex;
+                    maxIndex = rowIndex;
+                } else {
+                    if (maxIndex < rowIndex)
+                        maxIndex = rowIndex;
+                    else if (minIndex > rowIndex)
+                        minIndex = rowIndex;
+                }
+            }
+        }
+
+        return new Pair<>(minIndex, maxIndex);
     }
 
     @Override
