@@ -4,14 +4,14 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.jmx.impl;
+package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.jmx.JmxNodeIdentifier;
+import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifier;
 import com.haulmont.cuba.jmxcontrol.entity.*;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;

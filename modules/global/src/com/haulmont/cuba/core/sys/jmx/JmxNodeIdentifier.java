@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.jmx;
+package com.haulmont.cuba.core.sys.jmx;
 
 import com.haulmont.cuba.core.global.NodeIdentifier;
 
