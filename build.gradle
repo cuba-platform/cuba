@@ -18,7 +18,16 @@ allprojects {
 }
 
 buildscript {
-	ext.cubaPlugin = [group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT']
+	def cubaPluginVersion = '1.5.1-SNAPSHOT'
+	def docPluginVersion = '1.2.0-SNAPSHOT'
+	
+	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
+	def DOC_PLUGIN_VERSION = 'docPluginVersion'
+
+	cubaPluginVersion = rootProject.hasProperty(CUBA_PLUGIN_VERSION) ? rootProject[CUBA_PLUGIN_VERSION] : cubaPluginVersion
+	docPluginVersion = rootProject.hasProperty(DOC_PLUGIN_VERSION) ? rootProject[DOC_PLUGIN_VERSION] : docPluginVersion 
+	
+	ext.cubaPlugin = [group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaPluginVersion]
 	
     repositories {
         mavenLocal()
@@ -32,7 +41,7 @@ buildscript {
     }
     dependencies {
         classpath cubaPlugin
-        classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: '1.2.0-SNAPSHOT'
+        classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: docPluginVersion
     }
 }
 
