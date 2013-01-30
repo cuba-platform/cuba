@@ -74,7 +74,6 @@
                 <entry key="cuba_ScheduledTasksService" value="com.haulmont.cuba.core.app.SchedulingService"/>
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
                 <entry key="cuba_LogManagerService" value="com.haulmont.cuba.core.app.LogManagerService"/>
-                <entry key="report_ReportService" value="com.haulmont.reports.app.service.ReportService"/>
             </map>
         </property>
     </bean>
