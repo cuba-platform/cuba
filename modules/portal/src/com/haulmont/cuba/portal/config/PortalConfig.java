@@ -13,7 +13,7 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
- * Portal configuration parameters interface used by the WEB layer.
+ * Portal configuration parameters interface.
  *
  * @author artamonov
  * @version $Id$
@@ -21,10 +21,10 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 @Source(type = SourceType.APP)
 public interface PortalConfig extends Config {
 
-    @Property("cuba.portal.trustedClientLogin")
-    String getTrustedClientLogin();
+    @Property("cuba.portal.anonymousUserLogin")
+    String getAnonymousUserLogin();
 
-    @Property("cuba.portal.trustedClientPassword")
+    @Property("cuba.trustedClientPassword")
     String getTrustedClientPassword();
 
     @Property("cuba.portal.defaultLocale")
