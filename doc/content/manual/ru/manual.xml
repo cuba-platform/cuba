@@ -192,6 +192,16 @@
 
 &lt;/datatypes&gt;</programlisting></para>
     </section>
+    <section id="dispatcher-spring.xml">
+      <title>dispatcher-spring.xml</title>
+      <para>Файлы данного типа определяют конфигурацию дополнительного контейнера <application>Spring Framework</application> для клиентских блоков, содержащих контроллеры <application>Spring MVC</application>. </para>
+      <para>Набор файлов <filename>dispatcher-spring.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
+          <link linkend="cuba.dispatcherSpringContextConfig">cuba.dispatcherSpringContextConfig</link>
+        </property>. Последовательность перечисления файлов важна, так как каждый последующий файл может переопределять конфигурацию бинов, заданную в предыдущих файлах.</para>
+      <para>Контейнер контроллеров Spring MVC создается таким образом, что основной контейнер (конфигурируемый файлами <filename>
+          <link linkend="spring.xml">spring.xml</link>
+        </filename>) является родительским по отношению к нему. Это означает, что бины контейнера контроллеров могут обращаться к бинам основного контейнера, а бины основного контейнера &quot;не видят&quot; контейнер контроллеров.</para>
+    </section>
     <section id="menu.xml">
       <title>menu.xml</title>
       <para>Файлы данного типа используются в <link linkend="app_tiers">блоках</link> Web Client и Desktop Client, реализующих <link linkend="gui_framework">универсальный пользовательский интерфейс</link>, для описания структуры главного меню приложения.</para>
@@ -778,6 +788,19 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.dispatcherSpringContextConfig">
+        <term>cuba.dispatcherSpringContextConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>
+              <link linkend="dispatcher-spring.xml">dispatcher-spring.xml</link>
+            </filename> в клиентских  блоках.  </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется в блоках Web Client, Web Portal.</para>
+          <para>Пример:<programlisting>cuba.dispatcherSpringContextConfig=cuba-portal-dispatcher-spring.xml portal-dispatcher-spring.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.groovyEvaluatorImport">
         <term>cuba.groovyEvaluatorImport</term>
         <listitem>
@@ -965,6 +988,19 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
             </code>.</para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
           <para>Пример:<programlisting>cuba.persistenceConfig=cuba-persistence.xml sales-persistence.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.portal.anonymousUserLogin">
+        <term>cuba.portal.anonymousUserLogin</term>
+        <listitem>
+          <para>Логин пользователя системы, который используется для создания аниномной пользовательской сессии в блоке Web Portal. </para>
+          <para>Пользователь с таким логином должен быть создан в подсистеме безопасности, и ему должны быть назначены соответствующие права. Пароль пользователя игнорируется, так как анонимная сессия портала создается методом <code>
+              <link linkend="login">loginTrusted()</link>
+            </code> с передачей пароля, указанного в свойстве <property>
+              <link linkend="cuba.trustedClientPassword">cuba.trustedClientPassword</link>
+            </property>.</para>
+          <para>Интерфейс:  <code>PortalConfig</code></para>
+          <para>Используется в блоке Web Portal.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.remotingSpringContextConfig">

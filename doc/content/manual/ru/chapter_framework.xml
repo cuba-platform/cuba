@@ -28,19 +28,19 @@
         <varlistentry>
           <term>Web Client</term>
           <listitem>
-            <para>Основной блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация <link linkend="gui_framework">пользовательского интерфейса</link> основана на фреймворке <application>Vaadin</application>. См. <xref linkend="client"/></para>
+            <para>Основной блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация <link linkend="gui_framework">пользовательского интерфейса</link> основана на фреймворке <application>Vaadin</application>. См. <xref linkend="gui_framework"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>Desktop Client</term>
           <listitem>
-            <para>Дополнительный блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>. См. <xref linkend="client"/></para>
+            <para>Дополнительный блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>. См. <xref linkend="gui_framework"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>Web Portal</term>
           <listitem>
-            <para>Дополнительный блок клиентского уровня. Содержит  интерфейс для внешних пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>. См. <xref linkend="portal"/></para>
+            <para>Дополнительный блок клиентского уровня. Содержит интерфейс для внешних пользователей и средства интеграции с мобильными устройствами и сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>. См. <xref linkend="portal"/></para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -2422,7 +2422,7 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
           </itemizedlist></para>
         <para>Атрибуты реплицируются в кластере Middleware так же как и  все остальные данные сессии.</para>
       </section>
-      <section>
+      <section id="login">
         <title>Вход в систему</title>
         <para>Стандартный вариант входа пользователя: <itemizedlist>
             <listitem>
@@ -2935,7 +2935,7 @@ public String foo(String value) {
         </property>. Если требуется аутентификация от имени другого пользователя, нужно воспользоваться первым вариантом и передать в метод <code>begin()</code> логин нужного пользователя.</para>
       <warning>
         <para>Если в момент выполнения <code>Authentication.begin()</code> в текущем потоке выполнения присутствует активная пользовательская сессия, то она не заменяется - соответственно, код, требующий аутентификации, будет выполняться с имеющейся сессией, и последующий метод <code>end()</code> не будет очищать поток.</para>
-        <para>Следует иметь в виду, что вызов метода JMX-бина из встроенной в <structname>Web Client</structname> консоли JMX является обычной обработкой пользовательского запроса. Это означает, что метод JMX-бина будет выполнен от имени текущего зарегистрированного в системе пользователя, независимо от наличия системной аутентификации.</para>
+        <para>Например,  вызов метода JMX-бина из встроенной в <structname>Web Client</structname> консоли JMX, если бин находится в той же JVM, что и блок WebClient, к которому в данный момент подключен пользователь, будет выполнен от имени текущего зарегистрированного в системе пользователя, независимо от наличия системной аутентификации.</para>
       </warning>
     </section>
     <section id="orm">
@@ -9053,7 +9053,59 @@ taskHandler.execute();</programlisting>
   </section>
   <section id="portal">
     <title>Компоненты портала</title>
-    <para>TODO</para>
+    <para>В данном руководстве <firstterm>порталом</firstterm> называется клиентский <link linkend="app_tiers">блок</link>, способный решать следующие задачи:<itemizedlist>
+        <listitem>
+          <para>предоставлять альтернативный веб-интерфейс, как правило предназначенный для пользователей за пределами организации;</para>
+        </listitem>
+        <listitem>
+          <para>предоставлять интерфейс для интеграции с мобильными приложениями и со сторонними системами.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>Конкретное приложение может содержать несколько портальных модулей, предназначенных для различных целей, например в случае приложения, автоматизирующего бизнес такси это может быть публичный веб-сайт для клиентов, интеграционный модуль мобильного приложения заказа такси, интеграционный модуль мобильного приложения водителей, и т.д. </para>
+    <para><link linkend="base_projects">Базовый проект</link> <structname>cuba</structname> платформы содержит в своем составе модуль <structname>portal</structname>, который является заготовкой для создания порталов в проектах. Он, во-первых, предоставляет базовую функциональность клиентского блока для работы с Middleware, а во-вторых, включает в себя универсальный <link linkend="rest_api">REST API</link> для работы с сущностями.</para>
+    <section>
+      <title>Базовая функциональность</title>
+      <para>Рассмотрим основные компоненты, предоставляемые платформой для построения портала.<itemizedlist>
+          <listitem>
+            <para><code>PortalAppContextLoader</code> - загрузчик <code>
+                <link linkend="appContext">AppContext</link>
+              </code>, должен быть зарегистрирован в элементе <sgmltag>listener</sgmltag> файла <filename>web.xml</filename>.</para>
+          </listitem>
+          <listitem>
+            <para><code>PortalDispatcherServlet</code> - центральный сервлет, распределяющий запросы по контроллерам <application>Spring MVC</application>, как для веб-интерфейса, так и для REST API. Набор файлов конфигурации контекста Spring определяется свойством приложения <property>
+                <link linkend="cuba.dispatcherSpringContextConfig">cuba.dispatcherSpringContextConfig</link>
+              </property>. Данный сервлет должен быть зарегистрирован в <filename>web.xml</filename> и отображен на корневой URL веб-приложения.</para>
+          </listitem>
+          <listitem>
+            <para><code>App</code> - объект, содержащий информацию о текущем HTTP запросе и ссылку на объект <code>Connection</code>. Экземпляр <code>App</code> может быть получен в прикладном коде вызовом статического метода <code>App.getInstance()</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>Connection</code> - позволяет выполнять логин и логаут пользователя на Middleware.</para>
+          </listitem>
+          <listitem>
+            <para><code>PortalSession</code> - специфичесий для портала объект <link linkend="userSession">пользовательской сессии</link>. Возвращается интерфейсом инфраструктуры <code>
+                <link linkend="userSessionSource">UserSessionSource</link>
+              </code>, а также статическим методом <code>PortalSessionProvider.getUserSession()</code>.</para>
+            <para>Имеет дополнительный метод <code>isAuthenticated()</code>, возвращающий <code>true</code>, если данная сессия принадлежит не-анонимному, т.е. явно зарегистрировавшемуся с логином и паролем, пользователю.</para>
+            <para>При первом обращении некоторого пользователя к порталу <code>SecurityContextHandlerInterceptor</code> создает для него (или привязывает уже имеющуюся) анонимную сессию, регистрируясь на Middleware с именем пользователя, указанным в свойстве приложения <property>
+                <link linkend="cuba.portal.anonymousUserLogin">cuba.portal.anonymousUserLogin</link>
+              </property>. Регистрация производится методом <code>
+                <link linkend="login">loginTrusted()</link>
+              </code>, поэтому в блоке портала необходимо установить также свойство <property>
+                <link linkend="cuba.trustedClientPassword">cuba.trustedClientPassword</link>
+              </property>. Таким образом, любой анонимный пользователь портала может работать с сервисами Middleware с правами пользователя <property>cuba.portal.anonymousUserLogin</property>.</para>
+            <para>Если портал содержит страницу регистрации пользователя с именем и паролем, то после выполнения <code>Connection.login()</code> при обработке запросов <code>SecurityContextHandlerInterceptor</code> устанавливает в потоке выполнения пользовательскую сессию явно зарегистрированного пользователя, и работа с Middleware происходит от его имени.</para>
+          </listitem>
+          <listitem>
+            <para><code>PortalLogoutHandler</code> - обрабатывает навигацию на страницу логаута. Должен быть зарегистрирован в файле <filename>portal-security-spring.xml</filename> проекта.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Пример портала, содержащего страницу регистрации пользователей, включен в шаблон проекта <ulink url="http://docs.haulmont.com/cuba/4.0/samples/sales.zip">http://docs.haulmont.com/cuba/4.0/samples/sales.zip</ulink>, рассмотренный в  <xref linkend="chapter_quickStart"/></para>
+    </section>
+    <section id="rest_api">
+      <title>REST API</title>
+      <para>TODO</para>
+    </section>
   </section>
   <section>
     <title>Механизмы платформы</title>
@@ -9083,10 +9135,6 @@ taskHandler.execute();</programlisting>
     </section>
     <section id="entity_snapshots">
       <title>Снимки сущностей</title>
-      <para>TODO</para>
-    </section>
-    <section id="rest_api">
-      <title>REST API</title>
       <para>TODO</para>
     </section>
     <section id="file_storage">
