@@ -2104,7 +2104,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
         </itemizedlist>
         <para>Например, набор файлов свойств блока <structname>Middleware</structname> проекта <application>sales</application> задается в файле  <filename>web/WEB-INF/web.xml</filename>  модуля <structname>core</structname>, и выглядит следующим образом:</para>
         <programlisting>classpath:cuba-app.properties
-classpath:sales-app.properties
+classpath:app.properties
 file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <para>Здесь префикс <literal>classpath:</literal> означает, что данный файл нужно искать в Java classpath, префикс <literal>file:</literal> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <literal>catalina.home</literal> − путь к корню <application>Tomcat</application>.</para>
         <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
@@ -2645,7 +2645,7 @@ public class OrderServiceBean implements OrderService {
 }</programlisting>
             <para>Класс сервиса, как и класс любого другого <link linkend="managed_beans">управляемого бина</link>, должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
                 <link linkend="spring.xml">spring.xml</link>
-              </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
+              </filename>. В нашем случае файл <filename>spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
           </step>
         </procedure>
         <warning>
@@ -2659,7 +2659,7 @@ public class OrderServiceBean implements OrderService {
         <para>Фабрика прокси-объектов конфигурируется в файле <filename>
             <link linkend="spring.xml">spring.xml</link>
           </filename> ссответствующего клиентского блока.</para>
-        <para>Например, чтобы в приложении <application>sales</application> вызвать с веб-клиента сервис <code>sales_OrderService</code>, необходимо добавить в файл <filename>sales-web-spring.xml</filename> модуля <structname>web</structname> следующее:</para>
+        <para>Например, чтобы в приложении <application>sales</application> вызвать с веб-клиента сервис <code>sales_OrderService</code>, необходимо добавить в файл <filename>web-spring.xml</filename> модуля <structname>web</structname> следующее:</para>
         <programlisting language="xml">&lt;bean id=&quot;sales_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
     &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
     &lt;property name=&quot;remoteServices&quot;&gt;
@@ -2698,7 +2698,7 @@ public class OrderWorker {
         <para>Рекомендуется присваивать бину уникальное имя вида <literal>{имя_проекта}_{имя_класса}</literal>, и определять его в константе <code>NAME</code>. </para>
         <para>Класс управляемого бина должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
             <link linkend="spring.xml">spring.xml</link>
-          </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
+          </filename>. В нашем случае файл <filename>spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
         <para>Если нужно обеспечить возможность подмены реализации,  рекомендуется  выделять бизнес-интерфейс бина, например следующим образом:</para>
         <programlisting>package com.sample.sales.core;
 
@@ -2838,7 +2838,7 @@ public class Orders implements OrdersMBean {
               </itemizedlist></para>
           </listitem>
           <listitem>
-            <para>Регистрация JMX-бина в <filename>sales-spring.xml</filename>:</para>
+            <para>Регистрация JMX-бина в <filename>spring.xml</filename>:</para>
             <programlisting>&lt;bean id=&quot;sales_MBeanExporter&quot; lazy-init=&quot;false&quot; 
       class=&quot;com.haulmont.cuba.jmxcontrol.export.MBeanExporter&quot;&gt;
     &lt;property name=&quot;beans&quot;&gt;

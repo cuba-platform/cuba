@@ -88,7 +88,6 @@
         <listitem>
           <para>Разворачиваем собранные артефакты и библиотеки проекта в <application>Tomcat</application>:</para>
           <prompt>gradle deploy</prompt>
-          <para/>
         </listitem>
         <listitem>
           <para>Создаем базу данных на локальном сервере PostgreSQL:</para>
@@ -163,7 +162,7 @@
             <para><code>@javax.persistence.Column</code> − связывает атрибут сущности с колонкой таблицы. Параметр <code>nullable = false</code> делает атрибут сущности обязательным к заполнению. Параметр <code>length</code> задает максимальную длину текстового атрибута, по умолчанию <literal>255</literal>.</para>
           </listitem>
         </itemizedlist></para>
-      <para id="text_registration_entity">После создания класса зарегистрируйте его в файле <filename>sales-persistence.xml</filename> модуля <structname>global</structname> в элементе <sgmltag>persistence-unit</sgmltag>:<programlisting>&lt;class&gt;com.sample.sales.entity.Customer&lt;/class&gt;</programlisting></para>
+      <para id="text_registration_entity">После создания класса зарегистрируйте его в файле <filename>persistence.xml</filename> модуля <structname>global</structname> в элементе <sgmltag>persistence-unit</sgmltag>:<programlisting>&lt;class&gt;com.sample.sales.entity.Customer&lt;/class&gt;</programlisting></para>
       <para>Для <link linkend="localization">локализации</link> имен сущностей и атрибутов создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в том же пакете, что и классы.</para>
       <para>В этих файлах определяются строки с ключом <literal>класс_сущности</literal> для названия сущности и <literal>класс_сущности.атрибут</literal> для названий атрибутов. Эти названия будут использованы при отображении списка экземпляров  и в окне редактирования сущности.</para>
       <caution>
@@ -199,11 +198,11 @@ Order.amount=Amount</programlisting></para>
 Order.customer=Покупатель
 Order.date=Дата
 Order.amount=Сумма</programlisting></para>
-      <para>Зарегистрируйте сущность Заказ в файле <filename>sales-persistence.xml</filename> модуля <structname>global</structname>: <programlisting>&lt;class&gt;com.sample.sales.entity.Order&lt;/class&gt;</programlisting></para>
+      <para>Зарегистрируйте сущность Заказ в файле <filename>persistence.xml</filename> модуля <structname>global</structname>: <programlisting>&lt;class&gt;com.sample.sales.entity.Order&lt;/class&gt;</programlisting></para>
     </section>
     <section>
       <title>Создание пользовательского интерфейса приложения</title>
-      <para>Для ограничения списка поддерживаемых языков интерфейса откройте файл <filename>sales-web-app.properties</filename> модуля <structname>web</structname> и добавьте в него следующее значение:<programlisting>cuba.availableLocales=English|en;Russian|ru</programlisting></para>
+      <para>Для ограничения списка поддерживаемых языков интерфейса откройте файл <filename>web-app.properties</filename> модуля <structname>web</structname> и добавьте в него следующее значение:<programlisting>cuba.availableLocales=English|en;Russian|ru</programlisting></para>
       <para>Файлы, относящиеся к экранам, будем создавать в пакете <code>com.sample.sales.gui</code> модуля gui.</para>
       <para>Любой экран  определяется <glossterm linkend="screen_xml_glossentry">XML-дескриптором</glossterm>, описывающим  <link linkend="datasources">источники данных</link> и расположение <link linkend="gui_framework">визуальных компонентов</link> экрана. У экрана также может быть <glossterm linkend="screen_controller_glossentry">контроллер</glossterm> − Java-класс, содержащий логику инициализации и обработки событий экрана.</para>
       <section id="qs_customer_browse">
@@ -223,9 +222,9 @@ Order.amount=Сумма</programlisting></para>
         <para>Элемент <sgmltag>rowsCount</sgmltag> позволяет организовать постраничный вывод данных таблицы и отобразить общее количество строк.</para>
         <para>Элемент <sgmltag>actions</sgmltag> задает набор контекстных действий с таблицей. В нашем случае все указанные действия являются стандартными (что определяется именем действия в атрибуте <sgmltag>id</sgmltag> элемента <sgmltag>action</sgmltag>), и не требуют дополнительного кодирования. Задание некоторого действия для таблицы приводит к появлению соответствующего пункта контекстного меню таблицы.</para>
         <para>Над таблицей находится панель (элемент <sgmltag>buttonsPanel</sgmltag>), содержащая кнопки для управления данными в этой таблице. Кнопки связаны с действиями (<sgmltag>actions</sgmltag>) таблицы, и в данном случае дублируют пункты контекстного меню.</para>
-        <para><glossterm linkend="screen_xml_glossentry">XML-дескриптор</glossterm> экрана должен иметь идентификатор, по которому его можно вызвать  из меню или из программного кода. Идентификатор в нашем случае назначается в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-browse.xml&quot;/&gt;</programlisting></para>
+        <para><glossterm linkend="screen_xml_glossentry">XML-дескриптор</glossterm> экрана должен иметь идентификатор, по которому его можно вызвать  из меню или из программного кода. Идентификатор в нашем случае назначается в файле <filename>screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-browse.xml&quot;/&gt;</programlisting></para>
         <para>Идентификатор <literal> sales$Customer.lookup</literal> удовлетворяет соглашению, по которому экраны списков сущностей должны иметь вид <literal>{entity_name}.lookup</literal>. Данное соглашение облегчает настройку визуальных компонентов, работающих со ссылочными атрибутами сущностей.</para>
-        <para>Чтобы вызывать экран из главного меню приложения, добавьте в файл <filename>sales-web-menu.xml</filename> модуля <structname>web</structname> следующий элемент:<programlisting>&lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
+        <para>Чтобы вызывать экран из главного меню приложения, добавьте в файл <filename>web-menu.xml</filename> модуля <structname>web</structname> следующий элемент:<programlisting>&lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
     &lt;item id=&quot;sales$Customer.lookup&quot;/&gt;
 &lt;/menu&gt;</programlisting></para>
         <para>Для того, чтобы пункт меню содержал локализованное имя экрана, добавьте в <link linkend="main_message_pack">главный пакет сообщений</link> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.sample.sales.web</code> следующие строки:</para>
@@ -267,7 +266,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           </itemizedlist></para>
         <para>Атрибуты <sgmltag>id</sgmltag> элементов <sgmltag>field</sgmltag> группы полей соответствуют именам редактируемых атрибутов сущности.</para>
         <para>Атрибут <sgmltag>expand</sgmltag> элемента <sgmltag>layout</sgmltag> нужен для того, чтобы растянуть фрейм на все свободное пространство по вертикали, тогда кнопки окажутся прижатыми вверх к группе полей.</para>
-        <para>Зададим идентификатор экрана в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-edit.xml&quot;/&gt;</programlisting></para>
+        <para>Зададим идентификатор экрана в файле <filename>screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-edit.xml&quot;/&gt;</programlisting></para>
         <para>Для правильной работы стандартных действий <literal>create</literal> и <literal>edit</literal> таблицы в экране списка необходимо, чтобы идентификатор экрана редактирования соответствовал виду <literal>{entity_name}.edit</literal></para>
         <para>Попробуем добавить и отредактировать <code>Покупателя</code>  в работающем приложении. Для этого пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>
@@ -285,7 +284,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <title>Экран списка Заказов</title>
         <para>Создайте пакет <code>com.sample.sales.gui.order</code> и в нем файл <filename>order-browse.xml</filename> следующего содержания:<programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/order-browse.xml" parse="text" encoding="UTF-8"/></programlisting></para>
         <para>Данный экран аналогичен описанному в <xref linkend="qs_customer_browse"/> и имеет следующую особенность: так как среди прочих отображается ссылочный атрибут <code>Order.customer</code>, требуется определить представление сущности <code>Order</code>, включающее этот атрибут (стандартные представления <literal>_local</literal> и <literal>_minimal</literal> не включают ссылочных атрибутов).</para>
-        <para>Определите представление <literal>orderWithCustomer</literal> в файле <filename>sales-views.xml</filename> модуля <structname>core</structname>: <programlisting>&lt;view class=&quot;com.sample.sales.entity.Order&quot;
+        <para>Определите представление <literal>orderWithCustomer</literal> в файле <filename>views.xml</filename> модуля <structname>core</structname>: <programlisting>&lt;view class=&quot;com.sample.sales.entity.Order&quot;
       name=&quot;orderWithCustomer&quot;
       extends=&quot;_local&quot;&gt;
     &lt;property name=&quot;customer&quot; view=&quot;_minimal&quot;/&gt;
@@ -293,8 +292,8 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>Создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename>  в пакете <code>com.sample.sales.gui.order</code>, и внесите в них локализацию заголовка экрана: </para>
         <para><filename>messages.properties</filename> <programlisting>browserCaption=Orders</programlisting></para>
         <para><filename>messages_ru.properties</filename> <programlisting>browserCaption=Заказы</programlisting></para>
-        <para>Далее зарегистрируйте экран в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname>: <programlisting>&lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/haulmont/sales/gui/order/order-browse.xml&quot;/&gt;</programlisting></para>
-        <para>и добавьте соответствующий пункт меню в файл <filename>sales-web-menu.xml</filename> модуля <structname>web</structname>: <programlisting>&lt;item id=&quot;sales$Order.lookup&quot;/&gt;</programlisting></para>
+        <para>Далее зарегистрируйте экран в файле <filename>screens.xml</filename> модуля <structname>gui</structname>: <programlisting>&lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/haulmont/sales/gui/order/order-browse.xml&quot;/&gt;</programlisting></para>
+        <para>и добавьте соответствующий пункт меню в файл <filename>web-menu.xml</filename> модуля <structname>web</structname>: <programlisting>&lt;item id=&quot;sales$Order.lookup&quot;/&gt;</programlisting></para>
         <para>Локализованные названия нового пункта меню  добавьте в <link linkend="main_message_pack">главный пакет сообщений</link> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.sample.sales.web</code>):</para>
         <para>    <filename>messages.properties</filename></para>
         <programlisting>menu-config.sales$Order.lookup=Orders</programlisting>
@@ -319,7 +318,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>Добавьте в файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.sample.sales.gui.order</code>  локализацию заголовка экрана редактирования: </para>
         <para><filename>messages.properties</filename> <programlisting>editorCaption=Order</programlisting></para>
         <para><filename>messages_ru.properties</filename> <programlisting>editorCaption=Заказ</programlisting></para>
-        <para>Зарегистрируйте экран в файле <filename>sales-screens.xml</filename> модуля <structname>gui</structname>: </para>
+        <para>Зарегистрируйте экран в файле <filename>screens.xml</filename> модуля <structname>gui</structname>: </para>
         <programlisting>&lt;screen id=&quot;sales$Order.edit&quot; template=&quot;/com/haulmont/sales/gui/order/order-edit.xml&quot;/&gt;</programlisting>
         <para>Пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>

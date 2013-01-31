@@ -567,7 +567,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         &lt;param-name&gt;appPropertiesConfig&lt;/param-name&gt;
         &lt;param-value&gt;
             classpath:cuba-app.properties
-            classpath:sales-app.properties
+            classpath:app.properties
             file:${catalina.home}/conf/app-core/local.app.properties
         &lt;/param-value&gt;
     &lt;/context-param&gt;
@@ -619,7 +619,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         &lt;param-name&gt;appPropertiesConfig&lt;/param-name&gt;
         &lt;param-value&gt;
             classpath:cuba-web-app.properties
-            classpath:sales-web-app.properties
+            classpath:web-app.properties
             file:${catalina.home}/conf/app/local.app.properties
         &lt;/param-value&gt;
     &lt;/context-param&gt;
@@ -921,7 +921,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               <link linkend="resources">Resources</link>
             </code>.</para>
           <para>Используется в блоках Web Client и Desktop Client.</para>
-          <para>Пример:<programlisting>cuba.menuConfig=cuba-web-menu.xml sales-web-menu.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.menuConfig=cuba-web-menu.xml web-menu.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.metadataConfig">
@@ -934,7 +934,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               <link linkend="resources">Resources</link>
             </code>.</para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
-          <para>Пример:<programlisting>cuba.metadataConfig=cuba-metadata.xml sales-metadata.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.metadataConfig=cuba-metadata.xml metadata.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.passwordEncryptionModule">
@@ -974,7 +974,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               <link linkend="permissions.xml">permissions.xml</link>
             </filename>. </para>
           <para>Используется в блоках Web Client и Desktop Client.</para>
-          <para>Пример:<programlisting>cuba.permissionConfig=cuba-web-permissions.xml sales-web-permissions.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.permissionConfig=cuba-web-permissions.xml web-permissions.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.persistenceConfig">
@@ -987,7 +987,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               <link linkend="resources">Resources</link>
             </code>.</para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
-          <para>Пример:<programlisting>cuba.persistenceConfig=cuba-persistence.xml sales-persistence.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.persistenceConfig=cuba-persistence.xml persistence.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.portal.anonymousUserLogin">
@@ -1013,7 +1013,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               <link linkend="resources">Resources</link>
             </code>.</para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
-          <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml sales-remoting-spring.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.springContextConfig">
@@ -1026,7 +1026,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               <link linkend="resources">Resources</link>
             </code>.</para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
-          <para>Пример:<programlisting>cuba.springContextConfig=cuba-spring.xml sales-spring.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.springContextConfig=cuba-spring.xml spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.tempDir">
@@ -1120,7 +1120,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <listitem>
           <para>Конфигурационный параметр, задающий набор файлов <link linkend="views.xml">views.xml</link>, автоматически развертываемых на старте приложения. См. <xref linkend="views"/></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
-          <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml sales-views.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml views.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.windowConfig">
@@ -1133,7 +1133,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               <link linkend="resources">Resources</link>
             </code>.</para>
           <para>Используется в блоках Web Client и Desktop Client.</para>
-          <para>Пример:<programlisting>cuba.windowConfig=cuba-web-screens.xml sales-web-screens.xml</programlisting></para>
+          <para>Пример:<programlisting>cuba.windowConfig=cuba-web-screens.xml web-screens.xml</programlisting></para>
         </listitem>
       </varlistentry>
       <varlistentry>
