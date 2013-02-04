@@ -403,6 +403,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
+
+        impl.refreshComponent();
     }
 
     protected String instanceCaption(Instance instance) {

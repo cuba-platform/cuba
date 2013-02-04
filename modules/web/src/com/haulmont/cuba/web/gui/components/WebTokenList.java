@@ -376,6 +376,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
+
+        component.refreshComponent();
     }
 
     @Override
