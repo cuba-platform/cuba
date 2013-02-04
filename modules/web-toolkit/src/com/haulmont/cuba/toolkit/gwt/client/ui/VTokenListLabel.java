@@ -30,6 +30,7 @@ public class VTokenListLabel extends SimplePanel implements Paintable {
 
     private String key;
     private boolean editable;
+    private boolean canOpen;
 
     public VTokenListLabel() {
         super();
@@ -67,6 +68,12 @@ public class VTokenListLabel extends SimplePanel implements Paintable {
             getElement().removeClassName("noedit");
         }
 
+        canOpen = uidl.getBooleanAttribute("canopen");
+        if (canOpen)
+            getElement().addClassName("open");
+        else
+            getElement().removeClassName("open");
+
         label.setText(uidl.getChildString(0));
     }
 
@@ -74,6 +81,8 @@ public class VTokenListLabel extends SimplePanel implements Paintable {
     public void onBrowserEvent(Event event) {
         if (DOM.eventGetType(event) == Event.ONCLICK && DOM.eventGetTarget(event) != label.getElement() && editable) {
             client.updateVariable(paintableId, "removeToken", key, true);
+        } else if (DOM.eventGetType(event) == Event.ONCLICK && DOM.eventGetTarget(event) == label.getElement()) {
+            client.updateVariable(paintableId, "itemClick", key, true);
         }
     }
 }

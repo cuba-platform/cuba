@@ -80,6 +80,10 @@ public interface TokenList extends Field, Component.BelongToFrame,
     ItemChangeHandler getItemChangeHandler();
     void setItemChangeHandler(ItemChangeHandler handler);
 
+    ItemClickListener getItemClickListener();
+
+    void setItemClickListener(ItemClickListener itemClickListener);
+
     void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator);
     TokenStyleGenerator getTokenStyleGenerator();
 
@@ -90,6 +94,10 @@ public interface TokenList extends Field, Component.BelongToFrame,
     interface ItemChangeHandler {
         void addItem(Object item);
         void removeItem(Object item);
+    }
+
+    interface ItemClickListener {
+        void onClick(Object item);
     }
 
     enum Position {

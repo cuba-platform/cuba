@@ -11,7 +11,6 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.toolkit.gwt.client.ui.VTokenListLabel;
-import com.haulmont.cuba.web.gui.components.WebTokenList;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.ClientWidget;
@@ -27,6 +26,7 @@ public class TokenListLabel extends Label {
     private String key;
 
     private List<RemoveTokenListener> listeners;
+    private ClickListener clickListener;
 
     private boolean editable;
 
@@ -34,17 +34,16 @@ public class TokenListLabel extends Label {
     public void paintContent(PaintTarget target) throws PaintException {
         target.addAttribute("key", key);
         target.addAttribute("editable", editable);
+        target.addAttribute("canopen", clickListener != null);
         super.paintContent(target);
     }
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
-        if (variables.containsKey("removeToken")) {
-            String key = (String) variables.get("removeToken");
-            if (key.equals(this.key)) {
-                fireRemoveListeners();
-            }
-        }
+        if (canFireEvent(variables, "removeToken"))
+            fireRemoveListeners();
+        if (canFireEvent(variables, "itemClick"))
+            fireClick();
     }
 
     public void addListener(RemoveTokenListener listener) {
@@ -63,6 +62,18 @@ public class TokenListLabel extends Label {
         }
     }
 
+    public void setClickListener(ClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    private boolean canFireEvent(Map<String, Object> variables, String event) {
+        if (variables.containsKey(event)) {
+            String key = (String) variables.get(event);
+            return key.equals(this.key);
+        }
+        return false;
+    }
+
     private void fireRemoveListeners() {
         if (listeners != null) {
             for (final RemoveTokenListener listener : listeners) {
@@ -71,8 +82,18 @@ public class TokenListLabel extends Label {
         }
     }
 
+    private void fireClick() {
+        if (clickListener != null) {
+            clickListener.onClick(this);
+        }
+    }
+
     public interface RemoveTokenListener {
         void removeToken(TokenListLabel source);
+    }
+
+    public interface ClickListener {
+        void onClick(TokenListLabel source);
     }
 
     public void setKey(String key) {

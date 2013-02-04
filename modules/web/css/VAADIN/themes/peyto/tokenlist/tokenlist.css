@@ -38,6 +38,9 @@
     margin-right: 0;
 }
 
+.token-list .token-list-label.open .content {
+    cursor: pointer;
+}
 
 /* fix css for IE */
 .v-ie7 .token-list.inline .token-list-label .content, .v-ie8 .token-list.inline .token-list-label .content {
