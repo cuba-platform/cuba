@@ -781,7 +781,7 @@ private Set&lt;Constraint&gt; constraints;</programlisting></para>
 private Driver driver;</programlisting></para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="composition_annotation">
               <term>
                 <code>@Composition</code>
               </term>
@@ -790,6 +790,7 @@ private Driver driver;</programlisting></para>
                 <para>Например список пунктов в заказе (класс <code>Order</code> содержит коллекцию экземпляров <code>Item</code>):<programlisting>@OneToMany(mappedBy = &quot;order&quot;)
 @Composition
 protected List&lt;Item&gt; items;</programlisting></para>
+                <para>Указание для связи аннотации <code>@Composition</code> позволяет организовать в <link linkend="screen_edit">экранах редактирования</link> специальный <link linkend="datasource_commitMode">режим коммита</link> источников данных, при котором изменения экземпляров детализирующей сущности сохраняются в базе данных только при коммите основной сущности.</para>
               </listitem>
             </varlistentry>
             <varlistentry id="localizedValue_annotation">
@@ -8931,6 +8932,46 @@ where
           <para>В данном случае значение параметра, взятое из компонента <code>customerNameField</code>, будет переведено в нижний регистр и обрамлено символами &quot;%&quot;, а затем в базе данных будет выполнен SQL запрос с условием вида <code>lower(C.NAME) like ?</code></para>
           <para>Следует иметь в виду, что при таком поиске индекс, созданный в БД по полю <code>NAME</code>, не используется. </para>
         </section>
+      </section>
+      <section id="datasource_commitMode">
+        <title>Режим коммита</title>
+        <para>Любой источник данных имеет параметр типа <code>Datasource.CommitMode</code>, определяющий, куда будут отправляться измененные сущности при коммите:<itemizedlist>
+            <listitem>
+              <para><code>CommitMode.DATASTORE</code> - на Middleware через установленный для данного источника <code>DataSupplier</code>. </para>
+            </listitem>
+            <listitem>
+              <para><code>CommitMode.PARENT</code> - в так называемый &quot;родительский&quot; источник данных, установленный для данного источника и доступный через метод <code>DatasourceImplementation.getParent()</code>.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Режим <code>CommitMode.PARENT</code> используется в экранах редактирования композитных сущностей, которые представляют собой экземпляр основной сущности (master), и связанную с ним коллекцию экземпляров детализирующей сущности (detail). При этом детализирующая сущность имеет смысл только часть как часть основной сущности, и ее изменения должны отправляться в базу данных только вместе с основной сущностью в единой транзакции.</para>
+        <para>Для организации такой связи в классе основной сущности ссылка на детализирующую сущность помечается аннотацией <link linkend="composition_annotation">
+            <code>@Composition</code>
+          </link>.</para>
+        <para>Последовательность действий и условия правильной работы режима <code>CommitMode.PARENT</code>:<itemizedlist>
+            <listitem>
+              <para>Открывается экран редактирования основной сущности (master), в котором в элементе <sgmltag>dsContext</sgmltag> внутри основного источника описаны источники детализирующих сущностей, обязательно  на всю глубину композиции. Например, если сущность <code>Airport</code> имеет <code>@Composition</code> коллекцию сущности <code>Terminal</code>, а та в свою очередь имеет <code>@Composition</code> коллекцию сущности <code>MeetingPoint</code>, то описание источников должно быть примерно следующим:<programlisting>&lt;datasource
+        id=&quot;airportDs&quot;
+        class=&quot;com.sample.app.entity.Airport&quot;
+        view=&quot;airportEdit&quot;&gt;
+    &lt;collectionDatasource id=&quot;terminalsDs&quot; 
+                          property=&quot;terminals&quot;&gt;
+        &lt;collectionDatasource id=&quot;meetingPointsDs&quot; 
+                              property=&quot;meetingPoints&quot;/&gt;
+    &lt;/collectionDatasource&gt;
+&lt;/datasource&gt;</programlisting></para>
+              <para>В данном случае источник <code>meetingPointsDs</code> не используется никакими визуальными компонентами текущего экрана, однако он все равно нужен для того, чтобы служить родительским для источников в порождаемых экранах.</para>
+              <para>Все источники данного экрана имеют <code>CommitMode.DATASTORE</code>. </para>
+            </listitem>
+            <listitem>
+              <para>Открывается экран редактирования детализирующей сущности. При этом для главный источник этого экрана имеет <code>CommitMode.PARENT</code>, и родительским для него становится соответствующий <sgmltag>collectionDatasource</sgmltag> экрана основной сущности.</para>
+            </listitem>
+            <listitem>
+              <para>При коммите экрана детализирующей сущности измененный экземпляр попадет не в базу данных, а в <sgmltag>collectionDatasource</sgmltag> экрана основной сущности. </para>
+            </listitem>
+            <listitem>
+              <para>При коммите экрана основной сущности измененный экземпляр детализирующей сущности будет отправлен на Middleware вместе с экземпляром основной сущности.</para>
+            </listitem>
+          </itemizedlist></para>
       </section>
     </section>
     <section id="background_tasks">
