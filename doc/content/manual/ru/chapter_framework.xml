@@ -1441,7 +1441,7 @@ String formattedValue = format.format(value);</programlisting></para>
       </section>
       <section id="meta_annotations">
         <title>Мета-аннотации</title>
-        <para>Мета-аннотации сущностей - набор пар ключ/значение, содержащих дополнительную информацию о сущностей.</para>
+        <para>Мета-аннотации сущностей - набор пар ключ/значение, содержащих дополнительную информацию о сущностях.</para>
         <para>Обращение к мета-аннотациям  производится с помощью метода <link linkend="metaClass">мета-класса</link> <code>getAnnotations()</code>.</para>
         <para>Источниками мета-аннотаций сущности являются:<itemizedlist>
             <listitem>
@@ -2025,7 +2025,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
 });</programlisting>  </para>
           </listitem>
           <listitem>
-            <para>Проверки того, что данный <link linkend="app_tiers">блок</link> приложения полностью инициализирован и готов к выполнению. Такая проверка обычно необходима в методах бинов, автоматически запускаемых <link linkend="scheduled_tasks">планировщиком</link> <application>Sping Framework</application>.</para>
+            <para>Проверки того, что данный <link linkend="app_tiers">блок</link> приложения полностью инициализирован и готов к выполнению. Такая проверка обычно необходима в методах бинов, автоматически запускаемых <link linkend="scheduled_tasks">планировщиком</link> <application>Sping</application>.</para>
             <para>Пример:<programlisting>if (!AppContext.isStarted())
     return;</programlisting></para>
           </listitem>
@@ -2196,7 +2196,7 @@ int timeout = serverConfig.getDefaultQueryTimeoutSec();</programlisting></para>
                 </itemizedlist></para>
             </listitem>
             <listitem>
-              <para>Создать методы доступа к свойству (getter / settter). Если значение свойства не предполагается изменять во время выполнения, метод доступа на запись не нужен. Возможный тип свойства рассмотрен ниже.</para>
+              <para>Создать методы доступа к свойству (getter / setter). Если значение свойства не предполагается изменять во время выполнения, метод доступа на запись не нужен. Возможный тип свойства рассмотрен ниже.</para>
             </listitem>
             <listitem>
               <para>Добавить методу доступа на чтение аннотацию <code>@Property</code>, определяющую имя свойства.</para>
@@ -2353,7 +2353,7 @@ someMessage=Some Message
               <para>Ключ названия атрибута - простое имя класса, затем через точку имя атрибута</para>
             </listitem>
           </itemizedlist></para>
-        <para>Пример русской локализации сущнсти <code>com.abc.sales.entity.Customer</code> - файл <filename>/com/abc/sales/entity/messages_ru.properties</filename>:<programlisting>Customer=Покупатель
+        <para>Пример русской локализации сущности <code>com.abc.sales.entity.Customer</code> - файл <filename>/com/abc/sales/entity/messages_ru.properties</filename>:<programlisting>Customer=Покупатель
 Customer.name=Имя
 Customer.email=Email
 
@@ -2408,7 +2408,7 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
         <para>Основной элемент подсистемы контроля доступа в CUBA-приложении - пользовательская сессия. Это объект класса <code>UserSession</code>, который ассоциирован с аутентифицированным в данный момент в системе пользователем, и содержит информацию о правах доступа пользователя к данным. Объект текущей сессии может быть получен в любом <link linkend="app_tiers">блоке</link> приложения через интерфейс инфраструктуры <code>
             <link linkend="userSessionSource">UserSessionSource</link>
           </code>. </para>
-        <para>Пользовательская сессия создается на <structname>Middleware</structname> при выполнении метода <code>LoginService.login()</code> после аутентификации пользователя по переданному имени и паролю. Объект <code>UserSession</code> затем кэшируется в данном блоке <structname>Middleware</structname>, и возвращается на клиентский уровень. Пр работе в кластере объект сессии реплицируется на соседние узлы кластера <structname>Middleware</structname>. Клиентский блок, получив объект сессии, также сохраняет его у себя, так или иначе ассоциируя с активным пользователем (например в HTTP сессии). Далее все вызовы <structname>Middleware</structname> для данного пользователя сопровождаются передачей идентификатора сессии (типа <code>UUID</code>), причем прикладному коду не нужно об этом заботиться - идентификатор сессии передается автоматически, независимо от сигнатуры вызываемых методов среднего слоя. Обработка вызовов клиентов на <structname>Middleware</structname> начинается с извлечения из кэша сессии по полученному идентификатору и установки ее в потоке выполнения. Объект сессии удаляется из кэша при вызове метода <code>LoginService.logout()</code>, либо при истечения времени бездействия, определяемого свойством  приложения <property>
+        <para>Пользовательская сессия создается на <structname>Middleware</structname> при выполнении метода <code>LoginService.login()</code> после аутентификации пользователя по переданному имени и паролю. Объект <code>UserSession</code> затем кэшируется в данном блоке <structname>Middleware</structname>, и возвращается на клиентский уровень. При работе в кластере объект сессии реплицируется на соседние узлы кластера <structname>Middleware</structname>. Клиентский блок, получив объект сессии, также сохраняет его у себя, так или иначе ассоциируя с активным пользователем (например в HTTP сессии). Далее все вызовы <structname>Middleware</structname> для данного пользователя сопровождаются передачей идентификатора сессии (типа <code>UUID</code>), причем прикладному коду не нужно об этом заботиться - идентификатор сессии передается автоматически, независимо от сигнатуры вызываемых методов среднего слоя. Обработка вызовов клиентов на <structname>Middleware</structname> начинается с извлечения из кэша сессии по полученному идентификатору и установки ее в потоке выполнения. Объект сессии удаляется из кэша при вызове метода <code>LoginService.logout()</code>, либо при истечения времени бездействия, определяемого свойством  приложения <property>
             <link linkend="cuba.userSessionExpirationTimeoutSec">cuba.userSessionExpirationTimeoutSec</link>
           </property>.</para>
         <para>Таким образом, идентификатор сессии, создаваемой при входе пользователя в систему, служит для аутентификации пользователя при каждом вызове среднего слоя.</para>
@@ -2721,7 +2721,7 @@ public class OrderWorkerBean implements OrderWorker {
     public void calculateTotals(Order order) {
     }
 }</programlisting>
-        <para>Управляемые бины можно создавать на любом <link linkend="app_tiers">уровне</link>, так как контейнер <application>Spring Framework</application> используется во всех стандартные блоках приложения.</para>
+        <para>Управляемые бины можно создавать на любом <link linkend="app_tiers">уровне</link>, так как контейнер <application>Spring Framework</application> используется во всех стандартных блоках приложения.</para>
       </section>
       <section>
         <title>Использование бина</title>
