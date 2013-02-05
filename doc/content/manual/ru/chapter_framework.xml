@@ -2086,11 +2086,9 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
         <para><para>Основной способ доступа к свойствам приложения из прикладного кода − использование механизма <link linkend="config_interfaces">конфигурационных интерфейсов</link>. Кроме того, все параметры конфигурации и развертывания доступны через методы класса <code>
               <link linkend="appContext">AppContext</link>
             </code>.</para></para>
-        <para>Некоторые блоки приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <structname>Middleware</structname> имеется JMX-интерфейс <code>
+        <para>Некоторые блоки приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, в блоках Middleware, Web Client и Web Portal имеется JMX-интерфейс <code>
             <link linkend="configStorageMBean">ConfigStorageMBean</link>
-          </code>, а на уровне <structname>Web Client</structname> − <code>
-            <link linkend="configurationMBean">ConfigurationMBean</link>
-          </code>. Методы этих интерфейсов работают по отдельности с параметрами конфигурации и развертывания (<code>*AppProperties</code>) и с параметрами времени выполнения (<code>*DbProperties</code>). Это обусловлено различием механизмов хранения этих категорий свойств.</para>
+          </code>, позволяющий получить и задать значение любого свойства во время работы приложения. </para>
       </section>
       <section id="app_properties_files">
         <title>Хранение свойств в файлах</title>
@@ -2865,7 +2863,17 @@ public class Orders implements OrdersMBean {
         <section id="configStorageMBean">
           <title>ConfigStorageMBean</title>
           <para><code>ConfigStorageMBean</code> позволяет просматривать и задавать значения <link linkend="app_properties">свойствам приложения</link> в блоках <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>.</para>
-          <para>Следует иметь в виду, что измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
+          <para>Данный интерфейс имеет отдельные наборы методов для работы  с параметрами конфигурации и развертывания (<code>*AppProperties</code>) и с параметрами времени выполнения (<code>*DbProperties</code>), что обусловлено различием механизмов хранения этих категорий свойств.</para>
+          <warning>
+            <para>Существуют следующие ограничения в использовании интерфейса <code>ConfigStorageMBean</code>:<itemizedlist>
+                <listitem>
+                  <para>Отображаются только явно установленные в месте хранения свойства. Если значение свойства не задано, то в случае обращения к нему из кода программы через <link linkend="config_interfaces">конфигурационный интерфейс</link>, возвращается значение по умолчанию. Однако через <code>ConfigStorageMBean</code> значение по умолчанию не может быть получено. </para>
+                </listitem>
+                <listitem>
+                  <para>Измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
+                </listitem>
+              </itemizedlist></para>
+          </warning>
           <para>JMX ObjectName: <literal>app-core.cuba:type=ConfigStorage</literal>, <literal>app.cuba:type=ConfigStorage</literal>, <literal>app-portal.cuba:type=ConfigStorage</literal></para>
         </section>
         <section id="persistenceManagerMBean">
