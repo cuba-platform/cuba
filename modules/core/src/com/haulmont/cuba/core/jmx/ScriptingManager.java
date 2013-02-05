@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,10 +30,13 @@ public class ScriptingManager implements ScriptingManagerMBean {
     @Inject
     protected Scripting scripting;
 
+    @Override
     public String getRootPath() {
         return configuration.getConfig(GlobalConfig.class).getConfDir();
     }
 
+    @Authenticated
+    @Override
     public String runGroovyScript(String scriptName) {
         try {
             return scripting.runGroovyScript(scriptName, Collections.<String, Object>emptyMap());
