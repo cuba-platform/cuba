@@ -23,9 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements CheckBox {
 
@@ -35,6 +34,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     private boolean updatingInstance;
     private Object prevValue;
+
+    private boolean editable = true;
+
+    private boolean enabled = true;
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
@@ -159,12 +162,24 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     @Override
     public boolean isEditable() {
-        return impl.isEnabled();
+        return editable;
     }
 
     @Override
     public void setEditable(boolean editable) {
-        impl.setEnabled(editable);
+        this.editable = editable;
+        impl.setEnabled(editable && enabled);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        impl.setEnabled(editable && enabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
     private void updateInstance() {

@@ -25,8 +25,8 @@ import java.util.*;
  */
 public class DesktopOptionsGroup
         extends DesktopAbstractOptionsField<JPanel>
-        implements OptionsGroup
-{
+        implements OptionsGroup {
+
     private boolean multiselect;
     private boolean optionsInitialized;
     private Map<ValueWrapper, JToggleButton> items = new HashMap<>();
@@ -34,6 +34,10 @@ public class DesktopOptionsGroup
 
     private Orientation orientation = Orientation.VERTICAL;
     private MigLayout layout;
+
+    private boolean editable = true;
+
+    private boolean enabled = true;
 
     public DesktopOptionsGroup() {
         layout = new MigLayout();
@@ -146,6 +150,7 @@ public class DesktopOptionsGroup
             button = new JRadioButton(item.toString());
             buttonGroup.add(button);
         }
+        button.setEnabled(enabled && editable);
         button.addActionListener(
                 new ActionListener() {
                     @Override
@@ -260,11 +265,14 @@ public class DesktopOptionsGroup
 
     @Override
     public boolean isEditable() {
-        return true;
+        return editable;
     }
 
     @Override
     public void setEditable(boolean editable) {
+        this.editable = editable;
+        for (JToggleButton button : items.values())
+            button.setEnabled(enabled && editable);
     }
 
     @Override
@@ -282,8 +290,14 @@ public class DesktopOptionsGroup
     }
 
     @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
         for (JToggleButton button : items.values())
-            button.setEnabled(enabled);
+            button.setEnabled(enabled && editable);
     }
 }
