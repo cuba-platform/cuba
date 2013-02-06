@@ -202,7 +202,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 //        if (ds.size() >= persistenceManager.getMaxFetchUI(entityName)) {
 //            log.debug("MaxFetchUI threshold exceeded for " + entityName);
 //            String msg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "maxFetchUIExceeded");
-//            AppUI app = AppUI.getInstance();
+//            App app = App.getInstance();
 //            app.getAppLog().debug(entityName + ": " + msg);
 //            app.getWindowManager().showNotification(msg, IFrame.NotificationType.HUMANIZED);
 //        }
@@ -238,7 +238,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         }
 
         @Override
-        public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation) {
+        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
                 itemsCache.clear();

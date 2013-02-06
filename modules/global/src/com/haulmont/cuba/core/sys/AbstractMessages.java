@@ -78,7 +78,7 @@ public abstract class AbstractMessages implements Messages {
 
         for (Locale locale : globalConfig.getAvailableLocales().values()) {
             Datatypes.setFormatStrings(
-                    locale,
+                    globalConfig.getUseLocaleLanguageOnly() ? Locale.forLanguageTag(locale.getLanguage()) : locale,
                     new FormatStrings(
                             getMessage(mainMessagePack, "numberDecimalSeparator", locale).charAt(0),
                             getMessage(mainMessagePack, "numberGroupingSeparator", locale).charAt(0),
@@ -390,8 +390,8 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
-    private String getLocaleSuffix(Locale locale) {
-        return (locale != null ? "_" + locale.getLanguage() : "");
+    protected String getLocaleSuffix(Locale locale) {
+        return (locale != null ? "_" + locale : "");
     }
 
     private void cachePropertiesFromStream(String pack, Locale locale, boolean defaultLocale,

@@ -18,7 +18,16 @@ allprojects {
 }
 
 buildscript {
-	ext.cubaPlugin = [group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.5.1-SNAPSHOT']
+	def cubaPluginVersion = '1.5.1-SNAPSHOT'
+	def docPluginVersion = '1.2.0-SNAPSHOT'
+	
+	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
+	def DOC_PLUGIN_VERSION = 'docPluginVersion'
+
+	cubaPluginVersion = rootProject.hasProperty(CUBA_PLUGIN_VERSION) ? rootProject[CUBA_PLUGIN_VERSION] : cubaPluginVersion
+	docPluginVersion = rootProject.hasProperty(DOC_PLUGIN_VERSION) ? rootProject[DOC_PLUGIN_VERSION] : docPluginVersion 
+	
+	ext.cubaPlugin = [group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaPluginVersion]
 	
     repositories {
         mavenLocal()
@@ -32,7 +41,7 @@ buildscript {
     }
     dependencies {
         classpath cubaPlugin
-        classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: '1.2.0-SNAPSHOT'
+        classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: docPluginVersion
     }
 }
 
@@ -75,14 +84,14 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'commons-lang', name: 'commons-lang', version: '2.4')
         compile(group: 'commons-collections', name: 'commons-collections', version: '3.2.1')
         compile(group: 'commons-io', name: 'commons-io', version: '1.4')
-        compile(group: 'commons-codec', name: 'commons-codec', version: '1.3')
+        compile(group: 'commons-codec', name: 'commons-codec', version: '1.6')
         compile(group: 'commons-cli', name: 'commons-cli', version: '1.2')
         compile(group: 'commons-pool', name: 'commons-pool', version: '1.5.1')
         compile(group: 'dom4j', name: 'dom4j', version: '1.6.1')
         compile(group: 'javax.mail', name: 'mail', version: '1.4.1')
         compile(group: 'log4j', name: 'log4j', version: '1.2.16')
         compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.10')
-        compile(group: 'net.sourceforge.findbugs', name: 'jsr305', version: '1.3.2')
+        compile(group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.1')
         compile(group: 'com.haulmont.thirdparty', name: 'javaee-api', version: '6.0.20091228')
         compile(group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10')
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
@@ -93,10 +102,10 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')       
         compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')       
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
-        compile(group: 'org.springframework', name: 'spring-core', version: '3.1.2.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-beans', version: '3.1.2.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-context', version: '3.1.2.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-web', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-core', version: '3.1.3.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-beans', version: '3.1.3.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context', version: '3.1.3.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-web', version: '3.1.3.RELEASE')
 
         testCompile(group: 'com.haulmont.thirdparty', name: 'jmockit', version: '0.999.10')
         testCompile(group: 'junit', name: 'junit', version: '4.5')
@@ -178,10 +187,10 @@ configure(coreModule) {
         compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.5')
         compile(group: 'org.mybatis', name: 'mybatis-spring', version: '1.0.1')
         compile(group: 'org.json', name: 'json', version: '20090211')
-        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.1.2.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-orm', version: '3.1.2.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.2.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.1.3.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-orm', version: '3.1.3.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.3.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.3.RELEASE')
         compile(poi) // POI is actually not required by core, but remains here to simplify dependencies for reports project
 
         provided(servletApi)
@@ -276,7 +285,7 @@ configure(webModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
         compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2')
         compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.3.RELEASE')
 
         compile(group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion)
         compile(group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion)
@@ -415,7 +424,7 @@ configure(portalModule) {
         }
     }
 
-    def springSecurityVersion = '3.1.2.RELEASE'
+    def springSecurityVersion = '3.1.3.RELEASE'
 
     dependencies {
         compile(globalModule)
@@ -431,8 +440,8 @@ configure(portalModule) {
         groovy(groovyArtifact)
         groovy(asm)
 
-        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.2.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-jdbc', version: '3.1.2.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.3.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-jdbc', version: '3.1.3.RELEASE')
 
         testCompile(clientModule.sourceSets.test.output)
     }
@@ -527,7 +536,7 @@ task transformManual(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
-task buildManualXhtml(type: Docbook2Xhtml, dependsOn: transformManual) {
+/*task buildManualXhtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destFile = new File(docTmpDir, 'manual-pdf/manual-pdf.html')
     stylesheetName = 'pdf.xsl'
@@ -538,15 +547,15 @@ task buildManualXhtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     resources += fileTree(docCssDir) {
         include '*.css'
     }
-}
+}*/
 
-task buildManualPdf(type: Xhtml2Pdf, dependsOn: buildManualXhtml) {
+/*task buildManualPdf(type: Xhtml2Pdf, dependsOn: buildManualXhtml) {
     inputs.dir docCssDir
     sourceFile = buildManualXhtml.destFile
     destFile = new File(docDstDir, 'manual/ru/pdf/manual.pdf')
     classpath = configurations.buildDoc
     fonts = zipTree(configurations.docFonts.singleFile)
-}
+}*/
 
 task transformSecurity(type: TransformDocbook) {
     sourceDir = new File(docSrcDir, 'security/ru')
@@ -629,7 +638,8 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 }
 
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
+        dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml,buildSecurityPdf]) {
+		//dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'

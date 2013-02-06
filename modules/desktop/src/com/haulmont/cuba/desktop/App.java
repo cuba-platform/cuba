@@ -7,15 +7,11 @@
 package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
-import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
-import com.haulmont.cuba.desktop.sys.DesktopAppContextLoader;
-import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
-import com.haulmont.cuba.desktop.sys.MainWindowProperties;
-import com.haulmont.cuba.desktop.sys.MenuBuilder;
+import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
@@ -495,7 +491,7 @@ public class App implements ConnectionListener {
             windowManager.setTabsPane(tabsPane);
 
             initExceptionHandlers(true);
-            initTimeZone();
+            initClientTime();
 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -555,14 +551,10 @@ public class App implements ConnectionListener {
         }
     }
 
-    protected void initTimeZone() {
-        DesktopConfig desktopConfig = configuration.getConfig(DesktopConfig.class);
-        if (desktopConfig.isUseServerTimeZone()) {
-            ServerInfoService serverInfoService = AppBeans.get(ServerInfoService.NAME);
-            TimeZone serverTimeZone = serverInfoService.getTimeZone();
-            TimeZone.setDefault(serverTimeZone);
-            log.info("Time zone set to " + serverTimeZone);
-        }
+    protected void initClientTime() {
+        ClientTimeSynchronizer clientTimeSynchronizer = AppBeans.get(ClientTimeSynchronizer.NAME);
+        clientTimeSynchronizer.syncTimeZone();
+        clientTimeSynchronizer.syncTime();
     }
 
     public TopLevelFrame getMainFrame() {

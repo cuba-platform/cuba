@@ -7,8 +7,10 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
@@ -49,9 +51,11 @@ import java.util.List;
  * @version $Id$
  */
 public class DesktopWindow implements Window, Component.Disposable,
-        Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer
-{
-    private boolean disposed = false;
+        Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer {
+
+    protected Log log = LogFactory.getLog(getClass());
+
+    protected boolean disposed = false;
 
     protected BoxLayoutAdapter layoutAdapter;
     protected JPanel panel;
@@ -66,6 +70,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected DsContext dsContext;
     protected WindowContext context;
     protected String messagePack;
+    protected String focusComponentId;
     protected Element xmlDescriptor;
     protected String caption;
     protected String description;
@@ -77,18 +82,17 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected DesktopFrameActionsHolder actionsHolder;
 
-    private List<CloseListener> listeners = new ArrayList<>();
+    protected List<CloseListener> listeners = new ArrayList<>();
 
     protected boolean forceClose;
     protected Runnable doAfterClose;
 
     protected List<Timer> timers = new ArrayList<>();
 
-    private Log log = LogFactory.getLog(DesktopWindow.class);
+    protected DesktopWindowManager windowManager;
 
-    private DesktopWindowManager windowManager;
-
-    private String focusComponentId = null;
+    protected Configuration configuration = AppBeans.get(Configuration.class);
+    protected Messages messages = AppBeans.get(Messages.class);
 
     public DesktopWindow() {
         initLayout();
@@ -161,29 +165,59 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public boolean close(final String actionId) {
-        WindowManager windowManager = getWindowManager();
-
         if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
-            Messages messages = AppBeans.get(Messages.NAME);
-            windowManager.showOptionDialog(
-                    messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved.caption"),
-                    messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
-                    MessageType.WARNING,
-                    new Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
-                                public void actionPerform(Component component) {
-                                    forceClose = true;
-                                    close(actionId);
+            if (configuration.getConfig(ClientConfig.class).getUseSaveConfirmation()) {
+                windowManager.showOptionDialog(
+                        messages.getMainMessage("closeUnsaved.caption"),
+                        messages.getMainMessage("saveUnsaved"),
+                        MessageType.WARNING,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.YES) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        getDsContext().commit();
+                                        close(COMMIT_ACTION_ID, true);
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.NO) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        close(actionId, true);
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.CANCEL) {
+                                    @Override
+                                    public String getIcon() {
+                                        return null;
+                                    }
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        doAfterClose = null;
+                                    }
                                 }
+                        }
+                );
+            } else {
+                windowManager.showOptionDialog(
+                        messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved.caption"),
+                        messages.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
+                        MessageType.WARNING,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.YES) {
+                                    public void actionPerform(Component component) {
+                                        forceClose = true;
+                                        close(actionId);
+                                    }
 
-                            },
-                            new DialogAction(DialogAction.Type.NO) {
-                                public void actionPerform(Component component) {
-                                    doAfterClose = null;
+                                },
+                                new DialogAction(DialogAction.Type.NO) {
+                                    public void actionPerform(Component component) {
+                                        doAfterClose = null;
+                                    }
                                 }
-                            }
-                    }
-            );
+                        }
+                );
+            }
             return false;
         }
 
@@ -312,13 +346,6 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setMessagesPack(String name) {
         messagePack = name;
-    }
-
-    @Override
-    public String getMessage(String key) {
-        if (messagePack == null)
-            throw new IllegalStateException("MessagePack is not set");
-        return AppBeans.get(Messages.class).getMessage(messagePack, key);
     }
 
     @Override
@@ -756,7 +783,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                 buffer.append(error.description).append("<br/>");
             }
             showNotification(
-                    AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "validationFail.caption"),
+                    messages.getMainMessage("validationFail.caption"),
                     buffer.toString(),
                     NotificationType.HUMANIZED
             );
@@ -849,7 +876,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         public Lookup() {
             super();
-            addAction(new AbstractShortcutAction(LOOKUP_SELECTED_ACTION_ID,
+            addAction(new AbstractShortcutAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID,
                     new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
@@ -869,14 +896,14 @@ public class DesktopWindow implements Window, Component.Disposable,
             if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
                 com.haulmont.cuba.gui.components.Table table = (com.haulmont.cuba.gui.components.Table) lookupComponent;
                 table.setEnterPressAction(
-                        new AbstractAction(LOOKUP_ENTER_PRESSED_ACTION_ID) {
+                        new AbstractAction(WindowDelegate.LOOKUP_ENTER_PRESSED_ACTION_ID) {
                             @Override
                             public void actionPerform(Component component) {
                                 fireSelectAction();
                             }
                         });
                 table.setItemClickAction(
-                        new AbstractAction(LOOKUP_ITEM_CLICK_ACTION_ID) {
+                        new AbstractAction(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID) {
                             @Override
                             public void actionPerform(Component component) {
                                 fireSelectAction();
@@ -955,8 +982,6 @@ public class DesktopWindow implements Window, Component.Disposable,
             );
 
             selectListener = new SelectListener();
-
-            Messages messages = AppBeans.get(Messages.NAME);
 
             JButton selectBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
             selectBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));

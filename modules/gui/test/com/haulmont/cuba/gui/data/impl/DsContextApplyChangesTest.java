@@ -101,21 +101,18 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
                 .setMetaClass(metadataSession.getClass(TestMasterEntity.class))
                 .setViewName("withDetail");
         masterDs = masterDsBuilder.buildDatasource();
-        masterDsContext.register(masterDs);
 
         masterDsBuilder.reset().setId("detailDs")
                 .setMetaClass(metadataSession.getClass(TestDetailEntity.class))
                 .setMaster(masterDs)
                 .setProperty("detail");
         detailDs = masterDsBuilder.buildDatasource();
-        masterDsContext.register(detailDs);
 
         masterDsBuilder.reset().setId("embeddedDs")
                 .setMetaClass(metadataSession.getClass(TestEmbeddableEntity.class))
                 .setMaster(detailDs)
                 .setProperty("embeddable");
         embeddableDs = masterDsBuilder.buildDatasource();
-        masterDsContext.register(embeddableDs);
 
         for (Datasource ds : masterDsContext.getAll()) {
             ((DatasourceImplementation) ds).initialized();

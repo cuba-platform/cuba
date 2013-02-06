@@ -25,7 +25,7 @@
   </warning>
   <section>
     <title>Установка PostgreSQL 9.1</title>
-    <para>Сайт компании-разработчика: <ulink url="http://www.postgresql.org/">http://www.postgresql.org/</ulink></para>
+    <para>Сайт: <ulink url="http://www.postgresql.org/">http://www.postgresql.org/</ulink></para>
     <para>Дистрибутив: <ulink url="http://www.enterprisedb.com/products-services-training/pgdownload#windows">http://www.enterprisedb.com/products-services-training/pgdownload #windows</ulink></para>
     <orderedlist spacing="compact">
       <listitem>
@@ -96,7 +96,7 @@
   </section>
   <section>
     <title>Установка Java SE 7</title>
-    <para>Сайт компании-разработчика: <ulink url="http://oracle.com/technetwork/java/">http://oracle.com/technetwork/java</ulink></para>
+    <para>Сайт: <ulink url="http://oracle.com/technetwork/java/">http://oracle.com/technetwork/java</ulink></para>
     <para>Дистрибутив: <ulink url="http://www.oracle.com/technetwork/java/javase/downloads">http://www.oracle.com/technetwork/java/javase/downloads</ulink></para>
     <orderedlist>
       <listitem>
@@ -160,7 +160,7 @@
   </section>
   <section id="gradle_install">
     <title>Установка Gradle 1.0</title>
-    <para>Сайт компании-разработчика: <ulink url="http://www.gradle.org/">http://www.gradle.org</ulink></para>
+    <para>Сайт: <ulink url="http://www.gradle.org/">http://www.gradle.org</ulink></para>
     <para>Дистрибутив: <ulink url="http://services.gradle.org/distributions/gradle-1.0-all.zip">http://services.gradle.org/distributions/gradle-1.0-all.zip</ulink></para>
     <orderedlist>
       <listitem>
@@ -185,7 +185,7 @@
   </section>
   <section>
     <title>Установка IntelliJ IDEA 11 Community Edition</title>
-    <para>Сайт компании-разработчика: <ulink url="http://www.jetbrains.com/">http://www.jetbrains.com</ulink></para>
+    <para>Сайт: <ulink url="http://www.jetbrains.com/">http://www.jetbrains.com</ulink></para>
     <para>Дистрибутив: <ulink url="http://www.jetbrains.com/idea/download">http://www.jetbrains.com/idea/download</ulink></para>
     <orderedlist>
       <listitem>

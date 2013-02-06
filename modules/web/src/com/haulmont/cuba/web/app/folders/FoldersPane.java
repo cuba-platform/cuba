@@ -12,27 +12,20 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
-import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
-import com.haulmont.cuba.web.AppTimers;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
-import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
@@ -40,10 +33,6 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Tree;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -184,7 +173,8 @@ public class FoldersPane extends VerticalLayout {
                 }
 
                 int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
-
+                                    
+        // vaadin7
                 // find old timers
 //                AppTimers appTimers = AppUI.getInstance().getTimers();
 //                Collection<Timer> timers = appTimers.getAll(parentAppWindow);
@@ -528,7 +518,8 @@ public class FoldersPane extends VerticalLayout {
         }
 
         WindowParams.FOLDER_ID.set(params, folder.getId());
-
+            
+        // vaadin7
 //        Window window = AppUI.getInstance().getWindowManager().openWindow(windowInfo,
 //                WindowManager.OpenType.NEW_TAB, params);
 
@@ -536,6 +527,8 @@ public class FoldersPane extends VerticalLayout {
 
         if (strings.length > 1) {
             String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');
+
+        // vaadin7
 //            filterComponent = window.getComponent(filterComponentId);
 
             FilterEntity filterEntity = new FilterEntity();
@@ -555,7 +548,7 @@ public class FoldersPane extends VerticalLayout {
             }
             filterComponent.setFilterEntity(filterEntity);
         }
-
+        // vaadin7
 //        window.applySettings(new SettingsImpl(window.getId()));
 
         if (filterComponent != null && folder instanceof SearchFolder) {
@@ -565,7 +558,8 @@ public class FoldersPane extends VerticalLayout {
                         .applyPresentation(searchFolder.getPresentation().getId());
             }
         }
-
+            
+        // vaadin7
 //        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
 
@@ -836,7 +830,7 @@ public class FoldersPane extends VerticalLayout {
                             refreshFolders();
                         }
                     });
-
+              // vaadin7
 //            window.addListener(new com.vaadin.ui.Window.CloseListener() {
 //                private static final long serialVersionUID = 5604371155722856067L;
 //
@@ -896,6 +890,7 @@ public class FoldersPane extends VerticalLayout {
                 } else
                     return;
             }
+            // vaadin7
 //            window.addListener(new com.vaadin.ui.Window.CloseListener() {
 //                private static final long serialVersionUID = 3267969862627920749L;
 //
@@ -918,6 +913,7 @@ public class FoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
+              // vaadin7
 //            AppUI.getInstance().getWindowManager().showOptionDialog(
 //                    messages.getMainMessage("dialogs.Confirmation"),
 //                    messages.getMainMessage("folders.removeFolderConfirmation"),
@@ -964,29 +960,30 @@ public class FoldersPane extends VerticalLayout {
         @Override
         public void perform(final Folder folder) {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-//            final FileUploadDialog dialog = AppUI.getInstance().getWindowManager().
-//                    openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
-//
-//            dialog.addListener(new Window.CloseListener() {
-//                @Override
-//                public void windowClosed(String actionId) {
-//                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-//                        try {
-//                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.class);
-//                            byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
-//                            fileUploading.deleteFile(dialog.getFileId());
-//                            foldersService.importFolder(folder, data);
-//                        } catch (Exception ex) {
-//                            dialog.showNotification(
-//                                    dialog.getMessage("notification.importFailed"),
-//                                    ex.getMessage(),
-//                                    IFrame.NotificationType.ERROR
-//                            );
-//                        }
-//                        refreshFolders();
-//                    }
-//                }
-//            });
+            // vaadin7
+            /*final FileUploadDialog dialog = App.getInstance().getWindowManager().
+                    openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
+
+            dialog.addListener(new Window.CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        try {
+                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.class);
+                            byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
+                            fileUploading.deleteFile(dialog.getFileId());
+                            foldersService.importFolder(folder, data);
+                        } catch (Exception ex) {
+                            dialog.showNotification(
+                                    messages.getMainMessage("folders.importFailedNotification"),
+                                    ex.getMessage(),
+                                    IFrame.NotificationType.ERROR
+                            );
+                        }
+                        refreshFolders();
+                    }
+                }
+            });*/
         }
     }
 

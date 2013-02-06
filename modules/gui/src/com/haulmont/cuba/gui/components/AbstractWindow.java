@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 28.01.2009 10:20:22
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -14,6 +10,12 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
 
+/**
+ * Base class for simple screen controllers.
+ *
+ * @author Abramov
+ * @version $Id$
+ */
 public class AbstractWindow extends AbstractFrame 
         implements Window, Component.HasXmlDescriptor, Window.Wrapper {
 
@@ -58,28 +60,45 @@ public class AbstractWindow extends AbstractFrame
         ((Window) frame).removeListener(listener);
     }
 
+    /**
+     * @return screen caption which is set in XML or via {@link #setCaption(String)}
+     */
     @Override
     public String getCaption() {
         return ((Window) frame).getCaption();
     }
 
+    /**
+     * Set the screen caption. If called in {@link #init(java.util.Map)}, overrides the value from XML.
+     * @param caption   caption
+     */
     @Override
     public void setCaption(String caption) {
         ((Window) frame).setCaption(caption);
     }
 
+    /**
+     * Screen description is used by the framework to show some specified information, e.g. current filter or folder
+     * name. We don't recommend to use it in application code.
+     */
     @Override
     public String getDescription() {
         return ((Window) frame).getDescription();
     }
 
+    /**
+     * Screen description is used by the framework to show some specified information, e.g. current filter or folder
+     * name. We don't recommend to use it in application code.
+     */
     @Override
     public void setDescription(String description) {
         ((Window) frame).setDescription(description);
     }
 
+    /** For internal use only. Don't call from application code. */
     @Override
     public <T extends Window> T getWrappedWindow() {
+        //noinspection unchecked
         return (T) frame;
     }
 
@@ -88,10 +107,12 @@ public class AbstractWindow extends AbstractFrame
         ((Window) frame).applySettings(settings);
     }
 
+    @Override
     public void saveSettings() {
         ((Window) frame).saveSettings();
     }
 
+    @Override
     public void setFocusComponent(String componentId) {
         ((Window) frame).setFocusComponent(componentId);
     }
@@ -124,6 +145,7 @@ public class AbstractWindow extends AbstractFrame
      * otherwise use {@link #postValidate(ValidationErrors)}.
      * @return true if the validation was succesful, false if there were any problems
      */
+    @Override
     public boolean validateAll() {
         return ((Window) frame).validateAll();
     }
@@ -146,4 +168,52 @@ public class AbstractWindow extends AbstractFrame
     protected void postValidate(ValidationErrors errors) {
     }
 
+    /**
+     * Hook to be implemented in subclasses. Called by the framework before closing the screen.
+     * @param actionId  a string that is passed to one of {@link #close} methods by calling code to identify itself.
+     *                  Can be an {@link Action} ID, or a constant like {@link #COMMIT_ACTION_ID} or
+     *                  {@link #CLOSE_ACTION_ID}.
+     * @return          true to proceed with closing, false to interrupt and leave the screen open
+     */
+    protected boolean preClose(String actionId) {
+        return true;
+    }
+
+    /**
+     * Close the screen.
+     * <p/> If the screen has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
+     * the confirmation dialog will be shown.
+     * <p/> Don't override this method in subclasses, use hook {@link #preClose(String)}
+     *
+     * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
+     *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
+     *                 {@link #CLOSE_ACTION_ID} otherwise. These constants are recognized by various mechanisms of the
+     *                 framework.
+     */
+    @Override
+    public boolean close(String actionId) {
+        return ((Window) frame).close(actionId);
+    }
+
+    /** Close the screen.
+     * <p/> If the window has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
+     * and force=false, the confirmation dialog will be shown.
+     * <p/> Don't override this method in subclasses, use hook {@link #preClose(String)}
+     *
+     * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
+     *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
+     *                 {@link #CLOSE_ACTION_ID} otherwise. These constants are recognized by various mechanisms of the
+     *                 framework.
+     * @param force    if true, no confirmation dialog will be shown even if the screen has uncommitted changes
+     */
+    @Override
+    public boolean close(String actionId, boolean force) {
+        return ((Window) frame).close(actionId, force);
+    }
+
+    /** For internal use only. Don't call or override in application code. */
+    @Override
+    public void closeAndRun(String actionId, Runnable runnable) {
+        ((Window) frame).closeAndRun(actionId, runnable);
+    }
 }

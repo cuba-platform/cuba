@@ -7,6 +7,7 @@
 package com.haulmont.cuba.gui.app.security.session.browse;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -58,7 +59,7 @@ public class SessionBrowser extends AbstractLookup {
         }
         sessionsDs.addListener(new CollectionDsListenerAdapter<UserSessionEntity>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<UserSessionEntity> items) {
                 String time = Datatypes.get(Date.class).format(sessionsDs.getUpdateTs(), userSessionSource.getLocale());
                 lastUpdateTsLab.setValue(time);
             }

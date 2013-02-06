@@ -28,19 +28,19 @@
         <varlistentry>
           <term>Web Client</term>
           <listitem>
-            <para>Основной блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация <link linkend="gui_framework">пользовательского интерфейса</link> основана на фреймворке <application>Vaadin</application>. См. <xref linkend="client"/></para>
+            <para>Основной блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация <link linkend="gui_framework">пользовательского интерфейса</link> основана на фреймворке <application>Vaadin</application>. См. <xref linkend="gui_framework"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>Desktop Client</term>
           <listitem>
-            <para>Дополнительный блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>. См. <xref linkend="client"/></para>
+            <para>Дополнительный блок клиентского уровня. Содержит  интерфейс, предназначенный, как правило, для внутренних пользователей организации. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>. См. <xref linkend="gui_framework"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
           <term>Web Portal</term>
           <listitem>
-            <para>Дополнительный блок клиентского уровня. Содержит  интерфейс для внешних пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>. См. <xref linkend="portal"/></para>
+            <para>Дополнительный блок клиентского уровня. Содержит интерфейс для внешних пользователей и средства интеграции с мобильными устройствами и сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>. См. <xref linkend="portal"/></para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -781,7 +781,7 @@ private Set&lt;Constraint&gt; constraints;</programlisting></para>
 private Driver driver;</programlisting></para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="composition_annotation">
               <term>
                 <code>@Composition</code>
               </term>
@@ -790,6 +790,7 @@ private Driver driver;</programlisting></para>
                 <para>Например список пунктов в заказе (класс <code>Order</code> содержит коллекцию экземпляров <code>Item</code>):<programlisting>@OneToMany(mappedBy = &quot;order&quot;)
 @Composition
 protected List&lt;Item&gt; items;</programlisting></para>
+                <para>Указание для связи аннотации <code>@Composition</code> позволяет организовать в <link linkend="screen_edit">экранах редактирования</link> специальный <link linkend="datasource_commitMode">режим коммита</link> источников данных, при котором изменения экземпляров детализирующей сущности сохраняются в базе данных только при коммите основной сущности.</para>
               </listitem>
             </varlistentry>
             <varlistentry id="localizedValue_annotation">
@@ -1440,7 +1441,7 @@ String formattedValue = format.format(value);</programlisting></para>
       </section>
       <section id="meta_annotations">
         <title>Мета-аннотации</title>
-        <para>Мета-аннотации сущностей - набор пар ключ/значение, содержащих дополнительную информацию о сущностей.</para>
+        <para>Мета-аннотации сущностей - набор пар ключ/значение, содержащих дополнительную информацию о сущностях.</para>
         <para>Обращение к мета-аннотациям  производится с помощью метода <link linkend="metaClass">мета-класса</link> <code>getAnnotations()</code>.</para>
         <para>Источниками мета-аннотаций сущности являются:<itemizedlist>
             <listitem>
@@ -2024,7 +2025,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
 });</programlisting>  </para>
           </listitem>
           <listitem>
-            <para>Проверки того, что данный <link linkend="app_tiers">блок</link> приложения полностью инициализирован и готов к выполнению. Такая проверка обычно необходима в методах бинов, автоматически запускаемых <link linkend="scheduled_tasks">планировщиком</link> <application>Sping Framework</application>.</para>
+            <para>Проверки того, что данный <link linkend="app_tiers">блок</link> приложения полностью инициализирован и готов к выполнению. Такая проверка обычно необходима в методах бинов, автоматически запускаемых <link linkend="scheduled_tasks">планировщиком</link> <application>Sping</application>.</para>
             <para>Пример:<programlisting>if (!AppContext.isStarted())
     return;</programlisting></para>
           </listitem>
@@ -2085,11 +2086,9 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
         <para><para>Основной способ доступа к свойствам приложения из прикладного кода − использование механизма <link linkend="config_interfaces">конфигурационных интерфейсов</link>. Кроме того, все параметры конфигурации и развертывания доступны через методы класса <code>
               <link linkend="appContext">AppContext</link>
             </code>.</para></para>
-        <para>Некоторые блоки приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <structname>Middleware</structname> имеется JMX-интерфейс <code>
+        <para>Некоторые блоки приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, в блоках Middleware, Web Client и Web Portal имеется JMX-интерфейс <code>
             <link linkend="configStorageMBean">ConfigStorageMBean</link>
-          </code>, а на уровне <structname>Web Client</structname> − <code>
-            <link linkend="configurationMBean">ConfigurationMBean</link>
-          </code>. Методы этих интерфейсов работают по отдельности с параметрами конфигурации и развертывания (<code>*AppProperties</code>) и с параметрами времени выполнения (<code>*DbProperties</code>). Это обусловлено различием механизмов хранения этих категорий свойств.</para>
+          </code>, позволяющий получить и задать значение любого свойства во время работы приложения. </para>
       </section>
       <section id="app_properties_files">
         <title>Хранение свойств в файлах</title>
@@ -2104,7 +2103,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
         </itemizedlist>
         <para>Например, набор файлов свойств блока <structname>Middleware</structname> проекта <application>sales</application> задается в файле  <filename>web/WEB-INF/web.xml</filename>  модуля <structname>core</structname>, и выглядит следующим образом:</para>
         <programlisting>classpath:cuba-app.properties
-classpath:sales-app.properties
+classpath:app.properties
 file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <para>Здесь префикс <literal>classpath:</literal> означает, что данный файл нужно искать в Java classpath, префикс <literal>file:</literal> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <literal>catalina.home</literal> − путь к корню <application>Tomcat</application>.</para>
         <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
@@ -2195,7 +2194,7 @@ int timeout = serverConfig.getDefaultQueryTimeoutSec();</programlisting></para>
                 </itemizedlist></para>
             </listitem>
             <listitem>
-              <para>Создать методы доступа к свойству (getter / settter). Если значение свойства не предполагается изменять во время выполнения, метод доступа на запись не нужен. Возможный тип свойства рассмотрен ниже.</para>
+              <para>Создать методы доступа к свойству (getter / setter). Если значение свойства не предполагается изменять во время выполнения, метод доступа на запись не нужен. Возможный тип свойства рассмотрен ниже.</para>
             </listitem>
             <listitem>
               <para>Добавить методу доступа на чтение аннотацию <code>@Property</code>, определяющую имя свойства.</para>
@@ -2352,7 +2351,7 @@ someMessage=Some Message
               <para>Ключ названия атрибута - простое имя класса, затем через точку имя атрибута</para>
             </listitem>
           </itemizedlist></para>
-        <para>Пример русской локализации сущнсти <code>com.abc.sales.entity.Customer</code> - файл <filename>/com/abc/sales/entity/messages_ru.properties</filename>:<programlisting>Customer=Покупатель
+        <para>Пример русской локализации сущности <code>com.abc.sales.entity.Customer</code> - файл <filename>/com/abc/sales/entity/messages_ru.properties</filename>:<programlisting>Customer=Покупатель
 Customer.name=Имя
 Customer.email=Email
 
@@ -2407,13 +2406,22 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
         <para>Основной элемент подсистемы контроля доступа в CUBA-приложении - пользовательская сессия. Это объект класса <code>UserSession</code>, который ассоциирован с аутентифицированным в данный момент в системе пользователем, и содержит информацию о правах доступа пользователя к данным. Объект текущей сессии может быть получен в любом <link linkend="app_tiers">блоке</link> приложения через интерфейс инфраструктуры <code>
             <link linkend="userSessionSource">UserSessionSource</link>
           </code>. </para>
-        <para>Пользовательская сессия создается на <structname>Middleware</structname> при выполнении метода <code>LoginService.login()</code> после аутентификации пользователя по переданному имени и паролю. Объект <code>UserSession</code> затем кэшируется в данном блоке <structname>Middleware</structname>, и возвращается на клиентский уровень. Пр работе в кластере объект сессии реплицируется на соседние узлы кластера <structname>Middleware</structname>. Клиентский блок, получив объект сессии, также сохраняет его у себя, так или иначе ассоциируя с активным пользователем (например в HTTP сессии). Далее все вызовы <structname>Middleware</structname> для данного пользователя сопровождаются передачей идентификатора сессии (типа <code>UUID</code>), причем прикладному коду не нужно об этом заботиться - идентификатор сессии передается автоматически, независимо от сигнатуры вызываемых методов среднего слоя. Обработка вызовов клиентов на <structname>Middleware</structname> начинается с извлечения из кэша сессии по полученному идентификатору и установки ее в потоке выполнения. Объект сессии удаляется из кэша при вызове метода <code>LoginService.logout()</code>, либо при истечения времени бездействия, определяемого свойством  приложения <property>
+        <para>Пользовательская сессия создается на <structname>Middleware</structname> при выполнении метода <code>LoginService.login()</code> после аутентификации пользователя по переданному имени и паролю. Объект <code>UserSession</code> затем кэшируется в данном блоке <structname>Middleware</structname>, и возвращается на клиентский уровень. При работе в кластере объект сессии реплицируется на соседние узлы кластера <structname>Middleware</structname>. Клиентский блок, получив объект сессии, также сохраняет его у себя, так или иначе ассоциируя с активным пользователем (например в HTTP сессии). Далее все вызовы <structname>Middleware</structname> для данного пользователя сопровождаются передачей идентификатора сессии (типа <code>UUID</code>), причем прикладному коду не нужно об этом заботиться - идентификатор сессии передается автоматически, независимо от сигнатуры вызываемых методов среднего слоя. Обработка вызовов клиентов на <structname>Middleware</structname> начинается с извлечения из кэша сессии по полученному идентификатору и установки ее в потоке выполнения. Объект сессии удаляется из кэша при вызове метода <code>LoginService.logout()</code>, либо при истечения времени бездействия, определяемого свойством  приложения <property>
             <link linkend="cuba.userSessionExpirationTimeoutSec">cuba.userSessionExpirationTimeoutSec</link>
           </property>.</para>
         <para>Таким образом, идентификатор сессии, создаваемой при входе пользователя в систему, служит для аутентификации пользователя при каждом вызове среднего слоя.</para>
         <para>Объект <code>UserSession</code> содержит также методы для <firstterm>авторизации</firstterm> текущего пользователя, т.е. проверки его прав на объекты системы: <code>isScreenPermitted()</code>, <code>isEntityOpPermitted()</code>, <code>isEntityAttrPermitted()</code>, <code>isSpecificPermitted()</code>.</para>
+        <para>С объектом <code>UserSession</code> могут быть ассоциированы именованные атрибуты произвольного сериализуемого типа. Атрибуты устанавливаются методом <code>setAttribute()</code> и возвращаются методом <code>getAttribute()</code>. Последний может также возвращать следующие параметры сессии, как если бы они были атрибутами:<itemizedlist>
+            <listitem>
+              <para><code>userId</code> - ID текущего зарегистрированного или замещенного пользователя;</para>
+            </listitem>
+            <listitem>
+              <para><code>userLogin</code> - логин текущего зарегистрированного или замещенного пользователя в нижнем регистре.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Атрибуты реплицируются в кластере Middleware так же как и  все остальные данные сессии.</para>
       </section>
-      <section>
+      <section id="login">
         <title>Вход в систему</title>
         <para>Стандартный вариант входа пользователя: <itemizedlist>
             <listitem>
@@ -2434,7 +2442,7 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
         <para>Алгоритм хэширования паролей реализуется бином типа <code>EncryptionModule</code> и задается в свойстве приложения <property>
             <link linkend="cuba.passwordEncryptionModule">cuba.passwordEncryptionModule</link>
           </property>. По умолчанию - SHA-1.</para>
-        <para>Возможен вариант, когда пароль пользователя (точнее, хэш пароля) не хранится в базе данных, а проверяется внешними средствами, например путем интеграции с <application>ActiveDirectory</application>. В этом случае фактически аутентификацию выполняет клиентский блок, а <structname> Middleware</structname> &quot;доверяет&quot; клиенту, создавая сессию по одному только логину пользователя без пароля методом <code>LoginService.loginTrusted()</code>. Метод <code>loginTrusted()</code> требует выполнения следующих условия:<itemizedlist>
+        <para>Возможен вариант, когда пароль пользователя (точнее, хэш пароля) не хранится в базе данных, а проверяется внешними средствами, например, путем интеграции с <application>ActiveDirectory</application>. В этом случае фактически аутентификацию выполняет клиентский блок, а <structname> Middleware</structname> &quot;доверяет&quot; клиенту, создавая сессию по одному только логину пользователя без пароля методом <code>LoginService.loginTrusted()</code>. Метод <code>loginTrusted()</code> требует выполнения следующих условия:<itemizedlist>
             <listitem>
               <para>клиентский блок должен передать так называемый доверенный пароль, задаваемый на <structname>Middleware</structname> и на клиентском блоке свойством приложения <property>
                   <link linkend="cuba.trustedClientPassword">cuba.trustedClientPassword</link>
@@ -2451,9 +2459,7 @@ CustomerGrade.STANDARD=Стандартный</programlisting></para>
         <para>Вход в систему для процессов внутри <structname>Middleware</structname> выполняется вызовом <code>LoginWorker.loginSystem()</code> с передачей логина пользователя (без пароля), от имени которого будет работать данный процесс. В результате создается объект <code>
             <link linkend="userSession">UserSession</link>
           </code>, который будет закэширован в данном блоке <structname>Middleware</structname> и не будет реплицироваться в кластере. </para>
-        <para>Стандартная реализация входа / выхода для компонентов <structname>Middleware</structname> заключена в специальном базовом классе <code>
-            <link linkend="managementBean">ManagementBean</link>
-          </code>, поэтому свои JMX-бины рекомендуется наследовать от него.</para>
+        <para>Более подробно аутентификация процессов внутри Middleware рассмотрена в разделе <xref linkend="system_authentication"/></para>
       </section>
       <section id="securityContext">
         <title>SecurityContext</title>
@@ -2638,7 +2644,7 @@ public class OrderServiceBean implements OrderService {
 }</programlisting>
             <para>Класс сервиса, как и класс любого другого <link linkend="managed_beans">управляемого бина</link>, должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
                 <link linkend="spring.xml">spring.xml</link>
-              </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
+              </filename>. В нашем случае файл <filename>spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
           </step>
         </procedure>
         <warning>
@@ -2652,7 +2658,7 @@ public class OrderServiceBean implements OrderService {
         <para>Фабрика прокси-объектов конфигурируется в файле <filename>
             <link linkend="spring.xml">spring.xml</link>
           </filename> ссответствующего клиентского блока.</para>
-        <para>Например, чтобы в приложении <application>sales</application> вызвать с веб-клиента сервис <code>sales_OrderService</code>, необходимо добавить в файл <filename>sales-web-spring.xml</filename> модуля <structname>web</structname> следующее:</para>
+        <para>Например, чтобы в приложении <application>sales</application> вызвать с веб-клиента сервис <code>sales_OrderService</code>, необходимо добавить в файл <filename>web-spring.xml</filename> модуля <structname>web</structname> следующее:</para>
         <programlisting language="xml">&lt;bean id=&quot;sales_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
     &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
     &lt;property name=&quot;remoteServices&quot;&gt;
@@ -2691,7 +2697,7 @@ public class OrderWorker {
         <para>Рекомендуется присваивать бину уникальное имя вида <literal>{имя_проекта}_{имя_класса}</literal>, и определять его в константе <code>NAME</code>. </para>
         <para>Класс управляемого бина должен находиться внутри дерева пакетов с корнем, заданным в элементе <literal>context:component-scan</literal> файла <filename>
             <link linkend="spring.xml">spring.xml</link>
-          </filename>. В нашем случае файл <filename>sales-spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
+          </filename>. В нашем случае файл <filename>spring.xml</filename> содержит элемент:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.sales&quot;/&gt;</programlisting>что означает, что поиск аннотированных бинов для данного блока приложения будет происходить начиная с пакета <code>com.sample.sales</code>.</para>
         <para>Если нужно обеспечить возможность подмены реализации,  рекомендуется  выделять бизнес-интерфейс бина, например следующим образом:</para>
         <programlisting>package com.sample.sales.core;
 
@@ -2713,7 +2719,7 @@ public class OrderWorkerBean implements OrderWorker {
     public void calculateTotals(Order order) {
     }
 }</programlisting>
-        <para>Управляемые бины можно создавать на любом <link linkend="app_tiers">уровне</link>, так как контейнер <application>Spring Framework</application> используется во всех стандартные блоках приложения.</para>
+        <para>Управляемые бины можно создавать на любом <link linkend="app_tiers">уровне</link>, так как контейнер <application>Spring Framework</application> используется во всех стандартных блоках приложения.</para>
       </section>
       <section>
         <title>Использование бина</title>
@@ -2831,7 +2837,7 @@ public class Orders implements OrdersMBean {
               </itemizedlist></para>
           </listitem>
           <listitem>
-            <para>Регистрация JMX-бина в <filename>sales-spring.xml</filename>:</para>
+            <para>Регистрация JMX-бина в <filename>spring.xml</filename>:</para>
             <programlisting>&lt;bean id=&quot;sales_MBeanExporter&quot; lazy-init=&quot;false&quot; 
       class=&quot;com.haulmont.cuba.jmxcontrol.export.MBeanExporter&quot;&gt;
     &lt;property name=&quot;beans&quot;&gt;
@@ -2857,7 +2863,17 @@ public class Orders implements OrdersMBean {
         <section id="configStorageMBean">
           <title>ConfigStorageMBean</title>
           <para><code>ConfigStorageMBean</code> позволяет просматривать и задавать значения <link linkend="app_properties">свойствам приложения</link> в блоках <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>.</para>
-          <para>Следует иметь в виду, что измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
+          <para>Данный интерфейс имеет отдельные наборы методов для работы  с параметрами конфигурации и развертывания (<code>*AppProperties</code>) и с параметрами времени выполнения (<code>*DbProperties</code>), что обусловлено различием механизмов хранения этих категорий свойств.</para>
+          <warning>
+            <para>Существуют следующие ограничения в использовании интерфейса <code>ConfigStorageMBean</code>:<itemizedlist>
+                <listitem>
+                  <para>Отображаются только явно установленные в месте хранения свойства. Если значение свойства не задано, то в случае обращения к нему из кода программы через <link linkend="config_interfaces">конфигурационный интерфейс</link>, возвращается значение по умолчанию. Однако через <code>ConfigStorageMBean</code> значение по умолчанию не может быть получено. </para>
+                </listitem>
+                <listitem>
+                  <para>Измененные значения для свойств, хранящихся в файлах, не сохраняются, и действуют только до рестарта данного блока.</para>
+                </listitem>
+              </itemizedlist></para>
+          </warning>
           <para>JMX ObjectName: <literal>app-core.cuba:type=ConfigStorage</literal>, <literal>app.cuba:type=ConfigStorage</literal>, <literal>app-portal.cuba:type=ConfigStorage</literal></para>
         </section>
         <section id="persistenceManagerMBean">
@@ -2928,7 +2944,7 @@ public String foo(String value) {
         </property>. Если требуется аутентификация от имени другого пользователя, нужно воспользоваться первым вариантом и передать в метод <code>begin()</code> логин нужного пользователя.</para>
       <warning>
         <para>Если в момент выполнения <code>Authentication.begin()</code> в текущем потоке выполнения присутствует активная пользовательская сессия, то она не заменяется - соответственно, код, требующий аутентификации, будет выполняться с имеющейся сессией, и последующий метод <code>end()</code> не будет очищать поток.</para>
-        <para>Следует иметь в виду, что вызов метода JMX-бина из встроенной в <structname>Web Client</structname> консоли JMX является обычной обработкой пользовательского запроса. Это означает, что метод JMX-бина будет выполнен от имени текущего зарегистрированного в системе пользователя, независимо от наличия системной аутентификации.</para>
+        <para>Например,  вызов метода JMX-бина из встроенной в <structname>Web Client</structname> консоли JMX, если бин находится в той же JVM, что и блок WebClient, к которому в данный момент подключен пользователь, будет выполнен от имени текущего зарегистрированного в системе пользователя, независимо от наличия системной аутентификации.</para>
       </warning>
     </section>
     <section id="orm">
@@ -3060,7 +3076,7 @@ public String foo(String value) {
           </itemizedlist></para>
         <para>Загрузка по требованию работает только для экземпляра в состоянии <link linkend="entity_states">Managed</link>, то есть внутри транзакции, загрузившей данный экземпляр.</para>
       </section>
-      <section>
+      <section id="query">
         <title>Выполнение JPQL запросов</title>
         <para>Для выполнения <link linkend="jpql">JPQL</link> запросов предназначен интерфейс <code>Query</code>, ссылку на который который можно получить у текущего экземпляра <code>EntityManager</code> вызовом метода <code>createQuery()</code>. Если запрос предполагается использовать для извлечения сущностей, рекомендуется вызывать <code>createQuery()</code> с передачей типа результата, что приведет к созданию <code>TypedQuery</code>. </para>
         <para>Методы <code>Query</code> в основном соответствуют методам стандартного интерфейса <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Query.html">
@@ -3082,9 +3098,10 @@ query.setParameter(1, customer);</programlisting></para>
             </listitem>
           </itemizedlist></para>
         <section>
-          <title>Поиск like без учета регистра</title>
+          <title>Поиск подстроки без учета регистра</title>
           <para>Для удобного формирования условия поиска без учета регистра символов и по любой части строки можно использовать префикс <literal>(?i)</literal> имени параметра запроса, например:<programlisting>select c from sales$Customer c where c.name like :(?i)name</programlisting></para>
           <para>В данном случае ORM переведет значение параметра <literal>name</literal> в нижний регистр и обрамит символами <literal>%</literal>, а затем в БД выполнит SQL с условием вида <literal> lower(C.NAME) like ?</literal></para>
+          <para>Следует иметь в виду, что при таком поиске индекс, созданный в БД по полю <code>NAME</code>, не используется.</para>
         </section>
         <section>
           <title>Макросы в JPQL</title>
@@ -3648,7 +3665,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
     <para>Инфраструктура клиента  (Infrastructure) включает в себя главное окно приложения,
 механизмы отображения и взаимодействия  экранов UI, а также средства
 взаимодействия со средним слоем.</para>
-    <section>
+    <section id="screens">
       <title>Экраны</title>
       <para>Экран универсального пользовательского интерфейса состоит из <link linkend="screen_xml">XML-дескриптора</link> и класса <link linkend="screen_controller">контроллера</link>. Дескриптор содержит ссылку на класс контроллера. </para>
       <para>Для того, чтобы экран можно было вызывать из главного меню или из Java кода (например из контроллера другого экрана), XML-дескриптор должен быть зарегистрирован в файле <link linkend="screens.xml">
@@ -3857,22 +3874,312 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         <para>Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
         <itemizedlist>
           <listitem>
-            <para><code>AbstractFrame</code> − предназначен для реализации <link linkend="frame">фреймов</link>.</para>
+            <para><code>
+                <link linkend="abstractFrame">AbstractFrame</link>
+              </code> − предназначен для реализации <link linkend="frame">фреймов</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractWindow</code> − предназначен для реализации <link linkend="screen_simple">простых экранов</link>.</para>
+            <para><code>
+                <link linkend="abstractWindow">AbstractWindow</link>
+              </code> − предназначен для реализации <link linkend="screen_simple">простых экранов</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractLookup</code> − предназначен для реализации <link linkend="screen_lookup">экранов выбора</link>.</para>
+            <para><code>
+                <link linkend="abstractLookup">AbstractLookup</link>
+              </code> − предназначен для реализации <link linkend="screen_lookup">экранов выбора</link>.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractEditor</code> − предназначен для реализации <link linkend="screen_edit">экранов редактирования</link>.</para>
+            <para><code>
+                <link linkend="abstractEditor">AbstractEditor</link>
+              </code> − предназначен для реализации <link linkend="screen_edit">экранов редактирования</link>.</para>
           </listitem>
         </itemizedlist>
         <tip>
           <para>Если экрану не нужна никакая дополнительная логика, то в качестве контроллера можно использовать сам базовый класс <code>AbstractWindow</code>, <code>AbstractLookup</code> или <code>AbstractEditor</code>, указав его в XML-дескрипторе (эти классы на самом деле не являются абстрактными в смысле невозможности создания экземпляров). Для фрейма класс контроллера можно не указывать вообще.</para>
         </tip>
         <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <sgmltag>class</sgmltag> корневого элемента <sgmltag>window</sgmltag>.</para>
+        <figure>
+          <title>Базовые классы контроллеров</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/Controllers.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <section id="abstractFrame">
+          <title>AbstractFrame</title>
+          <para><code>AbstractFrame</code> является корнем иерархии классов контроллеров. Рассмотрим его основные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>init()</code> - вызывается фреймворком после создания всего дерева компонентов, описанного XML-дескриптором, но до отображения экрана.</para>
+              <para>В метод <methodname>init()</methodname> из вызывающего кода передается мэп параметров, которые могут быть использованы  внутри контроллера. Эти параметры могут быть переданы как из кода контроллера вызывающего экрана (в методе <code>openWindow()</code>, <code>openLookup()</code> или <code>openEditor()</code>), так и установлены в файле регистрации экранов <filename>
+                  <link linkend="screens.xml">screens.xml</link>
+                </filename>.</para>
+              <para>Метод <code>init()</code> следует имплементировать при необходимости  инициализации компонентов экрана, например:<programlisting>@Inject
+private Table someTable;
+
+@Override
+public void init(Map&lt;String, Object&gt; params) {
+    someTable.addGeneratedColumn(&quot;someColumn&quot;, new Table.ColumnGenerator&lt;Colour&gt;() {
+        @Override
+        public Component generateCell(Colour entity) {
+            ...
+        }
+    });
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>getMessage()</code>, <code>formatMessage()</code> - методы получения локализованных сообщений из <link linkend="message_packs">пакета</link>, заданного для экрана в XML-дескрипторе. Представляют собой просто короткие варианты вызова одноименных методов интерфейса <code>
+                  <link linkend="messages">Messages</link>
+                </code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>getDialogParams()</code> - получить объект <code>DialogParams</code> для установки параметров отображения диалоговых окон (высота, ширина и пр.). Значения, установленные в этом объекте, влияют на следующий экран, открываемый в режиме модального диалога (<code>WindowManager.OpenType.DIALOG</code>). После отображения диалога они сбрасываются в значения по умолчанию.</para>
+              <para>Таким образом, при устанавливать значения в <code>DialogParams</code> необходимо непосредственно перед вызовом другого экрана в режиме диалога методами <code>openWindow()</code>, <code>openLookup()</code>, <code>openEditor()</code>. Например:<programlisting>getDialogParams().setWidth(400);
+openEditor(&quot;sales$Customer.edit&quot;, customer, WindowManager.OpenType.DIALOG);</programlisting></para>
+              <para>Если же сам текущий экран открывается в режиме модального диалога, то можно управлять параметрами его отображения, устанавливая параметры <code>DialogParams</code>  в его методе <code>init()</code>. При этом установленные в <code>init()</code> параметры имеют приоритет над установленными в вызывающем коде.</para>
+            </listitem>
+            <listitem>
+              <para><code>openFrame()</code> - загрузить фрейм по идентификатору, зарегистрированному в <filename>
+                  <link linkend="screens.xml">screens.xml</link>
+                </filename>, и, если в метод передан компонент-контейнер, отобразить его внутри контейнера. Возвращается контроллер фрейма. Например:<programlisting>@Inject
+private BoxLayout container;
+
+@Override
+public void init(Map&lt;String, Object&gt; params) {
+    SomeFrame frame = openFrame(container, &quot;someFrame&quot;);
+    frame.setHeight(&quot;100%&quot;);
+    frame.someInitMethod();
+}</programlisting></para>
+              <para>Контейнер не обязательно сразу передавать в метод <code>openFrame()</code>, вместо этого можно загрузить фрейм, а затем добавить его  в нужный контейнер:<programlisting>@Inject
+private BoxLayout container;
+
+@Override
+public void init(Map&lt;String, Object&gt; params) {
+    SomeFrame frame = openFrame(null, &quot;someFrame&quot;);
+    frame.setHeight(&quot;100%&quot;);
+    frame.someInitMethod();
+    container.add(frame);
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>openWindow()</code>, <code>openLookup()</code>, <code>openEditor()</code> - открыть соответственно простой экран, экран выбора или редактирования. Методы возвращают контроллер созданного экрана.</para>
+              <para>Для выполнения действий после закрытия вызываемого экрана необходимо добавить слушатель типа <code>CloseListener</code>, например:<programlisting>CustomerEdit editor = openEditor(&quot;sales$Customer.edit&quot;, customer, WindowManager.OpenType.THIS_TAB);
+editor.addListener(new CloseListener() {
+    @Override
+    public void windowClosed(String actionId) {
+        // do something
+    }
+});</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>showMessageDialog()</code> - отобразить диалоговое окно с сообщением.</para>
+            </listitem>
+            <listitem>
+              <para><code>showOptionDialog()</code> - отобразить диалоговое окно с сообщением и возможностью выбора пользователем некоторых действий. Действия задаются массивом объектов типа <code>
+                  <link linkend="gui_Action">Action</link>
+                </code>, которые в диалоге отображаются посредством соответствующих кнопок.</para>
+              <para>Для отображения стандартных кнопок типа <guibutton>OK</guibutton>, <guibutton>Cancel</guibutton> и других рекомендуется использовать объекты типа <code>DialogAction</code>, например:<programlisting>showOptionDialog(&quot;PLease confirm&quot;, &quot;Are you sure?&quot;, 
+        MessageType.CONFIRMATION,
+        new Action[] {
+                new DialogAction(DialogAction.Type.YES) {
+                    @Override
+                    public void actionPerform(Component component) {
+                        // do something
+                    }
+                },
+                new DialogAction(DialogAction.Type.NO);
+        });</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>showNotification()</code> - отобразить всплывающее окно с сообщением.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="abstractWindow">
+          <title>AbstractWindow</title>
+          <para><code>AbstractWindow</code> является наследником <code>
+              <link linkend="abstractFrame">AbstractFrame</link>
+            </code>, и определяет следующие собственные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>validateAll()</code> - валидация экрана. Реализация по умолчанию вызывает метод <code>validate()</code> у всех компонентов экрана, реализующих интерфейс <code>Component.Validatable</code>, накапливает информацию об исключениях, и если таковые имеются, выводит соответствующее сообщение и возвращает <code>false</code>, иначе возвращает <code>true</code>.</para>
+              <para>Данный метод следует переопределять только в том случае, если необходимо полностью заменить стандартную процедуру валидации экрана. Если же нужно только дополнить ее, достаточно определить специальный шаблонный метод <code>postValidate()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>postValidate()</code> - шаблонный метод, который можно имплементировать в контроллере для дополнительной валидации экрана. Получаемый методом объект <code>ValidationErrors</code> используется для добавления информации об ошибках валидации, которая будет отображена совместно с ошибками стандартной валидации. Например:<programlisting>private Pattern pattern = Pattern.compile(&quot;\\d&quot;);
+
+@Override
+protected void postValidate(ValidationErrors errors) {
+    if (getItem().getAddress().getCity() != null) {
+        if (pattern.matcher(getItem().getAddress().getCity()).find()) {
+            errors.add(&quot;City name can&apos;t contain digits&quot;);
+        }
+    }
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>close()</code> - закрыть данный экран. </para>
+              <para>Метод принимает строковое значение, передаваемое далее  в шаблонный метод <code>preClose()</code> и слушателям <code>CloseListener</code>. Таким образом заинтересованный код может получить информацию о причине закрытия экрана от кода, инициирующего закрытие. В частности, в экранах редактирования сущностей при закрытии экрана после коммита изменений рекомендуется использовать константу <code>Window.COMMIT_ACTION_ID</code>, без коммита изменений - константу <code>Window.CLOSE_ACTION_ID</code>.</para>
+              <para>Если какой-либо из источников данных содержит несохраненные изменения, перед закрытием экрана будет выдано диалоговое окно с соответствующим предупреждением. Тип предупреждения можно выбрать с помощью свойства приложения <property>
+                  <link linkend="cuba.gui.useSaveConfirmation">cuba.gui.useSaveConfirmation</link>
+                </property>.</para>
+              <para>Вариант  метода <code>close()</code> с параметром <code>force = false</code> закрывает экран без вызова <code>preClose()</code> и без предупреждения, независимо от наличия несохраненных изменений.</para>
+              <para>Метод <code>close()</code> возвращает <code>true</code>, если экран был успешно закрыт, и <code>false</code> - если закрытие было прервано.</para>
+            </listitem>
+            <listitem>
+              <para><code>preClose()</code> - шаблонный метод, который можно имплементировать в контроллере для перехвата момента закрытия экрана. Метод получает строковое значение, указанное инициатором закрытия при вызове метода <code>close()</code>.</para>
+              <para>Если метод <code>preClose()</code> возвращает <code>false</code>, то процесс закрытия экрана прерывается.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="abstractLookup">
+          <title>AbstractLookup</title>
+          <para><code>AbstractLookup</code> является наследником <code>
+              <link linkend="abstractWindow">AbstractWindow</link>
+            </code>, и определяет следующие собственные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>setLookupComponent()</code> - установить компонент, из которого будет производиться выбор экземпляров сущности. </para>
+              <para>Как правило,  компонент выбора устанавливается в XML-дескрипторе экрана, и вызывать данный метод в прикладном коде нет необходимости.</para>
+            </listitem>
+            <listitem>
+              <para><code>setLookupValidator()</code> - установить для экрана объект типа <code>Window.Lookup.Validator</code>, метод <code>validate()</code> которого вызывается фреймворком перед тем как вернуть выбранные экземпляры сущностей. Если <code>validate()</code> возвращает <code>false</code>, процесс выбора и закрытия экрана прерывается.</para>
+              <para>По умолчанию валидатор не установлен.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="abstractEditor">
+          <title>AbstractEditor</title>
+          <para><code>AbstractEditor</code> − базовый класс контроллеров экранов редактирования, является наследником <code>
+              <link linkend="abstractWindow">AbstractWindow</link>
+            </code>.</para>
+          <para>При создании конкретного класса контроллера рекомендуется параметризовать <code>AbstractEditor</code> типом редактируемой сущности. При этом методы <code>getItem()</code> и <code>initItem()</code> будут работать с конкретным типом сущности и прикладному коду не потребуется дополнительных приведений типов. Например:</para>
+          <programlisting>public class CustomerEdit extends AbstractEditor&lt;Customer&gt; {
+
+    @Override
+    protected void initItem(Customer item) {
+    ...</programlisting>
+          <para><code>AbstractEditor</code> определяет следующие собственные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>getItem()</code> - возвращает экземпляр редактируемой сущности, установленный в главном источнике данных экрана (т.е. указанном в атрибуте <sgmltag>datasource</sgmltag> корневого элемента XML-дескриптора).</para>
+              <para>Если редактируется не новый экземпляр, то в момент открытия экрана он перезагружается из базы данных с необходимым <link linkend="views">представлением</link>, указанным для главного источника данных. </para>
+              <para>Изменения, вносимые в экземпляр, возвращаемый <code>getItem()</code>,  отражаются на состоянии источника данных, и будут отправлены на Middleware при коммите экрана.</para>
+              <warning>
+                <para>Следует иметь в виду, что <code>getItem()</code> возвращает значение только после инициализации экрана методом <code>setItem()</code>. До этого момента, например в методах <code>init()</code> и <code>initItem()</code>, данный метод возвращает <code>null</code>.</para>
+                <para>Однако в методе <code>init()</code> экземпляр сущности, переданный в <code>openEditor()</code>, можно получить из  параметров следующим образом:<programlisting>@Override
+public void init(Map&lt;String, Object&gt; params) {
+    Customer item = WindowParams.ITEM.getEntity(params);
+    // do something
+}</programlisting></para>
+                <para>В метод <code>initItem()</code> экземпляр передается явно и нужного типа.</para>
+                <para>В обоих случаях полученный экземпляр сущности, если он не новый, будет впоследствии перезагружен, и вносить в него изменения или сохранять в поле для последующего использования не имеет смысла.</para>
+              </warning>
+            </listitem>
+            <listitem>
+              <para><code>setItem()</code> - вызывается фреймворком при открытии экрана методом <code>openEditor()</code> для установки редактируемого экземпляра сущности в главном источнике данных. В момент вызова   созданы все компоненты и источники данных экрана, и отработал метод <code>init()</code> контроллера.</para>
+              <para>Для инициализации экрана редактирования вместо переопределения <code> setItem()</code> рекомендуется имплементировать специальные шаблонные методы <code>initItem()</code> и <code>postInit()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>initItem()</code> - шаблонный метод, вызываемый фреймворком перед установкой редактируемого экземпляра сущности в главном источнике данных.</para>
+              <para>Данный метод можно имплементировать в контроллере при необходимости инициализации экземпляра сущности перед его установкой в источник данных, например:<programlisting>@Override
+protected void initItem(Driver item) {
+    if (PersistenceHelper.isNew(item)){
+        item.setAddress(new Address());
+    }
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>postInit()</code> - шаблонный метод, вызываемый фреймворком сразу после  установки редактируемого экземпляра сущности в главном источнике данных. Во время выполнения данного метода можно вызывать <code>getItem()</code>, который будет возвращать новый или перезагруженный при инициализации экрана  экземпляр сущности.</para>
+              <para>Данный метод можно имплементировать в контроллере для окончательной инициализации экрана, например:<programlisting>@Inject
+protected EntityDiffViewer diffFrame;
+
+@Override
+protected void postInit() {
+    if (!PersistenceHelper.isNew(getItem())) {
+        diffFrame.loadVersions(getItem());
+    }
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>commit()</code> - валидировать экран и отправить изменения через <code>DataSupplier</code> на Middleware.</para>
+              <para>Если используется вариант метода с параметром <code>validate = false</code>, то валидация перед коммитом не производится.</para>
+              <para>Данный метод не рекомендуется переопределять, лучше использовать специальные шаблонные методы <code>postValidate()</code>, <code>preCommit()</code> и <code>postCommit()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>commitAndClose()</code> - валидировать экран, отправить изменения  на Middleware и закрыть экран. В метод <code>preClose()</code> и зарегистрированные слушатели <code>CloseListener</code> будет передано значение константы <code>Window.COMMIT_ACTION_ID</code>.</para>
+              <para>Данный метод не рекомендуется переопределять, лучше использовать специальные шаблонные методы <code>postValidate()</code>, <code>preCommit()</code> и <code>postCommit()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>preCommit()</code> - шаблонный метод, вызываемый фреймворком в процессе коммита изменений, после того как когда валидация завершена успешно и перед отправкой данных на Middleware.</para>
+              <para>Данный метод можно имплементировать в контроллере. Если метод возвращает <code>false</code>, процесс коммита (и закрытия экрана, если был вызван <code>commitAndClose()</code>), прерывается. Например:<programlisting>@Override
+protected boolean preCommit() {
+    if (somethingWentWrong) {
+        showNotification(&quot;Something went wrong&quot;, NotificationType.WARNING);
+        return false;
+    }
+    return true;
+}</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><code>postCommit()</code> - шаблонный метод, вызываемый фреймворком на финальной стадии коммита изменений. Параметры метода:<itemizedlist>
+                  <listitem>
+                    <para><code>committed</code> - установлен в <code>true</code>, если в экране действительно были изменения, и они отправлены на Middleware;</para>
+                  </listitem>
+                  <listitem>
+                    <para><code>close</code> - установлен в <code>true</code>, если экран после коммита будет закрыт.</para>
+                  </listitem>
+                </itemizedlist></para>
+              <para>Реализация метода по умолчанию, если экран не закрывается, отображает сообщение об успешном коммите изменений и вызывает метод <code>postInit()</code>.</para>
+              <para>Данный метод можно переопределить в контроллере для выполнения некоторых действий после успешного коммита, например:<programlisting>@Inject
+private Datasource&lt;Driver&gt; driverDs;
+@Inject
+private EntitySnapshotService entitySnapshotService;
+
+@Override
+protected boolean postCommit(boolean committed, boolean close) {
+    if (committed) {
+        entitySnapshotService.createSnapshot(driverDs.getItem(), driverDs.getView());
+    }
+    return super.postCommit(committed, close);
+}</programlisting></para>
+            </listitem>
+          </itemizedlist>
+          <para>Далее приведены диаграммы последовательностей инициализации и различных вариантов коммита экрана редактирования.</para>
+          <figure>
+            <title>Инициализация экрана редактирования</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/EditorInit.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <figure>
+            <title>Коммит и закрытие экрана с фреймом editWindowActions</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/EditorCommit.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <figure>
+            <title>Коммит экрана с фреймом extendedEditWindowActions</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/ExtendedEditorCommit.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <figure>
+            <title>Коммит и закрытие экрана с фреймом extendedEditWindowActions</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/ExtendedEditorCommitAndClose.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+        </section>
         <section>
           <title>Зависимости контроллеров</title>
           <para>В контроллерах можно использовать Dependency Injection для получения ссылок на используемые объекты. Для этого нужно объявить либо поле соответствующего типа, либо метод доступа на запись (setter) с соответствующим типом результата, и добавить ему одну из следующих аннотаций:<itemizedlist>
@@ -3932,84 +4239,6 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
                 <para>Если ничего из вышеперечисленного не подошло и контроллер имеет <link linkend="companions">компаньонов</link>, в случае совпадения типов будет инжектирован компаньон для текущего типа клиента.</para>
               </listitem>
             </itemizedlist></para>
-        </section>
-        <section>
-          <title>Методы контроллеров</title>
-          <para>Общим методом контроллеров всех типов является метод  <methodname>init()</methodname>. Этот метод вызывается фреймворком после создания класса окна и всего дерева компонентов, описанного XML-дескриптором, но до отображения экрана.</para>
-          <para>В метод <methodname>init()</methodname> из вызывающего кода передается мэп параметров, которые могут быть использованы  внутри контроллера. Эти параметры могут быть переданы как из кода контроллера вызывающего экрана (в методе <code>openWindow()</code>), так и установлены в файле регистрации экранов <filename>
-              <link linkend="screens.xml">screens.xml</link>
-            </filename>.</para>
-        </section>
-        <section id="abstractEditor">
-          <title>AbstractEditor</title>
-          <para><code>AbstractEditor</code> − базовый класс контроллеров экранов редактирования экземпляра сущности.</para>
-          <para>При создании конкретного класса контроллера рекомендуется параметризовать <code>AbstractEditor</code> типом редактируемой сущности. При этом методы <methodname>getItem</methodname> и <methodname>initItem</methodname> будут работать с конкретным типом сущности и прикладному коду не потребуется дополнительных приведений типов. Например:</para>
-          <programlisting>public class CustomerEdit extends AbstractEditor&lt;Customer&gt; {
-...
-    @Override
-    protected void initItem(Customer item) {
-    ...</programlisting>
-          <para>Помимо общего для всех контроллеров метода <code>init()</code> в контроллере экрана редактирования можно переопределить следующие:</para>
-          <itemizedlist>
-            <listitem>
-              <para>Методы инициализации:</para>
-              <itemizedlist>
-                <listitem>
-                  <para><methodname>initItem</methodname></para>
-                </listitem>
-                <listitem>
-                  <para><methodname>postInit</methodname></para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-            <listitem>
-              <para>Методы завершения:</para>
-              <itemizedlist>
-                <listitem>
-                  <para><methodname>postValidate</methodname></para>
-                </listitem>
-                <listitem>
-                  <para><methodname>preCommit</methodname></para>
-                </listitem>
-                <listitem>
-                  <para><methodname>postCommit</methodname></para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-          </itemizedlist>
-          <para><emphasis role="bold">Диаграммы последовательностей</emphasis></para>
-          <figure>
-            <title>Инициализация экрана</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/EditorInit.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <figure>
-            <title>Коммит и закрытие экрана с фреймом editWindowActions</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/EditorCommit.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <figure>
-            <title>Коммит экрана с фреймом extendedEditWindowActions</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/ExtendedEditorCommit.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <figure>
-            <title>Коммит и закрытие экрана с фреймом extendedEditWindowActions</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata align="center" fileref="img/ExtendedEditorCommitAndClose.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
         </section>
         <section id="companions">
           <title>Реализация для разных типов клиентов</title>
@@ -8398,36 +8627,360 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
     </section>
     <section id="datasources">
       <title>Источники данных</title>
-      <para>Предназначены для реализации связанных с данными (data-aware) компонентов.</para>
-      <para>Существуют следующие интерфейсы источников данных:</para>
-      <itemizedlist>
-        <listitem>
-          <para><code>Datasource</code> − предназначен для работы с одним экземпляром сущности.</para>
+      <section>
+        <title>Общие сведения</title>
+        <para>Источники данных обеспечивают работу связанных с данными (data-aware) компонентов.</para>
+        <para>Визуальные компоненты сами не обращаются к Middleware, а получают экземпляры сущностей  из связанных источников данных. При этом один источник данных может обслуживать несколько визуальных компонентов, если им нужен один и тот же экземпляр или набор экземпляров.</para>
+        <para>Источники данных также отслеживают изменения содержащихся в них сущностей, и могут отправлять измененные экземпляры обратно на Middleware для сохранения в базе данных.</para>
+        <para>Рассмотрим основные интерфейсы источников.</para>
+        <figure>
+          <title>Интерфейсы источников данных</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/Datasources.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <itemizedlist>
+          <listitem>
+            <para><code>Datasource</code> − простейший источник данных, предназначенный для работы с одним экземпляром сущности. Экземпляр устанавливается методом <code>setItem()</code> и  доступен через <code>getItem()</code>. </para>
+            <para>Стандартной реализацией такого источника является класс <code>DatasourceImpl</code>, который используется, например, как главный источник данных в <link linkend="screen_edit">экранах редактирования</link> сущностей.</para>
+          </listitem>
+          <listitem>
+            <para><code>CollectionDatasource</code> − источник данных, предназначенный для работы с коллекцией экземпляров сущности. Коллекция загружается при вызове метода <code>refresh()</code>, ключи экземпляров доступны через метод <code>getItemIds()</code>. Метод <code>setItem()</code> устанавливает, а <code>getItem()</code> возвращает  &quot;текущий&quot; экземпляр коллекции, т.е. например соответствующий выбранной в данный момент строке таблицы.</para>
+            <para>Способ загрузки коллекции сущностей определяется реализацией. Наиболее типичный - загрузка с Middleware через <code>
+                <link linkend="dataService">DataService</link>
+              </code>, при этом для формирования JPQL запроса используются методы <code>setQuery()</code>, <code>setQueryFilter()</code>.</para>
+            <para>Стандартной реализацией такого источника является класс <code>CollectionDatasourceImpl</code>, который используется в экранах, отображающих списки сущностей.</para>
+            <itemizedlist>
+              <listitem>
+                <para><code>GroupDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентом <code>
+                    <link linkend="gui_GroupTable">GroupTable</link>
+                  </code>.</para>
+                <para>Стандартной реализацией является класс <code>GroupDatasourceImpl</code>.</para>
+              </listitem>
+              <listitem>
+                <para><code>HierarchicalDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентами <code>
+                    <link linkend="gui_Tree">Tree</link>
+                  </code> и  <code>
+                    <link linkend="gui_TreeTable">TreeTable</link>
+                  </code>.</para>
+                <para>Стандартной реализацией является класс <code>HierarchicalDatasourceImpl</code>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para><code>NestedDatasource</code> - источник данных, предназначенный для работы с экземплярами, загруженными в атрибуте другой сущности. При этом источник, содержащий сущность-хозяина, доступен методом <code>getMaster()</code>, а <link linkend="metaProperty">мета-свойство</link>, соответствующее атрибуту хозяина, содержащему экземпляры данного источника, доступно через метод <code>getProperty()</code>.</para>
+            <para>Например,  в источнике <code>dsOrder</code> установлен экземпляр сущности <code>Order</code>, содержащий ссылку на экземпляр <code>Customer</code>. Тогда для связи экземпляра <code>Customer</code> с визуальными компонентами достаточно создать <code>NestedDatasource</code>, у которого хозяином является <code>dsOrder</code>, а мета-свойство указывает на атрибут <code>Order.customer</code>.</para>
+            <itemizedlist>
+              <listitem>
+                <para><code>PropertyDatasource</code> - подвид <code>NestedDatasource</code>, предназначенный для работы с одним экземпляром или коллекцией связанных сущностей, не являющихся встроенными (embedded).</para>
+                <para>Стандартные реализации: для работы с одним экземпляром - <code>PropertyDatasourceImpl</code>, для работы с коллекцией - <code>CollectionPropertyDatasourceImpl</code>, <code>GroupPropertyDatasourceImpl</code>, <code>HierarchicalPropertyDatasourceImpl</code>. Последние реализуют также интерфейс <code>CollectionDatasource</code>, однако некоторые его нерелевантные методы, связанные с загрузкой, например <code>setQuery()</code>, выбрасывают <code>UnsupportedOperationException</code>.</para>
+              </listitem>
+              <listitem>
+                <para><code>EmbeddedDatasource</code> - подвид <code>NestedDatasource</code>, содержащий экземпляр встроенной сущности.</para>
+                <para>Стандартной реализацией является класс <code>EmbeddedDatasourceImpl</code>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para><code>RuntimePropsDatasource</code> − специфический источник, предназначенный для работы с <link linkend="runtime_properties">динамическими атрибутами</link> сущностей.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
+      </section>
+      <section>
+        <title>Создание источников данных</title>
+        <section>
+          <title>Декларативное создание</title>
+          <para>Как правило источники данных объявляются декларативно в элементе <sgmltag>dsContext</sgmltag> дескриптора экрана. В зависимости от взаимного расположения элементов объявлений создаются источники двух разновидностей:<itemizedlist>
+              <listitem>
+                <para>если элемент расположен непосредственно в <sgmltag>dsContext</sgmltag>, создается обычный <code>Datasource</code> или <code>CollectionDatasource</code>, который содержит независимо загруженную сущность или коллекцию;</para>
+              </listitem>
+              <listitem>
+                <para>если элемент расположен внутри элемента другого источника, создается <code>NestedDatasource</code>, при этом  внешний источник становится его хозяином. </para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Рассмотрим схему XML. </para>
+          <para><sgmltag>dsContext</sgmltag> - корневой элемент.</para>
+          <para>Элементы <sgmltag>dsContext</sgmltag>:<itemizedlist>
+              <listitem>
+                <para><sgmltag>datasource</sgmltag> - определяет источник данных, содержащий единственный экземпляр сущности. </para>
+                <para>Атрибуты:<itemizedlist>
+                    <listitem>
+                      <para><sgmltag>id</sgmltag> - идентификатор источника, должен быть уникальным в для данного <code>DsContext</code>.</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>class</sgmltag> - Java класс сущности, которая будет содержаться в данном источнике</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>view</sgmltag> - имя <link linkend="views">представления</link> сущности. Если источник сам загружает экземпляры, то это представление будет использовано при загрузке. В противном случае это представление сигнализирует внешним механизмам о том, как нужно загрузить сущность для данного источника.</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>allowCommit</sgmltag> - при установке значения <code>false</code> метод <code>isModified()</code> данного источника всегда возвращает <code>false</code>, а метод <code>commit()</code> ничего не делает. Таким образом, изменения содержащихся в источнике сущностей игнорируются. По умолчанию <code>true</code>, т.е. изменения отслеживаются и могут быть сохранены.</para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>datasourceClass</sgmltag> - нестандартный класс реализации источника данных, если необходим.</para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+              <listitem>
+                <para><sgmltag>collectionDatasource</sgmltag> - определяет источник данных, содержащий коллекцию экземпляров.</para>
+                <para>Атрибуты <sgmltag>collectionDatasource</sgmltag>:<itemizedlist>
+                    <listitem>
+                      <para><sgmltag>refreshMode</sgmltag> - режим обновления источника, по умолчанию <code>ALWAYS</code>. В режиме <code>NEVER</code> при вызове <code>refresh()</code> источник не производит загрузку данных, а только переходит в состояние <code>Datasource.State.VALID</code>, оповещает слушателей и сортирует имеющиеся в нем экземпляры. Режим <code>NEVER</code> удобен, если необходимо программно заполнить <code>CollectionDatasource</code> предварительно загруженными или созданными сущностями. Например:<programlisting>@Override
+public void init(Map&lt;String, Object&gt; params) {
+    Set&lt;Customer&gt; entities = (Set&lt;Customer&gt;) params.get(&quot;customers&quot;);
+    for (Customer entity : entities) {
+        customersDs.includeItem(entity);
+    }
+    customersDs.refresh();
+}</programlisting></para>
+                    </listitem>
+                    <listitem>
+                      <para><sgmltag>softDeletion</sgmltag> - значение <code>false</code> отключает режим <link linkend="soft_deletion">мягкого удаления</link> при загрузке сущностей, т.е. будут загружены также и удаленные экземпляры. По умолчанию <code>true</code>.</para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Элементы <sgmltag>collectionDatasource</sgmltag>:<itemizedlist>
+                    <listitem>
+                      <para><sgmltag>query</sgmltag> - запрос для загрузки сущностей</para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+              <listitem>
+                <para><sgmltag>groupDatasource</sgmltag> - полностью аналогичен <sgmltag>collectionDatasource</sgmltag>, но создает реализацию источника данных, пригодную для использования совместно с компонентом <code>
+                    <link linkend="gui_GroupTable">GroupTable</link>
+                  </code>.</para>
+              </listitem>
+              <listitem>
+                <para><sgmltag>hierarchicalDatasource</sgmltag> - аналогичен <sgmltag>collectionDatasource</sgmltag>, и создает реализацию источника данных, пригодную для использования совместно с компонентами <code>
+                    <link linkend="gui_Tree">Tree</link>
+                  </code> и <code>
+                    <link linkend="gui_TreeTable">TreeTable</link>
+                  </code>.</para>
+                <para>Специфическим атрибутом является <sgmltag>hierarchyProperty</sgmltag>, задающий имя атрибута сущности, по которому строится иерархия.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Все созданные декларативно источники данных  регистрируются в объекте <code>DsContext</code> экрана. <code>DsContext</code> решает следующие задачи:<itemizedlist>
+              <listitem>
+                <para>Позволяет организовать зависимости между источниками данных, когда при навигации по одному источнику (т.е. при изменении &quot;текущего&quot; экземпляра методом <code>setItem()</code>) обновляется связанный источник. Такие зависимости дают возможность в экранах легко организовывать master-detail связи между компонентами.</para>
+              </listitem>
+              <listitem>
+                <para>Позволяет собрать все измененные экземпляры сущностей и отправить их на Middleware в одном вызове <code>DataService.commit()</code>, т.е. сохранить в базе данных в одной транзакции.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Класс реализации источника выбирается неявно на основе имени элемента XML и, как было сказано выше, взаимного расположения элементов. Однако если необходимо применить нестандартный источник данных, его класс может быть явно указан в атрибуте <code>datasourceClass</code>. </para>
+        </section>
+        <section>
+          <title>Прораммное создание</title>
+          <para>При необходимости создать источник данных в Java коде рекомендуется воспользоваться специальным классом <code>DsBuilder</code>. </para>
+          <para>Экземпляр <code>DsBuilder</code> параметризуется цепочкой вызовов его методов в стиле текучего (fluent) интерфейса. Если установлены параметры <code>master</code> и <code>property</code>, то в результате будет создан <code>NestedDatasource</code>, в противном случае - <code>Datasource</code> или <code>CollectionDatasource</code>.</para>
+          <para>Пример:<programlisting>CollectionDatasource ds = new DsBuilder(getDsContext())
+        .setJavaClass(Order.class)
+        .setViewName(View.LOCAL)
+        .setId(&quot;ordersDs&quot;)
+        .buildCollectionDatasource();</programlisting></para>
+        </section>
+      </section>
+      <section>
+        <title>Собственные классы реализации</title>
+        <para>Как правило, нестандартная реализация источника данных требуется для изменения процесса загрузки коллекции сущностей. При создании класса такого источника рекомендуется унаследовать его от <code>CollectionDatasourceImpl</code>, либо от <code>GroupDatasourceImpl</code> или <code>HierarchicalDatasourceImpl</code>, и переопределить метод <code>loadData()</code>.</para>
+        <para>Пример:<programlisting>public class MyDatasource extends CollectionDatasourceImpl&lt;SomeEntity, UUID&gt; {
+
+    private SomeService someService = AppBeans.get(SomeService.NAME);
+
+    @Override
+    protected void loadData(Map&lt;String, Object&gt; params) {
+        detachListener(data.values());
+        data.clear();
+
+        for (SomeEntity entity : someService.getEntities()) {
+            data.put(entity.getId(), entity);
+            attachListener(entity);
+        }
+    }
+}</programlisting></para>
+        <para>Здесь <code>data</code> - поле базового класса, хранящее коллекцию загруженных экземпляров. Методы базового класса <code>detachListener()</code> и <code>attachListener()</code> управляют назначением на загруженные сущности слушателя, который оповещает источник данных об изменениях в полях экземпляров.</para>
+        <para>Для создания нестандартного источника данных декларативным способом необходимо указать класс в атрибуте <sgmltag>datasourceClass</sgmltag> элемента XML. При программном содании через <code>DsBuilder</code> класс источника указывается вызовом <code>setDsClass()</code>.</para>
+      </section>
+      <section>
+        <title>Запросы в CollectionDatasourceImpl</title>
+        <para>Класс <code> CollectionDatasourceImpl</code> и его наследники <code>GroupDatasourceImpl</code>, <code>HierarchicalDatasourceImpl</code> являются стандартной реализацией источников данных, работающих с коллекциями независимых экземпляров сущностей. Эти источники загружают данные через <code>DataService</code>, отправляя на Middleware запрос на языке JPQL. Далее рассмтриваются особенности формирования таких запросов.</para>
+        <section>
+          <title>Возвращаемые значения</title>
+          <para>Запрос должен возвращать сущности того типа, который указан при создании источника данных. Тип сущности при декларативном создании указывается в атрибуте <sgmltag>class</sgmltag> элемента XML, при создании через <code>DsBuilder</code> - в методе <code>setJavaClass()</code> или <code>setMetaClass()</code>.</para>
+          <para>Кроме того, тип объекта в предложении <code>from</code> запроса должен соответствовать типу источника. Это необходимо для проведения автоматических транформаций запроса при наложении ограничений безопасности и др.</para>
+          <para>Например, запрос источника данных типа <code>Customer</code> может выглядеть следующим образом:<programlisting>select c from sales$Customer c</programlisting></para>
+          <para>Примеры недопустимых для источника типа <code>Customer</code> запросов:<programlisting>select c.id, c.name from sales$Customer c /* неверно - возвращает отдельные поля, а не весь объект Customer */
+
+select o.customer from sales$Order o /* неверно - тип from (Order) отличается от типа результата (Customer) */</programlisting></para>
+        </section>
+        <section>
+          <title>Параметры запроса</title>
+          <para>JPQL запрос в источнике данных может содержать параметры нескольких видов. Вид параметра определяется по префиксу имени параметра. Префиксом является часть имени до знака &quot;$&quot;. Интерпретация имени после &quot;$&quot; рассматривается ниже.</para>
           <itemizedlist>
             <listitem>
-              <para><code>RuntimePropsDatasource</code> − предназначен для работы с <link linkend="runtime_properties">динамическими атрибутами</link> сущностей.</para>
+              <para>Префикс <code>ds</code>. </para>
+              <para>Значением параметра являются данные другого источника данных, зарегистрированного в этом же <code>DsContext</code>. Например:<programlisting>&lt;collectionDatasource id=&quot;customersDs&quot; class=&quot;com.sample.sales.entity.Customer&quot; view=&quot;_local&quot;&gt;
+    &lt;query&gt;
+        select c from sales$Customer c
+    &lt;/query&gt;
+&lt;/collectionDatasource&gt;
+
+&lt;collectionDatasource id=&quot;ordersDs&quot; class=&quot;com.sample.sales.entity.Order&quot; view=&quot;_local&quot;&gt;
+    &lt;query&gt;
+        select o from sales$Order o where o.customer.id = :ds$customersDs
+    &lt;/query&gt;
+&lt;/collectionDatasource&gt;</programlisting></para>
+              <para>В данном случае параметром запроса источника данных <code>ordersDs</code> будет текущий экземпляр сущности, находящийся в источнике данных <code>customersDs</code>. </para>
+              <para>При использовании параметров с префиксом <code>ds</code> между источниками данных автоматически создаются зависимости, приводящие к обновлению источника если меняется значение его параметра. В приведенном примере если изменяется выбранный Покупатель, автоматически обновляется список его Заказов. </para>
+              <para>Обратите внимание, что в примере запроса с параметром  левой частью оператора сравнения является значение идентификатора <code>o.customer.id</code>, а правой - экземпляр <code>Customer</code>, содержащийся в источнике <code>customersDs</code>. Такое сравнение допустимо, так как при выполнении запроса на Middleware реализация интерфейса <link linkend="query">
+                  <code>Query</code>
+                </link>, присваивая значения параметрам запроса, автоматически подставляет ID сущности вместо переданного экземпляра сущности.</para>
+              <para>В имени параметра после префикса и имени источника может быть также указан путь по графу сущностей к атрибуту, из которого нужно взять значение, например: <programlisting>&lt;query&gt;
+    select o from sales$Order o where o.customer.id = :ds$customersDs.id
+&lt;/query&gt;</programlisting></para>
+              <para>или<programlisting>&lt;query&gt;
+    select o from sales$Order o where o.tagName = :ds$customersDs.group.tagName
+&lt;/query&gt;</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Префикс <code>custom</code>. </para>
+              <para>Значение параметра будет взято из объекта <code>Map&lt;String, Object&gt;</code>, переданного в метод <code>refresh()</code> источника данных. Например:<programlisting>&lt;collectionDatasource id=&quot;ordersDs&quot; class=&quot;com.sample.sales.entity.Order&quot; view=&quot;_local&quot;&gt;
+    &lt;query&gt;
+        select o from sales$Order o where o.number = :custom$number
+    &lt;/query&gt;
+&lt;/collectionDatasource&gt;</programlisting><programlisting>Map&lt;String, Object&gt; params = new HashMap&lt;&gt;();
+params.put(&quot;number&quot;, &quot;1&quot;);
+ordersDs.refresh(params);</programlisting></para>
+              <para>Приведение экземпляра при необходимости к его идентификатору осуществляется аналогично параметрам с префиксом <code>ds</code>. Путь по графу сущностей в имени параметра в данном случае не поддерживается. </para>
+            </listitem>
+            <listitem>
+              <para>Префикс <code>param</code>. </para>
+              <para>Значение параметра будет взято из объекта <code>Map&lt;String, Object&gt;</code>, переданного при открытии экрана в метод <code>init()</code> <link linkend="screen_controller">контроллера</link>. </para>
+              <para>Приведение экземпляра при необходимости к его идентификатору осуществляется аналогично параметрам с префиксом <code>ds</code>. Поддерживается путь к атрибуту по графу сущностей в имени параметра. </para>
+            </listitem>
+            <listitem>
+              <para>Префикс <code>component</code>. </para>
+              <para>Значением параметра будет текущее значение визуального компонента, путь к которому указан в имени параметра. Например:<programlisting>&lt;query&gt;
+    select o from sales$Order o where o.number = :component$filter.orderNumberField
+&lt;/query&gt;</programlisting></para>
+              <para>Путь к компоненту должен включать все вложенные <link linkend="frame">фреймы</link>.
+</para>
+              <para>Приведение экземпляра при необходимости к его идентификатору аналогично параметрам <code>ds</code>.
+Поддерживается путь к атрибуту по графу сущностей в имени параметра как продолжение пути к компоненту. </para>
+            </listitem>
+            <listitem>
+              <para>Префикс <code>session</code>. </para>
+              <para>Значением параметра будет значение атрибута <link linkend="userSession">пользовательской сессии</link>, указанного в имени параметра.</para>
+              <para>Значение извлекается методом <code>UserSession.getAttribute()</code>, поэтому поддерживаются также  предопределенные имена атрибутов сессии: <itemizedlist>
+                  <listitem>
+                    <para><code>userId</code> - ID текущего зарегистрированного или замещенного пользователя;</para>
+                  </listitem>
+                  <listitem>
+                    <para><code>userLogin</code> - логин текущего зарегистрированного или замещенного пользователя в нижнем регистре.</para>
+                  </listitem>
+                </itemizedlist></para>
+              <para>Пример:<programlisting>&lt;query&gt;
+    select o from sales$Order o where o.createdBy = :session$userLogin
+&lt;/query&gt;</programlisting></para>
+              <para>Приведение экземпляра при необходимости к его идентификатору аналогично параметрам <code>ds</code>.
+Путь по графу сущностей в имени параметра в данном случае не поддерживается. </para>
             </listitem>
           </itemizedlist>
-        </listitem>
-        <listitem>
-          <para><code>CollectionDatasource</code> − предназначен для работы с коллекцией сущностей</para>
-          <itemizedlist>
+        </section>
+        <section>
+          <title>Фильтр запроса</title>
+          <para>Запрос источника данных может быть модифицирован во время работы приложения, в зависимости от вводимых пользователем условий, что позволяет эффективно фильтровать данные на уровне выборки из БД.</para>
+          <para>Простейший способ обеспечения такой возможности - подключение к источнику данных специального визуального компонента <link linkend="gui_Filter">Filter</link>.</para>
+          <para>Если по какой-то причине применение универсального фильтра нежелательно, можно встроить в текст запроса специальную разметку на XML, позволяющую сформировать итоговый запрос в зависимости от значений, введенных пользователем в произвольные визуальные компоненты экрана.</para>
+          <para>В таком фильтре могут быть использованы следующие элементы:<itemizedlist>
+              <listitem>
+                <para><sgmltag>filter</sgmltag> - корневой элемент фильтра. Может непосредственно содержать  только одно условие.<itemizedlist>
+                    <listitem>
+                      <para><sgmltag>and</sgmltag>, <sgmltag>or</sgmltag> - логические условия, могут содержать любое количество других условий и предложений. </para>
+                    </listitem>
+                    <listitem>
+                      <para>предложение на JPQL, которое добавляется в секцию <code>where</code>. Содержит только текст и опционально атрибут <sgmltag>join</sgmltag>, значение которого будет добавлено в соответствующее место запроса, если добавляется данное предложение <code>where</code>. </para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Условия и предложения добавляются в итоговый запрос, только если присутствующие внутри них параметры получили значения, т.е. не равны <code>null</code>. </para>
+          <para>Пример:<programlisting>&lt;query&gt;
+    select distinct d from app$GeneralDoc d
+    &lt;filter&gt;
+        &lt;or&gt;
+            &lt;and&gt;
+                &lt;c join=&quot;, app$DocRole dr&quot;&gt;dr.doc.id = d.id and d.processState = :custom$state&lt;/c&gt;
+                &lt;c&gt;d.barCode like :component$barCodeFilterField&lt;/c&gt;
+            &lt;/and&gt;
+            &lt;c join=&quot;, app$DocRole dr&quot;&gt;dr.doc.id = d.id and dr.user.id = :custom$initiator&lt;/c&gt;
+        &lt;/or&gt;
+    &lt;/filter&gt;
+&lt;/query&gt;</programlisting></para>
+          <para>В данном случае если в метод <code>refresh()</code> источника данных переданы параметры <code>state</code> и <code>initiator</code>, а в визуальном компоненте <code>barCodeFilterField</code> установлено некоторое значение, то итоговый запрос примет вид:<programlisting>select distinct d from app$GeneralDoc d, app$DocRole dr 
+where 
+  (
+    (dr.doc.id = d.id and d.processState = :custom$state) 
+    and 
+    (d.barCode like :component$barCodeFilterField)
+  ) 
+  or 
+  (dr.doc.id = d.id and dr.user.id = :custom$initiator)</programlisting></para>
+          <para>Если же, к примеру, компонент <code>barCodeFilterField</code> пуст, а в <code>refresh()</code> передан только параметр <code>initiator</code>, то запрос получится следующим:<programlisting>select distinct d from app$GeneralDoc d, app$DocRole dr 
+where   
+  (dr.doc.id = d.id and dr.user.id = :custom$initiator)</programlisting></para>
+        </section>
+        <section>
+          <title>Поиск подстроки без учета регистра</title>
+          <para>В источниках данных можно использовать особенность выполнения JPQL запросов, описанную для интерфейса <code>
+              <link linkend="query">Query</link>
+            </code> уровня Middleware: для удобного формирования условия поиска без учета регистра символов и по любой части строки можно использовать префикс <code>(?i)</code> имени параметра запроса, например:<programlisting>select c from sales$Customer c where c.name like :(?i)component$customerNameField</programlisting></para>
+          <para>В данном случае значение параметра, взятое из компонента <code>customerNameField</code>, будет переведено в нижний регистр и обрамлено символами &quot;%&quot;, а затем в базе данных будет выполнен SQL запрос с условием вида <code>lower(C.NAME) like ?</code></para>
+          <para>Следует иметь в виду, что при таком поиске индекс, созданный в БД по полю <code>NAME</code>, не используется. </para>
+        </section>
+      </section>
+      <section id="datasource_commitMode">
+        <title>Режим коммита</title>
+        <para>Любой источник данных имеет параметр типа <code>Datasource.CommitMode</code>, определяющий, куда будут отправляться измененные сущности при коммите:<itemizedlist>
             <listitem>
-              <para><code>HierarchicalDatasource</code> − предназначен для работы с компонентами <code>
-                  <link linkend="gui_Tree">Tree</link>
-                </code>, <code>
-                  <link linkend="gui_TreeTable">TreeTable</link>
-                </code>.</para>
+              <para><code>CommitMode.DATASTORE</code> - на Middleware через установленный для данного источника <code>DataSupplier</code>. </para>
             </listitem>
             <listitem>
-              <para><code>GroupDatasource</code> − предназначен для работы с компонентом <code>
-                  <link linkend="gui_GroupTable">GroupTable</link>
-                </code>.</para>
+              <para><code>CommitMode.PARENT</code> - в так называемый &quot;родительский&quot; источник данных, установленный для данного источника и доступный через метод <code>DatasourceImplementation.getParent()</code>.</para>
             </listitem>
-          </itemizedlist>
-        </listitem>
-      </itemizedlist>
-      <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
+          </itemizedlist></para>
+        <para>Режим <code>CommitMode.PARENT</code> используется в экранах редактирования композитных сущностей, которые представляют собой экземпляр основной сущности (master), и связанную с ним коллекцию экземпляров детализирующей сущности (detail). При этом детализирующая сущность имеет смысл только часть как часть основной сущности, и ее изменения должны отправляться в базу данных только вместе с основной сущностью в единой транзакции.</para>
+        <para>Для организации такой связи в классе основной сущности ссылка на детализирующую сущность помечается аннотацией <link linkend="composition_annotation">
+            <code>@Composition</code>
+          </link>.</para>
+        <para>Последовательность действий и условия правильной работы режима <code>CommitMode.PARENT</code>:<itemizedlist>
+            <listitem>
+              <para>Открывается экран редактирования основной сущности (master), в котором в элементе <sgmltag>dsContext</sgmltag> внутри основного источника описаны источники детализирующих сущностей, обязательно  на всю глубину композиции. Например, если сущность <code>Airport</code> имеет <code>@Composition</code> коллекцию сущности <code>Terminal</code>, а та в свою очередь имеет <code>@Composition</code> коллекцию сущности <code>MeetingPoint</code>, то описание источников должно быть примерно следующим:<programlisting>&lt;datasource
+        id=&quot;airportDs&quot;
+        class=&quot;com.sample.app.entity.Airport&quot;
+        view=&quot;airportEdit&quot;&gt;
+    &lt;collectionDatasource id=&quot;terminalsDs&quot; 
+                          property=&quot;terminals&quot;&gt;
+        &lt;collectionDatasource id=&quot;meetingPointsDs&quot; 
+                              property=&quot;meetingPoints&quot;/&gt;
+    &lt;/collectionDatasource&gt;
+&lt;/datasource&gt;</programlisting></para>
+              <para>В данном случае источник <code>meetingPointsDs</code> не используется никакими визуальными компонентами текущего экрана, однако он все равно нужен для того, чтобы служить родительским для источников в порождаемых экранах.</para>
+              <para>Все источники данного экрана имеют <code>CommitMode.DATASTORE</code>. </para>
+            </listitem>
+            <listitem>
+              <para>Открывается экран редактирования детализирующей сущности. При этом для главный источник этого экрана имеет <code>CommitMode.PARENT</code>, и родительским для него становится соответствующий <sgmltag>collectionDatasource</sgmltag> экрана основной сущности.</para>
+            </listitem>
+            <listitem>
+              <para>При коммите экрана детализирующей сущности измененный экземпляр попадет не в базу данных, а в <sgmltag>collectionDatasource</sgmltag> экрана основной сущности. </para>
+            </listitem>
+            <listitem>
+              <para>При коммите экрана основной сущности измененный экземпляр детализирующей сущности будет отправлен на Middleware вместе с экземпляром основной сущности.</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
     </section>
     <section id="background_tasks">
       <title>Фоновые задачи</title>
@@ -8549,7 +9102,99 @@ taskHandler.execute();</programlisting>
   </section>
   <section id="portal">
     <title>Компоненты портала</title>
-    <para>TODO</para>
+    <para>В данном руководстве <firstterm>порталом</firstterm> называется клиентский <link linkend="app_tiers">блок</link>, способный решать следующие задачи:<itemizedlist>
+        <listitem>
+          <para>предоставлять альтернативный веб-интерфейс, как правило предназначенный для пользователей за пределами организации;</para>
+        </listitem>
+        <listitem>
+          <para>предоставлять интерфейс для интеграции с мобильными приложениями и со сторонними системами.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>Конкретное приложение может содержать несколько портальных модулей, предназначенных для различных целей, например в случае приложения, автоматизирующего бизнес такси это может быть публичный веб-сайт для клиентов, интеграционный модуль мобильного приложения заказа такси, интеграционный модуль мобильного приложения водителей, и т.д. </para>
+    <para><link linkend="base_projects">Базовый проект</link> <structname>cuba</structname> платформы содержит в своем составе модуль <structname>portal</structname>, который является заготовкой для создания порталов в проектах. Он, во-первых, предоставляет базовую функциональность клиентского блока для работы с Middleware, а во-вторых, включает в себя универсальный <link linkend="rest_api">REST API</link> для работы с сущностями.</para>
+    <section>
+      <title>Базовая функциональность</title>
+      <para>Рассмотрим основные компоненты, предоставляемые платформой для построения портала.<itemizedlist>
+          <listitem>
+            <para><code>PortalAppContextLoader</code> - загрузчик <code>
+                <link linkend="appContext">AppContext</link>
+              </code>, должен быть зарегистрирован в элементе <sgmltag>listener</sgmltag> файла <filename>web.xml</filename>.</para>
+          </listitem>
+          <listitem>
+            <para><code>PortalDispatcherServlet</code> - центральный сервлет, распределяющий запросы по контроллерам <application>Spring MVC</application>, как для веб-интерфейса, так и для REST API. Набор файлов конфигурации контекста Spring определяется свойством приложения <property>
+                <link linkend="cuba.dispatcherSpringContextConfig">cuba.dispatcherSpringContextConfig</link>
+              </property>. Данный сервлет должен быть зарегистрирован в <filename>web.xml</filename> и отображен на корневой URL веб-приложения.</para>
+          </listitem>
+          <listitem>
+            <para><code>App</code> - объект, содержащий информацию о текущем HTTP запросе и ссылку на объект <code>Connection</code>. Экземпляр <code>App</code> может быть получен в прикладном коде вызовом статического метода <code>App.getInstance()</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>Connection</code> - позволяет выполнять логин и логаут пользователя на Middleware.</para>
+          </listitem>
+          <listitem>
+            <para><code>PortalSession</code> - специфичесий для портала объект <link linkend="userSession">пользовательской сессии</link>. Возвращается интерфейсом инфраструктуры <code>
+                <link linkend="userSessionSource">UserSessionSource</link>
+              </code>, а также статическим методом <code>PortalSessionProvider.getUserSession()</code>.</para>
+            <para>Имеет дополнительный метод <code>isAuthenticated()</code>, возвращающий <code>true</code>, если данная сессия принадлежит не-анонимному, т.е. явно зарегистрировавшемуся с логином и паролем, пользователю.</para>
+            <para>При первом обращении некоторого пользователя к порталу <code>SecurityContextHandlerInterceptor</code> создает для него (или привязывает уже имеющуюся) анонимную сессию, регистрируясь на Middleware с именем пользователя, указанным в свойстве приложения <property>
+                <link linkend="cuba.portal.anonymousUserLogin">cuba.portal.anonymousUserLogin</link>
+              </property>. Регистрация производится методом <code>
+                <link linkend="login">loginTrusted()</link>
+              </code>, поэтому в блоке портала необходимо установить также свойство <property>
+                <link linkend="cuba.trustedClientPassword">cuba.trustedClientPassword</link>
+              </property>. Таким образом, любой анонимный пользователь портала может работать с сервисами Middleware с правами пользователя <property>cuba.portal.anonymousUserLogin</property>.</para>
+            <para>Если портал содержит страницу регистрации пользователя с именем и паролем, то после выполнения <code>Connection.login()</code> при обработке запросов <code>SecurityContextHandlerInterceptor</code> устанавливает в потоке выполнения пользовательскую сессию явно зарегистрированного пользователя, и работа с Middleware происходит от его имени.</para>
+          </listitem>
+          <listitem>
+            <para><code>PortalLogoutHandler</code> - обрабатывает навигацию на страницу логаута. Должен быть зарегистрирован в файле <filename>portal-security-spring.xml</filename> проекта.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Пример портала, содержащего страницу регистрации пользователей, включен в шаблон проекта,  рассмотренный в  <xref linkend="qs_setup"/></para>
+    </section>
+    <section id="rest_api">
+      <title>REST API</title>
+      <section>
+        <title>Общие сведения</title>
+        <para>Универсальный REST API платформы позволяет выполнять загрузку и сохранение  любых сущностей модели данных приложения посредством отправки простых HTTP запросов. Это открывает возможность легкой интеграции со сторонними приложениями самого широкого спектра - от JavaScript кода, выполняющегося в  браузере, до произвольных систем, работающих на Java, NET, PHP или любой другой платформе. </para>
+        <para>Основные возможности API:<itemizedlist>
+            <listitem>
+              <para>загрузка экземпляров сущностей из базы данных по идентификатору или по JPQL запросу с параметрами</para>
+            </listitem>
+            <listitem>
+              <para>сохранение новых и измененных экземпляров, удаление</para>
+            </listitem>
+            <listitem>
+              <para>получение описания модели данных в формате HTML</para>
+            </listitem>
+            <listitem>
+              <para>представление данных в форматах JSON и XML на выбор</para>
+            </listitem>
+            <listitem>
+              <para>аутентификация пользователя</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Все функции работают с данными в кодировке UTF-8. </para>
+      </section>
+      <section>
+        <title>Включение в проект</title>
+        <para>REST API реализован в модуле <structname>portal</structname> базового проекта <structname>cuba</structname>, поэтому для его использования необходимо создать модуль <structname>portal</structname> в проекте приложения. Пример содержится в шаблоне проекта,  рассмотренном в  <xref linkend="qs_setup"/> </para>
+        <para>Основные элементы настройки:<itemizedlist>
+            <listitem>
+              <para>Добавить контроллеры REST API в контекст Spring, определяемый файлом <filename>
+                  <link linkend="dispatcher-spring.xml">portal-dispather-spring.xml</link>
+                </filename>:<programlisting>&lt;context:component-scan base-package=&quot;com.haulmont.cuba.portal.restapi&quot;/&gt;</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Установить режим доступа в <filename>portal-security-spring.xml</filename>:<programlisting>&lt;intercept-url pattern=&quot;/api/**&quot; access=&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;/&gt;</programlisting></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section>
+        <title>Описание функций</title>
+        <para>При стандартных настройках модуля <structname>portal</structname> все запросы к REST API должны иметь URL, начинающийся с <literal>{host:port}/app-portal/api</literal>.</para>
+        <para>TODO</para>
+      </section>
+    </section>
   </section>
   <section>
     <title>Механизмы платформы</title>
@@ -8579,10 +9224,6 @@ taskHandler.execute();</programlisting>
     </section>
     <section id="entity_snapshots">
       <title>Снимки сущностей</title>
-      <para>TODO</para>
-    </section>
-    <section id="rest_api">
-      <title>REST API</title>
       <para>TODO</para>
     </section>
     <section id="file_storage">

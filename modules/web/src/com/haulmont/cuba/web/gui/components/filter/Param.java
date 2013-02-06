@@ -12,6 +12,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowParams;
@@ -403,9 +404,10 @@ public class Param extends AbstractParam<Component> {
                 lookup.setOptionsDatasource(ds);
 
                 ds.addListener(
-                        new CollectionDsListenerAdapter() {
+                        new CollectionDsListenerAdapter<Entity>() {
                             @Override
-                            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                            public void collectionChanged(CollectionDatasource ds, Operation operation,
+                                                          List<Entity> items) {
                                 lookup.setValue(null);
                             }
                         }

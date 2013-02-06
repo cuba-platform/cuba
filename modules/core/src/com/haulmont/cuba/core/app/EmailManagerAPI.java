@@ -20,5 +20,8 @@ public interface EmailManagerAPI {
 
     List<SendingMessage> addEmailsToQueue(List<SendingMessage> sendingMessageList);
 
-    void queueEmailsToSend();
+    /**
+     * @return short message describing  how many emails were sent
+     */
+    String queueEmailsToSend();
 }

@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 15:11:57
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -14,70 +10,104 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.settings.Settings;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Represents an independent window
+ * Represents an independent screen opened inside the main application window.
+ *
+ * @author Abramov
+ * @version $Id$
  */
 public interface Window extends IFrame, Component.HasCaption {
 
+    /**
+     * Name that is used to register a client type specific screen implementation in
+     * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+     */
     String NAME = "window";
 
-    /** Standard actionId passed to {@link CloseListener}s after succesful commit */
+    /**
+     * Constant that should be passed to {@link #close(String)} and {@link #close(String, boolean)} methods when
+     * the screen is closed after commit of changes. Propagated to {@link CloseListener#windowClosed}.
+     */
     String COMMIT_ACTION_ID = "commit";
 
-    /** Standard actionId passed to {@link CloseListener}s after close */
+    /**
+     * Constant that should be passed to {@link #close(String)} and {@link #close(String, boolean)} methods when
+     * the screen is closed without commit. Propagated to {@link CloseListener#windowClosed}.
+     */
     String CLOSE_ACTION_ID = "close";
 
+    /**
+     * Add a listener that will be notified when this screen is closed.
+     * @param listener listener instance
+     */
     void addListener(CloseListener listener);
     void removeListener(CloseListener listener);
 
-    /** Apply user settings to all components of this window */
+    /** This method is called by the framework after opening the screen to apply user settings to all components. */
     void applySettings(Settings settings);
 
-    /** Save this window user settings if they have been changed */
+    /** This method is called by the framework when closing the screen
+     * to save user settings if they have been changed. */
     void saveSettings();
 
-    /** Set focus to component **/
+    /**
+     * Set a component to be focused after the screen is opened.
+     * @param componentId component's ID in XML
+     */
     void setFocusComponent(String componentId);
 
-    /** Set focus to component id **/
+    /**
+     * @return an ID of the component which is set to be focused after the screen is opened
+     */
     String getFocusComponent();
 
-    /** Get this window user settings */
+    /**
+     * @return object encapsulating user settings for the current screen
+     */
     Settings getSettings();
 
-    /** Close this window.
-     * If the window has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
-     * the confirmation dialog will be showed.
-     * @param actionId action ID will be propagated to {@link CloseListener}s
+    /**
+     * Close the screen.
+     * <p/> If the screen has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
+     * the confirmation dialog will be shown.
+     *
+     * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
+     *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
+     *                 {@link #CLOSE_ACTION_ID} otherwise. These constants are recognized by various mechanisms of the
+     *                 framework.
      */
     boolean close(String actionId);
 
-    /** Close this window.
-     * If the window has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
+    /** Close the screen.
+     * <p/> If the window has uncommitted changes in its {@link com.haulmont.cuba.gui.data.DsContext},
      * and force=false, the confirmation dialog will be shown.
-     * @param actionId action ID will be propagated to {@link CloseListener}s
-     * @param force if true, no confirmation dialog will be shown in any case
+     *
+     * @param actionId action ID that will be propagated to attached {@link CloseListener}s.
+     *                 Use {@link #COMMIT_ACTION_ID} if some changes have just been committed, or
+     *                 {@link #CLOSE_ACTION_ID} otherwise. These constants are recognized by various mechanisms of the
+     *                 framework.
+     * @param force    if true, no confirmation dialog will be shown even if the screen has uncommitted changes
      */
     boolean close(String actionId, boolean force);
 
-    /*
-     * Needed by bmc
-     */
+    /** For internal use only. Don't call from application code. */
     void closeAndRun(String actionId, Runnable runnable);
 
     /**
-     * Assign a {@link Timer} component to this window.
-     * @param timer Timer component
+     * Add a {@link Timer} component to this window.
+     * @param timer Timer instance
      */
     void addTimer(Timer timer);
 
     /**
-     * Returns a {@link Timer} assigned to this window by it's own ID
-     * @param id Timer ID
-     * @return timer or null if not found
+     * Returns a {@link Timer} added to this screen.
+     * @param id timer ID
+     * @return timer instance or null if not found
      */
+    @Nullable
     Timer getTimer(String id);
 
     /**
@@ -88,124 +118,165 @@ public interface Window extends IFrame, Component.HasCaption {
     boolean validateAll();
 
     /**
-     * Returns current {@link WindowManager} of this window
-     * @return window manager
+     * @return window manager instance
      */
     WindowManager getWindowManager();
 
-    /**
-     * Assign {@link WindowManager} to this window
-     *
-     * @param windowManager
-     */
+    /** For internal use only. Don't call from application code. */
     void setWindowManager(WindowManager windowManager);
 
     /**
-     * Window intended for editing an entity instance
+     * Represents an edit screen.
      */
     interface Editor extends Window {
 
+        /**
+         * Name that is used to register a client type specific screen implementation in
+         * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+         */
         String NAME = "window.editor";
 
+        /**
+         * Name of action that commits changes.
+         * <p/> If the screen doesn't contain a component with {@link #WINDOW_COMMIT_AND_CLOSE} ID, this action also
+         * closes the screen after commit.
+         */
         String WINDOW_COMMIT = "windowCommit";
+
+        /** Name of action that commits changes and closes the screen. */
         String WINDOW_COMMIT_AND_CLOSE = "windowCommitAndClose";
+
+        /** Name of action that closes the screen. */
         String WINDOW_CLOSE = "windowClose";
 
         /**
-         * @return edited entity
+         * @return currently edited entity instance
          */
         Entity getItem();
 
         /** 
-         * Set parent datasource to commit into this datasource instead of database.
-         * This method must be followed by {@link #setItem(com.haulmont.cuba.core.entity.Entity)}
+         * This method is called by the framework to set parent datasource to commit into this datasource instead
+         * of directly to the database.
          */
         void setParentDs(Datasource parentDs);
 
         /**
-         * Set edited entity. Invoked by the framework after opening the window.
+         * Called by the framework to set an edited entity after creation of all components and datasources, and
+         * after <code>init()</code>.
          * @param item  entity instance
          */
         void setItem(Entity item);
 
         /**
-         * Validate and commit changes.
+         * Called by the framework to validate the screen components and commit changes.
          * @return true if commit was succesful
          */
         boolean commit();
 
         /**
-         * Commit changes with optional validation.
+         * Called by the framework to commit changes with optional validation.
          * @param validate false to avoid validation
          * @return true if commit was succesful
          */
         boolean commit(boolean validate);
 
         /**
-         * Validate, commit and close the window if commit was successful.
-         * Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s
+         * Called by the framework to validate, commit and close the screen if commit was successful.
+         * <p/> Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s.
          */
         void commitAndClose();
 
         /**
-         * Check whether the item was pessimistically locked when editor was opened
+         * @return true if the edited item has been pessimistically locked when the screen is opened
          */
         boolean isLocked();
-
     }
 
     /**
-     * Window intended for looking up entities
+     * Represents a lookup screen.
      */
     interface Lookup extends Window {
 
+        /**
+         * Name that is used to register a client type specific screen implementation in
+         * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+         */
         String NAME = "window.lookup";
 
-        String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
-
-        String LOOKUP_ENTER_PRESSED_ACTION_ID="lookupEnterPressed";
-
-        String LOOKUP_SELECTED_ACTION_ID="lookupAction";
-
-        /** Component showing a list of entities to look up from it */
+        /**
+         * @return component that is used to lookup entity instances
+         */
         Component getLookupComponent();
 
-        /** Set component showing a list of entities to look up from it. Usually defined in XML descriptor */
+        /** Set component that is used to lookup entity instances. */
         void setLookupComponent(Component lookupComponent);
 
         /**
-         * Interface implemented by invoking code to receive selected entities
+         * @return current lookup handler
+         */
+        @Nullable
+        Handler getLookupHandler();
+
+        /**
+         * Set a lookup handler.
+         * @param handler   handler implementation
+         */
+        void setLookupHandler(Handler handler);
+
+        /**
+         * @return current lookup validator
+         */
+        @Nullable
+        Validator getLookupValidator();
+
+        /**
+         * Set a lookup validator
+         * @param validator validator implementation
+         */
+        void setLookupValidator(Validator validator);
+
+        /**
+         * Callback interface to receive selected entities.
+         * <p/> Implementations of this interface must be passed to {@link #openLookup} methods or set directly in
+         * the screen instance via {@link #setLookupHandler}.
          */
         interface Handler {
-            /** Invoked on selection and contains selected entities */
+            /**
+             * Called upon selection.
+             * @param items selected entity instances
+             */
             void handleLookup(Collection items);
         }
 
-        Handler getLookupHandler();
-        void setLookupHandler(Handler handler);
-
+        /**
+         * Callback interface to validate the lookup screen upon selection before calling
+         * {@link Handler#handleLookup(java.util.Collection)} method.
+         * <p/> Implementations of this interface must be set in the screen instance via {@link #setLookupValidator}.
+         */
         interface Validator {
+            /**
+             * Called upon selection.
+             * @return true to proceed with selection, false to interrupt the selection and don't close the screen
+             */
             boolean validate();
         }
-
-        Validator getLookupValidator();
-        void setLookupValidator(Validator validator);
     }
 
     /**
-     * Listener to window closing event
+     * Listener to be notified when a screen is closed.
      */
     interface CloseListener {
         /**
-         * Invoked after window was closed
-         * @param actionId ID of action caused window to close
+         * Called when a screen is closed.
+         * @param actionId ID of action caused the screen closing, passed here from {@link Window#close} methods
          */
         void windowClosed(String actionId);
     }
 
     /**
      * Interface implemented by screen controllers which are not themselves windows,
-     * but has {@link Window} interface and delegate work to wrapped real window
+     * but has {@link Window} interface and delegate work to wrapped real window.
+     * <p/> For internal use only.
      */
     interface Wrapper {
         <T extends Window> T getWrappedWindow();

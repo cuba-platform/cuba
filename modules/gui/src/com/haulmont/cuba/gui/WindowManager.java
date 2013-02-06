@@ -40,7 +40,8 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
- * GenericUI class intended for creating and opening application screens.
+ * GenericUI class intended for creation and opening application screens.
+ *
  * @author abramov
  * @version $Id$
  */
@@ -51,19 +52,20 @@ public abstract class WindowManager {
      */
     public enum OpenType {
         /**
-         * In new tab for TABBED mode, replace current screen for SINGLE mode
+         * Open a screen in new tab of the main window.
+         * <p/> In Web Client with <code>AppWindow.Mode.SINGLE</code> the new screen replaces current screen.
          */
         NEW_TAB,
         /**
-         * On top of the current conversation stack
+         * Open a screen on top of the current tab screens stack.
          */
         THIS_TAB,
         /**
-         * In modal dialog
+         * Open a screen as modal dialog.
          */
         DIALOG,
         /**
-         * In new window in desktop client, new tab in web client
+         * In Desktop Client open a screen in new main window, in Web Client the same as new {@link #NEW_TAB}
          */
         NEW_WINDOW
     }

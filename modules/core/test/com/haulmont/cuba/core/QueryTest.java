@@ -13,8 +13,8 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 public class QueryTest extends CubaTestCase
 {
@@ -24,9 +24,9 @@ public class QueryTest extends CubaTestCase
     protected void setUp() throws Exception {
         super.setUp();
 
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             User user = new User();
             userId = user.getId();
@@ -47,9 +47,9 @@ public class QueryTest extends CubaTestCase
     }
 
     protected void tearDown() throws Exception {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Query q;
 
@@ -69,9 +69,9 @@ public class QueryTest extends CubaTestCase
     }
 
     public void test() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
@@ -88,9 +88,9 @@ public class QueryTest extends CubaTestCase
     }
 
     public void testNullParam() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Query query = em.createQuery("select r from sec$UserRole r where r.deleteTs = :dts");
             query.setParameter("dts", null);
@@ -105,9 +105,9 @@ public class QueryTest extends CubaTestCase
     }
 
     public void testUpdate() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Group group = em.find(Group.class, groupId);
 
@@ -122,4 +122,20 @@ public class QueryTest extends CubaTestCase
         }
     }
 
+    public void testAssociatedResult() throws Exception {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            Query query = em.createQuery("select u.group from sec$User u where u.id = :userId");
+            query.setParameter("userId", userId);
+            List list = query.getResultList();
+
+            assertFalse(list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
 }

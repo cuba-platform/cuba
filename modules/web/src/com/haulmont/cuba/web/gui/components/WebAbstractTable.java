@@ -496,10 +496,18 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
         }
         if (action != null && action.isEnabled()) {
             Window window = ComponentsHelper.getWindow(WebAbstractTable.this);
-            if (!(window instanceof Window.Lookup))
+
+            if (!(window instanceof Window.Lookup)) {
                 action.actionPerform(WebAbstractTable.this);
-            else if (action.getId().equals(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)) {
-                action.actionPerform(WebAbstractTable.this);
+            } else {
+                Window.Lookup lookup = (Window.Lookup) window;
+
+                com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
+                if (lookupComponent != this)
+                    action.actionPerform(WebAbstractTable.this);
+                else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                    action.actionPerform(WebAbstractTable.this);
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -21,6 +22,7 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
@@ -265,7 +267,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
-    public Collection getValidators() {
+    public Collection<Validator> getValidators() {
         return field.getValidators();
     }
 
@@ -400,8 +402,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             setWidth(200, Unit.PIXELS);
             setModal(true);
 
-            this.values = new HashMap<>(values);
             this.messages = AppBeans.get(Messages.class);
+
+            this.values = new HashMap<>(values);
 
             VerticalLayout contentLayout = new VerticalLayout();
 
@@ -421,9 +424,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 lookup.setOptionsDatasource(collectionDatasource);
 
                 collectionDatasource.addListener(
-                        new CollectionDsListenerAdapter() {
+                        new CollectionDsListenerAdapter<Entity>() {
                             @Override
-                            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                                 lookup.setValue(null);
                             }
                         }
@@ -505,32 +508,33 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 field = lookup.getComponent();
 
             } else if (Date.class.isAssignableFrom(itemClass)) {
-// vaadin7
-//                final WebDateField dateField = new WebDateField();
-//
-//                field = dateField.getComponent();
-//                DateField.Resolution resolution;
-//                String dateFormat;
-//                if (itemClass.equals(java.sql.Date.class)) {
-//                    resolution = DateField.Resolution.DAY;
-//                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
-//                } else {
-//                    resolution = DateField.Resolution.MIN;
-//                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
-//                }
-//                dateField.setResolution(resolution);
-//                dateField.setDateFormat(dateFormat);
-//
-//                dateField.addListener(new ValueListener() {
-//                    @Override
-//                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-//                        if (value != null) {
-//                            String str = addDate((Date) value);
-//                            addItemLayout(value, str);
-//                            field.setValue(null);
-//                        }
-//                    }
-//                });
+                // vaadin7
+                /*
+                final WebDateField dateField = new WebDateField();
+
+                field = dateField.getComponent();
+                DateField.Resolution resolution;
+                String dateFormat;
+                if (itemClass.equals(java.sql.Date.class)) {
+                    resolution = DateField.Resolution.DAY;
+                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+                } else {
+                    resolution = DateField.Resolution.MIN;
+                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+                }
+                dateField.setResolution(resolution);
+                dateField.setDateFormat(dateFormat);
+
+                dateField.addListener(new ValueListener() {
+                    @Override
+                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                        if (value != null) {
+                            String str = addDate((Date) value);
+                            addItemLayout(value, str);
+                            field.setValue(null);
+                        }
+                    }
+                }); */
                 field = null;
             } else
                 throw new UnsupportedOperationException();

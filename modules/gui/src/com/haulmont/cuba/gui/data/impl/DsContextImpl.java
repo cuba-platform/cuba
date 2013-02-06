@@ -27,36 +27,39 @@ public class DsContextImpl implements DsContextImplementation {
     private DataSupplier dataservice;
 
     private DsContext parent;
-    private List<DsContext> children = new ArrayList<DsContext>();
+    private List<DsContext> children = new ArrayList<>();
 
-    private Map<String, Datasource> datasourceMap = new HashMap<String, Datasource>();
+    private Map<String, Datasource> datasourceMap = new HashMap<>();
 
-    protected Map<Datasource, Datasource> dependencies = new HashMap<Datasource, Datasource>();
+    protected Map<Datasource, Datasource> dependencies = new HashMap<>();
 
     // TODO implement ContextListeners
 //    private Map<String, Collection<Datasource>> contextListeners =
 //            new HashMap<String, Collection<Datasource>>();
 
-    protected List<LazyTask> lazyTasks = new ArrayList<LazyTask>();
+    protected List<LazyTask> lazyTasks = new ArrayList<>();
 
-    private Set<CommitListener> commitListeners = new LinkedHashSet<CommitListener>();
+    private Set<CommitListener> commitListeners = new LinkedHashSet<>();
 
     public DsContextImpl(DataSupplier dataservice) {
         this.dataservice = dataservice;
     }
 
+    @Override
     public void addLazyTask(LazyTask lazyTask) {
         if (!lazyTasks.contains(lazyTask)) lazyTasks.add(lazyTask);
     }
 
+    @Override
     public void executeLazyTasks() {
         for (LazyTask lazyTask : lazyTasks) {
             lazyTask.execute(this);
         }
     }
 
+    @Override
     public void resumeSuspended() {
-        LinkedList<CollectionDatasource.Suspendable> list = new LinkedList<CollectionDatasource.Suspendable>();
+        LinkedList<CollectionDatasource.Suspendable> list = new LinkedList<>();
 
         addDsContextToResume(this, list);
 
@@ -89,10 +92,12 @@ public class DsContextImpl implements DsContextImplementation {
             list.add((CollectionDatasource.Suspendable) datasource);
     }
 
+    @Override
     public WindowContext getWindowContext() {
         return windowContext;
     }
 
+    @Override
     public void setWindowContext(WindowContext windowContext) {
         this.windowContext = windowContext;
         // TODO implement ContextListeners
@@ -122,6 +127,7 @@ public class DsContextImpl implements DsContextImplementation {
 //        });
     }
 
+    @Override
     public boolean commit() {
         for (DsContext childDsContext : children) {
             commitToParent(childDsContext.getAll());
@@ -155,7 +161,7 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     private void commitToParent(Collection<Datasource> datasources) {
-        List<Datasource> list = new ArrayList<Datasource>();
+        List<Datasource> list = new ArrayList<>();
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
                 list.add(datasource);
@@ -178,7 +184,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     private void notifyAllDsCommited(DataSupplier dataservice, Set<Entity> committedEntities) {
         // Notify all datasources in context
-        Collection<Datasource> datasources = new LinkedList<Datasource>();
+        Collection<Datasource> datasources = new LinkedList<>();
         for (DsContext childDsContext : children) {
             for (Datasource ds : childDsContext.getAll()) {
                 if (ObjectUtils.equals(ds.getDataSupplier(), dataservice))
@@ -272,8 +278,7 @@ public class DsContextImpl implements DsContextImplementation {
         }
         datasources.addAll(datasourceMap.values());
 
-        final Map<DataSupplier,Collection<Datasource<Entity>>> commitDatasources =
-                new HashMap<DataSupplier,Collection<Datasource<Entity>>>();
+        final Map<DataSupplier,Collection<Datasource<Entity>>> commitDatasources = new HashMap<>();
 
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.DATASTORE.equals(datasource.getCommitMode()) &&
@@ -291,6 +296,7 @@ public class DsContextImpl implements DsContextImplementation {
         return commitDatasources;
     }
 
+    @Override
     public void registerDependency(final Datasource datasource, final Datasource dependFrom, final String propertyName) {
         Datasource ds = dependencies.get(datasource);
         if (ds != null)
@@ -298,13 +304,16 @@ public class DsContextImpl implements DsContextImplementation {
             else throw new UnsupportedOperationException("Datasource couldn't depend from two different sources");
 
         final DatasourceListener listener = new CollectionDatasourceListener<Entity>() {
+            @Override
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                 if (Datasource.State.VALID.equals(datasource.getState()))
                     datasource.refresh();
             }
 
+            @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {}
 
+            @Override
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (propertyName != null && ObjectUtils.equals(propertyName, property)) {
                     final Entity item = Datasource.State.VALID.equals(dependFrom.getState()) ? dependFrom.getItem() : null;
@@ -314,7 +323,8 @@ public class DsContextImpl implements DsContextImplementation {
                 }
             }
 
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 if (Operation.REFRESH.equals(operation)) {
                     datasource.refresh();
                 }
@@ -325,18 +335,22 @@ public class DsContextImpl implements DsContextImplementation {
         dependencies.put(datasource, dependFrom);
     }
 
+    @Override
     public void addListener(CommitListener listener) {
         commitListeners.add(listener);
     }
 
+    @Override
     public void removeListener(CommitListener listener) {
         commitListeners.remove(listener);
     }
 
+    @Override
     public DataSupplier getDataService() {
         return dataservice;
     }
 
+    @Override
     public <T extends Datasource> T get(String id) {
         Datasource ds = datasourceMap.get(id);
         if (ds == null && parent != null) {
@@ -345,10 +359,12 @@ public class DsContextImpl implements DsContextImplementation {
         return (T) ds;
     }
 
+    @Override
     public Collection<Datasource> getAll() {
         return datasourceMap.values();
     }
 
+    @Override
     public boolean isModified() {
         for (Datasource datasource : datasourceMap.values()) {
             if (datasource.isModified()) {
@@ -365,6 +381,7 @@ public class DsContextImpl implements DsContextImplementation {
         return false;
     }
 
+    @Override
     public void refresh() {
         final Collection<Datasource> datasources = datasourceMap.values();
         for (Datasource datasource : datasources) {
@@ -373,10 +390,12 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
+    @Override
     public void register(Datasource datasource) {
         datasourceMap.put(datasource.getId(), datasource);
     }
 
+    @Override
     public void registerListener(ParameterInfo item, Datasource datasource) {
         // TODO implement ContextListeners
 //        if (ParametersHelper.ParameterInfo.Type.PARAM.equals(item.getType())) {
@@ -391,10 +410,12 @@ public class DsContextImpl implements DsContextImplementation {
 //        }
     }
 
+    @Override
     public DsContext getParent() {
         return parent;
     }
 
+    @Override
     public void setParent(DsContext parent) {
         this.parent = parent;
         if (!parent.getChildren().contains(this)) {
@@ -402,6 +423,7 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
+    @Override
     public List<DsContext> getChildren() {
         return children;
     }

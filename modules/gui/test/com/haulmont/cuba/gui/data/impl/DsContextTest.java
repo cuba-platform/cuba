@@ -11,8 +11,11 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestEmbeddableEntity;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity;
@@ -22,11 +25,11 @@ import mockit.NonStrictExpectations;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * <pre>
@@ -567,21 +570,18 @@ public class DsContextTest extends CubaClientTestCase {
                 .setMetaClass(metadataSession.getClass(TestMasterEntity.class))
                 .setViewName("withDetails");
         masterDs = masterDsBuilder.buildDatasource();
-        masterDsContext.register(masterDs);
 
         masterDsBuilder.reset().setId("detailsDs")
                 .setMetaClass(metadataSession.getClass(TestDetailEntity.class))
                 .setMaster(masterDs)
                 .setProperty("details");
         detailsDs = masterDsBuilder.buildCollectionDatasource();
-        masterDsContext.register(detailsDs);
 
         masterDsBuilder.reset().setId("masterPartsDs")
                 .setMetaClass(metadataSession.getClass(TestDetailEntity.class))
                 .setMaster(detailsDs)
                 .setProperty("parts");
         masterPartsDs = masterDsBuilder.buildCollectionDatasource();
-        masterDsContext.register(masterPartsDs);
 
         for (Datasource ds : masterDsContext.getAll()) {
             ((DatasourceImplementation) ds).initialized();
@@ -597,21 +597,18 @@ public class DsContextTest extends CubaClientTestCase {
                 .setMetaClass(metadataSession.getClass(TestDetailEntity.class))
                 .setViewName("_local");
         detailDs = detailDsBuilder.buildDatasource();
-        detailDsContext.register(detailDs);
 
         detailDsBuilder.reset().setId("embeddedDs")
                 .setMetaClass(metadataSession.getClass(TestEmbeddableEntity.class))
                 .setMaster(detailDs)
                 .setProperty("embeddable");
         embeddableDs = detailDsBuilder.buildDatasource();
-        detailDsContext.register(embeddableDs);
 
         detailDsBuilder.reset().setId("partsDs")
                 .setMetaClass(metadataSession.getClass(TestPartEntity.class))
                 .setMaster(detailDs)
                 .setProperty("parts");
         partsDs = detailDsBuilder.buildCollectionDatasource();
-        detailDsContext.register(partsDs);
 
         for (Datasource ds : detailDsContext.getAll()) {
             ((DatasourceImplementation) ds).initialized();
@@ -627,7 +624,6 @@ public class DsContextTest extends CubaClientTestCase {
                 .setMetaClass(metadataSession.getClass(TestPartEntity.class))
                 .setViewName("_local");
         partDs = partDsBuilder.buildDatasource();
-        partDsContext.register(partDs);
 
         for (Datasource ds : partDsContext.getAll()) {
             ((DatasourceImplementation) ds).initialized();

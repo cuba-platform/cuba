@@ -20,21 +20,24 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopOptionsGroup
         extends DesktopAbstractOptionsField<JPanel>
-        implements OptionsGroup
-{
+        implements OptionsGroup {
+
     private boolean multiselect;
     private boolean optionsInitialized;
-    private Map<ValueWrapper, JToggleButton> items = new HashMap<ValueWrapper, JToggleButton>();
+    private Map<ValueWrapper, JToggleButton> items = new HashMap<>();
     private ButtonGroup buttonGroup;
 
     private Orientation orientation = Orientation.VERTICAL;
     private MigLayout layout;
+
+    private boolean editable = true;
+
+    private boolean enabled = true;
 
     public DesktopOptionsGroup() {
         layout = new MigLayout();
@@ -77,7 +80,7 @@ public class DesktopOptionsGroup
             optionsDatasource.addListener(
                     new CollectionDsListenerAdapter<Entity<Object>>() {
                         @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity<Object>> items) {
                             removeAllItems();
                             for (Object id : ds.getItemIds()) {
                                 addItem(new EntityWrapper(ds.getItem(id)));
@@ -147,6 +150,7 @@ public class DesktopOptionsGroup
             button = new JRadioButton(item.toString());
             buttonGroup.add(button);
         }
+        button.setEnabled(enabled && editable);
         button.addActionListener(
                 new ActionListener() {
                     @Override
@@ -197,7 +201,7 @@ public class DesktopOptionsGroup
     @Override
     public <T> T getValue() {
         if (multiselect) {
-            Set<Object> set = new HashSet<Object>();
+            Set<Object> set = new HashSet<>();
             for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
                 if (entry.getValue().isSelected()) {
                     set.add(entry.getKey().getValue());
@@ -261,11 +265,14 @@ public class DesktopOptionsGroup
 
     @Override
     public boolean isEditable() {
-        return true;
+        return editable;
     }
 
     @Override
     public void setEditable(boolean editable) {
+        this.editable = editable;
+        for (JToggleButton button : items.values())
+            button.setEnabled(enabled && editable);
     }
 
     @Override
@@ -283,8 +290,14 @@ public class DesktopOptionsGroup
     }
 
     @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
         for (JToggleButton button : items.values())
-            button.setEnabled(enabled);
+            button.setEnabled(enabled && editable);
     }
 }

@@ -177,7 +177,6 @@ public class RuntimePropsDatasourceImpl
 
         ((DatasourceImpl) datasource).valid();
         //datasource.setItem(attributeValue);
-        ((DsContextImplementation) getDsContext()).register(datasource);
     }
 
     private List<SetValueEntity> getOptions(CategoryAttribute attribute, SetValueEntity attributeValue) {

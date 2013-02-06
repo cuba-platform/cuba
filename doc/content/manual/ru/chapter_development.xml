@@ -117,7 +117,7 @@
   </section>
   <section id="project_file_structure">
     <title>Файловая структура проекта</title>
-    <para>Рассмотрим файловую структуру  проекта на примере простого приложения <application>Sales</application>, состоящего из <link linkend="app_tiers">блоков</link> Middleware и Web Client.</para>
+    <para>Рассмотрим файловую структуру  проекта на примере простого приложения <application>Sales</application>, состоящего из <link linkend="app_tiers">блоков</link> Middleware,  Web Client и Web Portal.</para>
     <figure>
       <title>Файловая структура проекта</title>
       <mediaobject>
@@ -127,7 +127,7 @@
       </mediaobject>
     </figure>
     <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
-    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <link linkend="app_modules">модулей</link> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. </para>
+    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <link linkend="app_modules">модулей</link> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>portal, web</structname>. </para>
     <figure>
       <title>Структура модуля global</title>
       <mediaobject>
@@ -137,9 +137,9 @@
       </mediaobject>
     </figure>
     <para>Модуль <structname>global</structname> содержит каталог исходных текстов <filename>src</filename>, в корне которого располагаются конфигурационные файлы <filename>
-        <link linkend="metadata.xml">sales-metadata.xml</link>
+        <link linkend="metadata.xml">metadata.xml</link>
       </filename> и <filename>
-        <link linkend="persistence.xml">sales-persistence.xml</link>
+        <link linkend="persistence.xml">persistence.xml</link>
       </filename>. Пакет <code>com.sample.sales.core</code> содержит интерфейсы сервисов Middleware, пакет <code>com.sample.sales.entity</code> - классы <link linkend="data_model">сущностей</link> и <link linkend="message_packs">файлы локализации</link> для них.</para>
     <figure>
       <title>Структура модуля core</title>
@@ -155,9 +155,9 @@
         </listitem>
         <listitem>
           <para><filename>src</filename> - каталог исходных текстов, в корне которого расположены файл <link linkend="app_properties_files">свойств приложения</link> блока Middleware и конфигурационные файлы <filename>
-              <link linkend="spring.xml">sales-spring.xml</link>
+              <link linkend="spring.xml">spring.xml</link>
             </filename> и <filename>
-              <link linkend="views.xml">sales-views.xml</link>
+              <link linkend="views.xml">views.xml</link>
             </filename>. Пакет <code>com.samples.sales.core</code> содержит классы  Middleware: реализации <link linkend="services">сервисов</link>, <link linkend="managed_beans">управляемые бины</link>, <link linkend="jmx_beans">JMX-бины</link>.</para>
         </listitem>
         <listitem>
@@ -177,7 +177,7 @@
       </mediaobject>
     </figure>
     <para>Модуль <structname>gui</structname> содержит каталог исходных текстов <filename>src</filename>, в корне которого располагается конфигурационный файл <filename>
-        <link linkend="screens.xml">sales-screens.xml</link>
+        <link linkend="screens.xml">screens.xml</link>
       </filename>. Пакет <code>com.sample.sales.gui</code> содержит XML-дескрипторы и контроллеры экранов и  <link linkend="message_packs">файлы локализации</link> для них.</para>
     <figure>
       <title>Структура модуля web</title>
@@ -190,13 +190,13 @@
     <para>Модуль <structname>web</structname> содержит следующие каталоги:<itemizedlist>
         <listitem>
           <para><filename>src</filename> - каталог исходных текстов, в корне которого расположены файл <link linkend="app_properties_files">свойств приложения</link> блока Web Client и конфигурационные файлы <filename>
-              <link linkend="menu.xml">sales-web-menu.xml</link>
+              <link linkend="menu.xml">web-menu.xml</link>
             </filename>, <filename>
-              <link linkend="permissions.xml">sales-web-permissions.xml</link>
+              <link linkend="permissions.xml">web-permissions.xml</link>
             </filename>, <filename>
-              <link linkend="screens.xml">sales-web-screens.xml</link>
+              <link linkend="screens.xml">web-screens.xml</link>
             </filename> и <filename>
-              <link linkend="spring.xml">sales-web-spring.xml</link>
+              <link linkend="spring.xml">web-spring.xml</link>
             </filename>. Пакет <code>com.samples.sales.web</code> содержит главный класс блока Web Client (наследник <code>DefaultApp</code>) и <link linkend="main_message_pack">главный пакет локализованных сообщений</link>.</para>
         </listitem>
         <listitem>

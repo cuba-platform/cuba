@@ -68,7 +68,7 @@ public class AnonymousSessionHolder {
 
     private UserSession loginAsAnonymous() {
         PortalConfig config = configuration.getConfig(PortalConfig.class);
-        String login = config.getTrustedClientLogin();
+        String login = config.getAnonymousUserLogin();
         String password = config.getTrustedClientPassword();
 
         Locale defaulLocale = new Locale(config.getDefaultLocale());

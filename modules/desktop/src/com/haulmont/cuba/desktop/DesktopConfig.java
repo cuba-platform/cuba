@@ -69,6 +69,9 @@ public interface DesktopConfig extends Config {
     @DefaultBoolean(true)
     boolean isUseServerTimeZone();
 
+    /**
+     * @return true if application should synchronize its time source with server time
+     */
     @Property("cuba.desktop.useServerTime")
     @DefaultBoolean(true)
     boolean isUseServerTime();

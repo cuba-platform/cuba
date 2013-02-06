@@ -1,0 +1,22 @@
+user:Actor
+commitAndClose:Action
+controller:AbstractEditor
+f:framework
+l:CloseListener
+dsCtx:DsContext
+cl:CommitListener
+ds:DataSupplier
+
+user:commitAndClose.press OK&Close
+commitAndClose:controller.commitAndClose
+controller:f.commitAndClose
+f:controller.validateAll
+f:controller.postValidate
+f:controller.preCommit
+f:dsCtx.commit
+dsCtx:cl.beforeCommit
+dsCtx:ds.commit
+dsCtx:cl.afterCommit
+f:controller.postCommit(close)
+f:controller.preClose()
+f:l.windowClosed

@@ -11,7 +11,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.*;
@@ -45,6 +44,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     private Position position = Position.TOP;
 
     private ItemChangeHandler itemChangeHandler;
+
+    private ItemClickListener itemClickListener;
 
     private boolean inline;
 
@@ -116,9 +117,9 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        datasource.addListener(new CollectionDsListenerAdapter() {
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 if (lookupPickerField != null) {
                     if (isLookup()) {
                         if (getLookupScreen() != null)
@@ -131,6 +132,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                     }
                 }
                 impl.refreshComponent();
+                impl.refreshClickListeners(itemClickListener);
             }
         });
     }
@@ -316,6 +318,17 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     }
 
     @Override
+    public ItemClickListener getItemClickListener() {
+        return this.itemClickListener;
+    }
+
+    @Override
+    public void setItemClickListener(ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+        this.impl.refreshClickListeners(itemClickListener);
+    }
+
+    @Override
     public void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator) {
         this.tokenStyleGenerator = tokenStyleGenerator;
     }
@@ -390,6 +403,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
+
+        impl.refreshComponent();
     }
 
     protected String instanceCaption(Instance instance) {
@@ -412,10 +427,12 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         private DesktopLabel label;
         private DesktopHBox composition;
         private DesktopButton removeButton;
+        private DesktopButton openButton;
 
         private boolean editable;
 
         private List<RemoveTokenListener> listeners;
+        private ClickListener clickListener;
 
         public TokenListLabel() {
             label = new DesktopLabel();
@@ -441,6 +458,27 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             removeButton.setIcon("icons/remove.png");
 
             JButton button = removeButton.getComponent();
+            button.setBorder(new EmptyBorder(0,3,0,3));
+            button.setFocusPainted(false);
+            button.setBorderPainted(false);
+
+            openButton = new DesktopButton();
+            openButton.setAction(new AbstractAction("actions.Open") {
+                @Override
+                public void actionPerform(Component component) {
+                    fireClickListener();
+                }
+
+                @Override
+                public String getCaption() {
+                    return "";
+                }
+            });
+            openButton.setIcon("pickerfield/img/open-btn.png");
+            composition.add(openButton);
+            openButton.setVisible(false);
+
+            button = openButton.getComponent();
             button.setBorder(new EmptyBorder(0,3,0,3));
             button.setFocusPainted(false);
             button.setBorderPainted(false);
@@ -486,6 +524,11 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             }
         }
 
+        public void setClickListener(ClickListener clickListener) {
+            this.clickListener = clickListener;
+            openButton.setVisible(clickListener != null);
+        }
+
         private void fireRemoveListeners() {
             if (listeners != null) {
                 for (final RemoveTokenListener listener : listeners) {
@@ -493,10 +536,19 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 }
             }
         }
+
+        private void fireClickListener() {
+            if (clickListener != null)
+                clickListener.onClick(this);
+        }
     }
 
     public interface RemoveTokenListener {
         void removeToken(TokenListLabel source);
+    }
+
+    public interface ClickListener {
+        void onClick(TokenListLabel source);
     }
 
     public class AddAction extends AbstractAction {
@@ -699,6 +751,26 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             }
         }
 
+        public void refreshClickListeners(ItemClickListener listener) {
+            if (datasource != null && CollectionDatasource.State.VALID.equals(datasource.getState())) {
+                for (Object id : datasource.getItemIds()) {
+                    Instance item = datasource.getItem(id);
+                    final TokenListLabel label = itemComponents.get(item);
+                    if (label != null) {
+                        if (listener == null)
+                            label.setClickListener(null);
+                        else
+                            label.setClickListener(new ClickListener() {
+                                @Override
+                                public void onClick(TokenListLabel source) {
+                                    doClick(label);
+                                }
+                            });
+                    }
+                }
+            }
+        }
+
         protected TokenListLabel createToken() {
             final TokenListLabel label = new TokenListLabel();
             label.setWidth("100%");
@@ -724,6 +796,14 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 } else {
                     datasource.removeItem((Entity) item);
                 }
+            }
+        }
+
+        private void doClick(TokenListLabel source) {
+            if (itemClickListener != null) {
+                Instance item = componentItems.get(source);
+                if (item != null)
+                    itemClickListener.onClick(item);
             }
         }
     }

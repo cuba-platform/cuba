@@ -6,7 +6,9 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.RowsCount;
@@ -48,9 +50,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         this.datasource = datasource;
         if (datasource != null) {
             this.datasource.addListener(
-                    new CollectionDsListenerAdapter() {
+                    new CollectionDsListenerAdapter<Entity>() {
                         @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        public void collectionChanged(CollectionDatasource ds, Operation operation, java.util.List<Entity> items) {
                             onCollectionChanged();
                         }
                     }
@@ -160,10 +162,10 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
 
         String messagesPack = AppConfig.getMessagesPack();
-        impl.getLabel().setText(MessageProvider.formatMessage(messagesPack, msgKey, countValue));
+        impl.getLabel().setText(AppBeans.get(Messages.class).formatMessage(messagesPack, msgKey, countValue));
 
         if (impl.getCountButton().isVisible() && !refreshing) {
-            impl.getCountButton().setText(MessageProvider.getMessage(messagesPack, "table.rowsCount.msg3"));
+            impl.getCountButton().setText(AppBeans.get(Messages.class).getMessage(messagesPack, "table.rowsCount.msg3"));
         }
         impl.repaint();
         impl.revalidate();

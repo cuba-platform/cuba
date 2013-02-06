@@ -9,7 +9,6 @@ package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
@@ -55,6 +54,7 @@ public class AttributeEditWindow extends AbstractEditor {
     private boolean assignValue() {
         ManagedBeanAttribute mba = (ManagedBeanAttribute) getItem();
 
+        Object oldValue = mba.getValue();
         try {
             Object newValue = valueHolder != null ? valueHolder.getAttributeValue() : null;
             if (newValue != null) {
@@ -65,11 +65,13 @@ public class AttributeEditWindow extends AbstractEditor {
                 return true;
             }
         } catch (Exception e) {
-            showNotification(String.format(getMessage("editAttribute.exception"), e.getMessage()),
-                    IFrame.NotificationType.HUMANIZED);
+            getDialogParams().setWidth(640);
+            showMessageDialog(String.format(getMessage("editAttribute.exception"), mba.getName()), e.getMessage(),
+                    MessageType.WARNING);
+            mba.setValue(oldValue);
             return false;
         }
-        showNotification(getMessage("editAttribute.conversionError"), IFrame.NotificationType.HUMANIZED);
+        showNotification(getMessage("editAttribute.conversionError"), NotificationType.HUMANIZED);
         return false;
     }
 }

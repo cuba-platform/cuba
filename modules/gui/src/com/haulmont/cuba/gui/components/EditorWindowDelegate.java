@@ -107,32 +107,34 @@ public class EditorWindowDelegate extends WindowDelegate {
         Datasource ds = getDatasource();
         DataSupplier dataservice = ds.getDataSupplier();
 
-        if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)
-                && ds instanceof DatasourceImplementation
-                && ((DatasourceImplementation) ds).getParent() instanceof DatasourceImplementation) {
-            DatasourceImplementation parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
-            // We have to reload items in parent datasource because when item in child datasource is committed,
-            // an item in parent datasource must already have all item fields loaded.
-            if (parentDs != null) {
-                Collection<Object> justChangedItems = new HashSet<Object>(parentDs.getItemsToCreate());
-                justChangedItems.addAll(parentDs.getItemsToUpdate());
+        if (!PersistenceHelper.isNew(item)) {
+            if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)) {
+                if (ds instanceof DatasourceImplementation
+                        && ((DatasourceImplementation) ds).getParent() instanceof DatasourceImplementation) {
+                    DatasourceImplementation parentDs =
+                            (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
+                    // We have to reload items in parent datasource because when item in child datasource is committed,
+                    // an item in parent datasource must already have all item fields loaded.
+                    if (parentDs != null) {
+                        Collection<Object> justChangedItems = new HashSet<Object>(parentDs.getItemsToCreate());
+                        justChangedItems.addAll(parentDs.getItemsToUpdate());
 
-                if (!justChangedItems.contains(item)
-                        && parentDs instanceof CollectionDatasource
-                        && ((CollectionDatasource) parentDs).containsItem(item)) {
-                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                    if (parentDs instanceof CollectionPropertyDatasourceImpl) {
-                        ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
-                    } else {
-                        ((CollectionDatasource) parentDs).updateItem(item);
+                        if (!justChangedItems.contains(item)
+                                && parentDs instanceof CollectionDatasource
+                                && ((CollectionDatasource) parentDs).containsItem(item)) {
+                            item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                            if (parentDs instanceof CollectionPropertyDatasourceImpl) {
+                                ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
+                            } else {
+                                ((CollectionDatasource) parentDs).updateItem(item);
+                            }
+                        }
                     }
                 }
-            }
-            item = (Entity) InstanceUtils.copy(item);
-        } else {
-            if (!PersistenceHelper.isNew(item)
-                    && WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext())) {
-                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), false);
+                item = (Entity) InstanceUtils.copy(item);
+            } else {
+                boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());
+                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints);
             }
         }
 

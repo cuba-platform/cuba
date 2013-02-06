@@ -92,17 +92,17 @@ public class FeedbackWindow extends AbstractWindow {
                                 : (String) ((LookupField) getComponent("reason")).getValue()) + "\n");
                 infoHeader += (MessageProvider.getMessage(getClass(),  "mailBody") + ": \n");
                 infoHeader += ((String) ((TextField) getComponent("mainBody")).getValue());
-//                EmailInfo emailInfo = new EmailInfo(
-//                        webConfig.getSupportEmail(),
-//                        "[Feedback Form][" + webConfig.getSystemID() + "]["
-//                                + user.getLogin() + "]["
-//                                + Datatypes.get(Date.class).format(TimeProvider.currentTimestamp()) + "] "
-//                                + (otherReason.equals(((LookupField) getComponent("reason")).getValue())
-//                                    ? (String) ((TextField) getComponent("reasonFreeText")).getValue()
-//                                    : (String) ((LookupField) getComponent("reason")).getValue()),
-//                        infoHeader
-//                        );
-//                emailService.sendEmail(emailInfo);
+                EmailInfo emailInfo = new EmailInfo(
+                        webConfig.getSupportEmail(),
+                        "[Feedback Form][" + webConfig.getSystemID() + "]["
+                                + user.getLogin() + "]["
+                                + Datatypes.get(Date.class).format(TimeProvider.currentTimestamp()) + "] "
+                                + (otherReason.equals(((LookupField) getComponent("reason")).getValue())
+                                    ? (String) ((TextField) getComponent("reasonFreeText")).getValue()
+                                    : (String) ((LookupField) getComponent("reason")).getValue()),
+                        infoHeader
+                        );
+                emailService.sendEmail(emailInfo);
                 showNotification(MessageProvider.getMessage(getClass(),  "emailSent"), NotificationType.HUMANIZED);
             } catch (Exception e) {
                 showNotification(MessageProvider.getMessage(getClass(),  "emailSentErr"), NotificationType.ERROR);

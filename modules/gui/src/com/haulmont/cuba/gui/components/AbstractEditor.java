@@ -1,21 +1,19 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 28.01.2009 10:18:35
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.Datasource;
 
 /**
- * Base class for editor screen controllers
+ * Base class for edit screen controllers.
+ *
+ * @author Abramov
+ * @version $Id$
  */
 public class AbstractEditor<T extends Entity> extends AbstractWindow implements Window.Editor {
 
@@ -41,20 +39,22 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     /**
-     * Set edited entity. Invoked by the framework after opening the window.
+     * Called by the framework to set an edited entity after creation of all components and datasources, and after
+     * {@link #init(java.util.Map)}.
      * <p>Don't override this method in subclasses, use hooks {@link #initItem(com.haulmont.cuba.core.entity.Entity)}
      * and {@link #postInit()} instead.</p>
      * @param item  entity instance
      */
     @Override
     public void setItem(Entity item) {
+        //noinspection unchecked
         initItem((T) item);
         ((Editor) frame).setItem(item);
         postInit();
     }
 
     /**
-     * Validate and commit changes.
+     * Called by the framework to validate and commit changes.
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}
      * and {@link #postCommit(boolean, boolean)} instead.</p>
      * @return true if commit was succesful
@@ -82,6 +82,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}
      * and {@link #postCommit(boolean, boolean)} instead.</p>
      */
+    @Override
     public void commitAndClose() {
         ((Editor) frame).commitAndClose();
     }
@@ -124,7 +125,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      */
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed && !close) {
-            frame.showNotification(MessageProvider.formatMessage(AppConfig.getMessagesPack(),
+            frame.showNotification(messages.formatMessage(AppConfig.getMessagesPack(),
                     "info.EntitySave", ((Editor) frame).getItem().getInstanceName()),
                     NotificationType.HUMANIZED);
             postInit();

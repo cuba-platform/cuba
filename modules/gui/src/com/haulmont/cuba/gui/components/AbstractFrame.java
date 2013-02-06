@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
@@ -15,12 +14,13 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * Base class for screen controllers.
+ * Base class for frame controllers.
  *
  * @author abramov
  * @version $Id$
@@ -30,6 +30,9 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     protected IFrame frame;
     private String styleName;
     private Object _companion;
+
+    @Inject
+    protected Messages messages;
 
     /**
      * DEPRECATED - use default constructor!
@@ -42,10 +45,18 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     public AbstractFrame() {
     }
 
+    /** For internal use only. Don't call from application code. */
     public void setWrappedFrame(IFrame frame) {
         this.frame = frame;
     }
 
+    /**
+     * Called by the framework after creation of all components and before showing the screen.
+     * <p/> Override this method and put initialization logic here.
+     * @param params parameters passed from caller's code, usually from
+     * {@link #openWindow(String, com.haulmont.cuba.gui.WindowManager.OpenType)} and similar methods, or set in
+     *               <code>screens.xml</code> for this registered screen
+     */
     public void init(Map<String, Object> params) {
     }
 
@@ -166,6 +177,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     @Override
     public <T> T getComponent() {
+        //noinspection unchecked
         return (T) frame;
     }
 
@@ -214,21 +226,34 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setMessagesPack(name);
     }
 
-    @Override
-    public String getMessage(String key) {
+    /**
+     * Get localized message from the message pack associated with this frame or window.
+     * @param key   message key
+     * @return      localized message
+     * @see Messages#getMessage(String, String)
+     */
+    protected String getMessage(String key) {
         String msgPack = getMessagesPack();
         if (msgPack == null)
             throw new IllegalStateException("MessagePack is not set");
-        return AppBeans.get(Messages.class).getMessage(msgPack, key);
+
+        return messages.getMessage(msgPack, key);
     }
 
-    // wonder, if getMessage() is invoked anywhere from non-child class
+    /**
+     * Get localized message from the message pack associated with this frame or window, and use it as a format
+     * string for parameters provided.
+     * @param key       message key
+     * @param params    parameter values
+     * @return          formatted string or the key in case of IllegalFormatException
+     * @see Messages#formatMessage(String, String, Object...)
+     */
     protected String formatMessage(String key, Object... params) {
         String msgPack = getMessagesPack();
         if (msgPack == null)
             throw new IllegalStateException("MessagePack is not set");
 
-        return AppBeans.get(Messages.class).formatMessage(msgPack, key, params);
+        return messages.formatMessage(msgPack, key, params);
     }
 
     @Override
@@ -251,10 +276,15 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return frame.getDialogParams();
     }
 
+    /**
+     * @return a companion implementation, specific for the current client type
+     */
     public <T> T getCompanion() {
+        //noinspection unchecked
         return (T) _companion;
     }
 
+    /** For internal use only. Don't call from application code. */
     public void setCompanion(Object companion) {
         this._companion = companion;
     }
@@ -309,7 +339,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
      */
     @Override
     public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias) {
-        return frame.<T>openFrame(parent, windowAlias);
+        return frame.openFrame(parent, windowAlias);
     }
 
     /**
@@ -321,7 +351,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
      */
     @Override
     public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
-        return frame.<T>openFrame(parent, windowAlias, params);
+        return frame.openFrame(parent, windowAlias, params);
     }
 
     @Override
@@ -349,32 +379,9 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.showNotification(caption, description, type);
     }
 
-    public boolean close(String actionId) {
-        if (frame instanceof Window) {
-            return ((Window) frame).close(actionId);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public boolean close(String actionId, boolean force) {
-        if (frame instanceof Window) {
-            return ((Window) frame).close(actionId, force);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public void closeAndRun(String actionId, Runnable runnable) {
-        if (frame instanceof Window) {
-            ((Window) frame).closeAndRun(actionId, runnable);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     @Override
     public <A extends IFrame> A getFrame() {
+        //noinspection unchecked
         return (A) this.frame.getFrame();
     }
 

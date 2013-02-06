@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -46,6 +47,13 @@ public class MessageTools {
 
     @Inject
     protected Metadata metadata;
+
+    protected GlobalConfig globalConfig;
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+    }
 
     /**
      * Get localized message by reference provided in the full format.
@@ -235,5 +243,14 @@ public class MessageTools {
             }
         }
         return null;
+    }
+
+    /**
+     * Locale representation depending on <code>cuba.useLocaleLanguageOnly</code> application property.
+     * @param locale    locale instance
+     * @return language code if <code>cuba.useLocaleLanguageOnly=true</code>, or full locale representation otherwise
+     */
+    public String localeToString(Locale locale) {
+        return globalConfig.getUseLocaleLanguageOnly() ? locale.getLanguage() : locale.toString();
     }
 }

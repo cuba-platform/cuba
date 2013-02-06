@@ -32,7 +32,7 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     protected TreeModelAdapter treeDelegate;
     private TableModelAdapter tableDelegate;
 
-    protected List<DataChangeListener> changeListeners = new ArrayList<DataChangeListener>();
+    protected List<DataChangeListener> changeListeners = new ArrayList<>();
 
     public TreeTableModelAdapter(
             JXTreeTable treeTable,
@@ -45,9 +45,9 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
         this.tableDelegate = new TableModelAdapter(datasource, columns, autoRefresh);
 
         datasource.addListener(
-                new CollectionDsListenerAdapter() {
+                new CollectionDsListenerAdapter<Entity>() {
                     @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                         Object root = getRoot();
                         // Fixes #1160
                         JXTreeTableExt impl = (JXTreeTableExt) TreeTableModelAdapter.this.treeTable;

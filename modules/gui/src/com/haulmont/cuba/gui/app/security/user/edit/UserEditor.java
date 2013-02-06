@@ -126,7 +126,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected void initItem(User item) {
         if (PersistenceHelper.isNew(item)) {
             addDefaultRoles(item);
-            item.setLanguage(userSession.getLocale().getLanguage());
+            item.setLanguage(messages.getTools().localeToString(userSession.getLocale()));
         }
     }
 
@@ -193,7 +193,7 @@ public class UserEditor extends AbstractEditor<User> {
                 Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
                 TreeMap<String, Object> options = new TreeMap<>();
                 for (Map.Entry<String, Locale> entry : locales.entrySet()) {
-                    options.put(entry.getKey(), entry.getValue().getLanguage());
+                    options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
                 }
                 languageLookup.setOptionsMap(options);
                 if (companion != null)
@@ -271,7 +271,7 @@ public class UserEditor extends AbstractEditor<User> {
         @Override
         public void actionPerform(Component component) {
             Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
-            Lookup roleLookupWindow = openLookup("sec$Role.browse", new Lookup.Handler() {
+            Lookup roleLookupWindow = openLookup("sec$Role.lookup", new Lookup.Handler() {
                 @Override
                 public void handleLookup(Collection items) {
                     Collection<String> existingRoleNames = getExistingRoleNames();

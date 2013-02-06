@@ -11,12 +11,13 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.*;
 
+import java.util.List;
+
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class CollectionDsActionsNotifier implements CollectionDatasourceListener {
+public class CollectionDsActionsNotifier implements CollectionDatasourceListener<Entity> {
     
     private Component.ActionsHolder actionsHolder;
 
@@ -43,16 +44,16 @@ public class CollectionDsActionsNotifier implements CollectionDatasourceListener
     }
 
     @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
         for (Action action : actionsHolder.getActions()) {
             if (action instanceof CollectionDatasourceListener) {
-                ((CollectionDatasourceListener) action).collectionChanged(ds, operation);
+                ((CollectionDatasourceListener) action).collectionChanged(ds, operation, items);
             }
         }
     }
 
     @Override
-    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
         for (Action action : actionsHolder.getActions()) {
             if (action instanceof ValueListener) {
                 ((ValueListener) action).valueChanged(source, property, prevValue, value);

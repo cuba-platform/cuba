@@ -23,6 +23,8 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
 
     private ItemChangeHandler itemChangeHandler;
 
+    private ItemClickListener itemClickListener;
+
     private boolean inline;
 
     private WebButton addButton;
@@ -62,9 +64,9 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        datasource.addListener(new CollectionDsListenerAdapter() {
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 if (lookupPickerField != null) {
                     if (isLookup()) {
                         if (getLookupScreen() != null)
@@ -77,6 +79,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                     }
                 }
                 component.refreshComponent();
+                component.refreshClickListeners(itemClickListener);
             }
         });
     }
@@ -226,7 +229,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
             if (lookup)
                 lookupAction = lookupPickerField.addLookupAction();
             else
-               lookupPickerField.removeAction(lookupAction);
+                lookupPickerField.removeAction(lookupAction);
         }
         this.lookup = lookup;
         component.refreshComponent();
@@ -294,6 +297,17 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
     }
 
     @Override
+    public ItemClickListener getItemClickListener() {
+        return itemClickListener;
+    }
+
+    @Override
+    public void setItemClickListener(ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+        this.component.refreshClickListeners(itemClickListener);
+    }
+
+    @Override
     public Position getPosition() {
         return position;
     }
@@ -340,6 +354,8 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
+
+        component.refreshComponent();
     }
 
     @Override
@@ -365,7 +381,8 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
     }
 
     protected String instanceCaption(Instance instance) {
-        if (instance == null) { return ""; }
+        if (instance == null)
+            return "";
         if (captionProperty != null) {
             if (instance.getMetaClass().getPropertyPath(captionProperty) != null) {
                 Object o = instance.getValueEx(captionProperty);
@@ -546,6 +563,27 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
 
             root.requestRepaint();
         }
+        
+        public void refreshClickListeners(ItemClickListener listener) {
+            if (datasource != null && CollectionDatasource.State.VALID.equals(datasource.getState())) {
+                for (Object id : datasource.getItemIds()) {
+                    Instance item = datasource.getItem(id);
+                    final TokenListLabel label = itemComponents.get(item);
+                    if (label != null) {
+                        if (listener != null)
+                            label.setClickListener(new TokenListLabel.ClickListener() {
+                                @Override
+                                public void onClick(TokenListLabel source) {
+                                    doClick(label);
+                                }
+                            });
+                        else
+                            label.setClickListener(null);
+                        label.requestRepaint();
+                    }
+                }
+            }
+        }
 
         protected TokenListLabel createToken() {
             final TokenListLabel label = new TokenListLabel();
@@ -574,6 +612,14 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                 } else {
                     datasource.removeItem((Entity) item);
                 }
+            }
+        }
+
+        private void doClick(TokenListLabel source) {
+            if (itemClickListener != null) {
+                Instance item = componentItems.get(source);
+                if (item != null)
+                    itemClickListener.onClick(item);
             }
         }
 

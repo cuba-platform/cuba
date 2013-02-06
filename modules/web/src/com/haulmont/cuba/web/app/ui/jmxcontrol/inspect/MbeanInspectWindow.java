@@ -62,7 +62,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         attrTable.setItemClickAction(editAttributeAction);
         attrDs.addListener(new CollectionDsListenerAdapter<ManagedBeanAttribute>() {
             @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<ManagedBeanAttribute> items) {
                 if (ds.getItemIds().isEmpty()) {
                     attrTable.setHeight("80px"); // reduce its height if no attributes
                 }

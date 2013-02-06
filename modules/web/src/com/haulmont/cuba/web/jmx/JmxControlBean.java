@@ -4,14 +4,14 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.jmx.impl;
+package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.jmx.JmxNodeIdentifier;
+import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifier;
 import com.haulmont.cuba.jmxcontrol.entity.*;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ManagedBean(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
 
-    private static final String CLUSTER_NODE_NAME_ATTRIBUTE = "ClusterNodeName";
+    private static final String NODE_NAME_ATTRIBUTE = "NodeName";
 
     private final JmxInstance LOCAL_JMX_INSTANCE = new JmxInstance("Local");
 
@@ -78,8 +78,7 @@ public class JmxControlBean implements JmxControlAPI {
         jmxInstances.add(getLocalInstance());
 
         List<JmxInstance> clusterInstances = dataService.loadList(loadContext);
-        if (clusterInstances != null)
-            jmxInstances.addAll(clusterInstances);
+        jmxInstances.addAll(clusterInstances);
 
         return jmxInstances;
     }
@@ -120,9 +119,9 @@ public class JmxControlBean implements JmxControlAPI {
             });
 
             if (nodeIdentifierBeanInfo != null) {
-                Object clusterNodeName = connection.getAttribute(nodeIdentifierBeanInfo, CLUSTER_NODE_NAME_ATTRIBUTE);
-                if (clusterNodeName != null)
-                    remoteNodeName = clusterNodeName.toString();
+                Object nodeName = connection.getAttribute(nodeIdentifierBeanInfo, NODE_NAME_ATTRIBUTE);
+                if (nodeName != null)
+                    remoteNodeName = nodeName.toString();
                 else
                     remoteNodeName = getDefaultNodeName(instance);
             } else {
@@ -249,8 +248,17 @@ public class JmxControlBean implements JmxControlAPI {
             ObjectName name = new ObjectName(attribute.getMbean().getObjectName());
 
             Attribute a = new Attribute(attribute.getName(), attribute.getValue());
+
+            log.info(String.format("Set value '%s' to attribute '%s' in '%s' on '%s'",
+                    a.getValue(), a.getName(), name.getCanonicalName(),
+                    attribute.getMbean().getJmxInstance().getNodeName()));
+
             connection.setAttribute(name, a);
         } catch (Exception e) {
+            log.info(String.format("Unable to set value '%s' to attribute '%s' in '%s' on '%s'",
+                    attribute.getValue(), attribute.getName(), attribute.getMbean().getObjectName(),
+                    attribute.getMbean().getJmxInstance().getNodeName()), e);
+
             throw new JmxControlException(e);
         }
     }
@@ -270,9 +278,15 @@ public class JmxControlBean implements JmxControlAPI {
                 types[i] = operation.getParameters().get(i).getType();
             }
 
+            log.info(String.format("Invoke method '%s' from '%s' on '%s'",
+                    operation.getName(), name.getCanonicalName(), operation.getMbean().getJmxInstance().getNodeName()));
             return connection.invoke(name, operation.getName(), parameterValues, types);
         } catch (IOException | MalformedObjectNameException | ReflectionException
                 | MBeanException | InstanceNotFoundException e) {
+
+            log.warn(String.format("Error in method invocation '%s' from '%s' on '%s'",
+                    operation.getName(), operation.getMbean().getObjectName(),
+                    operation.getMbean().getJmxInstance().getNodeName()), e);
             throw new JmxControlException(e);
         }
     }

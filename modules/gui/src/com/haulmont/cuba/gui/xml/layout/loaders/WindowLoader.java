@@ -60,7 +60,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
-        return factory.createComponent("window");
+        return factory.createComponent(Window.NAME);
     }
 
     public static class Editor extends WindowLoader {
@@ -70,7 +70,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         @Override
         protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
-            return factory.createComponent("window.editor");
+            return factory.createComponent(Window.Editor.NAME);
         }
     }
 
@@ -81,7 +81,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         @Override
         protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
-            return factory.createComponent("window.lookup");
+            return factory.createComponent(Window.Lookup.NAME);
         }
     }
 

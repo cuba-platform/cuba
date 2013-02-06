@@ -52,6 +52,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected Throwable dataLoadError;
     protected boolean listenersSuspended;
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
+    protected List<Entity> lastCollectionChangeItems;
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
 
     @Override
@@ -320,14 +321,15 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return query;
     }
 
-    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation) {
+    protected void fireCollectionChanged(CollectionDatasourceListener.Operation operation, List<Entity> items) {
         if (listenersSuspended) {
             lastCollectionChangeOperation = operation;
+            lastCollectionChangeItems = items;
             return;
         }
-        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
             if (dsListener instanceof CollectionDatasourceListener) {
-                ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);
+                ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation, items);
             }
         }
     }
@@ -376,8 +378,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     @Override
     public void resumeListeners() {
         listenersSuspended = false;
-        fireCollectionChanged(lastCollectionChangeOperation);
+        fireCollectionChanged(lastCollectionChangeOperation,
+                lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+
         lastCollectionChangeOperation = null;
+        lastCollectionChangeItems = null;
     }
 
     @Override
