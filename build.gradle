@@ -537,7 +537,7 @@ task transformManual(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
-task buildManualXhtml(type: Docbook2Xhtml, dependsOn: transformManual) {
+/*task buildManualXhtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destFile = new File(docTmpDir, 'manual-pdf/manual-pdf.html')
     stylesheetName = 'pdf.xsl'
@@ -548,15 +548,15 @@ task buildManualXhtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     resources += fileTree(docCssDir) {
         include '*.css'
     }
-}
+}*/
 
-task buildManualPdf(type: Xhtml2Pdf, dependsOn: buildManualXhtml) {
+/*task buildManualPdf(type: Xhtml2Pdf, dependsOn: buildManualXhtml) {
     inputs.dir docCssDir
     sourceFile = buildManualXhtml.destFile
     destFile = new File(docDstDir, 'manual/ru/pdf/manual.pdf')
     classpath = configurations.buildDoc
     fonts = zipTree(configurations.docFonts.singleFile)
-}
+}*/
 
 task transformSecurity(type: TransformDocbook) {
     sourceDir = new File(docSrcDir, 'security/ru')
@@ -639,7 +639,8 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 }
 
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
+        dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml,buildSecurityPdf]) {
+		//dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
