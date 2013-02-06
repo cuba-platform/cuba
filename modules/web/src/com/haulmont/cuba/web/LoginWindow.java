@@ -273,10 +273,11 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected void initFields(App app) {
+        String currLocale = messages.getTools().localeToString(loc);
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             localesSelect.addItem(entry.getKey());
-            if (entry.getValue().getLanguage().equals(loc.getLanguage()))
+            if (messages.getTools().localeToString(entry.getValue()).equals(currLocale))
                 selected = entry.getKey();
         }
         if (selected == null)

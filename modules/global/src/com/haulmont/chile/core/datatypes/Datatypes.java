@@ -6,6 +6,7 @@
 
 package com.haulmont.chile.core.datatypes;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -40,6 +41,8 @@ public class Datatypes {
     private Map<String, Datatype> datatypeByName = new HashMap<String, Datatype>();
 
     private Map<Locale, FormatStrings> formatStringsMap = new HashMap<Locale, FormatStrings>();
+
+    private boolean useLocaleLanguageOnly = true;
 
     private Datatypes() {
         SAXReader reader = new SAXReader();
@@ -81,6 +84,18 @@ public class Datatypes {
         datatypeByName.put(datatype.getName(), datatype);
     }
 
+    private FormatStrings getFormat(Locale locale) {
+        if (useLocaleLanguageOnly)
+            locale = Locale.forLanguageTag(locale.getLanguage());
+        return formatStringsMap.get(locale);
+    }
+
+    private void putFormat(Locale locale, FormatStrings formatStrings) {
+        formatStringsMap.put(locale, formatStrings);
+        if (!StringUtils.isEmpty(locale.getCountry()) || !StringUtils.isEmpty(locale.getVariant()))
+            useLocaleLanguageOnly = false;
+    }
+
     @Deprecated
     public static Datatypes getInstance() {
         return instance;
@@ -92,11 +107,12 @@ public class Datatypes {
      * @return {@link FormatStrings} object, or null if no formats are registered for the locale
      */
     public static FormatStrings getFormatStrings(Locale locale) {
-        return instance.formatStringsMap.get(new Locale(locale.getLanguage()));
+        return instance.getFormat(locale);
     }
 
+    /** For internal use only. Don't call from application code. */
     public static void setFormatStrings(Locale locale, FormatStrings formatStrings) {
-        instance.formatStringsMap.put(new Locale(locale.getLanguage()), formatStrings);
+        instance.putFormat(locale, formatStrings);
     }
 
     public static void register(Datatype datatype) {

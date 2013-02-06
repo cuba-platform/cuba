@@ -145,11 +145,11 @@ public class LoginDialog extends JDialog {
     }
 
     protected void initLocales(JComboBox<String> localeCombo) {
-        Locale loc = new Locale(Locale.getDefault().getLanguage());
+        String currLocale = messages.getTools().localeToString(Locale.getDefault());
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             localeCombo.addItem(entry.getKey());
-            if (entry.getValue().getLanguage().equals(loc.getLanguage()))
+            if (messages.getTools().localeToString(entry.getValue()).equals(currLocale))
                 selected = entry.getKey();
         }
         if (selected == null)
