@@ -56,7 +56,7 @@
   </section>
   <section>
     <title>Создание приложения вручную</title>
-    <section>
+    <section id="qs_setup">
       <title>Настройка проекта приложения</title>
       <orderedlist>
         <listitem>

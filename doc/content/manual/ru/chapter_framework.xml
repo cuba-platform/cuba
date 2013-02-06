@@ -9149,11 +9149,51 @@ taskHandler.execute();</programlisting>
             <para><code>PortalLogoutHandler</code> - обрабатывает навигацию на страницу логаута. Должен быть зарегистрирован в файле <filename>portal-security-spring.xml</filename> проекта.</para>
           </listitem>
         </itemizedlist></para>
-      <para>Пример портала, содержащего страницу регистрации пользователей, включен в шаблон проекта <ulink url="http://docs.haulmont.com/cuba/4.0/samples/sales.zip">http://docs.haulmont.com/cuba/4.0/samples/sales.zip</ulink>, рассмотренный в  <xref linkend="chapter_quickStart"/></para>
+      <para>Пример портала, содержащего страницу регистрации пользователей, включен в шаблон проекта,  рассмотренный в  <xref linkend="qs_setup"/></para>
     </section>
     <section id="rest_api">
       <title>REST API</title>
-      <para>TODO</para>
+      <section>
+        <title>Общие сведения</title>
+        <para>Универсальный REST API платформы позволяет выполнять загрузку и сохранение  любых сущностей модели данных приложения посредством отправки простых HTTP запросов. Это открывает возможность легкой интеграции со сторонними приложениями самого широкого спектра - от JavaScript кода, выполняющегося в  браузере, до произвольных систем, работающих на Java, NET, PHP или любой другой платформе. </para>
+        <para>Основные возможности API:<itemizedlist>
+            <listitem>
+              <para>загрузка экземпляров сущностей из базы данных по идентификатору или по JPQL запросу с параметрами</para>
+            </listitem>
+            <listitem>
+              <para>сохранение новых и измененных экземпляров, удаление</para>
+            </listitem>
+            <listitem>
+              <para>получение описания модели данных в формате HTML</para>
+            </listitem>
+            <listitem>
+              <para>представление данных в форматах JSON и XML на выбор</para>
+            </listitem>
+            <listitem>
+              <para>аутентификация пользователя</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Все функции работают с данными в кодировке UTF-8. </para>
+      </section>
+      <section>
+        <title>Включение в проект</title>
+        <para>REST API реализован в модуле <structname>portal</structname> базового проекта <structname>cuba</structname>, поэтому для его использования необходимо создать модуль <structname>portal</structname> в проекте приложения. Пример содержится в шаблоне проекта,  рассмотренном в  <xref linkend="qs_setup"/> </para>
+        <para>Основные элементы настройки:<itemizedlist>
+            <listitem>
+              <para>Добавить контроллеры REST API в контекст Spring, определяемый файлом <filename>
+                  <link linkend="dispatcher-spring.xml">portal-dispather-spring.xml</link>
+                </filename>:<programlisting>&lt;context:component-scan base-package=&quot;com.haulmont.cuba.portal.restapi&quot;/&gt;</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Установить режим доступа в <filename>portal-security-spring.xml</filename>:<programlisting>&lt;intercept-url pattern=&quot;/api/**&quot; access=&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;/&gt;</programlisting></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section>
+        <title>Описание функций</title>
+        <para>При стандартных настройках модуля <structname>portal</structname> все запросы к REST API должны иметь URL, начинающийся с <literal>{host:port}/app-portal/api</literal>.</para>
+        <para>TODO</para>
+      </section>
     </section>
   </section>
   <section>
