@@ -11,7 +11,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
 public class WebAbstractComponent<T extends com.vaadin.ui.Component>
@@ -45,11 +44,11 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     public String getDebugId() {
-        return component.getDebugId();
+        return component.getId();
     }
 
     public void setDebugId(String id) {
-        component.setDebugId(id);
+        component.setId(id);
     }
 
     public String getStyleName() {
@@ -87,7 +86,8 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     public int getHeightUnits() {
-        return component.getHeightUnits();
+        return 0;
+//        return component.getHeightUnits();
     }
 
     public void setHeight(String height) {
@@ -99,7 +99,8 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     public int getWidthUnits() {
-        return component.getWidthUnits();
+        return 0;
+//        return component.getWidthUnits();
     }
 
     public void setWidth(String width) {
@@ -119,11 +120,12 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
+/*        this.alignment = alignment;
         final com.vaadin.ui.Component component = this.component.getParent();
         if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, WebComponentsHelper.convertAlignment(alignment));
-        }
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component,
+                    WebComponentsHelper.convertAlignment(alignment));
+        }*/
     }
 
     public <T> T getComponent() {

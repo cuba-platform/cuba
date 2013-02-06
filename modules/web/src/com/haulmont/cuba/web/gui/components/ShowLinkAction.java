@@ -6,7 +6,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 
 /**
  * <p>$Id$</p>
@@ -41,11 +41,11 @@ public class ShowLinkAction extends AbstractAction {
         if (ds == null)
             return;
 
-        App.getInstance().getWindowManager().showMessageDialog(
-                MessageProvider.getMessage(mp, "table.showLinkAction"),
-                compileLink(ds),
-                IFrame.MessageType.CONFIRMATION
-        );
+//        AppUI.getInstance().getWindowManager().showMessageDialog(
+//                MessageProvider.getMessage(mp, "table.showLinkAction"),
+//                compileLink(ds),
+//                IFrame.MessageType.CONFIRMATION
+//        );
     }
 
     private String compileLink(CollectionDatasource ds) {

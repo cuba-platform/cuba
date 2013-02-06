@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 15.10.2009 18:19:44
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
@@ -17,6 +12,10 @@ import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CustomCondition extends AbstractCustomCondition<Param> {
 
     private OperationEditor operationEditor;

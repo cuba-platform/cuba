@@ -33,9 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-public class WebTimeField extends WebAbstractField<MaskedTextField> implements TimeField, Component.Wrapper
-{
-    private boolean showSeconds;
+public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements TimeField, Component.Wrapper*/ {
+    /*private boolean showSeconds;
 
     private String mask;
     private String placeholder;
@@ -264,5 +263,5 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
                 };
             }
         };
-    }
+    }*/
 }

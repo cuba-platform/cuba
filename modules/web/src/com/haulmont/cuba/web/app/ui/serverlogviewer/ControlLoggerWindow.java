@@ -46,7 +46,7 @@ public class ControlLoggerWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         serverLogWindow = ((ServerLogWindow) params.get("controlWin"));
 
-        final ScrollBoxLayout loggersBox;
+        /*final ScrollBoxLayout loggersBox;
         loggersBox = getComponent("loggersGroupBox");
         loggersGrid = getComponent("loggersGrid");
         lookupFieldLogger.setOptionsList(getOptionsLoggers());
@@ -63,11 +63,11 @@ public class ControlLoggerWindow extends AbstractWindow {
         });
 
         createFieldsLoggers();
-        loggersBox.add(loggersGrid);
+        loggersBox.add(loggersGrid);*/
     }
 
     public void setButton() {
-        Collection<Component> components = loggersGrid.getComponents();
+        /*Collection<Component> components = loggersGrid.getComponents();
         for (Component component : components) {
             if (component.getId() != null ? component.getId().startsWith(PREFIX_ID) : false) {
                 Object value = ((TextField) component).getValue();
@@ -89,7 +89,7 @@ public class ControlLoggerWindow extends AbstractWindow {
         }
         serverLogWindow.showNotification(getMessage("addLogger"), NotificationType.HUMANIZED);
         serverLogWindow.refreshLogs();
-        close(this.getId());
+        close(this.getId());*/
 
     }
 
@@ -97,7 +97,7 @@ public class ControlLoggerWindow extends AbstractWindow {
         close(this.getId());
     }
 
-    public void addLogger() {
+    /*public void addLogger() {
         Object value = lookupFieldLogger.getValue();
         if (value != null)
             listNewLoggers.add(addLogger(value.toString(), null, 1, true));
@@ -124,7 +124,7 @@ public class ControlLoggerWindow extends AbstractWindow {
         loggersGrid.add(loggerNameField, 0, position);
         loggersGrid.add(levelsField, 1, position);
         return id;
-    }
+    }*/
 
     private List<String> getLogs() {
         List<Logger> listLogs = Collections.list(LogManager.getCurrentLoggers());
@@ -138,7 +138,7 @@ public class ControlLoggerWindow extends AbstractWindow {
         return listNameLogs;
     }
 
-    private void createFieldsLoggers() {
+/*    private void createFieldsLoggers() {
         Level level;
         for (String logName : getLogs()) {
             level = logManagerService.getLogLevel(logName);
@@ -148,7 +148,7 @@ public class ControlLoggerWindow extends AbstractWindow {
         if (amountLog == 0) {
             addLogger(null, null, 1, true);
         }
-    }
+    }*/
 
     private List<String> getOptionsLoggers() {
         List<String> list = getLogs();

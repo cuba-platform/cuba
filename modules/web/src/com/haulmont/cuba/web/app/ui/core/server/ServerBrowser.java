@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 27.03.2009 15:14:18
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app.ui.core.server;
 
@@ -18,11 +13,11 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 import java.util.Map;
 
-public class ServerBrowser extends AbstractWindow
-{
-    public ServerBrowser(IFrame frame) {
-        super(frame);
-    }
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class ServerBrowser extends AbstractWindow {
 
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -30,7 +25,7 @@ public class ServerBrowser extends AbstractWindow
         Table table = getComponent("servers");
         table.addAction(new RefreshAction(table));
 
-        com.vaadin.ui.Table impl = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
-        impl.setPageLength(10);
+//        com.vaadin.ui.Table impl = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+//        impl.setPageLength(10);
     }
 }

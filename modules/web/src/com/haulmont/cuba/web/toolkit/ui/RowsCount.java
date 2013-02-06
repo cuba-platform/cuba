@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -27,7 +28,7 @@ public class RowsCount extends CustomComponent {
     public RowsCount() {
         layout = new HorizontalLayout();
         layout.setSpacing(true);
-        layout.setMargin(false, true, false, true);
+        layout.setMargin(new MarginInfo(false, true, false, true));
 
         setCompositionRoot(layout);
 

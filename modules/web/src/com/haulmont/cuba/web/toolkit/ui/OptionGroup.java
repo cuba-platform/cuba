@@ -5,13 +5,13 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.terminal.gwt.client.ui.VOptionGroup;
-import com.vaadin.ui.ClientWidget;
+//import com.vaadin.terminal.gwt.client.ui.VOptionGroup;
+//import com.vaadin.ui.ClientWidget;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-@ClientWidget(VOptionGroup.class)
+//@ClientWidget(VOptionGroup.class)
 public class OptionGroup extends com.vaadin.ui.OptionGroup {
 }

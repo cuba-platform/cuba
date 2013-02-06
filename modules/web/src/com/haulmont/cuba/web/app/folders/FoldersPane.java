@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppTimers;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
@@ -37,9 +36,9 @@ import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -85,8 +84,8 @@ public class FoldersPane extends VerticalLayout {
     protected int verticalSplitPos;
 
     protected AppWindow parentAppWindow;
-    protected WebSplitPanel vertSplit;
-    protected WebSplitPanel horSplit;
+    protected VerticalSplitPanel vertSplit;
+    protected HorizontalSplitPanel horSplit;
 
     protected WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
 
@@ -108,13 +107,13 @@ public class FoldersPane extends VerticalLayout {
         this.menuBar = menuBar;
         parentAppWindow = appWindow;
 
-        setHeight(100, Sizeable.UNITS_PERCENTAGE);
+        setHeight(100, Unit.PERCENTAGE);
         setStyleName("folderspane");
     }
 
     public void init(Component parent) {
-        if (parent instanceof WebSplitPanel) {
-            horSplit = (WebSplitPanel) parent;
+        if (parent instanceof HorizontalSplitPanel) {
+            horSplit = (HorizontalSplitPanel) parent;
         }
 
         boolean visible;
@@ -163,10 +162,10 @@ public class FoldersPane extends VerticalLayout {
 
         if (show) {
             if (horSplit != null) {
-                horSplit.setSplitPosition(horizontalSplitPos, Sizeable.UNITS_PIXELS);
+                horSplit.setSplitPosition(horizontalSplitPos);
                 horSplit.setLocked(false);
             } else {
-                setWidth(horizontalSplitPos, Sizeable.UNITS_PIXELS);
+                setWidth(horizontalSplitPos, Unit.PIXELS);
             }
 
             setSizeFull();
@@ -187,16 +186,16 @@ public class FoldersPane extends VerticalLayout {
                 int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
 
                 // find old timers
-                AppTimers appTimers = App.getInstance().getTimers();
-                Collection<Timer> timers = appTimers.getAll(parentAppWindow);
-                for (Timer t : timers) {
-                    if (t instanceof FoldersPane.FoldersPaneTimer)
-                        t.stopTimer();
-                }
-
-                timer = new FoldersPaneTimer(period, true);
-                timer.addListener(createAppFolderUpdater());
-                appTimers.add(timer, parentAppWindow);
+//                AppTimers appTimers = AppUI.getInstance().getTimers();
+//                Collection<Timer> timers = appTimers.getAll(parentAppWindow);
+//                for (Timer t : timers) {
+//                    if (t instanceof FoldersPane.FoldersPaneTimer)
+//                        t.stopTimer();
+//                }
+//
+//                timer = new FoldersPaneTimer(period, true);
+//                timer.addListener(createAppFolderUpdater());
+//                appTimers.add(timer, parentAppWindow);
             }
 
             Component searchFoldersPane = createSearchFoldersPane();
@@ -212,8 +211,8 @@ public class FoldersPane extends VerticalLayout {
             }
 
             if (appFoldersPane != null && searchFoldersPane != null) {
-                vertSplit = new WebSplitPanel();
-                vertSplit.setSplitPosition(verticalSplitPos, Sizeable.UNITS_PIXELS);
+                vertSplit = new VerticalSplitPanel();
+                vertSplit.setSplitPosition(verticalSplitPos);
 
                 VerticalLayout afLayout = new VerticalLayout();
                 afLayout.setSpacing(true);
@@ -270,10 +269,10 @@ public class FoldersPane extends VerticalLayout {
             savePosition();
 
             if (horSplit != null) {
-                horSplit.setSplitPosition(0, Sizeable.UNITS_PIXELS);
+                horSplit.setSplitPosition(0, Unit.PIXELS);
                 horSplit.setLocked(true);
             } else {
-                setWidth(0, Sizeable.UNITS_PIXELS);
+                setWidth(0, Unit.PIXELS);
             }
 
             appFoldersTree = null;
@@ -362,7 +361,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected Component addFoldersLabel(AbstractLayout layout, Label label) {
         HorizontalLayout l = new HorizontalLayout();
-        l.setMargin(false, true, false, true);
+        l.setMargin(new MarginInfo(false, true, false, true));
         l.addComponent(label);
         layout.addComponent(l);
         return l;
@@ -371,9 +370,9 @@ public class FoldersPane extends VerticalLayout {
     public void savePosition() {
         if (visible) {
             if (horSplit != null)
-                horizontalSplitPos = horSplit.getSplitPosition();
+                horizontalSplitPos = (int) horSplit.getSplitPosition();
             if (vertSplit != null)
-                verticalSplitPos = vertSplit.getSplitPosition();
+                verticalSplitPos = (int) vertSplit.getSplitPosition();
         }
         userSettingsTools.saveFoldersState(
                 visible,
@@ -530,14 +529,14 @@ public class FoldersPane extends VerticalLayout {
 
         WindowParams.FOLDER_ID.set(params, folder.getId());
 
-        Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
-                WindowManager.OpenType.NEW_TAB, params);
+//        Window window = AppUI.getInstance().getWindowManager().openWindow(windowInfo,
+//                WindowManager.OpenType.NEW_TAB, params);
 
         Filter filterComponent = null;
 
         if (strings.length > 1) {
             String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');
-            filterComponent = window.getComponent(filterComponentId);
+//            filterComponent = window.getComponent(filterComponentId);
 
             FilterEntity filterEntity = new FilterEntity();
             filterEntity.setFolder(folder);
@@ -557,7 +556,7 @@ public class FoldersPane extends VerticalLayout {
             filterComponent.setFilterEntity(filterEntity);
         }
 
-        window.applySettings(new SettingsImpl(window.getId()));
+//        window.applySettings(new SettingsImpl(window.getId()));
 
         if (filterComponent != null && folder instanceof SearchFolder) {
             final SearchFolder searchFolder = (SearchFolder) folder;
@@ -567,7 +566,7 @@ public class FoldersPane extends VerticalLayout {
             }
         }
 
-        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+//        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
 
     protected boolean isNeedRootAppFolder() {
@@ -624,7 +623,7 @@ public class FoldersPane extends VerticalLayout {
         private static final long serialVersionUID = 3346848644718707748L;
 
         @Override
-        public String getStyle(Object itemId) {
+        public String getStyle(Tree source, Object itemId) {
             Folder folder = ((Folder) itemId);
             if (folder != null) {
                 String style = "";
@@ -838,15 +837,15 @@ public class FoldersPane extends VerticalLayout {
                         }
                     });
 
-            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-                private static final long serialVersionUID = 5604371155722856067L;
-
-                @Override
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    App.getInstance().getAppWindow().removeWindow(window);
-                }
-            });
-            App.getInstance().getAppWindow().addWindow(window);
+//            window.addListener(new com.vaadin.ui.Window.CloseListener() {
+//                private static final long serialVersionUID = 5604371155722856067L;
+//
+//                @Override
+//                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
+//                    AppUI.getInstance().getAppWindow().removeWindow(window);
+//                }
+//            });
+//            AppUI.getInstance().getAppWindow().addWindow(window);
         }
     }
 
@@ -897,15 +896,15 @@ public class FoldersPane extends VerticalLayout {
                 } else
                     return;
             }
-            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-                private static final long serialVersionUID = 3267969862627920749L;
-
-                @Override
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    App.getInstance().getAppWindow().removeWindow(window);
-                }
-            });
-            App.getInstance().getAppWindow().addWindow(window);
+//            window.addListener(new com.vaadin.ui.Window.CloseListener() {
+//                private static final long serialVersionUID = 3267969862627920749L;
+//
+//                @Override
+//                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
+//                    AppUI.getInstance().getAppWindow().removeWindow(window);
+//                }
+//            });
+//            AppUI.getInstance().getAppWindow().addWindow(window);
         }
     }
 
@@ -919,21 +918,21 @@ public class FoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
-            App.getInstance().getWindowManager().showOptionDialog(
-                    messages.getMainMessage("dialogs.Confirmation"),
-                    messages.getMainMessage("folders.removeFolderConfirmation"),
-                    IFrame.MessageType.CONFIRMATION,
-                    new com.haulmont.cuba.gui.components.Action[]{
-                            new DialogAction(DialogAction.Type.YES) {
-                                @Override
-                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                    removeFolder(folder);
-                                    refreshFolders();
-                                }
-                            },
-                            new DialogAction(DialogAction.Type.NO)
-                    }
-            );
+//            AppUI.getInstance().getWindowManager().showOptionDialog(
+//                    messages.getMainMessage("dialogs.Confirmation"),
+//                    messages.getMainMessage("folders.removeFolderConfirmation"),
+//                    IFrame.MessageType.CONFIRMATION,
+//                    new com.haulmont.cuba.gui.components.Action[]{
+//                            new DialogAction(DialogAction.Type.YES) {
+//                                @Override
+//                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+//                                    removeFolder(folder);
+//                                    refreshFolders();
+//                                }
+//                            },
+//                            new DialogAction(DialogAction.Type.NO)
+//                    }
+//            );
         }
     }
 
@@ -965,29 +964,29 @@ public class FoldersPane extends VerticalLayout {
         @Override
         public void perform(final Folder folder) {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-            final FileUploadDialog dialog = App.getInstance().getWindowManager().
-                    openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
-
-            dialog.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        try {
-                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.class);
-                            byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
-                            fileUploading.deleteFile(dialog.getFileId());
-                            foldersService.importFolder(folder, data);
-                        } catch (Exception ex) {
-                            dialog.showNotification(
-                                    dialog.getMessage("notification.importFailed"),
-                                    ex.getMessage(),
-                                    IFrame.NotificationType.ERROR
-                            );
-                        }
-                        refreshFolders();
-                    }
-                }
-            });
+//            final FileUploadDialog dialog = AppUI.getInstance().getWindowManager().
+//                    openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
+//
+//            dialog.addListener(new Window.CloseListener() {
+//                @Override
+//                public void windowClosed(String actionId) {
+//                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+//                        try {
+//                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.class);
+//                            byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
+//                            fileUploading.deleteFile(dialog.getFileId());
+//                            foldersService.importFolder(folder, data);
+//                        } catch (Exception ex) {
+//                            dialog.showNotification(
+//                                    dialog.getMessage("notification.importFailed"),
+//                                    ex.getMessage(),
+//                                    IFrame.NotificationType.ERROR
+//                            );
+//                        }
+//                        refreshFolders();
+//                    }
+//                }
+//            });
         }
     }
 

@@ -11,14 +11,14 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.Terminal;
+import com.vaadin.server.ErrorEvent;
+import com.vaadin.ui.UI;
 
 /**
  * Interface to be implemented by exception handlers in Web-client.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ExceptionHandler
 {
@@ -29,5 +29,5 @@ public interface ExceptionHandler
      * @param app   current {@link App} instance
      * @return      true if the exception has been succesfully handled, false if not
      */
-    boolean handle(Terminal.ErrorEvent event, App app);
+    boolean handle(ErrorEvent event, App app);
 }

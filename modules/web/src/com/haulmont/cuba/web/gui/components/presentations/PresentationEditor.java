@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
@@ -29,7 +28,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 
 public class PresentationEditor extends Window {
-
+/*
     private Presentation presentation;
     private Component.HasPresentations component;
 
@@ -103,7 +102,7 @@ public class PresentationEditor extends Window {
 
                 //check that name is empty
                 if (StringUtils.isEmpty((String) nameField.getValue())) {
-                    App.getInstance().getAppWindow().showNotification(
+                    AppUI.getInstance().getAppWindow().showNotification(
                             getMessage("PresentationsEditor.error"),
                             getMessage("PresentationsEditor.error.nameRequired"),
                             Window.Notification.TYPE_HUMANIZED_MESSAGE);
@@ -113,7 +112,7 @@ public class PresentationEditor extends Window {
                 //check that name is unique
                 final Presentation pres = presentations.getPresentationByName((String) nameField.getValue());
                 if (pres != null && !pres.equals(presentation)) {
-                    App.getInstance().getAppWindow().showNotification(
+                    AppUI.getInstance().getAppWindow().showNotification(
                             getMessage("PresentationsEditor.error"),
                             getMessage("PresentationsEditor.error.nameAlreadyExists"),
                             Window.Notification.TYPE_HUMANIZED_MESSAGE);
@@ -177,5 +176,5 @@ public class PresentationEditor extends Window {
     
     protected String getMessage(String key) {
         return MessageProvider.getMessage(getClass(), key);
-    }
+    }*/
 }

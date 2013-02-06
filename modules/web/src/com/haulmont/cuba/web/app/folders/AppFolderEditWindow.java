@@ -14,9 +14,10 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Constructor;
@@ -55,9 +56,9 @@ public class AppFolderEditWindow extends FolderEditWindow {
     public AppFolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         super(adding, folder, presentations, commitHandler);
         if (!adding) {
-            setWidth(500, Sizeable.UNITS_PIXELS);
+            setWidth(500, Unit.PIXELS);
             visibilityScriptField = new TextField();
-            visibilityScriptField.setRows(10);
+//            visibilityScriptField.setRows(10);
             visibilityScriptField.setColumns(40);
             visibilityScriptField.setCaption(getMessage("folders.visibilityScript"));
             String vScript = StringUtils.trimToEmpty(((AppFolder) folder).getVisibilityScript());
@@ -67,7 +68,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
             quantityScriptField = new TextField();
             String qScript = StringUtils.trimToEmpty(((AppFolder) folder).getQuantityScript());
             quantityScriptField.setValue(qScript);
-            quantityScriptField.setRows(10);
+//            quantityScriptField.setRows(10);
             quantityScriptField.setColumns(40);
             quantityScriptField.setCaption(getMessage("folders.quantityScript"));
             layout.addComponent(quantityScriptField, 4);
@@ -82,7 +83,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
                 AppFolder folder = (AppFolder) AppFolderEditWindow.this.folder;
                 if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
                     String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
-                    showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
+                    UI.getCurrent().showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
                     return;
                 }
                 folder.setName((String) nameField.getValue());
@@ -100,7 +101,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
                             sortOrder = Integer.parseInt((String) value);
                         } catch (NumberFormatException e) {
                             String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
-                            showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
+                            UI.getCurrent().showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
                             return;
                         }
                     folder.setSortOrder(sortOrder);

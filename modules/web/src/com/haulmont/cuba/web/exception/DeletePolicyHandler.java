@@ -8,7 +8,10 @@ package com.haulmont.cuba.web.exception;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.Terminal;
+import com.vaadin.server.ErrorEvent;
+//import com.vaadin.terminal.Terminal;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import java.util.regex.Matcher;
@@ -18,14 +21,13 @@ import java.util.regex.Pattern;
  * Handles {@link DeletePolicyException}. Determines the exception type by searching a special marker string in the
  * messages of all exceptions in the chain.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DeletePolicyHandler implements ExceptionHandler {
 
     @Override
-    public boolean handle(Terminal.ErrorEvent event, App app) {
+    public boolean handle(ErrorEvent event, App app) {
         Throwable t = event.getThrowable();
         try {
             while (t != null) {
@@ -57,8 +59,8 @@ public class DeletePolicyHandler implements ExceptionHandler {
         }
         String msg = MessageProvider.getMessage(getClass(), "deletePolicy.message");
         String references = MessageProvider.getMessage(getClass(), "deletePolicy.references.message");
-        app.getAppWindow().showNotification(msg + "<br>" + references + " \"" + localizedEntityName + "\"",
-                Window.Notification.TYPE_ERROR_MESSAGE);
+        app.getAppUI().showNotification(msg + "<br>" + references + " \"" + localizedEntityName + "\"",
+                Notification.TYPE_ERROR_MESSAGE);
     }
 
     protected MetaClass recognizeMetaClass(String message) {

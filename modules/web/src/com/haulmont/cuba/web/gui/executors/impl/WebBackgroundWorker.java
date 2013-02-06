@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebTimer;
 import org.apache.commons.logging.Log;
@@ -30,7 +30,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @version $Id$
  */
 public class WebBackgroundWorker implements BackgroundWorker {
-
     private Log log = LogFactory.getLog(WebBackgroundWorker.class);
 
     private WatchDog watchDog;
@@ -72,7 +71,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     @Override
     public <T, V> BackgroundTaskHandler<V> handle(final BackgroundTask<T, V> task) {
-        checkNotNull(task);
+        /*checkNotNull(task);
 
         App appInstance;
         try {
@@ -144,15 +143,16 @@ public class WebBackgroundWorker implements BackgroundWorker {
         // Start listen only if task started
         webTimerListener.setTimerListener(timerListener);
 
-        return taskHandler;
+        return taskHandler;*/
+        return null;
     }
 
-    /**
+    /*
      * Task runner
-     */
-    private class WebTaskExecutor<T, V> extends Thread implements TaskExecutor<T, V> {
+    */
+    /*private class WebTaskExecutor<T, V> extends Thread implements TaskExecutor<T, V> {
 
-        private App app;
+        private AppUI app;
 
         private BackgroundTask<T, V> runnableTask;
         private WebTimerListener webTimerListener;
@@ -198,6 +198,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         @Override
         public final void run() {
             // Set security permissions
+            // vaadin7 do not copy security context to another threads
             AppContext.setSecurityContext(securityContext);
 
             V result = null;
@@ -390,5 +391,5 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 }
             }
         }
-    }
+    }*/
 }

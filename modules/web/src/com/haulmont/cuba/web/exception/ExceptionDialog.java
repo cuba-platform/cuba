@@ -11,7 +11,7 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -20,9 +20,8 @@ import com.vaadin.ui.Button;
 /**
  * This dialog can be used by exception handlers to show an information about error.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ExceptionDialog extends Window
 {
@@ -41,20 +40,21 @@ public class ExceptionDialog extends Window
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
         layout.setMargin(true);
-        setLayout(layout);
+        setContent(layout);
 
         final Label label = new Label();
         label.setValue(message);
         label.setSizeFull();
 
-        addComponent(label);
+        layout.addComponent(label);
 
         Button closeBtn = new Button(MessageProvider.getMessage(ExceptionDialog.class, "exceptionDialog.closeBtn"));
-        closeBtn.addListener(new Button.ClickListener() {
+        closeBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
-                App.getInstance().getAppWindow().removeWindow(ExceptionDialog.this);
+//                AppUI.getInstance().getAppWindow().removeWindow(ExceptionDialog.this);
             }
         });
-        addComponent(closeBtn);
+        layout.addComponent(closeBtn);
     }
 }

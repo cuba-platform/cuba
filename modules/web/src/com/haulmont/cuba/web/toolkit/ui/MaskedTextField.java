@@ -1,13 +1,13 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
-import com.haulmont.cuba.toolkit.gwt.client.ui.VMaskedTextField;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.ClientWidget;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VMaskedTextField;
+//import com.vaadin.server.PaintException;
+//import com.vaadin.server.PaintTarget;
+//import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.TextField;
 
-@ClientWidget(VMaskedTextField.class)
+//@ClientWidget(VMaskedTextField.class)
 public class MaskedTextField extends TextField {
 	private static final long serialVersionUID = -5168618178262041249L;
 
@@ -51,12 +51,12 @@ public class MaskedTextField extends TextField {
         super.setReadOnly(readOnly);
     }
 
-	@Override
-	public void paintContent(PaintTarget target) throws PaintException {
-		super.paintContent(target);
-
-		if (mask != null) {
-			target.addAttribute("mask", mask);
-		}
-	}
+//	@Override
+//	public void paintContent(PaintTarget target) throws PaintException {
+//		super.paintContent(target);
+//
+//		if (mask != null) {
+//			target.addAttribute("mask", mask);
+//		}
+//	}
 }

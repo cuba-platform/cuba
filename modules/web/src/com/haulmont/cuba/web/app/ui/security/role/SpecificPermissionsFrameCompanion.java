@@ -29,8 +29,8 @@ public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFra
             @Override
             public Component generateCell(BasicPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
-                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
-                vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
+//                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
+//                vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
 
                 StringBuilder builder = new StringBuilder();
 
@@ -41,7 +41,7 @@ public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFra
                             .append(MessageProvider.getMessage(permissionVariant)).append("</span>");
                 }
 
-                vLabel.setValue(builder.toString());
+//                vLabel.setValue(builder.toString());
 
                 return label;
             }

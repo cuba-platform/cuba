@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.BooleanUtils;
@@ -107,7 +108,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         for (final Field fieldConf : fieldConfs) {
             com.vaadin.ui.Field field = component.getField(fieldConf.getId());
             if (field != null) {
-                field.setDebugId(id + ":" + fieldConf.getId());
+                field.setId(id + ":" + fieldConf.getId());
             }
         }
     }
@@ -235,9 +236,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     }
                 }
 
-                if (f.getDescription() == null && field.getDescription() != null) {
-                    f.setDescription(field.getDescription());
-                }
+//                vaadin7
+//                if (f.getDescription() == null && field.getDescription() != null) {
+//                    f.setDescription(field.getDescription());
+//                }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
                 if (/*f.getWidth() == -1f &&*/ field.getWidth() != null) {
@@ -386,9 +388,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     if (fieldConf.getCaption() != null) {
                         field.setCaption(fieldConf.getCaption());
                     }
-                    if (fieldConf.getDescription() != null) {
-                        field.setDescription(fieldConf.getDescription());
-                    }
+//                    vaadin7
+//                    if (fieldConf.getDescription() != null) {
+//                        field.setDescription(fieldConf.getDescription());
+//                    }
                     if (!field.isRequired()) {
                         field.setRequired(fieldConf.isRequired());
                     }
@@ -924,16 +927,18 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
             } else if (cubaField instanceof WebDateField) {
                 if (getFormatter(propertyPath) != null) {
-                    String format = getFormat(propertyPath);
-                    if (format != null) {
-                        ((WebDateField) cubaField).setDateFormat(format);
-                    }
+//                    vaadin7
+//                    String format = getFormat(propertyPath);
+//                    if (format != null) {
+//                        ((WebDateField) cubaField).setDateFormat(format);
+//                    }
                 }
                 if (fieldConf != null) {
                     initDateField(field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
             } else if (field instanceof CheckBox) {
-                ((CheckBox) field).setLayoutCaption(true);
+//                vaadin7
+//                ((CheckBox) field).setLayoutCaption(true);
             }
 
             if (fieldConf != null && fieldConf.getWidth() != null) {
@@ -1065,7 +1070,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         private LinkField(final Datasource datasource, final Field fieldConf) {
             component = new Button();
             component.setStyleName("link");
-            component.addListener(new Button.ClickListener() {
+            component.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Instance entity = datasource.getItem();
@@ -1125,6 +1130,19 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             component.setCaption(event.getProperty().getValue() == null
                     ? "" : event.getProperty().toString());
         }
+
+        @Override
+        public void setBuffered(boolean buffered) {
+        }
+
+        @Override
+        public boolean isBuffered() {
+            return false;
+        }
+
+        @Override
+        public void removeAllValidators() {
+        }
     }
 
     public class FieldGroupItemWrapper extends ItemWrapper {
@@ -1149,7 +1167,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
 
                 @Override
-                public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                     if (newValue instanceof String)
                         newValue = ((String) newValue).trim();
                     super.setValue(newValue);

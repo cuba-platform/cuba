@@ -20,11 +20,11 @@ import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 
 import java.util.*;
 
-public class WebFileMultiUploadField extends
+public class WebFileMultiUploadField /*extends
         WebAbstractComponent<MultiUpload>
         implements
-        FileMultiUploadField {
-
+        FileMultiUploadField*/ {
+/*
     private List<UploadListener> listeners = new ArrayList<UploadListener>();
 
     private Map<UUID, String> files = new HashMap<UUID, String>();
@@ -131,16 +131,16 @@ public class WebFileMultiUploadField extends
         listeners.remove(listener);
     }
 
-    /**
+    *//**
      * Get uploads map
      *
      * @return Map (UUID - Id of file in FileUploadService, String - FileName )
-     */
+     *//*
     public Map<UUID, String> getUploadsMap() {
         return files;
     }
 
     public ValueProvider getComponentParameters() {
         return componentParams;
-    }
+    }*/
 }

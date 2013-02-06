@@ -2,25 +2,25 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 22.10.2009 15:12:27
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.core.global.MessageProvider;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ConditionCreator extends AbstractConditionDescriptor {
 
     public ConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super("creator", filterComponentName, datasource);
-        locCaption = MessageProvider.getMessage(MESSAGES_PACK, "conditionCreator");
+        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "conditionCreator");
         showImmediately = true;
     }
 

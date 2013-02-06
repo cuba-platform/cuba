@@ -10,28 +10,10 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.gui.data.GroupInfo;
-import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollGroupTable;
-import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
-import com.haulmont.cuba.web.toolkit.data.util.GroupTableContainerWrapper;
-import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.Action;
-import com.vaadin.terminal.KeyMapper;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
-import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.Component;
-
-import java.util.*;
-
 @SuppressWarnings("serial")
-@ClientWidget(IScrollGroupTable.class)
-public class GroupTable extends Table implements GroupTableContainer {
-
+//@ClientWidget(IScrollGroupTable.class)
+public class GroupTable extends Table /*extends Table implements GroupTableContainer*/ {
+/*
     private KeyMapper groupIdMap = new KeyMapper();
 
     private GroupPropertyValueFormatter groupPropertyValueFormatter;
@@ -63,7 +45,6 @@ public class GroupTable extends Table implements GroupTableContainer {
         initComponent();
 
         enableContentRefreshing(true);
-
     }
 
     @Override
@@ -875,10 +856,6 @@ public class GroupTable extends Table implements GroupTableContainer {
         this.groupPropertyValueFormatter = groupPropertyValueFormatter;
     }
 
-    public interface GroupPropertyValueFormatter {
-        String format(Object groupId, Object value);
-    }
-
     public static class GroupAggregationContext extends Context {
         private Object groupId;
 
@@ -890,5 +867,9 @@ public class GroupTable extends Table implements GroupTableContainer {
         public Object getGroupId() {
             return groupId;
         }
+    }        */
+
+    public interface GroupPropertyValueFormatter {
+        String format(Object groupId, Object value);
     }
 }

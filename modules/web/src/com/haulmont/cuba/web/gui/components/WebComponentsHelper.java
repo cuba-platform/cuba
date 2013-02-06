@@ -2,27 +2,21 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.12.2008 9:54:57
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.ShortcutAction;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.Table;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.Action;
-import com.vaadin.terminal.ClassResource;
-import com.vaadin.terminal.FileResource;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ClassResource;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -31,15 +25,19 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebComponentsHelper {
 
     public static Resource getResource(String resURL) {
         if (StringUtils.isEmpty(resURL)) return null;
 
         if (resURL.startsWith("file:")) {
-            return new FileResource(new File(resURL.substring("file:".length())), App.getInstance());
+            return new FileResource(new File(resURL.substring("file:".length())));
         } else if (resURL.startsWith("jar:")) {
-            return new ClassResource(resURL.substring("jar:".length()), App.getInstance());
+            return new ClassResource(resURL.substring("jar:".length()));
         } else if (resURL.startsWith("theme:")) {
             return new ThemeResource(resURL.substring("theme:".length()));
         } else {
@@ -47,6 +45,7 @@ public class WebComponentsHelper {
         }
     }
 
+    /*
     public static class ComponentPath {
         String[] elements;
         com.haulmont.cuba.gui.components.Component[] components;
@@ -63,13 +62,12 @@ public class WebComponentsHelper {
         public com.haulmont.cuba.gui.components.Component[] getComponents() {
             return components;
         }
-    }
+    }*/
 
     public static <T extends Component> Collection<T> getComponents(ComponentContainer container, Class<T> aClass) {
-        List<T> res = new ArrayList<T>();
-        final Iterator iterator = container.getComponentIterator();
-        while (iterator.hasNext()) {
-            Component component = (Component) iterator.next();
+        List<T> res = new ArrayList<>();
+        for (Object aContainer : container) {
+            Component component = (Component) aContainer;
             if (aClass.isAssignableFrom(component.getClass())) {
                 res.add((T) component);
             } else if (ComponentContainer.class.isAssignableFrom(component.getClass())) {
@@ -96,10 +94,10 @@ public class WebComponentsHelper {
 
         return (com.vaadin.ui.Component) comp;
     }
-
+          /*
     public static com.haulmont.cuba.web.toolkit.Timer unwrap(com.haulmont.cuba.gui.components.Timer timer) {
         return (com.haulmont.cuba.web.toolkit.Timer) timer;
-    }
+    }   */
 
     /**
      * Returns underlying Vaadin component, which serves as the outermost container for the supplied GUI component.
@@ -117,7 +115,6 @@ public class WebComponentsHelper {
 
         return (com.vaadin.ui.Component) comp;
     }
-
     /**
      * @deprecated Use ComponentsHelper.getComponents() instead
      */
@@ -125,7 +122,7 @@ public class WebComponentsHelper {
     public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
             com.haulmont.cuba.gui.components.Component.Container container) {
         final Collection<com.haulmont.cuba.gui.components.Component> ownComponents = container.getOwnComponents();
-        Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<com.haulmont.cuba.gui.components.Component>(ownComponents);
+        Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<>(ownComponents);
 
         for (com.haulmont.cuba.gui.components.Component component : ownComponents) {
             if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
@@ -212,14 +209,12 @@ public class WebComponentsHelper {
 
     public static boolean isVerticalLayout(AbstractOrderedLayout layout) {
         return (layout instanceof VerticalLayout)
-                || (layout instanceof VerticalActionsLayout)
-                || (layout instanceof WebVBoxLayout);
+                || (layout instanceof VerticalActionsLayout);
     }
 
     public static boolean isHorizontalLayout(AbstractOrderedLayout layout) {
         return (layout instanceof HorizontalLayout)
-                || (layout instanceof HorizontalActionsLayout)
-                || (layout instanceof WebHBoxLayout);
+                || (layout instanceof HorizontalActionsLayout);
     }
 
     public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment alignment) {
@@ -236,40 +231,38 @@ public class WebComponentsHelper {
             case BOTTOM_CENTER: {return Alignment.BOTTOM_CENTER;}
             case BOTTOM_RIGHT: {return Alignment.BOTTOM_RIGHT;}
             default: {throw new UnsupportedOperationException();}
-            }
-            }
+        }
+    }
 
-    public static int convertNotificationType(IFrame.NotificationType type) {
+    public static Notification.Type convertNotificationType(IFrame.NotificationType type) {
         switch (type) {
             case TRAY:
-                return com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION;
+                return Notification.Type.TRAY_NOTIFICATION;
             case HUMANIZED:
-                return com.vaadin.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE;
+                return Notification.Type.HUMANIZED_MESSAGE;
             case WARNING:
-                return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+                return Notification.Type.WARNING_MESSAGE;
             case ERROR:
-                return com.vaadin.ui.Window.Notification.TYPE_ERROR_MESSAGE;
+                return Notification.Type.ERROR_MESSAGE;
             default:
-                return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+                return Notification.Type.WARNING_MESSAGE;
         }
     }
 
-    public static int convertFilterMode(com.haulmont.cuba.gui.components.LookupField.FilterMode filterMode) {
+    public static FilteringMode convertFilterMode(com.haulmont.cuba.gui.components.LookupField.FilterMode filterMode) {
         switch (filterMode) {
             case NO:
-                return 0;
+                return FilteringMode.OFF;
             case STARTS_WITH:
-                return 1;
+                return FilteringMode.STARTSWITH;
             case CONTAINS:
-                return 2;
+                return FilteringMode.CONTAINS;
             default:
-                return 0;
+                return FilteringMode.OFF;
         }
     }
 
-    public static AggregationContainer.Type convertAggregationType(
-            AggregationInfo.Type function
-    ) {
+    public static AggregationContainer.Type convertAggregationType(AggregationInfo.Type function) {
         switch (function) {
             case COUNT:
                 return AggregationContainer.Type.COUNT;
@@ -339,7 +332,6 @@ public class WebComponentsHelper {
     public static void setActions(final Action.Container container,
                                   final Map<Action, Runnable> actions) {
         container.addActionHandler(new Action.Handler() {
-
             @Override
             public Action[] getActions(Object target, Object sender) {
                 Set<Action> shortcuts = actions.keySet();
@@ -365,7 +357,7 @@ public class WebComponentsHelper {
                 return FieldGroupLayout.CAPTION_ALIGN_LEFT;
         }
     }
-
+    /*
     public static int convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {
         switch (resolution) {
             case MSEC: {
@@ -391,5 +383,5 @@ public class WebComponentsHelper {
                 return com.vaadin.ui.DateField.RESOLUTION_MIN;
             }
         }
-    }
+    }*/
 }

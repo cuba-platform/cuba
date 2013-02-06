@@ -9,16 +9,16 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.ui.ClientWidget;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.PaintException;
-import com.haulmont.cuba.toolkit.gwt.client.ui.VIndicatedTextField;
+//import com.vaadin.ui.ClientWidget;
+//import com.vaadin.server.PaintTarget;
+//import com.vaadin.server.PaintException;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VIndicatedTextField;
 
 @SuppressWarnings("serial")
-@ClientWidget(VIndicatedTextField.class)
+//@ClientWidget(VIndicatedTextField.class)
 public class IndicatedTextField extends TextField {
 
-    protected boolean indicator;
+   /* protected boolean indicator;
 
     public boolean isIndicator() {
         return indicator;
@@ -34,6 +34,6 @@ public class IndicatedTextField extends TextField {
         if (isIndicator()) {
             target.addAttribute("indicator", true);
         }
-    }
+    }*/
 
 }

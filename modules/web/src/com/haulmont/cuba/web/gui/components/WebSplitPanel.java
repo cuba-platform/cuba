@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 20.01.2009 17:09:40
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -13,72 +9,91 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.ui.AbstractSplitPanel;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.VerticalSplitPanel;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
-public class WebSplitPanel extends com.vaadin.ui.SplitPanel
-        implements SplitPanel, Component.HasSettings
-{
+public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel>
+        implements SplitPanel, Component.HasSettings, Component.Wrapper {
+
     protected String id;
 
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-    protected Collection<Component> ownComponents = new HashSet<Component>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected Collection<Component> ownComponents = new HashSet<>();
 
     private Alignment alignment = Alignment.TOP_LEFT;
 
     private boolean showHookButton = false;
     private String defaultPosition = null;
 
-    private PositionUpdateListener positionListener;
+    private SplitPanel.PositionUpdateListener positionListener;
 
     private IFrame frame;
+    private int orientation;
 
-    @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        int previousPosition = this.getSplitPosition();
-        super.changeVariables(source, variables);
-        int newPosition = this.getSplitPosition();
-        if ((newPosition != previousPosition) && (positionListener != null))
-            positionListener.updatePosition(previousPosition, newPosition);
+    public WebSplitPanel() {
     }
 
+//    vaadin7
+//    @Override
+//    public void changeVariables(Object source, Map<String, Object> variables) {
+//        int previousPosition = this.getSplitPosition();
+//        super.changeVariables(source, variables);
+//        int newPosition = this.getSplitPosition();
+//        if ((newPosition != previousPosition) && (positionListener != null))
+//            positionListener.updatePosition(previousPosition, newPosition);
+//    }
+
+//    vaadin7
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        super.paintContent(target);
+//
+//        target.addAttribute("useHookButton", showHookButton);
+//        if (defaultPosition != null)
+//            target.addAttribute("defaultPosition", defaultPosition);
+//    }
+
     @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
+    public void add(Component childComponent) {
+//        vaadin7
+        if (component == null) {
+            if (orientation == SplitPanel.ORIENTATION_HORIZONTAL)
+                component = new HorizontalSplitPanel();
+            else
+                component = new VerticalSplitPanel();
+        }
 
-        target.addAttribute("useHookButton", showHookButton);
-        if (defaultPosition != null)
-            target.addAttribute("defaultPosition", defaultPosition);
-    }
+        final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
-    @Override
-    public void add(Component component) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
+        component.addComponent(vComponent);
 
-        addComponent(itmillComponent);
-
-        if (component.getId() != null) {
-            componentByIds.put(component.getId(), component);
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
             if (frame != null) {
-                frame.registerComponent(component);
+                frame.registerComponent(childComponent);
             }
         }
-        ownComponents.add(component);
+        ownComponents.add(childComponent);
     }
 
     @Override
-    public void remove(Component component) {
-        removeComponent(WebComponentsHelper.getComposition(component));
-        if (component.getId() != null) {
-            componentByIds.remove(component.getId());
+    public void remove(Component childComponent) {
+        component.removeComponent(WebComponentsHelper.getComposition(childComponent));
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
         }
-        ownComponents.remove(component);
+        ownComponents.remove(childComponent);
     }
 
     @Override
@@ -88,7 +103,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.<T>getComponent(this, id);
+        return WebComponentsHelper.getComponent(this, id);
     }
 
     @Override
@@ -123,9 +138,9 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.vaadin.ui.Component component = getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this, WebComponentsHelper.convertAlignment(alignment));
+        final com.vaadin.ui.Component parentComponent = component.getParent();
+        if (parentComponent instanceof Layout.AlignmentHandler) {
+            ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component, WebComponentsHelper.convertAlignment(alignment));
         }
     }
 
@@ -135,8 +150,9 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         if (e != null) {
             String value = e.attributeValue("value");
             String unit = e.attributeValue("unit");
-            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit))
-                setSplitPosition(Integer.valueOf(value), Integer.valueOf(unit));
+            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit))  {}
+//                vaadin7 convert units
+//                component.setSplitPosition(Integer.valueOf(value), Sizeable.Unit.PIXELS);
         }
     }
 
@@ -145,8 +161,8 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         Element e = element.element("position");
         if (e == null)
             e = element.addElement("position");
-        e.addAttribute("value", String.valueOf(getSplitPosition()));
-        e.addAttribute("unit", String.valueOf(getSplitPositionUnit()));
+        e.addAttribute("value", String.valueOf(component.getSplitPosition()));
+        e.addAttribute("unit", String.valueOf(component.getSplitPositionUnit()));
         return true;
     }
 
@@ -175,6 +191,31 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
     public void setDefaultPosition(String defaultPosition) {
         this.defaultPosition = defaultPosition;
+    }
+
+    @Override
+    public int getOrientation() {
+        return orientation;
+    }
+
+    @Override
+    public void setOrientation(int orientation) {
+        this.orientation = orientation;
+    }
+
+    @Override
+    public void setSplitPosition(int pos) {
+        component.setSplitPosition(pos);
+    }
+
+    @Override
+    public void setLocked(boolean locked) {
+        component.setLocked(locked);
+    }
+
+    @Override
+    public boolean isLocked() {
+        return component.isLocked();
     }
 
     @Override

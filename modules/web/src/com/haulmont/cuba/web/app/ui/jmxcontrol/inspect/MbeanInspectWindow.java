@@ -56,7 +56,8 @@ public class MbeanInspectWindow extends AbstractEditor {
 
         com.haulmont.cuba.web.toolkit.ui.Table vaadinAttrTable =
                 (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(attrTable);
-        vaadinAttrTable.setTextSelectionEnabled(true);
+//        vaadin7
+//        vaadinAttrTable.setTextSelectionEnabled(true);
 
         attrTable.setItemClickAction(editAttributeAction);
         attrDs.addListener(new CollectionDsListenerAdapter<ManagedBeanAttribute>() {

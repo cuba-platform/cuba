@@ -20,14 +20,18 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author abramov
@@ -62,7 +66,7 @@ public class WebPickerField
             }
 
             @Override
-            public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+            public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
             }
 
             @Override
@@ -237,7 +241,7 @@ public class WebPickerField
                     }
 
                     @Override
-                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                         if (newValue instanceof String)
                             return;
                         value = newValue;
@@ -327,9 +331,11 @@ public class WebPickerField
     }
 
     protected void initActionHandler() {
-        com.vaadin.event.Action.Container actionContainer = ((com.vaadin.event.Action.Container) component.getField());
+//        vaadin7
+//        com.vaadin.event.Action.Container actionContainer = ((com.vaadin.event.Action.Container) component.getField());
         actionHandler = new WebPickerFieldActionHandler(this);
-        actionContainer.addActionHandler(actionHandler);
+//        vaadin7
+//        actionContainer.addActionHandler(actionHandler);
     }
 
     private static class PickerButton extends WebButton {

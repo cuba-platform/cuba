@@ -26,7 +26,7 @@ public class OperationResultWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        super.init(params);
+        /*super.init(params);
 
         getDialogParams().setResizable(true);
         getDialogParams().setWidth(800);
@@ -75,6 +75,6 @@ public class OperationResultWindow extends AbstractWindow {
             public String getCaption() {
                 return getMessage("close");
             }
-        });
+        });*/
     }
 }

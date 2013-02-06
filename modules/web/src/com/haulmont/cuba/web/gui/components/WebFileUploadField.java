@@ -30,8 +30,8 @@ import java.util.UUID;
  * @author abramov
  * @version $Id$
  */
-public class WebFileUploadField extends WebAbstractComponent<Upload> implements FileUploadField {
-
+public class WebFileUploadField /*extends WebAbstractComponent<Upload> implements FileUploadField*/ {
+/*
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
     protected FileUploadingAPI fileUploading;
@@ -53,8 +53,8 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
         messages = AppBeans.get(Messages.class);
         String caption = messages.getMessage(AppConfig.getMessagesPack(), "Upload");
         component = new Upload(
-                /* Fixes caption rendering.
-                * If caption == "", the VerticalLayout reserves an empty space */
+                *//* Fixes caption rendering.
+                * If caption == "", the VerticalLayout reserves an empty space *//*
                 StringUtils.isEmpty(caption) ? null : caption,
                 new Upload.Receiver() {
                     @Override
@@ -156,12 +156,12 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
         listeners.remove(listener);
     }
 
-    /**
+    *//**
      * Get content bytes for uploaded file
      *
      * @return Bytes for uploaded file
      * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadingAPI}
-     */
+     *//*
     @Deprecated
     public byte[] getBytes() {
         byte[] bytes = null;
@@ -208,9 +208,9 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
         component.setButtonWidth(buttonWidth);
     }
 
-    /**
+    *//**
      * @return File id for uploaded file in {@link FileUploadingAPI}
-     */
+     *//*
     @Override
     public UUID getFileId() {
         return fileId;
@@ -222,5 +222,5 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
             return fileUploading.getFileDescriptor(fileId, fileName);
         else
             return null;
-    }
+    }*/
 }

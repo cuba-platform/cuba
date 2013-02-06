@@ -6,7 +6,9 @@
 
 package com.haulmont.cuba.web.gui.executors.impl;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import com.haulmont.cuba.gui.executors.impl.TasksWatchDog;
 import com.haulmont.cuba.web.WebConfig;
@@ -21,7 +23,7 @@ public class WebTasksWatchDog extends TasksWatchDog {
 
     @Override
     protected boolean checkHangup(long actualTimeMs, TaskHandlerImpl taskHandler) {
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
 
         long timeout = taskHandler.getStartTimeStamp();
         long latencyMs = TimeUnit.SECONDS.toMillis(webConfig.getClientBackgroundTasksLatencySeconds());

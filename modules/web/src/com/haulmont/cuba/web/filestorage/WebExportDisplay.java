@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.export.*;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
@@ -66,7 +66,7 @@ public class WebExportDisplay implements ExportDisplay {
     @Override
     public void show(ExportDataProvider dataProvider, String resourceName, final ExportFormat format) {
 
-        if (useViewList) {
+        /*if (useViewList) {
             String fileExt;
 
             if (format != null)
@@ -84,7 +84,7 @@ public class WebExportDisplay implements ExportDisplay {
         // Try to get stream
         ProxyDataProvider proxyDataProvider = new ProxyDataProvider(dataProvider);
 
-        final App app = App.getInstance();
+        final AppUI app = AppUI.getInstance();
         final ResourceWindow window = new ResourceWindow(proxyDataProvider, resourceName, format, attachment);
 
         cleanOpenedWindows(app);
@@ -97,7 +97,7 @@ public class WebExportDisplay implements ExportDisplay {
             webScriptHost.viewDocument(window.getURL().toString() + "?" + cacheKey);
         } else {
             webScriptHost.getResource(window.getURL().toString() + "?" + cacheKey);
-        }
+        }*/
     }
 
     /**
@@ -133,8 +133,8 @@ public class WebExportDisplay implements ExportDisplay {
     public void show(byte[] content, String resourceName, ExportFormat format) {
         show(new ByteArrayDataProvider(content), resourceName, format);
     }
-
-    private void cleanOpenedWindows(App application) {
+/*
+    private void cleanOpenedWindows(AppUI application) {
         ResourceWindow window = null;
         for (Object obj : application.getWindows()) {
             if (obj instanceof ResourceWindow) {
@@ -145,5 +145,5 @@ public class WebExportDisplay implements ExportDisplay {
         if (window != null) {
             application.removeWindow(window);
         }
-    }
+    }*/
 }

@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -23,17 +23,17 @@ import java.util.UUID;
 public abstract class ControllerUtils {
     private static final String DISPATCHER = "dispatch";
 
-    public static String getWebControllerURL(String mapping) {
-        if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
-
-        String baseUrl = App.getInstance().getURL().toExternalForm();
-        StringBuilder url = new StringBuilder(baseUrl).append(getDispatcher());
-        if (!mapping.startsWith("/")) {
-            url.append("/");
-        }
-        url.append(mapping);
-        return url.toString();
-    }
+//    public static String getWebControllerURL(String mapping) {
+//        if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
+//
+//        String baseUrl = AppUI.getInstance().getURL().toExternalForm();
+//        StringBuilder url = new StringBuilder(baseUrl).append(getDispatcher());
+//        if (!mapping.startsWith("/")) {
+//            url.append("/");
+//        }
+//        url.append(mapping);
+//        return url.toString();
+//    }
 
     public static String getControllerURL(String mapping) {
         if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
@@ -62,9 +62,9 @@ public abstract class ControllerUtils {
         }
         return path;
     }
-
+/*
     public static UserSession getUserSession(HttpServletRequest req) {
-        UserSession userSession = (UserSession) req.getSession().getAttribute(App.USER_SESSION_ATTR);
+        UserSession userSession = (UserSession) req.getSession().getAttribute(AppUI.USER_SESSION_ATTR);
         if (userSession != null) {
             return userSession;
         } else {
@@ -75,7 +75,7 @@ public abstract class ControllerUtils {
                     LoginService service = ServiceLocator.lookup(LoginService.NAME);
                     UserSession session = service.getSession(id);
                     if (session != null) {
-                        req.getSession().setAttribute(App.USER_SESSION_ATTR, session);
+                        req.getSession().setAttribute(AppUI.USER_SESSION_ATTR, session);
                         return session;
                     }
                 } catch (Exception e) {
@@ -84,5 +84,5 @@ public abstract class ControllerUtils {
             }
             return null;
         }
-    }
+    }*/
 }

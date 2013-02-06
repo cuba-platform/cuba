@@ -10,12 +10,12 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.VFlowLayout;
-import com.vaadin.ui.ClientWidget;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VFlowLayout;
+//import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-@ClientWidget(VFlowLayout.class)
+//@ClientWidget(VFlowLayout.class)
 public class FlowLayout extends VerticalLayout {
     public FlowLayout() {
         super();

@@ -8,16 +8,21 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.filter.*;
+import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
+import com.haulmont.cuba.gui.components.filter.GroupType;
 import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
@@ -27,9 +32,8 @@ import java.util.*;
 /**
  * Window to select a new generic filter condition.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class AddConditionDlg extends Window {
 
@@ -45,7 +49,7 @@ public class AddConditionDlg extends Window {
                            DescriptorBuilder descriptorBuilder,
                            SelectionHandler selectionHandler)
     {
-        super(MessageProvider.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
+        super(AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
 
         this.selectionHandler = selectionHandler;
 
@@ -70,7 +74,7 @@ public class AddConditionDlg extends Window {
         Model model = new Model(metaClass, propertyDescriptors, descriptorBuilder);
         tree.setContainerDataSource(model);
         tree.setItemCaptionPropertyId(MODEL_PROPERTY_IDS.get(0));
-        tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+        tree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 
         topLayout.addComponent(tree);
         topLayout.setSizeFull();
@@ -102,7 +106,7 @@ public class AddConditionDlg extends Window {
 //            }
 //        });
 
-        tree.addListener(new Property.ValueChangeListener() {
+        tree.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 ModelItem modelItem = (ModelItem) tree.getValue();
@@ -117,8 +121,9 @@ public class AddConditionDlg extends Window {
     private void initButtonsLayout(HorizontalLayout buttonsLayout) {
         buttonsLayout.setSpacing(true);
 
-        okBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
-        okBtn.addListener(new Button.ClickListener() {
+        Messages messages = AppBeans.get(Messages.class);
+        okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
+        okBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 commit(AddConditionDlg.this.selectionHandler);
@@ -126,8 +131,8 @@ public class AddConditionDlg extends Window {
         });
         buttonsLayout.addComponent(okBtn);
 
-        Button cancelBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
-        cancelBtn.addListener(new Button.ClickListener() {
+        Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -211,7 +216,7 @@ public class AddConditionDlg extends Window {
                 }
 
                 @Override
-                public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                 }
 
                 @Override
@@ -284,7 +289,7 @@ public class AddConditionDlg extends Window {
         }
 
         private void initRootModelItems() {
-            rootModelItems = new ArrayList<ModelItem>();
+            rootModelItems = new ArrayList<>();
 
             rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorBuilder));
 
@@ -301,7 +306,7 @@ public class AddConditionDlg extends Window {
                 rootModelItems.add(new RootRuntimePropertiesModelItem(descriptorBuilder));
             }
 
-            if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+            if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
                 rootModelItems.add(new NewCustomConditionModelItem(descriptorBuilder));
             }
         }
@@ -411,5 +416,4 @@ public class AddConditionDlg extends Window {
             return false;
         }
     }
-
 }

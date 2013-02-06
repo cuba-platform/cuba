@@ -6,8 +6,9 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.gui.components.Window;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -41,11 +42,12 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
     public WindowBreadCrumbs() {
         setMargin(true);
-        setWidth(100, Sizeable.UNITS_PERCENTAGE);
-        setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
+        setWidth(100, Unit.PERCENTAGE);
+        setHeight(-1, Unit.PIXELS); // TODO (abramov) This is a bit tricky
         setStyleName("headline-container");
 
-        tabbedMode = AppWindow.Mode.TABBED.equals(App.getInstance().getAppWindow().getMode());
+//        tabbedMode = AppWindow.Mode.TABBED.equals(AppUI.getInstance().getAppWindow().getMode());
+        tabbedMode = true;
 
         if (tabbedMode)
             setVisible(false);
@@ -67,8 +69,8 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             });
             closeBtn.setIcon(new ThemeResource("images/close.png"));
             closeBtn.setStyleName("closetab-button");
-            App.getInstance().getWindowManager()
-                    .setDebugId(closeBtn, "closeBtn");
+//            AppUI.getInstance().getWindowManager()
+//                    .setDebugId(closeBtn, "closeBtn");
         }
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();
@@ -146,7 +148,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             if (it.hasNext()) {
                 linksLayout.addComponent(button);
                 Label separatorLab = new Label("&nbsp;&gt;&nbsp;");
-                separatorLab.setContentMode(Label.CONTENT_XHTML);
+                separatorLab.setContentMode(ContentMode.HTML);
                 linksLayout.addComponent(separatorLab);
             } else {
                 linksLayout.addComponent(new Label(window.getCaption()));

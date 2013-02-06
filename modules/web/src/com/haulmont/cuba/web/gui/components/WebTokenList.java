@@ -5,36 +5,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
-import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.toolkit.ui.CustomField;
-import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
-import com.haulmont.cuba.web.toolkit.ui.TokenListLabel;
-import com.vaadin.terminal.KeyMapper;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.*;
-
-import java.util.*;
+//import com.haulmont.cuba.web.AppUI;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList {
-
+public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList*/ {
+/*
     private CollectionDatasource datasource;
 
     private String captionProperty;
@@ -489,7 +467,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                         if (lookupScreenParams != null)
                             params.putAll(lookupScreenParams);
 
-                        WindowManager wm = App.getInstance().getWindowManager();
+                        WindowManager wm = AppUI.getInstance().getWindowManager();
                         wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                             @Override
                             public void handleLookup(Collection items) {
@@ -612,5 +590,5 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                 }
             }
         }
-    }
+    }*/
 }

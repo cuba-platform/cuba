@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
@@ -41,12 +41,12 @@ import java.util.Map;
 import java.util.UUID;
 
 public class LinkHandler {
-
+/*
     private static Log log = LogFactory.getLog(LinkHandler.class);
-    private App app;
+    private AppUI app;
     private Map<String, String> requestParams;
 
-    public LinkHandler(App app, Map<String, String> requestParams) {
+    public LinkHandler(AppUI app, Map<String, String> requestParams) {
         this.app = app;
         this.requestParams = requestParams;
     }
@@ -247,5 +247,5 @@ public class LinkHandler {
             return null;
         }
         return entity;
-    }
+    }*/
 }

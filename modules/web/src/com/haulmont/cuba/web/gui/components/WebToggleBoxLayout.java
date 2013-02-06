@@ -21,10 +21,10 @@ import org.apache.commons.lang.BooleanUtils;
 import java.util.*;
 
 public class WebToggleBoxLayout
-        extends WebAbstractComponent<TogglePanel>
-        implements ToggleBoxLayout
+        /*extends WebAbstractComponent<TogglePanel>
+        implements ToggleBoxLayout*/
 {
-    protected com.vaadin.ui.Layout onLayout = new LayoutWrapper();
+    /*protected com.vaadin.ui.Layout onLayout = new LayoutWrapper();
     protected com.vaadin.ui.Layout offLayout = new LayoutWrapper();
 
     public WebToggleBoxLayout() {
@@ -221,5 +221,5 @@ public class WebToggleBoxLayout
         public Component asComponent() {
             return component;
         }
-    }
+    }*/
 }

@@ -6,10 +6,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.VResizableTextField;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.ClientWidget;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VResizableTextField;
+//import com.vaadin.server.PaintException;
+//import com.vaadin.server.PaintTarget;
+//import com.vaadin.ui.ClientWidget;
+
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +22,11 @@ import java.util.Map;
  * @author subbotin
  * @version $Id$
  */
-@ClientWidget(VResizableTextField.class)
+//@ClientWidget(VResizableTextField.class)
 public class ResizableTextField extends TextField {
 
     private boolean resizable = false;
-    private List<ResizeListener> listeners = new ArrayList<ResizeListener>();
+    private List<ResizeListener> listeners = new ArrayList<>();
 
     public static interface ResizeListener {
         public void onResize(String oldWidth, String oldHeight, String width, String height);
@@ -55,7 +58,6 @@ public class ResizableTextField extends TextField {
             target.addAttribute("resizable", true);
         }
     }
-
 
     @Override
     public void changeVariables(Object source, Map variables) {

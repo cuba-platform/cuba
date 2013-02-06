@@ -9,8 +9,9 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -20,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -27,7 +29,7 @@ import java.util.Map;
 public class AppliedFilter {
 
     private FilterEntity filterEntity;
-    private LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+    private LinkedHashMap<String, String> params = new LinkedHashMap<>();
 
     public AppliedFilter(FilterEntity filterEntity, ComponentContainer container) {
         this.filterEntity = filterEntity;
@@ -65,11 +67,11 @@ public class AppliedFilter {
             return ((Instance) value).getInstanceName();
 
         if (value instanceof Enum)
-            return MessageProvider.getMessage((Enum) value);
+            return AppBeans.get(Messages.class).getMessage((Enum) value);
 
         Datatype datatype = Datatypes.get(value.getClass());
         if (datatype != null)
-            return datatype.format(value, UserSessionProvider.getLocale());
+            return datatype.format(value, AppBeans.get(UserSessionSource.class).getLocale());
 
         return value.toString();
     }
@@ -94,4 +96,3 @@ public class AppliedFilter {
         return result;
     }
 }
-

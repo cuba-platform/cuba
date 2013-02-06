@@ -18,14 +18,13 @@ import com.haulmont.cuba.security.entity.ui.PermissionVariant;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.Companion{
     @Override
     public void initPermissionColoredColumns(TreeTable screenPermissionsTree) {
-        screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
+        /*screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
             @Override
             public Component generateCell(BasicPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
@@ -45,6 +44,6 @@ public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.C
 
                 return label;
             }
-        });
+        });*/
     }
 }

@@ -2,32 +2,30 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 21.08.2009 16:14:58
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.data;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class ObjectContainer implements com.vaadin.data.Container {
 
     private transient Log log = LogFactory.getLog(getClass());
 
-    private static List<String> methodsName = new ArrayList<String>();
+    private static List<String> methodsName = new ArrayList<>();
 
     static {
         methodsName.add("getName");
@@ -45,102 +43,118 @@ public class ObjectContainer implements com.vaadin.data.Container {
         log = LogFactory.getLog(getClass());
     }
 
+    @Override
     public Item getItem(Object itemId) {
         return new ObjectItem(itemId);
     }
 
+    @Override
     public Collection getContainerPropertyIds() {
         return Collections.emptyList();
     }
 
+    @Override
     public Collection getItemIds() {
         return values;
     }
 
+    @Override
     public Property getContainerProperty(Object itemId, Object propertyId) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Class getType(Object propertyId) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int size() {
         return values.size();
     }
 
+    @Override
     public boolean containsId(Object itemId) {
         return values.contains(itemId);
     }
 
+    @Override
     public Item addItem(Object itemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object addItem() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeItem(Object itemId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean addContainerProperty(Object propertyId, Class type, Object defaultValue) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeAllItems() throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
     class ObjectItem implements Item {
-
         private Object item;
-
         private String name;
 
-        ObjectItem(Object item) {
+        ObjectItem(final Object item) {
             this.item = item;
 
             final Method[] methods = this.item.getClass().getMethods();
             if (methods != null) {
-                for (int i = 0; i < methods.length; i++) {
-                    Method m = methods[i];
-                    //TODO use annotation to get captionProperty instead of reflection
-                    if (methodsName.contains(m.getName())) {
-                        try {
-                            final Object o = m.invoke(item);
-                            if (o instanceof String) {
-                                this.name = (String) o;
-                                break;
-                            } else {
-                                this.name = o.toString();
-                                break;
-                            }
-                        } catch (Exception e) {
-                            log.error("error invoking " + m.getName(), e);
-                        }
+                Method method = (Method) CollectionUtils.find(Arrays.asList(methods), new Predicate() {
+                    @Override
+                    public boolean evaluate(Object o) {
+                        Method m = (Method) o;
+                        return methodsName.contains(m.getName());
+                    }
+                });
+
+                if (method != null) {
+                    try {
+                        final Object o = method.invoke(item);
+                        if (o instanceof String)
+                            this.name = (String) o;
+                        else
+                            this.name = o.toString();
+                    } catch (Exception e) {
+                        log.error("error invoking " + method.getName(), e);
                     }
                 }
             }
         }
 
+        @Override
         public Property getItemProperty(Object id) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Collection getItemPropertyIds() {
             return Collections.emptyList();
         }
 
+        @Override
         public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }

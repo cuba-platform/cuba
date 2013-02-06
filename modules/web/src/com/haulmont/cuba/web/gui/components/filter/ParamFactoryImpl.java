@@ -13,9 +13,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class ParamFactoryImpl implements ParamFactory<Param> {
 

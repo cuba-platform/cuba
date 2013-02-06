@@ -11,9 +11,8 @@ import com.haulmont.cuba.core.sys.logging.AbstractLogWrapper;
 import org.apache.commons.logging.Log;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class WebLogWrapper extends AbstractLogWrapper {
 

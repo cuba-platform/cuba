@@ -7,6 +7,8 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import javax.annotation.Nullable;
@@ -16,9 +18,8 @@ import java.util.regex.Pattern;
 /**
  * Handles a JPA optimistic lock exception.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class OptimisticExceptionHandler extends AbstractExceptionHandler {
 
@@ -41,6 +42,6 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
         localizedEntityName = MessageProvider.getMessage(packageName, entityName);
 
         String msg = MessageProvider.formatMessage(getClass(), "optimisticException.message", "\"" + localizedEntityName + "\"");
-        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+        app.getAppUI().showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
 }

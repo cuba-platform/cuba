@@ -6,21 +6,14 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.gui.components.WebDateField;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Layout;
-import org.apache.commons.lang.ObjectUtils;
-
-import java.util.Date;
-
 /**
  * <p>$Id$</p>
  *
  * @author devyatkin
  */
-public class DateFieldWrapper extends CustomField {
+public class DateFieldWrapper /*extends CustomField*/ {
 
-    private WebDateField dateField;
+    /*private WebDateField dateField;
 
     public DateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
@@ -88,5 +81,5 @@ public class DateFieldWrapper extends CustomField {
         // support dateField in editable table
         if (newDataSource != null && !ObjectUtils.equals(newDataSource.getValue(), getValue()))
             dateField.setValue(newDataSource.getValue());
-    }
+    }*/
 }

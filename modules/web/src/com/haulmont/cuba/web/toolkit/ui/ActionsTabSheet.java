@@ -10,17 +10,16 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.event.Action;
-import com.vaadin.event.ActionManager;
-import com.vaadin.terminal.*;
 import com.vaadin.ui.Component;
 
-import java.util.*;
+import java.util.Stack;
 
-public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
-    private static final long serialVersionUID = -2956008661221108673L;
+// vaadin7 Actions support
+public class ActionsTabSheet extends com.vaadin.ui.TabSheet /*implements Action.Container*/ {
 
-    private Stack<Component> openedComponents = new Stack<Component>();
+    private Stack<Component> openedComponents = new Stack<>();
+
+    /*private static final long serialVersionUID = -2956008661221108673L;
 
     protected TabSheetActionsManager actionManager;
 
@@ -54,7 +53,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
     @Override
     public void changeVariables(Object source, Map variables) {
         if (variables.containsKey("close")) {
-            final Component tab = (Component) keyMapper.get((String) variables.get("close"));
+            final Component tab = keyMapper.get((String) variables.get("close"));
             if (tab != null) {
                 closeTabAndSelectPrevious(tab);
             }
@@ -64,18 +63,19 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
         if (actionManager != null) {
             getActionManager().handleActions(variables, this);
         }
-    }
+    }         */
 
     public void closeTabAndSelectPrevious(Component tab) {
         while (openedComponents.removeElement(tab))
             openedComponents.removeElement(tab);
-        if ((!openedComponents.empty()) && (selected.equals(tab))) {
+        if ((!openedComponents.empty()) && (getSelectedTab().equals(tab))) {
             Component c = openedComponents.pop();
             while (!components.contains(c) && !openedComponents.isEmpty())
                 c = openedComponents.pop();
             setSelectedTab(c);
         }
         closeHandler.onTabClose(this, tab);
+        removeComponent(tab);
     }
 
     public void silentCloseTabAndSelectPrevious(Component tab) {
@@ -92,10 +92,11 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
     @Override
     public void setSelectedTab(Component c) {
         if (c != null && components.contains(c) && !c.equals(selected)) {
-            selected = c;
+            setSelected(c);
             openedComponents.push(c);
+            updateSelection();
             fireSelectedTabChange();
-            requestRepaint();
+            markAsDirty();
         }
     }
 
@@ -107,14 +108,15 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
         }
     }
 
+    /*
     @Override
     public void attach() {
         super.attach();
         if (actionManager != null) {
             getActionManager().setViewer(this);
         }
-    }
-
+    }           */
+    /*
     @Override
     protected void paintTab(PaintTarget target, Component component, Tab tab) throws PaintException {
         target.startTag("tab");
@@ -150,7 +152,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
         }
 
         target.addAttribute("key", keyMapper.key(component));
-        if (component.equals(selected)) {
+        if (component.equals(getSelectedTab())) {
             target.addAttribute("selected", true);
             component.paint(target);
             paintedTabs.add(component);
@@ -215,5 +217,5 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
             Component tab = (Component) keyMapper.get(tabKey);
             super.handleAction(action, sender, tab);
         }
-    }
+    }*/
 }

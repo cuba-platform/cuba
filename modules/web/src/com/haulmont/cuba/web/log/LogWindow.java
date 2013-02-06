@@ -9,9 +9,9 @@ import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -55,20 +55,22 @@ public class LogWindow extends Window {
         layout.setSizeFull();
         setContent(layout);
 
-        ScrollablePanel scrollablePanel = new ScrollablePanel();
+        Panel scrollablePanel = new Panel();
         scrollablePanel.setSizeFull();
-        scrollablePanel.getContent().setSizeUndefined();
+        VerticalLayout scrollContent = new VerticalLayout();
+        scrollContent.setSizeUndefined();
+        scrollablePanel.setContent(scrollContent);
 
         final Label label = new Label();
-        label.setContentMode(Label.CONTENT_XHTML);
+        label.setContentMode(ContentMode.HTML);
         label.setValue(writeLog());
         label.setSizeUndefined();
 
-        scrollablePanel.addComponent(label);
+        ((Layout)scrollablePanel.getContent()).addComponent(label);
 
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setWidth("100%");
-        topLayout.setHeight(SIZE_UNDEFINED, 0);
+        topLayout.setHeight(SIZE_UNDEFINED, Unit.PIXELS);
 
         Button refreshBtn = new Button(AppBeans.get(Messages.class).getMessage(getClass(), "logWindow.refreshBtn"),
                 new Button.ClickListener() {
@@ -86,8 +88,8 @@ public class LogWindow extends Window {
         topLayout.addComponent(versionLabel);
         topLayout.setComponentAlignment(versionLabel, Alignment.MIDDLE_RIGHT);
 
-        addComponent(topLayout);
-        addComponent(scrollablePanel);
+        layout.addComponent(topLayout);
+        layout.addComponent(scrollablePanel);
 
         layout.setExpandRatio(scrollablePanel, 1.0f);
     }
@@ -101,8 +103,8 @@ public class LogWindow extends Window {
     }
 
     private String writeLog() {
-        List<LogItem> items = App.getInstance().getAppLog().getItems();
         StringBuilder sb = new StringBuilder();
+        List<LogItem> items = App.getInstance().getAppLog().getItems();
         for (LogItem item : items) {
             sb.append("<b>");
             sb.append(DateFormatUtils.format(item.getTimestamp(), DATE_FORMAT));

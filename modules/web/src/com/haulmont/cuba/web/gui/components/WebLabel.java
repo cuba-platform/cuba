@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,9 @@ public class WebLabel
     extends
         WebAbstractComponent<com.vaadin.ui.Label>
     implements
-        Label, Component.Wrapper
-{
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+        Label, Component.Wrapper {
+
+    protected List<ValueListener> listeners = new ArrayList<>();
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -66,6 +67,12 @@ public class WebLabel
 
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
+
+//        vaadin7 converters
+        if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
+            component.setConverter(new EntityToStringConverter());
+        else
+            component.setConverter(null);
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
@@ -97,7 +104,7 @@ public class WebLabel
     @Override
     public void setValue(Object value) {
         final Object prevValue = getValue();
-        component.setValue(value);
+        component.setValue((String) value);
         fireValueChanged(prevValue, value);
     }
 

@@ -7,19 +7,19 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ValueProvider;
-import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
+//import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
-import com.vaadin.ui.ClientWidget;
+//import com.vaadin.ui.ClientWidget;
 
 /**
  * <p>$Id$</p>
  *
  * @author artamonov
  */
-@ClientWidget(VScriptHost.class)
+//@ClientWidget(VScriptHost.class)
 @SuppressWarnings({"unused"})
 public class WebScriptHost extends WebAbstractComponent<JavaScriptHost> {
-
+/*
     public WebScriptHost() {
         this.component = new JavaScriptHost();
 
@@ -44,5 +44,5 @@ public class WebScriptHost extends WebAbstractComponent<JavaScriptHost> {
 
     public void getResource(String resourceUrl) {
         this.component.getResource(resourceUrl);
-    }
+    }*/
 }

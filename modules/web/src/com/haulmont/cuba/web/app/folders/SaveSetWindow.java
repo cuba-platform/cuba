@@ -11,15 +11,14 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.security.entity.SearchFolder;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class SaveSetWindow extends AbstractWindow {
     private Set ids;
@@ -30,10 +29,6 @@ public class SaveSetWindow extends AbstractWindow {
     private FoldersPane foldersPane;
     private LookupField foldersSelect;
     private String query;
-
-    public SaveSetWindow(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -56,15 +51,16 @@ public class SaveSetWindow extends AbstractWindow {
         protected InsertAction() {
             super("InsertAction");
         }
+        @Override
         public void actionPerform(Component component) {
             SearchFolder folder = foldersSelect.getValue();
             if (folder==null){
                 showNotification(getMessage("saveSetWindow.notSelected"),NotificationType.TRAY);
                 return; }
             String filterXml = folder.getFilterXml();
-                folder.setFilterXml(WebFilter.UserSetHelper.addEntities(filterXml, ids));
-                foldersPane.saveFolder(folder);
-                foldersPane.refreshFolders();
+//                folder.setFilterXml(WebFilter.UserSetHelper.addEntities(filterXml, ids));
+//                foldersPane.saveFolder(folder);
+//                foldersPane.refreshFolders();
                 close(COMMIT_ACTION_ID,true);
         }
     }
@@ -75,38 +71,38 @@ public class SaveSetWindow extends AbstractWindow {
             super("CreateSetAction");
         }
 
+        @Override
         public void actionPerform(Component component) {
+//            QueryParser parser = QueryTransformerFactory.createParser(query);
+//            String entityAlias = parser.getEntityAlias(entityType);
+//            String filterXml = WebFilter.UserSetHelper.generateSetFilter(ids,entityClass,componentId,entityAlias);
+//            final SearchFolder folder = MetadataProvider.create(SearchFolder.class);
+//            folder.setUser(UserSessionProvider.getUserSession().getUser());
+//            folder.setName("");
+//            folder.setFilterXml(filterXml);
+//            folder.setFilterComponentId(componentPath);
+//            folder.setEntityType(entityType);
+//            folder.setIsSet(true);
+//
+//            Runnable commitHandler = new Runnable() {
+//                public void run() {
+//                    foldersPane.saveFolder(folder);
+//                    foldersPane.refreshFolders();
+//                }
+//            };
 
-            QueryParser parser = QueryTransformerFactory.createParser(query);
-            String entityAlias = parser.getEntityAlias(entityType);
-            String filterXml = WebFilter.UserSetHelper.generateSetFilter(ids,entityClass,componentId,entityAlias);
-            final SearchFolder folder = MetadataProvider.create(SearchFolder.class);
-            folder.setUser(UserSessionProvider.getUserSession().getUser());
-            folder.setName("");
-            folder.setFilterXml(filterXml);
-            folder.setFilterComponentId(componentPath);
-            folder.setEntityType(entityType);
-            folder.setIsSet(true);
-
-            Runnable commitHandler = new Runnable() {
-                public void run() {
-                    foldersPane.saveFolder(folder);
-                    foldersPane.refreshFolders();
-                }
-            };
-
-            final FolderEditWindow window = AppFolderEditWindow.create(false, false, folder, null, commitHandler);
-            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    App.getInstance().getAppWindow().removeWindow(window);
-                }
-            });
-            App.getInstance().getAppWindow().addWindow(window);
-            window.addListener(new com.vaadin.ui.Window.CloseListener(){
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    close(COMMIT_ACTION_ID);
-                }
-            });
+//            final FolderEditWindow window = AppFolderEditWindow.create(false, false, folder, null, commitHandler);
+//            window.addListener(new com.vaadin.ui.Window.CloseListener() {
+//                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
+//                    AppUI.getInstance().getAppWindow().removeWindow(window);
+//                }
+//            });
+//            AppUI.getInstance().getAppWindow().addWindow(window);
+//            window.addListener(new com.vaadin.ui.Window.CloseListener(){
+//                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
+//                    close(COMMIT_ACTION_ID);
+//                }
+//            });
         }
     }
 

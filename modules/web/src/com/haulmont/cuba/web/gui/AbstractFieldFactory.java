@@ -11,15 +11,14 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.chile.core.datatypes.impl.TimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -28,7 +27,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
-import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.DefaultFieldFactory;
@@ -37,7 +35,6 @@ import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
@@ -102,19 +99,21 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     if (Boolean.class.isAssignableFrom(type)) {
                         field = new CheckBox();
                     } else if (Date.class.isAssignableFrom(type)) {
-                        Datatype datatype = range.asDatatype();
-                        String dataTypeName = datatype.getName();
-                        if (TimeDatatype.NAME.equals(dataTypeName) || "timeField".equals(fieldType(propertyPath))) {
-                            final WebTimeField timeField = new WebTimeField();
-                            timeField.setDatasource(getDatasource(item), propertyPath.getMetaProperty().getName());
-                            cubaField = timeField;
-                            field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(timeField);
-                        } else {
-                            WebDateField dateField = new WebDateField();
-                            dateField.setDatasource(getDatasource(item), propertyPath.getMetaProperty().getName());
-                            cubaField = dateField;
-                            field = dateField.getComponent();
-                        }
+//                        vaadin7
+//                        Datatype datatype = range.asDatatype();
+//                        String dataTypeName = datatype.getName();
+//                        if (TimeDatatype.NAME.equals(dataTypeName) || "timeField".equals(fieldType(propertyPath))) {
+//                            final WebTimeField timeField = new WebTimeField();
+//                            timeField.setDatasource(getDatasource(item), propertyPath.getMetaProperty().getName());
+//                            cubaField = timeField;
+//                            field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(timeField);
+//                        } else {
+//                            WebDateField dateField = new WebDateField();
+//                            dateField.setDatasource(getDatasource(item), propertyPath.getMetaProperty().getName());
+//                            cubaField = dateField;
+//                            field = dateField.getComponent();
+//                        }
+                        field = null;
                     } else {
                         field = super.createField(item, propertyId, uiContext);
                         field.setInvalidAllowed(false);
@@ -123,17 +122,16 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                                     @Override
                                     public void validate(Object value) throws InvalidValueException {
                                         if (!isValid(value)) {
-                                            field.requestRepaint();
+                                            field.markAsDirty();
                                             throw new InvalidValueException("Unable to parse value: " + value);
                                         }
                                     }
 
-                                    @Override
                                     public boolean isValid(Object value) {
                                         Datatype datatype = range.asDatatype();
                                         if (value instanceof String && datatype != null) {
                                             try {
-                                                datatype.parse((String) value, UserSessionProvider.getLocale());
+                                                datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
                                             } catch (ParseException e) {
                                                 return false;
                                             }
@@ -193,8 +191,10 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 if (Boolean.class.isAssignableFrom(type)) {
                     field = new CheckBox();
                 } else if (Date.class.isAssignableFrom(type)) {
-                    cubaField = new WebDateField();
-                    field = ((WebDateField) cubaField).getComponent();
+//                    vaadin7
+//                    cubaField = new WebDateField();
+//                    field = ((WebDateField) cubaField).getComponent();
+                    field = null;
                 } else {
                     field = super.createField(container, itemId, propertyId, uiContext);
                 }
@@ -238,10 +238,11 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             ((TextField) field).setNullRepresentation("");
             field.setWidth("100%");
         } else if (cubaField instanceof WebDateField && getFormatter(propertyPath) != null) {
-            String format = getFormat(propertyPath);
-            if (format != null) {
-                ((WebDateField) cubaField).setDateFormat(format);
-            }
+//            vaadin7
+//            String format = getFormat(propertyPath);
+//            if (format != null) {
+//                ((WebDateField) cubaField).setDateFormat(format);
+//            }
         } else if (field instanceof Select) {
             field.setWidth("100%");
         } else if (field instanceof WebPickerField) {
@@ -295,10 +296,11 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         if (!StringUtils.isEmpty(cols)) {
             field.setColumns(Integer.valueOf(cols));
         }
-        final String rows = xmlDescriptor.attributeValue("rows");
-        if (!StringUtils.isEmpty(rows)) {
-            field.setRows(Integer.valueOf(rows));
-        }
+//        vaadin7
+//        final String rows = xmlDescriptor.attributeValue("rows");
+//        if (!StringUtils.isEmpty(rows)) {
+//            field.setRows(Integer.valueOf(rows));
+//        }
         final String maxLength = xmlDescriptor.attributeValue("maxLength");
         if (!StringUtils.isEmpty(maxLength)) {
             field.setMaxLength(Integer.valueOf(maxLength));
@@ -311,51 +313,52 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     }
 
     protected void initDateField(com.vaadin.ui.Field field, MetaProperty metaProperty, Element xmlDescriptor) {
-        WebDateField cubaField = ((DateFieldWrapper) field).getCubaField();
-        TemporalType tt = null;
-        if (metaProperty != null) {
-            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
-                tt = TemporalType.DATE;
-            else if (metaProperty.getAnnotations() != null)
-                tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
-        }
-
-        final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
-        String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
-
-        if (!StringUtils.isEmpty(resolution)) {
-            com.haulmont.cuba.gui.components.DateField.Resolution res = com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution);
-            cubaField.setResolution(res);
-
-            if (dateFormat == null) {
-                if (res == com.haulmont.cuba.gui.components.DateField.Resolution.DAY) {
-                    dateFormat = "msg://dateFormat";
-                } else if (res == com.haulmont.cuba.gui.components.DateField.Resolution.MIN) {
-                    dateFormat = "msg://dateTimeFormat";
-                }
-            }
-
-        } else if (tt == TemporalType.DATE) {
-            cubaField.setResolution(com.haulmont.cuba.gui.components.DateField.Resolution.DAY);
-        }
-
-        if (!StringUtils.isEmpty(dateFormat)) {
-            if (dateFormat.startsWith("msg://")) {
-                dateFormat = MessageProvider.getMessage(
-                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
-            }
-            cubaField.setDateFormat(dateFormat);
-        } else {
-            String formatStr;
-            if (tt == TemporalType.DATE) {
-                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                        "dateFormat");
-            } else {
-                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                        "dateTimeFormat");
-            }
-            cubaField.setDateFormat(formatStr);
-        }
+//        vaadin7
+//        WebDateField cubaField = ((DateFieldWrapper) field).getCubaField();
+//        TemporalType tt = null;
+//        if (metaProperty != null) {
+//            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
+//                tt = TemporalType.DATE;
+//            else if (metaProperty.getAnnotations() != null)
+//                tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
+//        }
+//
+//        final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
+//        String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
+//
+//        if (!StringUtils.isEmpty(resolution)) {
+//            com.haulmont.cuba.gui.components.DateField.Resolution res = com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution);
+//            cubaField.setResolution(res);
+//
+//            if (dateFormat == null) {
+//                if (res == com.haulmont.cuba.gui.components.DateField.Resolution.DAY) {
+//                    dateFormat = "msg://dateFormat";
+//                } else if (res == com.haulmont.cuba.gui.components.DateField.Resolution.MIN) {
+//                    dateFormat = "msg://dateTimeFormat";
+//                }
+//            }
+//
+//        } else if (tt == TemporalType.DATE) {
+//            cubaField.setResolution(com.haulmont.cuba.gui.components.DateField.Resolution.DAY);
+//        }
+//
+//        if (!StringUtils.isEmpty(dateFormat)) {
+//            if (dateFormat.startsWith("msg://")) {
+//                dateFormat = MessageProvider.getMessage(
+//                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+//            }
+//            cubaField.setDateFormat(dateFormat);
+//        } else {
+//            String formatStr;
+//            if (tt == TemporalType.DATE) {
+//                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
+//                        "dateFormat");
+//            } else {
+//                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
+//                        "dateTimeFormat");
+//            }
+//            cubaField.setDateFormat(formatStr);
+//        }
     }
 
     protected abstract Datasource getDatasource();

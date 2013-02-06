@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.toolkit;
 
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.PaintException;
+import com.vaadin.server.PaintTarget;
+import com.vaadin.server.PaintException;
 
 import java.io.Serializable;
 import java.util.Collections;

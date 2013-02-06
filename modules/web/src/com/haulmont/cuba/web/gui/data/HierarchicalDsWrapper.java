@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.01.2009 13:26:42
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.data;
 
@@ -18,38 +13,39 @@ import com.vaadin.data.Container;
 
 import java.util.Collection;
 
-public class HierarchicalDsWrapper
-    extends
-        CollectionDsWrapper
-    implements
-        Container.Hierarchical
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class HierarchicalDsWrapper extends CollectionDsWrapper implements Container.Hierarchical {
     private String parentPropertyName;
 
-    public HierarchicalDsWrapper(HierarchicalDatasource datasource)
-    {
+    public HierarchicalDsWrapper(HierarchicalDatasource datasource) {
         super(datasource);
         this.parentPropertyName = datasource.getHierarchyPropertyName();
     }
 
-    public HierarchicalDsWrapper(HierarchicalDatasource datasource, Collection<MetaPropertyPath> properties)
-    {
+    public HierarchicalDsWrapper(HierarchicalDatasource datasource, Collection<MetaPropertyPath> properties) {
         super(datasource, properties);
         this.parentPropertyName = datasource.getHierarchyPropertyName();
     }
 
+    @Override
     public Collection getChildren(Object itemId) {
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).getChildren(itemId);
     }
 
+    @Override
     public Object getParent(Object itemId) {
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).getParent(itemId);
     }
 
+    @Override
     public Collection rootItemIds() {
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).getRootItemIds();
     }
 
+    @Override
     public boolean setParent(Object itemId, Object newParentId) throws UnsupportedOperationException {
         Instance item = datasource.getItem(itemId);
         if (item != null) {
@@ -64,15 +60,18 @@ public class HierarchicalDsWrapper
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).canHasChildren(itemId);
     }
 
+    @Override
     public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed) throws UnsupportedOperationException {
         //return true;
         return false; // due to vaadin javadoc, return false if method is not implemented
     }
 
+    @Override
     public boolean isRoot(Object itemId) {
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).isRoot(itemId);
     }
 
+    @Override
     public boolean hasChildren(Object itemId) {
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).hasChildren(itemId);
     }

@@ -25,20 +25,19 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.*;
+
+//import com.haulmont.cuba.web.AppUI;
 
 /**
  * @author krivopustov
@@ -46,10 +45,10 @@ import java.util.*;
  */
 public class WebWindow
         implements
-        Window,
-        Component.Wrapper,
-        Component.HasXmlDescriptor,
-        WrappedWindow {
+            Window,
+            Component.Wrapper,
+            Component.HasXmlDescriptor,
+            WrappedWindow {
 
     private boolean closing = false;
 
@@ -91,20 +90,22 @@ public class WebWindow
     public WebWindow() {
         component = createLayout();
         delegate = createDelegate();
-        ((com.vaadin.event.Action.Container) component).addActionHandler(new com.vaadin.event.Action.Handler() {
-            @Override
-            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-                return actionsHolder.getActionImplementations();
-            }
-
-            @Override
-            public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
-                Action action = actionsHolder.getAction(actionImpl);
-                if (action != null && action.isEnabled() && action.isVisible()) {
-                    action.actionPerform(WebWindow.this);
+        if (component instanceof com.vaadin.event.Action.Container) {
+            ((com.vaadin.event.Action.Container) component).addActionHandler(new com.vaadin.event.Action.Handler() {
+                @Override
+                public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                    return actionsHolder.getActionImplementations();
                 }
-            }
-        });
+
+                @Override
+                public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+                    Action action = actionsHolder.getAction(actionImpl);
+                    if (action != null && action.isEnabled() && action.isVisible()) {
+                        action.actionPerform(WebWindow.this);
+                    }
+                }
+            });
+        }
     }
 
     protected WindowDelegate createDelegate() {
@@ -164,14 +165,14 @@ public class WebWindow
     @Override
     public void setMargin(boolean enable) {
         if (component instanceof Layout.MarginHandler) {
-            ((Layout.MarginHandler) component).setMargin(new Layout.MarginInfo(enable));
+            ((Layout.MarginHandler) component).setMargin(new MarginInfo(enable));
         }
     }
 
     @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         if (component instanceof Layout.MarginHandler) {
-            ((Layout.MarginHandler) component).setMargin(new Layout.MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
+            ((Layout.MarginHandler) component).setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
         }
     }
 
@@ -369,30 +370,12 @@ public class WebWindow
 
     @Override
     public void showNotification(String caption, NotificationType type) {
-        com.vaadin.ui.Window.Notification notification =
-                new com.vaadin.ui.Window.Notification(caption, WebComponentsHelper.convertNotificationType(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED))
-            notification.setDelayMsec(3000);
-
-        com.vaadin.ui.Window window = component.getWindow();
-        if (window != null)
-            window.showNotification(notification);
-        else
-            App.getInstance().getAppWindow().showNotification(notification);
+        App.getInstance().getWindowManager().showNotification(caption, type);
     }
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
-        com.vaadin.ui.Window.Notification notification =
-                new com.vaadin.ui.Window.Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED))
-            notification.setDelayMsec(3000);
-
-        com.vaadin.ui.Window window = component.getWindow();
-        if (window != null)
-            window.showNotification(notification);
-        else
-            App.getInstance().getAppWindow().showNotification(notification);
+        App.getInstance().getWindowManager().showNotification(caption, description, type);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -451,12 +434,13 @@ public class WebWindow
 
     @Override
     public void addTimer(Timer timer) {
-        App.getInstance().addTimer((WebTimer) timer, this);
+//        AppUI.getInstance().addTimer((WebTimer) timer, this);
     }
 
     @Override
     public Timer getTimer(String id) {
-        return (Timer) App.getInstance().getTimers().getTimer(id);
+        return null;
+//        return (Timer) AppUI.getInstance().getTimers().getTimer(id);
     }
 
     @Override
@@ -569,7 +553,9 @@ public class WebWindow
 
     @Override
     public int getHeightUnits() {
-        return component.getHeightUnits();
+        return 0;
+//        vaadin7
+//        return component.getHeightUnits();
     }
 
     @Override
@@ -584,7 +570,9 @@ public class WebWindow
 
     @Override
     public int getWidthUnits() {
-        return component.getWidthUnits();
+        return 0;
+//        vaadin7
+//        return component.getWidthUnits();
     }
 
     @Override
@@ -802,7 +790,9 @@ public class WebWindow
         }
 
         protected Collection<com.vaadin.ui.Field> getFields() {
-            return WebComponentsHelper.getComponents(getContainer(), com.vaadin.ui.Field.class);
+            return Collections.emptyList();
+//            vaadin7 i don't know what is this
+//            return WebComponentsHelper.getComponents(getContainer(), com.vaadin.ui.Field.class);
         }
 
         protected MetaClass getMetaClass() {
@@ -911,16 +901,19 @@ public class WebWindow
                 final Tree tree = (Tree) lookupComponent;
                 com.haulmont.cuba.web.toolkit.ui.Tree treeComponent =
                         (com.haulmont.cuba.web.toolkit.ui.Tree) WebComponentsHelper.unwrap(tree);
-                treeComponent.setDoubleClickMode(true);
-                treeComponent.addListener(new ItemClickEvent.ItemClickListener() {
+//                treeComponent.setDoubleClickMode(true);
+                treeComponent.addItemClickListener(new ItemClickEvent.ItemClickListener() {
                     @Override
                     public void itemClick(ItemClickEvent event) {
-                        CollectionDatasource treeCds = tree.getDatasource();
-                        if (treeCds != null) {
-                            Entity item = treeCds.getItem(event.getItemId());
-                            if (item != null) {
-                                treeCds.setItem(item);
-                                fireSelectAction();
+                        // vaadin7
+                        if (event.isDoubleClick()) {
+                            CollectionDatasource treeCds = tree.getDatasource();
+                            if (treeCds != null) {
+                                Entity item = treeCds.getItem(event.getItemId());
+                                if (item != null) {
+                                    treeCds.setItem(item);
+                                    fireSelectAction();
+                                }
                             }
                         }
                     }
@@ -975,7 +968,7 @@ public class WebWindow
 
         @Override
         public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-            container.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
+            container.setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
         }
 
         @Override
@@ -990,9 +983,9 @@ public class WebWindow
             container = new VerticalLayout();
 
             HorizontalLayout okbar = new HorizontalLayout();
-            okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
+            okbar.setHeight(-1, Sizeable.Unit.PIXELS);
             okbar.setStyleName("Window-actionsPane");
-            okbar.setMargin(true, false, false, false);
+            okbar.setMargin(new MarginInfo(true, false, false, false));
             okbar.setSpacing(true);
 
             Messages messages = AppBeans.get(Messages.NAME);
@@ -1002,12 +995,12 @@ public class WebWindow
             selectButton = WebComponentsHelper.createButton();
             selectButton.setCaption(messages.getMessage(messagesPackage, "actions.Select"));
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
-            selectButton.addListener(selectAction);
+            selectButton.addClickListener(selectAction);
             selectButton.setStyleName("Window-actionButton");
 
             cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(messages.getMessage(messagesPackage, "actions.Cancel"));
-            cancelButton.addListener(new Button.ClickListener() {
+            cancelButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     close("cancel");

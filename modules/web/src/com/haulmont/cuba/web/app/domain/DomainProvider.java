@@ -12,7 +12,6 @@ import com.haulmont.cuba.gui.export.RestApiDataProvider;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 /**
- *
  * Class providing system data model
  *
  * @author korotkov

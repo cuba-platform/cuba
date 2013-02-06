@@ -23,6 +23,7 @@ class SelectAction implements Button.ClickListener {
         this.window = window;
     }
 
+    @Override
     public void buttonClick(Button.ClickEvent event) {
         Window.Lookup.Validator validator = window.getLookupValidator();
         if (validator != null && !validator.validate()) return;

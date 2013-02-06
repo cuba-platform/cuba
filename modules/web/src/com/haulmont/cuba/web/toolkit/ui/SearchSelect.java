@@ -6,8 +6,8 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.terminal.gwt.client.ui.VSearchSelect;
-import com.vaadin.ui.ClientWidget;
+//import com.vaadin.terminal.gwt.client.ui.VSearchSelect;
+//import com.vaadin.ui.ClientWidget;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-@ClientWidget(VSearchSelect.class)
+//@ClientWidget(VSearchSelect.class)
 public class SearchSelect extends FilterSelect {
-
+/*
     private FilterHandler filterHandler = null;
     private boolean repaintOptions = false;
 
@@ -71,5 +71,5 @@ public class SearchSelect extends FilterSelect {
 
     public void setFilterHandler(FilterHandler filterHandler) {
         this.filterHandler = filterHandler;
-    }
+    }*/
 }

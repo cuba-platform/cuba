@@ -11,9 +11,8 @@ import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 /**
  * Grouping condition operation editor for the web-client. Actually does nothing.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class GroupOperationEditor extends OperationEditor {
 

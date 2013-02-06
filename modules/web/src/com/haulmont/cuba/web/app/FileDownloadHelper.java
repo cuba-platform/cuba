@@ -68,7 +68,7 @@ public class FileDownloadHelper {
     public static void initGeneratedColumn(final Table table) {
         final CollectionDatasource ds = table.getDatasource();
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath("name");
-        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        /*final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             private static final long serialVersionUID = -8909453319289476141L;
@@ -102,13 +102,13 @@ public class FileDownloadHelper {
                 return null;
 
             }
-        });
+        });*/
     }
 
     public static void initGeneratedColumn(Table table, final String fileProperty) {
         final CollectionDatasource ds = table.getDatasource();
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath(fileProperty + ".name");
-        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        /*final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             @Override
@@ -135,7 +135,7 @@ public class FileDownloadHelper {
                 }
                 return new Label();
             }
-        });
+        });*/
     }
 
     public static String formatFileSize(long longSize, int decimalPos) {

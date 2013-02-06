@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 06.03.2009 15:12:08
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -21,6 +17,10 @@ import com.vaadin.ui.AbstractSelect;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSelect>
     extends
         WebAbstractField<T>
@@ -96,7 +96,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 opts.add(itemId);
             }
             setComponentContainerDs(new ObjectContainer(opts));
-            component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
+            component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
             this.optionsMap = options;
         }
     }

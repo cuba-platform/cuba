@@ -10,7 +10,9 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.Terminal;
+import com.vaadin.server.ErrorEvent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -19,9 +21,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
- * @author Novikov
+ * @author novikov
+ * @version $Id$
  */
 public class MssqlDateOutOfRangeException implements ExceptionHandler {
 
@@ -35,7 +36,7 @@ public class MssqlDateOutOfRangeException implements ExceptionHandler {
 
     @Override
     @SuppressWarnings("unchecked")
-    public boolean handle(Terminal.ErrorEvent event, App app) {
+    public boolean handle(ErrorEvent event, App app) {
         Throwable exception = event.getThrowable();
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
         for (Throwable throwable : list) {
@@ -62,6 +63,6 @@ public class MssqlDateOutOfRangeException implements ExceptionHandler {
 
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         String msg = MessageProvider.formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
-        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_WARNING_MESSAGE);
+        app.getAppUI().showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
     }
 }

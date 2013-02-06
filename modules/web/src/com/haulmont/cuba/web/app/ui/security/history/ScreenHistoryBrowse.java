@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Valery Novikov
- * Created: 02.11.2010 10:29:39
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app.ui.security.history;
 
@@ -14,7 +9,6 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.web.gui.components.ShowLinkAction;
@@ -22,13 +16,13 @@ import com.haulmont.cuba.web.sys.LinkHandler;
 
 import java.util.*;
 
+/**
+ * @author novikov
+ * @version $Id$
+ */
 public class ScreenHistoryBrowse extends AbstractWindow{
 
     protected Table historyTable;
-
-    public ScreenHistoryBrowse(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -54,7 +48,7 @@ public class ScreenHistoryBrowse extends AbstractWindow{
 
     private void openUrl(Entity entity) {
         ScreenHistoryEntity screenHistoryEntity = (ScreenHistoryEntity) entity;
-        Map<String, String> paramsScreen = new HashMap<String, String>();
+        Map<String, String> paramsScreen = new HashMap<>();
         String url = screenHistoryEntity.getUrl();
         url = url.substring(url.indexOf("\u003f") + 1);
         paramsScreen.put("local", "true");
@@ -64,7 +58,7 @@ public class ScreenHistoryBrowse extends AbstractWindow{
             String value = param.split("=")[1];
             paramsScreen.put(name, value);
         }
-        LinkHandler linkHandler = new LinkHandler(App.getInstance(), paramsScreen);
-        linkHandler.handle();
+//        LinkHandler linkHandler = new LinkHandler(AppUI.getInstance(), paramsScreen);
+//        linkHandler.handle();
     }
 }

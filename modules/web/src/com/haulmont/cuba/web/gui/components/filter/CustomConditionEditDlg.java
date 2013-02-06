@@ -2,28 +2,27 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 20.10.2009 16:57:17
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Window> {
 
     protected Editor impl;
@@ -37,7 +36,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
         ShortcutAction commitAction = new ShortcutAction("commit", ShortcutAction.KeyCode.ENTER,
                 new int[]{ShortcutAction.ModifierKey.CTRL});
 
-        Map<Action, Runnable> actions = new HashMap<Action, Runnable>();
+        Map<Action, Runnable> actions = new HashMap<>();
         actions.put(closeAction, new Runnable() {
             @Override
             public void run() {
@@ -51,7 +50,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
                     closeDlg();
             }
         });
-        WebComponentsHelper.setActions(impl, actions);
+//        WebComponentsHelper.setActions(impl, actions);
     }
 
     @Override
@@ -70,7 +69,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-        App.getInstance().getWindowManager().showNotification(msg,type);
+//        AppUI.getInstance().getWindowManager().showNotification(msg,type);
     }
 
     @Override
@@ -98,7 +97,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
             GridLayout grid = new GridLayout();
             grid.setColumns(2);
             grid.setSpacing(true);
-            grid.setMargin(true, false, true, false);
+            grid.setMargin(new MarginInfo(true, false, true, false));
 
             int i = 0;
             // allow to change caption if it isn't set in descriptor
@@ -165,7 +164,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
             HorizontalLayout btnLayout = new HorizontalLayout();
             btnLayout.setSpacing(true);
-            btnLayout.setMargin(true, false, false, false);
+            btnLayout.setMargin(new MarginInfo(true, false, false, false));
 
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnOk));
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnCancel));
@@ -176,5 +175,4 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
             close();
         }
     }
-
 }

@@ -14,9 +14,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class RuntimePropCondition extends AbstractRuntimePropCondition<Param> {
 
@@ -29,7 +28,6 @@ public class RuntimePropCondition extends AbstractRuntimePropCondition<Param> {
 
     public RuntimePropCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
-
     }
 
     @Override

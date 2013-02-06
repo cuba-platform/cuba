@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 public class WebActionsField
-        extends WebAbstractField<ActionsField>
-        implements com.haulmont.cuba.gui.components.ActionsField {
-    private WebLookupField lookupField;
+        /*extends WebAbstractField<ActionsField>
+        implements com.haulmont.cuba.gui.components.ActionsField*/ {
+    /*private WebLookupField lookupField;
     private WebButton lookupButton;
     private WebButton openButton;
 
@@ -316,5 +316,5 @@ public class WebActionsField
 
 
     public void disablePaging() {
-    }
+    }*/
 }

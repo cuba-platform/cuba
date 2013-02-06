@@ -11,14 +11,16 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.terminal.gwt.client.ui.VVerticalLayout;
-import com.vaadin.ui.ClientWidget;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
+import com.vaadin.server.Sizeable;
+//import com.vaadin.terminal.gwt.client.ui.VVerticalLayout;
+//import com.vaadin.ui.ClientWidget;
 
 @SuppressWarnings("serial")
-@ClientWidget(VVerticalLayout.class)
-public class WebVBoxLayout extends WebAbstractBox implements BoxLayout {
-
+//@ClientWidget(VVerticalLayout.class)
+public class WebVBoxLayout extends WebAbstractBox  /*implements BoxLayout*/ {
     public WebVBoxLayout() {
-        setWidth("100%");
+        component = new VerticalActionsLayout();
+        component.setWidth(100, Sizeable.Unit.PERCENTAGE);
     }
 }

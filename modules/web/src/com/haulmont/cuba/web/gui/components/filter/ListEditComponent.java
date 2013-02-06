@@ -8,27 +8,24 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.*;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -80,19 +77,19 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
         pickerButton = new Button();
         pickerButton.addStyleName("pickButton");
-        pickerButton.addListener(
+        pickerButton.addClickListener(
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         ListEditWindow window = new ListEditWindow(values);
-                        com.haulmont.cuba.web.App.getInstance().getAppWindow().addWindow(window);
+                        com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(window);
                     }
                 }
         );
 
         clearButton = new Button();
         clearButton.addStyleName("clearButton");
-        clearButton.addListener(
+        clearButton.addClickListener(
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -135,29 +132,30 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         this.runtimeEnum = values;
     }
 
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        paintCommonContent(target);
-        super.paintContent(target);
-    }
-
-    protected void paintCommonContent(PaintTarget target) throws PaintException {
-        // If the field is modified, but not committed, set modified attribute
-        if (isModified()) {
-            target.addAttribute("modified", true);
-        }
-
-        // Adds the required attribute
-        if (!isReadOnly() && isRequired()) {
-            target.addAttribute("required", true);
-        }
-
-        // Hide the error indicator if needed
-        if (isRequired() && getValue() == null && getComponentError() == null
-                && getErrorMessage() != null) {
-            target.addAttribute("hideErrors", true);
-        }
-    }
+//    vaadin7
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        paintCommonContent(target);
+//        super.paintContent(target);
+//    }
+//
+//    protected void paintCommonContent(PaintTarget target) throws PaintException {
+//        // If the field is modified, but not committed, set modified attribute
+//        if (isModified()) {
+//            target.addAttribute("modified", true);
+//        }
+//
+//        // Adds the required attribute
+//        if (!isReadOnly() && isRequired()) {
+//            target.addAttribute("required", true);
+//        }
+//
+//        // Hide the error indicator if needed
+//        if (isRequired() && getValue() == null && getComponentError() == null
+//                && getErrorMessage() != null) {
+//            target.addAttribute("hideErrors", true);
+//        }
+//    }
 
     private void updateIcons() {
         if (isReadOnly()) {
@@ -200,28 +198,18 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
+    public void setBuffered(boolean buffered) {
+        field.setBuffered(buffered);
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return field.isBuffered();
+    }
+
+    @Override
     public boolean isModified() {
         return field.isModified();
-    }
-
-    @Override
-    public boolean isWriteThrough() {
-        return field.isWriteThrough();
-    }
-
-    @Override
-    public void setWriteThrough(boolean writeTrough) throws SourceException, com.vaadin.data.Validator.InvalidValueException {
-        field.setWriteThrough(writeTrough);
-    }
-
-    @Override
-    public boolean isReadThrough() {
-        return field.isReadThrough();
-    }
-
-    @Override
-    public void setReadThrough(boolean readTrough) throws SourceException {
-        field.setReadThrough(readTrough);
     }
 
     @Override
@@ -230,7 +218,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
-    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
         if (!ObjectUtils.equals(listValue, newValue)) {
             listValue = (List) newValue;
             for (ValueChangeListener listener : listeners) {
@@ -287,6 +275,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
+    public void removeAllValidators() {
+    }
+
+    @Override
     public boolean isValid() {
         return field.isValid();
     }
@@ -307,9 +299,17 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+    }
+
+    @Override
     public void addListener(ValueChangeListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
     }
 
     @Override
@@ -345,13 +345,13 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     @Override
     public void setRequired(boolean required) {
         this.required = required;
-        requestRepaint();
+        markAsDirty();
     }
 
     @Override
     public void setRequiredError(String requiredMessage) {
         this.requiredError = requiredMessage;
-        requestRepaint();
+        markAsDirty();
     }
 
     @Override
@@ -393,18 +393,20 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         private static final String COMPONENT_WIDTH = "140";
         private VerticalLayout listLayout;
         private Map<Object, String> values;
+        private Messages messages;
 
         private ListEditWindow(Map<Object, String> values) {
-            super(MessageProvider.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
-            setWidth(200, Sizeable.UNITS_PIXELS);
+            super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
+            setWidth(200, Unit.PIXELS);
             setModal(true);
 
-            this.values = new HashMap<Object, String>(values);
+            this.values = new HashMap<>(values);
+            this.messages = AppBeans.get(Messages.class);
 
             VerticalLayout contentLayout = new VerticalLayout();
 
             listLayout = new VerticalLayout();
-            listLayout.setMargin(false, false, true, false);
+            listLayout.setMargin(new MarginInfo(false, false, true, false));
             listLayout.setSpacing(true);
             for (Map.Entry<Object, String> entry : values.entrySet()) {
                 addItemLayout(entry.getKey(), entry.getValue());
@@ -480,9 +482,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
                 field = lookup.getComponent();
             } else if (itemClass.isEnum()) {
-                Map<String, Object> options = new HashMap<String, Object>();
+                Map<String, Object> options = new HashMap<>();
                 for (Object obj : itemClass.getEnumConstants()) {
-                    options.put(MessageProvider.getMessage((Enum) obj), obj);
+                    options.put(messages.getMessage((Enum) obj), obj);
                 }
 
                 final WebLookupField lookup = new WebLookupField();
@@ -503,44 +505,46 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 field = lookup.getComponent();
 
             } else if (Date.class.isAssignableFrom(itemClass)) {
-                final WebDateField dateField = new WebDateField();
-
-                field = dateField.getComponent();
-                DateField.Resolution resolution;
-                String dateFormat;
-                if (itemClass.equals(java.sql.Date.class)) {
-                    resolution = DateField.Resolution.DAY;
-                    dateFormat = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateFormat");
-                } else {
-                    resolution = DateField.Resolution.MIN;
-                    dateFormat = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
-                }
-                dateField.setResolution(resolution);
-                dateField.setDateFormat(dateFormat);
-
-                dateField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null) {
-                            String str = addDate((Date) value);
-                            addItemLayout(value, str);
-                            field.setValue(null);
-                        }
-                    }
-                });
+// vaadin7
+//                final WebDateField dateField = new WebDateField();
+//
+//                field = dateField.getComponent();
+//                DateField.Resolution resolution;
+//                String dateFormat;
+//                if (itemClass.equals(java.sql.Date.class)) {
+//                    resolution = DateField.Resolution.DAY;
+//                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+//                } else {
+//                    resolution = DateField.Resolution.MIN;
+//                    dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+//                }
+//                dateField.setResolution(resolution);
+//                dateField.setDateFormat(dateFormat);
+//
+//                dateField.addListener(new ValueListener() {
+//                    @Override
+//                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+//                        if (value != null) {
+//                            String str = addDate((Date) value);
+//                            addItemLayout(value, str);
+//                            field.setValue(null);
+//                        }
+//                    }
+//                });
+                field = null;
             } else
                 throw new UnsupportedOperationException();
 
             contentLayout.addComponent(field);
 
             HorizontalLayout bottomLayout = new HorizontalLayout();
-            bottomLayout.setMargin(true, false, true, false);
+            bottomLayout.setMargin(new MarginInfo(true, false, true, false));
             bottomLayout.setSpacing(true);
 
-            Button okBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+            Button okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
             okBtn.setIcon(new ThemeResource("icons/ok.png"));
             okBtn.setStyleName(WebButton.ICON_STYLE);
-            okBtn.addListener(
+            okBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
@@ -550,10 +554,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             );
             bottomLayout.addComponent(okBtn);
 
-            Button cancelBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+            Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
             cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
-            cancelBtn.addListener(
+            cancelBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
@@ -574,7 +578,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private String addEnumValue(Enum en) {
-            String str = MessageProvider.getMessage(en);
+            String str = messages.getMessage(en);
             values.put(en, str);
             return str;
         }
@@ -597,7 +601,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             delItemBtn.setStyleName(BaseTheme.BUTTON_LINK);
             delItemBtn.setIcon(new ThemeResource("icons/tab-remove.png"));
             delItemBtn.addStyleName("filter-param-list-edit-del");
-            delItemBtn.addListener(
+            delItemBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
@@ -613,7 +617,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private String addDate(Date date) {
-            String str = Datatypes.get(itemClass).format(date, UserSessionProvider.getUserSession().getLocale());
+            String str = Datatypes.get(itemClass).format(date, AppBeans.get(UserSessionSource.class).getUserSession().getLocale());
 
             values.put(date, str);
             return str;

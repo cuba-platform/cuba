@@ -23,6 +23,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class LinkColumnHelper {
 
     public interface Handler {
@@ -32,7 +36,7 @@ public class LinkColumnHelper {
     public static void initColumn(Table table, final String propertyName, final Handler handler) {
         final CollectionDatasource ds = table.getDatasource();
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx(propertyName);
-        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+       /* final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
@@ -67,13 +71,13 @@ public class LinkColumnHelper {
                 }
                 return new Label();
             }
-        });
+        });*/
     }
 
     public static void removeColumn(Table table, final String propertyName) {
         final CollectionDatasource ds = table.getDatasource();
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx(propertyName);
-        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
-        vTable.removeGeneratedColumn(nameProperty);
+//        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+//        vTable.removeGeneratedColumn(nameProperty);
     }
 }

@@ -8,11 +8,11 @@ package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.vaadin.service.ApplicationContext;
-import com.vaadin.terminal.DownloadStream;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
+//import com.vaadin.service.ApplicationContext;
+import com.vaadin.server.DownloadStream;
+//import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 
@@ -26,8 +26,8 @@ import java.net.URLEncoder;
  *
  * @author artamonov
  */
-public class ResourceWindow extends Window {
-
+public class ResourceWindow /*extends Window*/ {
+/*
     private static final long serialVersionUID = -7090903621043753813L;
 
     private ExportDataProvider dataProvider;
@@ -35,12 +35,12 @@ public class ResourceWindow extends Window {
     private ExportFormat exportFormat;
     private boolean isAttachment;
 
-    /**
+    *//**
      * @param dataProvider ExportDataprovider
      * @param resourceName Resource name for client side
      * @param format       Resource type, can be null
      * @param attachment   If true then download file else view
-     */
+     *//*
     public ResourceWindow(ExportDataProvider dataProvider, String resourceName,
                           ExportFormat format, boolean attachment) {
         this.resourceName = resourceName;
@@ -56,7 +56,7 @@ public class ResourceWindow extends Window {
 
         // Firefox trick
         boolean isFirefox = false;
-        ApplicationContext appContext = App.getInstance().getContext();
+        ApplicationContext appContext = AppUI.getInstance().getContext();
         if (appContext instanceof WebApplicationContext) {
             isFirefox = ((WebApplicationContext) appContext).getBrowser().isFirefox();
         }
@@ -97,5 +97,5 @@ public class ResourceWindow extends Window {
         downloadStream.setParameter("Content-Disposition", contentDisposition);
 
         return downloadStream;
-    }
+    }*/
 }

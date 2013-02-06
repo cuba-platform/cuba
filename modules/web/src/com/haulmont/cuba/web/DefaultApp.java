@@ -8,24 +8,17 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.Timer;
-import com.vaadin.service.ApplicationContext;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
+
+//import com.vaadin.service.ApplicationContext;
 
 /**
  * @author gorodnov
@@ -33,14 +26,15 @@ import java.util.Map;
  */
 public class DefaultApp extends App implements ConnectionListener {
 
-    private static Log log = LogFactory.getLog(DefaultApp.class);
-
-    private boolean principalIsWrong;
-
     private static final long serialVersionUID = 70273562618123015L;
+
+    private static Log log = LogFactory.getLog(DefaultApp.class);
 
     // Login on start only on first request from user
     protected boolean tryLoginOnStart = true;
+
+    public DefaultApp() {
+    }
 
     @Override
     protected Connection createConnection() {
@@ -49,11 +43,111 @@ public class DefaultApp extends App implements ConnectionListener {
         return connection;
     }
 
+    @Override
+    public void connectionStateChanged(Connection connection) throws LoginException {
+        MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
+
+        if (connection.isConnected()) {
+
+            log.debug("Creating AppWindow");
+
+//            getTimers().stopAll();
+
+//            for (Object win : new ArrayList<>(getWindows())) {
+//                removeWindow((Window) win);
+//            }
+
+            messagesClient.setRemoteSearch(true);
+
+//            String name = currentWindowName.get();
+//            if (name == null)
+//                name = createWindowName(true);
+
+//            Window window = getWindow(name);
+
+            UIView appWindow = createAppWindow();
+            showView(appWindow);
+
+//            currentWindowName.set(window.getName());
+
+//            if (linkHandler != null) {
+//                linkHandler.handle();
+//                linkHandler = null;
+//            }
+
+            afterLoggedIn();
+        } else {
+            log.debug("Closing all windows");
+//            getWindowManager().closeAll();
+
+//            getTimers().stopAll();
+
+//            for (Object win : new ArrayList<Object>(getWindows())) {
+//                removeWindow((Window) win);
+//            }
+
+            messagesClient.setRemoteSearch(false);
+
+//            String name = currentWindowName.get();
+//            if (name == null)
+//                name = createWindowName(false);
+
+            UIView window = createLoginWindow();
+            showView(window);
+//            window.setName(name);
+//            setMainWindow(window);
+
+//            currentWindowName.set(window.getName());
+
+//            initExceptionHandlers(false);
+        }
+    }
+
+    @Override
+    protected void initView() {
+        if (!connection.isConnected())
+            showView(createLoginWindow());
+        else
+            showView(createAppWindow());
+    }
+
     /**
      * Should be overridden in descendant to create an application-specific login window
      *
      * @return Login form
      */
+    protected UIView createLoginWindow() {
+        LoginWindow window = new LoginWindow(this, connection);
+
+//        Timer timer = createSessionPingTimer(false);
+//        if (timer != null)
+//            timers.add(timer, window);
+
+        return window;
+    }
+
+    protected void afterLoggedIn() {
+
+    }
+
+    protected UIView createAppWindow() {
+        AppWindow window = new AppWindow(connection);
+
+//        Timer timer = createSessionPingTimer(true);
+//        if (timer != null)
+//            timers.add(timer, appWindow);
+
+        return window;
+    }
+
+    /*
+    private boolean principalIsWrong;
+
+    *//**
+     * Should be overridden in descendant to create an application-specific login window
+     *
+     * @return Login form
+     *//*
     protected LoginWindow createLoginWindow() {
         LoginWindow window = new LoginWindow(this, connection);
 
@@ -64,11 +158,11 @@ public class DefaultApp extends App implements ConnectionListener {
         return window;
     }
 
-    /**
+    *//**
      * Get or create new LoginWindow
      *
      * @return LoginWindow
-     */
+     *//*
     private LoginWindow getLoginWindow() {
         for (Window win : getWindows()) {
             if (win instanceof LoginWindow)
@@ -184,9 +278,9 @@ public class DefaultApp extends App implements ConnectionListener {
         }
     }
 
-    /**
+    *//**
      * Perform actions after success login
-     */
+     *//*
     protected void afterLoggedIn() {
         if (!webConfig.getUseActiveDirectory()) {
             final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
@@ -211,24 +305,24 @@ public class DefaultApp extends App implements ConnectionListener {
                 });
             }
         }
-    }
+    }          */
 
     @Override
     protected boolean loginOnStart(HttpServletRequest request) {
         if (tryLoginOnStart &&
                 request.getUserPrincipal() != null
-                && !principalIsWrong
+//                && !principalIsWrong
                 && ActiveDirectoryHelper.useActiveDirectory()) {
 
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
             try {
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(userName, request.getLocale());
-                principalIsWrong = false;
+//                principalIsWrong = false;
 
                 return true;
             } catch (LoginException e) {
-                principalIsWrong = true;
+//                principalIsWrong = true;
             } finally {
                 // Close attempt login on start
                 tryLoginOnStart = false;

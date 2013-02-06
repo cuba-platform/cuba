@@ -9,7 +9,9 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.Terminal;
+import com.vaadin.server.ErrorEvent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 
@@ -20,12 +22,10 @@ import java.util.regex.Pattern;
  * Handles database unique constraint violations. Determines the exception type by searching a special marker string
  * in the messages of all exceptions in the chain.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class UniqueConstraintViolationHandler implements ExceptionHandler
-{
+public class UniqueConstraintViolationHandler implements ExceptionHandler {
     private String marker;
 
     private Pattern pattern;
@@ -49,7 +49,7 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
     }
 
     @Override
-    public boolean handle(Terminal.ErrorEvent event, App app) {
+    public boolean handle(ErrorEvent event, App app) {
         Throwable t = event.getThrowable();
         try {
             while (t != null) {
@@ -86,6 +86,6 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
                 msg = msg + " (" + constraintName + ")";
         }
 
-        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+        app.getAppUI().showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
 }

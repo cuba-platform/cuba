@@ -10,15 +10,15 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.vaadin.terminal.ApplicationResource;
-import com.vaadin.terminal.DownloadStream;
-import com.vaadin.Application;
-import com.vaadin.service.FileTypeResolver;
+//import com.vaadin.terminal.ApplicationResource;
+//import com.vaadin.terminal.DownloadStream;
+//import com.vaadin.Application;
+//import com.vaadin.service.FileTypeResolver;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.filestorage.CloseableDownloadStream;
 
-public class WebEmbeddedApplicationResource implements ApplicationResource {
-
+public class WebEmbeddedApplicationResource /*implements ApplicationResource*/ {
+/*
     private String filename;
     private String mimeType;
     private Application application;
@@ -64,5 +64,5 @@ public class WebEmbeddedApplicationResource implements ApplicationResource {
             return FileTypeResolver.getMIMEType(filename);
         else
             return mimeType;
-    }
+    }*/
 }

@@ -10,20 +10,10 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.security.global.LoginException;
-import com.vaadin.service.ApplicationContext;
-import com.vaadin.ui.Window;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import com.vaadin.service.ApplicationContext;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.ArrayList;
-
-public class CASProtectedApp extends App implements ConnectionListener {
+public class CASProtectedApp /*extends AppUI implements ConnectionListener*/ {
+/*
 
     private static Log log = LogFactory.getLog(CASProtectedApp.class);
     
@@ -109,5 +99,6 @@ public class CASProtectedApp extends App implements ConnectionListener {
 
         return window;
     }
+*/
 
 }

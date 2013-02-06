@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,8 @@ import java.util.HashSet;
  */
 public class WebLookupField
         extends  WebAbstractOptionsField<FilterSelect>
-        implements  LookupField, Component.Wrapper {
+        implements LookupField, Component.Wrapper {
+
     private Object nullOption;
     private FilterMode filterMode;
     private NewOptionHandler newOptionHandler;
@@ -37,8 +39,9 @@ public class WebLookupField
 
         attachListener(component);
         component.setImmediate(true);
-        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
-        component.setFixedTextBoxWidth(true);
+        component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
+//        vaadin7
+//        component.setFixedTextBoxWidth(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
 
@@ -71,7 +74,7 @@ public class WebLookupField
                         }
 
                         @Override
-                        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                             if (!optionsInitialization) {
                                 Object v = getValueFromKey(newValue);
                                 if (newValue != null) {
@@ -173,7 +176,7 @@ public class WebLookupField
 
     @Override
     protected void attachListener(FilterSelect component) {
-        component.addListener(new Property.ValueChangeListener() {
+        component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 final Object value = getValue();
@@ -235,15 +238,17 @@ public class WebLookupField
     @Override
     public void setDescriptionProperty(String descriptionProperty) {
         super.setDescriptionProperty(descriptionProperty);
-        component.setShowOptionsDescriptions(descriptionProperty != null);
-        if (optionsDatasource != null) {
-            component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
-        }
+//        vaadin7
+//        component.setShowOptionsDescriptions(descriptionProperty != null);
+//        if (optionsDatasource != null) {
+//            component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
+//        }
     }
 
     @Override
     public void disablePaging() {
-        component.disablePaging();
+//        vaadin7
+//        component.disablePaging();
     }
 
     protected abstract class LookupPropertyAdapter extends PropertyAdapter {

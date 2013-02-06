@@ -7,11 +7,11 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.components.ValueProvider;
-import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+//import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
+//import com.vaadin.server.PaintException;
+//import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ClientWidget;
+//import com.vaadin.ui.ClientWidget;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,95 +23,95 @@ import java.util.Set;
  *
  * @author artamonov
  */
-@ClientWidget(VScriptHost.class)
+//@ClientWidget(VScriptHost.class)
 public class JavaScriptHost extends AbstractComponent {
-    private static final long serialVersionUID = -136425458030091656L;
-
-    private static class ScriptValueProvider implements ValueProvider {
-
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        public Map<String, Object> getValues() {
-            return params;
-        }
-
-        public Map<String, Object> getParameters() {
-            return params;
-        }
-
-        public Set<Map.Entry<String, Object>> getEntrySet() {
-            return params.entrySet();
-        }
-
-        public void putParam(String key, Object value) {
-            params.put(key, value);
-        }
-
-        public void removeParam(String key) {
-            params.remove(key);
-        }
-    }
-
-    private ScriptValueProvider valueProvider = new ScriptValueProvider();
-
-    public JavaScriptHost() {
-    }
-
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        for (Map.Entry<String, Object> paramEntry : valueProvider.getEntrySet()) {
-            Object value = paramEntry.getValue();
-            String key = paramEntry.getKey();
-            if (value instanceof Map)
-                target.addAttribute(key, (Map<?, ?>) value);
-            else
-                target.addAttribute(key, String.valueOf(value));
-        }
-        cleanCommand();
-    }
-
-    public ValueProvider getValueProvider() {
-        return valueProvider;
-    }
-
-    public void updateLocale(Map localeMap) {
-        cleanCommand();
-
-        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.LOCALE_COMMAND);
-        valueProvider.putParam(VScriptHost.LOCALE_PARAM_KEY, localeMap);
-
-        requestRepaint();
-    }
-
-    public void evaluateScript(String script) {
-        cleanCommand();
-
-        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.SCRIPT_COMMAND);
-        valueProvider.putParam(VScriptHost.SCRIPT_PARAM_KEY, script);
-
-        requestRepaint();
-    }
-
-    public void viewDocument(String documentUrl) {
-        cleanCommand();
-
-        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.VIEW_COMMAND);
-        valueProvider.putParam(VScriptHost.URL_PARAM_KEY, documentUrl);
-
-        requestRepaint();
-    }
-
-    public void getResource(String resourceUrl) {
-        cleanCommand();
-
-        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.GET_COMMAND);
-        valueProvider.putParam(VScriptHost.URL_PARAM_KEY, resourceUrl);
-
-        requestRepaint();
-    }
-
-    private void cleanCommand() {
-        valueProvider.removeParam(VScriptHost.SCRIPT_PARAM_KEY);
-        valueProvider.removeParam(VScriptHost.COMMAND_PARAM_KEY);
-    }
+//    private static final long serialVersionUID = -136425458030091656L;
+//
+//    private static class ScriptValueProvider implements ValueProvider {
+//
+//        Map<String, Object> params = new HashMap<String, Object>();
+//
+//        public Map<String, Object> getValues() {
+//            return params;
+//        }
+//
+//        public Map<String, Object> getParameters() {
+//            return params;
+//        }
+//
+//        public Set<Map.Entry<String, Object>> getEntrySet() {
+//            return params.entrySet();
+//        }
+//
+//        public void putParam(String key, Object value) {
+//            params.put(key, value);
+//        }
+//
+//        public void removeParam(String key) {
+//            params.remove(key);
+//        }
+//    }
+//
+//    private ScriptValueProvider valueProvider = new ScriptValueProvider();
+//
+//    public JavaScriptHost() {
+//    }
+//
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        for (Map.Entry<String, Object> paramEntry : valueProvider.getEntrySet()) {
+//            Object value = paramEntry.getValue();
+//            String key = paramEntry.getKey();
+//            if (value instanceof Map)
+//                target.addAttribute(key, (Map<?, ?>) value);
+//            else
+//                target.addAttribute(key, String.valueOf(value));
+//        }
+//        cleanCommand();
+//    }
+//
+//    public ValueProvider getValueProvider() {
+//        return valueProvider;
+//    }
+//
+//    public void updateLocale(Map localeMap) {
+//        cleanCommand();
+//
+//        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.LOCALE_COMMAND);
+//        valueProvider.putParam(VScriptHost.LOCALE_PARAM_KEY, localeMap);
+//
+//        requestRepaint();
+//    }
+//
+//    public void evaluateScript(String script) {
+//        cleanCommand();
+//
+//        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.SCRIPT_COMMAND);
+//        valueProvider.putParam(VScriptHost.SCRIPT_PARAM_KEY, script);
+//
+//        requestRepaint();
+//    }
+//
+//    public void viewDocument(String documentUrl) {
+//        cleanCommand();
+//
+//        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.VIEW_COMMAND);
+//        valueProvider.putParam(VScriptHost.URL_PARAM_KEY, documentUrl);
+//
+//        requestRepaint();
+//    }
+//
+//    public void getResource(String resourceUrl) {
+//        cleanCommand();
+//
+//        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.GET_COMMAND);
+//        valueProvider.putParam(VScriptHost.URL_PARAM_KEY, resourceUrl);
+//
+//        requestRepaint();
+//    }
+//
+//    private void cleanCommand() {
+//        valueProvider.removeParam(VScriptHost.SCRIPT_PARAM_KEY);
+//        valueProvider.removeParam(VScriptHost.COMMAND_PARAM_KEY);
+//    }
 }

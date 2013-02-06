@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 21.08.2009 13:18:20
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app.ui.export.excel;
 
@@ -18,11 +13,15 @@ import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ThemeResource;
 
 import java.util.*;
 import java.util.List;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class ExcelExportBrowser extends AbstractWindow {
 
     protected Table table;
@@ -30,10 +29,6 @@ public class ExcelExportBrowser extends AbstractWindow {
     protected ExportDisplay exportDisplay;
 
     protected OptionsGroup optionsGroup;
-
-    public ExcelExportBrowser(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -49,7 +44,7 @@ public class ExcelExportBrowser extends AbstractWindow {
 
         Button closeButton = getComponent("close");
         closeButton.setAction(new AbstractAction("actions.Cancel") {
-
+            @Override
             public void actionPerform(Component component) {
                 ExcelExportBrowser.this.close(null);
             }
@@ -57,7 +52,7 @@ public class ExcelExportBrowser extends AbstractWindow {
 
         Button upButton = getComponent("up");
         upButton.setAction(new AbstractAction("") {
-
+            @Override
             public void actionPerform(Component component) {
                 moveColumns(true);
             }
@@ -65,16 +60,16 @@ public class ExcelExportBrowser extends AbstractWindow {
 
         Button downButton = getComponent("down");
         downButton.setAction(new AbstractAction("") {
-
+            @Override
             public void actionPerform(Component component) {
                 moveColumns(false);
             }
         });
-        final com.vaadin.ui.Component upButtonIT = WebComponentsHelper.unwrap(upButton);
-        upButtonIT.setIcon(new ThemeResource("icons/32/arrow-up.png"));
+//        final com.vaadin.ui.Component upButtonIT = WebComponentsHelper.unwrap(upButton);
+//        upButtonIT.setIcon(new ThemeResource("icons/32/arrow-up.png"));
 
-        final com.vaadin.ui.Component downButtonIT = WebComponentsHelper.unwrap(downButton);
-        downButtonIT.setIcon(new ThemeResource("icons/32/arrow-down.png"));
+//        final com.vaadin.ui.Component downButtonIT = WebComponentsHelper.unwrap(downButton);
+//        downButtonIT.setIcon(new ThemeResource("icons/32/arrow-down.png"));
     }
 
     protected void initValues() {
@@ -176,12 +171,12 @@ public class ExcelExportBrowser extends AbstractWindow {
         return null;
     }
 
-
     private class ExcelExportAction extends AbstractAction {
         protected ExcelExportAction(String id) {
             super(id);
         }
 
+        @Override
         public void actionPerform(Component component) {
 
             ExcelExporter ee = new ExcelExporter();

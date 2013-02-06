@@ -6,9 +6,14 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,11 +70,20 @@ public class PickerField extends CustomField {
             public String getRequiredError() {
                 return PickerField.this.requiredError;
             }
+
+            @Override
+            public void setPropertyDataSource(Property newDataSource) {
+                super.setPropertyDataSource(newDataSource);
+//                vaadin7 converters
+                setConverter(new EntityToStringConverter());
+            }
         };
         field.setImmediate(true);
         field.setReadOnly(true);
+        field.setConverter(new EntityToStringConverter());
         ((TextField) field).setNullRepresentation("");
-        ((TextField) field).setAllowFocusReadonly(true);
+//        vaadin7
+//        ((TextField) field).setAllowFocusReadonly(true);
     }
 
     public List<Button> getButtons() {
@@ -93,7 +107,7 @@ public class PickerField extends CustomField {
     }
 
     public void addFieldListener(final com.haulmont.cuba.gui.components.PickerField.FieldListener listener) {
-        ((TextField) field).addListener(new FieldEvents.TextChangeListener() {
+        ((TextField) field).addTextChangeListener(new FieldEvents.TextChangeListener() {
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
                 if (getValue() != null && event.getText().equals(getValue().toString()))
@@ -113,21 +127,31 @@ public class PickerField extends CustomField {
     }
 
     @Override
-    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
         boolean fieldReadOnly = field.isReadOnly();
         field.setReadOnly(false);
-        field.setValue(newValue);
+        getPropertyDataSource().setValue(newValue);
         field.setReadOnly(fieldReadOnly);
     }
 
     @Override
     public void addListener(ValueChangeListener listener) {
-        field.addListener(listener);
+        field.addValueChangeListener(listener);
     }
 
     @Override
     public void removeListener(ValueChangeListener listener) {
-        field.removeListener(listener);
+        field.removeValueChangeListener(listener);
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+        field.addValueChangeListener(listener);
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
+        field.removeValueChangeListener(listener);
     }
 
     @Override
@@ -153,5 +177,20 @@ public class PickerField extends CustomField {
     @Override
     public void focus() {
         field.focus();
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        field.setBuffered(buffered);
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return field.isBuffered();
+    }
+
+    @Override
+    public void removeAllValidators() {
+        field.removeAllValidators();
     }
 }

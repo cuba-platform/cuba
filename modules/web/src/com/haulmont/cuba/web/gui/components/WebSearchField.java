@@ -25,9 +25,9 @@ import java.util.HashSet;
  * @version $Id$
  */
 public class WebSearchField
-        extends WebLookupField
-        implements SearchField {
-
+        /*extends WebLookupField
+        implements SearchField*/ {
+/*
     protected int minSearchStringLength = 0;
 
     protected Entity newSettingValue = null;
@@ -171,9 +171,9 @@ public class WebSearchField
         return searchNotifications;
     }
 
-    /**
+    *//**
      * Allows set new item which not exists in options
-     */
+     *//*
     protected class CarelessDsWrapper extends DsWrapper {
 
         protected CarelessDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
@@ -210,5 +210,5 @@ public class WebSearchField
             }
             return itemIds;
         }
-    }
+    }*/
 }

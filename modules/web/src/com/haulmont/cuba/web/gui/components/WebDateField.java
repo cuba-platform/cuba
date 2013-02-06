@@ -35,11 +35,11 @@ import java.util.Date;
 import java.util.List;
 
 public class WebDateField
-        extends
+        /*extends
             WebAbstractComponent<DateFieldWrapper>
         implements
-            DateField, Component.Wrapper {
-
+            DateField, Component.Wrapper*/ {
+/*
     private Resolution resolution;
 
     private Object prevValue = null;
@@ -461,5 +461,5 @@ public class WebDateField
         for (Field.Validator validator : validators) {
             validator.validate(value);
         }
-    }
+    }*/
 }

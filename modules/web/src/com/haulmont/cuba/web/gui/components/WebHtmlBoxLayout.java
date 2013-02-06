@@ -18,8 +18,8 @@ import com.vaadin.ui.Layout;
 
 import java.util.*;
 
-public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
-
+public class WebHtmlBoxLayout /*extends CustomLayout implements HtmlBoxLayout*/ {
+/*
     protected String id;
 
     protected Collection<Component> ownComponents = new HashSet<Component>();
@@ -125,5 +125,5 @@ public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
-    }
+    }*/
 }

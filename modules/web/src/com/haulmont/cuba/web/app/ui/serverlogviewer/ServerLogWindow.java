@@ -9,15 +9,19 @@ package com.haulmont.cuba.web.app.ui.serverlogviewer;
 import com.haulmont.cuba.core.app.LogManagerService;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.export.SimpleFileDataProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -60,14 +64,17 @@ public class ServerLogWindow extends AbstractWindow {
         logFileNamesField.setOptionsList(logManagerService.getLogFileNames());
 
         panel.setSizeFull();
-        panel.setScrollable(true);
+//        vaadin7
+        VerticalLayout panelContent = new VerticalLayout();
+        panel.setContent(panelContent);
+//        panel.setScrollable(true);
 
         AbstractOrderedLayout vBox = (AbstractOrderedLayout) WebComponentsHelper.unwrap(logFieldBox);
-        panel.addComponent(vLabel);
+        panelContent.addComponent(vLabel);
         vBox.addComponent(panel);
         vLabel.setReadOnly(true);
         vLabel.setSizeFull();
-        vLabel.setContentMode(Label.CONTENT_XHTML);
+        vLabel.setContentMode(ContentMode.HTML);
 
         levelField.setOptionsList(getAllLevels());
 
@@ -133,21 +140,22 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     private void initTimers() {
-        Timer timer = getTimer("timer");
-
-        timer.addTimerListener(new Timer.TimerListener() {
-            @Override
-            public void onTimer(Timer timer) {
-                boolean flag = (Boolean.parseBoolean(autoRefreshCheck.getValue().toString()));
-                if (flag) {
-                    fillingTextArea();
-                }
-            }
-
-            @Override
-            public void onStopTimer(Timer timer) {
-            }
-        });
+//        vaadin7
+//        Timer timer = getTimer("timer");
+//
+//        timer.addTimerListener(new Timer.TimerListener() {
+//            @Override
+//            public void onTimer(Timer timer) {
+//                boolean flag = (Boolean.parseBoolean(autoRefreshCheck.getValue().toString()));
+//                if (flag) {
+//                    fillingTextArea();
+//                }
+//            }
+//
+//            @Override
+//            public void onStopTimer(Timer timer) {
+//            }
+//        });
     }
 
     private void fillingTextArea() {
