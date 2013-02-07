@@ -103,6 +103,8 @@ public class ViewRepository {
     }
 
     private View deployDefaultView(MetaClass metaClass, String name) {
+        metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
+
         Class<? extends BaseEntity> javaClass = metaClass.getJavaClass();
         View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
@@ -113,6 +115,12 @@ public class ViewRepository {
             }
         } else if (View.MINIMAL.equals(name)) {
             NamePattern annotation = javaClass.getAnnotation(NamePattern.class);
+            if (annotation == null) {
+                Class<?> originalClass = metadata.getExtendedEntities().getOriginalClass(metaClass);
+                if (originalClass != null)
+                    annotation = originalClass.getAnnotation(NamePattern.class);
+            }
+
             if (annotation != null) {
                 String pattern = annotation.value();
                 int pos = pattern.indexOf("|");
