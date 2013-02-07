@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 01.09.2009 11:59:38
- * $Id: SMTPAppender.java 3028 2010-11-09 08:12:36Z krivopustov $
  */
 package com.haulmont.bali.log4j;
 
@@ -13,24 +9,39 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.OptionHandler;
 import org.apache.log4j.spi.TriggeringEventEvaluator;
 
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
+/**
+ * Appender that sends error reports via email.
+ *
+ * @author abramov
+ * @version $Id$
+ */
 public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
+
+    private static final Message.RecipientType[] RECIPIENT_TYPES = new Message.RecipientType[]
+            {Message.RecipientType.BCC, Message.RecipientType.CC, Message.RecipientType.TO};
+
     private int interval;
     protected Scheduler scheduler;
     protected long sentTime;
     protected long timeout;
+    protected Session session;
+
+    protected Executor senderExecutor = Executors.newSingleThreadExecutor();
 
     public SMTPAppender() {
         this(new DefaultEvaluator());
@@ -53,7 +64,8 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
 
     @Override
     public void activateOptions() {
-        super.activateOptions();
+        session = createSession();
+        msg = new MimeMessage(session);
 
         // additionally add to the end of message host name and IP address of machine.
         String hostName = null;
@@ -64,6 +76,7 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
         }
 
         try {
+            addressMessage(msg);
             String compoundSubject = getCompoundSubject(hostName);
             if (compoundSubject.length() > 0) {
                 try {
@@ -74,6 +87,10 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
             }
         } catch (MessagingException e) {
             LogLog.error("Could not activate SMTPAppender options.", e);
+        }
+
+        if (evaluator instanceof OptionHandler) {
+            ((OptionHandler) evaluator).activateOptions();
         }
     }
 
@@ -100,15 +117,10 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
             LogLog.error("Unable to get local host IP address", e);
             return "<unknown>";
         }
-        StringBuilder sb = new StringBuilder()
-                .append(address.getHostName())
-                .append(" (")
-                .append(address.getHostAddress())
-                .append(")");
-        String res = sb.toString();
-        return res;
+        return String.format("%s (%s)", address.getHostName(), address.getHostAddress());
     }
 
+    @Override
     public void close() {
         synchronized (this) {
             if (closed) {
@@ -138,6 +150,7 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
         scheduler = null;
     }
 
+    @Override
     protected void sendBuffer() {
         try {
             if (cb.length() >= cb.getMaxSize()) {
@@ -165,34 +178,40 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
         try {
             MimeBodyPart part = new MimeBodyPart();
 
-            StringBuffer sbuf = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             String t = layout.getHeader();
-            if (t != null) sbuf.append(t);
+            if (t != null) sb.append(t);
             int len = cb.length();
             for (int i = 0; i < len; i++) {
                 //sbuf.append(MimeUtility.encodeText(layout.format(cb.get())));
                 LoggingEvent event = cb.get();
-                sbuf.append(layout.format(event));
+                sb.append(layout.format(event));
                 if (layout.ignoresThrowable()) {
                     String[] s = event.getThrowableStrRep();
                     if (s != null) {
                         for (String value : s) {
-                            sbuf.append(value);
-                            sbuf.append(Layout.LINE_SEP);
+                            sb.append(value);
+                            sb.append(Layout.LINE_SEP);
                         }
                     }
                 }
             }
             t = layout.getFooter();
-            if (t != null) sbuf.append(t);
-            part.setContent(sbuf.toString(), layout.getContentType());
+            if (t != null) sb.append(t);
+            part.setContent(sb.toString(), layout.getContentType());
 
             Multipart mp = new MimeMultipart();
             mp.addBodyPart(part);
-            msg.setContent(mp);
 
-            msg.setSentDate(new Date());
-            Transport.send(msg);
+            // copy message properties
+            Message messageToSend = cloneMessage(msg);
+
+            // prepare message to be sent
+            messageToSend.setSentDate(new Date());
+            messageToSend.setContent(mp);
+
+            // send email asynchronously
+            asyncSendEmail(messageToSend);
 
             sentTime = System.currentTimeMillis();
         } catch (Exception e) {
@@ -200,11 +219,35 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
         }
     }
 
+    protected Message cloneMessage(Message message) throws MessagingException {
+        Message messageToSend = new MimeMessage(session);
+        for (Address address : message.getFrom())
+            messageToSend.setFrom(address);
+
+        for (Message.RecipientType recipientType : RECIPIENT_TYPES)
+            messageToSend.setRecipients(recipientType, message.getRecipients(recipientType));
+
+        messageToSend.setSubject(message.getSubject());
+        messageToSend.setReplyTo(message.getReplyTo());
+        return messageToSend;
+    }
+
+    protected void asyncSendEmail(final Message messageToSend) {
+        senderExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Transport.send(messageToSend);
+                } catch (Exception e) {
+                    LogLog.error("Error occured while sending e-mail notification.", e);
+                }
+            }
+        });
+    }
+
     protected class Scheduler extends Thread {
 
-        protected Scheduler() {
-        }
-
+        @Override
         public void run() {
             synchronized (SMTPAppender.this) {
                 while (!closed) {
@@ -228,6 +271,7 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
 }
 
 class DefaultEvaluator implements TriggeringEventEvaluator {
+    @Override
     public boolean isTriggeringEvent(LoggingEvent event) {
         //noinspection deprecation
         return event.level.isGreaterOrEqual(Level.ERROR);
