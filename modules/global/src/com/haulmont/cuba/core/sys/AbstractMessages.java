@@ -78,7 +78,7 @@ public abstract class AbstractMessages implements Messages {
 
         for (Locale locale : globalConfig.getAvailableLocales().values()) {
             Datatypes.setFormatStrings(
-                    globalConfig.getUseLocaleLanguageOnly() ? Locale.forLanguageTag(locale.getLanguage()) : locale,
+                    messageTools.useLocaleLanguageOnly() ? Locale.forLanguageTag(locale.getLanguage()) : locale,
                     new FormatStrings(
                             getMessage(mainMessagePack, "numberDecimalSeparator", locale).charAt(0),
                             getMessage(mainMessagePack, "numberGroupingSeparator", locale).charAt(0),
@@ -191,7 +191,7 @@ public abstract class AbstractMessages implements Messages {
         if (key == null)
             throw new IllegalArgumentException("Message key is null");
 
-        if (globalConfig.getUseLocaleLanguageOnly())
+        if (messageTools.useLocaleLanguageOnly())
             locale = Locale.forLanguageTag(locale.getLanguage());
 
         String cacheKey = makeCacheKey(packs, key, locale, false);
