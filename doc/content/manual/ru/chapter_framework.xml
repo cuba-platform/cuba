@@ -2273,9 +2273,7 @@ Role getAdminRole();</programlisting></para>
       <para>Для того, чтобы некоторое сообщение могло быть локализовано, т.е. представлено пользователю на нужном языке, его необходимо поместить в так называемый <firstterm>пакет сообщений</firstterm>. </para>
       <section id="message_packs">
         <title>Пакеты сообщений</title>
-        <para>Пакет сообщений представляет собой набор файлов свойств с именами вида <filename>messages{_XX}.properties</filename>, расположенных в одном Java-пакете. Суффикс <literal>XX</literal> определяет язык, для которого в данном файле содержатся сообщения, и соответствует коду языка в <code>Locale.getLanguage()</code> (для поддержки остальных атрибутов локали необходимо установить в <code>false</code> свойство приложения <link linkend="cuba.useLocaleLanguageOnly">
-            <property>cuba.useLocaleLanguageOnly</property>
-          </link>). Один из файлов пакета может быть без суффикса языка - это <firstterm>файл по умолчанию</firstterm>. Именем пакета сообщений считается имя Java-пакета, в котором расположены файлы пакета.</para>
+        <para>Пакет сообщений представляет собой набор файлов свойств с именами вида <filename>messages{_XX}.properties</filename>, расположенных в одном Java-пакете. Суффикс <literal>XX</literal> определяет язык, для которого в данном файле содержатся сообщения, и соответствует коду языка в <code>Locale.getLanguage()</code>. Возможно также использование остальных атрибутов <code>Locale</code>, например <code>country</code>. В этом случая файл пакета будет иметь вид <filename>messages{_XX_YY}.properties</filename>. Один из файлов пакета может быть без суффикса языка - это <firstterm>файл по умолчанию</firstterm>. Именем пакета сообщений считается имя Java-пакета, в котором расположены файлы пакета.</para>
         <para>Рассмотрим пример:<programlisting>/com/abc/sales/gui/customer/messages.properties
 /com/abc/sales/gui/customer/messages_fr.properties
 /com/abc/sales/gui/customer/messages_ru.properties</programlisting></para>

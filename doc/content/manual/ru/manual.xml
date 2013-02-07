@@ -1057,15 +1057,6 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоках: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
-      <varlistentry id="cuba.useLocaleLanguageOnly">
-        <term>cuba.useLocaleLanguageOnly</term>
-        <listitem>
-          <para>Если данное свойство имеет значение <code>true</code>, то при поиске локализованных сообщений, принимается во внимание только язык текущей или переданной локали. В противном случае принимаются во внимание все параметры локали, т.е. например можно определить файлы сообщений <filename>messages_en_US.properties</filename> и <filename>messages_en_GB.properties</filename>. </para>
-          <para>Значение по умолчанию: <literal>true</literal></para>
-          <para>Интерфейс: <code>GlobalConfig</code></para>
-          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
-        </listitem>
-      </varlistentry>
       <varlistentry>
         <term>cuba.user.fullNamePattern</term>
         <listitem>
