@@ -10,22 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.presentations;
 
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.security.entity.Presentation;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.vaadin.ui.*;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 
 public class PresentationEditor extends Window {
 /*

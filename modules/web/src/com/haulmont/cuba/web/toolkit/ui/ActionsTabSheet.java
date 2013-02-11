@@ -2,68 +2,105 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
- *
- * Author: Nikolay Gorodnov
- * Created: 14.03.2011 16:07:19
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.ActionsTabSheetClientRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.ActionsTabSheetServerRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.ActionsTabSheetState;
+import com.haulmont.cuba.web.toolkit.ui.client.ClientAction;
+import com.vaadin.event.Action;
+import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
 
-import java.util.Stack;
+import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 // vaadin7 Actions support
-public class ActionsTabSheet extends com.vaadin.ui.TabSheet /*implements Action.Container*/ {
+public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
 
     private Stack<Component> openedComponents = new Stack<>();
 
-    /*private static final long serialVersionUID = -2956008661221108673L;
+    private static final long serialVersionUID = -2956008661221108673L;
 
-    protected TabSheetActionsManager actionManager;
+    protected HashSet<Action.Handler> actionHandlers = new HashSet<>();
 
-    protected TabSheetActionsManager getActionManager() {
-        if (actionManager == null) {
-            actionManager = new TabSheetActionsManager(this);
-        }
-        return actionManager;
-    }
+    protected KeyMapper<Action> actionMapper = null;
 
-    @Override
-    public void addActionHandler(Action.Handler actionHandler) {
-        getActionManager().addActionHandler(actionHandler);
-    }
-
-    @Override
-    public void removeActionHandler(Action.Handler actionHandler) {
-        if (actionManager != null) {
-            getActionManager().removeActionHandler(actionHandler);
-        }
-    }
-
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-        if (actionManager != null) {
-            getActionManager().paintActions(null, target);
-        }
-    }
-
-    @Override
-    public void changeVariables(Object source, Map variables) {
-        if (variables.containsKey("close")) {
-            final Component tab = keyMapper.get((String) variables.get("close"));
+    protected ActionsTabSheetServerRpc rpc = new ActionsTabSheetServerRpc() {
+        @Override
+        public void onTabContextMenu(int tabIndex) {
+            Tab tab = getTab(tabIndex);
             if (tab != null) {
-                closeTabAndSelectPrevious(tab);
+                Component actionTarget = tab.getComponent();
+                HashSet<Action> actions = getActions(actionTarget);
+
+                if (!actions.isEmpty()) {
+                    actionMapper = new KeyMapper<>();
+
+                    List<ClientAction> actionsList = new ArrayList<>(actions.size());
+                    for (Action action : actions) {
+                        ClientAction clientAction = new ClientAction(action.getCaption());
+                        clientAction.setActionId(actionMapper.key(action));
+                        actionsList.add(clientAction);
+                    }
+
+                    ClientAction[] clientActions = actionsList.toArray(new ClientAction[actions.size()]);
+
+                    getRpcProxy(ActionsTabSheetClientRpc.class).showTabContextMenu(tabIndex, clientActions);
+                }
             }
-        } else {
-            super.changeVariables(source, variables);
         }
-        if (actionManager != null) {
-            getActionManager().handleActions(variables, this);
+
+        @Override
+        public void performAction(int tabIndex, String actionKey) {
+            Tab tab = getTab(tabIndex);
+            if (tab != null) {
+                Component actionTarget = tab.getComponent();
+                if (actionMapper != null) {
+                    Action action = actionMapper.get(actionKey);
+                    Action.Handler[] handlers = actionHandlers.toArray(new Action.Handler[actionHandlers.size()]);
+                    for (Action.Handler handler : handlers)
+                        handler.handleAction(action, this, actionTarget);
+
+                    // forget all painted actions after perform one
+                    actionMapper = null;
+                }
+            }
         }
-    }         */
+    };
+
+    public ActionsTabSheet() {
+        registerRpc(rpc);
+    }
+
+    protected HashSet<Action> getActions(Component actionTarget) {
+        HashSet<Action> actions = new HashSet<>();
+        if (actionHandlers != null) {
+            for (Action.Handler handler : actionHandlers) {
+                Action[] as = handler.getActions(actionTarget, this);
+                if (as != null) {
+                    Collections.addAll(actions, as);
+                }
+            }
+        }
+        return actions;
+    }
+
+    @Override
+    protected ActionsTabSheetState getState() {
+        return (ActionsTabSheetState) super.getState();
+    }
+
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        getState().hasActionsHanlders = !actionHandlers.isEmpty();
+    }
 
     public void closeTabAndSelectPrevious(Component tab) {
         while (openedComponents.removeElement(tab))
@@ -108,14 +145,25 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet /*implements Action.
         }
     }
 
-    /*
     @Override
-    public void attach() {
-        super.attach();
-        if (actionManager != null) {
-            getActionManager().setViewer(this);
-        }
-    }           */
+    public void addActionHandler(Action.Handler actionHandler) {
+        actionHandlers.add(actionHandler);
+    }
+
+    @Override
+    public void removeActionHandler(Action.Handler actionHandler) {
+        actionHandlers.remove(actionHandler);
+    }
+
+//    vaadin7
+//    @Override
+//    public void attach() {
+//        super.attach();
+//        if (actionManager != null) {
+//            getActionManager().setViewer(this);
+//        }
+//    }
+
     /*
     @Override
     protected void paintTab(PaintTarget target, Component component, Tab tab) throws PaintException {
@@ -163,59 +211,11 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet /*implements Action.
         }
         paintTabActions(target, component, tab);
         target.endTag("tab");
-    }
+    }   */
 
-    protected void paintTabActions(PaintTarget target, Component component, Tab tab) throws PaintException {
-        if (actionManager != null) {
-            target.addAttribute("al", getActionManager().getActionsKeys(component, this));
-        }
-    }
-
-    private class TabSheetActionsManager extends ActionManager {
-        private static final long serialVersionUID = -8215673657372064982L;
-
-        private <T extends Component & Action.Container> TabSheetActionsManager(T viewer) {
-            super(viewer);
-            actionMapper = new KeyMapper(); //fixes an issue when actionMapper are reset to null during repainting
-        }
-
-        @Override
-        public void paintActions(Object actionTarget, PaintTarget paintTarget) throws PaintException {
-            List<Action> actions = new ArrayList<Action>();
-            if (actionHandlers != null) {
-                for (Action.Handler handler : actionHandlers) {
-                    Action[] as = handler.getActions(actionTarget, this.viewer);
-                    if (as != null) {
-                        actions.addAll(Arrays.asList(as));
-                    }
-                }
-            }
-            if (ownActions != null) {
-                actions.addAll(ownActions);
-            }
-            if (!actions.isEmpty() || clientHasActions) {
-                paintActions(paintTarget, actions);
-            }
-            clientHasActions = !actions.isEmpty();
-        }
-
-        public String[] getActionsKeys(Object target, Object sender) {
-            final Action[] actions = getActions(target, sender);
-            if (actions.length == 0) {
-                return new String[0];
-            }
-            final List<String> actionKeys = new ArrayList<String>(actions.length);
-            for (final Action action : actions) {
-                actionKeys.add(actionMapper.key(action));
-            }
-            return actionKeys.toArray(new String[actionKeys.size()]);
-        }
-
-        @Override
-        public void handleAction(Action action, Object sender, Object target) {
-            String tabKey = (String) target;
-            Component tab = (Component) keyMapper.get(tabKey);
-            super.handleAction(action, sender, tab);
-        }
-    }*/
+//    protected void paintTabActions(PaintTarget target, Component component, Tab tab) throws PaintException {
+//        if (actionManager != null) {
+//            target.addAttribute("al", getActionManager().getActionsKeys(component, this));
+//        }
+//    }
 }

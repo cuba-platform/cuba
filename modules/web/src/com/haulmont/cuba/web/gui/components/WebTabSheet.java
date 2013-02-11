@@ -333,7 +333,8 @@ public class WebTabSheet
         @Override
         public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
-            if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
+            com.vaadin.ui.Component tabComponent = tabContent.getComponent();
+            if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
                 Component comp;
                 try {
                     comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);

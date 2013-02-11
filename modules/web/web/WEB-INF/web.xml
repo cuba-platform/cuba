@@ -42,7 +42,7 @@
         <init-param>
             <description>Application widgetset</description>
             <param-name>widgetset</param-name>
-            <param-value>com.haulmont.cuba.web.client.WidgetSet</param-value>
+            <param-value>com.haulmont.cuba.web.toolkit.ui.WidgetSet</param-value>
         </init-param>
         <load-on-startup>0</load-on-startup>
     </servlet>

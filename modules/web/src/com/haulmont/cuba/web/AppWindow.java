@@ -888,7 +888,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                 }
             });
 //            vaadin7
-//            addActionHandler(this);
+            addActionHandler(this);
 
             Messages messages = AppBeans.get(Messages.class);
             closeAllTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeAllTabs"));
