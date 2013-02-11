@@ -2025,7 +2025,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
 });</programlisting>  </para>
           </listitem>
           <listitem>
-            <para>Проверки того, что данный <link linkend="app_tiers">блок</link> приложения полностью инициализирован и готов к выполнению. Такая проверка обычно необходима в методах бинов, автоматически запускаемых <link linkend="scheduled_tasks">планировщиком</link> <application>Sping</application>.</para>
+            <para>Проверки того, что данный <link linkend="app_tiers">блок</link> приложения полностью инициализирован и готов к выполнению. Такая проверка обычно необходима в методах бинов, автоматически запускаемых <link linkend="scheduled_tasks_spring">планировщиком</link> <application>Sping</application>.</para>
             <para>Пример:<programlisting>if (!AppContext.isStarted())
     return;</programlisting></para>
           </listitem>
@@ -2906,6 +2906,11 @@ public class Orders implements OrdersMBean {
               </listitem>
             </itemizedlist></para>
         </section>
+        <section id="serverInfoMBean">
+          <title>ServerInfoMBean</title>
+          <para><code>ServerInfoMBean</code> предоставляет общую информацию о данном блоке Middleware: номер и дату сборки, <link linkend="serverId">идентификатор сервера</link>.</para>
+          <para>JMX ObjectName: <literal>app-core.cuba:type=ServerInfo</literal></para>
+        </section>
       </section>
     </section>
     <section id="system_authentication">
@@ -2915,7 +2920,7 @@ public class Orders implements OrdersMBean {
         </code> всегда доступна информация о текущем пользователе. Это возможно потому, что при получении запроса с клиентского уровня в потоке выполнения автоматически устанавливается соответствующий объект <code>
           <link linkend="securityContext">SecurityContext</link>
         </code>.</para>
-      <para>Однако существуют ситуации, когда текущий поток выполнения  не связан ни с каким пользователем системы: например, при вызове метода бина из <link linkend="scheduled_tasks">планировщика</link>, либо через JMX-интерфейс. Если при этом бин выполняет изменение сущностей в базе данных, то ему потребуется информация о том, кто выполняет изменения, то есть аутентификация.</para>
+      <para>Однако существуют ситуации, когда текущий поток выполнения  не связан ни с каким пользователем системы: например, при вызове метода бина из <link linkend="scheduled_tasks_spring">планировщика</link>, либо через JMX-интерфейс. Если при этом бин выполняет изменение сущностей в базе данных, то ему потребуется информация о том, кто выполняет изменения, то есть аутентификация.</para>
       <para>Такого рода аутентификация называется системной, так как не требует участия пользователя - средний слой приложения просто создает (или использует имеющуюся) пользовательскую сессию, и устанавливает в потоке выполнения соответствующий объект <code>SecurityContext</code>. </para>
       <para>Обеспечить системную аутентификацию некоторого участка кода можно следующими способами:<itemizedlist>
           <listitem>
@@ -3430,7 +3435,7 @@ public void someServiceMethod() {
           </itemizedlist></para>
         <para>Таблицу <database>SYS_QUERY_RESULT</database> необходимо периодически чистить от ненужных результатов запросов, оставленных завершенными пользовательскими сессиями. Для этого предназначен метод <code>deleteForInactiveSessions</code> бина <code>QueryResultsManagerAPI</code>. В прикладном проекте с включенным параметром <property>
             <link linkend="cuba.allowQueryFromSelected">cuba.allowQueryFromSelected</link>
-          </property> необходимо вызывать этот метод либо из <link linkend="scheduled_tasks">назначенных заданий</link>, либо из стандартного планировщика <application>Spring</application>, например:<programlisting>&lt;task:scheduled-tasks scheduler=&quot;scheduler&quot;&gt;
+          </property> необходимо вызывать этот метод из <link linkend="scheduled_tasks">назначенных заданий</link>, например:<programlisting>&lt;task:scheduled-tasks scheduler=&quot;scheduler&quot;&gt;
     &lt;task:scheduled ref=&quot;cuba_QueryResultsManager&quot; method=&quot;deleteForInactiveSessions&quot; fixed-rate=&quot;600000&quot;/&gt;
 &lt;/task:scheduled-tasks&gt;</programlisting></para>
       </section>
@@ -9198,7 +9203,180 @@ taskHandler.execute();</programlisting>
     <title>Механизмы платформы</title>
     <section id="scheduled_tasks">
       <title>Выполнение задач по расписанию</title>
-      <para>TODO</para>
+      <para>Платформа предлагает два способа запуска задач по расписанию:<itemizedlist>
+          <listitem>
+            <para>Использование стандартного механизма <code>TaskScheduler</code> фреймворка <application>Spring</application></para>
+          </listitem>
+          <listitem>
+            <para>Использование собственного механизма выполнения назначенных заданий</para>
+          </listitem>
+        </itemizedlist></para>
+      <section id="scheduled_tasks_spring">
+        <title>Spring TaskScheduler</title>
+        <para>Данный механизм подробно описан в разделе <application>Task Execution and Scheduling</application> руководства <application>Spring Framework</application>.</para>
+        <para><code>TaskScheduler</code> можно использовать для запуска методов произвольных бинов Spring в любом <link linkend="app_tiers">блоке</link> приложения - как на Middleware, так и на клиентском уровне.</para>
+        <para>Пример конфигурации в файле <filename>
+            <link linkend="spring.xml">spring.xml</link>
+          </filename>:<programlisting>&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:task=&quot;http://www.springframework.org/schema/task&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd&quot;&gt;
+
+    ...
+    
+    &lt;task:scheduled-tasks scheduler=&quot;scheduler&quot;&gt;
+        &lt;task:scheduled ref=&quot;sales_Processor&quot; method=&quot;someMethod&quot; fixed-rate=&quot;60000&quot;/&gt;
+        &lt;task:scheduled ref=&quot;sales_Processor&quot; method=&quot;someOtherMethod&quot; cron=&quot;0 0 1 * * MON-FRI&quot;/&gt;
+    &lt;/task:scheduled-tasks&gt;
+&lt;/beans&gt;</programlisting></para>
+        <para>Здесь объявлены две задачи, запускающие на выполнение методы <code>someMethod()</code> и <code> someOtherMethod()</code> бина <code>sales_Processor</code>. При этом <code>someMethod()</code> запускается с момента старта приложения через фиксированные промежутки времени - 60 сек. Метод <code>someOtherMethod()</code> запускается в соответствии с расписанием, заданным выражением Cron (описание формата таких выражений см. <ulink url="http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger">http://quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger</ulink> ).</para>
+        <para>Собственно запуск задач выполняет бин типа <code>TaskScheduler</code>, заданный в атрибуте <sgmltag>scheduler</sgmltag> элемента <sgmltag>scheduled-tasks</sgmltag>. В данном случае используется бин <code>CubaThreadPoolTaskScheduler</code> с именем <code>scheduler</code>, который сконфигурирован в модулях <structname>core</structname> и <structname>web</structname> базового проекта <structname>cuba</structname> (см. <filename>cuba-spring.xml</filename>, <filename>cuba-web-spring.xml</filename>). Этот класс содержит специфическую реализацию, выполняющую очистку <code>
+            <link linkend="securityContext">SecurityContext</link>
+          </code> в запускаемых на выполнение потоках.</para>
+      </section>
+      <section id="scheduled_tasks_cuba">
+        <title>Назначенные задания CUBA</title>
+        <para>Механизм назначенных заданий <application>CUBA</application> предназначен для запуска по расписанию методов произвольных бинов Spring в блоке Middleware. Целью данного механизма и отличием его от вышеупомянутого стандартного механизма <application> Spring Framework</application> являются: <itemizedlist>
+            <listitem>
+              <para>возможость конфигурирования заданий во время работы приложения   без остановки сервера</para>
+            </listitem>
+            <listitem>
+              <para>координация выполнения синглтон-заданий в кластере Middleware, в том числе: <itemizedlist>
+                  <listitem>
+                    <para>надежная защита от одновременного выполнения </para>
+                  </listitem>
+                  <listitem>
+                    <para>привязка заданий к серверам по приоритетам</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Под <firstterm>синглтон</firstterm>-заданием понимается задача, которая должна выполняться в некоторый момент времени только на одном сервере. Пример - чтение из очереди и отсылка email.</para>
+        <section>
+          <title>Регистрация задания</title>
+          <para>Задания регистрируются в таблице <code>SYS_SCHEDULED_TASK</code> базы данных, соответствующей сущности <code>ScheduledTask</code>. Для работы с заданиями существуют экраны просмотра и редактирования, доступные через меню <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Назначенные задания</guimenuitem>. </para>
+          <para>Рассмотрим атрибуты задания:<itemizedlist>
+              <listitem>
+                <para><guilabel>Defined by</guilabel> - каким программным объектом реализуется задание. Возможные значения:<itemizedlist>
+                    <listitem>
+                      <para><guilabel>Bean</guilabel> - задание реализуется методом бина Spring. Дополнительные атрибуты:<itemizedlist>
+                          <listitem>
+                            <para><guilabel>Bean name</guilabel> - имя бина.</para>
+                          </listitem>
+                          <listitem>
+                            <para><guilabel>Method name</guilabel> - метод бина для выполнения. Метод должен либо не иметь параметров, либо иметь все параметры типа <code>String</code>.</para>
+                          </listitem>
+                          <listitem>
+                            <para><guilabel>Method parameters</guilabel> - параметры выбранного метода. Поддерживаются только параметры типа <code>String</code>.</para>
+                          </listitem>
+                        </itemizedlist></para>
+                    </listitem>
+                    <listitem>
+                      <para><guilabel>Class</guilabel> - задание представляет собой класс, реализующий интерфейс <code>java.util.concurrent.Callable</code>. Класс должен иметь открытый конструктор без параметров. Дополнительные атрибуты:<itemizedlist>
+                          <listitem>
+                            <para><guilabel>Class name</guilabel> - имя класса</para>
+                          </listitem>
+                        </itemizedlist></para>
+                    </listitem>
+                    <listitem>
+                      <para><guilabel>Script</guilabel> - задание представляет собой скрипт Groovy. Скрипт выполняется через <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript</link>()</code>. Дополнительные атрибуты:<itemizedlist>
+                          <listitem>
+                            <para><guilabel>Script name</guilabel> - имя скрипта.</para>
+                          </listitem>
+                        </itemizedlist></para>
+                    </listitem>
+                  </itemizedlist></para>
+              </listitem>
+              <listitem>
+                <para><guilabel>User name</guilabel> - имя пользователя, от имени которого будет будет выполняться задание. Если не задано, то задание будет выполнено от имени пользователя, указанного в свойстве приложения <property>
+                    <link linkend="cuba.jmxUserLogin">cuba.jmxUserLogin</link>
+                  </property>.</para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Singleton</guilabel> - признак, является ли задание синглтоном, т.е. выполняющимся только на одном сервере системы.</para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Period</guilabel> - период запуска задания в секундах. </para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Timeout</guilabel> - время в секундах, по истечении которого считается, что задание закончило выполнение, независимо от того, есть ли информация о завершении задания, или нет. </para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Start date</guilabel> - дата/время первого запуска. Если не установлено, то задание запускается сразу при старте сервера. Если установлено, то задание запускается в момент <code>startDate + period * N</code>, где N - целое число. </para>
+                <para>Start date имеет смысл указывать только для &quot;нечастых&quot; заданий - раз в 1 час, 1 сутки и т.п. </para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Time frame</guilabel> - в случае заданного Start date определяет временное окно в секундах, в течение которого будет запущено задание, если время <code>startDate + period * N</code> прошло. Если Time frame не задано явно, оно принимается равным <code>period / 2</code>. </para>
+                <para>Если Start date не указано, то Time frame не принимается во внимание, т.е. задание будет запущено в любое время после прохождения промежутка времени Period после предыдущего выполнения задания. </para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Permitted servers</guilabel>
+- список перечисленных через запятую <link linkend="serverId">идентификаторов серверов</link>, на которых возможен запуск данного задания. Если список не задан, то задание может выполняться на любом сервере. </para>
+                <para>Для синглтон-заданий порядок перечисления серверов указывает их приоритет - первый имеет больший приоритет чем последний. Сервер с большим приоритетом перехватит выполнение синглтона следующим образом: если сервер с большим приоритетом обнаруживает, что предыдущий раз задание было выполнено сервером с меньшим приоритетом, то он запускает задание независимо от того, пройден ли Period или нет. <warning>
+                    <para>Приоритет серверов работает только в случае не указанного атрибута Start date. Если Start date указан, старт происходит в одно и то же время, и перехват невозможен.</para>
+                  </warning></para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Log start</guilabel> - признак регистрации факта запуска задания в таблице <code>SYS_SCHEDULED_EXECUTION</code>, соответствующей сущности <code>ScheduledExecution</code>. </para>
+                <para>Если задание является синглтоном, то в текущей реализации регистрация факта запуска производится в любом случае, независимо от данного признака. </para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Log finish</guilabel> - признак регистрации факта завершения задания в таблице <code>SYS_SCHEDULED_EXECUTION</code>, соответствующей сущности <code>ScheduledExecution</code>. </para>
+                <para>Если задание является синглтоном, то в текущей реализации регистрация факта завершения производится в любом случае, независимо от данного признака. </para>
+              </listitem>
+              <listitem>
+                <para><guilabel>Description</guilabel> - произвольное текстовое описание задания.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Задание также имеет признак активности, который устанавливается в экране списка заданий. Неактивные задания не запускаются. </para>
+        </section>
+        <section>
+          <title>Управление обработкой заданий</title>
+          <itemizedlist>
+            <listitem>
+              <para>Для запуска обработки назначенных заданий необходимо перед стартом сервера установить свойство приложения <property>
+                  <link linkend="cuba.schedulingActive">cuba.schedulingActive</link>
+                </property> в значение <code>true</code>.</para>
+            </listitem>
+            <listitem>
+              <para>Для оперативного управления обработкой заданий можно использовать JMX-бин <code>app-core.cuba:type=Scheduling</code>, атрибут <code>Active</code> которого запускает/останавливает обработку заданий для текущего сеанса работы сервера. После перезапуска сервера обработка будет запущена только при установленном в <code>true</code> свойстве приложения <property>cuba.schedulingActive</property>.</para>
+            </listitem>
+            <listitem>
+              <para>Все изменения в заданиях, сделанные через экраны системы, вступают в силу немедленно для всех серверов кластера. </para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section>
+          <title>Особенности реализации</title>
+          <itemizedlist>
+            <listitem>
+              <para>Период вызова обработки заданий (метода <code>SchedulingAPI.processScheduledTasks()</code>) задается в <filename>cuba-spring.xml</filename> и по умолчанию равен 1 сек. Он задает минимальное значение периода запуска задания, которое должно быть в 2 раза больше, т.е. 2 сек. Уменьшать эти времена не рекомендуется. </para>
+            </listitem>
+            <listitem>
+              <para>Текущая реализация планировщика основана на синхронизации с помощью блокировки строк в таблице базы данных. Это означает, что при значительной нагрузке БД может не успевать вовремя отвечать планировщику, и необходимо увеличивать период запуска (&gt;1сек), и, соответственно, минимальный период запуска заданий также будет увеличиваться.</para>
+            </listitem>
+            <listitem>
+              <para>Синглтон-задания в случае незаданного атрибута Permitted servers выполняются только на мастер-узле кластера (при выполнении прочих условий). Следует иметь в виду, что отдельный  сервер вне кластера также является мастером. </para>
+            </listitem>
+            <listitem>
+              <para>Задание не запускается, если оно в данный момент не закончило предыдущее выполнение, и не истек указанный Timeout. Для синглтон-заданий в текущей реализации это обеспечивается информацией в базе данных, для не-синглтонов поддерживается таблица статуса выполнения в памяти сервера. </para>
+            </listitem>
+            <listitem>
+              <para>Механизм выполнения создает и кэширует <link linkend="userSession">пользовательские сессии</link> в соответствии с указанными для заданий User name, либо свойством приложения <property>
+                  <link linkend="cuba.jmxUserLogin">cuba.jmxUserLogin</link>
+                </property>. Сессия доступна в потоке выполнения запускаемого задания обычным способом - через интерфейс <code>
+                  <link linkend="userSessionSource">UserSessionSource</link>
+                </code>.</para>
+            </listitem>
+          </itemizedlist>
+          <warning>
+            <para>Для нормальной работы синглтон-заданий необходима точная синхронизация серверов Middleware по времени!</para>
+          </warning>
+        </section>
+      </section>
     </section>
     <section id="email_sending">
       <title>Отсылка email</title>

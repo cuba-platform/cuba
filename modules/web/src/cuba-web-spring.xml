@@ -99,7 +99,7 @@
 
     <!-- Spring scheduling setup -->
 
-    <bean id="scheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+    <bean id="scheduler" class="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
         <property name="poolSize" value="10"/>
     </bean>

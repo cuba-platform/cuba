@@ -1012,8 +1012,17 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
               <link linkend="resources">Resources</link>
             </code>.</para>
-          <para>Используется в блоке <structname>Middleware</structname>.</para>
+          <para>Используется в блоке Middleware.</para>
           <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.schedulingActive">
+        <term>cuba.schedulingActive</term>
+        <listitem>
+          <para>Включает и выключает механизм выполнения <link linkend="scheduled_tasks_cuba">назначенных заданий</link> CUBA.  </para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Интерфейс:  <code>ServerConfig</code></para>
+          <para>Используется в блоке Middleware.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.springContextConfig">

@@ -100,7 +100,20 @@
   </section>
   <section>
     <title>Отказоустойчивость и балансировка нагрузки</title>
-    <para>TODO</para>
+    <section id="serverId">
+      <title>Server Id</title>
+      <para><firstterm>Server Id</firstterm> служит для надежной идентификации серверов в кластере Middleware. Идентификатор имеет вид <literal>host:port/context</literal>, например:<programlisting>tezis.haulmont.com:80/app-core</programlisting><programlisting>192.168.44.55:8080/app-core</programlisting></para>
+      <para>Идентификатор формируется на основе  параметров конфигурации <link linkend="cuba.webHostName">
+          <property>cuba.webHostName</property>
+        </link>, <link linkend="cuba.webPort">
+          <property>cuba.webPort</property>
+        </link>, <link linkend="cuba.webContextName">
+          <property>cuba.webContextName</property>
+        </link>, поэтому крайне важно корректно указать эти параметры для блока Middleware, работающего в кластере. </para>
+      <para>Server Id может быть получен  c помощью бина <code>ServerInfoAPI</code> или через JMX-интерфейс <code>
+          <link linkend="serverInfoMBean">ServerInfoMBean</link>
+        </code>.</para>
+    </section>
   </section>
   <section>
     <title>Мониторинг работы приложения</title>

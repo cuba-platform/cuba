@@ -526,7 +526,9 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           <listitem>
             <para>В списке <guilabel>Entity</guilabel> выберите сущность <userinput>com.sample.sales.entity.Order</userinput>.</para>
           </listitem>
-          <listitem><para>В списке <guilabel>View</guilabel> выберите представление  <userinput>_local</userinput></para>.</listitem>
+          <listitem>
+            <para>В списке <guilabel>View</guilabel> выберите представление  <userinput>_local</userinput>.</para>
+          </listitem>
           <listitem>
             <para>В поле <guilabel>Query</guilabel> введите следующий запрос: <code>select o from sales$Order o where o.customer.id = :ds$customerDs order by o.date</code>. Здесь запрос содержит условие отбора Заказов с параметром <code>ds$customerDs</code>. Значением параметра с именем вида <code>ds${datasource_name}</code> будет идентификатор сущности, установленной в данный момент в источнике данных <code>datasource_name</code>, в данном случае − идентификатор редактируемого Покупателя.</para>
           </listitem>
