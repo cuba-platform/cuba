@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.FileDataProvider;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
@@ -108,14 +109,14 @@ public class DesktopExportDisplay implements ExportDisplay {
     private void openFileAction(String finalFileName, ExportDataProvider dataProvider) {
         File destFile = null;
         try {
-            destFile = File.createTempFile("tempCubaFile", "." + getFileExt(finalFileName));
+            destFile = File.createTempFile(FilenameUtils.getBaseName(finalFileName), "." + getFileExt(finalFileName));
         } catch (IOException e) {
             String message = messages.getMessage(DesktopExportDisplay.class, "export.tempFileError");
             getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
         }
 
         if (destFile != null) {
-            if (saveFile(dataProvider, destFile) && Desktop.isDesktopSupported()) {
+            if (Desktop.isDesktopSupported() && saveFile(dataProvider, destFile)) {
                 try {
                     Desktop.getDesktop().open(destFile);
                 } catch (IOException ex) {
