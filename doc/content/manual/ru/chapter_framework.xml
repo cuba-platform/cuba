@@ -9464,7 +9464,7 @@ taskHandler.execute();</programlisting>
             <para>Значение по умолчанию: <literal>10</literal></para>
           </listitem>
           <listitem>
-            <para>cuba.email.maxSendingTimeSec - при асинхронной отправке время в секундах с момента создания SendingMessage в базе данных, в течение которого повторяются попытки отправки данного сообщения.</para>
+            <para>cuba.email.maxSendingTimeSec - максимальное предполагаемое время в секундах, требуемое для отправки сообщения на SMTP сервер. Используется при асинхронной отправке для оптимизации выборки объектов <code>SendingMessage</code> из очереди в БД.</para>
             <para>Значение по умолчанию: 120</para>
           </listitem>
           <listitem>

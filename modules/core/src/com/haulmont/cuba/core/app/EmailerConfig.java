@@ -94,7 +94,8 @@ public interface EmailerConfig extends Config {
     int getDefaultSendingAttemptsCount();
 
     /**
-     * Max time of sending message while it is still considered to be valid.
+     * Max estimated time needed to send a message to SMTP server. This is used to optimize the loading
+     * messages from queue.
      */
     @Property("cuba.email.maxSendingTimeSec")
     @DefaultInt(120)
