@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 09.12.2010 17:11:28
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -24,6 +19,8 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.PropertyFormatter;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.UserError;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,8 +30,12 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements TimeField, Component.Wrapper*/ {
-    /*private boolean showSeconds;
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class WebTimeField extends WebAbstractField<MaskedTextField> implements TimeField, Component.Wrapper {
+    private boolean showSeconds;
 
     private String mask;
     private String placeholder;
@@ -57,26 +58,23 @@ public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements
         component.addValidator(new com.vaadin.data.Validator() {
             @Override
             public void validate(Object value) throws InvalidValueException {
-                if (!isValid(value)) {
-                    component.requestRepaint();
+                if (!(!(value instanceof String) || checkStringValue((String) value))) {
+                    component.markAsDirty();
                     throw new InvalidValueException("Unable to parse value: " + value);
                 }
             }
 
-            @Override
-            public boolean isValid(Object value) {
-
-                return (!(value instanceof String) || checkStringValue((String) value));
-            }
         });
         attachListener(component);
 
+//      vaadin7 rewrite to converter
         final Property p = new AbstractPropertyWrapper() {
             public Class<?> getType() {
                 return Date.class;
             }
         };
 
+//      vaadin7 rewrite to converter
         component.setPropertyDataSource(
                 new PropertyFormatter(p) {
 
@@ -101,7 +99,7 @@ public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements
                                 return date;
                             } catch (Exception e) {
                                 log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
-                                component.setComponentError(new com.vaadin.data.Validator.InvalidValueException("Invalid value"));
+                                component.setComponentError(new UserError("Invalid value"));
                                 return null;
                             }
                         } else
@@ -169,6 +167,7 @@ public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements
             super.setValue(value);
     }
 
+    @Override
     public boolean getShowSeconds() {
         return showSeconds;
     }
@@ -193,6 +192,7 @@ public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements
         }
     }
 
+    @Override
     public void setShowSeconds(boolean showSeconds) {
         this.showSeconds = showSeconds;
         if (showSeconds) {
@@ -241,7 +241,7 @@ public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements
                     }
 
                     @Override
-                    protected Object valueOf(Object newValue) throws ConversionException {
+                    protected Object valueOf(Object newValue) throws Converter.ConversionException {
                         if (newValue instanceof String) {
                             if (StringUtils.isNotEmpty((String) newValue) && !newValue.equals(placeholder)) {
                                 try {
@@ -252,7 +252,7 @@ public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements
                                     return date;
                                 } catch (Exception e) {
                                     log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
-                                    component.setComponentError(new com.vaadin.data.Validator.InvalidValueException("Invalid value"));
+                                    component.setComponentError(new UserError("Invalid value"));
                                     return null;
                                 }
                             } else
@@ -263,5 +263,5 @@ public class WebTimeField /*extends WebAbstractField<MaskedTextField> implements
                 };
             }
         };
-    }*/
+    }
 }

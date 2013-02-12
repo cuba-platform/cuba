@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 18:12:13
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -14,8 +10,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
@@ -34,12 +31,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebDateField
-        /*extends
+        extends
             WebAbstractComponent<DateFieldWrapper>
         implements
-            DateField, Component.Wrapper*/ {
-/*
+            DateField, Component.Wrapper {
+
     private Resolution resolution;
 
     private Object prevValue = null;
@@ -50,8 +51,8 @@ public class WebDateField
     private com.haulmont.cuba.web.toolkit.ui.DateField dateField;
     private WebTimeField timeField;
 
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
-    protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
+    protected List<ValueListener> listeners = new ArrayList<>();
+    protected List<Field.Validator> validators = new ArrayList<>();
 
     protected HorizontalLayout composition;
 
@@ -74,7 +75,7 @@ public class WebDateField
 
         composition.setSpacing(true);
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
-        dateField.setResolution(com.haulmont.cuba.web.toolkit.ui.DateField.RESOLUTION_DAY);
+        dateField.setResolution(com.vaadin.shared.ui.datefield.Resolution.DAY);
         dateField.setWidth("100%");
 
         dateField.setImmediate(true);
@@ -82,17 +83,12 @@ public class WebDateField
         dateField.addValidator(new com.vaadin.data.Validator() {
             @Override
             public void validate(Object value) throws InvalidValueException {
-                if (value instanceof Date)
-                    return;
-                if (!isValid(value)) {
-                    dateField.requestRepaint();
-                    throw new InvalidValueException("Unable to parse value: " + value);
-                }
-            }
-
-            @Override
-            public boolean isValid(Object value) {
-                return true;
+//                if (value instanceof Date)
+//                    return;
+//                if (!isValid(value)) {
+//                    dateField.markAsDirty();
+//                    throw new InvalidValueException("Unable to parse value: " + value);
+//                }
             }
         });
 
@@ -104,7 +100,7 @@ public class WebDateField
         timeField.<MaskedTextField>getComponent().setInvalidAllowed(false);
         timeField.<MaskedTextField>getComponent().setInvalidCommitted(true);
 
-        dateField.addListener(new Property.ValueChangeListener() {
+        dateField.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 updateInstance();
@@ -118,7 +114,7 @@ public class WebDateField
             }
         });
         setResolution(Resolution.MIN);
-        if (ConfigProvider.getConfig(WebConfig.class).getCloseCalendarWhenDateSelected()) {
+        if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getCloseCalendarWhenDateSelected()) {
             setCloseWhenDateSelected(true);
         }
         component = new DateFieldWrapper(this, composition);
@@ -202,7 +198,8 @@ public class WebDateField
     }
 
     protected void __setCloseWhenDateSelected(boolean autoClose) {
-        dateField.setCloseWhenDateSelected(autoClose);
+//        vaadin7
+//        dateField.setCloseWhenDateSelected(autoClose);
     }
 
     @Override
@@ -234,7 +231,7 @@ public class WebDateField
         prevValue = getValue();
         if (!editable)
             return;
-        dateField.setValue(value);
+        dateField.setValue((Date) value);
         timeField.setValue(value);
     }
 
@@ -374,11 +371,14 @@ public class WebDateField
     }
 
     private Date constructDate() {
-        final Date datePickerDate = (Date) dateField.getValue();
+        final Date datePickerDate = dateField.getValue();
         if (datePickerDate == null) {
             return null;
         }
-        Calendar c = Calendar.getInstance(UserSessionProvider.getLocale());
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+
+        Calendar c = Calendar.getInstance(uss.getLocale());
         c.setTime(datePickerDate);
         if (timeField.getValue() == null) {
             c.set(Calendar.HOUR_OF_DAY, 0);
@@ -386,7 +386,7 @@ public class WebDateField
             c.set(Calendar.SECOND, 0);
 
         } else {
-            Calendar c2 = Calendar.getInstance(UserSessionProvider.getLocale());
+            Calendar c2 = Calendar.getInstance(uss.getLocale());
             c2.setTime(timeField.<Date>getValue());
 
             c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
@@ -461,5 +461,5 @@ public class WebDateField
         for (Field.Validator validator : validators) {
             validator.validate(value);
         }
-    }*/
+    }
 }

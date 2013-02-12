@@ -6,14 +6,21 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-/**
- * <p>$Id$</p>
- *
- * @author devyatkin
- */
-public class DateFieldWrapper /*extends CustomField*/ {
+import com.haulmont.cuba.web.gui.components.WebDateField;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.Layout;
+import org.apache.commons.lang.ObjectUtils;
 
-    /*private WebDateField dateField;
+import java.util.Date;
+
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
+public class DateFieldWrapper extends CustomField {
+
+    private WebDateField dateField;
 
     public DateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
@@ -34,7 +41,7 @@ public class DateFieldWrapper /*extends CustomField*/ {
     }
 
     @Override
-    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
         if (getPropertyDataSource() != null)
             getPropertyDataSource().setValue(newValue);
         dateField.setValue(newValue);
@@ -81,5 +88,18 @@ public class DateFieldWrapper /*extends CustomField*/ {
         // support dateField in editable table
         if (newDataSource != null && !ObjectUtils.equals(newDataSource.getValue(), getValue()))
             dateField.setValue(newDataSource.getValue());
-    }*/
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return false;
+    }
+
+    @Override
+    public void removeAllValidators() {
+    }
 }

@@ -17,6 +17,7 @@ import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -357,31 +358,27 @@ public class WebComponentsHelper {
                 return FieldGroupLayout.CAPTION_ALIGN_LEFT;
         }
     }
-    /*
-    public static int convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {
+
+    public static Resolution convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {
         switch (resolution) {
-            case MSEC: {
-                return com.vaadin.ui.DateField.RESOLUTION_MSEC;
-            }
-            case SEC: {
-                return com.vaadin.ui.DateField.RESOLUTION_SEC;
-            }
-            case HOUR: {
-                return com.vaadin.ui.DateField.RESOLUTION_HOUR;
-            }
-            case DAY: {
-                return com.vaadin.ui.DateField.RESOLUTION_DAY;
-            }
-            case MONTH: {
-                return com.vaadin.ui.DateField.RESOLUTION_MONTH;
-            }
-            case YEAR: {
-                return com.vaadin.ui.DateField.RESOLUTION_YEAR;
-            }
+            case SEC:
+                return Resolution.SECOND;
+
+            case HOUR:
+                return Resolution.HOUR;
+
+            case DAY:
+                return Resolution.DAY;
+
+            case MONTH:
+                return Resolution.MONTH;
+
+            case YEAR:
+                return Resolution.YEAR;
+
             case MIN:
-            default: {
-                return com.vaadin.ui.DateField.RESOLUTION_MIN;
-            }
+            default:
+                return Resolution.MINUTE;
         }
-    }*/
+    }
 }

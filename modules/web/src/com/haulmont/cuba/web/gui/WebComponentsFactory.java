@@ -49,8 +49,8 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Table.NAME, WebTable.class);
         classes.put(TreeTable.NAME, WebTreeTable.class);
         classes.put(GroupTable.NAME, WebGroupTable.class);
-//        classes.put(DateField.NAME, WebDateField.class);
-//        classes.put(TimeField.NAME, WebTimeField.class);
+        classes.put(DateField.NAME, WebDateField.class);
+        classes.put(TimeField.NAME, WebTimeField.class);
         classes.put(LookupField.NAME, WebLookupField.class);
 //        classes.put(SearchField.NAME, WebSearchField.class);
         classes.put(PickerField.NAME, WebPickerField.class);
