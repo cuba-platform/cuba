@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -41,7 +41,7 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
     protected long timeout;
     protected Session session;
 
-    protected Executor senderExecutor = Executors.newSingleThreadExecutor();
+    protected ExecutorService senderExecutor = Executors.newSingleThreadExecutor();
 
     public SMTPAppender() {
         this(new DefaultEvaluator());
@@ -138,6 +138,12 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
         }
         try {
             scheduler.interrupt();
+        } catch (SecurityException e) {
+            LogLog.error("Got a SecurityException while interrupting for the scheduler to finish.", e);
+        }
+
+        try {
+            senderExecutor.shutdown();
         } catch (SecurityException e) {
             LogLog.error("Got a SecurityException while interrupting for the scheduler to finish.", e);
         }
