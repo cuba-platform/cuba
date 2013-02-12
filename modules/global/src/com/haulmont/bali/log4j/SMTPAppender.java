@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Appender that sends error reports via email.
@@ -143,9 +144,11 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
         }
 
         try {
-            senderExecutor.shutdown();
+            senderExecutor.awaitTermination(2, TimeUnit.SECONDS);
         } catch (SecurityException e) {
             LogLog.error("Got a SecurityException while interrupting for the scheduler to finish.", e);
+        } catch (InterruptedException e) {
+            LogLog.error("Got a InterruptedException while interrupting for the scheduler to finish.", e);
         }
 
         try {
