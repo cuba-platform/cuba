@@ -3,8 +3,7 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
-
-package com.haulmont.cuba.web.toolkit.ui.client;
+package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
@@ -16,7 +15,7 @@ import com.vaadin.client.metadata.Type;
  * @author artamonov
  * @version $Id$
  */
-public class ClientAction_Serializer implements JSONSerializer<ClientAction> {
+public class ClientActionSerializer implements JSONSerializer<ClientAction> {
     @Override
     public ClientAction deserialize(Type type, JSONValue jsonValue, ApplicationConnection connection) {
         ClientAction clientAction = new ClientAction();

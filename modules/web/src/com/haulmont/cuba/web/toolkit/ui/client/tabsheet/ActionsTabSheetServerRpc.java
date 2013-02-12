@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client;
+package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
 import com.vaadin.shared.communication.ServerRpc;
 

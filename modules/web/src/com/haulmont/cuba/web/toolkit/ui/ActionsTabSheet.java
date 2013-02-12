@@ -5,10 +5,10 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.toolkit.ui.client.ActionsTabSheetClientRpc;
-import com.haulmont.cuba.web.toolkit.ui.client.ActionsTabSheetServerRpc;
-import com.haulmont.cuba.web.toolkit.ui.client.ActionsTabSheetState;
-import com.haulmont.cuba.web.toolkit.ui.client.ClientAction;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ActionsTabSheetClientRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ActionsTabSheetServerRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ActionsTabSheetState;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.vaadin.event.Action;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;

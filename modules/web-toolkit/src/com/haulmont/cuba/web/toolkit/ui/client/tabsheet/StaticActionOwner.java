@@ -3,8 +3,7 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
-
-package com.haulmont.cuba.web.toolkit.ui.client;
+package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ui.Action;
