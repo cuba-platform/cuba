@@ -298,14 +298,6 @@ configure(webModule) {
         provided(servletApi)
     }
 
-//    task buildThemes(type: CubaWebThemeCreation) {
-//        themes = [
-//                [themeName: 'reindeer', destFile: 'styles-include.css'],
-//        ]
-//        cssDir = 'css/VAADIN/themes'
-//        destDir = "$buildDir/web/VAADIN/themes"
-//    }
-
     task buildScssThemes(type: CubaWebScssThemeCreation) {
         themes = ['iceland']
         scssDir = 'themes'
@@ -366,7 +358,7 @@ configure(webToolkitModule) {
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
         from file('web')
         from webOutDir
-        exclude '**/web.xml', '**/app.properties'
+        exclude '**/web.xml', '**/app.properties', '**/gwt-unitCache/'
         classifier = 'web'
     }
 
@@ -381,6 +373,7 @@ configure(webToolkitModule) {
         copy {
             from "$buildDir/web"
             into "$tomcatDir/webapps/cuba"
+            exclude '**/gwt-unitCache/'
         }
     }
 }

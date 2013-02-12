@@ -208,7 +208,7 @@ public interface WebConfig extends Config
      */
     @Property("cuba.web.availableAppThemes")
     @Factory(factory = StringListTypeFactory.class)
-    @Default("peyto|havana")
+    @Default("peyto|havana|iceland")
     List<String> getAvailableAppThemes();
 
     /**

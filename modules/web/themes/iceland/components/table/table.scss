@@ -1,0 +1,19 @@
+@mixin v-table-checkbox {
+  width: 13px;
+  height: 13px;
+  background-position: center center;
+}
+
+@mixin v-table {
+  .v-table {
+    .checkbox-checked {
+      @include v-table-checkbox;
+      background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
+    }
+
+    .checkbox-unchecked {
+      @include v-table-checkbox;
+      background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
+    }
+  }
+}

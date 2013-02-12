@@ -1,16 +1,15 @@
+/** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
+
 // Inherit theme
+//@import "../base/base.scss";
 @import "../reindeer/reindeer.scss";
 
 // Components
-@import "components/groupbox/groupbox.scss";
+@import "components/table/table.scss";
 
 @mixin iceland {
+  //@include base;
   @include reindeer;
 
-  $color: yellow;
-  .v-button-caption {
-    color: $color;
-  }
-
-  @include cuba-group-box;
+  @include v-table;
 }

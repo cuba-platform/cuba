@@ -47,9 +47,9 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1241,14 +1241,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
-            com.vaadin.ui.Embedded checkBoxImage;
-            if (BooleanUtils.isTrue((Boolean) value)){
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-checked.png"));
-            }
-            else {
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-unchecked.png"));
-            }
-            return checkBoxImage;
+            Embedded checkPoxImage = new Embedded();
+            checkPoxImage.setSizeUndefined();
+            if (BooleanUtils.isTrue((Boolean) value))
+                checkPoxImage.setStyleName("checkbox-checked");
+            else
+                checkPoxImage.setStyleName("checkbox-unchecked");
+
+            return checkPoxImage;
         }
     }
 
