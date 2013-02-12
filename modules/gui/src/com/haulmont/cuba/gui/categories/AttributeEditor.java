@@ -69,6 +69,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     private static final String FIELD_WIDTH = "200px";
 
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidth(250);
+
         dataService = getDsContext().getDataService();
         fieldsContainer = getComponent("attributeProperties");
 

@@ -9481,7 +9481,75 @@ taskHandler.execute();</programlisting>
     </section>
     <section id="runtime_properties">
       <title>Динамические атрибуты</title>
-      <para>TODO</para>
+      <section>
+        <title>Общие сведения</title>
+        <para>Механизм динамических атрибутов предназначен для описания новых свойств сущностей на этапе настройки и эксплуатации системы. При этом для одного типа сущности может быть задано несколько наборов динамических атрибутов.</para>
+        <figure>
+          <title>Диаграмма классов механизма динамических атрибутов</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata contentwidth="" align="center" fileref="img/RuntimeProperties.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>Рассмотрим приведенные на диаграмме классы.</para>
+        <itemizedlist>
+          <listitem>
+            <para><code>CategorizedEntity</code> - базовый класс сущностей, которые могут иметь динамические атрибуты. Содержит ссылку на объект <code>Category</code>, т.е. каждый экземпляр сущности <code>SomeEntity</code> может быть отнесен к одной из определенных заранее категорий.</para>
+          </listitem>
+          <listitem>
+            <para><code>Category</code> - определяет категорию объектов и соответствующий набор динамических атрибутов. Категория должна быть отнесена к некоторому типу сущности.</para>
+            <para>Например, имеется сущность типа <userinput>Автомобиль</userinput>. Для нее можно определить две категории: <userinput>Грузовой</userinput> и <userinput>Пассажирский</userinput>. При этом категория <userinput>Грузовой</userinput>  будет содержать атрибуты <userinput>Грузоподъемность</userinput> и <userinput>Вид кузова</userinput>, а категория <userinput>Пассажирский</userinput> - атрибуты <userinput>Количество мест</userinput> и <userinput>Наличие детского сидения</userinput>.</para>
+            <para>Атрибут <code>isDefault</code> указывает, что при создании нового экземпляра сущности для него автоматически выбирается данная категория.</para>
+            <para>Атрибут <code>special</code> указывает, что данная категория обрабатывается в приложении специальным образом, и не отображается в универсальном UI редактирования категорий.</para>
+          </listitem>
+          <listitem>
+            <para><code>CategoryAttribute</code> - определяет динамический атрибут, относящийся к некоторой категории. Содержит значение по умолчанию для различных типов данных. Значение перечислений задается в виде списка строк через запятую.</para>
+          </listitem>
+          <listitem>
+            <para><code>CategoryAttributeValue</code> - значение динамического атрибута для конкретного экземпляра сущности.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Управление категориями и описаниями атрибутов осуществляется с помощью специальных экранов, доступных через меню <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Категории</guimenuitem>.</para>
+      </section>
+      <section>
+        <title>Применение</title>
+        <para>Для того, чтобы некоторая сущность могла иметь динамические атрибуты, ее класс необходимо унаследовать от <code>CategorizedEntity</code>, и, соответственно, обеспечить в таблице наличие поля <database>CATEGORY_ID</database> типа <code>UUID</code>.</para>
+        <para>Для включения  динамических атрибутов в экран редактирования сущности необходимо выполнить следующее:<itemizedlist>
+            <listitem>
+              <para>В секции <sgmltag>dsContext</sgmltag> необходимо объявить два источника данных:<itemizedlist>
+                  <listitem>
+                    <para><sgmltag>runtimePropsDatasource</sgmltag> - специфический источник, в который будут загружены экземпляры <code>CategoryAttributeValue</code>. Атрибут <sgmltag>mainDs</sgmltag> должен ссылаться на главный источник данных, содержащий редактируемую сущность.</para>
+                  </listitem>
+                  <listitem>
+                    <para>обычный <sgmltag>collectionDatasource</sgmltag> для загрузки списка категорий данного типа сущности</para>
+                  </listitem>
+                </itemizedlist></para>
+              <para>Например:<programlisting>&lt;dsContext&gt;
+    &lt;datasource id=&quot;carDs&quot; 
+                class=&quot;com.sample.app.entity.Car&quot; 
+                view=&quot;carEdit&quot;/&gt;
+
+    &lt;runtimePropsDatasource id=&quot;runtimePropsDs&quot; 
+                            mainDs=&quot;carDs&quot;/&gt;
+
+    &lt;collectionDatasource id=&quot;categories&quot; 
+                          class=&quot;com.haulmont.cuba.core.entity.Category&quot; 
+                          view=&quot;_local&quot;&gt;
+        &lt;query&gt;
+            select c from sys$Category c where c.entityType=&apos;app$Car&apos;
+        &lt;/query&gt;
+    &lt;/collectionDatasource&gt;
+&lt;/dsContext&gt;</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Для отображения списка категорий и собственно динамических атрибутов используется визуальный компонент <sgmltag>runtimeProperties</sgmltag>:<programlisting>&lt;runtimeProperties id=&quot;runtimePropsFrame&quot; 
+                   runtimeDs=&quot;runtimePropsDs&quot; 
+                   categoriesDs=&quot;categories&quot; 
+                   width=&quot;100%&quot;/&gt;</programlisting></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
     </section>
     <section>
       <title>Пессимистичная блокировка</title>
