@@ -199,7 +199,7 @@ public interface WebConfig extends Config
     /**
      * @return Theme
      */
-    @Default("havana")
+    @Default("iceland")
     @Property("cuba.web.theme")
     String getAppWindowTheme();
 

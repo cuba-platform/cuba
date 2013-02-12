@@ -1,0 +1,16 @@
+// Inherit theme
+@import "../reindeer/reindeer.scss";
+
+// Components
+@import "components/groupbox/groupbox.scss";
+
+@mixin iceland {
+  @include reindeer;
+
+  $color: yellow;
+  .v-button-caption {
+    color: $color;
+  }
+
+  @include cuba-group-box;
+}

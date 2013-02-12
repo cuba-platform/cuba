@@ -713,7 +713,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         );
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("white-border");
-        logoutBtn.setIcon(new ThemeResource("images/exit.png"));
+        logoutBtn.setIcon(new ThemeResource("app/exit.png"));
 //        AppUI.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
@@ -729,7 +729,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("white-border");
-        newWindowBtn.setIcon(new ThemeResource("images/new-window.png"));
+        newWindowBtn.setIcon(new ThemeResource("app/new-window.png"));
         return newWindowBtn;
     }
 

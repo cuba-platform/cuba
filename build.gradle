@@ -18,7 +18,7 @@ allprojects {
 }
 
 buildscript {
-	def cubaPluginVersion = '1.5.1-SNAPSHOT'
+	def cubaPluginVersion = '1.5-SNAPSHOT'
 	def docPluginVersion = '1.2.0-SNAPSHOT'
 	
 	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
@@ -298,15 +298,24 @@ configure(webModule) {
         provided(servletApi)
     }
 
-    task buildThemes(type: CubaWebThemeCreation) {
-        themes = [
-                [themeName: 'reindeer', destFile: 'styles-include.css'],
-        ]
-        cssDir = 'css/VAADIN/themes'
-        destDir = "$buildDir/web/VAADIN/themes"
+//    task buildThemes(type: CubaWebThemeCreation) {
+//        themes = [
+//                [themeName: 'reindeer', destFile: 'styles-include.css'],
+//        ]
+//        cssDir = 'css/VAADIN/themes'
+//        destDir = "$buildDir/web/VAADIN/themes"
+//    }
+
+    task buildScssThemes(type: CubaWebScssThemeCreation) {
+        themes = ['iceland']
+        scssDir = 'themes'
+        destDir = "${project.buildDir}/web/VAADIN/themes"
+//        compress = true
+//        sprites = false
+//        cleanup = true
     }
 
-    assemble.dependsOn buildThemes
+    assemble.dependsOn buildScssThemes
 
     def webOutDir = file("$buildDir/web")
     task webArchive(type: Zip) {

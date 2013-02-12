@@ -154,7 +154,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         titleLayout.setStyleName(getStyle("title"));
         titleLayout.setSpacing(true);
 
-        Embedded logoImage = getLogoImage();
+        Image logoImage = getLogoImage();
         if (logoImage != null) {
             titleLayout.addComponent(logoImage);
             titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
@@ -200,7 +200,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
         okButton.addClickListener(new SubmitListener());
         okButton.setStyleName(getStyle("submit"));
-        okButton.setIcon(new ThemeResource("images/tick.png"));
+        okButton.setIcon(new ThemeResource("app/login-button.png"));
 
         loginFormLayout.addComponent(okButton);
         loginFormLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
@@ -225,12 +225,12 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     @Nullable
-    protected Embedded getLogoImage() {
+    protected Image getLogoImage() {
         final String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", loc);
         if ("loginWindow.logoImage".equals(loginLogoImagePath))
             return null;
 
-        return new Embedded(null, new ThemeResource(loginLogoImagePath));
+        return new Image(null, new ThemeResource(loginLogoImagePath));
     }
 
     protected void initUI() {
