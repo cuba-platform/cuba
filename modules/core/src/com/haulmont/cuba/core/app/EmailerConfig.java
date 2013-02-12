@@ -20,79 +20,95 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
  * @version $Id$
  */
 @Source(type = SourceType.DATABASE)
-public interface EmailerConfig extends Config
-{
+public interface EmailerConfig extends Config {
+
     /**
-     * @return Default "from" address
+     * Default "from" address
      */
     @Property("cuba.email.fromAddress")
     @Default("DoNotReply@haulmont.com")
     String getFromAddress();
     void setFromAddress(String fromAddress);
 
+    /**
+     * SMTP server address.
+     */
     @Property("cuba.email.smtpHost")
     @Default("test.host")
     String getSmtpHost();
 
+    /**
+     * SMTP server port.
+     */
     @Property("cuba.email.smtpPort")
     @Default("25")
     int getSmtpPort();
 
+    /**
+     * Whether to authenticate on SMTP server.
+     */
     @Property("cuba.email.smtpAuthRequired")
     @DefaultBoolean(false)
     boolean getSmtpAuthRequired();
 
+    /**
+     * Whether to use STARTTLS command during the SMTP server authentication.
+     */
     @Property("cuba.email.smtpStarttlsEnable")
     @DefaultBoolean(false)
     boolean getSmtpStarttlsEnable();
 
+    /**
+     * User name for the SMTP server authentication.
+     */
     @Property("cuba.email.smtpUser")
     String getSmtpUser();
 
+    /**
+     * User password for the SMTP server authentication.
+     */
     @Property("cuba.email.smtpPassword")
     String getSmtpPassword();
 
     /**
-     * Used in server startup.
-     * Sending emails will be started after delayCallCount cron ticks (used to not overload server in startup)
+     * How many calls of <code>EmailManager.queueEmailsToSend()</code> to skip after a server startup.
+     * Actual sending will start with the next call.
+     * <p/> This reduces the server load on startup.
      */
     @Property("cuba.email.delayCallCount")
     @Default("2")
     int getDelayCallCount();
 
     /**
-     * MaxResults query limit for load messages from DB in one tick
+     * Max number of messages to read from queue in one <code>EmailManager.queueEmailsToSend()</code> call.
      */
     @Property("cuba.email.messageQueueCapacity")
     @Default("100")
     int getMessageQueueCapacity();
 
     /**
-     * 
-     * @return Quantity of sending attempts after which message's status is set to NOT_SENT
+     * Max number of attempts to send a message, after which the message's status is set to NOT_SENT.
      */
     @Property("cuba.email.defaultSendingAttemptsCount")
     @DefaultInt(10)
     int getDefaultSendingAttemptsCount();
 
     /**
-     *
-     * @return Max time of sending message while it is still considered to be valid
+     * Max time of sending message while it is still considered to be valid.
      */
     @Property("cuba.email.maxSendingTimeSec")
     @DefaultInt(120)
     int getMaxSendingTimeSec();
 
     /**
-     *
-     * @return Admin's email address
+     * All emails go to this address if <code>cuba.email.sendAllToAdmin=true</code>, regardless of actual recipient.
      */
     @Property("cuba.email.adminAddress")
     @Default("address@company.com")
     String getAdminAddress();
 
     /**
-     * If this parameter is set to true, all email messages will be sent to admin's email address
+     * If this parameter is set to true, all email messages go to <code>cuba.email.adminAddress</code>.
      */
     @Property("cuba.email.sendAllToAdmin")
     @DefaultBoolean(false)

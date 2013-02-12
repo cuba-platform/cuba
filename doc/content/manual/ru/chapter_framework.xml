@@ -2147,6 +2147,9 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
             <listitem>
               <para>значение может быть изменено и сохранено во время работы приложения, как через <link linkend="config_interfaces">конфигурационный интерфейс</link>, содержащий это свойство, так и через <link linkend="configStorageMBean">ConfigStorageMBean</link>.</para>
             </listitem>
+            <listitem>
+              <para>значение свойства может быть переопределено для конкретного блока приложения в его файле <filename>app.properties</filename>. Поиск значения всегда происходит в два этапа - сначала в <filename>app.properties</filename>, если не найдено - то в базе данных. Поэтому изменять значение нужно в обоих местах хранения.</para>
+            </listitem>
           </itemizedlist></para>
         <para>Хранящиеся в БД свойства кэшируются на уровне <structname>Middleware</structname>. Очистить кэш можно с помощью JMX-интерфейсов <code>
             <link linkend="configStorageMBean">ConfigStorageMBean</link>
@@ -2873,6 +2876,11 @@ public class Orders implements OrdersMBean {
               </itemizedlist></para>
           </warning>
           <para>JMX ObjectName: <literal>app-core.cuba:type=ConfigStorage</literal>, <literal>app.cuba:type=ConfigStorage</literal>, <literal>app-portal.cuba:type=ConfigStorage</literal></para>
+        </section>
+        <section>
+          <title>EmailerMBean</title>
+          <para><code>EmailerMBean</code> позволяет просмотреть текущие значения параметров <link linkend="email_sending">отсылки email</link>, а также отправить тестовое сообщение.</para>
+          <para>JMX ObjectName: <literal>app-core.cuba:type=Emailer</literal></para>
         </section>
         <section id="persistenceManagerMBean">
           <title>PersistenceManagerMBean</title>
@@ -9379,8 +9387,97 @@ taskHandler.execute();</programlisting>
       </section>
     </section>
     <section id="email_sending">
-      <title>Отсылка email</title>
-      <para>TODO</para>
+      <title>Отправка email</title>
+      <para>Платформа предоставляет средства отправки сообщений электронной почты со следующими возможностями:<itemizedlist>
+          <listitem>
+            <para>Синхронная или асинхронная отправка. В случае синхронной отправки вызывающий код ожидает, пока сообщение не будет передано на SMTP сервер. При асинхронной отправке сообщение сохраняется в базе данных, и управление немедленно возвращается вызывающему коду. Отправка производится позже путем вызова из <link linkend="scheduled_tasks">назначенного задания</link>.  </para>
+          </listitem>
+          <listitem>
+            <para>Надежная фиксация факта отправки и ошибок в базе данных, как для синхронной, так и для асинхронной отправки.</para>
+          </listitem>
+          <listitem>
+            <para>Пользовательский интерфейс для поиска и просмотра информации о посылаемых сообщениях, включая все атрибуты и содержимое сообщений, а также статус отправки и количество предпринятых попыток.</para>
+          </listitem>
+        </itemizedlist></para>
+      <section>
+        <title>Методы отправки</title>
+        <para>Для отправки email на Middleware следует использовать бин <code>EmailerAPI</code>, на клиентском уровне - сервис <code>EmailService</code>.</para>
+        <para>Рассмотрим основные методы этих компонентов:<itemizedlist>
+            <listitem>
+              <para><code>sendEmail()</code> -  синхронная отправка сообщения. Вызывающий код блокируется на время отправки сообщения SMTP серверу.</para>
+              <para>Сообщение может быть передано как в виде набора параметров (список адресатов через запятую, тема, содержимое, массив вложений), так и в виде специального объекта <code>EmailInfo</code>, инкапсулирующего всю эту информацию, плюс позволяющего явно задать адрес отправителя и сформировать тело письма по шаблону <application>FreeMarker</application>.</para>
+              <para>При синхронной отправке может быть сгенерировано исключение <code>EmailException</code>, несущее в себе информацию о том, по каким адресам отправка не удалась, и соответствующие им сообщения об ошибках.</para>
+              <para>В процессе работы метода для каждого адресата в базе данных создается экземпляр сущности <code>SendingMessage</code>, который сначала получает статус <code>SendingStatus.SENDING</code>, а после успешной отправки - <code>SendingStatus.SENT</code>. В случае ошибки отправки статус сообщения меняется на <code>SendingStatus.NOTSENT</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>sendEmailAsync()</code> - асинхронная отправка сообщения. Данный метод возвращает список (по числу получателей) экземпляров <code>SendingMessage</code> со статусом <code>SendingStatus.QUEUE</code>, созданных  в базе данных. Собственно отправка производится при последующем вызове метода <code>EmailManagerAPI.queueEmailsToSend()</code>, который необходимо зарегистрировать в механизме <link linkend="scheduled_tasks">назначенных заданий</link> с желаемой периодичностью.</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section>
+        <title>Вложения</title>
+        <para>Объект <code>EmailAttachment</code> - обёртка, хранящая вложение в виде массива байт (поле <code>data</code>), имя файла (поле <code>name</code>), и при необходимости, уникальный для данного сообщения идентификатор вложения (необязательное, но полезное поле <code>contentId</code>). </para>
+        <para>Идентификатор вложения  может быть использован для вставки в сообщение изображений следующим образом:
+при создании <code>EmailAttachment</code> задаётся уникальный <code>contentId</code>, например <code>myPic</code>. В теле письма для вставки вложения необходимо в качестве пути использовать запись вида: <code>cid:myPic</code>. Т.е. для вставки изображения нужно указать следующий элемент HTML:<programlisting>&lt;img src=&quot;cid:myPic&quot;/&gt;</programlisting></para>
+      </section>
+      <section id="email_sending_properties">
+        <title>Настройка параметров отправки</title>
+        <para>Параметры отправки  email могут быть настроены с помощью перечисленных ниже <link linkend="app_properties">свойств приложения</link>. Все они являются параметрами времени выполнения и хранятся в базе данных, однако могут быть переопределены для конкретного блока Middleware в его файле <filename>app.properties</filename>.</para>
+        <para>Все параметры отправки email доступны через конфигурационный интерфейс <code>EmailerConfig</code>.</para>
+        <itemizedlist>
+          <listitem>
+            <para><property>cuba.email.fromAddress</property> - адрес отправителя по умолчанию. Принимается во внимание, если не указан атрибут <code>EmailInfo.from</code>.</para>
+            <para>Значение по умолчанию: <literal>DoNotReply@haulmont.com</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.smtpHost</property> - адрес SMTP сервера.</para>
+            <para>Значение по умолчанию: <literal>test.host</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.smtpPort</property> - порт SMTP сервера.</para>
+            <para>Значение по умолчанию: <literal>25</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.smtpAuthRequired</property> - требуется ли аутентификация на SMTP сервере. Соответствует параметру <literal>mail.smtp.auth</literal>, передаваемому при создании объекта <code>javax.mail.Session</code>.</para>
+            <para>Значение по умолчанию: <literal>false</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.smtpStarttlsEnable</property> - задает использование команды <literal>STARTTLS</literal> при аутентификации на SMTP сервере. Соответствует параметру <literal>mail.smtp.starttls.enable</literal>, передаваемому при создании объекта <code>javax.mail.Session</code>.</para>
+            <para>Значение по умолчанию: <literal>false</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.smtpUser</property> - имя пользователя для аутентификации на SMTP сервере.</para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.smtpPassword</property> - пароль пользователя для аутентификации на SMTP сервере.</para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.delayCallCount</property> - используется при асинхронной отправке email из очереди для пропуска нескольких первых вызовов <code>EmailManager.queueEmailsToSend()</code> сразу после старта сервера, чтобы снизить нагрузку во время инициализации приложения. Отправка email начнется следующим вызовом.</para>
+            <para>Значение по умолчанию: <literal>2</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.messageQueueCapacity</property> - при асинхронной отправке количество сообщений, читаемое из очереди и отправляемое за один вызов <code>EmailManager.queueEmailsToSend()</code>.</para>
+            <para>Значение по умолчанию: <literal>100</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.defaultSendingAttemptsCount</property> - при асинхронной отправке email количество попыток отправки по умолчанию. Принимается во внимание, если при вызове <code>Emailer.sendEmailAsync()</code> не указан параметр <code>attemptsCount</code>.</para>
+            <para>Значение по умолчанию: <literal>10</literal></para>
+          </listitem>
+          <listitem>
+            <para>cuba.email.maxSendingTimeSec - при асинхронной отправке время в секундах с момента создания SendingMessage в базе данных, в течение которого повторяются попытки отправки данного сообщения.</para>
+            <para>Значение по умолчанию: 120</para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.sendAllToAdmin</property> - указывает, что все сообщения должны отправляться на адрес <property>cuba.email.adminAddress</property>, независимо от указанного адреса получателя. Этот параметр рекомендуется использовать во время отладки системы.</para>
+            <para>Значение по умолчанию: <literal>false</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.email.adminAddress</property> - адрес, на который отправляются все сообщения при включенном свойстве <property>cuba.email.sendAllToAdmin</property>.</para>
+            <para>Значение по умолчанию: <literal>address@company.com</literal></para>
+          </listitem>
+        </itemizedlist>
+        <para>Просмотреть текущие значения параметров, а также отправить тестовое сообщение, можно с помощью JMX-бина <code>app-core.cuba:type=Emailer</code>.</para>
+      </section>
     </section>
     <section id="runtime_properties">
       <title>Динамические атрибуты</title>

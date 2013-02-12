@@ -801,6 +801,12 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.dispatcherSpringContextConfig=cuba-portal-dispatcher-spring.xml portal-dispatcher-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.groovyEvaluatorImport_1">
+        <term>cuba.email.*</term>
+        <listitem>
+          <para>Параметры отправки email, подробно описаны в <xref linkend="email_sending_properties"/></para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.groovyEvaluatorImport">
         <term>cuba.groovyEvaluatorImport</term>
         <listitem>

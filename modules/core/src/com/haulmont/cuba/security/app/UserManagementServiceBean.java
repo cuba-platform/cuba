@@ -313,7 +313,7 @@ public class UserManagementServiceBean implements UserManagementService {
         }
 
         EmailInfo emailInfo = new EmailInfo(user.getEmail(), emailSubject, emailBody);
-        emailerAPI.sendMessagesAsync(emailInfo);
+        emailerAPI.sendEmailAsync(emailInfo);
     }
 
     private Map<User, String> updateUserPasswords(List<UUID> userIds, boolean generatePassword) {
