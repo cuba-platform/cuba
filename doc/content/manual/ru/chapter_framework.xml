@@ -9589,7 +9589,44 @@ taskHandler.execute();</programlisting>
     </section>
     <section id="entity_statistics">
       <title>Статистика сущностей</title>
-      <para>TODO</para>
+      <para>Механизм статистики сущностей  предоставляет данные о текущем количестве экземпляров сущностей в базе данных. Эти данные используются для автоматического принятия решений о выборе способа поиска связанных сущностей и ограничении размера выборок в экранах пользовательского интерфейса.</para>
+      <para>Статистика хранится  в таблице <database>SYS_ENTITY_STATISTICS</database>, соответствующей сущности <code>EntityStatistics</code>. Заполнить статистику можно как вручную, внося соответствующие записи в таблицу, так и автоматически с помощью метода <code>refreshStatistics()</code> JMX-бина <code>
+          <link linkend="persistenceManagerMBean">PersistenceManagerMBean</link>
+        </code>. При указании в качестве параметра имени сущности статистика будет собрана только для данной сущности, в противном случае - для всех. Сбор статистики может занять значительное время и вызвать нежелательную нагрузку на БД, поэтому выполнять его нужно либо вручную, либо <link linkend="scheduled_tasks_cuba">назначенным заданием</link>   в подходящее время.</para>
+      <para>Программный доступ к статистике осуществляется с помощью интерфейса <code>PersistenceManagerAPI</code> на Middleware и <code>PersistenceManagerService</code> на клиентском уровне. Статистика кэшируется в памяти, поэтому если изменения статистики вносятся напрямую в базу данных, для всупления их в силу необходимо перезапустить сервер или вызвать метод <code>PersistenceManagerMBean.flushStatisticsCache()</code>.</para>
+      <para>Рассмотрим атрибуты <code>EntityStatistics</code> и их влияние на поведение системы.<itemizedlist>
+          <listitem>
+            <para><code>name</code> (колонка <database>NAME</database>) - тип сущности в виде имени <link linkend="metaClass">мета-класса</link>, например <code>sales$Customer</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>instanceCount</code> (колонка <database>INSTANCE_COUNT</database>) - примерное текущее количество экземпляров сущности. </para>
+          </listitem>
+          <listitem>
+            <para><code>fetchUI</code> (колонка <database>FETCH_UI</database>) - размер страницы данных, предлагаемый пользователю при извлечении списков сущностей. </para>
+            <para>Например, компонент <link linkend="gui_Filter">
+                <code>Filter</code>
+              </link> устанавливает это число в поле <guilabel>Показывать N строк</guilabel>.</para>
+          </listitem>
+          <listitem>
+            <para><code>maxFetchUI</code> (колонка <database>MAX_FETCH_UI</database>) - максимальное количество экземпляров сущности, которое может быть извлечено и передано на клиентский уровень. </para>
+            <para>Данный параметр играет роль при отображении списков сущностей в компонентах типа <code>
+                <link linkend="gui_LookupField">LookupField</link>
+              </code> и <code>
+                <link linkend="gui_LookupPickerField">LookupPickerField</link>
+              </code>, а также в таблицах без универсального <link linkend="gui_Filter">фильтра</link>, то есть когда на связанный <link linkend="datasources">источник данных</link> не налагается ограничений методом <code>CollectionDatasource.setMaxResults()</code>.  В этом случае сам источник данных ограничивает количество извлекаемых экземпляров значением <code>maxFetchUI</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>lookupScreenThreshold</code> (колонка <database>LOOKUP_SCREEN_THRESHOLD</database>) - порог количества экземпляров сущности, при превышении которого в универсальных механизмах пользовательского интерфейса для поиска связанных сущностей будут использоваться <link linkend="screen_lookup">экраны выбора</link>  вместо выпадающих списков. </para>
+            <para>В частности, этот параметр принимается во внимание компонентом <code>
+                <link linkend="gui_Filter">Filter</link>
+              </code> при выборе параметров фильтрации: до достижения порога используется компонент <code>
+                <link linkend="gui_LookupField">LookupField</link>
+              </code>, при превышении порога - компонент <code>
+                <link linkend="gui_PickerField">PickerField</link>
+              </code>. Поэтому, если необходимо заставить фильтр отображать выбор параметра некоторого типа через экран выбора, достаточно внести запись статистики для этой сущности со значением <code>lookupScreenThreshold</code> меньшим, чем <code>instanceCount</code>.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>JMX-бин <code>PersistenceManagerMBean</code> в атрибутах <code>DefaultFetchUI</code>, <code>DefaultMaxFetchUI</code>, <code>DefaultLookupScreenThreshold</code> позволяет задать значения вышеперечисленных параметров по умолчанию. В результате, если для некоторой сущности статистика отсутствует (что является обычной ситуацией), будет использоваться соответствующий параметр по умолчанию.</para>
     </section>
     <section id="audit">
       <title>Аудит изменений сущностей</title>
