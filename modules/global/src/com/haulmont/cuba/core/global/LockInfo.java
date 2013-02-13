@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.02.2010 11:15:43
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -17,6 +12,12 @@ import com.haulmont.cuba.security.entity.User;
 
 import java.util.Date;
 
+/**
+ * Describes a pessimistic lock of an object.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 @MetaClass(name = "sys$LockInfo")
 public class LockInfo extends AbstractNotPersistentEntity {
 
@@ -30,25 +31,37 @@ public class LockInfo extends AbstractNotPersistentEntity {
     public LockInfo(User user, String entityName, String entityId) {
         this.entityName = entityName;
         this.entityId = entityId;
-        this.since = TimeProvider.currentTimestamp();
+        this.since = AppBeans.get(TimeSource.class).currentTimestamp();
         this.user = user;
     }
 
+    /**
+     * @return locked object id
+     */
     @MetaProperty
     public String getEntityId() {
         return entityId;
     }
 
+    /**
+     * @return locked object type
+     */
     @MetaProperty
     public String getEntityName() {
         return entityName;
     }
 
+    /**
+     * @return when the lock occured
+     */
     @MetaProperty
     public Date getSince() {
         return since;
     }
 
+    /**
+     * @return a user which holds the lock
+     */
     @MetaProperty
     public User getUser() {
         return user;

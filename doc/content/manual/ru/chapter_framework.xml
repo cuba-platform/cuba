@@ -9553,7 +9553,39 @@ taskHandler.execute();</programlisting>
     </section>
     <section>
       <title>Пессимистичная блокировка</title>
-      <para>TODO</para>
+      <section>
+        <title>Блокировка редактирования сущностей</title>
+        <para>Пессимистичная блокировка сущностей применяется, если велика вероятность одновременного редактирования одного и того же экземпляра, и стандартная <link linkend="optimistic_locking">оптимистичная блокировка</link>, основанная на версионности сущностей, порождает слишком много коллизий.</para>
+        <para>Пессимистичная блокировка использует явное блокирование экземпляра сущности при открытии его в <link linkend="screen_edit">экране редактирования</link>. В результате только один пользователь  в некоторый момент времени может редактировать данный экземпляр сущности.</para>
+        <para>Режим пессимистичной блокировки может быть задан для любого класса сущности в процессе настройки или эксплуатации системы. Для этого достаточно выполнить следующие действия:<itemizedlist>
+            <listitem>
+              <para>вставить в таблицу <database>SYS_LOCK_CONFIG</database> запись со следующими значениями полей:<itemizedlist>
+                  <listitem>
+                    <para><database>ID</database> - произвольный идентификатор типа UUID.</para>
+                  </listitem>
+                  <listitem>
+                    <para><database>NAME</database> - наименование блокируемого объекта. Для сущности это должно быть имя ее <link linkend="metaClass">мета-класса</link>. </para>
+                  </listitem>
+                  <listitem>
+                    <para><database>TIMEOUT_SEC</database> - таймаут истечения блокировки в секундах.</para>
+                  </listitem>
+                </itemizedlist></para>
+              <para>Например: <programlisting>insert into sys_lock_config (id, create_ts, name, timeout_sec) values (newid(), current_timestamp, &apos;sales$Order&apos;, 300)</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>перезапустить сервер или выполнить метод <code>reloadConfiguration()</code> JMX-бина <code>app-core.cuba:type=LockManager</code>.</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section>
+        <title>Блокировка произвольных процессов</title>
+        <para>Механизм пессимистичной блокировки можно использовать также для управления совместным выполнением произвольных процессов. Причем блокировки являются распределенными, т.к. информация о них реплицируется в кластере  Middleware. </para>
+        <para>Подробнее см. JavaDoc интерфейсов <code>LockManagerAPI</code> и <code>LockService</code>.</para>
+      </section>
+      <section>
+        <title>Мониторинг блокировок</title>
+        <para>Текущее состояние блокировок можно отслеживать через JMX-бин <code>app-core.cuba:type=LockManager</code>, или через специальный экран, доступный в меню <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Блокировки</guimenuitem>. Экран также позволяет разблокировать любой объект принудительно. </para>
+      </section>
     </section>
     <section id="entity_statistics">
       <title>Статистика сущностей</title>
