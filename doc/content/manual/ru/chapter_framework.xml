@@ -3180,6 +3180,10 @@ query.setParameter(1, customer);</programlisting></para>
           <para>Список макросов может быть расширен в прикладном проекте. Для создания нового макроса необходимо определить бин, реализующий интерфейс <code>QueryMacroHandler</code>, и задать ему <code>@Scope(&quot;prototype&quot;)</code>. Механизм выполнения JPQL  запросов создает все доступные бины типа <code>QueryMacroHandler</code>, и по очереди передает им текст запроса с набором параметров. Очередность вызова обработчиков не определена.</para>
         </section>
       </section>
+      <section id="nativeQuery">
+        <title>Выполнение SQL запросов</title>
+        <para>NativeQuery TODO</para>
+      </section>
     </section>
     <section id="transactions">
       <title>Управление транзакциями</title>
@@ -9629,8 +9633,95 @@ taskHandler.execute();</programlisting>
       <para>JMX-бин <code>PersistenceManagerMBean</code> в атрибутах <code>DefaultFetchUI</code>, <code>DefaultMaxFetchUI</code>, <code>DefaultLookupScreenThreshold</code> позволяет задать значения вышеперечисленных параметров по умолчанию. В результате, если для некоторой сущности статистика отсутствует (что является обычной ситуацией), будет использоваться соответствующий параметр по умолчанию.</para>
     </section>
     <section id="audit">
-      <title>Аудит изменений сущностей</title>
-      <para>TODO</para>
+      <title>Журнал изменений сущностей</title>
+      <para>Механизм журналирования предназначен для отслеживания изменений атрибутов произвольных сущностей в процессе работы приложения. Измененные значения сохраняются в специальной таблице базы данных, список изменений для конкретного экземпляра сущности может быть отображен в пользовательском интерфейсе.</para>
+      <para>Данный механизм перехватывает сохранение сущностей в БД  на уровне <link linkend="entity_listeners">Entity Listeners</link>, т.е. гарантированно отслеживаются все изменения, проходящие через персистентный контекст <code>
+          <link linkend="entityManager">EntityManager</link>
+        </code>. Непосредственное изменение сущностей в базе данных с помощью SQL, в том числе изнутри системы через <link linkend="nativeQuery">
+          <code>NativeQuery</code>
+        </link> и <code>
+          <link linkend="queryRunner">QueryRunner</link>
+        </code>, в журнал не попадает.  </para>
+      <para>Измененные экземпляры сущностей перед сохранением в БД отправляются в  методы <code>registerCreate()</code>, <code>registerModify()</code>, <code>registerDelete()</code> бина <code>EntityLogAPI</code>. Параметр <code>auto</code> этих методов позволяет отделить автоматическое журналирование посредством Entity Listeners от ручного вызова этих же методов в прикладном коде. При вызове из Entity Listeners в параметре <code>auto</code> передается <code>true</code>. </para>
+      <section>
+        <title>Настройка журналирования</title>
+        <para>Аудит настраивается при помощи сущностей <code>LoggedEntity</code> и <code>LoggedAttribute</code> (соответствующих таблицам <database>SEC_LOGGED_ENTITY</database> и <database>SEC_LOGGED_ATTR</database>).</para>
+        <para><code>LoggedEntity</code> описывает тип сущности, изменения которой необходимо журналировать. Атрибуты <code>LoggedEntity</code>:</para>
+        <itemizedlist>
+          <listitem>
+            <para><code>name</code> (колонка <database>NAME</database>) - тип сущности в виде имени <link linkend="metaClass">мета-класса</link>, например <code>sales$Customer</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>auto</code> (колонка <database>AUTO</database>) - нужно ли журналировать изменения при вызове <code>EntityLogAPI</code> с параметром <code>auto = true</code> (т.е. из <link linkend="entity_listeners">Entity Listeners</link>).</para>
+          </listitem>
+          <listitem>
+            <para><code>manual</code> (колонка <database>MANUAL</database>) - нужно ли журналировать изменения при вызове <code>EntityLogAPI</code> с параметром <code>auto = false</code>.</para>
+          </listitem>
+        </itemizedlist>
+        <para><code>LoggedAttribute</code> описывает журналируемый атрибут сущности и содержит ссылку на <code>LoggedEntity</code> и имя атрибута.</para>
+        <para>Для настройки журналирования некоторой сущности достаточно внести соответствующие записи в таблицы <database>SEC_LOGGED_ENTITY</database> и <database>SEC_LOGGED_ATTR</database>. Например, для ведения журнала изменений атрибутов <code>name</code>  и <code>grade</code> сущности <code>Customer</code>, необходимо выполнить:<programlisting>insert into SEC_LOGGED_ENTITY (ID, CREATE_TS, CREATED_BY, NAME, AUTO, MANUAL) 
+values (&apos;25eeb644-e609-11e1-9ada-3860770d7eaf&apos;, now(), &apos;admin&apos;, &apos;sales$Customer&apos;, true, true);
+
+insert into SEC_LOGGED_ATTR (ID, CREATE_TS, CREATED_BY, ENTITY_ID, NAME) 
+values (newid(), now(), &apos;admin&apos;, &apos;25eeb644-e609-11e1-9ada-3860770d7eaf&apos;, &apos;name&apos;);
+
+insert into SEC_LOGGED_ATTR (ID, CREATE_TS, CREATED_BY, ENTITY_ID, NAME) 
+values (newid(), now(), &apos;admin&apos;, &apos;25eeb644-e609-11e1-9ada-3860770d7eaf&apos;, &apos;grade&apos;);</programlisting></para>
+        <para>Для активации механизма журналирования необходимо установить в <code>true</code> атрибут <code>Enabled</code> JMX-бина <code>app-core.cuba:type=EntityLog</code>. Для вступления в силу изменений настройки журналирования, произведенных во время работы приложения, необходимо перезапустить сервер или вызвать метод <code>invalidateCache()</code> этого же бина.</para>
+      </section>
+      <section>
+        <title>Отображение журнала</title>
+        <para>Для просмотра журнала изменений некоторого экземпляра сущности достаточно обычным способом загрузить в источники данных экрана коллекцию экземпляров <code>EntityLogItem</code> и ассоциированных с ними <code>EntityLogAttr</code>, и  создать визуальные компоненты, связанные с этими источниками. Например:<programlisting>&lt;dsContext&gt;
+    &lt;datasource id=&quot;customerDs&quot; 
+                class=&quot;com.sample.sales.entity.Customer&quot; 
+                view=&quot;customerEdit&quot;/&gt;
+
+    &lt;collectionDatasource id=&quot;logDs&quot; 
+                          class=&quot;com.haulmont.cuba.security.entity.EntityLogItem&quot; 
+                          view=&quot;logView&quot;&gt;
+        &lt;query&gt;
+            select i from sec$EntityLog i 
+            where i.entityId = :ds$customerDs order by i.eventTs
+        &lt;/query&gt;
+
+        &lt;collectionDatasource id=&quot;logAttrDs&quot; 
+                              property=&quot;attributes&quot;/&gt;
+    &lt;/collectionDatasource&gt;
+&lt;/dsContext&gt;
+&lt;layout&gt;
+...
+    &lt;split orientation=&quot;vertical&quot; width=&quot;100%&quot; height=&quot;100%&quot;&gt;
+
+        &lt;table id=&quot;logTable&quot; width=&quot;100%&quot; height=&quot;100%&quot;&gt;
+            &lt;columns&gt;
+                &lt;column id=&quot;eventTs&quot;/&gt;
+                &lt;column id=&quot;user.login&quot;/&gt;
+                &lt;column id=&quot;type&quot;/&gt;
+            &lt;/columns&gt;
+            &lt;rows datasource=&quot;logDs&quot;/&gt;
+        &lt;/table&gt;
+
+        &lt;table id=&quot;logAttrTable&quot; width=&quot;100%&quot; height=&quot;100%&quot;&gt;
+            &lt;columns&gt;
+                &lt;column id=&quot;name&quot;/&gt;
+                &lt;column id=&quot;value&quot;/&gt;
+            &lt;/columns&gt;
+            &lt;rows datasource=&quot;logAttrDs&quot;/&gt;
+        &lt;/table&gt;
+
+    &lt;/split&gt;
+...
+&lt;/layout&gt;</programlisting></para>
+        <para>Для отображения локализованных значений журналируемых атрибутов эти атрибуты должны содержать аннотацию <link linkend="localizedValue_annotation">
+            <code>@LocalizedValue</code>
+          </link>. При ее наличии механизм журналирования заполняет поле <code>EntityLogAttr.messagesPack</code>, и таблица, отображающая значения атрибутов из примера выше может использовать колонку <code>locValue</code> вместо <code>value</code>:<programlisting>&lt;table id=&quot;logAttrTable&quot; width=&quot;100%&quot; height=&quot;100%&quot;&gt;
+    &lt;columns&gt;
+        &lt;column id=&quot;name&quot;/&gt;
+        &lt;column id=&quot;locValue&quot;/&gt;
+    &lt;/columns&gt;
+    &lt;rows datasource=&quot;logAttrDs&quot;/&gt;
+&lt;/table&gt;</programlisting></para>
+      </section>
     </section>
     <section id="entity_snapshots">
       <title>Снимки сущностей</title>
