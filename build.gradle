@@ -18,7 +18,7 @@ allprojects {
 }
 
 buildscript {
-	def cubaPluginVersion = '1.5.1-SNAPSHOT'
+	def cubaPluginVersion = '1.5-SNAPSHOT'
 	def docPluginVersion = '1.2.0-SNAPSHOT'
 	
 	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
@@ -123,7 +123,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
     artifacts {
         archives sourceJar
     }
-
+    
     String checkstyleConfigDir = '../../config/checkstyle'
     checkstyleConfigFileName = "$checkstyleConfigDir/checkstyle.xml"
     checkstyleProperties.checkstyleConfigDir = checkstyleConfigFile.parentFile // Required for suppressions.xml linking
@@ -332,7 +332,7 @@ configure(webModule) {
         }
     }
 
-    task buildThemes(dependsOn: compileJava, type: CubaWebThemeCreation) {
+    task buildThemes(type: CubaWebThemeCreation) {
         themes = [
                 [themeName: 'peyto', destFile: 'styles-include.css'],
                 [themeName: 'havana', destFile: 'styles-include.css']
@@ -342,16 +342,15 @@ configure(webModule) {
     }
 
     File webOutDir = new File("$buildDir/web")
-    task buildGwt(dependsOn: buildThemes, type: CubaWebToolkit) {
+    task buildWidgetSet(dependsOn: compileJava, type: CubaWidgetSetBuilding) {
         widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
         widgetSetModules = [webToolkitModule]
         widgetSetClass = 'com.haulmont.cuba.toolkit.gwt.WidgetSet'
 //        jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
         //        compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
     }
-    assemble.dependsOn buildGwt
 
-    task webArchive(dependsOn: buildGwt, type: Zip) {
+    task webArchive(dependsOn: [buildWidgetSet, buildThemes], type: Zip) {
         from file('web')
         from webOutDir
         exclude '**/web.xml', '**/app.properties'
