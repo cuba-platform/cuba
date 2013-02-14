@@ -149,6 +149,13 @@ public class EntityManagerImpl implements EntityManager {
         return query;
     }
 
+    @Override
+    public <T> TypedQuery<T> createNativeQuery(String sql, Class<T> resultClass) {
+        QueryImpl query = new QueryImpl(this, true, resultClass, metadata, fetchPlanMgr);
+        query.setQueryString(sql);
+        return query;
+    }
+
     public void setView(View view) {
         fetchPlanMgr.setView(delegate.getFetchPlan(), view);
         views.clear();

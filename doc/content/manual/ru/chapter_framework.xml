@@ -3108,6 +3108,28 @@ query.setParameter(1, customer);</programlisting></para>
               <para><code>getDelegate()</code> - возвращает экземпляр <code>javax.persistence.Query</code>, предоставляемый реализацией ORM.</para>
             </listitem>
           </itemizedlist></para>
+        <para>При выполнении запроса через <code>Query</code> изменения в текущем персистентном контексте не учитываются, т.е. запрос просто выполняется в БД. Если результатом выборки являются экземпляры, уже находящиеся в персистентном контексте, то в результате запроса окажутся именно они, а не прочитанные из БД. Ситуацию поясняет следующий фрагмент теста:<programlisting>TypedQuery&lt;User&gt; query;
+List&lt;User&gt; list;
+
+query = em.createQuery(&quot;select u from sec$User u where u.name = ?1&quot;, User.class);
+query.setParameter(1, &quot;testUser&quot;);
+list = query.getResultList();
+assertEquals(1, list.size());
+User user = list.get(0);
+
+user.setName(&quot;newName&quot;);
+
+query = em.createQuery(&quot;select u from sec$User u where u.name = ?1&quot;, User.class);
+query.setParameter(1, &quot;testUser&quot;);
+list = query.getResultList();
+assertEquals(1, list.size());
+User user1 = list.get(0);
+
+assertTrue(user1 == user);</programlisting></para>
+        <para>Такое поведение определяется параметром <code>openjpa.IgnoreChanges=true</code>, заданным в файле <link linkend="persistence.xml">
+            <filename>persistence.xml</filename>
+          </link> базового проекта <structname>cuba</structname>. В прикладном проекте данный параметр можно изменить, указав его в собственном <filename>persistence.xml</filename>.</para>
+        <para>Запросы, модифицирующие данные (<code>update</code>, <code>delete</code>) приводят к сбросу (flush) в базу данных текущего песрсистентного контекста перед выполнением. Другими словами, ORM сначала синхронизирует состояние сущностей в персистентном контексте и в БД, а уже потом выполняет модифицирующий запрос. Рекомендуется выполнять такие запросы в неизмененном персистентном контексте, чтобы исключить неявные действия ORM, которые могут отрицательно сказаться на производительности.</para>
         <section>
           <title>Поиск подстроки без учета регистра</title>
           <para>Для удобного формирования условия поиска без учета регистра символов и по любой части строки можно использовать префикс <literal>(?i)</literal> имени параметра запроса, например:<programlisting>select c from sales$Customer c where c.name like :(?i)name</programlisting></para>
@@ -3182,7 +3204,22 @@ query.setParameter(1, customer);</programlisting></para>
       </section>
       <section id="nativeQuery">
         <title>Выполнение SQL запросов</title>
-        <para>NativeQuery TODO</para>
+        <para>ORM позволяет выполнять SQL запросы к базе данных, возвращая как списки отдельных полей, так и экземпляры сущностей. Для этого необходимо создать объект <code>Query</code> или <code>TypedQuery</code> вызовом одного из методов <code>EntityManager.createNativeQuery()</code>. </para>
+        <para>Если  выполняется выборка отдельных колонок таблицы, то результирующий список будет содержать строки в виде <code>Object[]</code>. Например:<programlisting>Query query = em.createNativeQuery(&quot;select ID, NAME from SALES_CUSTOMER where NAME like ?1&quot;);
+query.setParameter(1, &quot;%Company%&quot;);
+List list = query.getResultList();
+for (Iterator it = list.iterator(); it.hasNext(); ) {
+    Object[] row = (Object[]) it.next();
+    UUID id = UUID.fromString((String) row[0]);
+    String name = (String) row[1];
+}</programlisting></para>
+        <para>Следует иметь в виду, что значения колонок типа <code>UUID</code> возвращаются в виде <code>String</code>, а параметры этого типа также должны задаваться своим строковым представлением.</para>
+        <para>Если вместе с текстом запроса передан класс результирующей сущности, то возвращается <code>TypedQuery</code> и после выполнения производится попытка отображения результатов запроса на атрибуты сущности. Например:<programlisting>TypedQuery&lt;Customer&gt; query = em.createNativeQuery(
+    &quot;select * from SALES_CUSTOMER where NAME like ?1&quot;, 
+    Customer.class);
+query.setParameter(1, &quot;%Company%&quot;);
+List&lt;Customer&gt; list = query.getResultList();</programlisting></para>
+        <para>Поведение SQL запросов, возвращающих сущности, и модифицирующих запросов (<code>update</code>, <code>delete</code>), по отношению к текущему персистентному контексту аналогично описанному для <link linkend="query">JPQL запросов</link>.</para>
       </section>
     </section>
     <section id="transactions">

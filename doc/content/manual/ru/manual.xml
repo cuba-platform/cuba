@@ -358,7 +358,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <para>Набор файлов <filename>persistence.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
           <link linkend="cuba.persistenceConfig">cuba.persistenceConfig</link>
         </property>. </para>
-      <para>На старте блока <structname>Middleware</structname> из заданных файлов собирается один <filename>persistence.xml</filename> и сохраняется в <link linkend="work_dir">рабочем каталоге</link> приложения. Параметры ORM могут переопределяться каждым следующим файлом списка, поэтому порядок указания файлов важен. Существует несколько параметры, жестко определяемые типом используемой СУБД (заданным в <property>
+      <para>На старте блока <structname>Middleware</structname> из заданных файлов собирается один <filename>persistence.xml</filename> и сохраняется в <link linkend="work_dir">рабочем каталоге</link> приложения. Параметры ORM могут переопределяться каждым следующим файлом списка, поэтому порядок указания файлов важен. Существует несколько параметров, жестко определяемых типом используемой СУБД (заданным в <property>
           <link linkend="cuba.dbmsType">cuba.dbmsType</link>
         </property>), которые невозможно переопределить в <filename>persistence.xml</filename>, это:<itemizedlist>
           <listitem>
@@ -370,7 +370,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         </itemizedlist>Кроме того, при выключенном свойстве приложения <property>
           <link linkend="cuba.disableOrmXmlGeneration">cuba.disableOrmXmlGeneration</link>
         </property> и наличии <link linkend="extension">расширенных сущностей</link> на старте приложения в рабочем каталоге создается файл <filename>orm.xml</filename> и путь к нему записывается в параметр <literal>openjpa.MetaDataFactory</literal>. В этом случае параметр <literal>openjpa.MetaDataFactory</literal> также нельзя задать в <filename>persistence.xml</filename> заранее. </para>
-      <para>Пример:<programlisting>&lt;persistence xmlns=&quot;http://java.sun.com/xml/ns/persistence&quot; version=&quot;1.0&quot;&gt;
+      <para>Пример файла:<programlisting>&lt;persistence xmlns=&quot;http://java.sun.com/xml/ns/persistence&quot; version=&quot;1.0&quot;&gt;
     &lt;persistence-unit name=&quot;sales&quot; transaction-type=&quot;RESOURCE_LOCAL&quot;&gt;
         &lt;class&gt;com.sample.sales.entity.Customer&lt;/class&gt;
         &lt;class&gt;com.sample.sales.entity.Order&lt;/class&gt;
