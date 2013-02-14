@@ -62,7 +62,7 @@ def desktopModule = project(':cuba-desktop')
 def uiTestModule = project(':cuba-test-ui')
 def portalModule = project(':cuba-portal')
 
-def vaadinVersion = '7.0.0.h.M2'
+def vaadinVersion = '7.0.0.h.M3'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
@@ -299,18 +299,16 @@ configure(webModule) {
     }
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
-        themes = ['iceland']
         scssDir = 'themes'
+        themes = ['iceland']
         destDir = "${project.buildDir}/web/VAADIN/themes"
 //        compress = true
 //        sprites = false
 //        cleanup = true
     }
 
-    assemble.dependsOn buildScssThemes
-
     def webOutDir = file("$buildDir/web")
-    task webArchive(type: Zip) {
+    task webArchive(dependsOn: buildScssThemes, type: Zip) {
         from file('web')
         from webOutDir
         exclude '**/web.xml', '**/app.properties'
@@ -345,15 +343,13 @@ configure(webToolkitModule) {
     }
 
     def webOutDir = file("$buildDir/web")
-    task buildWidgetSet(dependsOn: compileJava, type: CubaWebToolkit) {
+    task buildWidgetSet(dependsOn: compileJava, type: CubaWidgetSetBuilding) {
         widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
         widgetSetModules = [webToolkitModule, webModule]
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
         //compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
     }
-
-    assemble.dependsOn buildWidgetSet
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
         from file('web')
