@@ -9669,7 +9669,7 @@ taskHandler.execute();</programlisting>
         </itemizedlist></para>
       <para>JMX-бин <code>PersistenceManagerMBean</code> в атрибутах <code>DefaultFetchUI</code>, <code>DefaultMaxFetchUI</code>, <code>DefaultLookupScreenThreshold</code> позволяет задать значения вышеперечисленных параметров по умолчанию. В результате, если для некоторой сущности статистика отсутствует (что является обычной ситуацией), будет использоваться соответствующий параметр по умолчанию.</para>
     </section>
-    <section id="audit">
+    <section id="entity_log">
       <title>Журнал изменений сущностей</title>
       <para>Механизм журналирования предназначен для отслеживания изменений атрибутов произвольных сущностей в процессе работы приложения. Измененные значения сохраняются в специальной таблице базы данных, список изменений для конкретного экземпляра сущности может быть отображен в пользовательском интерфейсе.</para>
       <para>Данный механизм перехватывает сохранение сущностей в БД  на уровне <link linkend="entity_listeners">Entity Listeners</link>, т.е. гарантированно отслеживаются все изменения, проходящие через персистентный контекст <code>
@@ -9680,6 +9680,7 @@ taskHandler.execute();</programlisting>
           <link linkend="queryRunner">QueryRunner</link>
         </code>, в журнал не попадает.  </para>
       <para>Измененные экземпляры сущностей перед сохранением в БД отправляются в  методы <code>registerCreate()</code>, <code>registerModify()</code>, <code>registerDelete()</code> бина <code>EntityLogAPI</code>. Параметр <code>auto</code> этих методов позволяет отделить автоматическое журналирование посредством Entity Listeners от ручного вызова этих же методов в прикладном коде. При вызове из Entity Listeners в параметре <code>auto</code> передается <code>true</code>. </para>
+      <para>В журнале сохраняется информация о том, кто и  когда изменил данный экземпляр, а также новые значения измененных атрибутов.</para>
       <section>
         <title>Настройка журналирования</title>
         <para>Аудит настраивается при помощи сущностей <code>LoggedEntity</code> и <code>LoggedAttribute</code> (соответствующих таблицам <database>SEC_LOGGED_ENTITY</database> и <database>SEC_LOGGED_ATTR</database>).</para>
@@ -9762,7 +9763,64 @@ values (newid(), now(), &apos;admin&apos;, &apos;25eeb644-e609-11e1-9ada-3860770
     </section>
     <section id="entity_snapshots">
       <title>Снимки сущностей</title>
-      <para>TODO</para>
+      <para>Механизм сохранения снимков сущностей, так же как и <link linkend="entity_log">журнал изменений</link>, предназначен для отслеживания изменений данных в процессе работы приложения. Его отличительными особенностями являются:<itemizedlist>
+          <listitem>
+            <para>Сохраняются не изменения некоторых атрибутов одного экземпляра, а состояние (снимок) целого графа сущностей, определяемого заданным <link linkend="views">представлением</link>.</para>
+          </listitem>
+          <listitem>
+            <para>Процесс сохранения снимка вызывается явно из кода клиентского уровня.</para>
+          </listitem>
+          <listitem>
+            <para>Платформа предоставляет возможность просмотра  и сравнения между собой сохраненных снимков.</para>
+          </listitem>
+        </itemizedlist></para>
+      <section>
+        <title>Сохранение снимков</title>
+        <para>Для сохранения снимка некоторого графа сущностей достаточно вызвать метод <code>EntitySnapshotService.createSnapshot()</code> и передать ему основную сущность графа и  <link linkend="views">представление</link>, описывающее граф. Снимок создается по загруженной сущности, никаких обращений к базе данных не производится, поэтому снимок в результате содержит не больше полей, чем представление, с которым была загружена основная сущность.</para>
+        <para>Граф Java объектов преобразуется в XML и сохраняется в базе данных вместе со ссылкой на основную сущность в таблице <database>SYS_ENTITY_SNAPSHOT</database>, соответствующей сущности <code>EntitySnapshot</code>.  </para>
+        <para>Как правило, снимки требуется сохранять после коммита <link linkend="screen_edit">экрана редактирования</link>. Для этого можно переопределить метод <code>postCommit()</code> контроллера экрана, например:<programlisting>public class CustomerEditor extends AbstractEditor&lt;Customer&gt; {
+
+    @Inject
+    protected Datasource&lt;Customer&gt; customerDs;
+
+    @Inject
+    protected EntitySnapshotService entitySnapshotService;
+
+...
+    @Override
+    protected boolean postCommit(boolean committed, boolean close) {
+        if (committed) {
+            entitySnapshotService.createSnapshot(customerDs.getItem(), customerDs.getView());
+        }
+        return super.postCommit(committed, close);
+    }
+}</programlisting></para>
+      </section>
+      <section>
+        <title>Отображение снимков</title>
+        <para>Для отображения сохраненных для некоторой сущности снимков можно использовать фрейм <filename>com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml</filename>, например:<programlisting>&lt;iframe id=&quot;diffFrame&quot; 
+        src=&quot;/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml&quot;
+        width=&quot;100%&quot; 
+        height=&quot;100%&quot;/&gt;</programlisting></para>
+        <para>В контроллере экрана редактирования необходимо вызвать загрузку снимков во фрейм:<programlisting>public class CustomerEditor extends AbstractEditor&lt;Customer&gt; {
+
+    @Inject
+    protected EntityDiffViewer diffFrame;
+
+...
+    @Override
+    protected void postInit() {
+        if (!PersistenceHelper.isNew(getItem())) {
+            diffFrame.loadVersions(getItem());
+        }
+    }
+}</programlisting></para>
+        <para>Фрейм <filename>diff-view.xml</filename> отображает список сохраненных для данной сущности снимков с возможностью их сравнения. Для каждого снимка указывается пользователь, дата и время сохранения. При выборе из списка некоторого снимка сущности в таблице сравнения показываются изменения  данных по сравнению с предыдущим снимком. В первом снимке измененными считаются все атрибуты. Если выбрано два снимка, то в таблицу   выводится результат их сравнения.
+</para>
+        <para>В таблице сравнения отображаются имена атрибутов и их новые значения, при выборе строки показывается детальная информация по изменениям атрибута в двух снимках. Ссылочные поля выводятся в соответствии с их шаблоном <link linkend="namePattern">
+            <code>@NamePattern</code>
+          </link>. При сравнении коллекций добавленные и удаленные элементы выделяются цветом (зеленый, красный), а элементы с измененными атрибутами остаются без выделения. Изменение позиций элементов не учитывается.  </para>
+      </section>
     </section>
     <section id="file_storage">
       <title>Хранилище файлов</title>
