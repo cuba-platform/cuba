@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.10.2009 12:15:26
- *
- * $Id$
  */
 package com.haulmont.cuba.core.entity;
 
@@ -22,6 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @javax.persistence.Entity(name = "sys$FileDescriptor")
 @Table(name = "SYS_FILE")
 @NamePattern("%s (%s)|name,createDate")
@@ -29,6 +28,7 @@ import java.util.UUID;
 public class FileDescriptor extends StandardEntity {
 
     private static final long serialVersionUID = 564683944299730504L;
+
     public static final String DATE_FMT = "yyyy-MM-dd";
 
     @Column(name = "NAME", length = 500)

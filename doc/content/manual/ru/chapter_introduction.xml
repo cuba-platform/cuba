@@ -144,9 +144,6 @@
                     <para><link linkend="entity_log">Средства ведения журнала аудита</link> изменений <glossterm linkend="entity">сущностей</glossterm> и
 <link linkend="entity_snapshots"> сохранения версий</link></para>
                   </listitem>
-                  <listitem>
-                    <para>Средства организации <link linkend="objects_cache">кэшей данных</link></para>
-                  </listitem>
                 </itemizedlist></para>
             </listitem>
             <listitem>

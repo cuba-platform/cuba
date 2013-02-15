@@ -104,10 +104,6 @@
         <property name="poolSize" value="10"/>
     </bean>
 
-    <task:scheduled-tasks scheduler="scheduler">
-        <task:scheduled ref="cuba_FileUploading" method="clearTempDirectory" cron="0 0 0 * * 2,4,6"/>
-    </task:scheduled-tasks>
-
     <!-- Background tasks support -->
 
     <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.web.gui.executors.impl.WebTasksWatchDog"/>

@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.export.ExportDisplay;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -153,7 +154,7 @@ public class ControllerDependencyInjector {
             return frame.getDsContext();
 
         } else if (DataSupplier.class.isAssignableFrom(type)) {
-            // Injecting the DataService
+            // Injecting the DataSupplier
             return frame.getDsContext().getDataService();
 
         } else if (WindowContext.class.isAssignableFrom(type)) {
@@ -163,6 +164,10 @@ public class ControllerDependencyInjector {
         } else if (Action.class.isAssignableFrom(type)) {
             // Injecting an action
             return ComponentsHelper.findAction(name, frame);
+
+        } else if (ExportDisplay.class.isAssignableFrom(type)) {
+            // Injecting an ExportDisplay
+            return AppConfig.createExportDisplay(frame);
 
         } else {
             Object instance;

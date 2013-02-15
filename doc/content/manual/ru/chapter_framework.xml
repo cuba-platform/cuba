@@ -4232,7 +4232,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
         </section>
-        <section>
+        <section id="screen_controller_injection">
           <title>Зависимости контроллеров</title>
           <para>В контроллерах можно использовать Dependency Injection для получения ссылок на используемые объекты. Для этого нужно объявить либо поле соответствующего типа, либо метод доступа на запись (setter) с соответствующим типом результата, и добавить ему одну из следующих аннотаций:<itemizedlist>
               <listitem>
@@ -9680,7 +9680,7 @@ taskHandler.execute();</programlisting>
           <link linkend="queryRunner">QueryRunner</link>
         </code>, в журнал не попадает.  </para>
       <para>Измененные экземпляры сущностей перед сохранением в БД отправляются в  методы <code>registerCreate()</code>, <code>registerModify()</code>, <code>registerDelete()</code> бина <code>EntityLogAPI</code>. Параметр <code>auto</code> этих методов позволяет отделить автоматическое журналирование посредством Entity Listeners от ручного вызова этих же методов в прикладном коде. При вызове из Entity Listeners в параметре <code>auto</code> передается <code>true</code>. </para>
-      <para>В журнале сохраняется информация о том, кто и  когда изменил данный экземпляр, а также новые значения измененных атрибутов.</para>
+      <para>Журнал содержит информация о том, кто и  когда изменил данный экземпляр, а также новые значения измененных атрибутов. Записи журнала сохраняются в таблице <database>SEC_ENTITY_LOG</database> базы данных, соответствующей сущности <code>EntityLogItem</code>. Измененные значения атрибутов хранятся в этой же таблице в колонке <database>CHANGES</database>, а при чтении на Middleware преобразуются в экземпляры сущности <code>EntityLogAttr</code>. </para>
       <section>
         <title>Настройка журналирования</title>
         <para>Аудит настраивается при помощи сущностей <code>LoggedEntity</code> и <code>LoggedAttribute</code> (соответствующих таблицам <database>SEC_LOGGED_ENTITY</database> и <database>SEC_LOGGED_ATTR</database>).</para>
@@ -9824,15 +9824,137 @@ values (newid(), now(), &apos;admin&apos;, &apos;25eeb644-e609-11e1-9ada-3860770
     </section>
     <section id="file_storage">
       <title>Хранилище файлов</title>
-      <para>TODO</para>
-    </section>
-    <section id="objects_cache">
-      <title>Организация кэшей данных</title>
-      <para>TODO</para>
+      <para>Хранилище файлов обеспечивает загрузку, хранение и выгрузку произвольных файлов, ассоциированных с сущностями системы. Стандартная реализация сохраняет файлы вне основной базы данных, в специальной структуре файловой системы.</para>
+      <para>Механизм работы с  файлами состоит из следующих частей:<itemizedlist>
+          <listitem>
+            <para>Сущность <code>FileDescriptor</code> - описатель загруженного файла (не путать с <code>java.io.FileDescriptor</code>), позволяющий ссылаться на файл из объектов модели данных.</para>
+          </listitem>
+          <listitem>
+            <para>Интерфейс <code>FileStorageAPI</code> - доступ к хранилищу файлов на <link linkend="app_tiers">уровне</link> Middleware. Основные методы:<itemizedlist>
+                <listitem>
+                  <para><code>saveStream()</code> - сохранить содержимое файла, переданное в <code>InputStream</code>, по данным указанного <code>FileDescriptor</code>.</para>
+                </listitem>
+                <listitem>
+                  <para><code>openStream()</code> - вернуть содержимое файла, указанного объектом <code>FileDescriptor</code>,  в виде открытого <code>InputStream</code>.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para>Класс <code>FileUploadController</code> - контроллер Spring MVC, позволяющий отправлять файлы с клиентского    уровня на  Middleware посредством HTTP POST запросов.</para>
+          </listitem>
+          <listitem>
+            <para>Класс <code>FileDownloadController</code> - контроллер Spring MVC, позволяющий получать файлы с Middleware на клиентский уровень посредством HTTP GET запросов.</para>
+          </listitem>
+          <listitem>
+            <para>Визуальные компоненты <code>
+                <link linkend="gui_FileUploadField">FileUpload</link>
+              </code> и <code>
+                <link linkend="gui_FileMultiUploadField">FileMultiUpload</link>
+              </code> - позволяют загрузить файлы с компьютера пользователя на клиентский уровень приложения, и затем организовать их передачу на Middleware.</para>
+          </listitem>
+          <listitem>
+            <para>Интерфейс <code>FileUploadingAPI</code> - промежуточное хранилище загружаемых файлов на клиентском уровне. Используется вышеупомянутыми компонентами для загрузки файлов на клиентский уровень. В прикладном коде используется метод <code>putFileIntoStorage()</code>, перемещающий файл в постоянное хранилище на Middleware.</para>
+          </listitem>
+          <listitem>
+            <para><code>ExportDisplay</code> - интерфейс клиентского уровня, позволяющий выгружать различные ресурсы приложения на компьютер пользователя. Для получения файлов из хранилища можно использовать метод <code>show()</code>, принимающий <code>FileDescriptor</code>. Экземпляр <code>ExportDisplay</code> можно получить либо вызовом статического метода <code>AppConfig.createExportDisplay()</code>, либо <link linkend="screen_controller_injection">инжекцией</link> в класс контроллера.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Передача файлов между пользовательским компьютером и хранилищем в обе стороны производится только путем копирования данных между потоками ввода-вывода. Ни на каком уровне приложения файл не оказывается целиком в памяти, поэтому возможна передача файлов практически любых размеров.</para>
+      <section id="file_upload">
+        <title>Загрузка файлов</title>
+        <para>Для загрузки файлов с компьютера пользователя в хранилище следует использовать компоненты <code>
+            <link linkend="gui_FileUploadField">FileUpload</link>
+          </code> и <code>
+            <link linkend="gui_FileMultiUploadField">FileMultiUpload</link>
+          </code>. Примеры использования приведены в описании компонентов.</para>
+        <para>Промежуточное хранилище клиентского уровня <code>FileUploadingAPI</code> для хранения временных файлов использует каталог, заданный свойством приложения <property>
+            <link linkend="cuba.tempDir">cuba.tempDir</link>
+          </property>.  В случае сбоев в нем могут оставаться временные файлы, для  удаления которых желательно в клиентских блоках приложения периодически вызывать метод <code>clearTempDirectory()</code> бина <code>cuba_FileUploading</code>. Это можно сделать, создав задание планировщика в файле <filename>
+            <link linkend="spring.xml">spring.xml</link>
+          </filename> модуля <structname>web</structname> (и/или <structname>desktop</structname>) проекта приложения, например:<programlisting>&lt;task:scheduled-tasks scheduler=&quot;scheduler&quot;&gt;
+    &lt;task:scheduled ref=&quot;cuba_FileUploading&quot; method=&quot;clearTempDirectory&quot; cron=&quot;0 0 0 * * 2,4,6&quot;/&gt;
+&lt;/task:scheduled-tasks&gt;</programlisting></para>
+        <para>В данном случае очистка будет производиться в 00:00:00 каждый вторник, четверг и субботу.</para>
+      </section>
+      <section id="file_download">
+        <title>Выгрузка данных</title>
+        <para>Для выгрузки файлов на клиентском уровне следует использовать интерфейс <code>ExportDisplay</code>, получив ссылку на него вызовом статического метода <code>AppConfig.createExportDisplay()</code>, либо <link linkend="screen_controller_injection">инжекцией</link> в класс контроллера. Например:<programlisting>AppConfig.createExportDisplay(this).show(fileDescriptor);</programlisting></para>
+        <para>Метод <code>show()</code> может принимать дополнительный параметр типа <code>ExportFormat</code>, в котором можно задать тип содержимого и расширение имени файла. Если формат не передан, расширение берется из <code>FileDescriptor</code>, а типом содержимого принимается <code>application/octet-stream</code>. </para>
+        <para>При использовании пользователем веб-интерфейса от расширения имени файла зависит, будет ли файл выгружаться через диалог сохранения или открытия файлов браузера (<code>Content-Disposition = attachment</code>), или браузер попытается отобразить содержимое прямо в своем окне (<code>Content-Disposition = inline</code>). Список расширений файлов, отображаемых в окне браузера, задается свойством приложения <property>
+            <link linkend="cuba.web.viewFileExtensions">cuba.web.viewFileExtensions</link>
+          </property>.</para>
+      </section>
+      <section id="file_storage_impl">
+        <title>Стандартная реализация хранилища</title>
+        <para>Стандартная реализация хранит файлы в специальной структуре каталогов на одном или нескольких файловых ресурсах.</para>
+        <para>Корни структуры можно задать в свойстве приложения <property>
+            <link linkend="cuba.fileStorageDir">cuba.fileStorageDir</link>
+          </property>. Формат - список путей через запятую. Например: <programlisting>cuba.fileStorageDir=/work/sales/filestorage,/mnt/backup/filestorage</programlisting></para>
+        <para>Если данное свойство не задано, хранилище будет создано в подкаталоге <filename>filestorage</filename> <link linkend="work_dir">рабочего каталога</link> Middleware. В стандартном варианте развертывания в Tomcat это каталог <filename>tomcat/work/app-core/filestorage</filename>. </para>
+        <para>В случае указания нескольких ресурсов хранилище ведет себя следующим образом: <itemizedlist>
+            <listitem>
+              <para>Первый каталог в списке является <firstterm>основным</firstterm>, остальные - <firstterm>резервными</firstterm>. </para>
+            </listitem>
+            <listitem>
+              <para>Запись сохраняемых файлов производится в основной каталог, а затем файл копируется во все резервные каталоги. </para>
+              <para>Перед записью проверяется доступность каждого каталога. Если недоступен основной каталог, выбрасывается исключение и запись не производится. Если недоступен какой-то из резервных каталогов, запись все равно производится, в лог выводится сообщение об ошибке. </para>
+            </listitem>
+            <listitem>
+              <para>Чтение производится из основного каталога. </para>
+              <para>При недоступности основного каталога чтение производится из первого резервного каталога, в котором имеется данный файл. В лог выводится сообщение об ошибке. </para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Файловая структура хранилища организована следующим образом:<itemizedlist>
+            <listitem>
+              <para>Имеется три уровня каталогов, соответствующих дате загрузки файла - год, месяц, день.</para>
+            </listitem>
+            <listitem>
+              <para>Файл сохраняется в каталоге дня. Именем файла является  идентификатор соответствующего объекта <code>FileDescriptor</code>. Расширение файла - исходное.</para>
+            </listitem>
+            <listitem>
+              <para>В корне структуры хранилища ведется файл <filename>storage.log</filename>, содержащий информацию о том, какой файл, когда и каким пользователем был записан в хранилище. Этот журнал не несет никакой функциональности, но может быть полезен при поиске проблем.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>JMX-бин <code>app-core.cuba:type=FileStorage</code> отображает текущий список корней хранилища, а также предоставляет следующие методы для поиска проблем:<itemizedlist>
+            <listitem>
+              <para><code>findOrphanDescriptors()</code> - найти в базе данных все экземпляры <code>FileDescriptor</code>, для которых не имеется соответствующего файла в хранилище.</para>
+            </listitem>
+            <listitem>
+              <para><code>findOrphanFiles()</code> - найти файлы в хранилище, для которых не имеется соответствующего экземпляра <code>FileDescriptor</code> в БД.</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
     </section>
     <section id="queryRunner">
       <title>Выполнение SQL с помощью QueryRunner</title>
-      <para>TODO</para>
+      <para><code>QueryRunner</code> - класс, предназначенный для выполнения SQL. Его следует использовать вместо <application>JDBC</application> везде, где есть необходимость работы с SQL и нежелательно применение аналогичных <link linkend="nativeQuery">средств ORM</link>. </para>
+      <para>QueryRunner платформы является вариантом <ulink url="http://commons.apache.org/dbutils/apidocs/org/apache/commons/dbutils/QueryRunner.html">Apache DbUtils QueryRunner</ulink>, усовершенствованным для использования Java Generics.</para>
+      <para>Пример использования: <programlisting>
+
+QueryRunner runner = new QueryRunner(persistence.getDataSource());
+try {
+    Set&lt;String&gt; scripts = runner.query(&quot;select SCRIPT_NAME from SYS_DB_CHANGELOG&quot;,
+            new ResultSetHandler&lt;Set&lt;String&gt;&gt;() {
+                public Set&lt;String&gt; handle(ResultSet rs) throws SQLException {
+                    Set&lt;String&gt; rows = new HashSet&lt;String&gt;();
+                    while (rs.next()) {
+                        rows.add(rs.getString(1));
+                    }
+                    return rows;
+                }
+            });
+    return scripts;
+} catch (SQLException e) {
+    throw new RuntimeException(e);
+}</programlisting></para>
+      <para>Есть два варианта использования <code>QueryRunner</code> - либо в текущей транзакции, либо в отдельной в режиме autocommit.<itemizedlist>
+          <listitem>
+            <para>Для выполнения запроса в текущей транзакции необходимо  создать экземпляр <code>QueryRunner</code> конструктором без параметров, не передавая <code>DataSource</code>. После этого нужно вызывать методы <code>query()</code> или <code>update()</code>, передавая в них <code>Connection</code>, полученный вызовом <code>EntityManager.getConnection()</code>. После выполнения закрывать <code>Connection</code> не нужно, он будет закрыт при коммите транзакции. </para>
+          </listitem>
+          <listitem>
+            <para>Для выполнения запроса в отдельной транзакции необходимо создать экземпляр <code>QueryRunner</code> конструктором с параметром <code>DataSource</code>, получив экземпляр <code>DataSource</code> вызовом <code>Persistence.getDataSource()</code>. После этого нужно вызывать методы <code>query()</code> или <code>update()</code> без передачи какого-либо <code>Connection</code>, оно будет создано из указанного <code>DataSource</code> и затем сразу закрыто.</para>
+          </listitem>
+        </itemizedlist> </para>
     </section>
     <section>
       <title>Интеграция с MyBatis</title>

@@ -50,7 +50,6 @@ public class FileStorage implements FileStorageAPI {
 
     protected volatile File[] storageRoots;
 
-    @Override
     public File[] getStorageRoots() {
         if (storageRoots == null) {
             String conf = configuration.getConfig(ServerConfig.class).getFileStorageDir();
@@ -198,7 +197,7 @@ public class FileStorage implements FileStorageAPI {
     }
 
     @Override
-    public InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException {
+    public InputStream openStream(FileDescriptor fileDescr) throws FileStorageException {
         checkNotNull(fileDescr, "No file descriptor");
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
 
@@ -233,7 +232,7 @@ public class FileStorage implements FileStorageAPI {
 
     @Override
     public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
-        InputStream inputStream = openFileInputStream(fileDescr);
+        InputStream inputStream = openStream(fileDescr);
         try {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
@@ -258,7 +257,6 @@ public class FileStorage implements FileStorageAPI {
         }
     }
 
-    @Override
     public File getStorageDir(File rootDir, Date createDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(createDate);

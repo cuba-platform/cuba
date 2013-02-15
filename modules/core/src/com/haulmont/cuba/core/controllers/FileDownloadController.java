@@ -80,17 +80,9 @@ public class FileDownloadController {
             InputStream is = null;
             ServletOutputStream os = null;
             try {
-                is = fd != null ? fileStorage.openFileInputStream(fd) : FileUtils.openInputStream(file);
+                is = fd != null ? fileStorage.openStream(fd) : FileUtils.openInputStream(file);
                 os = response.getOutputStream();
-
-                byte[] buffer = new byte[1024 * 64];
-                long count = 0;
-                int n = 0;
-                while (-1 != (n = is.read(buffer))) {
-                    os.write(buffer, 0, n);
-                    count += n;
-                }
-
+                IOUtils.copy(is, os);
                 os.flush();
             } catch (FileStorageException e) {
                 log.error("Unable to download file", e);

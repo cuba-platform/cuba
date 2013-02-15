@@ -807,6 +807,14 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Параметры отправки email, подробно описаны в <xref linkend="email_sending_properties"/></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.fileStorageDir">
+        <term>cuba.fileStorageDir</term>
+        <listitem>
+          <para>Задает корни структуры каталогов файлового хранилища. Подробнее см. <xref linkend="file_storage_impl"/></para>
+          <para>Значение по умолчанию: <literal>null</literal></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.groovyEvaluatorImport">
         <term>cuba.groovyEvaluatorImport</term>
         <listitem>
@@ -1156,6 +1164,15 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <listitem>
           <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.viewFileExtensions">
+        <term>cuba.web.viewFileExtensions</term>
+        <listitem>
+          <para>Задает список расширений файлов, отображаемых в окне браузера при <link linkend="file_download">выгрузке файла</link> через <code>ExportDisplay.show()</code>. Разделителем элементов списка является символ <literal>|</literal>.</para>
+          <para>Значение по умолчанию: <literal>htm|html|jpg|png|jpeg|pdf</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
