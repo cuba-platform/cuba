@@ -19,7 +19,6 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-// vaadin7 Actions support
 public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
 
     private Stack<Component> openedComponents = new Stack<>();
@@ -154,68 +153,4 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
     public void removeActionHandler(Action.Handler actionHandler) {
         actionHandlers.remove(actionHandler);
     }
-
-//    vaadin7
-//    @Override
-//    public void attach() {
-//        super.attach();
-//        if (actionManager != null) {
-//            getActionManager().setViewer(this);
-//        }
-//    }
-
-    /*
-    @Override
-    protected void paintTab(PaintTarget target, Component component, Tab tab) throws PaintException {
-        target.startTag("tab");
-        if (!tab.isEnabled() && tab.isVisible()) {
-            target.addAttribute("disabled", true);
-        }
-
-        if (!tab.isVisible()) {
-            target.addAttribute("hidden", true);
-        }
-
-        if (tab.isClosable()) {
-            target.addAttribute("closable", true);
-        }
-
-        final Resource icon = tab.getIcon();
-        if (icon != null) {
-            target.addAttribute("icon", icon);
-        }
-        final String caption = tab.getCaption();
-        if (caption != null && caption.length() > 0) {
-            target.addAttribute("caption", caption);
-        }
-
-        final String description = tab.getDescription();
-        if (description != null) {
-            target.addAttribute("description", description);
-        }
-
-        final ErrorMessage componentError = tab.getComponentError();
-        if (componentError != null) {
-            componentError.paint(target);
-        }
-
-        target.addAttribute("key", keyMapper.key(component));
-        if (component.equals(getSelectedTab())) {
-            target.addAttribute("selected", true);
-            component.paint(target);
-            paintedTabs.add(component);
-        } else if (paintedTabs.contains(component)) {
-            component.paint(target);
-        } else {
-            component.requestRepaintRequests();
-        }
-        paintTabActions(target, component, tab);
-        target.endTag("tab");
-    }   */
-
-//    protected void paintTabActions(PaintTarget target, Component component, Tab tab) throws PaintException {
-//        if (actionManager != null) {
-//            target.addAttribute("al", getActionManager().getActionsKeys(component, this));
-//        }
-//    }
 }

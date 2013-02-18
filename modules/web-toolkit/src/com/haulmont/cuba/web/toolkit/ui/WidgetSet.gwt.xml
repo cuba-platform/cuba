@@ -48,6 +48,6 @@
      See https://vaadin.com/wiki/-/wiki/Main/Using%20SuperDevMode for more
      information and instructions.
     -->
-    <!-- <set-configuration-property name="devModeRedirectEnabled" value="true" /> -->
+     <set-configuration-property name="devModeRedirectEnabled" value="true" />
 
 </module>

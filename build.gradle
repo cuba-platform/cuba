@@ -62,7 +62,7 @@ def desktopModule = project(':cuba-desktop')
 def uiTestModule = project(':cuba-test-ui')
 def portalModule = project(':cuba-portal')
 
-def vaadinVersion = '7.0.0.h.M3'
+def vaadinVersion = '7.0.0.h.M4'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
@@ -339,7 +339,7 @@ configure(webToolkitModule) {
         compile(group: 'com.vaadin', name: 'vaadin-client-compiled', version: vaadinVersion)
         compile(group: 'com.vaadin', name: 'vaadin-client', version: vaadinVersion)
 
-        provided(group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion)
+        compile(group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion)
     }
 
     def webOutDir = file("$buildDir/web")
@@ -348,7 +348,7 @@ configure(webToolkitModule) {
         widgetSetModules = [webToolkitModule, webModule]
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-        //compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
+        compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
     }
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
