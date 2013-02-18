@@ -9958,7 +9958,80 @@ try {
     </section>
     <section>
       <title>Интеграция с MyBatis</title>
-      <para>TODO</para>
+      <para>В состав платформы включен фреймворк <ulink url="http://www.mybatis.org">MyBatis</ulink>, обладающий, по сравнению с <link linkend="nativeQuery">ORM</link> и <link linkend="queryRunner">QueryRunner</link>,  более  широкими возможностями по выполнению SQL и отображению результатов на объекты предметной области.</para>
+      <para>Для использование MyBatis в проекте необходимо добавить следующие бины в файл <filename>
+          <link linkend="spring.xml">spring.xml</link>
+        </filename> модуля <structname>core</structname>:<programlisting>&lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
+    &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;
+    &lt;property name=&quot;configLocation&quot; value=&quot;cuba-mybatis.xml&quot;/&gt;
+    &lt;property name=&quot;mapperLocations&quot; value=&quot;classpath*:com/sample/sales/core/sqlmap/*.xml&quot;/&gt;
+&lt;/bean&gt;
+
+&lt;bean id=&quot;sqlSession&quot; class=&quot;org.mybatis.spring.SqlSessionTemplate&quot;&gt;
+    &lt;constructor-arg index=&quot;0&quot; ref=&quot;sqlSessionFactory&quot; /&gt;
+&lt;/bean&gt;</programlisting></para>
+      <para>В параметре <code>mapperLocations</code> задается путь (по правилам интерфейса <code>ResourceLoader</code> <application>Spring</application>)  к файлам отображений <application>MyBatis</application>. </para>
+      <para>Пример файла отбражения для загрузки экземпляра сущности <code>Заказ</code> вместе со связанным <code>Покупателем</code> и коллекцией <code>Пунктов заказа</code>:<programlisting>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;!DOCTYPE mapper
+        PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;
+        &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
+&lt;mapper namespace=&quot;com.sample.sales&quot;&gt;
+
+    &lt;select id=&quot;selectOrder&quot; resultMap=&quot;orderResultMap&quot;&gt;
+        select
+            o.ID as order_id,
+            o.DATE as order_date,
+            o.AMOUNT as order_amount,
+            c.ID as customer_id,
+            c.NAME as customer_name,
+            c.EMAIL as customer_email,
+            i.ID as item_id,
+            i.QUANTITY as item_quantity,
+            p.ID as product_id,
+            p.NAME as product_name    
+        from
+            SALES_ORDER o
+            left join SALES_CUSTOMER c on c.ID = o.CUSTOMER_ID
+            left join SALES_ITEM i on i.ORDER_ID = o.id and i.DELETE_TS is null
+            left join SALES_PRODUCT p on p.ID = i.PRODUCT_ID
+        where
+            c.id = #{id}
+    &lt;/select&gt;
+
+    &lt;resultMap id=&quot;orderResultMap&quot; type=&quot;com.sample.sales.entity.Order&quot;&gt;
+        &lt;id property=&quot;id&quot; column=&quot;order_id&quot;/&gt;
+        &lt;result property=&quot;date&quot; column=&quot;order_date&quot;/&gt;
+        &lt;result property=&quot;amount&quot; column=&quot;order_amount&quot;/&gt;
+
+        &lt;association property=&quot;customer&quot; column=&quot;customer_id&quot; javaType=&quot;com.sample.sales.entity.Customer&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;customer_id&quot;/&gt;
+            &lt;result property=&quot;name&quot; column=&quot;customer_name&quot;/&gt;
+            &lt;result property=&quot;email&quot; column=&quot;customer_email&quot;/&gt;
+        &lt;/association&gt;
+
+        &lt;collection property=&quot;items&quot; ofType=&quot;com.sample.sales.entity.Item&quot;&gt;
+            &lt;id property=&quot;id&quot; column=&quot;item_id&quot;/&gt;
+            &lt;result property=&quot;quantity&quot; column=&quot;item_quantity&quot;/&gt;
+            &lt;association property=&quot;product&quot; column=&quot;product_id&quot; javaType=&quot;com.sample.sales.entity.Product&quot;&gt;
+                &lt;id property=&quot;id&quot; column=&quot;product_id&quot;/&gt;
+                &lt;result property=&quot;name&quot; column=&quot;product_name&quot;/&gt;
+            &lt;/association&gt;
+        &lt;/collection&gt;
+    &lt;/resultMap&gt;
+
+&lt;/mapper&gt;</programlisting></para>
+      <para>Для получения результатов запроса в приведенном выше примере можно использовать следующий код:<programlisting>Transaction tx = persistence.createTransaction();
+try {
+    SqlSession sqlSession = AppBeans.get(&quot;sqlSession&quot;);
+    Order order = (Order) sqlSession.selectOne(&quot;com.sample.sales.selectOrder&quot;, orderId);
+    tx.commit();
+} finally {
+    tx.end();
+}</programlisting></para>
+      <tip>
+        <para>Объекты, загруженные с помощью <application>MyBatis</application>, можно изменять и передавать в <code>EntityManager.merge()</code> для сохранения в базе данных. При этом в апдейт будут включены только не-<code>null</code> атрибуты, то есть если атрибут не был загружен, или специально установлен в значение <code>null</code>, соответствующее поле в БД не будет изменено.</para>
+        <para>Такое поведение определяется параметром ORM <code>openjpa.DetachState=loaded</code>, установленным по умолчанию.</para>
+      </tip>
     </section>
     <section id="folders_pane">
       <title>Панель папок</title>
