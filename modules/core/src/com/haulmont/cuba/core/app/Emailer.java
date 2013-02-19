@@ -110,14 +110,14 @@ public class Emailer implements EmailerAPI {
     }
 
     @Override
-    public void sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline) {
+    public List<SendingMessage> sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline) {
         prepareMessageBody(info);
         List<SendingMessage> sendingMessageList = splitEmail(info, attemptsCount, deadline);
-        emailManager.addEmailsToQueue(sendingMessageList);
+        return emailManager.addEmailsToQueue(sendingMessageList);
     }
 
     @Override
-    public List<SendingMessage> sendMessagesAsync(EmailInfo info) {
+    public List<SendingMessage> sendEmailAsync(EmailInfo info) {
         prepareMessageBody(info);
         List<SendingMessage> sendingMessageList = splitEmail(info);
         return emailManager.addEmailsToQueue(sendingMessageList);

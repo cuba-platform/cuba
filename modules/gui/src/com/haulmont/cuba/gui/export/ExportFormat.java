@@ -1,19 +1,18 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 04.06.2009 12:32:50
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.export;
 
 /**
- * Format of data exported by {@link ExportDisplay}
+ * Format of data exported by {@link ExportDisplay}.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public enum ExportFormat {
+
     HTML("text/html", "html"),
     HTM("text/html", "htm"),
 

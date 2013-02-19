@@ -188,9 +188,6 @@ public class GroupBrowser extends AbstractWindow {
             return;
 
         final Table constraintsTable = getComponent("constraintsTable");
-        for (Action action : constraintsTable.getActions()) {
-            action.setEnabled(constraintsTable.getSingleSelected() != null);
-        }
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
 
@@ -202,9 +199,6 @@ public class GroupBrowser extends AbstractWindow {
             return;
 
         final Table attributesTable = getComponent("attributesTable");
-        for (Action action : attributesTable.getActions()) {
-            action.setEnabled(attributesTable.getSingleSelected() != null);
-        }
         attributeCreateAction = new GroupPropertyCreateAction(attributesTable);
         attributesTable.addAction(attributeCreateAction);
 

@@ -17,6 +17,8 @@ import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import javax.annotation.Nullable;
+
 /**
  * GenericUI class holding common information about client application configuration,
  * as well as some static helper methods to obtain infrastructure objects.
@@ -24,8 +26,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
  * @author abramov
  * @version $Id$
  */
-public abstract class AppConfig
-{
+public abstract class AppConfig {
+
     public static final String CLIENT_TYPE_PROP = "cuba.clientType";
 
     /**
@@ -57,19 +59,21 @@ public abstract class AppConfig
     }
 
     /**
-     * Client-specific ExportDisplay
-     * @return  a new ExportDisplay instance
+     * DEPRECATED! Use {@link #createExportDisplay(com.haulmont.cuba.gui.components.IFrame)}.
      */
+    @Deprecated
     public static ExportDisplay createExportDisplay() {
         return AppBeans.get(ExportDisplay.NAME);
     }
 
     /**
-     * Client-specific ExportDisplay for concrete frame.
-     * Should be used in desktop client for properly showing user notifications in multiple windows applications.
+     * Create an ExportDisplay implementation.
+     *
+     * @param frame current frame. It is needed for desktop implementation to corrrectly show dialog inside of currently
+     *              active main window. Can be null, but in this case a position of the dialog is not guaranteed.
      * @return  a new ExportDisplay instance
      */
-    public static ExportDisplay createExportDisplay(IFrame frame) {
+    public static ExportDisplay createExportDisplay(@Nullable IFrame frame) {
         ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.NAME);
         exportDisplay.setFrame(frame);
         return exportDisplay;

@@ -1,0 +1,16 @@
+<dsContext>
+    <!--...-->
+    <collectionDatasource id="customersDs"
+                          class="com.sample.sales.entity.Customer"
+                          view="_minimal">
+        <query>select c from sales$Customer c order by c.name</query>
+    </collectionDatasource>
+</dsContext>
+<fieldGroup id="orderFieldGroup"
+            datasource="orderDs">
+    <column width="250px">
+        <field id="date"/>
+        <field id="customer" optionsDatasource="customersDs"/>
+        <field id="amount"/>
+    </column>
+</fieldGroup>

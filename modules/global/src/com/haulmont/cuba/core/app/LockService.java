@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.02.2010 16:46:59
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -14,6 +9,12 @@ import com.haulmont.cuba.core.global.LockInfo;
 
 import java.util.List;
 
+/**
+ * Service interface for pessimistic locking.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface LockService {
 
     String NAME = "cuba_LockService";

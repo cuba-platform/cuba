@@ -1,1 +1,1 @@
-﻿<checkBox id="chBox" caption="msg://chCaption" description="Test"/>
+﻿<checkBox id="checkBox1" caption="msg://chCaption"/>

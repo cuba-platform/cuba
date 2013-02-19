@@ -1,15 +1,18 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 24.02.2010 11:14:55
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
+/**
+ * A special case of {@link LockInfo} that is returned from <code>LockManagerAPI</code> and
+ * {@link com.haulmont.cuba.core.app.LockService} methods to indicate that locking is not supported for a
+ * specified object type.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class LockNotSupported extends LockInfo {
 
     private static final long serialVersionUID = -5382095361423998544L;

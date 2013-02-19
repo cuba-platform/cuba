@@ -243,7 +243,7 @@
         <para>Установите инструменты сборки и настройте окружение согласно предыдущим разделам данной главы.</para>
       </listitem>
       <listitem>
-        <para>Загрузите архив <filename>studio-0.1.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.1/studio-0.1.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.1/studio-0.1.zip</ulink> (для доступа к репозиторию используйте имя <userinput>cuba</userinput> и пароль <userinput>cuba123</userinput>).</para>
+        <para>Загрузите архив <filename>studio-0.2.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.2/studio-0.2.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.2/studio-0.2.zip</ulink> (для доступа к репозиторию используйте имя <userinput>cuba</userinput> и пароль <userinput>cuba123</userinput>).</para>
       </listitem>
       <listitem>
         <para>Распакуйте архив в локальный путь, не содержащий пробелов, например, <filename>c:/work/studio</filename></para>

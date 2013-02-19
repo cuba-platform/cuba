@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -15,11 +15,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
+ * Entity to store information about sending emails.
  *
  * @author ovchinnikov
+ * @version $Id$
  */
-
 @Entity(name = "sys$SendingMessage")
 @Table(name = "SYS_SENDING_MESSAGE")
 @SystemLevel

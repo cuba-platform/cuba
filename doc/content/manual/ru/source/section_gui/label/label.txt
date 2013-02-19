@@ -1,1 +1,1 @@
-﻿<label id="labelInfo" value="msg://labelVal"/>
+﻿<label id="label1" value="msg://orders"/>

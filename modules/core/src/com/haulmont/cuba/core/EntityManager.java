@@ -130,6 +130,17 @@ public interface EntityManager {
     Query createNativeQuery(String sqlString);
 
     /**
+     * Create an instance of Query for executing
+     * a native SQL statement and map its result to an entity.<br>
+     * Native Query doesn't support named parameters.
+     *
+     * @param sqlString a native SQL query string
+     * @param resultClass expected result class
+     * @return the new query instance
+     */
+    <T> TypedQuery<T> createNativeQuery(String sqlString, Class<T> resultClass);
+
+    /**
      * Set View for this EntityManager instance.
      * <p>All view fields except declared lazy will be eagerly fetched.</p>
      * @param view view instance. May be null, in this case eager fetching will be performed according to JPA mappings.

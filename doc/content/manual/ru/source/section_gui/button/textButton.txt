@@ -1,1 +1,1 @@
-﻿<button id="textButton" caption="msg://saveAction" description="Press me"/>
+﻿<button id="textButton" caption="msg://someAction" description="Press me"/>

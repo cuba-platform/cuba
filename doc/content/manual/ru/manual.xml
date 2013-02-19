@@ -358,7 +358,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <para>Набор файлов <filename>persistence.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
           <link linkend="cuba.persistenceConfig">cuba.persistenceConfig</link>
         </property>. </para>
-      <para>На старте блока <structname>Middleware</structname> из заданных файлов собирается один <filename>persistence.xml</filename> и сохраняется в <link linkend="work_dir">рабочем каталоге</link> приложения. Параметры ORM могут переопределяться каждым следующим файлом списка, поэтому порядок указания файлов важен. Существует несколько параметры, жестко определяемые типом используемой СУБД (заданным в <property>
+      <para>На старте блока <structname>Middleware</structname> из заданных файлов собирается один <filename>persistence.xml</filename> и сохраняется в <link linkend="work_dir">рабочем каталоге</link> приложения. Параметры ORM могут переопределяться каждым следующим файлом списка, поэтому порядок указания файлов важен. Существует несколько параметров, жестко определяемых типом используемой СУБД (заданным в <property>
           <link linkend="cuba.dbmsType">cuba.dbmsType</link>
         </property>), которые невозможно переопределить в <filename>persistence.xml</filename>, это:<itemizedlist>
           <listitem>
@@ -370,7 +370,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         </itemizedlist>Кроме того, при выключенном свойстве приложения <property>
           <link linkend="cuba.disableOrmXmlGeneration">cuba.disableOrmXmlGeneration</link>
         </property> и наличии <link linkend="extension">расширенных сущностей</link> на старте приложения в рабочем каталоге создается файл <filename>orm.xml</filename> и путь к нему записывается в параметр <literal>openjpa.MetaDataFactory</literal>. В этом случае параметр <literal>openjpa.MetaDataFactory</literal> также нельзя задать в <filename>persistence.xml</filename> заранее. </para>
-      <para>Пример:<programlisting>&lt;persistence xmlns=&quot;http://java.sun.com/xml/ns/persistence&quot; version=&quot;1.0&quot;&gt;
+      <para>Пример файла:<programlisting>&lt;persistence xmlns=&quot;http://java.sun.com/xml/ns/persistence&quot; version=&quot;1.0&quot;&gt;
     &lt;persistence-unit name=&quot;sales&quot; transaction-type=&quot;RESOURCE_LOCAL&quot;&gt;
         &lt;class&gt;com.sample.sales.entity.Customer&lt;/class&gt;
         &lt;class&gt;com.sample.sales.entity.Order&lt;/class&gt;
@@ -801,6 +801,20 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.dispatcherSpringContextConfig=cuba-portal-dispatcher-spring.xml portal-dispatcher-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.groovyEvaluatorImport_1">
+        <term>cuba.email.*</term>
+        <listitem>
+          <para>Параметры отправки email, подробно описаны в <xref linkend="email_sending_properties"/></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.fileStorageDir">
+        <term>cuba.fileStorageDir</term>
+        <listitem>
+          <para>Задает корни структуры каталогов файлового хранилища. Подробнее см. <xref linkend="file_storage_impl"/></para>
+          <para>Значение по умолчанию: <literal>null</literal></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.groovyEvaluatorImport">
         <term>cuba.groovyEvaluatorImport</term>
         <listitem>
@@ -1012,8 +1026,17 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
               <link linkend="resources">Resources</link>
             </code>.</para>
-          <para>Используется в блоке <structname>Middleware</structname>.</para>
+          <para>Используется в блоке Middleware.</para>
           <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.schedulingActive">
+        <term>cuba.schedulingActive</term>
+        <listitem>
+          <para>Включает и выключает механизм выполнения <link linkend="scheduled_tasks_cuba">назначенных заданий</link> CUBA.  </para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Интерфейс:  <code>ServerConfig</code></para>
+          <para>Используется в блоке Middleware.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.springContextConfig">
@@ -1055,15 +1078,6 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значение по умолчанию: <literal>127\.0\.0\.1</literal></para>
           <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
           <para>Используется в блоках: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry id="cuba.useLocaleLanguageOnly">
-        <term>cuba.useLocaleLanguageOnly</term>
-        <listitem>
-          <para>Если данное свойство имеет значение <code>true</code>, то при поиске локализованных сообщений, принимается во внимание только язык текущей или переданной локали. В противном случае принимаются во внимание все параметры локали, т.е. например можно определить файлы сообщений <filename>messages_en_US.properties</filename> и <filename>messages_en_GB.properties</filename>. </para>
-          <para>Значение по умолчанию: <literal>true</literal></para>
-          <para>Интерфейс: <code>GlobalConfig</code></para>
-          <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1136,6 +1150,42 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.windowConfig=cuba-web-screens.xml web-screens.xml</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.web.appFoldersRefreshPeriodSec">
+        <term>cuba.web.appFoldersRefreshPeriodSec</term>
+        <listitem>
+          <para>Период по умолчанию обновления <link linkend="folders_pane">папок приложения</link>  в секундах.</para>
+          <para>Значение по умолчанию: <literal>180</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.foldersPaneDefaultWidth">
+        <term>cuba.web.foldersPaneDefaultWidth</term>
+        <listitem>
+          <para>Ширина по умолчанию <link linkend="folders_pane">панели папок</link> в пикселях.</para>
+          <para>Значение по умолчанию: <literal>200</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.foldersPaneEnabled">
+        <term>cuba.web.foldersPaneEnabled</term>
+        <listitem>
+          <para>Включает или отключает отображение <link linkend="folders_pane">панели папок</link>.</para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.foldersPaneVisibleByDefault">
+        <term>cuba.web.foldersPaneVisibleByDefault</term>
+        <listitem>
+          <para>Если <code>true</code>, то при первом входе пользователя в систему <link linkend="folders_pane">панель папок</link> будет отображаться в развернутом состоянии, если <code>false</code> - то в свернутом.</para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry>
         <term>cuba.web.loginDialogDefaultUser</term>
         <listitem>
@@ -1150,6 +1200,34 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <listitem>
           <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.showFolderIcons">
+        <term>cuba.web.showFolderIcons</term>
+        <listitem>
+          <para>Задает отображение пиктограмм в <link linkend="folders_pane">панели папок</link>. Если включено, то используются следующие файлы каталога темы приложения:<itemizedlist>
+              <listitem>
+                <para><filename>icons/app-folder-small.png</filename> - для папок приложения</para>
+              </listitem>
+              <listitem>
+                <para><filename>icons/search-folder-small.png</filename> - для папок поиска</para>
+              </listitem>
+              <listitem>
+                <para><filename>icons/set-small.png</filename> - для наборов</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.viewFileExtensions">
+        <term>cuba.web.viewFileExtensions</term>
+        <listitem>
+          <para>Задает список расширений файлов, отображаемых в окне браузера при <link linkend="file_download">выгрузке файла</link> через <code>ExportDisplay.show()</code>. Разделителем элементов списка является символ <literal>|</literal>.</para>
+          <para>Значение по умолчанию: <literal>htm|html|jpg|png|jpeg|pdf</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>

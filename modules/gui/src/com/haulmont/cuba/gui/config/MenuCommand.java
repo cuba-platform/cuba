@@ -9,11 +9,11 @@ package com.haulmont.cuba.gui.config;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import org.apache.commons.lang.BooleanUtils;
@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class MenuCommand {
 
@@ -73,7 +72,7 @@ public class MenuCommand {
                 else
                     throw new UnsupportedOperationException();
 
-                entityItem = MetadataProvider.create(metaClassName);
+                entityItem = AppBeans.get(Metadata.class).create(metaClassName);
             }
             windowManager.openEditor(
                     windowInfo,
@@ -119,7 +118,7 @@ public class MenuCommand {
     }
 
     private Entity loadEntityInstance(EntityLoadInfo info) {
-        DataService ds = ServiceLocator.getDataService();
+        DataService ds = AppBeans.get(DataService.class);
         LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
         if (info.getViewName() != null)
             ctx.setView(info.getViewName());

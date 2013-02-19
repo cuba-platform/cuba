@@ -1,1 +1,1 @@
-﻿<dateField id="dateField2" resolution="MONTH" caption="msg://name7"/>
+﻿<dateField id="dateField1" resolution="MONTH" caption="msg://name1"/>

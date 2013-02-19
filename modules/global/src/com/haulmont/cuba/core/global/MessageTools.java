@@ -42,6 +42,8 @@ public class MessageTools {
 
     private Log log = LogFactory.getLog(getClass());
 
+    protected volatile Boolean useLocaleLanguageOnly;
+
     @Inject
     protected Messages messages;
 
@@ -51,7 +53,7 @@ public class MessageTools {
     protected GlobalConfig globalConfig;
 
     @Inject
-    public void setConfiguration(Configuration configuration) {
+    public MessageTools(Configuration configuration) {
         globalConfig = configuration.getConfig(GlobalConfig.class);
     }
 
@@ -246,11 +248,31 @@ public class MessageTools {
     }
 
     /**
+     * @return whether to use a full locale representation, or language only. Returns true if all locales listed
+     * in <code>cuba.availableLocales</code> app property are language only.
+     */
+    public boolean useLocaleLanguageOnly() {
+        if (useLocaleLanguageOnly == null) {
+            boolean found = false;
+            for (Locale locale : globalConfig.getAvailableLocales().values()) {
+                if (!StringUtils.isEmpty(locale.getCountry()) || !StringUtils.isEmpty(locale.getVariant())) {
+                    useLocaleLanguageOnly = false;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                useLocaleLanguageOnly = true;
+        }
+        return useLocaleLanguageOnly;
+    }
+
+    /**
      * Locale representation depending on <code>cuba.useLocaleLanguageOnly</code> application property.
      * @param locale    locale instance
      * @return language code if <code>cuba.useLocaleLanguageOnly=true</code>, or full locale representation otherwise
      */
     public String localeToString(Locale locale) {
-        return globalConfig.getUseLocaleLanguageOnly() ? locale.getLanguage() : locale.toString();
+        return useLocaleLanguageOnly() ? locale.getLanguage() : locale.toString();
     }
 }

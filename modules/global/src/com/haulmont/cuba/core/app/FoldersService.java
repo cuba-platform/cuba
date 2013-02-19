@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 10.12.2009 17:40:39
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -17,20 +12,43 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Folders pane support service.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface FoldersService {
 
     String NAME = "cuba_FoldersService";
 
+    /**
+     * Load application folders available to a user.
+     *
+     * @return folders list
+     */
     List<AppFolder> loadAppFolders();
 
+    /**
+     * Reload quantity and style information for supplied application folders.
+     *
+     * @param folders folders to reload
+     * @return reloaded folders list
+     */
     List<AppFolder> reloadAppFolders(List<AppFolder> folders);
 
+    /**
+     * Load search folders for the current user.
+     *
+     * @return folders list
+     */
     List<SearchFolder> loadSearchFolders();
 
     /**
-     * Export folder as zip archive
-     * @param folder
-     * @return
+     * Export folder as zip archive.
+     *
+     * @param folder exported folder
+     * @return zip contents
      * @throws IOException
      */
     byte[] exportFolder(Folder folder) throws IOException;

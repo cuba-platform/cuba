@@ -16,14 +16,14 @@ import com.haulmont.cuba.core.config.type.StringListTypeFactory;
 import java.util.List;
 
 /**
- * Configuration parameters interface used by the WEB layer.
+ * Web Client configuration parameters interface.
  *
  * @author krivopustov
  * @version $Id$
  */
 @Source(type = SourceType.APP)
-public interface WebConfig extends Config
-{
+public interface WebConfig extends Config {
+
     /**
      * @return Whether to use local invocations instead of HTTPInvoker. Makes sense for improving performance,
      * if the WEB and CORE applications started on the same JVM (same Tomcat instance).
@@ -169,6 +169,13 @@ public interface WebConfig extends Config
     int getLogLongRequestsThresholdSec();
 
     /**
+     * @return Whether to enable the Folders Pane functionality.
+     */
+    @Property("cuba.web.foldersPaneEnabled")
+    @DefaultBoolean(true)
+    boolean getFoldersPaneEnabled();
+
+    /**
      * @return AppFolders refresh period in seconds.
      */
     @Property("cuba.web.appFoldersRefreshPeriodSec")
@@ -181,6 +188,20 @@ public interface WebConfig extends Config
     @Property("cuba.web.showFolderIcons")
     @DefaultBoolean(false)
     boolean getShowFolderIcons();
+
+    /**
+     * @return Whether to show {@link com.haulmont.cuba.web.app.folders.FoldersPane} on first login.
+     */
+    @Property("cuba.web.foldersPaneVisibleByDefault")
+    @DefaultBoolean(false)
+    boolean getFoldersPaneVisibleByDefault();
+
+    /**
+     * @return Default {@link com.haulmont.cuba.web.app.folders.FoldersPane} width.
+     */
+    @Property("cuba.web.foldersPaneDefaultWidth")
+    @DefaultInt(200)
+    int getFoldersPaneDefaultWidth();
 
     /**
      * @return Maximum number of symbols in main tabs captions.
@@ -232,22 +253,6 @@ public interface WebConfig extends Config
     @Factory(factory = StringListTypeFactory.class)
     @Default("htm|html|jpg|png|jpeg|pdf")
     List<String> getViewFileExtensions();
-
-    /**
-     * @return Whether to show {@link com.haulmont.cuba.web.app.folders.FoldersPane} on first login.
-     * This parameter can be overridden by user settings.
-     */
-    @Property("cuba.web.foldersPaneVisibleByDefault")
-    @DefaultBoolean(false)
-    boolean getFoldersPaneVisibleByDefault();
-
-    /**
-     * @return Default {@link com.haulmont.cuba.web.app.folders.FoldersPane} width.
-     * This parameter can be overridden by user settings.
-     */
-    @Property("cuba.web.foldersPaneDefaultWidth")
-    @DefaultInt(200)
-    int getFoldersPaneDefaultWidth();
 
     @Property("cuba.web.resourcesRoot")
     String getResourcesRoot();

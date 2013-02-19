@@ -1,2 +1,1 @@
-﻿<pickerField id="pickerField1" metaClass="ref$Colour" lookupScreen="ref$Colour.browse"
-             caption="Picker Field Component with metaClass='ref$Colour'"/>
+﻿<pickerField id="pickerField1" metaClass="sales$Customer"/>

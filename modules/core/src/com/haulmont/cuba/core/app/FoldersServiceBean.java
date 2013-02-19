@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 10.12.2009 17:41:44
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.security.entity.User;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import groovy.lang.Binding;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -32,20 +32,38 @@ import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.zip.CRC32;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @Service(FoldersService.NAME)
 public class FoldersServiceBean implements FoldersService {
 
-    private Log log = LogFactory.getLog(FoldersServiceBean.class);
+    protected Log log = LogFactory.getLog(getClass());
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
+
+    @Inject
+    protected Persistence persistence;
+
+    @Inject
+    protected Scripting scripting;
+
+    @Inject
+    protected Resources resources;
 
     @Override
     public List<AppFolder> loadAppFolders() {
@@ -54,18 +72,22 @@ public class FoldersServiceBean implements FoldersService {
         StopWatch stopWatch = new Log4JStopWatch("AppFolders");
         stopWatch.start();
 
-        List<AppFolder> result = new ArrayList<AppFolder>();
+        List<AppFolder> result = new ArrayList<>();
 
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(AppFolder.class);
-            Query q = em.createQuery(
-                    "select f from " + effectiveMetaClass.getName() + " f order by f.sortOrder, f.name");
+            TypedQuery<AppFolder> q = em.createQuery(
+                    "select f from " + effectiveMetaClass.getName() + " f order by f.sortOrder, f.name",
+                    AppFolder.class);
             List<AppFolder> list = q.getResultList();
 
             if (!list.isEmpty()) {
                 Binding binding = new Binding();
+                binding.setVariable("persistence", persistence);
+                binding.setVariable("metadata", metadata);
+                binding.setVariable("userSession", userSessionSource.getUserSession());
                 for (AppFolder folder : list) {
                     try {
                         if (!StringUtils.isBlank(folder.getVisibilityScript())) {
@@ -95,13 +117,13 @@ public class FoldersServiceBean implements FoldersService {
         }
     }
 
-    private <T> T runScript(String script, Binding binding) {
+    protected  <T> T runScript(String script, Binding binding) {
         Object result;
         script = StringUtils.trim(script);
         if (script.endsWith(".groovy")) {
-            script = ScriptingProvider.getResourceAsString(script);
+            script = resources.getResourceAsString(script);
         }
-        result = ScriptingProvider.evaluateGroovy(script, binding);
+        result = scripting.evaluateGroovy(script, binding);
         return (T) result;
     }
 
@@ -112,7 +134,7 @@ public class FoldersServiceBean implements FoldersService {
         StopWatch stopWatch = new Log4JStopWatch("AppFolders");
         stopWatch.start();
 
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             if (!folders.isEmpty()) {
                 Binding binding = new Binding();
@@ -130,7 +152,7 @@ public class FoldersServiceBean implements FoldersService {
         }
     }
 
-    private void loadFolderQuantity(Binding binding, AppFolder folder) {
+    protected void loadFolderQuantity(Binding binding, AppFolder folder) {
         try {
             if (!StringUtils.isBlank(folder.getQuantityScript())) {
                 String variable = "style";
@@ -152,15 +174,16 @@ public class FoldersServiceBean implements FoldersService {
         StopWatch stopWatch = new Log4JStopWatch("SearchFolders");
         stopWatch.start();
 
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(SearchFolder.class);
-            Query q = em.createQuery("select f from "+ effectiveMetaClass.getName() +" f " +
+            TypedQuery<SearchFolder> q = em.createQuery("select f from "+ effectiveMetaClass.getName() +" f " +
                     "left join fetch f.user " +
                     "left join fetch f.presentation " +
                     "where (f.user.id = ?1 or f.user is null) " +
-                    "order by f.sortOrder, f.name");
+                    "order by f.sortOrder, f.name",
+                    SearchFolder.class);
             q.setParameter(1, userSessionSource.currentOrSubstitutedUserId());
             List<SearchFolder> list = q.getResultList();
             // fetch parents
@@ -179,11 +202,86 @@ public class FoldersServiceBean implements FoldersService {
 
     @Override
     public byte[] exportFolder(Folder folder) throws IOException {
-        return FolderHelper.exportFolder(folder);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
+        zipOutputStream.setMethod(ZipArchiveOutputStream.STORED);
+        zipOutputStream.setEncoding("UTF-8");
+        String xml = createXStream().toXML(folder);
+        byte[] xmlBytes = xml.getBytes();
+        ArchiveEntry zipEntryDesign = newStoredEntry("folder.xml", xmlBytes);
+        zipOutputStream.putArchiveEntry(zipEntryDesign);
+        zipOutputStream.write(xmlBytes);
+        try {
+            zipOutputStream.closeArchiveEntry();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception occured while exporting folder\"" + folder.getName() + "\".", ex);
+        }
+
+        zipOutputStream.close();
+        return byteArrayOutputStream.toByteArray();
     }
 
     @Override
     public Folder importFolder(Folder parentFolder, byte[] bytes) throws IOException {
-        return FolderHelper.importFolder(parentFolder, bytes);
+        Folder folder = null;
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        ZipArchiveInputStream archiveReader;
+        archiveReader = new ZipArchiveInputStream(byteArrayInputStream);
+        ZipArchiveEntry archiveEntry;
+
+        while (((archiveEntry = archiveReader.getNextZipEntry()) != null) && (folder == null)) {
+            if (archiveEntry.getName().equals("folder.xml")) {
+                String xml = new String(IOUtils.toByteArray(archiveReader));
+                folder = (Folder) createXStream().fromXML(xml);
+            }
+        }
+
+        byteArrayInputStream.close();
+
+        if (folder != null) {
+            folder = resetAttributes(folder);
+            folder.setParent(parentFolder);
+            Transaction tx = persistence.createTransaction();
+            try {
+                EntityManager em = persistence.getEntityManager();
+                if (PersistenceHelper.isNew(folder)) {
+                    em.persist(folder);
+                } else {
+                    em.merge(folder);
+                }
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+        }
+        return folder;
+    }
+
+    private XStream createXStream() {
+        XStream xStream = new XStream();
+        xStream.getConverterRegistry().removeConverter(ExternalizableConverter.class);
+        return xStream;
+    }
+
+    private ArchiveEntry newStoredEntry(String name, byte[] data) {
+        ZipArchiveEntry zipEntry = new ZipArchiveEntry(name);
+        zipEntry.setSize(data.length);
+        zipEntry.setCompressedSize(zipEntry.getSize());
+        CRC32 crc32 = new CRC32();
+        crc32.update(data);
+        zipEntry.setCrc(crc32.getValue());
+        return zipEntry;
+    }
+
+    protected Folder resetAttributes(Folder folder) {
+        User user = userSessionSource.getUserSession().getUser();
+        folder.setCreatedBy(user.getLoginLowerCase());
+        folder.setUuid(UUID.randomUUID());
+        folder.setCreateTs(new Date());
+        folder.setUpdatedBy(null);
+        folder.setUpdateTs(null);
+
+        return folder;
     }
 }

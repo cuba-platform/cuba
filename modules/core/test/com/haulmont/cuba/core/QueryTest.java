@@ -47,24 +47,8 @@ public class QueryTest extends CubaTestCase
     }
 
     protected void tearDown() throws Exception {
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-
-            Query q;
-
-            q = em.createNativeQuery("delete from SEC_USER where ID = ?");
-            q.setParameter(1, userId.toString());
-            q.executeUpdate();
-
-            q = em.createNativeQuery("delete from SEC_GROUP where ID = ?");
-            q.setParameter(1, groupId.toString());
-            q.executeUpdate();
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
+        deleteRecord("SEC_USER", userId);
+        deleteRecord("SEC_GROUP", groupId);
         super.tearDown();
     }
 
@@ -122,6 +106,42 @@ public class QueryTest extends CubaTestCase
         }
     }
 
+// This test doesn't pass for some unclarified reason.
+//
+//    public void testFlushBeforeUpdate() {
+//        Transaction tx = persistence.createTransaction();
+//        try {
+//            EntityManager em = persistence.getEntityManager();
+//
+//            Group group = em.find(Group.class, groupId);
+//            User user = em.find(User.class, userId);
+//            assertNotNull(user);
+//            user.setName("newName");
+//
+//            Query query = em.createQuery("update sec$User u set u.group = :group where u.id = :userId");
+//            query.setParameter("userId", userId);
+//            query.setParameter("group", group, false);
+//            query.executeUpdate();
+//
+//            tx.commit();
+//        } finally {
+//            tx.end();
+//        }
+//
+//        tx = persistence.createTransaction();
+//        try {
+//            EntityManager em = persistence.getEntityManager();
+//            User user = em.find(User.class, userId);
+//            assertNotNull(user);
+//            assertEquals(groupId, user.getGroup().getId());
+//            assertEquals("newName", user.getName());
+//
+//            tx.commit();
+//        } finally {
+//            tx.end();
+//        }
+//    }
+
     public void testAssociatedResult() throws Exception {
         Transaction tx = persistence.createTransaction();
         try {
@@ -132,6 +152,120 @@ public class QueryTest extends CubaTestCase
             List list = query.getResultList();
 
             assertFalse(list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testIgnoreChanges() throws Exception {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            TypedQuery<User> query;
+            List<User> list;
+
+            query = em.createQuery("select u from sec$User u where u.name = ?1", User.class);
+            query.setParameter(1, "testUser");
+            list = query.getResultList();
+            assertEquals(1, list.size());
+            User user = list.get(0);
+
+            user.setName("newName");
+
+            query = em.createQuery("select u from sec$User u where u.name = ?1", User.class);
+            query.setParameter(1, "testUser");
+            list = query.getResultList();
+            assertEquals(1, list.size());
+            User user1 = list.get(0);
+
+            assertTrue(user1 == user);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testNativeQueryIgnoreChanges() throws Exception {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            TypedQuery<User> query;
+            List<User> list;
+
+            query = em.createNativeQuery("select * from SEC_USER where NAME = ?1", User.class);
+            query.setParameter(1, "testUser");
+            list = query.getResultList();
+            assertEquals(1, list.size());
+            User user = list.get(0);
+
+            user.setName("newName");
+
+            query = em.createNativeQuery("select * from SEC_USER where NAME = ?1", User.class);
+            query.setParameter(1, "testUser");
+            list = query.getResultList();
+            assertEquals(1, list.size());
+            User user1 = list.get(0);
+
+            assertTrue(user1 == user);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testNativeQuerySelect() throws Exception {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            Query query = em.createNativeQuery("select ID, LOGIN from SEC_USER where NAME = ?1");
+            query.setParameter(1, "testUser");
+            List list = query.getResultList();
+            assertEquals(1, list.size());
+            assertTrue(list.get(0) instanceof Object[]);
+            Object[] row = (Object[]) list.get(0);
+            assertEquals(userId.toString(), row[0]);
+            assertEquals("testLogin", row[1]);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testNativeQueryFlushBeforeUpdate() {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            Group group = em.find(Group.class, groupId);
+            User user = em.find(User.class, userId);
+            assertNotNull(user);
+            user.setName("newName");
+
+            Query query = em.createNativeQuery("update SEC_USER set GROUP_ID = ?1 where ID = ?2");
+            query.setParameter(1, group.getId().toString());
+            query.setParameter(2, userId.toString());
+            query.executeUpdate();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userId);
+            assertNotNull(user);
+            assertEquals(groupId, user.getGroup().getId());
+            assertEquals("newName", user.getName());
 
             tx.commit();
         } finally {

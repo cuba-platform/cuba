@@ -1,1 +1,1 @@
-﻿<timeField id="timeField1" caption="msg://name4" description="msg://descr1"/>
+﻿<timeField id="timeField1" caption="msg://name1"/>

@@ -131,12 +131,5 @@ public interface GlobalConfig extends Config {
     @Property("cuba.allowQueryFromSelected")
     @DefaultBoolean(true)
     boolean getAllowQueryFromSelected();
-
-    /**
-     * @return If true, localized messages search will use locale language only, ignoring country, variant, etc.
-     */
-    @Property("cuba.useLocaleLanguageOnly")
-    @DefaultBoolean(true)
-    boolean getUseLocaleLanguageOnly();
 }
 

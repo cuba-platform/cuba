@@ -211,29 +211,31 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         middleLayout.setSizeFull();
 
-        foldersPane = createFoldersPane();
+        if (webConfig.getFoldersPaneEnabled()) {
+            foldersPane = createFoldersPane();
 
-        if (foldersPane != null) {
-            foldersSplit = new HorizontalSplitPanel();
+            if (foldersPane != null) {
+                foldersSplit = new HorizontalSplitPanel();
 
-            if (webConfig.getUseLightHeader()) {
+                if (webConfig.getUseLightHeader()) {
 //                foldersSplit.setShowHookButton(true);
-                foldersSplit.setImmediate(true);
-                foldersPane.setVisible(true);
-                foldersSplit.setSplitPosition(webConfig.getFoldersPaneDefaultWidth(), Unit.PIXELS);
+                    foldersSplit.setImmediate(true);
+                    foldersPane.setVisible(true);
+                    foldersSplit.setSplitPosition(webConfig.getFoldersPaneDefaultWidth(), Unit.PIXELS);
+                }
+
+                foldersSplit.setSplitPosition(0, Unit.PIXELS);
+
+                if (!webConfig.getUseLightHeader())
+                    foldersSplit.setLocked(true);
+
+                foldersSplit.addComponent(foldersPane);
+
+                middleLayout.addComponent(foldersSplit);
+                middleLayout.setExpandRatio(foldersSplit, 1);
+
+                foldersPane.init(foldersSplit);
             }
-
-            foldersSplit.setSplitPosition(0, Unit.PIXELS);
-
-            if (!webConfig.getUseLightHeader())
-                foldersSplit.setLocked(true);
-
-            foldersSplit.addComponent(foldersPane);
-            
-            middleLayout.addComponent(foldersSplit);
-            middleLayout.setExpandRatio(foldersSplit, 1);
-
-            foldersPane.init(foldersSplit);
         }
 
         layout.addComponent(middleLayout);
@@ -372,7 +374,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     /*  */
     protected void unInitStartupLayout() {
         genericStartupLayout();
-        mainLayout.setMargin(new MarginInfo(true,false,false,false));
+        mainLayout.setMargin(new MarginInfo(true, false, false, false));
         mainLayout.setSpacing(true);
     }
 
@@ -786,7 +788,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
         placeMenuBar(menuBarLayout);
 
-        if (foldersPane != null) {
+        if (webConfig.getFoldersPaneEnabled() && foldersPane != null) {
             foldersPane.savePosition();
             FoldersPane oldFoldersPane = foldersPane;
             foldersPane = createFoldersPane();

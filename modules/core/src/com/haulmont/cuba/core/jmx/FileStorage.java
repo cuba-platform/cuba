@@ -31,7 +31,7 @@ import java.util.*;
 public class FileStorage implements FileStorageMBean {
 
     @Inject
-    protected FileStorageAPI fileStorage;
+    protected com.haulmont.cuba.core.app.FileStorage fileStorage;
 
     @Inject
     protected Persistence persistence;

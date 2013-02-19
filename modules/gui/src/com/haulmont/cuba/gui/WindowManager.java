@@ -562,7 +562,7 @@ public abstract class WindowManager {
 
         final Element element = windowInfo.getDescriptor();
         if (element != null) {
-            final Element paramsElement = element.element("params");
+            Element paramsElement = element.element("params") != null ? element.element("params") : element;
             if (paramsElement != null) {
                 @SuppressWarnings({"unchecked"})
                 final List<Element> paramElements = paramsElement.elements("param");
