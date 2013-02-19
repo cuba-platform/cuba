@@ -1,1 +1,1 @@
-﻿<timeField id="timeField1" caption="msg://name5" showSeconds="true"/>
+﻿<timeField id="timeField1" caption="msg://name1" showSeconds="true"/>

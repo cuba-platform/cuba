@@ -1,1 +1,1 @@
-﻿<lookupPickerField id="lookupPickerField3" optionsDatasource="coloursDs" width="200px"/>
+﻿<lookupPickerField id="lookupPickerField1" datasource="orderDs" property="customer" optionsDatasource="customersDs">

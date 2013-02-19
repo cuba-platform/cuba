@@ -1,8 +1,9 @@
-﻿<pickerField id="pickerField4" caption="Picker Field Component with custom actions">
-   <actions>
-      <action id="pickerAction1" icon="icons/ok.png"
-              invoke="pickerField1Disabled" caption=""/>
-      <action id="pickerAction2" icon="icons/cancel.png"
-              invoke="pickerField1Enabled" caption=""/>
-   </actions>
+﻿<pickerField id="pickerField1">
+    <actions>
+        <action id="pickerAction1" icon="icons/up.png"
+                invoke="someMethod1" caption=""/>
+        <action id="pickerAction2"
+                invoke="someMethod2" icon="icons/down.png"
+                caption=""/>
+    </actions>
 </pickerField>

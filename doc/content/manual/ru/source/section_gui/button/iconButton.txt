@@ -1,1 +1,1 @@
-﻿<button id="iconButton" caption="" description="Press me" icon="icons/save.png"/>
+﻿<button id="iconButton" caption="" icon="icons/save.png"/>

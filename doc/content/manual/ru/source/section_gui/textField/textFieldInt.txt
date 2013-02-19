@@ -1,1 +1,1 @@
-﻿<textField id="textFieldInt" datatype="int" caption="msg://name9"/>
+﻿<textField id="textField1" datatype="int" caption="msg://name"/>

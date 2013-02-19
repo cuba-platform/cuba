@@ -1,7 +1,13 @@
-﻿<collectionDatasource id="coloursDs" class="com.haulmont.refapp.core.entity.Colour" view="_local">
-    <query>
-        select c from ref$Colour c order by c.name
-    </query>
-</collectionDatasource>
+﻿<dsContext>
+    <datasource id="orderDs"
+                class="com.sample.sales.entity.Order"
+                view="orderWithCustomer">
+    </datasource>
+    <collectionDatasource id="customersDs"
+                          class="com.sample.sales.entity.Customer"
+                          view="_minimal">
+        <query>select c from sales$Customer c order by c.name</query>
+    </collectionDatasource>
+</dsContext>
 <!--..-->
-<lookupField id="lookupField1" optionsDatasource="coloursDs"/>
+<lookupField id="lookupField1" datasource="orderDs" property="customer" optionsDatasource="customersDs"/>

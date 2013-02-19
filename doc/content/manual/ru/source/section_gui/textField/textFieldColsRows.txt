@@ -1,1 +1,1 @@
-﻿<textField id="textFieldInfo" cols="20" rows="5" caption="msg://name13"/>
+﻿<textField id="textField1" cols="20" rows="5" caption="msg://name"/>

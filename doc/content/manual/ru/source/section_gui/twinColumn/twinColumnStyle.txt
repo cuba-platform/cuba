@@ -1,0 +1,13 @@
+﻿twinColumn1.setStyleProvider(new TwinColumn.StyleProvider() {
+    public String getStyleName(Entity item, Object property, boolean selected) {
+        return null;
+    }
+
+    public String getItemIcon(Entity item, boolean selected) {
+        if (((Product) item).getName().equals("Printer")) {
+            return "theme:icons/print.png";
+        } else {
+            return null;
+        }
+    }
+});

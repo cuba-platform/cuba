@@ -1,1 +1,1 @@
-﻿<linkButton id="linkButton" caption="msg://saveAction" description="Press me" invoke="saveActionTest"/>
+﻿<linkButton id="linkButton" caption="msg://someAction" invoke="someMethod"/>
