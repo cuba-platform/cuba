@@ -10251,41 +10251,176 @@ try {
     </section>
     <section id="folders_pane">
       <title>Панель папок</title>
-      <section id="search_folder">
-        <title>Папки поиска</title>
-        <para>Папки поиска обладают следующими особенностями:</para>
-        <itemizedlist>
+      <para>Панель папок предназначена для быстрого доступа пользователя к часто используемой информации. Она представляет собой скрываемую панель в левой части главного окна приложения, в которой располагается иерархическая структура, нажатие на элементы которой (папки) приводит к отображению соответствующих экранов системы с определенными параметрами.</para>
+      <para id="">На момент написания данного руководства панель папок реализована  только для <link linkend="app_tiers">Web Client</link>. </para>
+      <para id="">Платформа поддерживает три вида папок: <firstterm>папки приложения</firstterm>, <firstterm>папки поиска</firstterm> и <firstterm>наборы</firstterm> записей. Папки приложения отображаются в верхней части панели в отдельной иерархии, папки поиска и наборы - в нижней части панели в совместной иерархии. <itemizedlist>
           <listitem>
-            <para>при выборе отображают экраны с <link linkend="gui_Filter">универсальным фильтром</link>;</para>
+            <para>Папки приложения:<itemizedlist>
+                <listitem>
+                  <para>Открывают  экраны с <link linkend="gui_Filter">фильтром</link> или без него.</para>
+                </listitem>
+                <listitem>
+                  <para>Набор папок может зависеть от текущего сеанса пользователя. Видимость конкретной папки определяется путем выполнения скрипта Groovy.</para>
+                </listitem>
+                <listitem>
+                  <para>Пользователь может создавать или изменять папки приложения, только если у него есть специальное право.</para>
+                </listitem>
+                <listitem>
+                  <para>В заголовке папки может отображаться текущее количество входящих в папку записей, вычисляемое скриптом Groovy. </para>
+                </listitem>
+                <listitem>
+                  <para>Заголовки папок приложения обновляются по таймеру, тем самым может изменяться счетчик записей и стиль отображения каждой папки.</para>
+                </listitem>
+              </itemizedlist></para>
           </listitem>
           <listitem>
-            <para>создаются пользователем из любого отображенного экрана с <link linkend="gui_Filter">универсальным фильтром</link>;</para>
+            <para>Папки поиска:<itemizedlist>
+                <listitem>
+                  <para>Открывают экраны с <link linkend="gui_Filter">фильтром</link>. </para>
+                </listitem>
+                <listitem>
+                  <para>Могут быть как локальными - доступными только пользователю, их создавшему, так и глобальными - доступными всем пользователям.</para>
+                </listitem>
+                <listitem>
+                  <para>Локальные папки может создавать и изменять любой пользователь, глобальные - только имеющий специальное право.</para>
+                </listitem>
+              </itemizedlist></para>
           </listitem>
           <listitem>
-            <para>пользователь может изменить иерархию, название, либо переопределить фильтр поиска. </para>
+            <para>Наборы: <itemizedlist>
+                <listitem>
+                  <para>Открывают экраны с <link linkend="gui_Filter">фильтром</link>, содержащим условие отбора отдельных записей по их идентификаторам.</para>
+                </listitem>
+                <listitem>
+                  <para>Содержимое набора редактируется с помощью специальных <link linkend="gui_Action">действий</link> таблицы: <guibutton>Добавить в набор</guibutton>, <guibutton>Удалить из набора</guibutton>.</para>
+                </listitem>
+                <listitem>
+                  <para>Наборы локальны, то есть доступны только создавшему их пользователю.</para>
+                </listitem>
+              </itemizedlist></para>
           </listitem>
-        </itemizedlist>
-      </section>
-      <section id="application_folder">
+        </itemizedlist></para>
+      <para>На функционирование панели папок влияют следующие свойства приложения:<itemizedlist>
+          <listitem>
+            <para><link linkend="cuba.web.foldersPaneEnabled">
+                <property>cuba.web.foldersPaneEnabled</property>
+              </link></para>
+          </listitem>
+          <listitem>
+            <para><link linkend="cuba.web.foldersPaneVisibleByDefault">
+                <property>cuba.web.foldersPaneVisibleByDefault</property>
+              </link></para>
+          </listitem>
+          <listitem>
+            <para><link linkend="cuba.web.foldersPaneDefaultWidth">
+                <property>cuba.web.foldersPaneDefaultWidth</property>
+              </link></para>
+          </listitem>
+          <listitem>
+            <para><link linkend="cuba.web.appFoldersRefreshPeriodSec">
+                <property>cuba.web.appFoldersRefreshPeriodSec</property>
+              </link></para>
+          </listitem>
+          <listitem>
+            <para><link linkend="cuba.web.showFolderIcons">
+                <property>cuba.web.showFolderIcons</property>
+              </link></para>
+          </listitem>
+        </itemizedlist></para>
+      <section>
         <title>Папки приложения</title>
-        <para>Обладают следующими особенностями:</para>
-        <itemizedlist>
-          <listitem>
-            <para>при выборе отображают предопределенные экраны с фильтром или без;</para>
-          </listitem>
-          <listitem>
-            <para>набор папок может зависеть от ролей пользователя; </para>
-          </listitem>
-          <listitem>
-            <para>пользователь не может изменить настройки папок;</para>
-          </listitem>
-          <listitem>
-            <para>в заголовке папки может отображаться текущее количество входящих в нее записей;</para>
-          </listitem>
-          <listitem>
-            <para>периодически обновляются по таймеру.</para>
-          </listitem>
-        </itemizedlist>
+        <para>Для создания папок приложения пользователь должен иметь специфическое право <guilabel>Создание/изменение папок приложения</guilabel> (код <literal>cuba.gui.appFolder.global</literal>).</para>
+        <para>Простейшая папка приложения может быть создана из контекстного меню панели папок. Такая папка не связана с экранами системы и предназначена только для группировки других папок в иерархии.</para>
+        <para>Для создания папки, открывающей некоторый экран с фильтром, необходимо выполнить следующее:<itemizedlist>
+            <listitem>
+              <para>Открыть экран и отобрать записи по нужному фильтру.</para>
+            </listitem>
+            <listitem>
+              <para>В меню кнопки <guibutton>Фильтр...</guibutton> выбрать команду <guimenuitem>Сохранить как папку приложения</guimenuitem>.</para>
+            </listitem>
+            <listitem>
+              <para>В окне добавления заполнить атрибуты папки:<itemizedlist>
+                  <listitem>
+                    <para>Наименование папки</para>
+                  </listitem>
+                  <listitem>
+                    <para>Заголовок окна - строка, добавляемая к заголовку окна, когда он открывается из папки</para>
+                  </listitem>
+                  <listitem>
+                    <para>Родительская папка - определяет место создаваемой папки в иерархии</para>
+                  </listitem>
+                  <listitem>
+                    <para>Скрипт видимости - скрипт Groovy, выполняемый в начале сеанса пользователя, и определяющий доступность для него данной папки. </para>
+                    <para>Скрипт должен вернуть булевское значение. Если скрипт не задан, либо возвращает null, папка доступна. Пример:<programlisting>userSession.currentOrSubstitutedUser.login == &apos;admin&apos;</programlisting></para>
+                  </listitem>
+                  <listitem>
+                    <para>Cкрипт количества - скрипт Groovy, выполняемый в начале сеанса пользователя и по таймеру, для вычисления количества записей для данной папки и ее стиля отображения.</para>
+                    <para>Скрипт должен вернуть числовое значение, целая часть которого будет использована в качестве счетчика. Если скрипт не задан, либо возвращает <code>null</code>, счетчик не будет отображаться. Кроме возвращаемого значения скрипт может установить переменную <code>style</code>, которая будет использована как имя стиля отображения папки. Пример:<programlisting>import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.Query
+
+EntityManager em = persistence.getEntityManager()
+Query q = em.createQuery(&apos;select count(o) from sales$Order o&apos;)
+Number count = q.getSingleResult()
+
+style = count &gt; 0 ? &apos;emphasized&apos; : null
+return count</programlisting></para>
+                    <para>Для отображения указанного скриптом стиля тема приложения должна содержать описание этого стиля для элемента  <code>v-tree-node</code> внутри  <code>folderspane</code>, например:<programlisting>.folderspane .v-tree-node.emphasized {
+    font-weight: bold;
+}</programlisting></para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>В скриптах доступны следующие переменные, установленные в контексте <code>groovy.lang.Binding</code>:<itemizedlist>
+            <listitem>
+              <para><code>folder</code>  - экземпляр сущности <code>AppFolder</code> - папка, для которой выполняется скрипт</para>
+            </listitem>
+            <listitem>
+              <para><code>userSession</code> - экземпляр <code>UserSession</code> - текущая <link linkend="userSession">пользовательская сессия</link> </para>
+            </listitem>
+            <listitem>
+              <para><code>persistence</code> - реализация интерфейса <link linkend="persistence">
+                  <code>Persistence</code>
+                </link></para>
+            </listitem>
+            <listitem>
+              <para><code>metadata</code> - реализация интерфейса <link linkend="metadata">
+                  <code>Metadata</code>
+                </link></para>
+            </listitem>
+          </itemizedlist>При обновлении папок для всех скриптов используется один экземпляр <code>groovy.lang.Binding</code>, поэтому между ними можно передавать переменные для исключения дублирующихся запросов и повышения производительности. </para>
+        <para>Тексты скриптов могут содержаться либо непосредственно в атрибутах сущности <code>AppFolder</code>, либо в отдельных файлах. В последнем случае атрибут должен содержать путь к файлу скрипта (обязательно с расширением &quot;.groovy&quot;) по правилам интерфейса <code>
+            <link linkend="resources">Resources</link>
+          </code>. Таким образом, если содержимое атрибута представляет собой строку, заканчивающуюся на &quot;.groovy&quot;, текст скрипта загружается из указанного файла, в противном случае в качестве скрипта используется само содержимое атрибута.</para>
+        <para>Папки приложения представляют собой экземпляры сущности <code>AppFolder</code> и хранятся в связанных таблицах <database>SYS_FOLDER</database> и <database>SYS_APP_FOLDER</database>.</para>
+      </section>
+      <section>
+        <title>Папки поиска</title>
+        <para>Папки поиска создаются пользователями аналогично папкам приложения - группирующие папки непосредственно из контекстного меню панели папок, связанные с экранами - из меню кнопки <guibutton>Фильтр...</guibutton> экрана командой <guimenuitem>Сохранить как папку поиска</guimenuitem>.</para>
+        <para>Для создания глобальной папки пользователь должен иметь специфическое право <guilabel>Создание/изменение глобальных папок поиска</guilabel> (код <literal>cuba.gui.searchFolder.global</literal>). </para>
+        <para>Фильтр папки поиска можно изменить после ее создания - для этого достаточно открыть папку и  в экране изменить фильтр <guilabel>Папка: {имя папки}</guilabel>. После сохранения фильтра он будет изменен и в папке тоже.</para>
+        <para>Папки поиска  представляют собой экземпляры сущности <code>SearchFolder</code> и хранятся в связанных таблицах <database>SYS_FOLDER</database> и <database>SEC_SEARCH_FOLDER</database>.</para>
+      </section>
+      <section>
+        <title>Наборы</title>
+        <para>Использование наборов в экране возможно, если для компонента <code>
+            <link linkend="gui_Filter">Filter</link>
+          </code> в атрибуте <sgmltag>applyTo</sgmltag> указан соответствующий компонент <code>
+            <link linkend="gui_Table">Table</link>
+          </code>. Например:<programlisting>&lt;layout&gt;
+    &lt;filter id=&quot;customerFilter&quot; 
+            datasource=&quot;customersDs&quot; 
+            applyTo=&quot;customersTable&quot;/&gt;
+
+    &lt;groupTable id=&quot;customersTable&quot; 
+                width=&quot;100%&quot;&gt;
+        &lt;buttonsPanel&gt;
+            &lt;button action=&quot;customersTable.create&quot;/&gt;
+...
+        &lt;/buttonsPanel&gt;
+...</programlisting></para>
+        <para>При этом в контекстном меню таблицы появятся команды <guibutton>Добавить в набор</guibutton> или <guibutton>Добавить в тек. набор</guibutton> / <guibutton>Удалить из набора</guibutton>. Если таблица содержит внутри себя компонент <sgmltag>buttonsPanel</sgmltag> (как в приведенном выше примере), команды контекстного меню будут продублированы соответствующими кнопками.</para>
+        <para>Наборы  представляют собой экземпляры сущности <code>SearchFolder</code> и хранятся в связанных таблицах <database>SYS_FOLDER</database> и <database>SEC_SEARCH_FOLDER</database>.</para>
       </section>
     </section>
     <section>

@@ -1150,6 +1150,42 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.windowConfig=cuba-web-screens.xml web-screens.xml</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.web.appFoldersRefreshPeriodSec">
+        <term>cuba.web.appFoldersRefreshPeriodSec</term>
+        <listitem>
+          <para>Период по умолчанию обновления <link linkend="folders_pane">папок приложения</link>  в секундах.</para>
+          <para>Значение по умолчанию: <literal>180</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.foldersPaneDefaultWidth">
+        <term>cuba.web.foldersPaneDefaultWidth</term>
+        <listitem>
+          <para>Ширина по умолчанию <link linkend="folders_pane">панели папок</link> в пикселях.</para>
+          <para>Значение по умолчанию: <literal>200</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.foldersPaneEnabled">
+        <term>cuba.web.foldersPaneEnabled</term>
+        <listitem>
+          <para>Включает или отключает отображение <link linkend="folders_pane">панели папок</link>.</para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.foldersPaneVisibleByDefault">
+        <term>cuba.web.foldersPaneVisibleByDefault</term>
+        <listitem>
+          <para>Если <code>true</code>, то при первом входе пользователя в систему <link linkend="folders_pane">панель папок</link> будет отображаться в развернутом состоянии, если <code>false</code> - то в свернутом.</para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry>
         <term>cuba.web.loginDialogDefaultUser</term>
         <listitem>
@@ -1164,6 +1200,25 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <listitem>
           <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.showFolderIcons">
+        <term>cuba.web.showFolderIcons</term>
+        <listitem>
+          <para>Задает отображение пиктограмм в <link linkend="folders_pane">панели папок</link>. Если включено, то используются следующие файлы каталога темы приложения:<itemizedlist>
+              <listitem>
+                <para><filename>icons/app-folder-small.png</filename> - для папок приложения</para>
+              </listitem>
+              <listitem>
+                <para><filename>icons/search-folder-small.png</filename> - для папок поиска</para>
+              </listitem>
+              <listitem>
+                <para><filename>icons/set-small.png</filename> - для наборов</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
