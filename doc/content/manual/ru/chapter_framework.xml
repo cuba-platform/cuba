@@ -10425,7 +10425,24 @@ return count</programlisting></para>
     </section>
     <section>
       <title>Инспектор сущностей</title>
-      <para>TODO</para>
+      <para>Инспектор сущностей позволяет работать с любыми объектами предметной области без создания специфических экранов. Инспектор динамически генерирует экраны просмотра списка и редактирования экземпляра выбранной сущности.</para>
+      <para>Это дает возможность администратору системы просматривать и редактировать данные, которые недоступны в стандартных экранах в силу их дизайна, а  на этапе прототипирования создать только модель данных и пункты главного меню, ссылающиеся на инспектор сущностей.</para>
+      <para>Точкой входа в инспектор является экран <filename>com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml</filename>. </para>
+      <para>Если в экран передан параметр <code>entity</code> типа <code>String</code> с именем сущности, то инспектор отобразит список экземпляров этой сущности с возможностью фильтрации, выбора и редактирования экземпляров. Параметр может быть указан при регистрации экрана в <link linkend="screens.xml">
+          <filename>screens.xml</filename>
+        </link>, например:</para>
+      <para><filename>screens.xml</filename><programlisting>&lt;screen id=&quot;sales$Product.lookup&quot; 
+        template=&quot;/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml&quot;&gt;
+    &lt;param name=&quot;entity&quot; 
+           value=&quot;sales$Product&quot;/&gt;
+&lt;/screen&gt;</programlisting></para>
+      <para><filename>menu.xml</filename><programlisting>&lt;item id=&quot;sales$Product.lookup&quot;/&gt;</programlisting></para>
+      <para>Идентификатор экрана вида <code>{имя_сущности}.lookup</code>  дает возможность использовать этот экран компонентам <code>
+          <link linkend="gui_PickerField">PickerField</link>
+        </code> и <code>
+          <link linkend="gui_LookupPickerField">LookupPickerField</link>
+        </code> в стандартном действии <code>PickerField.LookupAction</code>.</para>
+      <para>В общем случае данный экран можно вызывать без передачи параметров, тогда в его верхней части отображается поле для выбора сущности. В базовом проекте <structname>cuba</structname> экран инспектора зарегистрирован с идентификатором <code>entityInspector.browse</code>, поэтому для его вызова достаточно наличия пункта меню:<programlisting>&lt;item id=&quot;entityInspector.browse&quot;/&gt;</programlisting></para>
     </section>
     <section>
       <title>Информация об используемом ПО</title>

@@ -256,6 +256,34 @@ shortcut=&quot;ALT-CTRL-SHIFT-C&quot;</programlisting></para>
                   <para>По умолчанию главное меню не влияет на возможность изменения размера диалоговых окон.</para>
                 </listitem>
               </itemizedlist></para>
+            <para>Элементы <sgmltag>item</sgmltag>:<itemizedlist>
+                <listitem>
+                  <para><sgmltag>param</sgmltag> - задает параметр экрана, передаваемый в мэп метода <code>init()</code> <link linkend="screen_controller">контроллера</link>. Параметры, заданные в <filename>menu.xml</filename>, переопределяют одноименные параметры, заданные в <link linkend="screens.xml">
+                      <filename>screens.xml</filename>
+                    </link>.</para>
+                  <para>Атрибуты <sgmltag>param</sgmltag>:<itemizedlist>
+                      <listitem>
+                        <para><sgmltag>name</sgmltag> - имя параметра</para>
+                      </listitem>
+                      <listitem>
+                        <para><sgmltag>value</sgmltag> - значение параметра. Строковое значение может преобразовываться в некоторый объект по следующим правилам:<itemizedlist>
+                            <listitem>
+                              <para>Если строка представляет собой идентификатор сущности, записанный по правилам класса <code>EntityLoadInfo</code>, то загружается указанный экземпляр сущности.</para>
+                            </listitem>
+                            <listitem>
+                              <para>Если строка имеет вид <code>${some_name}</code>, то значением параметра будет  свойство приложения <property>some_name</property>.</para>
+                            </listitem>
+                            <listitem>
+                              <para>Строки <literal>true</literal> и <literal>false</literal> преобразуются в соответствующие значения типа <code>Boolean</code>.</para>
+                            </listitem>
+                            <listitem>
+                              <para>Если ничего из вышеперечисленного не подходит, значением параметра становится сама строка.</para>
+                            </listitem>
+                          </itemizedlist></para>
+                      </listitem>
+                    </itemizedlist></para>
+                </listitem>
+              </itemizedlist></para>
           </listitem>
         </itemizedlist></para>
       <para>Пример файла меню:<programlisting>&lt;menu-config xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/menu.xsd&quot;&gt;
