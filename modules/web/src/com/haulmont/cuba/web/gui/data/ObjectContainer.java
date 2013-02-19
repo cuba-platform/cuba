@@ -5,6 +5,8 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import org.apache.commons.collections.CollectionUtils;
@@ -115,7 +117,14 @@ public class ObjectContainer implements com.vaadin.data.Container {
         ObjectItem(final Object item) {
             this.item = item;
 
-            final Method[] methods = this.item.getClass().getMethods();
+            if (item instanceof Instance)
+                this.name = InstanceUtils.getInstanceName((Instance) item);
+            else
+                this.name = getNameFromReflection(item);
+        }
+
+        private String getNameFromReflection(Object value) {
+            final Method[] methods = value.getClass().getMethods();
             if (methods != null) {
                 Method method = (Method) CollectionUtils.find(Arrays.asList(methods), new Predicate() {
                     @Override
@@ -127,16 +136,17 @@ public class ObjectContainer implements com.vaadin.data.Container {
 
                 if (method != null) {
                     try {
-                        final Object o = method.invoke(item);
+                        final Object o = method.invoke(value);
                         if (o instanceof String)
-                            this.name = (String) o;
+                            return (String) o;
                         else
-                            this.name = o.toString();
+                            return String.valueOf(o);
                     } catch (Exception e) {
                         log.error("error invoking " + method.getName(), e);
                     }
                 }
             }
+            return String.valueOf(value);
         }
 
         @Override

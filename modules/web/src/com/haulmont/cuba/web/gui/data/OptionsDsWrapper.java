@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -18,10 +18,12 @@ import com.vaadin.data.Property;
 import java.util.*;
 
 /**
- * @author abramov
+ * Uses any Object as his Id
+ *
+ * @author artamonov
  * @version $Id$
  */
-public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
+public class OptionsDsWrapper implements Container, Container.ItemSetChangeNotifier {
 
     private static final long serialVersionUID = 1440434590495905389L;
 
@@ -33,23 +35,15 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
 
-    public CollectionDsWrapper(CollectionDatasource datasource) {
-        this(datasource, false);
-    }
-
-    public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-        this(datasource, properties, false);
-    }
-
-    public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
+    public OptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this(datasource, null, autoRefresh);
     }
 
-    public CollectionDsWrapper(
+    public OptionsDsWrapper(
             CollectionDatasource datasource,
             Collection<MetaPropertyPath> properties,
-            boolean autoRefresh
-    ) {
+            boolean autoRefresh) {
+
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
 
@@ -66,10 +60,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected DatasourceListener createDatasourceListener() {
-        if (datasource instanceof CollectionDatasource.Lazy)
-            return new LazyDataSourceRefreshListener();
-        else
-            return new DataSourceRefreshListener();
+        return new DataSourceRefreshListener();
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -78,6 +69,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     protected void fireItemSetChanged() {
         if (ignoreListeners) return;
+
         ignoreListeners = true;
 
         if (!itemSetChangeListeners.isEmpty()) {
@@ -86,12 +78,16 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
                 listener.containerItemSetChange(event);
             }
         }
+
+        ignoreListeners = false;
     }
 
     @Override
     public Item getItem(Object itemId) {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
-        final Object item = datasource.getItem(itemId);
+
+        Entity entity = (Entity) itemId;
+        final Object item = datasource.getItem(entity.getId());
         return item == null ? null : getItemWrapper(item);
     }
 
@@ -119,7 +115,13 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     @Override
     public Collection getItemIds() {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
-        return datasource.getItemIds();
+
+        Collection itemIds = datasource.getItemIds();
+        ArrayList items = new ArrayList(itemIds.size());
+        for (Object id : itemIds)
+            items.add(datasource.getItem(id));
+
+        return items;
     }
 
     @Override
@@ -196,20 +198,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         removeItemSetChangeListener(listener);
     }
 
-    protected void checkMaxFetchUI(CollectionDatasource ds) {
-//        String entityName = ds.getMetaClass().getName();
-//        if (ds.size() >= persistenceManager.getMaxFetchUI(entityName)) {
-//            log.debug("MaxFetchUI threshold exceeded for " + entityName);
-//            String msg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "maxFetchUIExceeded");
-//            App app = App.getInstance();
-//            app.getAppLog().debug(entityName + ": " + msg);
-//            app.getWindowManager().showNotification(msg, IFrame.NotificationType.HUMANIZED);
-//        }
-    }
-
     protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
         @Override
-        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {}
+        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+        }
 
         @Override
         public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
@@ -242,20 +234,9 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             try {
                 itemsCache.clear();
                 fireItemSetChanged();
-                if (!(ds instanceof CollectionDatasource.Lazy)) {
-                    checkMaxFetchUI(ds);
-                }
             } finally {
                 ignoreListeners = prevIgnoreListeners;
             }
-        }
-    }
-
-    protected class LazyDataSourceRefreshListener extends DataSourceRefreshListener
-            implements LazyCollectionDatasourceListener<Entity> {
-        @Override
-        public void completelyLoaded(CollectionDatasource.Lazy ds) {
-            checkMaxFetchUI(ds);
         }
     }
 

@@ -5,34 +5,34 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect;
+import org.apache.commons.lang.ObjectUtils;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * @author abramov
  * @version $Id$
  */
 public class WebLookupField
-        extends  WebAbstractOptionsField<FilterSelect>
+        extends WebAbstractOptionsField<FilterSelect>
         implements LookupField, Component.Wrapper {
 
     private Object nullOption;
     private FilterMode filterMode;
     private NewOptionHandler newOptionHandler;
+
+    private Object missingValue = null;
 
     public WebLookupField() {
         createComponent();
@@ -63,44 +63,12 @@ public class WebLookupField
         this.component = new FilterSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
-                if (newDataSource == null) {
+                if (newDataSource == null)
                     super.setPropertyDataSource(null);
-                } else {
-                    super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource) {
-                        @Override
-                        public Object getValue() {
-                            final Object o = itemProperty.getValue();
-                            return getKeyFromValue(o);
-                        }
-
-                        @Override
-                        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                            if (!optionsInitialization) {
-                                Object v = getValueFromKey(newValue);
-                                if (newValue != null) {
-                                    if (v == null && !items.containsId(v)) {
-                                        Object valueKey = WebLookupField.super.getValue();
-                                        if (newValue == valueKey)
-                                            v = getValueFromDs();
-                                    }
-                                }
-                                itemProperty.setValue(v);
-                            }
-                        }
-                    });
-                }
+                else
+                    super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource));
             }
         };
-    }
-
-    protected Object getValueFromDs() {
-        Object value;
-        Entity containingEntity = this.datasource.getItem();
-        if (this.metaPropertyPath != null)
-            value = InstanceUtils.getValueEx(containingEntity, this.metaPropertyPath.getPath());
-        else
-            value = containingEntity.getValue(this.metaProperty.getName());
-        return value;
     }
 
     @Override
@@ -169,12 +137,6 @@ public class WebLookupField
     }
 
     @Override
-    public <T> T getValue() {
-        final Object key = super.getValue();
-        return (T) getValueFromKey(key);
-    }
-
-    @Override
     protected void attachListener(FilterSelect component) {
         component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -187,11 +149,6 @@ public class WebLookupField
                 }
             }
         });
-    }
-
-    @Override
-    public void setValue(@Nullable Object value) {
-        super.setValue(getKeyFromValue(value));
     }
 
     @Override
@@ -208,7 +165,7 @@ public class WebLookupField
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
-        component.setContainerDataSource(new DsWrapper(datasource, true));
+        component.setContainerDataSource(new LookupOptionsDsWrapper(datasource, true));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
@@ -251,162 +208,74 @@ public class WebLookupField
 //        component.disablePaging();
     }
 
-    protected abstract class LookupPropertyAdapter extends PropertyAdapter {
-        public LookupPropertyAdapter(Property itemProperty) {
-            super(itemProperty);
-        }
+    private class LookupOptionsDsWrapper extends OptionsDsWrapper {
 
-        public Object getInternalValue() {
-            return itemProperty.getValue();
-        }
-    }
-
-    // Shows LookupFiled value even if it is not present in options list
-    protected class DsWrapper extends CollectionDsWrapper implements com.vaadin.data.Container.Ordered {
-
-        private Object previousValue = null;
-
-        public DsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
+        public LookupOptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
             super(datasource, autoRefresh);
+        }
+
+        @Override
+        public boolean containsId(Object itemId) {
+            boolean containsFlag = super.containsId(itemId);
+            if (!containsFlag)
+                missingValue = itemId;
+            return true;
         }
 
         @Override
         public Collection getItemIds() {
             Collection itemIds = super.getItemIds();
-            Object valueKey = WebLookupField.super.getValue();
-            if (valueKey != null && previousValue == null)
-                previousValue = valueKey;
-
-            if (valueKey != null && !itemIds.contains(valueKey)) {
-                itemIds = new HashSet(itemIds);
-                itemIds.add(valueKey);
-            } else if (previousValue != null && !itemIds.contains(previousValue)) {
-                itemIds = new HashSet(itemIds);
-                itemIds.add(previousValue);
+            if (missingValue != null && !itemIds.contains(missingValue)) {
+                Collection newItemIds = new ArrayList(itemIds.size() + 1);
+                newItemIds.add(missingValue);
+                for (Object itemId : itemIds)
+                    newItemIds.add(itemId);
+                itemIds = newItemIds;
             }
-
             return itemIds;
         }
 
         @Override
         public Item getItem(Object itemId) {
-            Item item = super.getItem(itemId);
-            if (item == null) {
-                if (WebLookupField.this.datasource != null) {
-                    Object value = WebLookupField.this.getValueFromDs();
+            if (ObjectUtils.equals(missingValue, itemId))
+                return getItemWrapper(missingValue);
 
-                    if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
-                        item = getItemWrapper(value);
-                    }
-                } else if (WebLookupField.this.component.getPropertyDataSource() != null) {
-                    // For work in field group
-                    Property propertyDataSource = WebLookupField.this.component.getPropertyDataSource();
-                    Object value;
-                    if (propertyDataSource instanceof LookupPropertyAdapter)
-                        value = ((LookupPropertyAdapter) propertyDataSource).getInternalValue();
-                    else
-                        value = propertyDataSource.getValue();
-
-                    if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
-                        item = getItemWrapper(value);
-                    }
-                }
-            }
-            return item;
+            return super.getItem(itemId);
         }
 
         @Override
         public int size() {
-            if (datasource instanceof CollectionDatasource.Lazy) {
-                if (Datasource.State.INVALID.equals(datasource.getState()))
-                    datasource.refresh();
+            int size = super.size();
+            if (missingValue != null)
+                size++;
+            return size;
+        }
+    }
 
-                if (datasource.size() == 0) {
-                    Object valueKey = WebLookupField.super.getValue();
-                    return (valueKey != null && !datasource.containsItem(valueKey)) ? 1 : 0;
-                }
+    private class LookupPropertyAdapter extends PropertyAdapter {
+        public LookupPropertyAdapter(Property itemProperty) {
+            super(itemProperty);
+        }
 
-                return datasource.size();
-            } else {
-                return getItemIds().size();
+        @Override
+        public Object getValue() {
+            Object value = itemProperty.getValue();
+            if (optionsDatasource != null &&
+                    !ObjectUtils.equals(missingValue, value) &&
+                    !optionsDatasource.containsItem(value)) {
+                missingValue = value;
             }
+            return value;
         }
 
         @Override
-        public boolean containsId(Object itemId) {
-            if (datasource instanceof CollectionDatasource.Lazy) {
-                return datasource.containsItem(itemId);
-            } else {
-                Collection itemIds = getItemIds();
-                return itemIds.contains(itemId);
+        public void setValue(Object newValue) throws ReadOnlyException {
+            if (optionsDatasource != null &&
+                    !ObjectUtils.equals(missingValue, newValue) &&
+                    !optionsDatasource.containsItem(newValue)) {
+                missingValue = newValue;
             }
-        }
-
-        @Override
-        public Object nextItemId(Object itemId) {
-            if (datasource instanceof CollectionDatasource.Ordered)
-                return ((CollectionDatasource.Ordered) datasource).nextItemId(itemId);
-            else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Object prevItemId(Object itemId) {
-            if (datasource instanceof CollectionDatasource.Ordered)
-                return ((CollectionDatasource.Ordered) datasource).prevItemId(itemId);
-            else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Object firstItemId() {
-            if (datasource instanceof CollectionDatasource.Ordered) {
-                Object itemId = ((CollectionDatasource.Ordered) datasource).firstItemId();
-                if (itemId == null && WebLookupField.this.datasource != null) {
-                    Object value = WebLookupField.this.getValueFromDs();
-
-                    if (value instanceof Entity) {
-                        return ((Entity) value).getId();
-                    } else
-                        return value;
-                } else
-                    return itemId;
-            } else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Object lastItemId() {
-            if (datasource instanceof CollectionDatasource.Ordered)
-                return ((CollectionDatasource.Ordered) datasource).lastItemId();
-            else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isFirstId(Object itemId) {
-            if (datasource instanceof CollectionDatasource.Ordered)
-                return ((CollectionDatasource.Ordered) datasource).isFirstId(itemId);
-            else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isLastId(Object itemId) {
-            if (datasource instanceof CollectionDatasource.Ordered)
-                return ((CollectionDatasource.Ordered) datasource).isLastId(itemId);
-            else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
-            throw new UnsupportedOperationException();
+            itemProperty.setValue(newValue);
         }
     }
 }

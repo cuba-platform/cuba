@@ -345,7 +345,8 @@ configure(webToolkitModule) {
     def webOutDir = file("$buildDir/web")
     task buildWidgetSet(dependsOn: compileJava, type: CubaWidgetSetBuilding) {
         widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
-        widgetSetModules = [webToolkitModule, webModule]
+        widgetSetModules = [webToolkitModule]
+        dependencyModules = [webModule]
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
         compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']

@@ -25,8 +25,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     extends
         WebAbstractField<T>
     implements
-        com.haulmont.cuba.gui.components.Field, Component.Wrapper
-{
+        com.haulmont.cuba.gui.components.Field, Component.Wrapper {
+
     protected List optionsList;
     protected Map<String, Object> optionsMap;
     protected CollectionDatasource optionsDatasource;
@@ -96,7 +96,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 opts.add(itemId);
             }
             setComponentContainerDs(new ObjectContainer(opts));
-            component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
+            component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
             this.optionsMap = options;
         }
     }
@@ -115,8 +115,9 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 setCaptionMode(CaptionMode.ITEM);
             } else {
                 setComponentContainerDs(new ObjectContainer(optionsList));
-                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
+                component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
             }
+
             component.setValue(currentValue);
             this.optionsList = optionsList;
         } else if (!optionsList.isEmpty()) {
@@ -150,17 +151,16 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     public void setCaptionMode(CaptionMode captionMode) {
         this.captionMode = captionMode;
         switch (captionMode) {
-            case ITEM: {
-                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
+            case ITEM:
+                component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
                 break;
-            }
-            case PROPERTY: {
-                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+
+            case PROPERTY:
+                component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
                 break;
-            }
-            default: {
+
+            default:
                 throw new UnsupportedOperationException();
-            }
         }
     }
 
