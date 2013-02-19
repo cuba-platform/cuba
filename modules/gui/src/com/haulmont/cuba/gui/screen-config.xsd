@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema
+<xs:schema 
         targetNamespace="http://schemas.haulmont.com/cuba/4.0/screens.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns="http://schemas.haulmont.com/cuba/4.0/screens.xsd"
@@ -18,7 +18,7 @@
 
     <xs:complexType name="screenType">
         <xs:sequence>
-            <xs:element type="paramsType" name="params" maxOccurs="1" minOccurs="0"/>
+            <xs:element type="paramType" name="param" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="class" type="xs:string" use="optional"/>
@@ -28,12 +28,6 @@
 
     <xs:complexType name="includeType">
         <xs:attribute name="file" type="xs:string" use="required"/>
-    </xs:complexType>
-
-    <xs:complexType name="paramsType">
-        <xs:sequence>
-            <xs:element type="paramType" name="param" maxOccurs="unbounded" minOccurs="0"/>
-        </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="paramType">
