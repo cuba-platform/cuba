@@ -717,15 +717,15 @@
 
     <!-- Table -->
     <xs:complexType name="tableComponent">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
             <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
                 <xs:complexType/>
             </xs:element>
-            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="tableColumnsList"/>
+            <xs:element name="columns" minOccurs="1" maxOccurs="1" type="tableColumnsList"/>
             <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
-        </xs:sequence>
+        </xs:all>
 
         <xs:attributeGroup ref="hasId"/>
 
@@ -739,15 +739,15 @@
 
     <!-- GroupTable -->
     <xs:complexType name="groupTableComponent">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
             <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
                 <xs:complexType/>
             </xs:element>
-            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="groupTableColumnsType"/>
+            <xs:element name="columns" minOccurs="1" maxOccurs="1" type="groupTableColumnsType"/>
             <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
-        </xs:sequence>
+        </xs:all>
 
         <xs:attributeGroup ref="hasId"/>
 
