@@ -28,6 +28,7 @@ public class PropertyModelItem implements ModelItem {
     private AbstractDescriptorBuilder descriptorBuilder;
     private AbstractConditionDescriptor descriptor;
     private ModelItem parent;
+    private List<ModelItem> modelItems;
 
     PropertyModelItem(ModelItem parent, MetaProperty metaProperty,
                       AbstractConditionDescriptor descriptor, AbstractDescriptorBuilder descriptorBuilder) {
@@ -57,19 +58,21 @@ public class PropertyModelItem implements ModelItem {
     @Override
     @Nonnull
     public List<ModelItem> getChildren() {
-        if (metaProperty.getRange().isClass()) {
-            List<ModelItem> list = new ArrayList<>();
+        if (modelItems == null) {
+            if (metaProperty.getRange().isClass()) {
+                modelItems = new ArrayList<>();
 
-            ModelPropertiesFilter propertiesFilter = new ModelPropertiesFilter();
+                ModelPropertiesFilter propertiesFilter = new ModelPropertiesFilter();
 
-            for (MetaProperty property : metaProperty.getRange().asClass().getProperties()) {
-                if (propertiesFilter.isPropertyFilterAllowed(property))
-                    list.add(new PropertyModelItem(this, property, null, descriptorBuilder));
-            }
-            Collections.sort(list, new ModelItemComparator());
-            return list;
-        } else
-            return Collections.emptyList();
+                for (MetaProperty property : metaProperty.getRange().asClass().getProperties()) {
+                    if (propertiesFilter.isPropertyFilterAllowed(property))
+                        modelItems.add(new PropertyModelItem(this, property, null, descriptorBuilder));
+                }
+                Collections.sort(modelItems, new ModelItemComparator());
+            } else
+                modelItems = Collections.emptyList();
+        }
+        return modelItems;
     }
 
     @Override

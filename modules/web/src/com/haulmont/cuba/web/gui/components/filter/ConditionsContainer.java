@@ -18,6 +18,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
@@ -92,12 +93,12 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
 
     @Override
     public boolean isFirstId(Object itemId) {
-        return itemId.equals(firstItemId());
+        return ObjectUtils.equals(itemId, firstItemId());
     }
 
     @Override
     public boolean isLastId(Object itemId) {
-        return itemId.equals(lastItemId());
+        return ObjectUtils.equals(itemId, lastItemId());
     }
 
     @Override

@@ -36,8 +36,10 @@ public class RootPropertyModelItem implements ModelItem {
     private List<AbstractConditionDescriptor> propertyDescriptors;
     private AbstractDescriptorBuilder descriptorBuilder;
 
+    private List<ModelItem> modelItems;
+
     public RootPropertyModelItem(MetaClass metaClass, List<AbstractConditionDescriptor> propertyDescriptors,
-                          AbstractDescriptorBuilder descriptorBuilder) {
+                                 AbstractDescriptorBuilder descriptorBuilder) {
         this.metaClass = metaClass;
         this.propertyDescriptors = propertyDescriptors;
         this.descriptorBuilder = descriptorBuilder;
@@ -51,26 +53,28 @@ public class RootPropertyModelItem implements ModelItem {
     @Nonnull
     @Override
     public List<ModelItem> getChildren() {
-        List<ModelItem> list = new ArrayList<>();
+        if (modelItems == null) {
+            modelItems = new ArrayList<>();
 
-        ModelPropertiesFilter modelPropertiesFilter = new ModelPropertiesFilter();
+            ModelPropertiesFilter modelPropertiesFilter = new ModelPropertiesFilter();
 
-        for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
-            if (descriptor instanceof AbstractPropertyConditionDescriptor) {
-                MetaPropertyPath mpp = metaClass.getPropertyPath(descriptor.getName());
-                if (mpp == null) {
-                    log.error("Invalid property name: " + descriptor.getName());
-                    continue;
+            for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
+                if (descriptor instanceof AbstractPropertyConditionDescriptor) {
+                    MetaPropertyPath mpp = metaClass.getPropertyPath(descriptor.getName());
+                    if (mpp == null) {
+                        log.error("Invalid property name: " + descriptor.getName());
+                        continue;
+                    }
+                    MetaProperty metaProperty = mpp.getMetaProperty();
+
+                    if (modelPropertiesFilter.isPropertyFilterAllowed(metaProperty))
+                        modelItems.add(new PropertyModelItem(null, metaProperty, descriptor, descriptorBuilder));
                 }
-                MetaProperty metaProperty = mpp.getMetaProperty();
-
-                if (modelPropertiesFilter.isPropertyFilterAllowed(metaProperty))
-                    list.add(new PropertyModelItem(null, metaProperty, descriptor, descriptorBuilder));
             }
-        }
 
-        Collections.sort(list, new ModelItemComparator());
-        return list;
+            Collections.sort(modelItems, new ModelItemComparator());
+        }
+        return modelItems;
     }
 
     @Override

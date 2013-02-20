@@ -15,7 +15,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 @SuppressWarnings("serial")
 public class Tree extends com.vaadin.ui.Tree {
-    private boolean doubleClickMode = false;
+//    private boolean doubleClickMode = false;
 //
 //    @Override
 //    public void paintContent(PaintTarget target) throws PaintException {

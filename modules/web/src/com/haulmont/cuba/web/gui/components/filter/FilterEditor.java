@@ -44,13 +44,10 @@ public class FilterEditor extends AbstractFilterEditor {
     private CheckBox defaultCb;
     private CheckBox applyDefaultCb;
 
-    private static final String EDITOR_WIDTH = "640px";
-    private static final String TABLE_WIDTH = "600px";
+    private static final String EDITOR_WIDTH = "700px";
+    private static final String TABLE_WIDTH = "660px";
     private CheckBox globalCb;
     private Button saveBtn;
-
-    private Button upBtn;
-    private Button downBtn;
 
     protected ConditionsContainer container;
 
@@ -86,7 +83,7 @@ public class FilterEditor extends AbstractFilterEditor {
         controlLayout.setSpacing(true);
 
         // Move up button
-        upBtn = WebComponentsHelper.createButton("icons/up.png");
+        Button upBtn = WebComponentsHelper.createButton("icons/up.png");
         upBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -99,7 +96,7 @@ public class FilterEditor extends AbstractFilterEditor {
         upBtn.setEnabled(true);
 
         // Move down button
-        downBtn = WebComponentsHelper.createButton("icons/down.png");
+        Button downBtn = WebComponentsHelper.createButton("icons/down.png");
         downBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

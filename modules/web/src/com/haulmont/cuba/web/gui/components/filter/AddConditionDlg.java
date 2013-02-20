@@ -43,12 +43,13 @@ public class AddConditionDlg extends Window {
     private Button okBtn;
 
     private SelectionHandler selectionHandler;
+    private ModelItem selectedItem;
 
     public AddConditionDlg(MetaClass metaClass,
                            List<AbstractConditionDescriptor> propertyDescriptors,
                            DescriptorBuilder descriptorBuilder,
-                           SelectionHandler selectionHandler)
-    {
+                           SelectionHandler selectionHandler) {
+
         super(AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
 
         this.selectionHandler = selectionHandler;
@@ -59,39 +60,63 @@ public class AddConditionDlg extends Window {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
+        layout.setMargin(true);
         layout.setSizeFull();
 
-        setContent(layout);
-
-        VerticalLayout topLayout = new VerticalLayout();
-        topLayout.setMargin(true);
+        Panel treePanel = new Panel();
 
         tree = new com.haulmont.cuba.web.toolkit.ui.Tree();
         tree.setWidth("100%");
         tree.setHeight("100%");
         tree.setImmediate(true);
+        tree.setSelectable(true);
         tree.setMultiSelect(false);
+
+        tree.setPropertyDataSource(new Property<ModelItem>() {
+            @Override
+            public ModelItem getValue() {
+                return selectedItem;
+            }
+
+            @Override
+            public void setValue(ModelItem newValue) throws ReadOnlyException {
+                selectedItem = newValue;
+            }
+
+            @Override
+            public Class<ModelItem> getType() {
+                return ModelItem.class;
+            }
+
+            @Override
+            public boolean isReadOnly() {
+                return false;
+            }
+
+            @Override
+            public void setReadOnly(boolean newStatus) {
+            }
+        });
+
         Model model = new Model(metaClass, propertyDescriptors, descriptorBuilder);
         tree.setContainerDataSource(model);
         tree.setItemCaptionPropertyId(MODEL_PROPERTY_IDS.get(0));
         tree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 
-        topLayout.addComponent(tree);
-        topLayout.setSizeFull();
+//        Tree fakeTree = getFakeTree();
 
-        layout.addComponent(topLayout);
-        layout.setExpandRatio(topLayout, 1);
+        treePanel.setContent(tree);
+        treePanel.setSizeFull();
 
-        VerticalLayout bottomLayout = new VerticalLayout();
-        bottomLayout.setMargin(true);
+        layout.addComponent(treePanel);
+        layout.setExpandRatio(treePanel, 1);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         initButtonsLayout(buttonsLayout);
 
-        bottomLayout.addComponent(buttonsLayout);
-        bottomLayout.setComponentAlignment(buttonsLayout, Alignment.MIDDLE_RIGHT);
+        layout.addComponent(buttonsLayout);
 
-        layout.addComponent(bottomLayout);
+        setContent(layout);
 
         initShortcuts();
 
@@ -118,8 +143,90 @@ public class AddConditionDlg extends Window {
         tree.focus();
     }
 
+//    private Tree getFakeTree() {
+//        final Object[][] planets = new Object[][]{
+//            new Object[]{"Mercury"},
+//            new Object[]{"Venus"},
+//            new Object[]{"Earth", "The Moon"},
+//            new Object[]{"Mars", "Phobos", "Deimos"},
+//            new Object[]{"Jupiter", "Io", "Europa", "Ganymedes",
+//                    "Callisto"},
+//            new Object[]{"Saturn",  "Titan", "Tethys", "Dione",
+//                    "Rhea", "Iapetus"},
+//            new Object[]{"Uranus",  "Miranda", "Ariel", "Umbriel",
+//                    "Titania", "Oberon"},
+//            new Object[]{"Neptune", "Triton", "Proteus", "Nereid",
+//                    "Larissa"}};
+//        Tree fakeTree = new Tree();
+//
+//        fakeTree.setImmediate(true);
+//
+//        fakeTree.setPropertyDataSource(new Property<String>() {
+//            String value;
+//
+//            @Override
+//            public String getValue() {
+//                return value;
+//            }
+//
+//            @Override
+//            public void setValue(String newValue) throws ReadOnlyException {
+//                value = newValue;
+//            }
+//
+//            @Override
+//            public Class<String> getType() {
+//                return String.class;
+//            }
+//
+//            @Override
+//            public boolean isReadOnly() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void setReadOnly(boolean newStatus) {
+//            }
+//        });
+//
+//        for (Object[] planet1 : planets) {
+//            String planet = (String) (planet1[0]);
+//            fakeTree.addItem(planet);
+//
+//            if (planet1.length == 1) {
+//                // The planet has no moons so make it a leaf.
+//                fakeTree.setChildrenAllowed(planet, false);
+//            } else {
+//                // Add children (moons) under the planets.
+//                for (int j = 1; j < planet1.length; j++) {
+//                    String moon = (String) planet1[j];
+//
+//                    // Add the item as a regular item.
+//                    fakeTree.addItem(moon);
+//
+//                    // Set it to be a child.
+//                    fakeTree.setParent(moon, planet);
+//
+//                    // Make the moons look like leaves.
+//                    fakeTree.setChildrenAllowed(moon, false);
+//                }
+//
+//                // Expand the subtree.
+//                fakeTree.expandItemsRecursively(planet);
+//            }
+//        }
+//
+//        fakeTree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
+//        return fakeTree;
+//    }
+
     private void initButtonsLayout(HorizontalLayout buttonsLayout) {
+        buttonsLayout.setWidth("100%");
         buttonsLayout.setSpacing(true);
+
+        Label spacer = new Label();
+        buttonsLayout.addComponent(spacer);
+        buttonsLayout.setExpandRatio(spacer, 1);
 
         Messages messages = AppBeans.get(Messages.class);
         okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
@@ -247,12 +354,12 @@ public class AddConditionDlg extends Window {
 
         @Override
         public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
-            return false;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
-            return false;
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -333,7 +440,7 @@ public class AddConditionDlg extends Window {
 
         @Override
         public boolean areChildrenAllowed(Object itemId) {
-            return true; // always return true to get correct styles in Tree web implementation
+            return !((ModelItem) itemId).getChildren().isEmpty();
         }
 
         @Override
