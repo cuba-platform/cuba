@@ -742,6 +742,17 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.creditsConfig">
+        <term>cuba.creditsConfig</term>
+        <listitem>
+          <para>Конфигурационный параметр, задает набор файлов <filename>credits.xml</filename>, содержащих <link linkend="credits">информацию об используемом программном обеспечении</link>. </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>.</para>
+          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Пример:<programlisting>cuba.creditsConfig=cuba-credits.xml reports-credits.xml credits.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.dataSourceJndiName">
         <term>cuba.dataSourceJndiName</term>
         <listitem>
