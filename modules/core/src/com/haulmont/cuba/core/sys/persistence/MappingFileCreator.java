@@ -259,6 +259,7 @@ class MappingFileCreator {
             private String xml;
 
             private Type(int order, String xml) {
+                this.order = order;
                 this.xml = xml;
             }
 
