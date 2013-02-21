@@ -296,7 +296,7 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setPageLength(0);
         table.setWidth(TABLE_WIDTH);
         table.setHeight("200px");
-        table.setStyleName("table filter-conditions");
+        table.setStyleName("cuba-filter-conditions");
         table.setColumnReorderingAllowed(false);
         table.setSortEnabled(false);
 

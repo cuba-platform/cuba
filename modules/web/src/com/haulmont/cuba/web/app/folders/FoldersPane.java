@@ -97,7 +97,7 @@ public class FoldersPane extends VerticalLayout {
         parentAppWindow = appWindow;
 
         setHeight(100, Unit.PERCENTAGE);
-        setStyleName("folderspane");
+        setStyleName("cuba-folderspane");
     }
 
     public void init(Component parent) {
@@ -127,7 +127,7 @@ public class FoldersPane extends VerticalLayout {
                     createMenuBarCommand(),
                     firstItem);
 
-            menuBar.setStyleName("folders-pane");
+            menuBar.setStyleName("cuba-folders-pane");
         }
     }
 
@@ -167,7 +167,7 @@ public class FoldersPane extends VerticalLayout {
                 appFoldersPane.setWidth("96%");
                 if (isNeedFoldersTitle()) {
                     appFoldersLabel = new Label(messages.getMainMessage("folders.appFoldersRoot"));
-                    appFoldersLabel.setStyleName("folderspane-caption");
+                    appFoldersLabel.setStyleName("cuba-folderspane-caption");
                 } else {
                     appFoldersLabel = null;
                 }
@@ -194,7 +194,7 @@ public class FoldersPane extends VerticalLayout {
                 searchFoldersPane.setWidth("96%");
                 if (isNeedFoldersTitle()) {
                     searchFoldersLabel = new Label(messages.getMainMessage("folders.searchFoldersRoot"));
-                    searchFoldersLabel.setStyleName("folderspane-caption");
+                    searchFoldersLabel.setStyleName("cuba-folderspane-caption");
                 } else {
                     searchFoldersLabel = null;
                 }

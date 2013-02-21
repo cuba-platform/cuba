@@ -121,7 +121,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             BoxLayout vl = new WebVBoxLayout();
             vl.setMargin(false, false, true, false);
             vl.setSpacing(true);
-            vl.setStyleName("operationContainer");
+            vl.setStyleName("cuba-mbeans-operationContainer");
 
             Label nameLbl = new WebLabel();
             nameLbl.setValue(op.getReturnType() + " " + op.getName() + "()");

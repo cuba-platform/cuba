@@ -55,7 +55,7 @@ public class PickerField extends CustomField {
         container.setExpandRatio(field, 1);
 
         setCompositionRoot(container);
-        setStyleName("pickerfield");
+        setStyleName("cuba-pickerfield");
         setWidth(DEFAULT_WIDTH + "px");
     }
 

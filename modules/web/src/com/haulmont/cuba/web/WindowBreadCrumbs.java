@@ -44,7 +44,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         setMargin(true);
         setWidth(100, Unit.PERCENTAGE);
         setHeight(-1, Unit.PIXELS); // TODO (abramov) This is a bit tricky
-        setStyleName("headline-container");
+        setStyleName("cuba-headline-container");
 
 //        tabbedMode = AppWindow.Mode.TABBED.equals(AppUI.getInstance().getAppWindow().getMode());
         tabbedMode = true;
@@ -57,7 +57,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         logoLayout.setSpacing(true);
 
         linksLayout = new HorizontalLayout();
-        linksLayout.setStyleName("breadcrumbs");
+        linksLayout.setStyleName("cuba-breadcrumbs");
 
         if (!tabbedMode) {
             closeBtn = new Button("", new Button.ClickListener() {
@@ -68,7 +68,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
                 }
             });
             closeBtn.setIcon(new ThemeResource("images/close.png"));
-            closeBtn.setStyleName("closetab-button");
+            closeBtn.setStyleName("cuba-closetab-button");
 //            AppUI.getInstance().getWindowManager()
 //                    .setDebugId(closeBtn, "closeBtn");
         }

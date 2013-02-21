@@ -5,10 +5,10 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ActionsTabSheetClientRpc;
-import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ActionsTabSheetServerRpc;
-import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ActionsTabSheetState;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetClientRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetServerRpc;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetState;
 import com.vaadin.event.Action;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
@@ -19,7 +19,7 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
+public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
 
     private Stack<Component> openedComponents = new Stack<>();
 
@@ -29,7 +29,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
 
     protected KeyMapper<Action> actionMapper = null;
 
-    protected ActionsTabSheetServerRpc rpc = new ActionsTabSheetServerRpc() {
+    protected CubaTabSheetServerRpc rpc = new CubaTabSheetServerRpc() {
         @Override
         public void onTabContextMenu(int tabIndex) {
             Tab tab = getTab(tabIndex);
@@ -49,7 +49,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
 
                     ClientAction[] clientActions = actionsList.toArray(new ClientAction[actions.size()]);
 
-                    getRpcProxy(ActionsTabSheetClientRpc.class).showTabContextMenu(tabIndex, clientActions);
+                    getRpcProxy(CubaTabSheetClientRpc.class).showTabContextMenu(tabIndex, clientActions);
                 }
             }
         }
@@ -72,7 +72,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
         }
     };
 
-    public ActionsTabSheet() {
+    public CubaTabSheet() {
         registerRpc(rpc);
     }
 
@@ -90,8 +90,8 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
     }
 
     @Override
-    protected ActionsTabSheetState getState() {
-        return (ActionsTabSheetState) super.getState();
+    protected CubaTabSheetState getState() {
+        return (CubaTabSheetState) super.getState();
     }
 
     @Override

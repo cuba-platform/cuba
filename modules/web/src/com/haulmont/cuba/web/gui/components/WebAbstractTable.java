@@ -420,7 +420,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
             }
         });
 
-        component.addListener(new ItemClickEvent.ItemClickListener() {
+        component.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick() && event.getItem() != null) {
@@ -457,7 +457,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
 //        vaadin7
 //        component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
 
-        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
 
         addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
         addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);

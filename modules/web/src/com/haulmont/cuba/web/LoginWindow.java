@@ -150,6 +150,8 @@ public class LoginWindow extends UIView implements Action.Handler {
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
 
+        centerLayout.setHeight(formHeight + "px");
+
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setStyleName(getStyle("title"));
         titleLayout.setSpacing(true);

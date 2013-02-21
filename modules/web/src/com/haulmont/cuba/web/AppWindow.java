@@ -27,7 +27,7 @@ import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
-import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
@@ -401,7 +401,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSpacing(false);
         layout.setMargin(false);
-        layout.setStyleName("menubar");
+        layout.setStyleName("cuba-app-menubar");
         layout.setWidth(100, Unit.PERCENTAGE);
         if (webConfig.getUseLightHeader()){
             layout.setHeight(40, Unit.PIXELS);
@@ -557,7 +557,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
      */
     protected Layout createTitleLayout() {
         HorizontalLayout titleLayout = new HorizontalLayout();
-        titleLayout.setStyleName("titlebar");
+        titleLayout.setStyleName("cuba-app-titlebar");
 
         titleLayout.setWidth(100, Unit.PERCENTAGE);
         titleLayout.setHeight(41, Unit.PIXELS);
@@ -572,7 +572,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         }
 
         Label logoLabel = new Label(getLogoLabelCaption());
-        logoLabel.setStyleName("appname");
+        logoLabel.setStyleName("cuba-app-appname-label");
 
         titleLayout.addComponent(logoLabel);
         titleLayout.setExpandRatio(logoLabel, 1);
@@ -591,7 +591,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
     protected void addUserLabel(HorizontalLayout layout) {
         Label userLabel = new Label(messages.getMessage(getMessagesPack(), "loggedInLabel"));
-        userLabel.setStyleName("select-label");
+        userLabel.setStyleName("cuba-user-select-label");
         userLabel.setSizeUndefined();
 
         layout.addComponent(userLabel);
@@ -657,7 +657,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         if (substitutions.isEmpty()) {
             Label userNameLabel = new Label(getSubstitutedUserCaption(session.getUser()));
-            userNameLabel.setStyleName("select-label");
+            userNameLabel.setStyleName("cuba-user-select-label");
             userNameLabel.setSizeUndefined();
             parentLayout.addComponent(userNameLabel);
             parentLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
@@ -670,7 +670,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
             substUserSelect.setNullSelectionAllowed(false);
             substUserSelect.setImmediate(true);
-            substUserSelect.setStyleName("select-label");
+            substUserSelect.setStyleName("cuba-user-select-combobox");
             substUserSelect.addItem(session.getUser());
             substUserSelect.setItemCaption(session.getUser(), getSubstitutedUserCaption(session.getUser()));
 
@@ -714,7 +714,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                 new LogoutBtnClickListener()
         );
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
-        logoutBtn.setStyleName("white-border");
+        logoutBtn.setStyleName("cuba-buttons-white-border");
         logoutBtn.setIcon(new ThemeResource("app/exit.png"));
 //        AppUI.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
@@ -730,7 +730,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         opener.extend(newWindowBtn);
 
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
-        newWindowBtn.setStyleName("white-border");
+        newWindowBtn.setStyleName("cuba-buttons-white-border");
         newWindowBtn.setIcon(new ThemeResource("app/new-window.png"));
         return newWindowBtn;
     }
@@ -863,7 +863,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         }
     }
 
-    public static class AppTabSheet extends ActionsTabSheet implements com.vaadin.event.Action.Handler {
+    public static class AppTabSheet extends CubaTabSheet implements com.vaadin.event.Action.Handler {
 
         private static final long serialVersionUID = 623307791240239175L;
 

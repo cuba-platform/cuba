@@ -9,7 +9,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.client.Util;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.ui.Action;
@@ -20,16 +20,16 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = ActionsTabSheet.class)
-public class ActionsTabSheetConnector extends TabsheetConnector {
+@Connect(value = CubaTabSheet.class)
+public class CubaTabSheetConnector extends TabsheetConnector {
 
-    protected ActionsTabSheetServerRpc rpc = RpcProxy.create(ActionsTabSheetServerRpc.class, this);
+    protected CubaTabSheetServerRpc rpc = RpcProxy.create(CubaTabSheetServerRpc.class, this);
 
     protected int lastContextMenuX = -1;
     protected int lastContextMenuY = -1;
 
-    public ActionsTabSheetConnector() {
-        registerRpc(ActionsTabSheetClientRpc.class, new ActionsTabSheetClientRpc() {
+    public CubaTabSheetConnector() {
+        registerRpc(CubaTabSheetClientRpc.class, new CubaTabSheetClientRpc() {
             @Override
             public void showTabContextMenu(final int tabIndex, ClientAction[] actions) {
                 StaticActionOwner actionOwner = new StaticActionOwner(getConnection(), getWidget().id);
@@ -60,14 +60,14 @@ public class ActionsTabSheetConnector extends TabsheetConnector {
     }
 
     @Override
-    public ActionsTabSheetWidget getWidget() {
-        return (ActionsTabSheetWidget) super.getWidget();
+    public CubaTabSheetWidget getWidget() {
+        return (CubaTabSheetWidget) super.getWidget();
     }
 
     @Override
     protected Widget createWidget() {
-        ActionsTabSheetWidget widget = GWT.create(ActionsTabSheetWidget.class);
-        widget.tabContextMenuHandler = new ActionsTabSheetWidget.TabContextMenuHandler() {
+        CubaTabSheetWidget widget = GWT.create(CubaTabSheetWidget.class);
+        widget.tabContextMenuHandler = new CubaTabSheetWidget.TabContextMenuHandler() {
             @Override
             public void onContextMenu(int tabIndex, ContextMenuEvent event) {
                 lastContextMenuX = Util.getTouchOrMouseClientX(event.getNativeEvent());
@@ -84,7 +84,7 @@ public class ActionsTabSheetConnector extends TabsheetConnector {
     }
 
     @Override
-    public ActionsTabSheetState getState() {
-        return (ActionsTabSheetState) super.getState();
+    public CubaTabSheetState getState() {
+        return (CubaTabSheetState) super.getState();
     }
 }

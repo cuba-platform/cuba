@@ -159,7 +159,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         // don't add margin because filter is usually placed inside a groupbox that adds margins to its content
         component.setMargin(false);
-        component.setStyleName("generic-filter");
+        component.setStyleName("cuba-generic-filter");
 
         foldersPane = App.getInstance().getAppWindow().getFoldersPane();
 
@@ -176,7 +176,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         select = new FilterSelect();
         select.setWidth(300, Sizeable.Unit.PIXELS);
-        select.setStyleName("generic-filter-select");
+        select.setStyleName("cuba-generic-filter-select");
         select.setNullSelectionAllowed(true);
         select.setNullSelectionItemId(noFilter);
         select.setImmediate(true);
@@ -305,7 +305,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                     }
                 });
 
-        maxResultsCb.setStyleName("filter-maxresults");
+        maxResultsCb.setStyleName("cuba-filter-maxresults");
         maxResultsLayout.addComponent(maxResultsCb);
 
         maxResultsField = new TextField();
@@ -333,7 +333,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         maxResultsLayout.addComponent(maxResultsLabel2);
         maxResultsLayout.setComponentAlignment(maxResultsLabel2, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
-        maxResultsLayout.setStyleName("filter-maxresults");
+        maxResultsLayout.setStyleName("cuba-filter-maxresults");
     }
 
     private void fillActions() {

@@ -40,7 +40,7 @@ public class WebPopupButton
     private List<Action> actionOrder = new LinkedList<>();
 
     public WebPopupButton() {
-        component = new PopupButton("");
+        component = new PopupButton();
         component.setImmediate(true);
 
         vPopupComponent = new VerticalLayout();

@@ -13,13 +13,13 @@ import com.vaadin.client.ui.VTabsheet;
  * @author artamonov
  * @version $Id$
  */
-public class ActionsTabSheetWidget extends VTabsheet {
+public class CubaTabSheetWidget extends VTabsheet {
 
     public static final String CLASSNAME = "v-actions-tabsheet";
 
     protected TabContextMenuHandler tabContextMenuHandler;
 
-    public ActionsTabSheetWidget() {
+    public CubaTabSheetWidget() {
         setStyleName(CLASSNAME);
     }
 

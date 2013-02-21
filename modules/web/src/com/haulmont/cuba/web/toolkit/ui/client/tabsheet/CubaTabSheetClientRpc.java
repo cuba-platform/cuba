@@ -6,15 +6,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
-import com.vaadin.shared.ui.tabsheet.TabsheetState;
+import com.vaadin.shared.communication.ClientRpc;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class ActionsTabSheetState extends TabsheetState {
+public interface CubaTabSheetClientRpc extends ClientRpc {
 
-    private static final long serialVersionUID = 4132538424243246049L;
-
-    public boolean hasActionsHanlders = false;
+    public void showTabContextMenu(int tabIndex, ClientAction[] actions);
 }

@@ -1115,7 +1115,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     }
                 }
             });
-            setStyleName("linkfield");
+            setStyleName("cuba-linkfield");
             setCompositionRoot(component);
         }
 

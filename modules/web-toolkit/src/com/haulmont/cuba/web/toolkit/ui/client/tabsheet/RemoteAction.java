@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
-import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.ActionOwner;
 

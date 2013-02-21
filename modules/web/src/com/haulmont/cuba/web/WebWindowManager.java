@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -779,7 +779,7 @@ public class WebWindowManager extends WindowManager {
                 final Layout layout = (Layout) openMode.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
 
-                ActionsTabSheet webTabsheet = (ActionsTabSheet) appWindow.getTabSheet();
+                CubaTabSheet webTabsheet = (CubaTabSheet) appWindow.getTabSheet();
 
                 if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
                     webTabsheet.silentCloseTabAndSelectPrevious(layout);

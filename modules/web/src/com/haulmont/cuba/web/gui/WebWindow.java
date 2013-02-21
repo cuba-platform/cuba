@@ -1017,7 +1017,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.Unit.PIXELS);
-            okbar.setStyleName("Window-actionsPane");
+            okbar.setStyleName("cuba-window-actions-pane");
             okbar.setMargin(new MarginInfo(true, false, false, false));
             okbar.setSpacing(true);
 
@@ -1029,7 +1029,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
             selectButton.setCaption(messages.getMessage(messagesPackage, "actions.Select"));
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
             selectButton.addClickListener(selectAction);
-            selectButton.setStyleName("Window-actionButton");
+            selectButton.setStyleName("cuba-window-action-button");
 
             cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(messages.getMessage(messagesPackage, "actions.Cancel"));
@@ -1039,7 +1039,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                     close("cancel");
                 }
             });
-            cancelButton.setStyleName("Window-actionButton");
+            cancelButton.setStyleName("cuba-window-action-button");
             cancelButton.setIcon(new ThemeResource("icons/cancel.png"));
 
             okbar.addComponent(selectButton);
