@@ -18,11 +18,11 @@ import java.util.Date;
  * @author devyatkin
  * @version $Id$
  */
-public class DateFieldWrapper extends CustomField {
+public class CubaDateFieldWrapper extends CustomField {
 
     private WebDateField dateField;
 
-    public DateFieldWrapper(WebDateField dateField, Layout composition) {
+    public CubaDateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
         composition.setWidth("100%");
         setSizeUndefined();
@@ -47,6 +47,7 @@ public class DateFieldWrapper extends CustomField {
         dateField.setValue(newValue);
     }
 
+    @Override
     public void focus() {
         dateField.getDateField().focus();
     }
@@ -56,18 +57,22 @@ public class DateFieldWrapper extends CustomField {
         return Date.class;
     }
 
+    @Override
     public void setReadOnly(boolean readOnly) {
         dateField.setEditable(!readOnly);
     }
 
+    @Override
     public boolean isReadOnly() {
         return !dateField.isEditable();
     }
 
+    @Override
     public boolean isRequired() {
         return dateField.isRequired();
     }
 
+    @Override
     public void setRequired(boolean required) {
         dateField.setRequired(required);
         super.setRequired(required);

@@ -19,8 +19,9 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
-import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
+import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
+import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
+import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +38,7 @@ import java.util.List;
  */
 public class WebDateField
         extends
-            WebAbstractComponent<DateFieldWrapper>
+            WebAbstractComponent<CubaDateFieldWrapper>
         implements
             DateField, Component.Wrapper {
 
@@ -48,7 +49,7 @@ public class WebDateField
     private boolean updatingInstance;
     private boolean valid;
 
-    private com.haulmont.cuba.web.toolkit.ui.DateField dateField;
+    private CubaDateField dateField;
     private WebTimeField timeField;
 
     protected List<ValueListener> listeners = new ArrayList<>();
@@ -59,8 +60,6 @@ public class WebDateField
     private Datasource datasource;
     private MetaPropertyPath metaPropertyPath;
     private MetaProperty metaProperty;
-
-    private boolean closeWhenDateSelected = false;
 
     private boolean required;
 
@@ -74,31 +73,30 @@ public class WebDateField
         composition = new HorizontalLayout();
 
         composition.setSpacing(true);
-        dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
+        dateField = new CubaDateField();
         dateField.setResolution(com.vaadin.shared.ui.datefield.Resolution.DAY);
         dateField.setWidth("100%");
 
         dateField.setImmediate(true);
         dateField.setInvalidAllowed(true);
-        dateField.addValidator(new com.vaadin.data.Validator() {
-            @Override
-            public void validate(Object value) throws InvalidValueException {
+//        dateField.addValidator(new com.vaadin.data.Validator() {
+//            @Override
+//            public void validate(Object value) throws InvalidValueException {
 //                if (value instanceof Date)
 //                    return;
-//                if (!isValid(value)) {
-//                    dateField.markAsDirty();
-//                    throw new InvalidValueException("Unable to parse value: " + value);
-//                }
-            }
-        });
+//
+//                dateField.markAsDirty();
+//                throw new InvalidValueException("Unable to parse value: " + value);
+//            }
+//        });
 
         timeField = new WebTimeField();
 
         dateField.setImmediate(true);
         dateField.setInvalidCommitted(true);
-        timeField.<MaskedTextField>getComponent().setImmediate(true);
-        timeField.<MaskedTextField>getComponent().setInvalidAllowed(false);
-        timeField.<MaskedTextField>getComponent().setInvalidCommitted(true);
+        timeField.<CubaMaskedTextField>getComponent().setImmediate(true);
+        timeField.<CubaMaskedTextField>getComponent().setInvalidAllowed(false);
+        timeField.<CubaMaskedTextField>getComponent().setInvalidCommitted(true);
 
         dateField.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -114,13 +112,11 @@ public class WebDateField
             }
         });
         setResolution(Resolution.MIN);
-        if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getCloseCalendarWhenDateSelected()) {
-            setCloseWhenDateSelected(true);
-        }
-        component = new DateFieldWrapper(this, composition);
+
+        component = new CubaDateFieldWrapper(this, composition);
     }
 
-    public com.haulmont.cuba.web.toolkit.ui.DateField getDateField() {
+    public CubaDateField getDateField() {
         return dateField;
     }
 
@@ -180,26 +176,12 @@ public class WebDateField
         dateField.setDateFormat(this.dateFormat);
     }
 
-    public boolean isCloseWhenDateSelected() {
-        return closeWhenDateSelected;
-    }
-
-    public void setCloseWhenDateSelected(boolean closeWhenDateSelected) {
-        this.closeWhenDateSelected = closeWhenDateSelected;
-        __setCloseWhenDateSelected(closeWhenDateSelected);
-    }
-
     protected void __setResolution(Resolution resolution) {
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             timeField.setResolution(resolution);
         } else {
             dateField.setResolution(WebComponentsHelper.convertDateFieldResolution(resolution));
         }
-    }
-
-    protected void __setCloseWhenDateSelected(boolean autoClose) {
-//        vaadin7
-//        dateField.setCloseWhenDateSelected(autoClose);
     }
 
     @Override

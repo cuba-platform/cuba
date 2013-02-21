@@ -21,9 +21,9 @@ import java.util.*;
  */
 public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
 
-    private Stack<Component> openedComponents = new Stack<>();
-
     private static final long serialVersionUID = -2956008661221108673L;
+
+    private Stack<Component> openedComponents = new Stack<>();
 
     protected HashSet<Action.Handler> actionHandlers = new HashSet<>();
 

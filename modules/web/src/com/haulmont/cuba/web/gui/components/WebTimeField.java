@@ -8,17 +8,15 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.AbstractPropertyWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.PropertyFormatter;
+import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.UserError;
 import org.apache.commons.lang.StringUtils;
@@ -29,15 +27,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class WebTimeField extends WebAbstractField<MaskedTextField> implements TimeField, Component.Wrapper {
+public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implements TimeField, Component.Wrapper {
     private boolean showSeconds;
 
-    private String mask;
     private String placeholder;
     private String timeFormat;
 
@@ -48,11 +46,13 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
     protected static final int DIGIT_WIDTH = 23;
     
     public WebTimeField() {
-        timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
+        timeFormat = Datatypes.getFormatStrings(AppBeans.get(UserSessionSource.class).getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
-        component = new MaskedTextField();
+
+        component = new CubaMaskedTextField();
         component.setImmediate(true);
         setShowSeconds(timeFormat.contains("ss"));
+
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
         component.addValidator(new com.vaadin.data.Validator() {
@@ -63,50 +63,46 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
                     throw new InvalidValueException("Unable to parse value: " + value);
                 }
             }
-
         });
         attachListener(component);
 
-//      vaadin7 rewrite to converter
-        final Property p = new AbstractPropertyWrapper() {
-            public Class<?> getType() {
+        component.setConverter(new Converter<String, Date>() {
+            @Override
+            public Date convertToModel(String formattedValue, Locale locale) throws ConversionException {
+                if (StringUtils.isNotEmpty(formattedValue) && !formattedValue.equals(placeholder)) {
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+                        Date date = sdf.parse(formattedValue);
+                        if (component.getComponentError() != null)
+                            component.setComponentError(null);
+                        return date;
+                    } catch (Exception e) {
+                        log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                        throw new ConversionException("Invalid value");
+                    }
+                } else
+                    return null;
+            }
+
+            @Override
+            public String convertToPresentation(Date value, Locale locale) throws ConversionException {
+                if (value != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+                    return sdf.format(value);
+                } else
+                    return null;
+            }
+
+            @Override
+            public Class<Date> getModelType() {
                 return Date.class;
             }
-        };
 
-//      vaadin7 rewrite to converter
-        component.setPropertyDataSource(
-                new PropertyFormatter(p) {
-
-                    @Override
-                    public String format(Object value) {
-                        if (value != null) {
-                            SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
-                            return sdf.format(value);
-                        } else {
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    public Object parse(String formattedValue) throws Exception {
-                        if (StringUtils.isNotEmpty(formattedValue) && !formattedValue.equals(placeholder)) {
-                            try {
-                                SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
-                                Date date = sdf.parse(formattedValue);
-                                if (component.getComponentError() != null)
-                                    component.setComponentError(null);
-                                return date;
-                            } catch (Exception e) {
-                                log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
-                                component.setComponentError(new UserError("Invalid value"));
-                                return null;
-                            }
-                        } else
-                            return null;
-                    }
-                }
-        );
+            @Override
+            public Class<String> getPresentationType() {
+                return String.class;
+            }
+        });
     }
 
     public boolean isAmPmUsed() {
@@ -215,7 +211,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
     }
 
     private void updateTimeFormat() {
-        mask = StringUtils.replaceChars(timeFormat, "Hhmsa", "####U");
+        String mask = StringUtils.replaceChars(timeFormat, "Hhmsa", "####U");
         placeholder = StringUtils.replaceChars(mask, "#U", "__");
         component.setMask(mask);
         component.setNullRepresentation(placeholder);

@@ -19,8 +19,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.converter.Converter;
@@ -508,18 +510,16 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 field = lookup.getComponent();
 
             } else if (Date.class.isAssignableFrom(itemClass)) {
-                // vaadin7
-                /*
                 final WebDateField dateField = new WebDateField();
 
                 field = dateField.getComponent();
-                DateField.Resolution resolution;
+                com.haulmont.cuba.gui.components.DateField.Resolution resolution;
                 String dateFormat;
                 if (itemClass.equals(java.sql.Date.class)) {
-                    resolution = DateField.Resolution.DAY;
+                    resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
                     dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
                 } else {
-                    resolution = DateField.Resolution.MIN;
+                    resolution = com.haulmont.cuba.gui.components.DateField.Resolution.MIN;
                     dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
                 }
                 dateField.setResolution(resolution);
@@ -534,8 +534,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                             field.setValue(null);
                         }
                     }
-                }); */
-                field = null;
+                });
             } else
                 throw new UnsupportedOperationException();
 

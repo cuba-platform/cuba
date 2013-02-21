@@ -20,7 +20,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaTabSheet.class)
+@Connect(CubaTabSheet.class)
 public class CubaTabSheetConnector extends TabsheetConnector {
 
     protected CubaTabSheetServerRpc rpc = RpcProxy.create(CubaTabSheetServerRpc.class, this);

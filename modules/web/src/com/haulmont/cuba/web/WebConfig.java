@@ -153,15 +153,6 @@ public interface WebConfig extends Config {
     boolean getUseChromeFramePlugin();
 
     /**
-     * @return Whether to close DateField calendar popup right after date is selected.
-     * Default behaviour is the following: if the DateField contains time, the calendar popup allows to select time and
-     * closes only when user clicks somewhere outside the popup.
-     */
-    @Property("cuba.web.closeCalendarWhenDateSelected")
-    @DefaultBoolean(false)
-    boolean getCloseCalendarWhenDateSelected();
-
-    /**
      * @return Request execution time in seconds, after which a message log will be logged.
      */
     @Property("cuba.web.logLongRequestsThresholdSec")

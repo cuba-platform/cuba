@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
@@ -32,6 +34,7 @@ import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.util.*;
 
@@ -163,52 +166,50 @@ public class Param extends AbstractParam<Component> {
     }
 
     private Component createDateField(Class javaClass) {
-//        vaadin7
-//        if (inExpr) {
-//            if (property != null) {
-//                TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
-//                if (tt == TemporalType.DATE) {
-//                    javaClass = java.sql.Date.class;
-//                }
-//            }
-//            final ListEditComponent component = new ListEditComponent(javaClass);
-//            initListEdit(component);
-//            return component;
-//        }
-//
-//        final WebDateField dateField = new WebDateField();
-//
-//        com.haulmont.cuba.gui.components.DateField.Resolution resolution;
-//        String formatStr;
-//        boolean dateOnly = false;
-//        if (property != null) {
-//            TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
-//            dateOnly = (tt == TemporalType.DATE);
-//        } else if (javaClass.equals(java.sql.Date.class)) {
-//            dateOnly = true;
-//        }
-//        Messages messages = AppBeans.get(Messages.class);
-//
-//        if (dateOnly) {
-//            resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
-//            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
-//        } else {
-//            resolution = com.haulmont.cuba.gui.components.DateField.Resolution.MIN;
-//            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
-//        }
-//        dateField.setResolution(resolution);
-//        dateField.setDateFormat(formatStr);
-//
-//        dateField.addListener(new ValueListener() {
-//            @Override
-//            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-//                setValue(value);
-//            }
-//        });
-//
-//        dateField.setValue(value);
-//        return dateField.getComponent();
-        return null;
+        if (inExpr) {
+            if (property != null) {
+                TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+                if (tt == TemporalType.DATE) {
+                    javaClass = java.sql.Date.class;
+                }
+            }
+            final ListEditComponent component = new ListEditComponent(javaClass);
+            initListEdit(component);
+            return component;
+        }
+
+        final WebDateField dateField = new WebDateField();
+
+        com.haulmont.cuba.gui.components.DateField.Resolution resolution;
+        String formatStr;
+        boolean dateOnly = false;
+        if (property != null) {
+            TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+            dateOnly = (tt == TemporalType.DATE);
+        } else if (javaClass.equals(java.sql.Date.class)) {
+            dateOnly = true;
+        }
+        Messages messages = AppBeans.get(Messages.class);
+
+        if (dateOnly) {
+            resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
+            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+        } else {
+            resolution = com.haulmont.cuba.gui.components.DateField.Resolution.MIN;
+            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+        }
+        dateField.setResolution(resolution);
+        dateField.setDateFormat(formatStr);
+
+        dateField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                setValue(value);
+            }
+        });
+
+        dateField.setValue(value);
+        return dateField.getComponent();
     }
 
     private AbstractField createNumberField(final Datatype datatype) {
