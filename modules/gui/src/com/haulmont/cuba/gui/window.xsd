@@ -153,10 +153,12 @@
 
     <xs:attributeGroup name="hasId">
         <xs:attribute name="id" type="xs:string" use="optional"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="requiresId">
         <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasSize">
@@ -847,6 +849,7 @@
                     <xs:sequence>
                         <xs:element name="field" minOccurs="1" maxOccurs="unbounded" type="fieldGroupField"/>
                     </xs:sequence>
+                    <xs:attributeGroup ref="hasId"/>
                     <xs:attribute name="width" type="xs:string" use="optional"/>
                     <xs:attribute name="flex" type="xs:string" use="optional"/>
                 </xs:complexType>

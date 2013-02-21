@@ -1,17 +1,13 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 04.03.2010 11:11:58
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +19,12 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.*;
 
+/**
+ * Provides inheritance of screen XML descriptors.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class XmlInheritanceProcessor {
 
     private static Log log = LogFactory.getLog(XmlInheritanceProcessor.class);
@@ -31,13 +33,15 @@ public class XmlInheritanceProcessor {
     private Namespace extNs;
     private Map<String, Object> params;
 
-    private List<ElementTargetLocator> targetLocators = new ArrayList<ElementTargetLocator>();
+    private List<ElementTargetLocator> targetLocators = new ArrayList<>();
+
+    protected Resources resources = AppBeans.get(Resources.class);
 
     public XmlInheritanceProcessor(Document document, Map<String, Object> params) {
         this.document = document;
         this.params = params;
 
-        extNs = new Namespace("ext", "http://www.haulmont.com/schema/cuba/gui/window-ext.xsd");
+        extNs = document.getRootElement().getNamespaceForPrefix("ext");
 
         targetLocators.add(new ViewPropertyElementTargetLocator());
         targetLocators.add(new ViewElementTargetLocator());
@@ -51,7 +55,7 @@ public class XmlInheritanceProcessor {
         Element root = document.getRootElement();
         String ancestorTemplate = root.attributeValue("extends");
         if (!StringUtils.isBlank(ancestorTemplate)) {
-            InputStream ancestorStream = ScriptingProvider.getResourceAsStream(ancestorTemplate);
+            InputStream ancestorStream = resources.getResourceAsStream(ancestorTemplate);
             if (ancestorStream == null) {
                 ancestorStream = getClass().getResourceAsStream(ancestorTemplate);
                 if (ancestorStream == null) {
