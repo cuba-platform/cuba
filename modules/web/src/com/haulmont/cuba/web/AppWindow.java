@@ -31,14 +31,17 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.BrowserWindowOpener;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -54,6 +57,8 @@ import java.util.*;
 public class AppWindow extends UIView implements UserSubstitutionListener {
 
     private static final long serialVersionUID = 7269808125566032433L;
+
+    private Log log = LogFactory.getLog(getClass());
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -726,8 +731,26 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             buttonTitle = messages.getMessage(getMessagesPack(), "newWindowBtn");
 
         Button newWindowBtn = new Button(buttonTitle);
-        BrowserWindowOpener opener = new BrowserWindowOpener(AppUI.class);
-        opener.extend(newWindowBtn);
+        URL pageUrl = null;
+        try {
+            pageUrl = Page.getCurrent().getLocation().toURL();
+        } catch (MalformedURLException ignored) {
+            log.warn("Couldn't get URL of current Page");
+        }
+
+        if (pageUrl != null) {
+            ExternalResource currentPage = new ExternalResource(pageUrl);
+            final BrowserWindowOpener opener = new BrowserWindowOpener(currentPage) {
+                @Override
+                public void beforeClientResponse(boolean initial) {
+                    super.beforeClientResponse(initial);
+                    //generate new window name
+                    getState().target = "win" + UUID.randomUUID().toString();
+                }
+            };
+            opener.extend(newWindowBtn);
+        } else
+            newWindowBtn.setVisible(false);
 
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("cuba-buttons-white-border");
