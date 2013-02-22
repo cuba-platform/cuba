@@ -436,6 +436,188 @@
   </section>
   <section>
     <title>Отладка и тестирование</title>
-    <para>TODO</para>
+    <section>
+      <title>Подключение отладчика</title>
+      <para>Запустить сервер Tomcat в режиме отладки можно либо выполнением команды сборки</para>
+      <para><prompt>gradle start</prompt></para>
+      <para>либо запуском командного файла <filename>bin/debug.*</filename> установленного <application>Tomcat</application>.</para>
+      <para>После этого сервер будет принимать подключения отладчика на порту 8787. Порт можно изменить в файле <filename>bin/setenv.*</filename> в переменной <code>JPDA_OPTS</code>.</para>
+      <para>Для пошаговой отладки в <application>Intellij IDEA</application> необходимо в проекте приложения создать новый элемент  <guilabel>Run/Debug Configuration</guilabel> типа <guilabel>Remote</guilabel>, и в его поле <guilabel>Port</guilabel> указать 8787.</para>
+    </section>
+    <section>
+      <title>Тестирование</title>
+      <section>
+        <title>Модульные тесты</title>
+        <para>Модульные тесты (unit tests) можно создавать и выполнять и на <link linkend="app_tiers">уровне</link> Middleware, и на клиентском уровне. Для этого платформа включает в себя фреймворки <ulink url="http://junit.org">JUnit</ulink> и <ulink url="http://code.google.com/p/jmockit">JMockit</ulink>.</para>
+        <para>Допустим, имеется следующий контроллер экрана:<programlisting>public class OrderEditor extends AbstractEditor {
+
+    @Named(&quot;itemsTable.add&quot;)
+    protected AddAction addAction;
+
+    @Override
+    public void init(Map&lt;String, Object&gt; params) {
+        addAction.setWindowId(&quot;sales$Product.lookup&quot;);
+        addAction.setHandler(new Lookup.Handler() {
+            @Override
+            public void handleLookup(Collection items) {
+                // some code
+            }
+        });
+    }
+}</programlisting></para>
+        <para>Тогда можно написать следющий тест, проверяющий работу метода <code>init()</code>:<programlisting>public class OrderEditorTest {
+
+    OrderEditor editor;
+
+    @Mocked
+    Window.Editor frame;
+
+    @Mocked
+    AddAction addAction;
+
+    @Before
+    public void setUp() throws Exception {
+        editor = new OrderEditor();
+        editor.setWrappedFrame(frame);
+        editor.addAction = addAction;
+    }
+
+    @Test
+    public void testInit() {
+        editor.init(Collections.&lt;String, Object&gt;emptyMap());
+        editor.setItem(new Order());
+
+        new Verifications() {
+            {
+                addAction.setWindowId(&quot;sales$Product.lookup&quot;);
+                addAction.setHandler(withInstanceOf(Window.Lookup.Handler.class));
+            }
+        };
+    }
+}</programlisting></para>
+      </section>
+      <section>
+        <title>Интеграционные тесты Middleware</title>
+        <para>На уровне Middleware можно создавать интеграционные тесты, которые выполняются в полнофункциональном контейнере <application>Spring</application> с подключением к базе данных. В тестах такого типа можно выполнять код любого слоя внутри Middleware - от сервисов до ORM. </para>
+        <para>Для создания интеграционных тестов в модуле <structname>core</structname> проекта приложения должен быть создан базовый класс - наследник <code>CubaTestCase</code>. В этом классе должны быть переопределены методы инициализации доступа к данным  и получения списка файлов конфигурации. Например: <programlisting>public class SalesTestCase extends CubaTestCase {
+
+    @Override
+    protected void initDataSources() throws Exception {
+        Class.forName(&quot;org.postgresql.Driver&quot;);
+        TestDataSource ds = new TestDataSource(&quot;jdbc:postgresql://localhost/sales_test&quot;, &quot;cuba&quot;, &quot;cuba&quot;);
+        TestContext.getInstance().bind(&quot;java:comp/env/jdbc/CubaDS&quot;, ds);
+    }
+
+    @Override
+    protected List&lt;String&gt; getTestAppProperties() {
+        String[] files = {
+                &quot;cuba-app.properties&quot;,
+                &quot;app.properties&quot;,
+                &quot;test-app.properties&quot;,
+        };
+        return Arrays.asList(files);
+    }
+}</programlisting></para>
+        <para>В качестве базы данных  рекомендуется использовать отдельную тестовую БД, которую можно создавать, например, следующей задачей в <filename>build.gradle</filename>: <programlisting>configure(coreModule) {
+...
+    task createTestDb(dependsOn: assemble, description: &apos;Creates local Postgres database for tests&apos;, type: CubaDbCreation) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;sales_test&apos;
+        dbUser = &apos;cuba&apos;
+        dbPassword = &apos;cuba&apos;
+    }</programlisting></para>
+        <para>Класс <code>CubaTestCase</code>  содержит следующие поля и методы, которые можно использовать в коде тестов:<itemizedlist>
+            <listitem>
+              <para><code>persistence</code> - ссылка на интерфейс <code>
+                  <link linkend="persistence">Persistence</link>
+                </code></para>
+            </listitem>
+            <listitem>
+              <para><code>metadata</code> - ссылка на интерфейс <code>
+                  <link linkend="metadata">Metadata</link>
+                </code></para>
+            </listitem>
+            <listitem>
+              <para><code>deleteRecord()</code> - метод, который удобно использовать в <code>tearDown()</code> для удаления тестовых объектов из БД.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Пример теста, проверяющего чтение сущностей из базы данных:<programlisting>public class CustomerLoadTest extends SalesTestCase {
+
+    private UUID customerId;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        persistence.createTransaction().execute(new Transaction.Runnable() {
+            @Override
+            public void run(EntityManager em) {
+                Customer customer = new Customer();
+                customerId = customer.getId();
+                customer.setName(&quot;testCustomer&quot;);
+                em.persist(customer);
+            }
+        });
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        deleteRecord(&quot;SALES_CUSTOMER&quot;, customerId);
+        super.tearDown();
+    }
+
+    public void test() {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            TypedQuery&lt;Customer&gt; query = em.createQuery(
+                &quot;select c from sales$Customer c&quot;, Customer.class);
+            List&lt;Customer&gt; list = query.getResultList();
+            tx.commit();
+            assertTrue(list.size() &gt; 0);
+        } finally {
+            tx.end();
+        }
+    }
+}</programlisting></para>
+      </section>
+      <section>
+        <title>Интеграционные тесты клиентского уровня</title>
+        <para>Интеграционные тесты на клиентском уровне реализуются с применением  фреймворка <application>
+            <ulink url="http://code.google.com/p/jmockit">JMockit</ulink>
+          </application>. С его помощью тест изолируется от Middleware, а также создаются необходимые объекты инфраструктуры. </para>
+        <para>Класс клиентского интеграционного теста должен быть унаследован от <code>CubaClientTestCase</code>. В методе <code>@Before</code> необходимо вызвать унаследованные методы <code>addEntityPackage()</code>, <code>setViewConfig()</code> и затем <code>setupInfrastructure()</code> для создания объектов <code>
+            <link linkend="metadata">Metadata</link>
+          </code> и <code>
+            <link linkend="configuration">Configuration</link>
+          </code> и развертывания метаданных по выбранным сущностям. Далее в методе <code>@Before</code> можно дополнить инфраструктуру необходимыми мок-объектами с помощью конструкции <code>Expectations</code> или <code>NonStrictExpectations</code>. </para>
+        <para>Пример инициализирующего метода <code>@Before</code> одного из тестов платформы:<programlisting>@Before
+public void setUp() throws Exception {
+    addEntityPackage(&quot;com.haulmont.cuba.security.entity&quot;);
+    addEntityPackage(&quot;com.haulmont.cuba.core.entity&quot;);
+    addEntityPackage(&quot;com.haulmont.cuba.gui.data.impl.testmodel1&quot;);
+    setViewConfig(&quot;/com/haulmont/cuba/gui/data/impl/testmodel1/test-views.xml&quot;);
+    setupInfrastructure();
+
+    metadataSession = metadata.getSession();
+    dataService = new TestDataSupplier();
+
+    dataService.commitCount = 0;
+
+    new NonStrictExpectations() {
+        @Mocked ClientConfig clientConfig;
+        @Mocked PersistenceHelper persistenceHelper;
+        {
+            configuration.getConfig(ClientConfig.class); result = clientConfig;
+
+            clientConfig.getCollectionDatasourceDbSortEnabled(); result = true;
+
+            persistenceManager.getMaxFetchUI(anyString); result = 10000;
+
+            PersistenceHelper.isNew(any); result = false;
+        }
+    };
+}</programlisting></para>
+      </section>
+    </section>
   </section>
 </chapter>
