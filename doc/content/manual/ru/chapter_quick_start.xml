@@ -390,7 +390,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
   </section>
   <section>
     <title>Создание приложения в CUBA Studio</title>
-    <section>
+    <section id="qs_studio_setup">
       <title>Создание проекта</title>
       <orderedlist>
         <listitem>

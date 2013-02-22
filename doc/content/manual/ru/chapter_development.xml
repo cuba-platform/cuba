@@ -352,7 +352,87 @@
   </section>
   <section>
     <title>Создание проекта</title>
-    <para>TODO</para>
+    <para>Рекомендуемый способ создания нового проекта - использование <application>CUBA Studio</application>. Пример рассмотрен в главе &quot;Быстрый старт&quot; данного руководства: <xref linkend="qs_studio_setup"/></para>
+    <para>Если применение <application>CUBA Studio</application> невозможно, для создания нового проекта необходимо выполнить следующее:<itemizedlist>
+        <listitem>
+          <para>Загрузить шаблон проекта, описанного в <xref linkend="qs_setup"/> главы &quot;Быстрый старт&quot;, и распаковать его в локальный каталог.</para>
+        </listitem>
+        <listitem>
+          <para>Выбрать название проекта. Оно должно состоять только из латинских букв в нижнем регистре, и быть не слишком длинным. Далее для примера используется название <code>bookstore</code>.</para>
+        </listitem>
+        <listitem>
+          <para>Выбрать корневой Java пакет. Далее для примера используется  <code>com.sample.bookstore</code>.</para>
+        </listitem>
+        <listitem>
+          <para>В файле <filename>settings.gradle</filename>  изменить строку с именем проекта:<programlisting>rootProject.name = &apos;bookstore&apos;</programlisting></para>
+          <para>Если модуль <structname>portal</structname> не нужен, удалить из объявления <code>include</code> элемент <code>&apos;:app-portal&apos;</code>, и удалить соответствующее объявление <code>project(&apos;:app-portal&apos;).projectDir</code>.</para>
+        </listitem>
+        <listitem>
+          <para>В файле <filename>build.gradle</filename> произвести следующие изменения:<itemizedlist>
+              <listitem>
+                <para>В переменной <code>ext.artifactGroup</code> указать желаемое название группы для артефактов. Этот параметр играет роль только при выгрузке собранных артефактов приложения в <link linkend="artifact_repository">репозиторий</link>. Например:<programlisting>allprojects {
+    ext.artifactGroup = &apos;com.sample.bookstore&apos;
+...</programlisting></para>
+              </listitem>
+              <listitem>
+                <para>В секции конфигурации модуля <structname>core</structname> указать для задач <code>createDb</code> и <code>updateDb</code> желаемое имя базы данных. Например:<programlisting>configure(coreModule) {
+...
+    task createDb(dependsOn: assemble, description: &apos;Creates local database&apos;, type: CubaDbCreation) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;bookstore&apos;
+        dbUser = &apos;cuba&apos;
+        dbPassword = &apos;cuba&apos;
+    }
+
+    task updateDb(dependsOn: assemble, description: &apos;Updates local database&apos;, type: CubaDbUpdate) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;bookstore&apos;
+        dbUser = &apos;cuba&apos;
+        dbPassword = &apos;cuba&apos;
+    }
+...</programlisting></para>
+              </listitem>
+              <listitem>
+                <para>Если модуль <structname>portal</structname> не используется, удалить объявление переменной <code>portalModule</code>, ее использование в списке <code>configure([...])</code>, и всю секцию <code>configure(portalModule)</code>.</para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+        <listitem>
+          <para>В модуле <structname>core</structname>: </para>
+          <para>В файле <link linkend="context.xml">
+              <filename>context.xml</filename>
+            </link>  изменить URL подключения к базе данных:<programlisting>&lt;Context&gt;
+    &lt;!-- PostgreSQL connection --&gt;
+    &lt;Resource
+...
+      username=&quot;cuba&quot;
+      password=&quot;cuba&quot;
+      url=&quot;jdbc:postgresql://localhost/bookstore&quot;/&gt;
+...</programlisting></para>
+          <para>В файле <filename>
+              <link linkend="spring.xml">spring.xml</link>
+            </filename> изменить базовый пакет поиска аннотированных бинов:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.bookstore&quot;/&gt;</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>В модуле <structname>web</structname>: </para>
+          <para>Перенести класс <code>App</code> и <link linkend="main_message_pack">файлы локализованных сообщений</link> в пакет <code>com.sample.bookstore.web</code>, и в файле <filename>web/WEB-INF/<link linkend="web.xml">web.xml</link></filename> указать новое расположение этого класса для сервлета <code>app_servlet</code>:<programlisting>&lt;servlet&gt;
+    &lt;servlet-name&gt;app_servlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.haulmont.cuba.web.sys.CubaApplicationServlet&lt;/servlet-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;application&lt;/param-name&gt;
+        &lt;param-value&gt;com.sample.bookstore.web.App&lt;/param-value&gt;
+    &lt;/init-param&gt;
+...</programlisting></para>
+          <para>Изменить значение свойства приложения <property>
+              <link linkend="cuba.mainMessagePack">cuba.mainMessagePack</link>
+            </property> в <filename>web-app.properties</filename>:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.sample.bookstore.web</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Если используется модуль <structname>portal</structname>, изменить в нем соответственно пакет расположения классов контроллеров и ссылку на него в <filename>portal-dispatcher-spring.xml</filename>.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>После выполнения вышеописанных действий можно собрать новый проект:</para>
+    <para><prompt>gradle idea assemble setupTomcat deploy</prompt></para>
   </section>
   <section>
     <title>Отладка и тестирование</title>
