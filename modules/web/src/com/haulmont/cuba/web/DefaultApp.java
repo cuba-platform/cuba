@@ -8,15 +8,19 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
-import com.haulmont.cuba.web.toolkit.Timer;
-import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 //import com.vaadin.service.ApplicationContext;
 
@@ -48,7 +52,6 @@ public class DefaultApp extends App implements ConnectionListener {
         MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
 
         if (connection.isConnected()) {
-
             log.debug("Creating AppWindow");
 
 //            getTimers().stopAll();
@@ -69,6 +72,8 @@ public class DefaultApp extends App implements ConnectionListener {
             showView(appWindow);
 
 //            currentWindowName.set(window.getName());
+
+            initExceptionHandlers(true);
 
 //            if (linkHandler != null) {
 //                linkHandler.handle();
@@ -99,7 +104,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
 //            currentWindowName.set(window.getName());
 
-//            initExceptionHandlers(false);
+            initExceptionHandlers(false);
         }
     }
 
@@ -124,10 +129,6 @@ public class DefaultApp extends App implements ConnectionListener {
 //            timers.add(timer, window);
 
         return window;
-    }
-
-    protected void afterLoggedIn() {
-
     }
 
     protected UIView createAppWindow() {
@@ -278,9 +279,11 @@ public class DefaultApp extends App implements ConnectionListener {
         }
     }
 
-    *//**
+    */
+
+    /**
      * Perform actions after success login
-     *//*
+     */
     protected void afterLoggedIn() {
         if (!webConfig.getUseActiveDirectory()) {
             final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
@@ -305,7 +308,7 @@ public class DefaultApp extends App implements ConnectionListener {
                 });
             }
         }
-    }          */
+    }
 
     @Override
     protected boolean loginOnStart(HttpServletRequest request) {

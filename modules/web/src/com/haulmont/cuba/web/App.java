@@ -23,17 +23,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Locale;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * @author artamonov
@@ -93,6 +86,20 @@ public abstract class App implements Serializable {
         cookies = new AppCookies();
         timers = new AppTimers(this);
         backgroundTaskManager = new BackgroundTaskManager();
+    }
+
+    /**
+     * Initializes exception handlers immediately after login and logout.
+     * Can be overridden in descendants to manipulate exception handlers programmatically.
+     *
+     * @param isConnected true after login, false after logout
+     */
+    protected void initExceptionHandlers(boolean isConnected) {
+        if (isConnected) {
+            exceptionHandlers.createByConfiguration();
+        } else {
+            exceptionHandlers.removeAll();
+        }
     }
 
     public AppWindow getAppWindow() {

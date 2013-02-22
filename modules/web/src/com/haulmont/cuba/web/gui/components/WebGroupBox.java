@@ -54,11 +54,13 @@ public class WebGroupBox extends WebAbstractComponent<Panel> implements GroupBox
         container.setSizeFull();
         component.setContent(container);
         component.addActionHandler(new com.vaadin.event.Action.Handler() {
+            @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 final Set<com.vaadin.event.Action> keys = actions.keySet();
                 return keys.toArray(new com.vaadin.event.Action[keys.size()]);
             }
 
+            @Override
             public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
                 Action act = actions.get(action);
                 if (act != null && act.isEnabled()) {

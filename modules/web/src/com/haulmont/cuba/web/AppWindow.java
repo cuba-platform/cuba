@@ -740,14 +740,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         if (pageUrl != null) {
             ExternalResource currentPage = new ExternalResource(pageUrl);
-            final BrowserWindowOpener opener = new BrowserWindowOpener(currentPage) {
-                @Override
-                public void beforeClientResponse(boolean initial) {
-                    super.beforeClientResponse(initial);
-                    //generate new window name
-                    getState().target = "win" + UUID.randomUUID().toString();
-                }
-            };
+            final BrowserWindowOpener opener = new BrowserWindowOpener(currentPage);
+            opener.setWindowName("_blank");
+
             opener.extend(newWindowBtn);
         } else
             newWindowBtn.setVisible(false);
@@ -912,7 +907,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                     }
                 }
             });
-//            vaadin7
+
             addActionHandler(this);
 
             Messages messages = AppBeans.get(Messages.class);
