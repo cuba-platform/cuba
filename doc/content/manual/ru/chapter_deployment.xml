@@ -155,7 +155,7 @@
               </itemizedlist></para>
           </listitem>
           <listitem>
-            <para>Если <application>Tomcat</application> установлен как служба Windows, то для службы должен быть задан вход в систему с учетной записью, имеющей права на файл <filename>jmxremote.password</filename>.</para>
+            <para>Если <application>Tomcat</application> установлен как служба Windows, то для службы должен быть задан вход в систему с учетной записью, имеющей права на файл <filename>jmxremote.password</filename>. Кроме того, следует иметь в виду, что в этом случае файл <filename>bin/setenv.bat</filename> не используется, и соответствующие параметры запуска JVM должны быть заданы в приложении, настраивающем службу.</para>
           </listitem>
         </itemizedlist>
       </section>
@@ -179,7 +179,7 @@ CATALINA_OPTS=&quot;$CATALINA_OPTS -Dcom.sun.management.jmxremote.password.file=
               <para>Отредактировать файл <filename>conf/jmxremote.password</filename>. Он должен содержать пароли пользователей JMX, например:<programlisting>admin admin</programlisting></para>
             </listitem>
             <listitem>
-              <para>Файл паролей должен иметь разрешение на чтение только для пользователя, от имени которого работает сервер <application>Tomcat</application>. Настроить права можно следующим образом:<itemizedlist>
+              <para>Файл паролей должен иметь разрешение на чтение только для пользователя, от имени которого работает сервер <application>Tomcat</application>. Настроить права для текущего пользователя можно следующим образом:<itemizedlist>
                   <listitem>
                     <para>Открыть командную строку и перейти в каталог <filename>conf</filename>.</para>
                   </listitem>
