@@ -61,9 +61,6 @@
       <orderedlist>
         <listitem>
           <para>Создайте рабочую папку для проекта, например, <filename>c:/work/sales</filename>.</para>
-          <warning>
-            <para>Путь не должен содержать пробелов!</para>
-          </warning>
         </listitem>
         <listitem>
           <para>Загрузите архив с шаблоном проекта <ulink url="http://docs.haulmont.com/cuba/4.0/samples/sales.zip">http://docs.haulmont.com/cuba/4.0/samples/sales.zip</ulink> и распакуйте содержимое архива в рабочий каталог таким образом, чтобы в каталоге <filename>c:/work/sales</filename> появился подкаталог <filename>modules</filename> и файлы <filename>build.gradle</filename> и <filename>settings.gradle</filename></para>
