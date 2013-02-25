@@ -112,7 +112,7 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited, h6 a:visit
  */
 
 .book .toc > dl > dt {
-	font-weight:normal;
+	font-weight: bold;
 	text-decoration: none;
 }
 
@@ -120,17 +120,9 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited, h6 a:visit
 	margin-bottom: 1em;
 }
 
-.toc p{
+.toc p {
 	font-size: 1.8em;
 	color: #0b6ec7;
-}
-
-.toc > dl > dt {
-    margin-top: 1.2em;
-}
-
-.toc > dl > dd > dl > dt {
-    margin-top: 0.5em;
 }
 
 /*
@@ -503,4 +495,54 @@ table .footnote {
 .errorname {
 	font-family: 'Courier New', Courier, monospace;
 	font-style: italic;
+}
+
+/* ToC panel */
+
+a.toc-btn{
+    position: fixed;
+    background-color: #404040;
+    opacity:0.5;
+    filter:alpha(opacity=50);
+    text-decoration: none;
+    font-size: 16px;
+    letter-spacing: -1px;
+    font-family: verdana, helvetica, arial, sans-serif;
+    color: #fff;
+    padding: 4px 12px 6px 12px;
+    font-weight: bold;
+    z-index: 2;
+    right: 0;
+    top: 45%;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+a.toc-btn:hover {
+    opacity: 1.0;
+    filter:alpha(opacity=100);
+}
+
+a.toc-btn.active {
+    display: none;
+}
+
+.toc-panel {
+    position: fixed;
+    display: none;
+    background-color: #404040;
+    color: #c0c0c0;
+    width: 450px;
+    height: 85%;
+    z-index:1;
+    overflow: auto;
+    right: 0;
+    top: 5%;
+    padding: 20px 20px 20px 20px;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+}
+
+div#toc-panel a, div#toc-panel p {
+    color: #c0c0c0;
 }
