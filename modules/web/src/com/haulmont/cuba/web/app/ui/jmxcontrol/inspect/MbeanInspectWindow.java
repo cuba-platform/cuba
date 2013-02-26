@@ -19,6 +19,7 @@ import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,8 +55,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        com.haulmont.cuba.web.toolkit.ui.Table vaadinAttrTable =
-                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(attrTable);
+        CubaTable vaadinAttrTable = (CubaTable) WebComponentsHelper.unwrap(attrTable);
 //        vaadin7
 //        vaadinAttrTable.setTextSelectionEnabled(true);
 

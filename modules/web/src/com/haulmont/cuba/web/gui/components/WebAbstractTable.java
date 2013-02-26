@@ -1102,7 +1102,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
         }
 
         @Override
-        public String toString() {
+        public String getFormattedValue() {
             final Table.Column column = WebAbstractTable.this.columns.get(propertyPath);
             if (column != null) {
                 if (column.getFormatter() != null) {
@@ -1119,7 +1119,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
                     }
                 }
             }
-            return super.toString();
+            return super.getFormattedValue();
         }
     }
 

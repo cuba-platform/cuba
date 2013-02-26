@@ -8,7 +8,10 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
@@ -19,7 +22,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
-import com.haulmont.cuba.web.toolkit.ui.TreeTable;
+import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
@@ -39,7 +42,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     private AbstractOrderedLayout layout;
     private TextField nameField;
-    private TreeTable table;
+    private CubaTreeTable table;
     private ComboBox addSelect;
     private CheckBox defaultCb;
     private CheckBox applyDefaultCb;
@@ -290,7 +293,8 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     private void initTable(AbstractLayout layout) {
-        table = new TreeTable();
+        table = new CubaTreeTable();
+
         table.setImmediate(true);
         table.setSelectable(true);
         table.setPageLength(0);

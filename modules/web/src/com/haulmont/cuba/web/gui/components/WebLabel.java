@@ -80,16 +80,16 @@ public class WebLabel
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
                 return new PropertyWrapper(item, propertyPath) {
+
                     @Override
-                    public String toString() {
+                    public String getFormattedValue() {
                         if (formatter != null) {
                             Object value = getValue();
                             if (value instanceof Instance)
                                 value = ((Instance) value).getInstanceName();
                             return formatter.format(value);
-                        } else {
-                            return super.toString();
-                        }
+                        } else
+                            return super.getFormattedValue();
                     }
                 };
             }

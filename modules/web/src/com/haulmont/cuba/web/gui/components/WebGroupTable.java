@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
 import com.vaadin.data.Item;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
@@ -35,7 +36,7 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table>
+public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         implements GroupTable, Component.Wrapper {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
@@ -43,7 +44,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     protected boolean rerender = true;
 
     public WebGroupTable() {
-        component = new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
+        component = new CubaGroupTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {

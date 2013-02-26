@@ -16,6 +16,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
@@ -28,12 +29,12 @@ import java.util.*;
  */
 public class WebTable
     extends
-        WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table>
+        WebAbstractTable<CubaTable>
     implements
-        Component.Wrapper
-{
+        Component.Wrapper {
+
     public WebTable() {
-        component = new com.haulmont.cuba.web.toolkit.ui.Table() {
+        component = new CubaTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {
@@ -65,7 +66,7 @@ public class WebTable
     }
 
     @Override
-    protected void initComponent(com.haulmont.cuba.web.toolkit.ui.Table component) {
+    protected void initComponent(CubaTable component) {
         super.initComponent(component);
         setSortable(true);
     }

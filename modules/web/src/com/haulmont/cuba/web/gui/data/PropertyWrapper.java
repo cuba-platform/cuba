@@ -12,9 +12,11 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 
@@ -24,7 +26,7 @@ import java.text.ParseException;
  * @author abramov
  * @version $Id$
  */
-public class PropertyWrapper extends AbstractPropertyWrapper {
+public class PropertyWrapper extends AbstractPropertyWrapper implements PropertyValueStringify {
 
     private static final long serialVersionUID = 5863216328152195113L;
 
@@ -36,14 +38,10 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
         this.item = item;
         this.propertyPath = propertyPath;
         if (item instanceof Datasource) {
-            ((Datasource) item).addListener(new DatasourceListener<Entity>() {
+            ((Datasource) item).addListener(new DsListenerAdapter<Entity>() {
                 @Override
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireValueChangeEvent();
-                }
-
-                @Override
-                public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
                 }
 
                 @Override
@@ -129,8 +127,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
     }
 
     @Override
-    public String toString() {
-        Object value = getValue();
-        return metadataTools.format(value, propertyPath.getMetaProperty());
+    public String getFormattedValue() {
+        return metadataTools.format(getValue(), propertyPath.getMetaProperty());
     }
 }

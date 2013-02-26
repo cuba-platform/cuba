@@ -231,15 +231,14 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
                     }
 
                     @Override
-                    public String toString() {
+                    public String getFormattedValue() {
                         if (formatter != null) {
                             Object value = getValue();
                             if (value instanceof Instance)
                                 value = ((Instance) value).getInstanceName();
                             return formatter.format(value);
-                        } else {
-                            return super.toString();
-                        }
+                        } else
+                            return super.getFormattedValue();
                     }
                 };
             }

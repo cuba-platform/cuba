@@ -1174,7 +1174,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
 
                 @Override
-                public String toString() {
+                public String getFormattedValue() {
                     Object value = getValue();
                     if (value == null) return null;
                     Field field = fields.get(propertyPath.toString());
@@ -1184,7 +1184,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                         }
                         return field.getFormatter().format(value);
                     }
-                    return super.toString();
+                    return super.getFormattedValue();
                 }
             };
         }

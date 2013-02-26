@@ -12,7 +12,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 @SuppressWarnings("serial")
 //@ClientWidget(IScrollGroupTable.class)
-public class GroupTable extends Table /*extends Table implements GroupTableContainer*/ {
+public class GroupTable extends CubaTable /*extends Table implements GroupTableContainer*/ {
 /*
     private KeyMapper groupIdMap = new KeyMapper();
 

@@ -249,12 +249,11 @@ public class WebPickerField
                     }
 
                     @Override
-                    public String toString() {
-                        if (CaptionMode.PROPERTY.equals(captionMode)) {
+                    public String getFormattedValue() {
+                        if (CaptionMode.PROPERTY.equals(captionMode))
                             return String.valueOf(getValue() == null ? "" : ((Instance) getValue()).getValue(captionProperty));
-                        } else {
-                            return super.toString();
-                        }
+                        else
+                            return super.getFormattedValue();
                     }
                 };
             }

@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.vaadin.data.Item;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
@@ -34,7 +35,7 @@ import java.util.*;
  */
 public class WebTreeTable
     extends
-        WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.TreeTable>
+        WebAbstractTable<CubaTreeTable>
     implements
         TreeTable, Component.Wrapper {
 
@@ -45,8 +46,8 @@ public class WebTreeTable
         initComponent(component);
     }
 
-    protected com.haulmont.cuba.web.toolkit.ui.TreeTable createTreeTableComponent() {
-        return new MyTreeTable();
+    protected CubaTreeTable createTreeTableComponent() {
+        return new CubaTreeTableExt();
     }
 
     @Override
@@ -278,7 +279,7 @@ public class WebTreeTable
         }
     }
 
-    protected class MyTreeTable extends com.haulmont.cuba.web.toolkit.ui.TreeTable {
+    protected class CubaTreeTableExt extends CubaTreeTable {
         @Override
         public Resource getItemIcon(Object itemId) {
             if (styleProvider != null) {

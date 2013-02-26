@@ -228,12 +228,12 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                     private static final long serialVersionUID = -4481934193197224070L;
 
                     @Override
-                    public String toString() {
+                    public String getFormattedValue() {
                         Object value = getValue();
-                        if (value instanceof Date) {
+                        if (value instanceof Date)
                             return new SimpleDateFormat(timeFormat).format(value);
-                        } else
-                            return super.toString();
+
+                        return super.getFormattedValue();
                     }
 
                     @Override
