@@ -11,9 +11,8 @@ import java.text.SimpleDateFormat;
 /**
  * Microsoft SQLServer dialect.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class MssqlDbDialect extends DbDialect implements SequenceSupport {
 
@@ -30,11 +29,6 @@ public class MssqlDbDialect extends DbDialect implements SequenceSupport {
     @Override
     public String getDeleteTsColumn() {
         return "DELETE_TS";
-    }
-
-    @Override
-    public String getUniqueConstraintViolationMarker() {
-        return "Cannot insert duplicate key row in object";
     }
 
     @Override

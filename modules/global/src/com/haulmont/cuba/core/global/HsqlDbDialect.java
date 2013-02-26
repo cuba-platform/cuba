@@ -8,12 +8,11 @@ package com.haulmont.cuba.core.global;
 /**
  * HSQLDB dialect.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class HsqlDbDialect extends DbDialect implements SequenceSupport
-{
+public class HsqlDbDialect extends DbDialect implements SequenceSupport {
+
     public String sequenceExistsSql(String sequenceName) {
         return "select top 1 SEQUENCE_NAME from INFORMATION_SCHEMA.SYSTEM_SEQUENCES where SEQUENCE_NAME = '"
                 + sequenceName.toUpperCase() + "'";
@@ -50,11 +49,6 @@ public class HsqlDbDialect extends DbDialect implements SequenceSupport
     @Override
     public String getDeleteTsColumn() {
         return "DELETE_TS";
-    }
-
-    @Override
-    public String getUniqueConstraintViolationMarker() {
-        return "Violation of unique index";
     }
 
     @Override

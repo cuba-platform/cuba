@@ -8,9 +8,8 @@ package com.haulmont.cuba.core.global;
 /**
  * PostgreSQL dialect.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class PostgresDbDialect extends DbDialect implements SequenceSupport {
 
@@ -49,11 +48,6 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport {
     @Override
     public String getDeleteTsColumn() {
         return "delete_ts";
-    }
-
-    @Override
-    public String getUniqueConstraintViolationMarker() {
-        return "ERROR: duplicate key value violates unique constraint";
     }
 
     @Override

@@ -10,16 +10,15 @@ import java.io.Serializable;
 /**
  * Class that encapsulates some database-specific persistence properties.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  *
  * @see HsqlDbDialect
  * @see PostgresDbDialect
  * @see MssqlDbDialect
  */
-public abstract class DbDialect implements Serializable
-{
+public abstract class DbDialect implements Serializable {
+
     /**
      * @return  the dialect name
      */
@@ -34,11 +33,6 @@ public abstract class DbDialect implements Serializable
      * @return  soft deletion column name
      */
     public abstract String getDeleteTsColumn();
-
-    /**
-     * @return  a message to distinguish a unique constraint violation
-     */
-    public abstract String getUniqueConstraintViolationMarker();
 
     /**
      * @return  regexp to extract a unique constraint name from an exception message
