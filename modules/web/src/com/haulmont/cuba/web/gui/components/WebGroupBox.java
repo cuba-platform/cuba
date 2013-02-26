@@ -10,6 +10,7 @@ import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.OrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
@@ -20,13 +21,12 @@ import org.dom4j.Element;
 
 import java.util.*;
 
-//@ClientWidget(VGroupBox.class)
-
 /**
  * @author abramov
  * @version $Id$
  */
-public class WebGroupBox extends WebAbstractComponent<Panel> implements GroupBoxLayout, Component.Wrapper {
+public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
+        implements GroupBoxLayout, Component.Wrapper, CubaGroupBox.ExpandChangeHandler {
 
     private String id;
     private IFrame frame;
@@ -34,17 +34,15 @@ public class WebGroupBox extends WebAbstractComponent<Panel> implements GroupBox
     private Alignment alignment = Alignment.TOP_LEFT;
     private Orientation orientation = Orientation.VERTICAL;
 
-    private boolean expanded = true;
-    private boolean collapsable;
-
     private List<ExpandListener> expandListeners = null;
     private List<CollapseListener> collapseListeners = null;
 
-    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<Action>();
+    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public WebGroupBox() {
-        component = new Panel();
+        component = new CubaGroupBox();
+        component.setExpandChangeHandler(this);
 
         VerticalActionsLayout container = new VerticalActionsLayout();
         initContainer(container);
@@ -140,35 +138,28 @@ public class WebGroupBox extends WebAbstractComponent<Panel> implements GroupBox
 
     @Override
     public boolean isExpanded() {
-        return !collapsable || expanded;
+        return component.isExpanded();
     }
 
     @Override
     public void setExpanded(boolean expanded) {
-        if (collapsable) {
-            this.expanded = expanded;
-            getComponentContent().setVisible(expanded);
-            component.markAsDirty();
-        }
+        component.setExpanded(expanded);
     }
 
     @Override
     public boolean isCollapsable() {
-        return collapsable;
+        return component.isCollapsable();
     }
 
     @Override
     public void setCollapsable(boolean collapsable) {
-        this.collapsable = collapsable;
-        if (collapsable) {
-            setExpanded(true);
-        }
+        component.setCollapsable(collapsable);
     }
 
     @Override
     public void addListener(ExpandListener listener) {
         if (expandListeners == null) {
-            expandListeners = new ArrayList<>();
+            expandListeners = new LinkedList<>();
         }
         expandListeners.add(listener);
     }
@@ -194,7 +185,7 @@ public class WebGroupBox extends WebAbstractComponent<Panel> implements GroupBox
     @Override
     public void addListener(CollapseListener listener) {
         if (collapseListeners == null) {
-            collapseListeners = new ArrayList<>();
+            collapseListeners = new LinkedList<>();
         }
         collapseListeners.add(listener);
     }
@@ -245,34 +236,6 @@ public class WebGroupBox extends WebAbstractComponent<Panel> implements GroupBox
         }
         return null;
     }
-
-//    vaadin7
-//    @Override
-//    public void paintContent(PaintTarget target) throws PaintException {
-//        super.paintContent(target);
-//        target.addAttribute("collapsable", isCollapsable());
-//        if (isCollapsable()) {
-//            target.addAttribute("expanded", isExpanded());
-//        }
-//    }
-//
-//    @Override
-//    public void changeVariables(Object source, Map variables) {
-//        super.changeVariables(source, variables);
-//        if (isCollapsable()) {
-//            if (variables.containsKey("expand")) {
-//                setExpanded(true);
-//                getContent().requestRepaintAll();
-//
-//                fireExpandListeners();
-//
-//            } else if (variables.containsKey("collapse")) {
-//                setExpanded(false);
-//
-//                fireCollapseListeners();
-//            }
-//        }
-//    }
 
     @Override
     public void applySettings(Element element) {
@@ -391,5 +354,13 @@ public class WebGroupBox extends WebAbstractComponent<Panel> implements GroupBox
     @Override
     public void setDescription(String description) {
         component.setDescription(description);
+    }
+
+    @Override
+    public void expandStateChanged(boolean expanded) {
+        if (expanded)
+            fireExpandListeners();
+        else
+            fireCollapseListeners();
     }
 }

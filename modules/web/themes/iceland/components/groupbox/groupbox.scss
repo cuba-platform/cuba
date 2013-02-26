@@ -1,0 +1,74 @@
+@mixin cuba-groupbox-defaults {
+  outline: none; /* Prevent selection outline which might break layouts or cause scrollbars */
+  text-align: left; /* Force default alignment */
+  border: 0;
+}
+
+@mixin cuba-groupbox {
+  .cuba-groupbox {
+    @include cuba-groupbox-defaults;
+    fieldset {
+      border: 1px solid #babfc0;
+      margin: 0;
+      padding: 5px 5px 5px;
+
+      legend {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+
+      .cuba-groupbox-caption {
+        @include cuba-groupbox-defaults;
+        padding: 0 4px;
+        line-height: 18px;
+
+        .cuba-groupbox-expander {
+          float: left;
+          width: 12px;
+          height: 18px;
+          background: transparent url(sprites/expand.png) no-repeat center left; /** sprite-ref: components; */
+          cursor: pointer;
+        }
+
+        .cuba-groupbox-expander.expanded {
+          background: transparent url(sprites/collapse.png) no-repeat center left; /** sprite-ref: components; */
+        }
+
+        .v-errorindicator {
+          float: none;
+          padding-right: 10px;
+          display: inline;
+          background: transparent;
+        }
+
+        .v-icon {
+          display: inline;
+          vertical-align: middle;
+        }
+      }
+
+      .cuba-groupbox-content {
+        @include cuba-groupbox-defaults;
+        overflow: auto;
+      }
+
+      .cuba-groupbox-deco {
+        @include cuba-groupbox-defaults;
+        height: 0;
+        background: transparent;
+        margin: 0;
+      }
+
+      .cuba-groupbox-deco:before {
+        display: block;
+        content: "";
+        width: 0;
+        height: 0;
+        margin-left: 0;
+        background: transparent;
+      }
+    }
+  }
+}
