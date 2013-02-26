@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.03.11 18:55
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components.actions;
 
@@ -15,6 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -184,7 +180,7 @@ public class RemoveAction extends ItemTrackingAction {
             datasource.removeItem((Entity) item);
         }
 
-        if (this.autocommit) {
+        if (autocommit && (datasource.getCommitMode() != Datasource.CommitMode.PARENT)) {
             try {
                 datasource.commit();
             } catch (RuntimeException e) {
