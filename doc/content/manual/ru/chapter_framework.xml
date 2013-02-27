@@ -1565,9 +1565,9 @@ String formattedValue = format.format(value);</programlisting></para>
             </listitem>
           </itemizedlist></para>
         <para>Рассмотрим подробнее декларативный способ создания и работы с представлениями.</para>
-        <para>Ссылка на <code>ViewRepository</code> может быть получена через интерфейс инфраструктуры <code>
+        <para><code>ViewRepository</code> является бином <application>Spring</application>, доступным для всех блоков приложения. Ссылка на <code>ViewRepository</code> может быть также получена через интерфейс инфраструктуры <code>
             <link linkend="metadata">Metadata</link>
-          </code>. Для получения экземпляра <code>View</code>, содержащегося в репозитории, используются методы <code>getView()</code>. Для развертывания XML-описателей представлений в репозитории используются методы  <code>deployViews()</code>.</para>
+          </code>. Для получения экземпляра <code>View</code>, содержащегося в репозитории, используются методы <code>getView()</code>. Для развертывания XML-описателей представлений в репозитории используются методы  <code>deployViews()</code> базовой реализации <code>AbstractViewRepository</code>.</para>
         <para>В репозитории для каждой сущности по умолчанию доступны два  представления с именами <filename>_local</filename> и <filename>_minimal</filename>:<itemizedlist>
             <listitem>
               <para><filename>_local</filename> включает в себя все <glossterm linkend="local_attribute">локальные</glossterm> атрибуты сущности</para>
@@ -1592,12 +1592,12 @@ String formattedValue = format.format(value);</programlisting></para>
             <listitem>
               <para>Зарегистрировать данный файл в свойстве <property>
                   <link linkend="cuba.viewsConfig">cuba.viewsConfig</link>
-                </property> блока <structname>Middleware</structname>, т.е. в файле <filename>{имя_проекта}-app.properties</filename> модуля <structname>core</structname>. Это обеспечит автоматическое развертывание представлений на старте приложения в репозитории <structname>Middleware</structname> (см. метод <code>MetadataImpl.initViews()</code>). Развернутые представления будут доступны и для <structname>Middleware</structname>, и для  клиентских <link linkend="app_tiers">блоков</link>, которые получат соответствующие экземпляры <code>View</code> при подключении к среднему слою.</para>
+                </property> блока <structname>Middleware</structname>, т.е. в файле <filename>{имя_проекта}-app.properties</filename> модуля <structname>core</structname>. Это обеспечит автоматическое развертывание представлений на старте приложения в репозитории <structname>Middleware</structname> (см. метод <code>AbstractViewRepository.init()</code>). Развернутые представления будут доступны и для <structname>Middleware</structname>, и для  клиентских <link linkend="app_tiers">блоков</link>, которые получат соответствующие экземпляры <code>View</code> при подключении к среднему слою.</para>
             </listitem>
             <listitem>
               <para>Если существуют представления, которые необходимы только какому-то одному клиентскому блоку приложения, то можно определить их в аналогичном файле этого блока, например <filename>{имя_проекта}-web-views.xml</filename>, и зарегистрировать в свойстве <property>
                   <link linkend="cuba.viewsConfig">cuba.viewsConfig</link>
-                </property> этого блока, т.е. в данном случае в  файле <filename>{имя_проекта}-web-app.properties</filename>. Тогда клиентский блок сначала загрузит все имеющиеся представления с <structname>Middleware</structname>,  а затем развернет свои собственные (см. <code>MetadataClientImpl.initViews()</code>).</para>
+                </property> этого блока, т.е. в данном случае в  файле <filename>{имя_проекта}-web-app.properties</filename>. Тогда клиентский блок сначала загрузит все имеющиеся представления с <structname>Middleware</structname>,  а затем развернет свои собственные (см. <code>ViewRepositoryClientImpl.init()</code>).</para>
               <para>Возможна также ситуация, когда некоторому клиентскому блоку не нужны глобальные представления, зарегистрированные на среднем слое, или нужны редко. В этом случае имеет смысл объявить в этом клиентском блоке свойство <link linkend="cuba.lazyLoadServerViews">
                   <property>cuba.lazyLoadServerViews</property>
                 </link>, тогда глобальные представления будут загружаться на клиентский уровень не все сразу, а по необходимости.</para>
@@ -10515,7 +10515,7 @@ public class ExtUser extends User {
         </code> не требуется. Другие аннотации базовой сущности - <code>
           <link linkend="namePattern">@NamePattern</link>
         </code>, <code>
-           <link linkend="listeners_annotation">@Listeners</link>
+          <link linkend="listeners_annotation">@Listeners</link>
         </code> и прочие - автоматически применяются к расширяющей сущности, но могут быть переопределены в ее классе.  </para>
       <para>Важным элементом класса новой сущности является аннотация <code>@Extends</code> с базовым классом в качестве параметра. Она позволяет сформировать реестр расширяющих сущностей, и заставить механизмы платформы использовать их повсеместно вместо базовых. Реестр реализуется классом <code>ExtendedEntities</code>, который является бином <application>Spring</application> с именем <code>cuba_ExtendedEntities</code>, и доступен также через интерфейс <code>
           <link linkend="metadata">Metadata</link>
