@@ -63,12 +63,15 @@
                             $(this).removeClass('toc-search-result');
                             $(this).removeClass('toc-search-hidden');
                         } else {
-                            if (this.innerText.toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0) {
-                                $(this).addClass('toc-search-result');
-                                $(this).removeClass('toc-search-hidden');
-                            } else {
-                                $(this).addClass('toc-search-hidden');
-                                $(this).removeClass('toc-search-result');
+                            var innerText = $(this).text();
+                            if (innerText) {
+                                if (innerText.toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0) {
+                                    $(this).addClass('toc-search-result');
+                                    $(this).removeClass('toc-search-hidden');
+                                } else {
+                                    $(this).addClass('toc-search-hidden');
+                                    $(this).removeClass('toc-search-result');
+                                }
                             }
                         }
                     });
