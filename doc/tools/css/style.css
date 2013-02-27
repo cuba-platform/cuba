@@ -499,7 +499,7 @@ table .footnote {
 
 /* ToC panel */
 
-a.toc-btn{
+a.toc-btn {
     position: fixed;
     background-color: #404040;
     opacity:0.5;
@@ -541,6 +541,22 @@ a.toc-btn.active {
     padding: 20px 20px 20px 20px;
     border-bottom-left-radius: 15px;
     border-top-left-radius: 15px;
+}
+
+.toc-search,
+.toc-search .toc-search-label {
+    color: #c0c0c0;
+    font-family: 'Arial', 'Verdana', sans-serif;
+    font-size: 14px;
+}
+
+#toc-panel a.toc-search-result {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+#toc-panel a.toc-search-hidden {
+    display: none;
 }
 
 div#toc-panel a, div#toc-panel p {
