@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.CubaTestCase;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.entity.User;
 
 import java.io.InputStream;
@@ -21,10 +22,10 @@ public class ViewRepositoryTest extends CubaTestCase
 
     protected void setUp() throws Exception {
         super.setUp();
-        repository = MetadataProvider.getViewRepository();
+        repository = metadata.getViewRepository();
 
         InputStream stream = ViewRepositoryTest.class.getResourceAsStream("test.view.xml");
-        repository.deployViews(stream);
+        ((AbstractViewRepository) repository).deployViews(stream);
     }
 
     public void testGetView() {

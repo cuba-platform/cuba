@@ -10,9 +10,6 @@ import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.Resources;
-import com.haulmont.cuba.core.global.ViewRepository;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrTokenizer;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -42,25 +39,5 @@ public class MetadataImpl extends AbstractMetadata {
     protected void initMetadata() {
         super.initMetadata();
         SessionImpl.setSerializationSupportSession(this.session);
-    }
-
-    @Override
-    protected void initViews() {
-        log.info("Initializing views");
-        ViewRepository viewRepository = createViewRepository();
-
-        String configName = AppContext.getProperty("cuba.viewsConfig");
-        if (!StringUtils.isBlank(configName)) {
-            StrTokenizer tokenizer = new StrTokenizer(configName);
-            for (String fileName : tokenizer.getTokenArray()) {
-                viewRepository.deployViews(fileName);
-            }
-        }
-
-        this.viewRepository = viewRepository;
-    }
-
-    protected ViewRepository createViewRepository() {
-        return new ViewRepository(this, resources);
     }
 }

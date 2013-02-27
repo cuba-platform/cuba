@@ -42,6 +42,8 @@ public class CubaClientTestCase {
 
     protected TestMetadataClient metadata;
 
+    protected TestViewRepositoryClient viewRepository;
+
     protected TestUserSessionSource userSessionSource;
 
     /**
@@ -66,16 +68,24 @@ public class CubaClientTestCase {
      * once in their @Before method.
      */
     protected void setupInfrastructure() {
-        metadata = new TestMetadataClient(entityPackages, viewConfig);
+        new NonStrictExpectations() {
+            {
+                AppContext.getProperty("cuba.confDir"); result = System.getProperty("user.dir");
+            }
+        };
+        viewRepository = new TestViewRepositoryClient(viewConfig);
+        metadata = new TestMetadataClient(entityPackages, viewRepository);
         userSessionSource = new TestUserSessionSource();
 
         new NonStrictExpectations() {
             {
-                AppContext.getProperty("cuba.confDir"); result = System.getProperty("user.dir");
-
                 AppBeans.get(Metadata.NAME); result = metadata;
                 AppBeans.get(Metadata.class); result = metadata;
                 AppBeans.get(Metadata.NAME, Metadata.class); result = metadata;
+
+                AppBeans.get(ViewRepository.NAME); result = viewRepository;
+                AppBeans.get(ViewRepository.class); result = viewRepository;
+                AppBeans.get(ViewRepository.NAME, ViewRepository.class); result = viewRepository;
 
                 AppBeans.get(MetadataTools.NAME); result = metadata.getTools();
                 AppBeans.get(MetadataTools.class); result = metadata.getTools();

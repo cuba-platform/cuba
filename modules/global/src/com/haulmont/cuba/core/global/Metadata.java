@@ -26,7 +26,7 @@ public interface Metadata {
     Session getSession();
 
     /**
-     * Access to {@link ViewRepository}. It is not a bean and can only be obtained through this method.
+     * Convenient access to {@link ViewRepository} bean.
      * @return  ViewRepository instance
      */
     ViewRepository getViewRepository();

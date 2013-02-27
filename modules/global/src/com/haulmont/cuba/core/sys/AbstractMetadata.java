@@ -22,9 +22,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractMetadata implements Metadata {
 
@@ -32,7 +31,8 @@ public abstract class AbstractMetadata implements Metadata {
 
     protected volatile Session session;
 
-    protected volatile ViewRepository viewRepository;
+    @Inject
+    protected ViewRepository viewRepository;
 
     @Inject
     protected ExtendedEntities extendedEntities;
@@ -62,13 +62,6 @@ public abstract class AbstractMetadata implements Metadata {
 
     @Override
     public ViewRepository getViewRepository() {
-        if (viewRepository == null) {
-            synchronized (this) {
-                if (viewRepository == null) {
-                    initViews();
-                }
-            }
-        }
         return viewRepository;
     }
 
@@ -136,8 +129,6 @@ public abstract class AbstractMetadata implements Metadata {
     }
 
     protected abstract MetadataBuildInfo getMetadataBuildInfo();
-
-    protected abstract void initViews();
 
     /**
      * Initialize entity annotations from class-level Java annotations.

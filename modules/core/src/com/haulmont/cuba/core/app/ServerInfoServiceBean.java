@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport;
 
 import javax.annotation.ManagedBean;
@@ -18,12 +19,15 @@ import java.util.TimeZone;
  * Standard implementation of {@link ServerInfoService} interface.
  *
  * <p>Annotated with <code>@ManagedBean</code> instead of <code>@Service</code> to be available before user login.</p>
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(ServerInfoService.NAME)
 public class ServerInfoServiceBean implements ServerInfoService {
 
     @Inject
-    protected Metadata metadata;
+    protected ViewRepository viewRepository;
 
     @Inject
     protected ServerInfoAPI serverInfo;
@@ -55,13 +59,13 @@ public class ServerInfoServiceBean implements ServerInfoService {
 
     @Override
     public List<View> getViews() {
-        return metadata.getViewRepository().getAll();
+        return ((AbstractViewRepository) viewRepository).getAll();
     }
 
     @Override
     public View getView(Class<? extends Entity> entityClass, String name) {
         try {
-            return metadata.getViewRepository().getView(entityClass, name);
+            return viewRepository.getView(entityClass, name);
         } catch (ViewNotFoundException e) {
             return null;
         }

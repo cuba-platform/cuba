@@ -7,7 +7,11 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.Permission;
@@ -44,7 +48,7 @@ public class WindowCreationHelper {
      */
     public static void applyUiPermissions(IFrame container) {
         Window window = ComponentsHelper.getWindow(container);
-        UserSession userSession = UserSessionProvider.getUserSession();
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
         String screenId = window.getId();
         Map<String, Integer> uiPermissions = userSession.getPermissionsByType(PermissionType.UI);
@@ -131,7 +135,7 @@ public class WindowCreationHelper {
     public static void deployViews(Element rootElement) {
         Element metadataContextEl = rootElement.element("metadataContext");
         if (metadataContextEl != null) {
-            ViewRepository viewRepository = MetadataProvider.getViewRepository();
+            AbstractViewRepository viewRepository = (AbstractViewRepository) AppBeans.get(ViewRepository.NAME);
             for (Element fileEl : Dom4j.elements(metadataContextEl, "deployViews")) {
                 String resource = fileEl.attributeValue("name");
                 InputStream resourceInputStream = AppBeans.get(Resources.class).getResourceAsStream(resource);

@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.portal.restapi.template.MetaClassRepresentation;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -240,7 +241,7 @@ public class DataServiceController {
         response.addHeader("Access-Control-Allow-Origin", "*");
         ViewRepository viewRepository = metadata.getViewRepository();
         try {
-            viewRepository.deployViews(new StringReader(requestContent));
+            ((AbstractViewRepository) viewRepository).deployViews(new StringReader(requestContent));
         } finally {
             authentication.forget();
         }
@@ -264,7 +265,7 @@ public class DataServiceController {
         PrintWriter writer = response.getWriter();
 
         try {
-            ViewRepository viewRepository = metadata.getViewRepository();
+            AbstractViewRepository viewRepository = (AbstractViewRepository) metadata.getViewRepository();
             List<View> views = viewRepository.getAll();
             Map<MetaClass, List<View>> meta2views = new HashMap<>();
             for (View view : views) {
