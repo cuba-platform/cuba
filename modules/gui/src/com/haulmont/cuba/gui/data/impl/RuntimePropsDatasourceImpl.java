@@ -95,9 +95,10 @@ public class RuntimePropsDatasourceImpl
         valuesContext.setView("_local");
         List<CategoryAttribute> attributes = dataSupplier.loadList(attributesContext);
 
-        Map<String, Object> variables = new HashMap<String, Object>();
-        Map<String, CategoryAttributeValue> categoryValues = new HashMap<String, CategoryAttributeValue>();
+        Map<String, Object> variables = new HashMap<>();
+        Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
 
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
         for (CategoryAttribute attribute : attributes) {
             CategoryAttributeValue attrValue = getValue(attribute, entityValues);
             Object value;
@@ -111,7 +112,7 @@ public class RuntimePropsDatasourceImpl
                     attrValue.setDoubleValue(attribute.getDefaultDouble());
                     attrValue.setBooleanValue(attribute.getDefaultBoolean());
                     attrValue.setDateValue(BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent()) ?
-                            TimeProvider.currentTimestamp() : attribute.getDefaultDate());
+                            timeSource.currentTimestamp() : attribute.getDefaultDate());
                     attrValue.setEntityValue(attribute.getDefaultEntityId());
                     value = parseValue(attribute, attrValue);
                     itemToUpdate.add(attrValue);
@@ -163,7 +164,8 @@ public class RuntimePropsDatasourceImpl
                     String.format("Can't find property '%s' in datasource '%s'", property, this.getId()));
         }
         DsBuilder builder = new DsBuilder(getDsContext());
-        builder.reset().setMetaClass(MetadataProvider.getSession().getClass(SetValueEntity.class)).setId(id).setViewName("_minimal").setSoftDeletion(false);
+        builder.reset().setMetaClass(metadata.getSession().getClass(SetValueEntity.class)).setId(id)
+                .setViewName("_minimal").setSoftDeletion(false);
 
         final CollectionDatasource datasource;
 
@@ -182,7 +184,7 @@ public class RuntimePropsDatasourceImpl
     private List<SetValueEntity> getOptions(CategoryAttribute attribute, SetValueEntity attributeValue) {
         String enumeration = attribute.getEnumeration();
         String[] values = StringUtils.split(enumeration, ',');
-        List<SetValueEntity> options = new LinkedList<SetValueEntity>();
+        List<SetValueEntity> options = new LinkedList<>();
         for (String value : values) {
             String trimmedValue = StringUtils.trimToNull(value);
             if (trimmedValue != null) {
@@ -268,7 +270,7 @@ public class RuntimePropsDatasourceImpl
         try {
             Class clazz = Class.forName(entityType);
             LoadContext entitiesContext = new LoadContext(clazz);
-            String entityClassName = MetadataProvider.getSession().getClass(clazz).getName();
+            String entityClassName = metadata.getSession().getClassNN(clazz).getName();
             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
             query.addParameter("e", uuid);
             entitiesContext.setView("_local");
@@ -339,7 +341,7 @@ public class RuntimePropsDatasourceImpl
     }
 
     public View getView() {
-        return view;
+        return null; // null is correct
     }
 
     public void initialized() {
@@ -391,7 +393,7 @@ public class RuntimePropsDatasourceImpl
         LoadContext categoryContext = new LoadContext(Category.class);
         LoadContext.Query query = categoryContext.setQueryString(
                 "select c from sys$Category c where c.isDefault = true and c.entityType=:type ");
-        query.addParameter("type", MetadataProvider.getSession().getClass(entity.getClass()).getName());
+        query.addParameter("type", metadata.getSession().getClassNN(entity.getClass()).getName());
         categoryContext.setView("_minimal");
         List<Category> categories = dataSupplier.loadList(categoryContext);
         if (!categories.isEmpty())
