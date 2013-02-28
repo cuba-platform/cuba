@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -125,9 +126,17 @@ public class RemotingServlet extends DispatcherServlet {
         remoteClientInfo.setPort(request.getRemotePort());
 
         RemoteClientInfo.set(remoteClientInfo);
+        try {
+            super.doService(request, response);
+        } finally {
+            RemoteClientInfo.clear();
+        }
+    }
 
-        super.doService(request, response);
-
-        RemoteClientInfo.clear();
+    @Override
+    protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
+                                                   Object handler, Exception ex) throws Exception {
+        log.error("Error processing request", ex);
+        return super.processHandlerException(request, response, handler, ex);
     }
 }
