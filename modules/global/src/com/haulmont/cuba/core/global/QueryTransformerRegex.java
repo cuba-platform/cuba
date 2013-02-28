@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.12.2008 9:53:52
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -18,7 +13,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 /**
- * Implementation of {@link QueryTransformer} based on regular expressions
+ * Implementation of {@link QueryTransformer} based on regular expressions.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class QueryTransformerRegex extends QueryParserRegex implements QueryTransformer
 {
@@ -47,7 +45,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         else
             sb.append(" where ");
 
-        if (where.indexOf(ALIAS_PLACEHOLDER) >= 0) {
+        if (where.contains(ALIAS_PLACEHOLDER)) {
             // replace ALIAS_PLACEHOLDER
             sb.append(where);
             int idx;
@@ -143,7 +141,13 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         if (!StringUtils.isBlank(join)) {
             buffer.insert(insertPos, " ");
             insertPos++;
-            int joinLen = insertReplacingAlias(buffer, insertPos, join, alias);
+            int joinLen;
+            if (join.contains(ALIAS_PLACEHOLDER)) {
+                joinLen = join.length();
+                buffer.insert(insertPos, join);
+            } else {
+                joinLen = insertReplacingAlias(buffer, insertPos, join, alias);
+            }
             insertPos += joinLen;
 
             Matcher paramMatcher = PARAM_PATTERN.matcher(join);
