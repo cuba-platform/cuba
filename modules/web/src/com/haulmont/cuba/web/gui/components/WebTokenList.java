@@ -285,7 +285,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
     @Override
     public void setMultiSelect(boolean multiselect) {
         this.multiselect = multiselect;
-        lookupPickerField.setMultiSelect(multiselect);
     }
 
     @Override
