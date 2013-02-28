@@ -62,18 +62,18 @@ public class ServerLogWindow extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         logFileNamesField.setOptionsList(logManagerService.getLogFileNames());
-
-        panel.setSizeFull();
 //        vaadin7
         VerticalLayout panelContent = new VerticalLayout();
+        panelContent.setSizeUndefined();
         panel.setContent(panelContent);
-//        panel.setScrollable(true);
+
+        panel.setSizeFull();
 
         AbstractOrderedLayout vBox = (AbstractOrderedLayout) WebComponentsHelper.unwrap(logFieldBox);
         panelContent.addComponent(vLabel);
         vBox.addComponent(panel);
         vLabel.setReadOnly(true);
-        vLabel.setSizeFull();
+        vLabel.setSizeUndefined();
         vLabel.setContentMode(ContentMode.HTML);
 
         levelField.setOptionsList(getAllLevels());

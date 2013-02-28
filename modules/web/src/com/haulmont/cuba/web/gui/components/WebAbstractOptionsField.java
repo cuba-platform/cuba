@@ -40,6 +40,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
      */
     protected boolean optionsInitialization = false;
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -96,7 +97,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 opts.add(itemId);
             }
             setComponentContainerDs(new ObjectContainer(opts));
-            component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
+            component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
             this.optionsMap = options;
         }
     }

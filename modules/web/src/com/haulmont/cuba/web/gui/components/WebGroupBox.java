@@ -78,9 +78,9 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
 
         if (newContent != null) {
             initContainer(newContent);
+
             newContent.setMargin(((OrderedActionsLayout) component.getContent()).getMargin());
             newContent.setSpacing(((OrderedActionsLayout) component.getContent()).isSpacing());
-            component.setContent(newContent);
         }
 
         getComponentContent().addComponent(WebComponentsHelper.getComposition(childComponent));

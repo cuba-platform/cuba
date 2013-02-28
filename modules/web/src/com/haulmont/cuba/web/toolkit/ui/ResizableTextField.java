@@ -32,7 +32,6 @@ public class ResizableTextField extends TextField {
         public void onResize(String oldWidth, String oldHeight, String width, String height);
     }
 
-
     public boolean isResizable() {
         return resizable;
     }
@@ -40,7 +39,6 @@ public class ResizableTextField extends TextField {
     public void setResizable(boolean resizable) {
         this.resizable = resizable;
     }
-
 
     public void addResizeListener(ResizeListener resizeListener) {
         if (!listeners.contains(resizeListener))

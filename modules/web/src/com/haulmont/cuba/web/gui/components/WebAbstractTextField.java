@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -16,6 +17,8 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
 import com.vaadin.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -211,6 +214,11 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         if (len != null) {
             component.setMaxLength(len);
         }
+
+        if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
+            component.setConverter(new EntityToStringConverter());
+        else
+            component.setConverter(new StringToStringConverter());
     }
 
     @Override

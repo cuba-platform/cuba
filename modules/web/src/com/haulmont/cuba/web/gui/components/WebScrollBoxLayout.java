@@ -35,7 +35,6 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         component.setContent(new VerticalLayout());
 
         getContent().setMargin(false);
-//        component.setScrollable(true);
     }
 
     private AbstractOrderedLayout getContent() {

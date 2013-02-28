@@ -19,11 +19,11 @@ import java.util.List;
  */
 public class WebResizableTextField
         extends
-        WebAbstractTextField<com.haulmont.cuba.web.toolkit.ui.ResizableTextField>
+            WebAbstractTextField<com.haulmont.cuba.web.toolkit.ui.ResizableTextField>
         implements
-        ResizableTextField, Component.Wrapper {
+            ResizableTextField, Component.Wrapper {
 
-    protected final List<ResizeListener> resizeListeners = new ArrayList<ResizeListener>();
+    protected final List<ResizeListener> resizeListeners = new ArrayList<>();
 
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.ResizableTextField createTextFieldImpl() {
