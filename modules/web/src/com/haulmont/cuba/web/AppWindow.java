@@ -173,7 +173,7 @@ public class AppWindow extends Window implements UserSubstitutionListener, JavaS
 
     @Override
     public void onHistoryBackPerformed() {
-        showNotification("Go back to the Future!", Notification.TYPE_HUMANIZED_MESSAGE);
+        // Go back to the Future!
     }
 
     /**

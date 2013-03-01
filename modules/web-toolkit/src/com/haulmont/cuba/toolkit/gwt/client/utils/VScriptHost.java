@@ -112,11 +112,11 @@ public class VScriptHost extends SimplePanel implements Paintable {
 
             var defaultState = 0;
 
-            if (location.indexOf('?wv') >= 0) {
-                History.pushState({state: 1, rand: 1}, window.document.title, '?vw');
+            if (location.indexOf('?a') >= 0) {
+                History.pushState({state: 1, rand: 1}, window.document.title, '?b');
                 defaultState = 1;
             } else {
-                History.pushState({state: 2, rand: 2}, window.document.title, '?wv');
+                History.pushState({state: 2, rand: 2}, window.document.title, '?a');
                 defaultState = 2;
             }
 
@@ -124,8 +124,9 @@ public class VScriptHost extends SimplePanel implements Paintable {
                 var State = History.getState();
 
                 if (!State.data || State.data.state != defaultState) {
+                    // one step forward
                     History.go(1);
-
+                    // call handler
                     vScriptHost.@com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::handleHistoryBackAction()();
                 }
             });

@@ -134,6 +134,9 @@ public class JavaScriptHost extends AbstractComponent {
     }
 
     public interface HistoryBackHandler {
+        /**
+         * When User performs back step by history
+         */
         void onHistoryBackPerformed();
     }
 }
