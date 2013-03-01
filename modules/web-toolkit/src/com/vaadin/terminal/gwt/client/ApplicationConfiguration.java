@@ -125,7 +125,7 @@ public class ApplicationConfiguration implements EntryPoint {
      */
     public void updateSystemMessages(ValueMap localeMessages) {
         if (!localeMessages.getKeySet().isEmpty()) {
-            // Update all system messages                                                   handleHistoryBack
+            // Update all system messages
             communicationErrorCaption = localeMessages.getString("communicationErrorCaption");
             communicationErrorMessage = localeMessages.getString("communicationErrorMessage");
 
