@@ -6,8 +6,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -63,12 +61,6 @@ public class CubaGroupBoxWidget extends VPanel {
         getElement().appendChild(fieldset);
 
         DOM.sinkEvents(expander, Event.ONCLICK);
-
-        addHandler(new ResizeHandler() {
-            @Override
-            public void onResize(ResizeEvent event) {
-            }
-        }, ResizeEvent.getType());
     }
 
     public void setDescription(String text) {

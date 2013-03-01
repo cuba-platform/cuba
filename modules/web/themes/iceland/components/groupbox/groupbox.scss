@@ -4,15 +4,21 @@
   border: 0;
 }
 
+$groupBoxInnerPadding: 5px;
+$groupBoxCaptionLineHeight: 18px;
+
 @mixin cuba-groupbox {
-  .cuba-groupbox {
+  .cuba-groupbox.v-widget {
     @include cuba-groupbox-defaults;
+
     fieldset {
       border: 1px solid #babfc0;
       margin: 0;
-      padding: 5px 5px 5px;
+      padding: $groupBoxInnerPadding $groupBoxInnerPadding $groupBoxInnerPadding;
       width: 100%;
       height: 100%;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
       box-sizing: border-box;
 
       legend {
@@ -25,7 +31,7 @@
       .cuba-groupbox-caption {
         @include cuba-groupbox-defaults;
         padding: 0 4px;
-        line-height: 18px;
+        line-height: $groupBoxCaptionLineHeight;
 
         .cuba-groupbox-expander {
           float: left;
@@ -58,6 +64,8 @@
         @include cuba-groupbox-defaults;
         overflow: hidden;
         border: none;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
         box-sizing: border-box;
         width: 100%;
         height: 100%;
@@ -77,6 +85,24 @@
         height: 0;
         margin-left: 0;
         background: transparent;
+      }
+    }
+  }
+}
+
+.v-webkit {
+  .cuba-groupbox.v-widget {
+    fieldset {
+      .cuba-groupbox-content {
+        padding-bottom: $groupBoxCaptionLineHeight;
+      }
+    }
+  }
+
+  .cuba-groupbox.v-widget.cuba-groupbox-nocaption {
+    fieldset {
+      .cuba-groupbox-content {
+        padding-bottom: 0;
       }
     }
   }

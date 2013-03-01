@@ -1,0 +1,15 @@
+@mixin v-panel {
+  .v-panel {
+    .v-panel-content {
+      border: 0;
+    }
+
+    .v-panel-deco {
+      display: none;
+    }
+
+    .v-panel-captionwrap {
+      display: none;
+    }
+  }
+}

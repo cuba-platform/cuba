@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.vaadin.client.ApplicationConnection;
@@ -59,6 +60,18 @@ public class CubaGroupBoxConnector extends PanelConnector {
         replaceClassNames(getWidget().contentNode);
         replaceClassNames(getWidget().bottomDecoration);
         replaceClassNames(getWidget().getElement());
+    }
+
+    @Override
+    public void layout() {
+        super.layout();
+
+        // fix padding
+        getWidget().legend.getStyle().clearMarginTop();
+
+        Style style = getWidget().getElement().getStyle();
+        style.clearPaddingTop();
+        style.clearPaddingBottom();
     }
 
     private void replaceClassNames(Element element) {

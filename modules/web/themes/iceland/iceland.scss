@@ -7,11 +7,13 @@
 // Components
 @import "components/table/table.scss";
 @import "components/groupbox/groupbox.scss";
+@import "components/panel/panel.scss";
 
 @mixin iceland {
   //@include base;
   @include reindeer;
 
   @include v-table;
+  @include v-panel;
   @include cuba-groupbox;
 }
