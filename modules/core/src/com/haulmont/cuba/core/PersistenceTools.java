@@ -9,8 +9,6 @@ package com.haulmont.cuba.core;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.sys.ViewHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -139,62 +137,5 @@ public class PersistenceTools {
             id = (UUID) objectId.getId();
         }
         return id;
-    }
-
-    /**
-     * Reload an entity from DB according to a combined view defined by the given array of views.
-     * <p/> The method must be called inside of a transaction.
-     * <p/> If the given entity is in managed state, the method returns the same object instance. If the entity is
-     * detached, the method returns a new object instance.
-     * @param entity    entity instance to reload
-     * @param viewNames array of view names
-     * @return          reloaded entity instance
-     * @throws IllegalStateException if there is no active transaction
-     */
-    public <T extends Entity> T reloadEntity(T entity, String... viewNames) {
-        Objects.requireNonNull(entity, "entity is null");
-
-        Entity resultEntity = reloadEntity(entity.getClass(), entity.getId(), viewNames);
-        return (T) resultEntity;
-    }
-
-    /**
-     * Reload an entity from DB according to a combined view defined by the given array of views.
-     * <p/> The method must be called inside of a transaction.
-     * <p/> If there is a managed entity with the given id in the current persistence context, the method returns it.
-     * Otherwise the method returns a new object instance.
-     * @param entityClass   entity class
-     * @param id            entity id
-     * @param viewNames     array of view names
-     * @return              reloaded entity instance
-     * @throws IllegalStateException if there is no active transaction
-     */
-    public <T extends Entity> T reloadEntity(Class<T> entityClass, Object id, String... viewNames) {
-        Objects.requireNonNull(entityClass, "entityClass is null");
-        Objects.requireNonNull(id, "id is null");
-
-        if (!persistence.isInTransaction())
-            throw new IllegalStateException("No active transaction");
-
-        EntityManager em = persistence.getEntityManager();
-
-        View mainView = null;
-        for (int i = 0; i < viewNames.length; i++) {
-            String viewName = viewNames[i];
-            View view = metadata.getViewRepository().getView(entityClass, viewName);
-            if (i == 0) {
-                mainView = view;
-                em.setView(view);
-            } else {
-                em.addView(view);
-            }
-        }
-
-        T e = em.find(entityClass, id);
-
-        if (e != null && mainView != null && mainView.hasLazyProperties()) {
-            em.fetch(e, mainView);
-        }
-        return e;
     }
 }

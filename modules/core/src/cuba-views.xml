@@ -154,4 +154,8 @@
         <property name="author" view="_minimal"/>
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.UserSetting" name="userSetting.value">
+        <property name="value"/>
+    </view>
+
 </views>

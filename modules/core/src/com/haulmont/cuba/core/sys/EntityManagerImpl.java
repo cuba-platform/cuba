@@ -1,20 +1,14 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 31.10.2008 16:56:32
- * $Id$
  */
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.app.DataCacheAPI;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -25,16 +19,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.StoreCache;
 
+import javax.annotation.Nullable;
 import java.sql.Connection;
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class EntityManagerImpl implements EntityManager {
-
-    public interface CloseListener {
-        void onClose();
-    }
 
     private OpenJPAEntityManager delegate;
 
@@ -42,14 +36,7 @@ public class EntityManagerImpl implements EntityManager {
     private Metadata metadata;
     private FetchPlanManager fetchPlanMgr;
 
-    private boolean closed;
-    private Set<CloseListener> closeListeners = new HashSet<CloseListener>();
-
     private boolean softDeletion = true;
-
-    private static Boolean storeCacheEnabled;
-
-    private List<Entity> entitiesToEvict;
 
     private List<View> views = new ArrayList<>(1);
 
@@ -63,30 +50,27 @@ public class EntityManagerImpl implements EntityManager {
         this.fetchPlanMgr = fetchPlanMgr;
     }
 
-    private static boolean isStoreCacheEnabled() {
-        if (storeCacheEnabled == null) {
-            DataCacheAPI bean = Locator.lookup(DataCacheAPI.NAME);
-            storeCacheEnabled = bean.isStoreCacheEnabled();
-        }
-        return storeCacheEnabled;
-    }
-
+    @Override
     public OpenJPAEntityManager getDelegate() {
         return delegate;
     }
 
+    @Override
     public boolean isSoftDeletion() {
         return softDeletion;
     }
 
+    @Override
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
     }
 
+    @Override
     public void persist(Entity entity) {
         delegate.persist(entity);
     }
 
+    @Override
     public <T extends Entity> T merge(T entity) {
         // Don't use PersistenceHelper.isDetached here, as we have to merge not-detached instances too.
         if (entity instanceof PersistenceCapable
@@ -96,18 +80,20 @@ public class EntityManagerImpl implements EntityManager {
             return delegate.merge(entity);
     }
 
+    @Override
     public void remove(Entity entity) {
+        if (PersistenceHelper.isDetached(entity)) {
+            entity = delegate.merge(entity);
+        }
         if (entity instanceof SoftDelete && softDeletion) {
-            if (PersistenceHelper.isDetached(entity)) {
-                entity = delegate.merge(entity);
-            }
-            ((SoftDelete) entity).setDeleteTs(TimeProvider.currentTimestamp());
+            ((SoftDelete) entity).setDeleteTs(AppBeans.get(TimeSource.class).currentTimestamp());
             ((SoftDelete) entity).setDeletedBy(userSession != null ? userSession.getUser().getLogin() : "<unknown>");
         } else {
             delegate.remove(entity);
         }
     }
 
+    @Override
     public <T extends Entity> T find(Class<T> clazz, Object key) {
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
 
@@ -118,14 +104,38 @@ public class EntityManagerImpl implements EntityManager {
             return entity;
     }
 
+    @Nullable
+    @Override
+    public <T extends Entity> T find(Class<T> entityClass, Object primaryKey, View... views) {
+        setFetchPlan(Arrays.asList(views));
+        try {
+            return find(entityClass, primaryKey);
+        } finally {
+            setFetchPlan(this.views);
+        }
+    }
+
+    @Nullable
+    @Override
+    public <T extends Entity> T find(Class<T> entityClass, Object primaryKey, String... viewNames) {
+        View[] viewArray = new View[viewNames.length];
+        for (int i = 0; i < viewNames.length; i++) {
+            viewArray[i] = metadata.getViewRepository().getView(entityClass, viewNames[i]);
+        }
+        return find(entityClass, primaryKey, viewArray);
+    }
+
+    @Override
     public <T extends Entity> T getReference(Class<T> clazz, Object key) {
         return delegate.getReference(clazz, key);
     }
 
+    @Override
     public Query createQuery() {
         return new QueryImpl(this, false, null, metadata, fetchPlanMgr);
     }
 
+    @Override
     public Query createQuery(String qlStr) {
         QueryImpl query = new QueryImpl(this, false, null, metadata, fetchPlanMgr);
         query.setQueryString(qlStr);
@@ -134,15 +144,17 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
-        QueryImpl<T> query = new QueryImpl<T>(this, false, resultClass, metadata, fetchPlanMgr);
+        QueryImpl<T> query = new QueryImpl<>(this, false, resultClass, metadata, fetchPlanMgr);
         query.setQueryString(qlString);
         return query;
     }
 
+    @Override
     public Query createNativeQuery() {
         return new QueryImpl(this, true, null, metadata, fetchPlanMgr);
     }
 
+    @Override
     public Query createNativeQuery(String sql) {
         QueryImpl query = new QueryImpl(this, true, null, metadata, fetchPlanMgr);
         query.setQueryString(sql);
@@ -156,17 +168,20 @@ public class EntityManagerImpl implements EntityManager {
         return query;
     }
 
+    @Override
     public void setView(View view) {
         fetchPlanMgr.setView(delegate.getFetchPlan(), view);
         views.clear();
         views.add(view);
     }
 
+    @Override
     public void addView(View view) {
         fetchPlanMgr.addView(delegate.getFetchPlan(), view);
         views.add(view);
     }
 
+    @Override
     public void fetch(Entity entity, View view) {
         Objects.requireNonNull(view, "View is null");
         if (PersistenceHelper.isDetached(entity))
@@ -178,6 +193,42 @@ public class EntityManagerImpl implements EntityManager {
             fetchInstance(entity, view, new HashMap<Instance, Set<View>>());
         } finally {
             // Restore fetch plan
+            setFetchPlan(this.views);
+        }
+    }
+
+    @Nullable
+    @Override
+    public <T extends Entity> T reload(Class<T> entityClass, Object id, String... viewNames) {
+        Objects.requireNonNull(entityClass, "entityClass is null");
+        Objects.requireNonNull(id, "id is null");
+
+        T entity = find(entityClass, id, viewNames);
+        if (entity != null) {
+            for (String viewName : viewNames) {
+                View view = metadata.getViewRepository().getView(entityClass, viewName);
+                if (view.hasLazyProperties()) {
+                    fetch(entity, view);
+                }
+            }
+        }
+
+        return entity;
+    }
+
+    @Nullable
+    @Override
+    public <T extends Entity> T reload(T entity, String... viewNames) {
+        Objects.requireNonNull(entity, "entity is null");
+
+        Entity resultEntity = reload(entity.getClass(), entity.getId(), viewNames);
+        return (T) resultEntity;
+    }
+
+    private void setFetchPlan(List<View> views) {
+        if (views == null)
+            fetchPlanMgr.setView(delegate.getFetchPlan(), null);
+        else {
             for (int i = 0; i < views.size(); i++) {
                 if (i == 0)
                     fetchPlanMgr.setView(delegate.getFetchPlan(), views.get(i));
@@ -190,7 +241,7 @@ public class EntityManagerImpl implements EntityManager {
     private void fetchInstance(Instance instance, View view, Map<Instance, Set<View>> visited) {
         Set<View> views = visited.get(instance);
         if (views == null) {
-            views = new HashSet<View>();
+            views = new HashSet<>();
             visited.put(instance, views);
         } else if (views.contains(view)) {
             return;
@@ -225,45 +276,16 @@ public class EntityManagerImpl implements EntityManager {
         }
     }
 
+    @Override
     public void flush() {
         delegate.flush();
-    }
-
-    public void close() {
-        if (isStoreCacheEnabled()) {
-            // Evict from L2 cache all updated entities
-            StoreCache storeCache = delegate.getEntityManagerFactory().getStoreCache();
-            if (storeCache != null && entitiesToEvict != null) {
-                for (Entity entity : entitiesToEvict) {
-                    storeCache.evict(entity.getClass(), entity.getId());
-                }
-            }
-            entitiesToEvict = null;
-        }
-
-        delegate.close();
-        closed = true;
-        for (CloseListener listener : closeListeners) {
-            listener.onClose();
-        }
-    }
-
-    public boolean isClosed() {
-        return closed;
-    }
-
-    public void addCloseListener(CloseListener listener) {
-        closeListeners.add(listener);
-    }
-
-    public void removeCloseListener(CloseListener listener) {
-        closeListeners.remove(listener);
     }
 
     public Collection getManagedObjects() {
         return delegate.getManagedObjects();
     }
 
+    @Override
     public Connection getConnection() {
         return (Connection) delegate.getConnection();
     }

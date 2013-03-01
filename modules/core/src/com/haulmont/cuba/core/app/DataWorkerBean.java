@@ -215,11 +215,6 @@ public class DataWorkerBean implements DataWorker {
         try {
             final EntityManager em = persistence.getEntityManager();
 
-            // Set view only if StoreCache is disabled
-            if (!dataCacheAPI.isStoreCacheEnabled() && context.getView() != null) {
-                em.setView(context.getView());
-            }
-
             if (!context.isSoftDeletion())
                 em.setSoftDeletion(false);
 
@@ -372,7 +367,7 @@ public class DataWorkerBean implements DataWorker {
                 query.setMaxResults(contextQuery.getMaxResults());
         }
 
-        if (context.getView() != null) {
+        if (!dataCacheAPI.isStoreCacheEnabled() && context.getView() != null) {
             query.setView(context.getView());
         }
 
