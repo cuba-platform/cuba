@@ -2,16 +2,12 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 27.08.2009 18:39:09
- *
- * $Id$
  */
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.app.ServerInfoService;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
@@ -25,6 +21,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +35,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class CubaApplicationServlet extends ApplicationServlet {
     private static final long serialVersionUID = -8701539520754293569L;
 
@@ -45,14 +46,27 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     private Log log = LogFactory.getLog(CubaApplicationServlet.class);
 
+    private WebConfig webConfig;
+
+    private GlobalConfig globalConfig;
+
     @Override
     protected boolean isTestingMode() {
-        return ConfigProvider.getConfig(GlobalConfig.class).getTestMode();
+        return globalConfig.getTestMode();
     }
 
     @Override
     protected CubaApplicationContext getApplicationContext(HttpSession session) {
         return CubaApplicationContext.getApplicationContext(session);
+    }
+
+    @Override
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
+
+        Configuration configuration = AppBeans.get(Configuration.class);
+        webConfig = configuration.getConfig(WebConfig.class);
+        globalConfig = configuration.getConfig(GlobalConfig.class);
     }
 
     @Override
@@ -249,7 +263,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
             page.write("useDebugIdInDom: true,\n");
         }
 
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        if (webConfig.getAllowHandleBrowserHistoryBack())
+            page.write("handleHistoryBack: true,\n");
+
         page.write("\n\"uiBlocking\" : {");
         page.write(" \"blockUiMessage\" : \"" + systemMessages.getUiBlockingMessage() + "\" ,");
         page.write(" \"useUiBlocking\" : " +
@@ -296,7 +312,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
     protected void writeAjaxPageHtmlHeader(HttpServletRequest request, BufferedWriter page, String title,
                                            String themeUri) throws IOException {
         page.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n");
-        if (ConfigProvider.getConfig(WebConfig.class).getUseChromeFramePlugin()
+        if (webConfig.getUseChromeFramePlugin()
                 && Browser.getBrowserInfo(request).isChromeFrame()) {
             page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\" />\n");
 /*
@@ -319,6 +335,12 @@ public class CubaApplicationServlet extends ApplicationServlet {
         writeScriptResource(request, page, "jquery-1.4.2.min.js", false);
         writeScriptResource(request, page, "jquery.blockUI.js", false);
         writeScriptResource(request, page, "scripts.js", true);
+
+        // history control
+        if (webConfig.getAllowHandleBrowserHistoryBack()) {
+            writeScriptResource(request, page, "jquery.history.js", false);
+            writeScriptResource(request, page, "json2.js", false);
+        }
     }
 
     private void writeScriptResource(HttpServletRequest request, BufferedWriter page, String fileName, boolean nocache) throws IOException {

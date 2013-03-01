@@ -19,9 +19,9 @@ import java.util.Set;
 
 /**
  * Component for evaluate custom JavaScript from server
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 @ClientWidget(VScriptHost.class)
 public class JavaScriptHost extends AbstractComponent {
@@ -29,12 +29,14 @@ public class JavaScriptHost extends AbstractComponent {
 
     private static class ScriptValueProvider implements ValueProvider {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
+        @Override
         public Map<String, Object> getValues() {
             return params;
         }
 
+        @Override
         public Map<String, Object> getParameters() {
             return params;
         }
@@ -54,7 +56,15 @@ public class JavaScriptHost extends AbstractComponent {
 
     private ScriptValueProvider valueProvider = new ScriptValueProvider();
 
-    public JavaScriptHost() {
+    private HistoryBackHandler historyBackHandler = null;
+
+    @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
+        super.changeVariables(source, variables);
+
+        if (variables.containsKey(VScriptHost.HISTORY_BACK_ACTION) && historyBackHandler != null) {
+            historyBackHandler.onHistoryBackPerformed();
+        }
     }
 
     @Override
@@ -113,5 +123,17 @@ public class JavaScriptHost extends AbstractComponent {
     private void cleanCommand() {
         valueProvider.removeParam(VScriptHost.SCRIPT_PARAM_KEY);
         valueProvider.removeParam(VScriptHost.COMMAND_PARAM_KEY);
+    }
+
+    public HistoryBackHandler getHistoryBackHandler() {
+        return historyBackHandler;
+    }
+
+    public void setHistoryBackHandler(HistoryBackHandler historyBackHandler) {
+        this.historyBackHandler = historyBackHandler;
+    }
+
+    public interface HistoryBackHandler {
+        void onHistoryBackPerformed();
     }
 }

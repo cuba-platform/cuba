@@ -218,6 +218,13 @@ public interface WebConfig extends Config {
     boolean getUseUiBlocking();
 
     /**
+     * @return Whether to handle back button click in browser on server-side.
+     */
+    @Property("cuba.web.getAllowHandleBrowserHistoryBack")
+    @DefaultBoolean(true)
+    boolean getAllowHandleBrowserHistoryBack();
+
+    /**
      * @return Theme
      */
     @Default("havana")

@@ -63,6 +63,8 @@ public class ApplicationConfiguration implements EntryPoint {
     private String blockUiMessage = "Please wait";
     private boolean useUiBlocking = false;
 
+    private boolean handleHistoryBack = false;
+
     private String requiredWidgetset;
     private boolean useDebugIdInDom = true;
     private boolean usePortletURLs = false;
@@ -123,7 +125,7 @@ public class ApplicationConfiguration implements EntryPoint {
      */
     public void updateSystemMessages(ValueMap localeMessages) {
         if (!localeMessages.getKeySet().isEmpty()) {
-            // Update all system messages
+            // Update all system messages                                                   handleHistoryBack
             communicationErrorCaption = localeMessages.getString("communicationErrorCaption");
             communicationErrorMessage = localeMessages.getString("communicationErrorMessage");
 
@@ -190,6 +192,14 @@ public class ApplicationConfiguration implements EntryPoint {
         return useUiBlocking;
     }
 
+    public boolean isHandleHistoryBack() {
+        return handleHistoryBack;
+    }
+
+    public void setHandleHistoryBack(boolean handleHistoryBack) {
+        this.handleHistoryBack = handleHistoryBack;
+    }
+
     private native void loadFromDOM()
     /*-{
 
@@ -203,6 +213,7 @@ public class ApplicationConfiguration implements EntryPoint {
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::appUri = uri;
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::themeUri = jsobj.themeUri;
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::sessionId = jsobj.sessionId;
+
             if(jsobj.windowName) {
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::windowName = jsobj.windowName;
             }
@@ -225,6 +236,9 @@ public class ApplicationConfiguration implements EntryPoint {
             if (jsobj.uiBlocking) {
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::useUiBlocking = jsobj.uiBlocking.useUiBlocking;
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::blockUiMessage = jsobj.uiBlocking.blockUiMessage;
+            }
+            if (jsobj.handleHistoryBack) {
+                this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::handleHistoryBack = jsobj.handleHistoryBack;
             }
             if (jsobj.usePortletURLs) {
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::usePortletURLs = jsobj.usePortletURLs;
