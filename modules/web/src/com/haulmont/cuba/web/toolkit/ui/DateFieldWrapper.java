@@ -14,9 +14,8 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.Date;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class DateFieldWrapper extends CustomField {
 
@@ -47,6 +46,7 @@ public class DateFieldWrapper extends CustomField {
         dateField.setValue(newValue);
     }
 
+    @Override
     public void focus() {
         dateField.getDateField().focus();
     }
@@ -56,18 +56,22 @@ public class DateFieldWrapper extends CustomField {
         return Date.class;
     }
 
+    @Override
     public void setReadOnly(boolean readOnly) {
         dateField.setEditable(!readOnly);
     }
 
+    @Override
     public boolean isReadOnly() {
         return !dateField.isEditable();
     }
 
+    @Override
     public boolean isRequired() {
         return dateField.isRequired();
     }
 
+    @Override
     public void setRequired(boolean required) {
         dateField.setRequired(required);
         super.setRequired(required);
@@ -84,9 +88,12 @@ public class DateFieldWrapper extends CustomField {
 
     @Override
     public void setPropertyDataSource(Property newDataSource) {
+        Object newValue = newDataSource != null ? newDataSource.getValue() : null;
+        Object oldValue = getValue();
+
         super.setPropertyDataSource(newDataSource);
         // support dateField in editable table
-        if (newDataSource != null && !ObjectUtils.equals(newDataSource.getValue(), getValue()))
-            dateField.setValue(newDataSource.getValue());
+        if (newDataSource != null && !ObjectUtils.equals(newValue, oldValue))
+            dateField.setValue(newValue);
     }
 }
