@@ -2,16 +2,12 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 16.12.2008 11:09:01
- *
- * $Id$
  */
 package com.haulmont.cuba.web.log;
 
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
+import com.vaadin.data.Validator;
 import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.URIHandler;
@@ -25,11 +21,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class AppLog {
 
-    private transient LinkedList<LogItem> items = new LinkedList<LogItem>();
+    private transient LinkedList<LogItem> items = new LinkedList<>();
 
-    private int capacity = 100;
+    private static final int CAPACITY = 100;
 
     private static Log log = LogFactory.getLog(AppLog.class);
 
@@ -40,7 +40,7 @@ public class AppLog {
         else
             log.debug(item.getLevel() + ": " + msg);
         
-        if (items.size() >= capacity) {
+        if (items.size() >= CAPACITY) {
             items.removeLast();
         }
         items.addFirst(item);
@@ -70,6 +70,9 @@ public class AppLog {
         Throwable t = event.getThrowable();
 
         if (t instanceof SilentException)
+            return;
+
+        if (t instanceof Validator.InvalidValueException)
             return;
 
         if (t instanceof SocketException) {
@@ -111,6 +114,6 @@ public class AppLog {
     }
 
     public List<LogItem> getItems() {
-        return new ArrayList<LogItem>(items);
+        return new ArrayList<>(items);
     }
 }
