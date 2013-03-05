@@ -1,8 +1,12 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.gui.autocomplete;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.gui.autocomplete.impl.HintProvider;
@@ -14,9 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.11.2010
- * Time: 3:44:24
+ * @author Alexander Chevelev
+ * @version $Id$
  */
 public class JpqlSuggestionFactory {
 
@@ -42,9 +45,11 @@ public class JpqlSuggestionFactory {
         return new Suggestion(sender, displayedValue, value, valueSuffix, startPosition, endPosition);
     }
 
-    public static List<Suggestion> requestHint(String query, int queryPosition, AutoCompleteSupport sender, int senderCursorPosition) {
-        DomainModelBuilder builder = new DomainModelBuilder();
-        DomainModel domainModel = builder.produce(AppBeans.get(MetadataTools.class).getAllPersistentMetaClasses());
+    public static List<Suggestion> requestHint(String query, int queryPosition, AutoCompleteSupport sender,
+                                               int senderCursorPosition) {
+        DomainModelBuilder builder = new DomainModelBuilder(
+                AppBeans.get(MetadataTools.class), AppBeans.get(MessageTools.class));
+        DomainModel domainModel = builder.produce();
 
         HintProvider provider = new HintProvider(domainModel);
         try {

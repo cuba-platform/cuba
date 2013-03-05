@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.12.2008 10:10:03
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -16,11 +11,15 @@ import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.antlr.runtime.RecognitionException;
 
 /**
- * Factory to get {@link QueryParser} and {@link QueryTransformer} instances
+ * Factory to get {@link QueryParser} and {@link QueryTransformer} instances.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class QueryTransformerFactory {
 
-    private static boolean useAst = ConfigProvider.getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
+    private static boolean useAst = AppBeans.get(Configuration.class)
+            .getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
 
     private static volatile DomainModel domainModel;
 
@@ -28,8 +27,9 @@ public class QueryTransformerFactory {
         if (useAst) {
             try {
                 if (domainModel == null) {
-                    DomainModelBuilder builder = new DomainModelBuilder();
-                    domainModel = builder.produce(AppBeans.get(MetadataTools.class).getAllPersistentMetaClasses());
+                    DomainModelBuilder builder = new DomainModelBuilder(
+                            AppBeans.get(MetadataTools.class), AppBeans.get(MessageTools.class));
+                    domainModel = builder.produce();
                 }
                 return new QueryTransformerAstBased(domainModel, query, targetEntity);
             } catch (RecognitionException e) {
