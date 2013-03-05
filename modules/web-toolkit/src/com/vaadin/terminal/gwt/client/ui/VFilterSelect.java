@@ -808,6 +808,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 setPromptingOn();
             }
             selectedOptionKey = null;
+            currentSuggestion = null;
         }
 
         if (filtering
