@@ -128,6 +128,8 @@ public class MetaClassRepresentation {
 
         public String getCardinality() {
             switch (property.getRange().getCardinality()) {
+                case NONE:
+                    return "";
                 case ONE_TO_ONE:
                     return property.getRange().isClass() ? "1:1" : "";
                 case ONE_TO_MANY:

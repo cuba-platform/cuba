@@ -1,10 +1,19 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Enumeration;
 
 /**
- * Object encapsulating some common properties of MetaProperty
+ * Object encapsulating common properties of {@link MetaProperty}.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public interface Range {
 
@@ -31,6 +40,7 @@ public interface Range {
 
     /** Relation type for reference property */
     enum Cardinality {
+        NONE,
         ONE_TO_ONE,
         MANY_TO_ONE,
         ONE_TO_MANY,

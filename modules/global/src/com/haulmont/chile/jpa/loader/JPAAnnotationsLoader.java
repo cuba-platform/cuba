@@ -158,24 +158,20 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
     }
 
     protected Range.Cardinality getCardinality(Field field) {
-        final OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
-        final OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
-        final ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
-        final ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
-        final Embedded embeddedAnnotation = field.getAnnotation(Embedded.class);
-
-        if (oneToOneAnnotation != null) {
+        if (field.isAnnotationPresent(Column.class)) {
+            return Range.Cardinality.NONE;
+        } else if (field.isAnnotationPresent(OneToOne.class)) {
             return Range.Cardinality.ONE_TO_ONE;
-        } else if (oneToManyAnnotation != null) {
+        } else if (field.isAnnotationPresent(OneToMany.class)) {
             return Range.Cardinality.ONE_TO_MANY;
-        } else if (manyToOneAnnotation != null) {
+        } else if (field.isAnnotationPresent(ManyToOne.class)) {
             return Range.Cardinality.MANY_TO_ONE;
-        } else if (manyToManyAnnotation != null) {
+        } else if (field.isAnnotationPresent(ManyToMany.class)) {
             return Range.Cardinality.MANY_TO_MANY;
-        } else if (embeddedAnnotation != null) {
+        } else if (field.isAnnotationPresent(Embedded.class)) {
             return Range.Cardinality.ONE_TO_ONE;
         } else {
-            return null;
+            return super.getCardinality(field);
         }
     }
 
