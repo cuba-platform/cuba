@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -32,7 +32,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     private UserSessionManager userSessionManager;
 
-    private ClusterInvocationSupport clusterInvocationSupport;
+    private volatile ClusterInvocationSupport clusterInvocationSupport;
 
     private Configuration configuration;
 
@@ -82,9 +82,14 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     private ClusterInvocationSupport getClusterInvocationSupport(String sessionProviderUrl) {
         if (clusterInvocationSupport == null) {
-            clusterInvocationSupport = new ClusterInvocationSupport();
-            clusterInvocationSupport.setBaseUrl(sessionProviderUrl);
-            clusterInvocationSupport.init();
+            synchronized (this) {
+                if (clusterInvocationSupport == null) {
+                    ClusterInvocationSupport result = new ClusterInvocationSupport();
+                    result.setBaseUrl(sessionProviderUrl);
+                    result.init();
+                    clusterInvocationSupport = result;
+                }
+            }
         }
         return clusterInvocationSupport;
     }
