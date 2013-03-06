@@ -91,7 +91,11 @@ public abstract class WebAbstractList<T extends AbstractSelect>
             }
             itemIds.add(item.getId());
         }
-        component.setValue(itemIds.size() == 1 ? itemIds.iterator().next() : itemIds);
+        if (component.isMultiSelect()) {
+            component.setValue(itemIds);
+        } else {
+            component.setValue(itemIds.size() > 0 ? itemIds.iterator().next() : null);
+        }
     }
 
     @Override
