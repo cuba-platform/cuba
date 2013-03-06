@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -28,6 +29,7 @@ public class WebRowsCount
     protected State state;
     protected int start;
     protected int size;
+    protected ListComponent owner;
 
     public WebRowsCount() {
         component = new com.haulmont.cuba.web.toolkit.ui.RowsCount();
@@ -81,6 +83,16 @@ public class WebRowsCount
         }
     }
 
+    @Override
+    public ListComponent getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(ListComponent owner) {
+        this.owner = owner;
+    }
+
     private void onPrevClick() {
         if (!(datasource instanceof CollectionDatasource.SupportsPaging))
             return;
@@ -89,6 +101,10 @@ public class WebRowsCount
         int newStart = ds.getFirstResult() - ds.getMaxResults();
         ds.setFirstResult(newStart < 0 ? 0 : newStart);
         refreshDatasource(ds);
+        if (owner instanceof WebAbstractTable) {
+            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            vTable.setCurrentPageFirstItemIndex(0);
+        }
     }
 
     private void onNextClick() {
@@ -106,6 +122,10 @@ public class WebRowsCount
             ds.setMaxResults(maxResults + 1);
             refreshDatasource(ds);
             ds.setMaxResults(maxResults);
+        }
+        if (owner instanceof WebAbstractTable) {
+            com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) ((WebAbstractTable) owner).getComponent();
+            vTable.setCurrentPageFirstItemIndex(0);
         }
     }
 

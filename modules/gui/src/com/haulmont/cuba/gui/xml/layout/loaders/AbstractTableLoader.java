@@ -121,6 +121,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         Element rowsCountEl = element.element("rowsCount");
         if (rowsCountEl != null) {
             RowsCount rowsCount = factory.createComponent("rowsCount");
+            rowsCount.setOwner(table);
             table.setRowsCount(rowsCount);
         }
     }
