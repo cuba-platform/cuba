@@ -2827,7 +2827,46 @@ public class Orders implements OrdersMBean {
             </itemizedlist></para>
           <para>JMX операции:<itemizedlist>
               <listitem>
-                <para><code>runGroovyScript()</code> - выполнить скрипт Groovy в контексте <structname>Middleware</structname> и вернуть результат. Для отображения в JMX-интерфейсе результат должен быть типа <code>String</code>. В остальном аналогичен методу <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript()</link></code>. </para>
+                <para><code>runGroovyScript()</code> - выполнить скрипт Groovy в контексте <structname>Middleware</structname> и вернуть результат. В скрипт передаются следующие переменные:<itemizedlist>
+                    <listitem>
+                      <para><code>persistence</code> типа <code>
+                          <link linkend="persistence">Persistence</link>
+                        </code> </para>
+                    </listitem>
+                    <listitem>
+                      <para><code>metadata</code> типа <code>
+                          <link linkend="metadata">Metadata</link>
+                        </code></para>
+                    </listitem>
+                    <listitem>
+                      <para><code>configuration</code> типа <code>
+                          <link linkend="configuration">Configuration</link>
+                        </code></para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>Для отображения в JMX-интерфейсе результат должен быть типа <code>String</code>. В остальном аналогичен методу <code>Scripting.<link linkend="scripting.runGroovyScript">runGroovyScript()</link></code>. </para>
+                <para>Пример скрипта, создающего набор тестовых пользователей:<programlisting>import com.haulmont.cuba.core.*
+import com.haulmont.cuba.core.global.*
+import com.haulmont.cuba.security.entity.*
+
+PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.class)
+
+Transaction tx = persistence.createTransaction()
+try {
+    EntityManager em = persistence.getEntityManager()
+    Group group = em.getReference(Group.class, UUID.fromString(&apos;0fa2b1a5-1d68-4d69-9fbd-dff348347f93&apos;))
+    for (i in (1..250)) {
+        User user = new User()
+        user.setGroup(group)
+        user.setLogin(&quot;user_${i.toString().padLeft(3, &apos;0&apos;)}&quot;)
+        user.setName(user.login)
+        user.setPassword(passwordEncryption.getPasswordHash(user.id, &apos;1&apos;));
+        em.persist(user)
+    }
+    tx.commit()
+} finally {
+    tx.end()
+}</programlisting></para>
               </listitem>
             </itemizedlist></para>
         </section>

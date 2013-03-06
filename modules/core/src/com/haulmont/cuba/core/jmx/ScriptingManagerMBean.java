@@ -21,7 +21,7 @@ public interface ScriptingManagerMBean {
 
     String getRootPath();
 
-    @ManagedOperation(description = "Execute a Groovy script")
+    @ManagedOperation(description = "Execute a Groovy script. Binding contains variables: persistence, metadata, configuration")
     @ManagedOperationParameters(
             {@ManagedOperationParameter(name = "scriptName",
                     description = "path to the script relative to conf dir or to the classpath root")})
