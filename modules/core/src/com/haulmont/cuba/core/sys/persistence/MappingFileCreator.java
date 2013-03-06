@@ -362,7 +362,7 @@ class MappingFileCreator {
             for (JoinColumn joinColumnAnnot : annotation.joinColumns()) {
                 new JoinColumnHandler(joinColumnAnnot).toXml(el);
             }
-            for (JoinColumn joinColumnAnnot : annotation.joinColumns()) {
+            for (JoinColumn joinColumnAnnot : annotation.inverseJoinColumns()) {
                 new InverseJoinColumnHandler(joinColumnAnnot).toXml(el);
             }
         }
