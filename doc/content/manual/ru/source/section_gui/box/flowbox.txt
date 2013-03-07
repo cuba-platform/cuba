@@ -1,4 +1,5 @@
-﻿<flowbox margin="true" spacing="true" >
-   <button id="testButton" caption="msg://mouseOver"/>
-   <textField id="textFieldDescription" caption="msg://click"/>
-</flowbox>
+﻿<flowBox spacing="true" margin="true">
+    <dateField id="dateField1" datasource="orderDs" property="date"/>
+    <lookupField id="lookupField1" datasource="orderDs" optionsDatasource="customersDs" property="customer"/>
+    <textField id="textField1" datasource="orderDs" property="amount"/>
+</flowBox>

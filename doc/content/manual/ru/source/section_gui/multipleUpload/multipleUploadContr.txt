@@ -1,9 +1,6 @@
 ﻿public class UploadSample extends AbstractWindow {
 
     @Inject
-    private TimeSource timeSource;
-
-    @Inject
     private TextField textFieldInfo;
 
     @Inject
@@ -27,14 +24,8 @@
                 //загрузка мапы идентификаторов файлов и названий имен файлов
                 Map<UUID, String> uploadMap = uploadTemplateAttachment.getUploadsMap();
                 for (UUID fileId : uploadMap.keySet()) {
-                    long length = fileUploading.getFile(fileId).length();
                     //создание дескриптора файла
-                    FileDescriptor fd = new FileDescriptor();
-                    //установка значений в дескриптор из мапы
-                    fd.setName(uploadMap.get(fileId));
-                    fd.setExtension(fd.getFileExt());
-                    fd.setSize((int) length);
-                    fd.setCreateDate(timeSource.currentTimestamp());
+                    FileDescriptor fd = fileUploading.getFileDescriptor(fileId, uploadMap.get(fileId));
                     //запись файла в хранилище файлов
                     try {
                         fileUploading.putFileIntoStorage(fileId, fd);
@@ -43,16 +34,16 @@
                         new RuntimeException(e);
                     }
                 }
-                if (val != "") {
+                if (StringUtils.isNotEmpty(val)) {
                     textFieldInfo.setValue(val);
                 }
-                showNotification(getMessage("files"), IFrame.NotificationType.HUMANIZED);
+                showNotification("Files were successfully uploaded", IFrame.NotificationType.HUMANIZED);
                 uploadTemplateAttachment.getUploadsMap().clear();
             }
 
             @Override
             public void errorNotify(String fileName, String message, int errorCode) {
-                showNotification(getMessage("template.edit.uploadTemplateAttachmentsUnsuccess"), IFrame.NotificationType.ERROR);
+                showNotification("Upload was unsuccessfully", IFrame.NotificationType.ERROR);
             }
         });
     }

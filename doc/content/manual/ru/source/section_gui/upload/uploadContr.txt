@@ -3,9 +3,6 @@
     private FileUploadField uploadField;
 
     @Inject
-    private TimeSource timeSource;
-
-    @Inject
     private Label fileName;
 
     @Inject
@@ -17,45 +14,39 @@
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        uploadField.addListener(new FileUploadField.Listener() {
+        uploadField.addListener(new FileUploadField.ListenerAdapter() {
+            @Override
             public void uploadStarted(Event event) {
                 //код обработки начала загрузки
                 uploadField.setEnabled(false);
             }
 
+            @Override
             public void uploadFinished(Event event) {
                 //код обработки окончания загрузки
                 uploadField.setEnabled(true);
             }
 
+            @Override
             public void uploadSucceeded(Event event) {
                 //код обработки успешной загрузки
-                fd = new FileDescriptor();//создание дескриптора  файла
-                fd.setName(uploadField.getFileName());//установка названия загружаемого файла в дескриптор
+                fd = uploadField.getFileDescriptor();
 
-                //создание объекта файла
-                File file = fileUploading.getFile(uploadField.getFileId());
-
-                fd.setSize((int) file.length());
-                fd.setCreateDate(timeSource.currentTimestamp());
                 try {
                     //запись файла в хранилище файлов
                     fileUploading.putFileIntoStorage(uploadField.getFileId(), fd);
                 } catch (FileStorageException e) {
                     throw new RuntimeException(e);
                 }
-                showNotification(getMessage("File") + " " + uploadField.getFileName() + " " + getMessage("success"), NotificationType.HUMANIZED);
+                showNotification("File " + uploadField.getFileName() + " was successfully uploaded",
+                        NotificationType.HUMANIZED);
                 fileName.setValue(uploadField.getFileName());
             }
 
+            @Override
             public void uploadFailed(Event event) {
                 //код обработки ошибок загрузки
-                showNotification("uploadUnsuccess", NotificationType.HUMANIZED);
-            }
-
-            public void updateProgress(long readBytes, long contentLength) {
-                //отслеживание процесса загрузки, например, тут можно
-                //организовать обновление состояния индикатора загрузки
+                showNotification("Upload was unsuccessfull", NotificationType.HUMANIZED);
             }
         });
     }

@@ -6295,7 +6295,7 @@ protected boolean postCommit(boolean committed, boolean close) {
         </section>
         <section id="gui_SearchPickerField">
           <title>SearchPickerField</title>
-          <para>Поле поиска с расширенной функциональностью (<code>SearchPickerField</code>) служит для поиска значения по заранее определенному условию. Для работы с полем достаточно ввести хотя бы один символ и нажать клавишу <keycap>Enter</keycap>. Если будут найдены несколько совпадений, значения будут отображены  в виде списка. С помощью дополнительных кнопок можно открывать экземпляр выбранной в поле <glossterm linkend="entity">сущности</glossterm>, удалять экземпляр или выбирать экземпляр из экрана списка сущностей.</para>
+          <para>Поле поиска с расширенной функциональностью (<code>SearchPickerField</code>) служит для поиска значения по заранее определенному условию. Для работы с полем достаточно ввести хотя бы один символ и нажать клавишу <keycap>Enter</keycap>. Если будут найдены несколько совпадений, значения будут отображены  в виде списка. С помощью дополнительных кнопок можно открывать экземпляр выбранной в поле <glossterm linkend="entity">сущности</glossterm>, выбирать экземпляр из экрана списка сущностей, а также очищать поле поиска.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -6563,28 +6563,28 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_caption">caption</link>
+                    <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry><entry align="left">
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry><entry/></row>
                 <row>
                   <entry>
-                    <link linkend="attr_description">description</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                   <entry/>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                   <entry/>
                   <entry/>
@@ -6630,28 +6630,28 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_caption">caption</link>
+                    <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry><entry align="left">
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry><entry/></row>
                 <row>
                   <entry>
-                    <link linkend="attr_description">description</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                   <entry/>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                   <entry/>
                   <entry/>
@@ -6680,126 +6680,180 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
-          <para>Интерфейс <code>Table</code>,  наследуется от интерфейса  <code>ListComponent</code> − базового интерфейса компонентов, предназначенных для работы с коллекциями <glossterm linkend="entity">сущностей</glossterm>.</para>
+          <para>Интерфейс <code>Table</code>  наследуется от интерфейса  <code>ListComponent</code> − базового интерфейса компонентов, предназначенных для работы с коллекциями <glossterm linkend="entity">сущностей</glossterm>.</para>
           <para>Для того чтобы создать простую таблицу, необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> задать <link linkend="datasources">источник данных</link> и определить описание таблицы:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/table.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>В элементе <sgmltag>dsContext</sgmltag> добавлен один источник данных <sgmltag>collectionDatasource</sgmltag>, который выбирает сущности <code>Order</code> с помощью <link linkend="jpql">JPQL</link> запроса
+
+<code>select o from sales$Order o order by o.date</code>.</para>
           <warning>
             <para>Обязательными для таблицы являются элементы <link linkend="element_table_columns">columns</link> и  <link linkend="element_table_rows">rows</link>.</para>
           </warning>
-          <para>Атрибут <sgmltag id="attr_presentations">presentations</sgmltag> управляет механизмом <link linkend="gui_Table_presentations">представлений</link>. Значение по умолчанию равно <literal>false</literal>. Когда значение атрибута равно <literal>true</literal>, то в верхнем правом углу таблицы появляется значок <inlinemediaobject>
-              <imageobject>
-                <imagedata fileref="img/gui_presentation.png"/>
-              </imageobject>
-            </inlinemediaobject>.</para>
-          <para>Атрибут <sgmltag id="attr_sortable">sortable</sgmltag> разрешает или запрещает сортировку в таблице. По умолчанию имеет значение <literal>true</literal>. Если сортировка разрешена, то при нажатии на название колонки справа от названия появляется значок <inlinemediaobject>
-              <imageobject>
-                <imagedata fileref="img/gui_sortable_down.png"/>
-              </imageobject>
-            </inlinemediaobject>/<inlinemediaobject>
-              <imageobject>
-                <imagedata fileref="img/gui_sortable_up.png"/>
-              </imageobject>
-            </inlinemediaobject>.</para>
-          <para>Существует возможность использования для колонок функций <link linkend="gui_Table_aggregation">агрегирования</link> без модификации <link linkend="datasources">источника данных</link> с помощью атрибута <sgmltag id="attr_aggregatable">aggregatable</sgmltag>. По умолчанию атрибут  имеет значение <literal>false</literal>.</para>
-          <para>Атрибут <sgmltag id="attr_showTotalAggregation">showTotalAggregation</sgmltag> разрешает или запрещает отображение строки итоговой агрегации в таблице. По умолчанию имеет значение <literal>true</literal>.</para>
-          <para>Можно задать множественное выделение строк в таблице с помощью присваивания атрибуту <sgmltag id="attr_table_multiselect">multiselect</sgmltag>  значения <literal>true</literal>. По умолчанию значение атрибута равно <literal>false</literal>.</para>
-          <para>С помощью элемента <sgmltag id="element_table_actions">actions</sgmltag> возможно определять набор действий (<link linkend="gui_Action">action</link>). Кроме описания произвольного действия возможно использование стандартных действий, определяемых перечислением <code>ListActionType</code>: <code>create</code>, <code>edit</code>, <code>remove</code>, <code>refresh</code>, <code>add</code>, <code>exclude</code>, <code>excel</code>.</para>
-          <para><sgmltag id="attr_rowsCount">rowsCount</sgmltag> − необязательный элемент, создающий для таблицы компонент <code>RowsCount</code>, который позволяет загружать в таблицу данные постранично.</para>
-          <para>Элемент <sgmltag id="element_table_rows">rows</sgmltag> является обязательным. В этом элементе необходимо объявить используемый <link linkend="datasources">источник данных</link>.</para>
-          <para>Атрибут <sgmltag id="attr_headerMode">headerMode</sgmltag> элемента <sgmltag>rows</sgmltag> задает вариант отображения заголовков рядов:</para>
           <itemizedlist>
             <listitem>
-              <para><literal>NONE</literal> − нет заголовков</para>
+              <para id="gui_attr_table_presentations">Атрибут <sgmltag>presentations</sgmltag> управляет механизмом <link linkend="gui_Table_presentations">представлений</link>. Значение по умолчанию равно <literal>false</literal>. Когда значение атрибута равно <literal>true</literal>, то в верхнем правом углу таблицы появляется значок <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="img/gui_presentation.png"/>
+                  </imageobject>
+                </inlinemediaobject>.</para>
             </listitem>
             <listitem>
-              <para><literal>ICON</literal> − пиктограмма</para>
+              <para id="gui_attr_table_sortable">Атрибут <sgmltag>sortable</sgmltag> разрешает или запрещает сортировку в таблице. По умолчанию имеет значение <literal>true</literal>. Если сортировка разрешена, то при нажатии на название колонки справа от названия появляется значок <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="img/gui_sortable_down.png"/>
+                  </imageobject>
+                </inlinemediaobject>/<inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="img/gui_sortable_up.png"/>
+                  </imageobject>
+                </inlinemediaobject>.</para>
+            </listitem>
+            <listitem>
+              <para>Существует возможность скрывать колонки таблицы с помощью нажатия на кнопку <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="img/gui_table_columnControl.png"/>
+                  </imageobject>
+                </inlinemediaobject>  в правой части шапки таблицы. Флажками отмечаются те колонки, которые должны быть отображены в таблице. </para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_table_columnControl_all.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+              <para id="gui_attr_table_columnControlVisible">Атрибут <sgmltag>columnControlVisible</sgmltag> разрешает или запрещает скрывать колонки. По умолчанию значение атрибута равно <literal>true</literal>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_table_reorderingAllowed">Колонки в таблице можно менять местами, перетаскивая их с помощью мыши. Эту возможность можно отключить, установив атрибуту <sgmltag>reorderingAllowed</sgmltag> значение <literal>false</literal>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_table_aggregatable">Существует возможность использования для колонок функций <link linkend="gui_Table_aggregation">агрегирования</link> без модификации <link linkend="datasources">источника данных</link> с помощью атрибута <sgmltag>aggregatable</sgmltag>. По умолчанию атрибут  имеет значение <literal>false</literal>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_table_showTotalAggregation">Атрибут <sgmltag>showTotalAggregation</sgmltag> разрешает или запрещает отображение строки итоговой агрегации в таблице. По умолчанию имеет значение <literal>true</literal>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_table_multiselect">Можно задать множественное выделение строк в таблице с помощью присваивания атрибуту <sgmltag>multiselect</sgmltag>  значения <literal>true</literal>. По умолчанию значение атрибута равно <literal>false</literal>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_element_table_actions">С помощью элемента <sgmltag>actions</sgmltag> возможно определять набор действий (<link linkend="gui_Action">action</link>). Кроме описания произвольного действия возможно использование стандартных действий, определяемых перечислением <code>ListActionType</code>: <code>create</code>, <code>edit</code>, <code>remove</code>, <code>refresh</code>, <code>add</code>, <code>exclude</code>, <code>excel</code>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_table_rowsCount"><sgmltag>rowsCount</sgmltag> − необязательный элемент, создающий для таблицы компонент <code>RowsCount</code>, который позволяет загружать в таблицу данные постранично.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_element_table_rows">Элемент <sgmltag>rows</sgmltag> является обязательным. В этом элементе необходимо объявить используемый <link linkend="datasources">источник данных</link>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_table_headerMode">Атрибут <sgmltag>headerMode</sgmltag> элемента <sgmltag>rows</sgmltag> задает вариант отображения заголовков рядов:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><literal>NONE</literal> − нет заголовков</para>
+                </listitem>
+                <listitem>
+                  <para><literal>ICON</literal> − пиктограмма</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+            <listitem>
+              <para id="gui_element_table_columns">Следующим обязательным элементом для таблицы является элемент <sgmltag>columns</sgmltag>. Он определяет набор колонок (<sgmltag>column</sgmltag>) таблицы.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_element_table_columns_column"><sgmltag>column</sgmltag>  − элемент, задающий опции для колонки таблицы. Может содержать следующие атрибуты:</para>
+              <itemizedlist>
+                <listitem>
+                  <para id="gui_attr_table_column_id"><sgmltag>id</sgmltag> − обязательный атрибут, содержит название атрибута <glossterm linkend="entity">сущности</glossterm>, выводимого в колонке.</para>
+                </listitem>
+                <listitem>
+                  <para id="gui_attr_table_column_collapsed"><sgmltag>collapsed</sgmltag> − необязательный атрибут, скрывает/показывает колонку. По умолчанию имеет значение <literal>false</literal>.</para>
+                </listitem>
+                <listitem>
+                  <para id="gui_attr_table_column_caption"><sgmltag>caption</sgmltag> − необязательный атрибут, содержит заголовок колонки.</para>
+                </listitem>
+                <listitem>
+                  <para id="gui_attr_table_column_width"><sgmltag>width</sgmltag> − необязательный атрибут, отвечает за изначальную ширину колонки.</para>
+                </listitem>
+                <listitem>
+                  <para id="gui_attr_table_column_calculatable"><sgmltag>calculatable</sgmltag> − необязательный атрибут, используется только в редактируемой таблице. Буквально означает, что значения в данной колонке являются вычислимыми и зависят от значений других колонок.</para>
+                </listitem>
+                <listitem>
+                  <para id="gui_attr_table_column_editable"><link linkend="attr_editable">editable</link> − необязательный атрибут, разрешает/запрещает редактирование данного атрибута в редактируемой таблице.</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+            <listitem>
+              <para>Для таблицы можно задать стиль отображения ячеек таблицы. Для этого в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана нужно задать для таблицы <code>StyleProvider</code> реализовав интерфейс <code>com.haulmont.cuba.gui.components.StyleProvider.</code></para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableStyle.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Далее нужно определить в теме приложения стили для строк и столбцов (подробную информацию о том, как создать тему приложения, смотрите <xref linkend="gui_themes"/>):</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableStylecss.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_table_Style.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+            <listitem>
+              <para>В таблице существует возможность задавать собственное представление данных в колонке. Для этого необходимо использовать метод <code>Table.addGeneratedColumn</code>. В методе нужно создать CUBA-компонент с использованием класса <code>ComponentsFactory</code>. Пример:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableGeneratedColumn.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_tableGenerated.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
             </listitem>
           </itemizedlist>
-          <para>Следующим обязательным элементом для таблицы является элемент <sgmltag id="element_table_columns">columns</sgmltag>. Он определяет набор колонок (<sgmltag>column</sgmltag>) таблицы.</para>
-          <para><sgmltag id="element_table_columns_column_1">column</sgmltag>  − элемент, задающий опции для колонки таблицы. Может содержать следующие атрибуты:</para>
-          <itemizedlist>
-            <listitem>
-              <para><sgmltag id="attr_table_column_id">id</sgmltag> − обязательный атрибут, содержит название атрибута <glossterm linkend="entity">сущности</glossterm>, выводимого в колонке.</para>
-            </listitem>
-            <listitem>
-              <para><sgmltag id="attr_table_column_collapsed">collapsed</sgmltag> − необязательный атрибут, скрывает/показывает колонку. По умолчанию имеет значение <literal>false</literal>.</para>
-            </listitem>
-            <listitem>
-              <para><sgmltag id="attr_table_column_caption">caption</sgmltag> − необязательный атрибут, содержит заголовок колонки.</para>
-            </listitem>
-            <listitem>
-              <para><sgmltag id="attr_table_column_width">width</sgmltag> − необязательный атрибут, отвечает за изначальную ширину колонки.</para>
-            </listitem>
-            <listitem>
-              <para><sgmltag id="attr_table_column_calculatable">calculatable</sgmltag> − необязательный атрибут, используется только в редактируемой таблице. Буквально означает, что значения в данной колонке являются вычислимыми и зависят от значений других колонок.</para>
-            </listitem>
-            <listitem>
-              <para><link linkend="attr_editable" id="attr_table_column_editable">editable</link> − необязательный атрибут, разрешает/запрещает редактирование данного атрибута в редактируемой таблице.</para>
-            </listitem>
-          </itemizedlist>
-          <para>Для таблицы можно задать стиль отображения ячеек таблицы. Для этого в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана нужно задать для таблицы <code>StyleProvider</code> реализовав интерфейс <code>com.haulmont.cuba.gui.components.StyleProvider.</code></para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableStyle.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Далее нужно определить в теме приложения стили для строк и столбцов (подробную информацию о том, как создать тему приложения, смотрите <xref linkend="gui_themes"/>):</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableStylecss.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <figure>
-            <title/>
-            <mediaobject>
-              <imageobject>
-                <imagedata contentwidth="381" align="center" fileref="img/gui_table_Style.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <para>В таблице существует возможность задавать собственное представление данных в колонке. Для этого необходимо использовать метод <code>Table.addGeneratedColumn</code>. В методе нужно создать CUBA-компонент с использованием класса <code>ComponentsFactory</code>. Пример:</para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/table/tableGeneratedColumn.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <figure>
-            <title/>
-            <mediaobject>
-              <imageobject>
-                <imagedata contentwidth="501" align="center" fileref="img/gui_tableGenerated.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
           <para>Атрибуты <sgmltag>table</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_aggregatable">aggregatable</link>
-                  </entry>editable<entry align="left">margin</entry><entry align="left">
-                    <link linkend="attr_sortable">sortable</link>
-                  </entry><entry/></row>
+                    <link linkend="gui_attr_table_aggregatable">aggregatable</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_table_showTotalAggregation">showTotalAggregation</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>editable<entry/></row>
                 <row>
                   <entry>
-                    <link linkend="attr_editable">editable</link>
+                    <link linkend="gui_attr_table_columnControlVisible">columnControlVisible</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_table_multiselect">multiselect</link>
+                    <link linkend="gui_attr_table_multiselect">multiselect</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_table_sortable">sortable</link>
+                  </entry>
+                  <entry/>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_table_presentations">presentations</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_stylename">styleName</link>
+                    <link linkend="gui_attr_button_stylename">styleName</link>
                   </entry>
                   <entry/>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_height">height</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="attr_presentations">presentations</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_visible">visible</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="attr_id">id</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="attr_showTotalAggregation">showTotalAggregation</link>
+                    <link linkend="gui_attr_table_reorderingAllowed">reorderingAllowed</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6812,7 +6866,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               <tbody>
                 <row>
                   <entry>
-                    <link linkend="element_table_actions">actions</link>
+                    <link linkend="gui_element_table_actions">actions</link>
                   </entry>
                 </row>
                 <row>buttonsPanel<entry>
@@ -6820,23 +6874,23 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_rowsCount">rowsCount</link>
+                    <link linkend="gui_attr_table_rowsCount">rowsCount</link>
                   </entry>
                 </row>
                 <row>
                   <entry>
-                    <link linkend="element_t_columns">columns</link>
+                    <link linkend="gui_element_table_columns">columns</link>
                   </entry>
                 </row>
                 <row>
                   <entry>
-                    <link linkend="element_t_rows">rows</link>
+                    <link linkend="gui_element_table_rows">rows</link>
                   </entry>
                 </row>
               </tbody>
             </tgroup>
           </informaltable>
-          <para>Атрибуты элемента <link linkend="element_table_columns" id="element_t_columns">columns</link> <link linkend="element_table_columns_column_1">column</link>:</para>
+          <para>Атрибуты элемента columns <link linkend="gui_element_table_columns_column">column</link>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
@@ -6846,59 +6900,59 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry><entry align="left">
                     <link linkend="attr_table_column_id">id</link>
                   </entry><entry>
-                    <link linkend="attr_resolution">resolution</link>
+                    <link linkend="gui_attr_dateField_resolution">resolution</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_table_column_calculatable">calculatable</link>
+                    <link linkend="gui_attr_table_column_calculatable">calculatable</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_table_column_collapsed">collapsed</link>
+                    <link linkend="gui_attr_table_column_collapsed">collapsed</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_optionsDatasource">optionsDatasource</link>
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_table_column_caption">caption</link>
+                    <link linkend="gui_attr_table_column_caption">caption</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_dateFormat">dateFormat</link>
+                    <link linkend="gui_attr_dateField_dateFormat">dateFormat</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_required">required</link>
+                    <link linkend="gui_attr_basic_required">required</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_table_column_width">width</link>
+                    <link linkend="gui_attr_table_column_width">width</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_captionProperty">captionProperty</link>
+                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_table_column_editable">editable</link>
+                    <link linkend="gui_attr_table_column_editable">editable</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                   <entry/>
                 </row>
               </tbody></tgroup>
           </informaltable>
-          <para>Атрибуты <link linkend="element_table_rows" id="element_t_rows">rows</link>:</para>
+          <para>Атрибуты <link linkend="gui_element_table_rows">rows</link>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_datasource">datasource</link>
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry>editable</row>
                 <row>
                   <entry>
-                    <link linkend="attr_headerMode">headerMode</link>
+                    <link linkend="gui_attr_table_headerMode">headerMode</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -6911,7 +6965,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="321" align="center" fileref="img/gui_treeTable.png"/>
+                <imagedata align="center" fileref="img/gui_treeTable.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -6925,10 +6979,10 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
-          <para>Для того чтобы создать иерархическую таблицу, необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> задать иерархический <link linkend="datasources">источник данных</link> и определить описание таблицы:</para>
+          <para>Для того чтобы создать иерархическую таблицу, необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> задать иерархический <link linkend="datasources">источник данных</link>. Ниже представлено описание  таблицы, отображающей иеархию продавцов.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/treeTable/treeTable.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
-            <para>Обязательными для иерархической таблицы являются элементы <link linkend="element_table_columns">columns</link> и  <link linkend="element_table_rows">rows</link>.</para>
+            <para>Обязательными для иерархической таблицы являются элементы <link linkend="gui_element_table_columns">columns</link> и  <link linkend="gui_element_table_rows">rows</link>.</para>
           </warning>
         </section>
         <section id="gui_GroupTable">
@@ -6950,7 +7004,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="357" align="center" fileref="img/gui_groupTableDragColumn.png"/>
+                <imagedata align="center" fileref="img/gui_groupTableDragColumn.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -6967,7 +7021,7 @@ protected boolean postCommit(boolean committed, boolean close) {
           <para>Для правильного функционирования <code>GroupTable</code> должна быть соединена с <link linkend="datasources">GroupDatasource</link>.</para>
           <para>Пример использования:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/groupTable/groupTable.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Элемент <sgmltag>group</sgmltag> − необязательный элемент, может в единственном экземпляре находиться внутри <link linkend="element_table_columns">columns</link>. Содержит набор элементов <link linkend="element_table_columns_column_1">column</link>, по которым будет выполняться первоначальная группировка.</para>
+          <para>Элемент <sgmltag>group</sgmltag> − необязательный элемент, может в единственном экземпляре находиться внутри <link linkend="gui_element_table_columns">columns</link>. Содержит набор элементов <link linkend="gui_element_table_columns_column">column</link>, по которым будет выполняться первоначальная группировка.</para>
         </section>
         <section id="gui_Tree">
           <title>Tree</title>
@@ -6976,7 +7030,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="100" align="center" fileref="img/Tree.png"/>
+                <imagedata align="center" fileref="img/Tree.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -6993,26 +7047,27 @@ protected boolean postCommit(boolean committed, boolean close) {
           <para>Для того чтобы создать компонент дерева, создайте в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> следующий код:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tree/tree.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
-            <para>Обязательными для дерева являются элемент <sgmltag>treechildren</sgmltag>.</para>
+            <para>Обязательным для дерева является элемент <sgmltag>treechildren</sgmltag>.</para>
           </warning>
-          <para>Элемент <sgmltag id="element_treechildren">treechildren</sgmltag>  декларирует используемый <link linkend="datasources">источник данных</link>. </para>
+          <para id="gui_element_tree_treechildren">Элемент <sgmltag>treechildren</sgmltag>  декларирует используемый <link linkend="datasources">источник данных</link>. </para>
+          <para id="gui_attr_tree_hierarchyProperty">Атрибут <sgmltag>hierarchyProperty</sgmltag> задает имя атрибута сущности, по которому строится иерархия.</para>
           <para>Атрибуты <sgmltag>tree</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>editable</row>
                 <row><entry>
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>required<entry/></row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_table_multiselect">multiselect</link>
+                    <link linkend="gui_attr_table_multiselect">multiselect</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7021,10 +7076,10 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="1" colsep="1" rowsep="1" align="left"><colspec colname="c1"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="element_treechildren">treechildren</link>
+                    <link linkend="gui_element_tree_treechildren">treechildren</link>
                   </entry>editable</row>
                 <row><entry>
-                    <link linkend="element_table_actions">actions</link>
+                    <link linkend="gui_element_table_actions">actions</link>
                   </entry>required</row>
               </tbody></tgroup>
           </informaltable>
@@ -7032,14 +7087,14 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_captionProperty">captionProperty</link>
+                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry>editable</row>
                 <row><entry>
-                    <link linkend="attr_datasource">datasource</link>
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry>required</row>
                 <row>
                   <entry align="left">
-                    <sgmltag>hierarchyProperty</sgmltag>
+                    <link linkend="gui_attr_tree_hierarchyProperty">hierarchyProperty</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7303,7 +7358,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="310" align="center" fileref="img/gui_tokenList.png"/>
+                <imagedata align="center" fileref="img/gui_tokenList.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -7331,10 +7386,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                 </listitem>
               </itemizedlist>
               <figure>
-                <title>Список маркеров со значением атрибута position=&quot;BOTTOM&quot;</title>
+                <title/>
                 <mediaobject>
                   <imageobject>
-                    <imagedata contentwidth="310" align="center" fileref="img/gui_tokenListBottom.png"/>
+                    <imagedata align="center" fileref="img/gui_tokenListBottom.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -7345,21 +7400,16 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <title>Список маркеров с горизонтальным расположением выбранных значений</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata contentwidth="409" align="center" fileref="img/gui_tokenListInline.png"/>
+                    <imagedata align="center" fileref="img/gui_tokenListInline.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
             </listitem>
             <listitem>
               <para id="gui_attr_tokenList_simple">Установка атрибута <sgmltag>simple</sgmltag> в значение <literal>true</literal> позволяет сворачивать компонент, оставляя только кнопку добавления. При нажатии на кнопку добавления сразу показывается экран списка экземпляров <glossterm linkend="entity">сущности</glossterm>, для которой задан <link linkend="datasources">источник данных</link>.</para>
-              <figure>
-                <title>Список маркеров со значением атрибута simple=&quot;true&quot;</title>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata contentwidth="234" align="center" fileref="img/gui_tokenListSimple.png"/>
-                  </imageobject>
-                </mediaobject>
-              </figure>
+              <tip>
+                <para>Уустановка атрибута <sgmltag>simple</sgmltag> в значение <literal>true</literal> имеет смысл только тогда, когда   атрибут <link linkend="gui_attr_tokenList_lookup_lookup">lookup</link> установлен в значение <literal>true</literal>, а в атрибуте <link linkend="gui_attr_basic_lookupScreen">lookupScreen</link> задан идентификатор экрана для выбора значений.</para>
+              </tip>
             </listitem>
           </itemizedlist>
           <para>Компонент <sgmltag>tokenList</sgmltag> должен содержать следующие элементы:</para>
@@ -7397,6 +7447,9 @@ protected boolean postCommit(boolean committed, boolean close) {
                       <para><literal>THIS_TAB</literal> − открытие экрана в текущей вкладке</para>
                     </listitem>
                   </itemizedlist>
+                </listitem>
+                <listitem>
+                  <para id="gui_attr_tokenList_lookup_multiselect">Значение атрибута <sgmltag>multiselect</sgmltag> передается в мэп параметров окна. В дальнейшем значение этого атрибута можно обрабатывать внутри контроллера.</para>
                 </listitem>
               </itemizedlist>
             </listitem>
@@ -7484,7 +7537,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <row><entry>
                     <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
                   </entry><entry align="left">
-                    <sgmltag>multiselect</sgmltag>
+                    <link linkend="gui_attr_tokenList_lookup_multiselect">multiselect</link>
                   </entry>required<entry/><entry/></row>
                 <row>
                   <entry align="left">
@@ -7532,41 +7585,43 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
-          <para>Для создания индикатора необходимо в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> определить его описание:</para>
+          <para>Ниже показан пример индикатора прогресса, который изменяет свое состояние по <link linkend="gui_Timer">таймеру</link>:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/progressBar/progressBar.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>С помощью атрибута <sgmltag id="attr_indeterminate">indeterminate</sgmltag> можно задать отображение неопределенного состояния индикатора. Если значение атрибута равно <literal>true</literal>, то индикатор отображает неопределенное состояние. Значение атрибута по умолчанию равно <literal>true</literal>.</para>
+          <para>В контроллере экрана определяем слушатель для таймера, и в нем устанавливаем соответствующее значение индикатора прогресса.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/progressBar/progressBarContr.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para id="gui_attr_progressBar_indeterminate">С помощью атрибута <sgmltag>indeterminate</sgmltag> можно задать отображение неопределенного состояния индикатора. Если значение атрибута равно <literal>true</literal>, то индикатор отображает неопределенное состояние. Значение атрибута по умолчанию равно <literal>true</literal>.</para>
           <para>Значения прогресса задачи для индикатора прогресса следует передавать в  значениях типа <code>Float</code> в диапазоне от 0.0 до 1.0.</para>
           <para>Атрибуты <sgmltag>progressBar</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_align">align</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry><entry align="left">
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry><entry/></row>
                 <row>
                   <entry>
-                    <link linkend="attr_editable">editable</link>
+                    <link linkend="gui_attr_basic_editable">editable</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                   <entry/>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_enable">enable</link>
+                    <link linkend="gui_attr_basic_enable">enable</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_indeterminate">indeterminate</link>
+                    <link linkend="gui_attr_progressBar_indeterminate">indeterminate</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                   <entry/>
                 </row>
@@ -7632,7 +7687,7 @@ protected boolean postCommit(boolean committed, boolean close) {
           </figure>
           <para>Существует два класса компонентов фильтра: для веб-приложений  и для десктоп-приложений.</para>
           <para>Компонент фильтра имеет следующие атрибуты, перечисленные ниже.</para>
-          <para><sgmltag id="applyTo_attr">applyTo</sgmltag> − необязательный атрибут, содержит <link linkend="attr_id">идентификатор</link> компонента, с которым связан фильтр. Используется в случае, когда необходимо иметь доступ к <link linkend="gui_Table_presentations">представлениям</link> связного компонента. Например, сохраняя фильтр как <link linkend="search_folder">папку поиска</link> или как <link linkend="application_folder">папку приложения</link>, можно указать, какое представление будет применятся при просмотре этой папки.</para>
+          <para id="gui_attr_filter_applyTo"><sgmltag>applyTo</sgmltag> − необязательный атрибут, содержит <link linkend="gui_attr_basic_id">идентификатор</link> компонента, с которым связан фильтр. Используется в случае, когда необходимо иметь доступ к <link linkend="gui_Table_presentations">представлениям</link> связного компонента. Например, сохраняя фильтр как <link linkend="search_folder">папку поиска</link> или как <link linkend="application_folder">папку приложения</link>, можно указать, какое представление будет применятся при просмотре этой папки.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter.txt" encoding="UTF-8" parse="text"/></programlisting>
           <figure>
             <title/>
@@ -7642,7 +7697,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               </imageobject>
             </mediaobject>
           </figure>
-          <para><sgmltag id="useMaxResults_attr">useMaxResults</sgmltag> − необязательный атрибут, при указании значения <literal>false</literal> фильтр не будет отображать флажок <guilabel>Показывать N строк</guilabel>. По умолчанию флажок отображается, если есть специфическое разрешение <property>cuba.gui.filter.maxResults</property> (подробнее о специфических разрешениях смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink>)). Если атрибут <sgmltag>useMaxResults</sgmltag> не указан или значение атрибута равно <literal>true</literal>, а разрешение <property>cuba.gui.filter.maxResults</property> запрещено, фильтр будет принудительно отбирать только первые N строк без возможности пользователя отключить это. Число N определяется параметрами <literal>FetchUI</literal>, <literal>DefaultFetchUI</literal>, задаваемыми в <code>PersistenceManager</code>.</para>
+          <para id="gui_attr_filter_useMaxResults"><sgmltag>useMaxResults</sgmltag> − необязательный атрибут, при указании значения <literal>false</literal> фильтр не будет отображать флажок <guilabel>Показывать N строк</guilabel>. По умолчанию флажок отображается, если есть специфическое разрешение <property>cuba.gui.filter.maxResults</property> (подробнее о специфических разрешениях смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink>)). Если атрибут <sgmltag>useMaxResults</sgmltag> не указан или значение атрибута равно <literal>true</literal>, а разрешение <property>cuba.gui.filter.maxResults</property> запрещено, фильтр будет принудительно отбирать только первые N строк без возможности пользователя отключить это. Число N определяется параметрами <literal>FetchUI</literal>, <literal>DefaultFetchUI</literal>, задаваемыми в <code>PersistenceManager</code>.</para>
           <para>На рисунке далее показан вид фильтра со значением атрибута <code>useMaxResults=&quot;true&quot;</code>, запретом специфического разрешения <property>cuba.gui.filter.maxResults</property> и параметром <code>DefaultFetchUI=2</code></para>
           <figure>
             <title/>
@@ -7652,9 +7707,9 @@ protected boolean postCommit(boolean committed, boolean close) {
               </imageobject>
             </mediaobject>
           </figure>
-          <para><sgmltag id="manualApplyRequired_attr">manualApplyRequired</sgmltag> − необязательный атрибут. Определяет, как будет   применяться фильтр. Если значение атрибута равно <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. Если значение атрибута равно true, то фильтр будет применяться только после нажатия на кнопку <guibutton>Применить</guibutton>. Данный атрибут имеет приоритет над общесистемным <link linkend="app_properties_glossentry">свойством</link>  <property>cuba.gui.genericFilterManualApplyRequired</property>.</para>
-          <para>Если значение атрибута <sgmltag id="required_filter_attr">required</sgmltag> равно <literal>true</literal>, то  в списке фильтров значение <literal>&lt;без фильтрации&gt;</literal> не отображается, и должен быть выбран один из доступных фильтров. Если для экрана не установлен фильтр по умолчанию, то в списке выбора фильтра автоматически устанавливается первый созданный фильтр.</para>
-          <para>Если значение атрибута <sgmltag id="editable_filter_attr">editable</sgmltag> равно <literal>false</literal>, то кнопка <guibutton>Фильтр</guibutton> скрывается.</para>
+          <para id="gui_attr_filter_manualApplyRequired"><sgmltag>manualApplyRequired</sgmltag> − необязательный атрибут. Определяет, как будет   применяться фильтр. Если значение атрибута равно <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. Если значение атрибута равно true, то фильтр будет применяться только после нажатия на кнопку <guibutton>Применить</guibutton>. Данный атрибут имеет приоритет над общесистемным <link linkend="app_properties_glossentry">свойством</link>  <property>cuba.gui.genericFilterManualApplyRequired</property>.</para>
+          <para id="gui_attr_filter_required">Если значение атрибута <sgmltag>required</sgmltag> равно <literal>true</literal>, то  в списке фильтров значение <literal>&lt;без фильтрации&gt;</literal> не отображается, и должен быть выбран один из доступных фильтров. Если для экрана не установлен фильтр по умолчанию, то в списке выбора фильтра автоматически устанавливается первый созданный фильтр.</para>
+          <para id="gui_attr_filter_editable">Если значение атрибута <sgmltag>editable</sgmltag> равно <literal>false</literal>, то кнопка <guibutton>Фильтр</guibutton> скрывается.</para>
           <para>Компонент  <sgmltag>filter</sgmltag> может содержать следующие элементы:</para>
           <variablelist>
             <varlistentry>
@@ -7665,12 +7720,12 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <para>Элемент, определяющий набор атрибутов <glossterm linkend="entity">сущности</glossterm>, заданной <link linkend="datasources">источником данных</link>. В качестве названий атрибутов используются <glossterm linkend="localization">локализованные имена атрибутов сущностей</glossterm>. Атрибуты:</para>
                 <itemizedlist>
                   <listitem>
-                    <para><sgmltag id="include_filter_attr">include</sgmltag> − обязательный атрибут, содержит регулярное выражение для включения атрибутов сущности. Атрибуты-коллекции не включаются независимо от данного регулярного выражения.</para>
+                    <para id="gui_attr_filter_include"><sgmltag>include</sgmltag> − обязательный атрибут, содержит регулярное выражение для включения атрибутов сущности. Атрибуты-коллекции не включаются независимо от данного регулярного выражения.</para>
                     <para>Чтобы включить все атрибуты сущности, используйте значение атрибута <literal>.*</literal> </para>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="exclude_filter_attr">exclude</sgmltag> − необязательный атрибут, содержит регулярное выражение для исключения атрибутов сущности из предварительно включенных с помощью <link linkend="include_filter_attr">include</link>.</para>
-                    <para>Чтобы исключить несколько атрибутов, перечислите их в значении атрибута <link linkend="exclude_filter_attr">exclude</link>, разделяя символом <literal>|</literal></para>
+                    <para id="gui_attr_filter_exclude"><sgmltag>exclude</sgmltag> − необязательный атрибут, содержит регулярное выражение для исключения атрибутов сущности из предварительно включенных с помощью <link linkend="gui_attr_filter_include">include</link>.</para>
+                    <para>Чтобы исключить несколько атрибутов, перечислите их в значении атрибута <link linkend="gui_attr_filter_exclude">exclude</link>, разделяя символом <literal>|</literal></para>
                   </listitem>
                 </itemizedlist>
                 <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_properties.txt" encoding="UTF-8" parse="text"/></programlisting>
@@ -7692,13 +7747,13 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <para>Элемент, определяющий один атрибут сущности. Атрибуты:</para>
                 <itemizedlist>
                   <listitem>
-                    <para><sgmltag id="name_filter_property_attr">name</sgmltag> − имя атрибута сущности. Может быть путем (через &quot;.&quot;) по графу <glossterm linkend="entity">сущностей</glossterm>.</para>
+                    <para id="gui_attr_filter_name"><sgmltag>name</sgmltag> − имя атрибута сущности. Может быть путем (через &quot;.&quot;) по графу <glossterm linkend="entity">сущностей</glossterm>.</para>
                     <warning>
-                      <para>Если в качестве имени атрибута указан путь по графу сущностей, обязательно указание значения для атрибута <link linkend="caption_filter_attr">caption</link>.</para>
+                      <para>Если в качестве имени атрибута указан путь по графу сущностей, обязательно указание значения для атрибута <link linkend="gui_attr_filter_caption">caption</link>.</para>
                     </warning>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="caption_filter_attr">caption</sgmltag> −  атрибут для задания локализованного названия имени параметра</para>
+                    <para id="gui_attr_filter_caption"><sgmltag>caption</sgmltag> −  атрибут для задания локализованного названия имени параметра</para>
                     <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_property_caption.txt" encoding="UTF-8" parse="text"/></programlisting>
                     <figure>
                       <title/>
@@ -7710,7 +7765,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     </figure>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="paramWhere_filter_attr">paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-<glossterm linkend="entity">сущности</glossterm>. </para>
+                    <para id="gui_attr_filter_paramWhere"><sgmltag>paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-<glossterm linkend="entity">сущности</glossterm>. </para>
                     <para>Например, можно ограничить список предлагаемых пользователю  моделей автомобилей только моделями марки <literal>Audi</literal>.</para>
                     <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/filter/filter_paramWhere.txt" encoding="UTF-8" parse="text"/></programlisting>
                     <figure>
@@ -7723,7 +7778,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     </figure>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="paramView_filter_attr">paramView</sgmltag> − необязательный атрибут для задания <link linkend="views">представления</link>, с которым будут загружаться список значений параметра-<glossterm linkend="entity">сущности</glossterm>. Например, <literal>_local</literal>.</para>
+                    <para id="gui_attr_filter_paramView"><sgmltag>paramView</sgmltag> − необязательный атрибут для задания <link linkend="views">представления</link>, с которым будут загружаться список значений параметра-<glossterm linkend="entity">сущности</glossterm>. Например, <literal>_local</literal>.</para>
                   </listitem>
                 </itemizedlist>
               </listitem>
@@ -7748,25 +7803,28 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <para>Атрибуты элемента <sgmltag>custom</sgmltag>:</para>
                 <itemizedlist>
                   <listitem>
-                    <para><sgmltag id="name_filter_custom_attr">name</sgmltag> − имя условия</para>
+                    <para id="gui_attr_filter_custom_name"><sgmltag>name</sgmltag> − имя условия</para>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="caption_filter_custom_attr">caption</sgmltag> − <link linkend="localization">локализованное</link> название условия</para>
+                    <para id="gui_attr_filter_custom_caption"><sgmltag>caption</sgmltag> − <link linkend="localization">локализованное</link> название условия</para>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="paramClass_filter_attr">paramClass</sgmltag> или <sgmltag>class</sgmltag> − класс параметра условия</para>
+                    <para id="gui_attr_filter_custom_paramClass"><sgmltag>paramClass</sgmltag> или <sgmltag>class</sgmltag> − класс параметра условия</para>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="inExpr_filter_attr">inExpr</sgmltag> − значение должно быть равно <literal>true</literal>, если выражение <glossterm linkend="jpql">JPQL</glossterm> содержит условие <code>in (?)</code></para>
+                    <para id="gui_attr_filter_custom_inExpr"><sgmltag>inExpr</sgmltag> − значение должно быть равно <literal>true</literal>, если выражение <glossterm linkend="jpql">JPQL</glossterm> содержит условие <code>in (?)</code></para>
                   </listitem>
                   <listitem>
-                    <para><sgmltag id="join_filter_attr">join</sgmltag> − необязательный атрибут для задания строки, которая будет добавлена в секцию <literal>join</literal> запроса.</para>
+                    <para id="gui_attr_filter_custom_join"><sgmltag>join</sgmltag> − необязательный атрибут для задания строки, которая будет добавлена в секцию <literal>join</literal> запроса.</para>
                   </listitem>
                   <listitem>
                     <para><sgmltag>paramWhere</sgmltag> − необязательный атрибут для задания фильтра на список значений параметра-сущности.</para>
                   </listitem>
                   <listitem>
                     <para><sgmltag>paramView</sgmltag> − необязательный атрибут для задания <link linkend="views">представления</link>, с которым будут загружаться список значений параметра-<glossterm linkend="entity">сущности</glossterm>. Например,  <literal>_local</literal>.</para>
+                  </listitem>
+                  <listitem>
+                    <para id="gui_attr_filter_custom_operatorType"><sgmltag>operatorType</sgmltag> − необязательный атрибут. Используется для задания операторов <literal>&quot;начинается с&quot;</literal> и <literal>&quot;заканчивается на&quot;</literal></para>
                   </listitem>
                 </itemizedlist>
               </listitem>
@@ -7872,32 +7930,32 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="applyTo_attr">applyTo</link>
+                    <link linkend="gui_attr_filter_applyTo">applyTo</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry><entry align="left">
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_datasource">datasource</link>
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="manualApplyRequired_attr">manualApplyRequired</link>
+                    <link linkend="gui_attr_filter_manualApplyRequired">manualApplyRequired</link>
                   </entry>
                   <entry>
-                    <link linkend="useMaxResults_attr">useMaxResults</link>
+                    <link linkend="gui_attr_filter_useMaxResults">useMaxResults</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="editable_filter_attr">editable</link>
+                    <link linkend="gui_attr_filter_editable">editable</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="required_filter_attr">required</link>
+                    <link linkend="gui_attr_filter_required">required</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7906,11 +7964,11 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="1" colsep="1" rowsep="1" align="left"><colspec colname="c1"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="include_filter_attr">include</link>
+                    <link linkend="gui_attr_filter_include">include</link>
                   </entry>editable</row>
                 <row>
                   <entry>
-                    <link linkend="exclude_filter_attr">exclude</link>
+                    <link linkend="gui_attr_filter_exclude">exclude</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7919,16 +7977,16 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="caption_filter_attr">caption</link>
+                    <link linkend="gui_attr_filter_caption">caption</link>
                   </entry>editable<entry align="left">
-                    <link linkend="paramView_filter_attr">paramView</link>
+                    <link linkend="gui_attr_filter_paramView">paramView</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="name_filter_property_attr">name</link>
+                    <link linkend="gui_attr_filter_name">name</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="paramWhere_filter_attr">paramWhere</link>
+                    <link linkend="gui_attr_filter_paramWhere">paramWhere</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7937,24 +7995,88 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="caption_filter_custom_attr">caption</link>
-                  </entry>editable<entry align="left">operatorType</entry><entry align="left">
-                    <link linkend="paramWhere_filter_attr">paramWhere</link>
+                    <link linkend="gui_attr_filter_custom_caption">caption</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="gui_attr_filter_custom_operatorType">operatorType</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_filter_paramWhere">paramWhere</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="join_filter_attr">join</link>
+                    <link linkend="gui_attr_filter_custom_join">join</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="paramClass_filter_attr">paramClass</link>
+                    <link linkend="gui_attr_filter_custom_paramClass">paramClass</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="name_filter_custom_attr">name</link>
+                    <link linkend="gui_attr_filter_custom_name">name</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="paramView_filter_attr">paramView</link>
+                    <link linkend="gui_attr_filter_paramView">paramView</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+        </section>
+        <section id="gui_Timer">
+          <title>Timer</title>
+          <para>Таймер − это невизуальный компонент, который запускается в браузере клиента и опрашивает сервер через определенные интервалы времени.</para>
+          <para>XML-имя компонента: <sgmltag>timer</sgmltag>.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
+          <para>При задании таймера в <link linkend="screen_xml_glossentry">xml-дескрипторе</link> таймер прекращает работу при закрытии  экрана.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Пример использования таймера:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer1.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Как видно из примера, описание компонента располагается между элементами экрана <sgmltag>dsContext</sgmltag> и <sgmltag>layout</sgmltag>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_timer_delay">Атрибут <sgmltag>delay</sgmltag> является обязательным атрибутом, в нем задается интервал срабатывания таймера в миллисекундах.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_timer_repeating"><sgmltag>repeating</sgmltag> − необязательный атрибут, разрешает/запрещает повторное срабатывание таймера. Если значение атрибута равно <literal>true</literal>, то таймер выполняется циклически, через равные промежутки времени, заданные с помощью атрибута <link linkend="gui_attr_timer_delay">delay</link>. В противном случае таймер выполняется один раз.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_timer_onTimer"><sgmltag>onTimer</sgmltag> − необязательный атрибут, содержит метод-обработчик срабатывания таймера. Метод-обработчик должен располагаться в <link linkend="screen_controller_glossentry">контроллере</link> экрана и иметь один входной атрибут <code>com.haulmont.cuba.gui.components.Timer</code>. </para>
+              <para>Пример использования в XML-дескрипторе:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer2.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Пример обработчика событий от таймера в контроллере экрана:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer3.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+            <listitem>
+              <para>Другой способ задать обработчик событий от таймера:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer4.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+            <listitem>
+              <para>Программно таймер можно принудительно остановить:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer5.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+            <listitem>
+              <para>Таймер можно создавать напрямую из кода приложения следующим образом:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer6.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+          </itemizedlist>
+          <para>Атрибуты компонента <sgmltag>timer</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="gui_attr_timer_delay">delay</link>
+                  </entry>editable</row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_timer_repeating">onTimer</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_filter_custom_name">repeating</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7994,14 +8116,14 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <title/>
                 <mediaobject>
                   <imageobject>
-                    <imagedata contentwidth="182" contentdepth="245" align="center" fileref="img/gui_vbox.png"/>
+                    <imagedata align="center" fileref="img/gui_vbox.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/box/vbox.txt" encoding="UTF-8" parse="text"/></programlisting>
             </listitem>
             <listitem>
-              <para><sgmltag>flowbox</sgmltag> − горизонтальное расположение компонентов с переносом вниз. При недостатке места по горизонтали непомещающиеся компоненты будут перенесены &quot;на следующую строку&quot; (поведение аналогично <application>Swing</application> <code>FlowLayout</code>)</para>
+              <para><sgmltag>flowBox</sgmltag> − горизонтальное расположение компонентов с переносом вниз. При недостатке места по горизонтали непомещающиеся компоненты будут перенесены &quot;на следующую строку&quot; (поведение аналогично <application>Swing</application> <code>FlowLayout</code>)</para>
               <figure>
                 <title/>
                 <mediaobject>
@@ -8017,32 +8139,32 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_align">align</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry><entry>
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_expand">expand</link>
+                    <link linkend="gui_attr_basic_expand">expand</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_margin">margin</link>
+                    <link linkend="gui_attr_basic_margin">margin</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_spacing">spacing</link>
+                    <link linkend="gui_attr_basic_spacing">spacing</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8055,48 +8177,48 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="272" align="center" fileref="img/gui_buttonsPanel.png"/>
+                <imagedata align="center" fileref="img/gui_buttonsPanel.png"/>
               </imageobject>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>buttonsPanel</sgmltag>.</para>
           <para>Для создания панели с кнопками нужно определить ее описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/buttonsPanel/buttonsPanel.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибут <sgmltag id="attr_alwaysVisible">alwaysVisible</sgmltag> служит для управления видимостью панели с кнопками при открытии окна списка в режиме поиска (например, при открытии окна списка из компонента <link linkend="gui_PickerField">PickerField</link>). Если значение атрибута равно <literal>true</literal>, то панель с кнопками не скрывается. По умолчанию значение атрибута равно <literal>false</literal>.</para>
+          <para id="gui_attr_buttonsPanel_alwaysVisible">Атрибут <sgmltag>alwaysVisible</sgmltag> служит для управления видимостью панели с кнопками при открытии окна списка в режиме поиска (например, при открытии окна списка из компонента <link linkend="gui_PickerField">PickerField</link>). Если значение атрибута равно <literal>true</literal>, то панель с кнопками не скрывается. По умолчанию значение атрибута равно <literal>false</literal>.</para>
           <para>Элементами панели с кнопками являются элементы <link linkend="gui_Button">button</link>.</para>
           <para>Атрибуты <sgmltag>buttonsPanel</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_align">align</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                 </row>
                 <row>
                   <entry>
-                    <link linkend="attr_alwaysVisible">alwaysVisible</link>
+                    <link linkend="gui_attr_buttonsPanel_alwaysVisible">alwaysVisible</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_stylename">styleName</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="attr_expand">expand</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_stylename">styleName</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_expand">expand</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_height">height</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8114,42 +8236,42 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>grid</sgmltag>.</para>
-          <para>Для создания контейнера с табличным расположением нужно определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Пример создания контейнера с табличным расположением для экрана редактирования заказа:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/grid/grid.txt" encoding="UTF-8" parse="text"/></programlisting>
           <warning>
             <para>Обязательными вложенными элементами являются элементы <sgmltag>columns</sgmltag> и <sgmltag>rows</sgmltag>. </para>
           </warning>
-          <para><sgmltag id="attr_layout_rows">rows</sgmltag> − обязательный элемент, содержит последовательность строк (<sgmltag>row</sgmltag>). Хотя бы один элемент строки является обязательным.</para>
-          <para><sgmltag id="attr_layout_row">row</sgmltag> − элемент строки, контейнер для содержимого ряда. Состоит из контейнеров или  компонентов.</para>
-          <para><sgmltag id="attr_grid_flex_row">flex</sgmltag> − необязательный атрибут для элемента <sgmltag>row</sgmltag>, задает соотношение высот рядов сетки.</para>
-          <para><sgmltag id="attr_grid_columns">columns</sgmltag> − обязательный элемент, содержит последовательность <sgmltag>column</sgmltag>.</para>
-          <para>Атрибут <sgmltag id="attr_grid_count">count</sgmltag> − необязательный атрибут, задает количество колонок, если не заданы элементы <sgmltag>column</sgmltag>.</para>
-          <para><sgmltag id="attr_grid_column">column</sgmltag> − необязательный элемент для элемента <link linkend="attr_grid_columns">columns</link>, декларирует атрибуты колонок сетки.</para>
-          <para>Атрибут <sgmltag id="attr_grid_flex_column">flex</sgmltag> − необязательный атрибут, задает соотношение ширин колонок.</para>
+          <para id="gui_attr_grid_rows"><sgmltag>rows</sgmltag> − обязательный элемент, содержит последовательность строк (<sgmltag>row</sgmltag>). Хотя бы один элемент строки является обязательным.</para>
+          <para id="gui_attr_grid_row"><sgmltag>row</sgmltag> − элемент строки, контейнер для содержимого ряда. Состоит из контейнеров или  компонентов.</para>
+          <para id="gui_attr_grid_row_flex"><sgmltag>flex</sgmltag> − необязательный атрибут для элемента <sgmltag>row</sgmltag>, задает соотношение высот рядов сетки.</para>
+          <para id="gui_attr_grid_columns"><sgmltag>columns</sgmltag> − обязательный элемент, содержит последовательность <sgmltag>column</sgmltag>.</para>
+          <para id="gui_attr_grid_count">Атрибут <sgmltag>count</sgmltag> − необязательный атрибут, задает количество колонок, если не заданы элементы <sgmltag>column</sgmltag>.</para>
+          <para id="gui_attr_grid_column"><sgmltag>column</sgmltag> − необязательный элемент для элемента <link linkend="gui_attr_grid_columns">columns</link>, декларирует атрибуты колонок сетки.</para>
+          <para id="gui_attr_grid_column_flex">Атрибут <sgmltag>flex</sgmltag> − необязательный атрибут, задает соотношение ширин колонок.</para>
           <para>Атрибуты <sgmltag>grid</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_spacing">spacing</link>
+                    <link linkend="gui_attr_basic_spacing">spacing</link>
                   </entry><entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_stylename">styleName</link>
+                    <link linkend="gui_attr_basic_stylename">styleName</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_margin">margin</link>
+                    <link linkend="gui_attr_basic_margin">margin</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8158,11 +8280,11 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_grid_columns">columns</link>
+                    <link linkend="gui_attr_grid_columns">columns</link>
                   </entry>editable</row>
                 <row>
                   <entry>
-                    <link linkend="attr_layout_rows">rows</link>
+                    <link linkend="gui_attr_grid_rows">rows</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8171,7 +8293,7 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_grid_count">count</link>
+                    <link linkend="gui_attr_grid_count">count</link>
                   </entry>editable</row>
               </tbody></tgroup>
           </informaltable>
@@ -8179,21 +8301,21 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_align">align</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable</row>
                 <row>
                   <entry>
-                    <link linkend="attr_grid_flex_row">flex</link>
+                    <link linkend="gui_attr_grid_row_flex">flex</link>
                   </entry>
                 </row>
                 <row>
                   <entry>
-                    <link linkend="attr_spacing">spacing</link>
+                    <link linkend="gui_attr_basic_spacing">spacing</link>
                   </entry>
                 </row>
                 <row>
                   <entry>
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8211,9 +8333,9 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>scrollBox</sgmltag></para>
-          <para>Для создания контейнера с табличным расположением нужно определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Пример создания контейнера с прокруткой в экране редактирования заказа:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/scrollBox/scrollBox.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>С помощью атрибута <sgmltag id="attr_scroll_orientation">orientation</sgmltag> можно задавать направление расположения вложенных компонентов − <literal>horizontal</literal> или <literal>vertical</literal>. По умолчанию значением атрибута является <literal>vertical</literal>.</para>
+          <para id="gui_attr_scrollBox_orientation">С помощью атрибута <sgmltag>orientation</sgmltag> можно задавать направление расположения вложенных компонентов − <literal>horizontal</literal> или <literal>vertical</literal>. По умолчанию значением атрибута является <literal>vertical</literal>.</para>
           <warning>
             <para>Вложенные в <sgmltag>scrollBox</sgmltag> компоненты должны иметь фиксированные размеры или размеры по умолчанию. Нельзя устанавливать <code>height=&quot;100%&quot;</code> или <code>width=&quot;100%&quot;</code>.</para>
           </warning>
@@ -8221,32 +8343,32 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_align">align</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry><entry>
-                    <link linkend="attr_scroll_orientation">orientation</link>
+                    <link linkend="gui_attr_scrollBox_orientation">orientation</link>
                   </entry>editable</row>
                 <row>
                   <entry>
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_spacing">spacing</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry>
-                    <link linkend="attr_id">id</link>
-                  </entry>
-                  <entry>
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_spacing">spacing</link>
                   </entry>
                 </row>
                 <row>
                   <entry>
-                    <link linkend="attr_margin">margin</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_margin">margin</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8264,10 +8386,10 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>split</sgmltag>.</para>
-          <para>Для создания панели с разделителем нужно определить ее описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Пример создания панели с разделителем  в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> экрана редактирования заказа:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/split/split.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>При создании панели с разделителем нужно указать ориентацию разделителя с помощью атрибута <sgmltag id="attr_layout_orientation">orientation</sgmltag>. По умолчанию значение атрибута равно <literal>vertical</literal>.</para>
-          <para id="attr_layout_pos"><sgmltag>pos</sgmltag> − необязательный атрибут, определяет процентное соотношение областей. Например, <code>pos=&quot;30%&quot;</code> означает соотношение областей 30/70. По умолчанию соотношение областей составляет 50/50.</para>
+          <para id="gui_attr_split_orientation">При создании панели с разделителем нужно указать ориентацию разделителя с помощью атрибута <sgmltag>orientation</sgmltag>. По умолчанию значение атрибута равно <literal>vertical</literal>.</para>
+          <para id="gui_attr_split_pos"><sgmltag>pos</sgmltag> − необязательный атрибут, определяет процентное соотношение областей. Например, <code>pos=&quot;30%&quot;</code> означает соотношение областей 30/70. По умолчанию соотношение областей составляет 50/50.</para>
           <warning>
             <para>Обязательными вложенными элементами являются два контейнера или компонента.</para>
           </warning>
@@ -8275,21 +8397,21 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_layout_pos">pos</link>
+                    <link linkend="gui_attr_split_pos">pos</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_layout_orientation">orientation</link>
+                    <link linkend="gui_attr_split_orientation">orientation</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8302,15 +8424,15 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="188" contentdepth="270" align="center" fileref="img/gui_groupBox.png"/>
+                <imagedata align="center" fileref="img/gui_groupBox.png"/>
               </imageobject>
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>groupBox</sgmltag>.</para>
-          <para>Для создания контейнера с названием и рамкой нужно определить его описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Пример создания контейнера с названием и рамкой  в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> экрана редактирования заказа:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/groupBox/groupBox.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para>Атрибут <sgmltag id="attr_group_orientation">orientation</sgmltag>  задает направление расположения вложенных компонентов − <literal>horizontal</literal> или <literal>vertical</literal>. По умолчанию значением атрибута является <literal>vertical</literal>.</para>
-          <para><sgmltag id="attr_group_collapsable">collapsable</sgmltag> − необязательный атрибут, в значении <literal>true</literal> компонент может сворачивать свое содержимое. В верхнем нижнем углу контейнера появляется значок <inlinemediaobject>
+          <para id="gui_attr_groupBox_orientation">Атрибут <sgmltag>orientation</sgmltag>  задает направление расположения вложенных компонентов − <literal>horizontal</literal> или <literal>vertical</literal>. По умолчанию значением атрибута является <literal>vertical</literal>.</para>
+          <para id="gui_attr_groupBox_collapsable"><sgmltag>collapsable</sgmltag> − необязательный атрибут, в значении <literal>true</literal> компонент может сворачивать свое содержимое. В верхнем нижнем углу контейнера появляется значок <inlinemediaobject>
               <imageobject>
                 <imagedata fileref="img/gui_groupBox_minus.png"/>
               </imageobject>
@@ -8319,7 +8441,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <imagedata fileref="img/gui_groupBox_plus.png"/>
               </imageobject>
             </inlinemediaobject>.</para>
-          <para><sgmltag id="attr_group_collapsed">collapsed</sgmltag> − необязательный атрибут, в значении <literal>true</literal> компонент будет свернут по умолчанию.</para>
+          <para id="gui_attr_groupBox_collapsed"><sgmltag>collapsed</sgmltag> − необязательный атрибут, в значении <literal>true</literal> компонент будет свернут по умолчанию.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -8332,37 +8454,37 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_caption">caption</link>
+                    <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_description">description</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry><entry>
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry><entry>
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_group_collapsable">collapsable</link>
+                    <link linkend="gui_attr_groupBox_collapsable">collapsable</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_expand">expand</link>
+                    <link linkend="gui_attr_basic_expand">expand</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_orientation">orientation</link>
+                    <link linkend="gui_attr_groupBox_orientation">orientation</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_group_collapsed">collapsed</link>
+                    <link linkend="gui_attr_groupBox_collapsed">collapsed</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_spacing">spacing</link>
+                    <link linkend="gui_attr_basic_spacing">spacing</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8380,13 +8502,13 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>XML-имя компонента: <sgmltag>tabSheet</sgmltag>.</para>
-          <para>Для создания панели с вкладками нужно определить ее описание в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm>.</para>
+          <para>Пример создания панели с вкладками  в <glossterm linkend="screen_xml_glossentry">xml-дескрипторе</glossterm> экрана редактирования заказа:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/tabsheet/tabsheet.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>Как видно, компонент <sgmltag>tabSheet</sgmltag> состоит из элементов <sgmltag>tab</sgmltag>.</para>
           <para>Элемент <sgmltag>tab</sgmltag> может содержать как другой <link linkend="gui_layouts">контейнер</link>, так и <link linkend="gui_components">компонент</link>.</para>
-          <para>Атрибут <link linkend="attr_id" id="attr_tabsheet_id">id</link> является идентификатором вкладки. Следует отметить, что вкладка не является компонентом, и данный идентификатор используется только в рамках <code>TabSheet</code>.</para>
-          <para>Атрибут <sgmltag id="attr_tabsheet_lazy">lazy</sgmltag> задает отложенную загрузку содержимого вкладки. При открытии экрана <sgmltag>lazy</sgmltag>-вкладки не загружают свое содержимое, что приводит к созданию меньшего количества компонентов в памяти и, как следствие, к меньшему количеству запросов к БД. Компоненты вкладки загружаются только в тот момент, когда пользователь выбирает данную вкладку. Значение по умолчанию равно <literal>false</literal>. Если компоненты <sgmltag>lazy</sgmltag>-вкладки требуют инициализации, проводить ее нужно не напрямую в методе <code>init()</code> <glossterm linkend="screen_controller_glossentry">контроллера</glossterm>, а в слушателе на переключение вкладок <code>TabSheet.TabChangeListener.</code></para>
-          <para>В десктоп-приложении есть возможность открывать вкладки в новом окне. Для этого нужно атрибуту <sgmltag id="attr_detachable">detachable</sgmltag> присвоить значение <literal>true</literal>.</para>
+          <para id="gui_attr_tabsheet_id">Атрибут <link linkend="attr_id">id</link> является идентификатором вкладки. Следует отметить, что вкладка не является компонентом, и данный идентификатор используется только в рамках <code>TabSheet</code>.</para>
+          <para id="gui_attr_tabsheet_lazy">Атрибут <sgmltag>lazy</sgmltag> задает отложенную загрузку содержимого вкладки. При открытии экрана <sgmltag>lazy</sgmltag>-вкладки не загружают свое содержимое, что приводит к созданию меньшего количества компонентов в памяти и, как следствие, к меньшему количеству запросов к БД. Компоненты вкладки загружаются только в тот момент, когда пользователь выбирает данную вкладку. Значение по умолчанию равно <literal>false</literal>. Если компоненты <sgmltag>lazy</sgmltag>-вкладки требуют инициализации, проводить ее нужно не напрямую в методе <code>init()</code> <glossterm linkend="screen_controller_glossentry">контроллера</glossterm>, а в слушателе на переключение вкладок <code>TabSheet.TabChangeListener.</code></para>
+          <para id="gui_attr_tabsheet_detachable">В десктоп-приложении есть возможность открывать вкладки в новом окне. Для этого нужно атрибуту <sgmltag>detachable</sgmltag> присвоить значение <literal>true</literal>.</para>
           <figure>
             <title>Вид отделяемой вкладки</title>
             <mediaobject>
@@ -8399,21 +8521,21 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8422,29 +8544,29 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_caption">caption</link>
+                    <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_expand">expand</link>
+                    <link linkend="gui_attr_basic_expand">expand</link>
                   </entry><entry>
-                    <link>margin</link>
+                    <link linkend="gui_attr_basic_margin">margin</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_detachable">detachable</link>
+                    <link linkend="gui_attr_tabsheet_detachable">detachable</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_tabsheet_id">id</link>
+                    <link linkend="gui_attr_tabsheet_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_spacing">spacing</link>
+                    <link linkend="gui_attr_basic_spacing">spacing</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_enable">enable</link>
+                    <link linkend="gui_attr_basic_enable">enable</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_tabsheet_lazy">lazy</link>
+                    <link linkend="gui_attr_tabsheet_lazy">lazy</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8455,7 +8577,7 @@ protected boolean postCommit(boolean committed, boolean close) {
           <para>Элемент <sgmltag>iframe</sgmltag> предназначен для включения в экран <link linkend="frame">фрейма</link>.</para>
           <para>Атрибуты:<itemizedlist>
               <listitem>
-                <para><sgmltag id="attr_frame_src">src</sgmltag> − путь к XML-дескриптору фрейма</para>
+                <para id="gui_attr_frame_src"><sgmltag>src</sgmltag> − путь к XML-дескриптору фрейма</para>
               </listitem>
               <listitem>
                 <para><sgmltag>screen</sgmltag> - идентификатор фрейма в <filename>screens.xml</filename> (если имеется)</para>
@@ -8465,24 +8587,24 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="3" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="attr_align">align</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="attr_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="attr_height">height</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="attr_visible">visible</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="attr_id">id</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="attr_width">width</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -8493,13 +8615,13 @@ protected boolean postCommit(boolean committed, boolean close) {
         <title>Разное</title>
         <section>
           <title>AccessControl</title>
-          <para>Компонент <code>accessControl</code> предназначен для декларативного управления доступом к частям экрана. Он представляет собой контейнер, который никак не отображает себя на экране, а только управляет атрибутами <parameter>visible</parameter> и <parameter>editable</parameter> входящих в него компонентов.</para>
-          <para>Состояние управляемых компонентов определяется на основе двух элементов, вложенных в <code>accessControl</code>: <parameter>visible</parameter> и <parameter>editable</parameter>.</para>
-          <para>Соответствующее значение принимается либо из скрипта, возвращающего <type>boolean</type>, либо из свойства объекта <code>AccessData</code>, связанного с компонентом (см. ниже).
-Скрипт задается либо атрибутом <parameter>script</parameter>, либо in-place в тексте элемента. 
-Свойство объекта <code>AccessData</code> задается атрибутом <parameter>property</parameter> и имеет больший приоритет, чем скрипт.</para>
+          <para>Компонент <sgmltag>accessControl</sgmltag> предназначен для декларативного управления доступом к частям экрана. Он представляет собой контейнер, который никак не отображает себя на экране, а только управляет атрибутами <link linkend="gui_attr_basic_visible">visible</link> и <link linkend="gui_attr_basic_editable">editable</link> входящих в него компонентов.</para>
+          <para>Состояние управляемых компонентов определяется на основе двух элементов, вложенных в <sgmltag>accessControl</sgmltag>: <sgmltag>visible</sgmltag> и <sgmltag>editable</sgmltag>.</para>
+          <para>Соответствующее значение принимается либо из скрипта, возвращающего <code>boolean</code>, либо из свойства объекта <link linkend="AccessData">AccessData</link>, связанного с компонентом.
+Скрипт задается либо атрибутом <sgmltag>script</sgmltag>, либо непосредственно в тексте элемента. 
+Свойство объекта <link linkend="AccessData">AccessData</link> задается атрибутом <sgmltag>property</sgmltag> и имеет больший приоритет, чем скрипт.</para>
           <warning>
-            <para>В случае <parameter>visible=false</parameter> вложенные компоненты вообще не создаются, поэтому будьте осторожны при обращении к ним из контроллера.</para>
+            <para>В случае <sgmltag>visible</sgmltag>=<literal>false</literal> вложенные компоненты вообще не создаются, поэтому будьте осторожны при обращении к ним из контроллера.</para>
           </warning>
           <para>
                 <programlisting>&lt;tab id=&quot;mainTab&quot; caption=&quot;msg://mainTab&quot;&gt;
@@ -8509,9 +8631,9 @@ protected boolean postCommit(boolean committed, boolean close) {
             &lt;vbox margin=&quot;true&quot; expand=&quot;attachmentsPane&quot;&gt;
                 ...</programlisting>
             </para>
-          <section>
+          <section id="AccessData">
             <title>Объект AccessData</title>
-            <para>В связи с тем, что одни и те же параметры доступа могут многократно потребоваться в разных частях экрана и в коде контроллера, компонент <code>accessControl</code> может быть связан с объектом Java|Groovy, вычисляющим и хранящим эти параметры. Т.о. дорогостоящая инициализация параметра доступа производится только один раз, и затем доступна на протяжении жизни экрана.</para>
+            <para>В связи с тем что одни и те же параметры доступа могут многократно потребоваться в разных частях экрана и в коде контроллера, компонент <sgmltag>accessControl</sgmltag> может быть связан с объектом Java или Groovy, вычисляющим и хранящим эти параметры. Таким образом,  дорогостоящая инициализация параметра доступа производится только один раз и затем доступна на протяжении жизни экрана.</para>
             <para>Для связи компонента с данными доступа создайте класс, унаследованный от <code>AbstractAccessData</code>, и задайте следующие атрибуты компонента <code>accessControl</code>:</para>
             <itemizedlist>
               <listitem>

@@ -1,24 +1,20 @@
-﻿<layout>
-   <grid spacing="true" margin="true">
-      <columns>
-         <column flex="1"/>
-         <column flex="1"/>
-         <column flex="1"/>
-         <column flex="1"/>
-      </columns>
-      <rows>
-         <row>
-            <label value="msg://name1"/>
-            <textField id="name1" width="200px"/>
-            <label value="msg://name2"/>
-            <textField id="name2" width="200px"/>
-         </row>
-         <row>
-            <label value="msg://name3"/>
-            <textField id="name3" width="200px"/>
-            <label value="msg://name4"/>
-            <textField id="name4" width="200px"/>
-         </row>
-       </rows>
-   </grid>
-</layout>
+﻿<grid spacing="true" margin="true">
+    <columns>
+        <column flex="1"/>
+        <column flex="1"/>
+        <column flex="1"/>
+        <column flex="1"/>
+    </columns>
+    <rows>
+        <row>
+            <label value="Date"/>
+            <dateField id="dateField1" datasource="orderDs" property="date"/>
+            <label value="Customer"/>
+            <lookupField id="lookupField1" datasource="orderDs" optionsDatasource="customersDs" property="customer"/>
+        </row>
+        <row>
+            <label value="Amount"/>
+            <textField id="textField1" datasource="orderDs" property="amount"/>
+        </row>
+    </rows>
+</grid>

@@ -1,9 +1,9 @@
-﻿.v-table-row-budget-yellow,
-.v-table-row-budget-yellow.v-selected {
+﻿.v-table-row-table-yellow,
+.v-table-row-table-yellow.v-selected {
     background-color: #edebbb;
 }
 
-.v-table .v-table-cell-content-budget-yellow,
-   .v-selected .v-table-cell-content-budget-yellow {
+.v-table .v-table-cell-content-table-yellow,
+   .v-selected .v-table-cell-content-table-yellow {
         background-color: #edebbb;
-   }
+}
