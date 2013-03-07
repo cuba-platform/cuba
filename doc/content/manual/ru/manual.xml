@@ -749,7 +749,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
               <link linkend="resources">Resources</link>
             </code>.</para>
-          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Пример:<programlisting>cuba.creditsConfig=cuba-credits.xml reports-credits.xml credits.xml</programlisting></para>
         </listitem>
       </varlistentry>
@@ -836,7 +836,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
               <link linkend="resources">Resources</link>
             </code>.</para>
-          <para>Используется в блоках Web Client, Web Portal.</para>
+          <para>Используется в блоках <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
           <para>Пример:<programlisting>cuba.dispatcherSpringContextConfig=cuba-portal-dispatcher-spring.xml portal-dispatcher-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
@@ -852,6 +852,31 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Задает корни структуры каталогов файлового хранилища. Подробнее см. <xref linkend="file_storage_impl"/></para>
           <para>Значение по умолчанию: <literal>null</literal></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.gui.genericFilterChecking">
+        <term>cuba.gui.genericFilterChecking</term>
+        <listitem>
+          <para>Определяет,  будет ли  перед применением фильтра  выполняться проверка его условий. Если фильтр не имеет ни одного заданного условия, то применяться он не будет. </para>
+          <para>Значение по умолчанию:  <literal>true</literal></para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.gui.genericFilterManualApplyRequired">
+        <term>cuba.gui.genericFilterManualApplyRequired</term>
+        <listitem>
+          <para>Определяет, будет ли    применяться фильтр только после нажатия пользователем соответствующей кнопки <guibutton>Применить</guibutton>. Значение по умолчанию равно <literal>true</literal>. Если выставлено значение <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. При открытии экрана списка с помощью папки приложения или папки поиска значение <property>cuba.gui.genericFilterManualApplyRequired</property> не учитывается. По умолчанию в этом случае в экране поиска фильтр будет применяться. Фильтр не применится, если значение атрибута <parameter>applyDefault</parameter> у папки явно установлено в <literal>false</literal>.</para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.gui.genericFilterTreeConditionSelect">
+        <term>cuba.gui.genericFilterTreeConditionSelect</term>
+        <listitem>
+          <para>Включает выбор условий в древовидной структуре с возможностью обхода свойств связанных сущностей. Значение по умолчанию равно <literal>true</literal>. В случае задания значения <literal>false</literal> выбор условий осуществляется в плоском выпадающем списке из описателей условий, заданных в дескрипторе экрана.</para>
+          <para>Интерфейс: <code>ClientConfig</code></para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.groovyEvaluatorImport">
@@ -973,7 +998,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
               <link linkend="resources">Resources</link>
             </code>.</para>
-          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Пример:<programlisting>cuba.menuConfig=cuba-web-menu.xml web-menu.xml</programlisting></para>
         </listitem>
       </varlistentry>
@@ -1001,7 +1026,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <varlistentry>
         <term>cuba.passwordPolicyEnabled</term>
         <listitem>
-          <para>Определяет, нужно ли применять политику проверки пароля. Если свойство имеет значение <code>true</code>, то все новые задаваемые пользователями пароли будут проверяться в соответствии со свойством <property>
+          <para>Определяет, нужно ли применять политику проверки пароля. Если свойство имеет значение <literal>true</literal>, то все новые задаваемые пользователями пароли будут проверяться в соответствии со свойством <property>
               <link linkend="cuba.passwordPolicyRegExp">cuba.passwordPolicyRegExp</link>
             </property>.</para>
           <para>Значение по умолчанию: <literal>false</literal></para>
@@ -1026,7 +1051,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Конфигурационный параметр, задает набор файлов <filename>
               <link linkend="permissions.xml">permissions.xml</link>
             </filename>. </para>
-          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Пример:<programlisting>cuba.permissionConfig=cuba-web-permissions.xml web-permissions.xml</programlisting></para>
         </listitem>
       </varlistentry>
@@ -1046,14 +1071,14 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <varlistentry id="cuba.portal.anonymousUserLogin">
         <term>cuba.portal.anonymousUserLogin</term>
         <listitem>
-          <para>Логин пользователя системы, который используется для создания аниномной пользовательской сессии в блоке Web Portal. </para>
+          <para>Логин пользователя системы, который используется для создания аниномной пользовательской сессии в блоке <structname>Web Portal</structname>. </para>
           <para>Пользователь с таким логином должен быть создан в подсистеме безопасности, и ему должны быть назначены соответствующие права. Пароль пользователя игнорируется, так как анонимная сессия портала создается методом <code>
               <link linkend="login">loginTrusted()</link>
             </code> с передачей пароля, указанного в свойстве <property>
               <link linkend="cuba.trustedClientPassword">cuba.trustedClientPassword</link>
             </property>.</para>
           <para>Интерфейс:  <code>PortalConfig</code></para>
-          <para>Используется в блоке Web Portal.</para>
+          <para>Используется в блоке <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.remotingSpringContextConfig">
@@ -1065,7 +1090,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
               <link linkend="resources">Resources</link>
             </code>.</para>
-          <para>Используется в блоке Middleware.</para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
           <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
@@ -1075,7 +1100,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Включает и выключает механизм выполнения <link linkend="scheduled_tasks_cuba">назначенных заданий</link> CUBA.  </para>
           <para>Значение по умолчанию: <literal>false</literal></para>
           <para>Интерфейс:  <code>ServerConfig</code></para>
-          <para>Используется в блоке Middleware.</para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.springContextConfig">
@@ -1106,7 +1131,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <listitem>
           <para>Пароль, используемый методом <code>LoginService.loginTrusted()</code>. Средний слой может аутентифицировать пользователей, подключающихся через доверенный клиентский <link linkend="app_tiers">блок</link>, без проверки пользовательского пароля. </para>
           <para>Это свойство используется в случае, если пароли пользователей не хранятся в БД, и реальную аутентификацию выполняет сам клиентский блок, например,  путем интеграции с <application>Active Directory</application>.</para>
-          <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
+          <para>Интерфейсы:  <code>ServerConfig</code>, <code>WebConfig</code></para>
           <para>Используется в блоках: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
@@ -1115,7 +1140,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <listitem>
           <para>Маска IP адресов, с которых возможен вызов метода <code>LoginService.loginTrusted()</code>, в формате регулярного выражения.</para>
           <para>Значение по умолчанию: <literal>127\.0\.0\.1</literal></para>
-          <para>Интерфейсы: <code> ServerConfig</code>, <code>WebConfig</code></para>
+          <para>Интерфейсы:  <code>ServerConfig</code>, <code>WebConfig</code></para>
           <para>Используется в блоках: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
@@ -1185,7 +1210,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <code>
               <link linkend="resources">Resources</link>
             </code>.</para>
-          <para>Используется в блоках Web Client и Desktop Client.</para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <para>Пример:<programlisting>cuba.windowConfig=cuba-web-screens.xml web-screens.xml</programlisting></para>
         </listitem>
       </varlistentry>

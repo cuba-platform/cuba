@@ -4628,6 +4628,11 @@ protected boolean postCommit(boolean committed, boolean close) {
                 </entry>
               </row>
               <row>
+                <entry>
+                  <link linkend="gui_FileMultiUploadField">FileMultiUploadField</link>
+                </entry>
+              </row>
+              <row>
                 <entry/>
               </row>
               <row>
@@ -4719,7 +4724,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               </row>
               <row>
                 <entry align="left">
-                  <link linkend="gui_Filter">GenericFilter</link>
+                  <link linkend="gui_Filter">Filter</link>
                 </entry>
                 <entry align="left">
                   <mediaobject>
@@ -4727,6 +4732,11 @@ protected boolean postCommit(boolean committed, boolean close) {
                       <imagedata fileref="img/gui_filter_mini.png"/>
                     </imageobject>
                   </mediaobject>
+                </entry>
+              </row>
+              <row>
+                <entry>
+                  <link linkend="gui_Timer">Timer</link>
                 </entry>
               </row>
             </tbody>
@@ -7707,7 +7717,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               </imageobject>
             </mediaobject>
           </figure>
-          <para id="gui_attr_filter_manualApplyRequired"><sgmltag>manualApplyRequired</sgmltag> − необязательный атрибут. Определяет, как будет   применяться фильтр. Если значение атрибута равно <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. Если значение атрибута равно true, то фильтр будет применяться только после нажатия на кнопку <guibutton>Применить</guibutton>. Данный атрибут имеет приоритет над общесистемным <link linkend="app_properties_glossentry">свойством</link>  <property>cuba.gui.genericFilterManualApplyRequired</property>.</para>
+          <para id="gui_attr_filter_manualApplyRequired"><sgmltag>manualApplyRequired</sgmltag> − необязательный атрибут. Определяет, как будет   применяться фильтр. Если значение атрибута равно <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. Если значение атрибута равно true, то фильтр будет применяться только после нажатия на кнопку <guibutton>Применить</guibutton>. Данный атрибут имеет приоритет над общесистемным <link linkend="app_properties_glossentry">свойством</link>  <link linkend="cuba.gui.genericFilterManualApplyRequired">cuba.gui.genericFilterManualApplyRequired</link>.</para>
           <para id="gui_attr_filter_required">Если значение атрибута <sgmltag>required</sgmltag> равно <literal>true</literal>, то  в списке фильтров значение <literal>&lt;без фильтрации&gt;</literal> не отображается, и должен быть выбран один из доступных фильтров. Если для экрана не установлен фильтр по умолчанию, то в списке выбора фильтра автоматически устанавливается первый созданный фильтр.</para>
           <para id="gui_attr_filter_editable">Если значение атрибута <sgmltag>editable</sgmltag> равно <literal>false</literal>, то кнопка <guibutton>Фильтр</guibutton> скрывается.</para>
           <para>Компонент  <sgmltag>filter</sgmltag> может содержать следующие элементы:</para>
@@ -7863,16 +7873,16 @@ protected boolean postCommit(boolean committed, boolean close) {
           <para>В системе предусмотрены следующие <glossterm linkend="app_properties_glossentry">параметры</glossterm>, влияющие на поведение фильтров:</para>
           <itemizedlist>
             <listitem>
-              <para><property>cuba.gui.genericFilterManualApplyRequired</property>  − означает, что фильтр будет применяться только после нажатия пользователем соответствующей кнопки <guibutton>Применить</guibutton>. Значение по умолчанию равно <literal>true</literal>. Если выставлено значение <literal>false</literal>, то фильтр будет применяться сразу при открытии экрана списка. При открытии  экрана списка с помощью <link linkend="application_folder">папки приложения</link> или <link linkend="search_folder">папки поиска</link> значение <property>cuba.gui.genericFilterManualApplyRequired</property> не учитывается. По умолчанию в этом случае  в экране поиска фильтр будет применяться. Фильтр не применится, если значение атрибута <code>applyDefault</code> у папки явно установлено в <literal>false</literal>.</para>
+              <para><link linkend="cuba.gui.genericFilterManualApplyRequired">cuba.gui.genericFilterManualApplyRequired</link>  − означает, что фильтр будет применяться только после нажатия пользователем соответствующей кнопки <guibutton>Применить</guibutton>.</para>
             </listitem>
             <listitem>
-              <para><property>cuba.gui.genericFilterChecking</property> − означает, что перед применением фильтра будет выполняться проверка его условий. Если фильтр не имеет ни одного заданного условия, то применяться он не будет. Значение по умолчанию равно <literal>true</literal>. Если значение равно  <literal>false</literal>, то проверка не производится.</para>
+              <para><link linkend="cuba.gui.genericFilterChecking">cuba.gui.genericFilterChecking</link> − означает, что перед применением фильтра будет выполняться проверка его условий.</para>
             </listitem>
             <listitem>
-              <para><property>cuba.gui.genericFilterTreeConditionSelect</property> − включает выбор условий в древовидной структуре с возможностью обхода свойств связанных сущностей. Значение по умолчанию равно <literal>true</literal>. В случае задания значения <literal>false</literal> выбор условий осуществляется в плоском выпадающем списке из описателей условий, заданных в дескрипторе экрана.</para>
+              <para><link linkend="cuba.gui.genericFilterTreeConditionSelect">cuba.gui.genericFilterTreeConditionSelect</link> − включает выбор условий в древовидной структуре с возможностью обхода свойств связанных сущностей.</para>
             </listitem>
             <listitem>
-              <para><property>cuba.allowQueryFromSelected</property> служит для включения механизма  <link linkend="sequential_filter_para">последовательного наложения фильтров</link>. Значение по умолчанию равно <literal>true</literal>.</para>
+              <para><link linkend="cuba.allowQueryFromSelected">cuba.allowQueryFromSelected</link> служит для включения механизма  <link linkend="sequential_filter_para">последовательного наложения фильтров</link>.</para>
             </listitem>
           </itemizedlist>
           <para><emphasis role="bold">Параметры вызова экрана</emphasis></para>
