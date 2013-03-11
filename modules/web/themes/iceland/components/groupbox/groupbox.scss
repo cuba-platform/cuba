@@ -90,7 +90,7 @@ $groupBoxCaptionLineHeight: 18px;
   }
 }
 
-.v-webkit {
+@mixin cuba-groupbox-content-fix {
   .cuba-groupbox.v-widget {
     fieldset {
       .cuba-groupbox-content {
@@ -106,4 +106,16 @@ $groupBoxCaptionLineHeight: 18px;
       }
     }
   }
+}
+
+.v-webkit {
+  @include cuba-groupbox-content-fix;
+}
+
+.v-ie {
+  @include cuba-groupbox-content-fix;
+}
+
+.v-opera {
+  @include cuba-groupbox-content-fix;
 }
