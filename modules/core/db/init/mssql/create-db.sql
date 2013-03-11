@@ -46,7 +46,7 @@ create table SYS_FILE (
     --
     NAME varchar(500),
     EXT varchar(20),
-    SIZE integer,
+    FILE_SIZE integer,
     CREATE_DATE datetime,
     --
     primary key nonclustered (ID)
@@ -162,7 +162,7 @@ create table SEC_ROLE (
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE tinyint, 
-    TYPE integer,
+    ROLE_TYPE integer,
     --
     primary key (ID)
 )^
@@ -197,7 +197,7 @@ create table SEC_GROUP_HIERARCHY (
     --
     GROUP_ID uniqueidentifier,
     PARENT_ID uniqueidentifier,
-    LEVEL integer,
+    HIERARCHY_LEVEL integer,
     --
     primary key nonclustered (ID),
     constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
@@ -232,7 +232,6 @@ create table SEC_USER (
     GROUP_ID uniqueidentifier,
     DEFAULT_SUBSTITUTED_USER_ID uniqueidentifier,
     IP_MASK varchar(200),
-    TYPE varchar(1),
     CHANGE_PASSWORD_AT_LOGON tinyint,
     --
     primary key nonclustered (ID),
@@ -280,7 +279,7 @@ create table SEC_PERMISSION (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    TYPE integer,
+    PERMISSION_TYPE integer,
     TARGET varchar(100),
     VALUE integer,
     ROLE_ID uniqueidentifier,
@@ -358,8 +357,6 @@ create table SEC_USER_SETTING (
 
 create clustered index IDX_SEC_USER_SETTING_CREATE_TS on SEC_USER_SETTING (CREATE_TS)^
 
-create index IDX_SEC_USER_SETTING_USER_NAME_CLIENT on SEC_USER_SETTING (USER_ID, NAME, CLIENT_TYPE)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_USER_SUBSTITUTION (
@@ -425,7 +422,7 @@ create table SEC_ENTITY_LOG (
     --
     EVENT_TS datetime,
     USER_ID uniqueidentifier,
-    TYPE char(1),
+    CHANGE_TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID uniqueidentifier,
     CHANGES varchar(max),
@@ -496,7 +493,7 @@ create table SYS_FOLDER (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     --
-    TYPE char(1),
+    FOLDER_TYPE char(1),
     PARENT_ID uniqueidentifier,
     NAME varchar(100),
     TAB_NAME varchar(100),
@@ -798,14 +795,14 @@ create index IDX_SYS_QUERY_RESULT_SESSION_KEY on SYS_QUERY_RESULT (SESSION_ID, Q
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin',
 'cc2229d1b8a052423d9e1c9ef0113b850086586a',
-'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
+'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f94', current_timestamp, 0, 'emailer', 'emailer', null,
-'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1, 'C')^
+'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', 1)^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 10)^

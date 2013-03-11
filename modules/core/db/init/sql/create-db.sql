@@ -55,7 +55,7 @@ create table SYS_FILE (
     --
     NAME varchar(500),
     EXT varchar(20),
-    SIZE integer,
+    FILE_SIZE integer,
     CREATE_DATE timestamp,
     --
     primary key (ID)
@@ -164,7 +164,7 @@ create table SEC_ROLE (
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE smallint,
-    TYPE integer,
+    ROLE_TYPE integer,
     --
     primary key (ID)
 );
@@ -201,7 +201,7 @@ create table SEC_GROUP_HIERARCHY (
     --
     GROUP_ID varchar(36),
     PARENT_ID varchar(36),
-    LEVEL integer,
+    HIERARCHY_LEVEL integer,
     --
     primary key (ID),
     constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
@@ -238,7 +238,6 @@ create table SEC_USER (
     GROUP_ID varchar(36),
     DEFAULT_SUBSTITUTED_USER_ID varchar(36),
     IP_MASK varchar(200),
-    TYPE varchar(1),
     CHANGE_PASSWORD_AT_LOGON smallint,
     --
     primary key (ID),
@@ -293,7 +292,7 @@ create table SEC_PERMISSION (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    TYPE integer,
+    PERMISSION_TYPE integer,
     TARGET varchar(100),
     VALUE integer,
     ROLE_ID varchar(36),
@@ -446,7 +445,7 @@ create table SEC_ENTITY_LOG (
     --
     EVENT_TS timestamp,
     USER_ID varchar(36),
-    TYPE char(1),
+    CHANGE_TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID varchar(36),
     CHANGES longvarchar,
@@ -512,7 +511,7 @@ create table SYS_FOLDER (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    TYPE char(1),
+    FOLDER_TYPE char(1),
     PARENT_ID varchar(36),
     NAME varchar(100),
     TAB_NAME varchar(100),

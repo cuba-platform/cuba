@@ -72,7 +72,7 @@ public class EntityLogItem extends BaseUuidEntity
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @Column(name = "TYPE", length = 1)
+    @Column(name = "CHANGE_TYPE", length = 1)
     private String type;
 
     @Column(name = "ENTITY", length = 100)

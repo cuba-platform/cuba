@@ -29,7 +29,7 @@ public class Permission extends StandardEntity
     public static final String TARGET_PATH_DELIMETER = ":";
 
     /** @see com.haulmont.cuba.security.entity.PermissionType PermissionType.getId() */
-    @Column(name = "TYPE")
+    @Column(name = "PERMISSION_TYPE")
     private Integer type;
 
     @Column(name = "TARGET", length = 100)

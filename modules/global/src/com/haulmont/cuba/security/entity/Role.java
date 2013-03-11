@@ -44,7 +44,7 @@ public class Role extends StandardEntity
     @Column(name = "DESCRIPTION", length = 1000)
     private String description;
 
-    @Column(name = "TYPE")
+    @Column(name = "ROLE_TYPE")
     private Integer type;
 
     @Column(name = "IS_DEFAULT_ROLE")
