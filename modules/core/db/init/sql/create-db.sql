@@ -299,7 +299,7 @@ create table SEC_PERMISSION (
     --
     primary key (ID),
     constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID),
-    constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, TYPE, TARGET, DELETE_TS)
+    constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, PERMISSION_TYPE, TARGET, DELETE_TS)
 );
 
 -- alter table SEC_PERMISSION add constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID);
@@ -605,12 +605,12 @@ create table SYS_FTS_QUEUE (
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin',
 'cc2229d1b8a052423d9e1c9ef0113b850086586a',
-'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C');
+'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true);
 
-insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)
+insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 10);
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
@@ -686,9 +686,9 @@ alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_SEND
 CREATE INDEX SYS_SENDING_ATTACHMENT_MESSAGE_IDX
   ON SYS_SENDING_ATTACHMENT(MESSAGE_ID );
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', null,
-'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C');
+'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true);
 
 ------------------------------------------------------------------------------------------------------------
 
