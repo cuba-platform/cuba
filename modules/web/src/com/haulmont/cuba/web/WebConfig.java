@@ -331,4 +331,21 @@ public interface WebConfig extends Config {
     @Property("cuba.systemId")
     @DefaultString("CUBA")
     String getSystemID();
+
+    /**
+     * @return an action to force login.
+     * <p/> An action is represented by the last part of URL.
+     */
+    @Property("cuba.web.loginAction")
+    @DefaultString("login")
+    String getLoginAction();
+
+    /**
+     * @return list of URL actions to call {@link com.haulmont.cuba.web.sys.LinkHandler}
+     * <p/> An action is represented by the last part of URL.
+     */
+    @Property("cuba.web.linkHandlerActions")
+    @Factory(factory = StringListTypeFactory.class)
+    @Default("open|o")
+    List<String> getLinkHandlerActions();
 }

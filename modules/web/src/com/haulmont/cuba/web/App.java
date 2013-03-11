@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 03.12.2008 14:37:46
- *
- * $Id$
  */
 package com.haulmont.cuba.web;
 
@@ -51,9 +46,13 @@ import java.util.regex.Pattern;
  * <p/>
  * Specific application should inherit from this class and set derived class name
  * in <code>application</code> servlet parameter of <code>web.xml</code>
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public abstract class App extends Application
         implements ApplicationContext.TransactionListener, HttpServletRequestListener {
+
     private static final long serialVersionUID = -3435976475534930050L;
 
     public static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
@@ -65,8 +64,6 @@ public abstract class App extends Application
     public static final String LAST_REQUEST_PARAMS_ATTR = "lastRequestParams";
 
     public static final String LAST_REQUEST_ACTION_ATTR = "lastRequestAction";
-
-    public static final List<String> ACTION_NAMES = Arrays.asList("open", "login");
 
     public static final String USER_SESSION_ATTR = "userSessionId";
 
@@ -400,7 +397,7 @@ public abstract class App extends Application
         String action = (String) httpSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
 
         if (!connection.isConnected() &&
-                !(("login".equals(action)) || auxillaryUrl(requestURI))) {
+                !((webConfig.getLoginAction().equals(action)) || auxillaryUrl(requestURI))) {
             if (loginOnStart(request))
                 setupCurrentWindowName(requestURI, windowName);
         }
@@ -459,16 +456,16 @@ public abstract class App extends Application
         }
     }
 
-    private void processExternalLink(HttpServletRequest request, String requestURI) {
+    protected void processExternalLink(HttpServletRequest request, String requestURI) {
         String action = (String) request.getSession().getAttribute(LAST_REQUEST_ACTION_ATTR);
 
-        if ("open".equals(action) && !auxillaryUrl(requestURI)) {
+        if (!auxillaryUrl(requestURI) && webConfig.getLinkHandlerActions().contains(action)) {
             Map<String, String> params = (Map<String, String>) request.getSession().getAttribute(LAST_REQUEST_PARAMS_ATTR);
             if (params == null) {
                 log.warn("Unable to process the external link: lastRequestParams not found in session");
                 return;
             }
-            LinkHandler linkHandler = new LinkHandler(this, params);
+            LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, this, action, params);
             if (connection.isConnected())
                 linkHandler.handle();
             else

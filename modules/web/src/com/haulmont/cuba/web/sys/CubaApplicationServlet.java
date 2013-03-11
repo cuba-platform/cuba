@@ -89,7 +89,10 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
         if (needRedirect) {
             String lastPart = uriParts[uriParts.length - 1];
-            action = App.ACTION_NAMES.contains(lastPart) ? lastPart : null;
+
+            if (webConfig.getLoginAction().equals(lastPart) || webConfig.getLinkHandlerActions().contains(lastPart)) {
+                action = lastPart;
+            }
             needRedirect = contextName.equals(lastPart) || action != null;
             int i = 0;
             while ((i < uriParts.length) && needRedirect) {
