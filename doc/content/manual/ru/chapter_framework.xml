@@ -10619,6 +10619,30 @@ return count</programlisting></para>
         <para>Наборы  представляют собой экземпляры сущности <code>SearchFolder</code> и хранятся в связанных таблицах <database>SYS_FOLDER</database> и <database>SEC_SEARCH_FOLDER</database>.</para>
       </section>
     </section>
+    <section id="link_to_screen">
+      <title>Ссылки на экраны</title>
+      <para>Блок <link linkend="app_tiers">Web Client</link> позволяет открывать экраны приложения по команде, переданной в URL. Причем если в данный момент в браузере нет сессии приложения с зарегистрированным пользователем, то сначала будет отображено окно логина, и сразу после успешной регистрации - главное окно приложения с требуемым экраном.</para>
+      <para>Набор возможных команд указывается в свойстве приложения <property>
+          <link linkend="cuba.web.linkHandlerActions">cuba.web.linkHandlerActions</link>
+        </property>, по умолчанию это команды  <code>open</code> и <code>o</code>.  При обработке HTTP запроса анализируется последняя часть URL, и если она совпадает с одной из команд, управление передается бину <code>LinkHandler</code>. Стандартная реализация этого бина позволяет указывать следующие параметры:<itemizedlist>
+          <listitem>
+            <para><code>screen</code> - имя экрана, указанное в <filename>
+                <link linkend="screens.xml">screens.xml</link>
+              </filename>, например:<programlisting>http://localhost:8080/app/open?screen=sec$User.browse</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>item</code> - экземпляр сущности для передачи в <link linkend="screen_edit">экран редактирования</link>, закодированный по правилам класса <code>EntityLoadInfo</code>, т.е. <code>entityName-instanceId</code> или <code>entityName-instanceId-viewName</code>. Примеры:<programlisting>http://localhost:8080/app/open?screen=sec$User.edit&amp;item=sec$User-60885987-1b61-4247-94c7-dff348347f93
+
+http://localhost:8080/app/open?screen=sec$User.edit&amp;item=sec$User-60885987-1b61-4247-94c7-dff348347f93-user.edit</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>params</code> - параметры экрана, передаваемые в метод <code>init()</code> <link linkend="screen_controller">контроллера</link>. Параметры кодируются в виде <code>name1:value1,name2:value2</code>. Значениями параметров могут быть экземпляры сущностей, в свою очередь закодированные по правилам класса <code>EntityLoadInfo</code>. Примеры:<programlisting>http://localhost:8080/app/open?screen=sales$Customer.lookup&amp;params=p1:v1,p2:v2
+
+http://localhost:8080/app/open?screen=sales$Customer.lookup&amp;params=p1:sales$Customer-01e37691-1a9b-11de-b900-da881aea47a6</programlisting></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Бин <code>LinkHandler</code> может быть переопределен в проекте приложения для обеспечения специфической обработки ссылок.</para>
+    </section>
     <section>
       <title>Инспектор сущностей</title>
       <para>Инспектор сущностей позволяет работать с любыми объектами предметной области без создания специфических экранов. Инспектор динамически генерирует экраны просмотра списка и редактирования экземпляра выбранной сущности.</para>
