@@ -270,7 +270,7 @@
           <listitem>
             <para><code>createDb</code> - задача типа <code>CubaDbCreation</code>, выполняющая создание базы данных приложения и выполнение соответствующих <link linkend="db_scripts">скриптов</link>. Объявляется в модуле <structname>core</structname>. Параметры:<itemizedlist>
                 <listitem>
-                  <para><code>dbms</code> - тип СУБД, задается строкой <code>postgres</code> или <code>mssql</code>.</para>
+                  <para><code>dbms</code> - тип СУБД, задается строкой <code>postgres</code>, <code>mssql</code> или <code>oracle</code>.</para>
                 </listitem>
                 <listitem>
                   <para><code>dbName</code> - имя базы данных. </para>
@@ -282,7 +282,7 @@
                   <para><code>dbPassword</code> - пароль пользователя СУБД.</para>
                 </listitem>
                 <listitem>
-                  <para><code>host</code> - имя хоста СУБД. Если не задан, используется <code>localhost</code>.</para>
+                  <para><code>host</code> - хост, и, опционально, порт СУБД в формате <code>host[:port]</code>. Если не задан, используется <code>localhost</code>. </para>
                 </listitem>
                 <listitem>
                   <para><code>dropDbSql</code> - команда SQL для удаления БД. Если не задана, используется значение по умолчанию, зависящее от типа СУБД. </para>
@@ -290,12 +290,33 @@
                 <listitem>
                   <para><code>createDbSql</code> - команда SQL для создания БД. Если не задана, используется значение по умолчанию, зависящее от типа СУБД. </para>
                 </listitem>
+                <listitem>
+                  <para><code>driverClasspath</code> - список JAR файлов, содержащих JDBC драйвер. Элементы списка разделяются символом &quot;:&quot; на Linux и символом &quot;;&quot; на Windows. Если не задан, используются зависимости, входящие в конфигурацию <code>jdbc</code> данного модуля. Явное задание <code>driverClasspath</code> актуально при использовании Oracle, т.к. его JDBC драйвер не присутствует в зависимостях. </para>
+                </listitem>
+                <listitem>
+                  <para><code>oracleSystemPassword</code> - при использовании Oracle пароль пользователя SYSTEM.</para>
+                </listitem>
               </itemizedlist></para>
-            <para>Например:<programlisting>task createDb(dependsOn: assemble, description: &apos;Creates local database&apos;, type: CubaDbCreation) {
+            <para>Пример для PostgreSQL:<programlisting>task createDb(dependsOn: assemble, description: &apos;Creates local database&apos;, type: CubaDbCreation) {
     dbms = &apos;postgres&apos;
     dbName = &apos;sales&apos;
     dbUser = &apos;cuba&apos;
     dbPassword = &apos;cuba&apos;
+}</programlisting></para>
+            <para>Пример для MS SQL Server:<programlisting>task createDb(dependsOn: assemble, description: &apos;Creates local database&apos;, type: CubaDbCreation) {
+    dbms = &apos;mssql&apos;
+    dbName = &apos;sales&apos;
+    dbUser = &apos;sa&apos;
+    dbPassword = &apos;saPass1&apos;
+}</programlisting></para>
+            <para>Пример для Oracle:<programlisting>task createDb(dependsOn: assemble, description: &apos;Creates database&apos;, type: CubaDbCreation) {
+    dbms = &apos;oracle&apos;
+    host = &apos;192.168.1.10&apos;
+    dbName = &apos;orcl&apos;
+    dbUser = &apos;sales&apos;
+    dbPassword = &apos;sales&apos;
+    oracleSystemPassword = &apos;manager&apos;
+    driverClasspath = &quot;$tomcatDir/lib/ojdbc6.jar&quot;
 }</programlisting></para>
           </listitem>
           <listitem>

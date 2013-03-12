@@ -3559,7 +3559,7 @@ public void someServiceMethod() {
         <title>Выбор и подключение</title>
         <para>Тип используемой СУБД определяется свойством приложения <property>
             <link linkend="cuba.dbmsType">cuba.dbmsType</link>
-          </property> и настройкой источника данных. Конфигурационный файл для Tomcat, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
+          </property> и настройкой источника данных. Конфигурационный файл для <application>Tomcat</application>, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
         <warning>
           <para>Обратите внимание на применимость СУБД в зависимости от используемых <link linkend="base_projects">базовых проектов</link> платформы:<itemizedlist>
               <listitem>
@@ -3569,10 +3569,14 @@ public void someServiceMethod() {
                 <para><application>PostgreSQL</application> - поддерживается всеми базовыми проектами платформы</para>
               </listitem>
               <listitem>
-                <para><application>Microsoft SQL Server</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>workflow</structname>, <structname>fts</structname></para>
+                <para><application>Microsoft SQL Server</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname></para>
+              </listitem>
+              <listitem>
+                <para><application>Oracle</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname>, <structname>ccpayments</structname></para>
               </listitem>
             </itemizedlist></para>
         </warning>
+        <para>При использовании <application>Oracle</application> имеется следующая особенность: в связи с политикой распространения JDBC драйвера Oracle его можно скачать только вручную с сайта <ulink url="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html">http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html</ulink>. После скачивания разместите JAR с драйвером в подкаталоге <filename>lib</filename> установленного сервера <application>Tomcat</application>.</para>
       </section>
       <section id="db_scripts">
         <title>Создание и обновление БД</title>
@@ -3659,15 +3663,17 @@ public void someServiceMethod() {
           <title>Соответствие типов данных</title>
           <para>В таблице приведено соответствие типов данных, отличающихся для разных СУБД.</para>
           <informaltable frame="all">
-            <tgroup cols="3">
+            <tgroup cols="4">
               <colspec colnum="1" colname="c0"/>
               <colspec colnum="2" colname="c1"/>
               <colspec colnum="3" colname="c2"/>
+              <colspec colname="cgen1" colnum="4"/>
               <thead>
                 <row>
                   <entry>Java</entry>
                   <entry>PostgreSQL</entry>
                   <entry>MS SQL Server</entry>
+                  <entry>Oracle</entry>
                 </row>
               </thead>
               <tbody>
@@ -3675,21 +3681,25 @@ public void someServiceMethod() {
                   <entry>UUID</entry>
                   <entry>uuid</entry>
                   <entry>uniqueidentifier</entry>
+                  <entry>varchar2(32)</entry>
                 </row>
                 <row>
                   <entry>Date</entry>
                   <entry>timestamp</entry>
                   <entry>datetime</entry>
+                  <entry>timestamp</entry>
                 </row>
                 <row>
                   <entry>Boolean</entry>
                   <entry>boolean</entry>
                   <entry>tinyint</entry>
+                  <entry>char(1)</entry>
                 </row>
                 <row>
                   <entry>byte[]</entry>
                   <entry>bytea</entry>
                   <entry>image</entry>
+                  <entry>blob</entry>
                 </row>
               </tbody>
             </tgroup>
