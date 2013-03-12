@@ -732,6 +732,33 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.backgroundWorker.maxActiveTasksCount">
+        <term>cuba.backgroundWorker.maxActiveTasksCount</term>
+        <listitem>
+          <para>Максимальное количество активных  <link linkend="background_tasks">фоновых задач</link>.</para>
+          <para>Значение по умолчанию: <literal>100</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.backgroundWorker.maxClientLatencySeconds">
+        <term>cuba.backgroundWorker.maxClientLatencySeconds</term>
+        <listitem>
+          <para>Задержка в секундах, которая добавляется к таймауту   <link linkend="background_tasks">фоновой задачи</link>, прежде чем она будет прервана механизмом <code>WatchDog</code>. Отражает возможные сетевые задержки при опросе статуса задачи.</para>
+          <para>Значение по умолчанию: <literal>60</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.backgroundWorker.uiCheckInterval">
+        <term>cuba.backgroundWorker.uiCheckInterval</term>
+        <listitem>
+          <para>Период опроса состояния <link linkend="background_tasks">фоновых задач</link>.</para>
+          <para>Значение по умолчанию: <literal>2000</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.confDir">
         <term>cuba.confDir</term>
         <listitem>

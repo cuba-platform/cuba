@@ -100,12 +100,4 @@
         <property name="poolSize" value="10"/>
     </bean>
 
-    <!-- Background tasks support -->
-
-    <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.web.gui.executors.impl.WebTasksWatchDog"/>
-
-    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.web.gui.executors.impl.WebBackgroundWorker">
-        <constructor-arg index="0" ref="cuba_BackgroundWorker_WatchDog"/>
-    </bean>
-
 </beans>
