@@ -62,7 +62,7 @@ def desktopModule = project(':cuba-desktop')
 def uiTestModule = project(':cuba-test-ui')
 def portalModule = project(':cuba-portal')
 
-def vaadinVersion = '7.0.1.h.M1'
+def vaadinVersion = '7.0.2.h.M1'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
@@ -349,7 +349,7 @@ configure(webToolkitModule) {
         dependencyModules = [webModule]
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-        compilerArgs = ['-style' : 'PRETTY', '-logLevel' : 'INFO', '-localWorkers' : '2']
+        compilerArgs = ['-style' : 'DETAILED', '-logLevel' : 'INFO', '-localWorkers' : '2', '-draftCompile' : 'true']
     }
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {

@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 10.11.2009 18:00:23
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.data;
 
@@ -14,6 +9,10 @@ import com.vaadin.data.Container;
 
 import java.util.Collection;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public interface GroupTableContainer extends Container.Sortable {
     void groupBy(Object[] properties);
 

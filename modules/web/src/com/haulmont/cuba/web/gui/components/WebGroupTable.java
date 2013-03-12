@@ -24,8 +24,6 @@ import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
 import com.vaadin.data.Item;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -66,22 +64,22 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
 //                return b;
 //            }
 
-            @Override
-            public void paintContent(PaintTarget target) throws PaintException {
-                super.paintContent(target);
-                paintSpecificContent(target);
-            }
-
 //            vaadin7
 //            @Override
-//            public void groupBy(Object[] properties) {
-//                groupBy(properties, rerender);
+//            public void paintContent(PaintTarget target) throws PaintException {
+//                super.paintContent(target);
+//                paintSpecificContent(target);
 //            }
+
+            @Override
+            public void groupBy(Object[] properties) {
+                groupBy(properties, rerender);
+            }
         };
         initComponent(component);
 
 //        vaadin7
-//        component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
+        component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
     }
 
     @Override
@@ -95,12 +93,11 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
 
         groupPropertiesElement = element.addElement("groupProperties");
 
-//        vaadin7
-//        final Collection<?> groupProperties = component.getGroupProperties();
-//        for (Object groupProperty : groupProperties) {
-//            final Element groupPropertyElement = groupPropertiesElement.addElement("property");
-//            groupPropertyElement.addAttribute("id", groupProperty.toString());
-//        }
+        final Collection<?> groupProperties = component.getGroupProperties();
+        for (Object groupProperty : groupProperties) {
+            final Element groupPropertyElement = groupPropertiesElement.addElement("property");
+            groupPropertyElement.addAttribute("id", groupProperty.toString());
+        }
 
         return true;
     }
@@ -112,10 +109,9 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         final Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {
             final List elements = groupPropertiesElement.elements("property");
-            final List<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>(elements.size());
+            final List<MetaPropertyPath> properties = new ArrayList<>(elements.size());
             for (final Object o : elements) {
-                final MetaPropertyPath property = datasource.getMetaClass().getPropertyEx(
-                        ((Element) o).attributeValue("id")
+                final MetaPropertyPath property = datasource.getMetaClass().getPropertyPath(((Element) o).attributeValue("id")
                 );
                 properties.add(property);
             }
@@ -162,39 +158,32 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
 
     @Override
     public void groupBy(Object[] properties) {
-//        vaadin7
-//        component.groupBy(properties);
+        component.groupBy(properties);
     }
 
     @Override
     public void expandAll() {
-//        vaadin7
-//        component.expandAll();
+        component.expandAll();
     }
 
     @Override
     public void expand(GroupInfo groupId) {
-//        vaadin7
-//        component.expand(groupId);
+        component.expand(groupId);
     }
 
     @Override
     public void collapseAll() {
-//        vaadin7
-//        component.collapseAll();
+        component.collapseAll();
     }
 
     @Override
     public void collapse(GroupInfo groupId) {
-//        vaadin7
-//        component.collapse(groupId);
+        component.collapse(groupId);
     }
 
     @Override
     public boolean isExpanded(GroupInfo groupId) {
-//        vaadin7
-//        return component.isExpanded(groupId);
-        return false;
+        return component.isExpanded(groupId);
     }
 
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
@@ -428,6 +417,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         @Override
         public void collapse(Object id) {
             if (isGroup(id)) {
+                //noinspection RedundantCast
                 expanded.remove((GroupInfo)id);
                 resetCachedItems();
             }
@@ -435,6 +425,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
 
         @Override
         public boolean isExpanded(Object id) {
+            //noinspection RedundantCast
             return isGroup(id) && expanded.contains((GroupInfo)id);
         }
 
@@ -617,18 +608,16 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
             @Override
             public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
                 rerender = false;
-//                vaadin7
-//                Collection groupProperties = component.getGroupProperties();
-//                component.groupBy(groupProperties.toArray());
+                Collection groupProperties = component.getGroupProperties();
+                component.groupBy(groupProperties.toArray());
                 super.stateChanged(ds, prevState, state);
                 rerender = true;
             }
 
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-//                vaadin7
-//                Collection groupProperties = component.getGroupProperties();
-//                component.groupBy(groupProperties.toArray());
+                Collection groupProperties = component.getGroupProperties();
+                component.groupBy(groupProperties.toArray());
                 super.collectionChanged(ds, operation, items);
             }
         }
@@ -639,15 +628,12 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         @Override
         public String format(Object groupId, Object value) {
             String formattedValue = super.format(groupId, value);
-//            vaadin7
-//            int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
-//            return String.format("%s (%d)", formattedValue == null ? "" : formattedValue, count);
-            return formattedValue;
+            int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
+            return String.format("%s (%d)", formattedValue == null ? "" : formattedValue, count);
         }
     }
 
-    protected class DefaultGroupPropertyValueFormatter
-            implements com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupPropertyValueFormatter {
+    protected class DefaultGroupPropertyValueFormatter implements CubaGroupTable.GroupPropertyValueFormatter {
 
         @Override
         public String format(Object groupId, Object value) {
