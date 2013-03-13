@@ -51,7 +51,8 @@ import java.util.*;
  * @version $Id$
  */
 @SuppressWarnings("unused")
-public class AppWindow extends Window implements UserSubstitutionListener, JavaScriptHost.HistoryBackHandler {
+public class AppWindow extends Window implements UserSubstitutionListener,
+        JavaScriptHost.HistoryBackHandler, JavaScriptHost.ServerCallHandler {
 
     private static final long serialVersionUID = 7269808125566032433L;
 
@@ -168,12 +169,18 @@ public class AppWindow extends Window implements UserSubstitutionListener, JavaS
         if (webConfig.getAllowHandleBrowserHistoryBack()) {
             scriptHost.setHistoryBackHandler(this);
         }
+        scriptHost.setServerCallHandler(this);
         addComponent(scriptHost);
     }
 
     @Override
     public void onHistoryBackPerformed() {
         // Go back to the Future!
+    }
+
+    @Override
+    public void onJsServerCall(String[] params) {
+        // handle js api call
     }
 
     /**

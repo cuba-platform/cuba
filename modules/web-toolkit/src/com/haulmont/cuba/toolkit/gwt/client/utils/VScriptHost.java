@@ -8,10 +8,7 @@ package com.haulmont.cuba.toolkit.gwt.client.utils;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.ValueMap;
+import com.vaadin.terminal.gwt.client.*;
 
 /**
  * Component for evaluate custom JavaScript from server
@@ -35,8 +32,10 @@ public class VScriptHost extends SimplePanel implements Paintable {
     public static final String LOCALE_PARAM_KEY = "messages";
 
     public static final String HISTORY_BACK_ACTION = "historyBackAction";
+    public static final String SERVER_CALL_ACTION = "serverCall";
 
     private boolean historyHandlerInitialized = false;
+    private boolean serverCallHandlerInitialized = false;
 
     private ApplicationConnection client;
     private String paintableId;
@@ -55,6 +54,12 @@ public class VScriptHost extends SimplePanel implements Paintable {
             initHistoryHandler();
 
             historyHandlerInitialized = true;
+        }
+
+        if (!serverCallHandlerInitialized) {
+            initJsApi();
+
+            serverCallHandlerInitialized = true;
         }
 
         this.getElement().setId("scriptHost_" + paintableId);
@@ -87,6 +92,13 @@ public class VScriptHost extends SimplePanel implements Paintable {
         }
     }
 
+    public void makeServerCall(String[] params) {
+        if (params != null && params.length > 0)
+            client.updateVariable(paintableId, SERVER_CALL_ACTION, params, true);
+        else
+            VConsole.log("JsAPI: Null or empty params in server call");
+    }
+
     private native void evaluateScript(String script)/*-{
         eval(script);
     }-*/;
@@ -96,7 +108,7 @@ public class VScriptHost extends SimplePanel implements Paintable {
     }-*/;
 
     private native void getResource(String resourceUrl)/*-{
-        var timedAction = function() {
+        var timedAction = function () {
             document.location.href = resourceUrl;
         };
         setTimeout(timedAction, 50);
@@ -105,7 +117,7 @@ public class VScriptHost extends SimplePanel implements Paintable {
     private native void initHistoryHandler()
     /*-{
         var vScriptHost = this;
-        (function(window){
+        (function (window) {
             var History = window.History;
 
             var location = window.location.href;
@@ -131,5 +143,15 @@ public class VScriptHost extends SimplePanel implements Paintable {
                 }
             });
         })($wnd);
+    }-*/;
+
+    private native void initJsApi() /*-{
+        var vScriptHost = this;
+        $wnd.cubaJsApi = {
+            makeServerCall: function (params) {
+                if (params)
+                    vScriptHost.@com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::makeServerCall([Ljava/lang/String;)(params);
+            }
+        }
     }-*/;
 }

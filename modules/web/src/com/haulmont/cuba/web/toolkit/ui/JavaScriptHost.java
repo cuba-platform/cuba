@@ -12,6 +12,8 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,8 @@ import java.util.Set;
 @ClientWidget(VScriptHost.class)
 public class JavaScriptHost extends AbstractComponent {
     private static final long serialVersionUID = -136425458030091656L;
+
+    private static Log log = LogFactory.getLog(JavaScriptHost.class);
 
     private static class ScriptValueProvider implements ValueProvider {
 
@@ -58,12 +62,22 @@ public class JavaScriptHost extends AbstractComponent {
 
     private HistoryBackHandler historyBackHandler = null;
 
+    private ServerCallHandler serverCallHandler = null;
+
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
 
         if (variables.containsKey(VScriptHost.HISTORY_BACK_ACTION) && historyBackHandler != null) {
             historyBackHandler.onHistoryBackPerformed();
+        }
+
+        if (variables.containsKey(VScriptHost.SERVER_CALL_ACTION) && serverCallHandler != null) {
+            Object params = variables.get(VScriptHost.SERVER_CALL_ACTION);
+            if (params instanceof String[])
+                serverCallHandler.onJsServerCall((String[]) params);
+            else
+                log.warn("Unrecognized params from client-side in JS server call");
         }
     }
 
@@ -133,10 +147,25 @@ public class JavaScriptHost extends AbstractComponent {
         this.historyBackHandler = historyBackHandler;
     }
 
+    public ServerCallHandler getServerCallHandler() {
+        return serverCallHandler;
+    }
+
+    public void setServerCallHandler(ServerCallHandler serverCallHandler) {
+        this.serverCallHandler = serverCallHandler;
+    }
+
     public interface HistoryBackHandler {
         /**
          * When User performs back step by history
          */
         void onHistoryBackPerformed();
+    }
+
+    public interface ServerCallHandler {
+        /**
+         * When on client called js api for server-side
+         */
+        void onJsServerCall(String[] params);
     }
 }
