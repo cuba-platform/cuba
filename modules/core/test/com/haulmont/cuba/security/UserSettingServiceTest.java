@@ -12,7 +12,7 @@ package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.sys.TestUserSessionSource;
+import com.haulmont.cuba.testsupport.TestUserSessionSource;
 import com.haulmont.cuba.security.app.UserSettingService;
 
 public class UserSettingServiceTest extends CubaTestCase
