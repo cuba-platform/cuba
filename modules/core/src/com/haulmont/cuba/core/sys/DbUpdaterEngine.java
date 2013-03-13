@@ -68,12 +68,20 @@ public class DbUpdaterEngine implements DbUpdater {
     protected DbUpdaterEngine() {
     }
 
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public DbDialect getDbDialect() {
+        return dbDialect;
+    }
+
     protected void createChangelogTable() {
-        QueryRunner runner = new QueryRunner(dataSource);
+        QueryRunner runner = new QueryRunner(getDataSource());
         try {
             runner.update("create table SYS_DB_CHANGELOG(" +
                     "SCRIPT_NAME varchar(300) not null primary key, " +
-                    "CREATE_TS " + (dbDialect instanceof MssqlDbDialect ? "datetime" : "timestamp") + " default current_timestamp, " +
+                    "CREATE_TS " + (getDbDialect() instanceof MssqlDbDialect ? "datetime" : "timestamp") + " default current_timestamp, " +
                     "IS_INIT integer default 0)");
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -112,7 +120,7 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "update");
-                File scriptDir = new File(initDir, dbDialect.getName());
+                File scriptDir = new File(initDir, getDbDialect().getName());
                 if (scriptDir.exists()) {
                     Collection list = FileUtils.listFiles(scriptDir, null, true);
                     URI scriptDirUri = scriptDir.toURI();
@@ -180,7 +188,7 @@ public class DbUpdaterEngine implements DbUpdater {
     protected boolean dbInitialized() {
         Connection connection = null;
         try {
-            connection = dataSource.getConnection();
+            connection = getDataSource().getConnection();
             DatabaseMetaData dbMetaData = connection.getMetaData();
             ResultSet tables = dbMetaData.getTables(null, null, null, null);
             boolean found = false;
@@ -262,7 +270,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected Set<String> getExecutedScripts() {
-        QueryRunner runner = new QueryRunner(dataSource);
+        QueryRunner runner = new QueryRunner(getDataSource());
         try {
             Set<String> scripts = runner.query("select SCRIPT_NAME from SYS_DB_CHANGELOG",
                     new ResultSetHandler<Set<String>>() {
@@ -282,7 +290,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected void markScript(String name, boolean init) {
-        QueryRunner runner = new QueryRunner(dataSource);
+        QueryRunner runner = new QueryRunner(getDataSource());
         try {
             runner.update("insert into SYS_DB_CHANGELOG (SCRIPT_NAME, IS_INIT) values (?, ?)",
                     new Object[]{name, init ? 1 : 0}
@@ -300,10 +308,10 @@ public class DbUpdaterEngine implements DbUpdater {
             throw new RuntimeException(e);
         }
         StrTokenizer tokenizer = new StrTokenizer(script,
-                StrMatcher.charSetMatcher(dbDialect.getScriptSeparator()),
+                StrMatcher.charSetMatcher(getDbDialect().getScriptSeparator()),
                 StrMatcher.singleQuoteMatcher()
         );
-        QueryRunner runner = new QueryRunner(dataSource);
+        QueryRunner runner = new QueryRunner(getDataSource());
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
             try {
@@ -346,7 +354,7 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "init");
-                File scriptDir = new File(initDir, dbDialect.getName());
+                File scriptDir = new File(initDir, getDbDialect().getName());
                 if (scriptDir.exists()) {
                     File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
                         @Override
