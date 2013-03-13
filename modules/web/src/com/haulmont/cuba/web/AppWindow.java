@@ -37,6 +37,8 @@ import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -55,6 +57,8 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         JavaScriptHost.HistoryBackHandler, JavaScriptHost.ServerCallHandler {
 
     private static final long serialVersionUID = 7269808125566032433L;
+
+    private static final Log log = LogFactory.getLog(AppWindow.class);
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -181,6 +185,8 @@ public class AppWindow extends Window implements UserSubstitutionListener,
     @Override
     public void onJsServerCall(String[] params) {
         // handle js api call
+        if (params != null)
+            log.debug("Client JS API Call with params [" + StringUtils.join(params, ',') + "]");
     }
 
     /**

@@ -77,7 +77,7 @@ public class JavaScriptHost extends AbstractComponent {
             if (params instanceof String[])
                 serverCallHandler.onJsServerCall((String[]) params);
             else
-                log.warn("Unrecognized params from client-side in JS server call");
+                log.warn("Unrecognized params from client-side in JS server call: " + params);
         }
     }
 
