@@ -72,6 +72,12 @@ public class CubaGroupBoxConnector extends PanelConnector {
         Style style = getWidget().getElement().getStyle();
         style.clearPaddingTop();
         style.clearPaddingBottom();
+
+        com.google.gwt.dom.client.Element firstChildElement = getWidget().contentNode.getFirstChildElement();
+        if (firstChildElement != null && "100%".equals(firstChildElement.getStyle().getHeight()))
+            getWidget().contentNode.addClassName("first-child-expanded");
+        else
+            getWidget().contentNode.removeClassName("first-child-expanded");
     }
 
     private void replaceClassNames(Element element) {

@@ -34,9 +34,11 @@ $groupBoxCaptionLineHeight: 18px;
         line-height: $groupBoxCaptionLineHeight;
 
         .cuba-groupbox-expander {
+          width: 9px;
+          height: 9px;
           float: left;
-          width: 12px;
-          height: 18px;
+          margin-top: 4px;
+          margin-right: 2px;
           background: transparent no-repeat center left;
           background-image: url(sprites/expand.png); /** sprite-ref: components; */
           cursor: pointer;
@@ -93,13 +95,13 @@ $groupBoxCaptionLineHeight: 18px;
 @mixin cuba-groupbox-content-fix {
   .cuba-groupbox.v-widget {
     fieldset {
-      .cuba-groupbox-content {
+      .cuba-groupbox-content.first-child-expanded {
         padding-bottom: $groupBoxCaptionLineHeight;
       }
     }
   }
 
-  .cuba-groupbox.v-widget.cuba-groupbox-nocaption {
+  .cuba-groupbox.v-widget.first-child-expanded.cuba-groupbox-nocaption {
     fieldset {
       .cuba-groupbox-content {
         padding-bottom: 0;
