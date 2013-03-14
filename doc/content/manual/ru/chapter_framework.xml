@@ -1346,12 +1346,25 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
           </itemizedlist></para>
         <para>Экземпляр <code>Datatype</code> может быть получен двумя способами:<itemizedlist>
             <listitem>
-              <para>из мета-свойства типа <code>
+              <para>для атрибута сущности из соответствующего ему  мета-свойства типа <code>
                   <link linkend="metaProperty.getType">DATATYPE</link>
                 </code>, вызовом <code>getRange().asDatatype()</code></para>
             </listitem>
             <listitem>
               <para>статическим методом <code>Datatypes.get()</code>, передавая в него имя реализации <code>Datatype</code> или класс Java, для которого он создан.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para><code>Datatype</code> сопоставляется атрибуту сущности на старте системы по следующим правилам:<itemizedlist>
+            <listitem>
+              <para>Если для поля или метода задана аннотация <code>@MetaProperty</code> с непустым значением <code>datatype</code>, то атрибуту соспоставляется экземпляр <code>Datatype</code> с данным именем. </para>
+              <para>Например, при следующем объявлении атрибута сущности он получит нестандартный тип <code>GeoCoordinateDatatype</code> (см. пример ниже):<programlisting>@MetaProperty(datatype = GeoCoordinateDatatype.NAME)
+@Column(name = &quot;LATITUDE&quot;)
+private Double latitude;</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>как правило, явное указание отсутствует, и атрибуту сопоставляется экземпляр <code>Datatype</code>, возвращаемый репозиторием <code>Datatypes.get(Class)</code>, при передаче в него типа поля или метода.</para>
+              <para>Например, в данном случае атрибут latitude получит стандартный тип DoubleDatatype, зарегистрированный в базовом <filename>/com/haulmont/chile/core/datatypes/datatypes.xml</filename>:<programlisting>@Column(name = &quot;LATITUDE&quot;)
+private Double latitude;</programlisting></para>
             </listitem>
           </itemizedlist></para>
         <para>Основные методы интерфейса <code>Datatype</code>:<itemizedlist>
@@ -1427,7 +1440,7 @@ String dateStr = Datatypes.get(Date.class).format(date, userSessionSource.getLoc
             </listitem>
             <listitem>
               <para>Пример форматирования числового значения с повышенной точностью  (5 знаков после запятой) в <link linkend="app_tiers">блоке</link> <structname>Web Client</structname></para>
-              <para><filename>/com/abc/sales/web/messages_ru.properties</filename><programlisting>coordinateFormat = #,##0.00000</programlisting></para>
+              <para><filename>/com/sample/sales/web/messages_ru.properties</filename><programlisting>coordinateFormat = #,##0.00000</programlisting></para>
               <para><filename>SomeClass.java</filename><programlisting>@Inject
 protected Messages messages;
 @Inject
@@ -1440,6 +1453,59 @@ NumberFormat format = new DecimalFormat(coordinateFormat, formatStrings.getForma
 String formattedValue = format.format(value);</programlisting></para>
             </listitem>
           </itemizedlist>
+        </section>
+        <section>
+          <title>Пример специализированного Datatype</title>
+          <para>Рассмотрим реализацию нестандартного типа GeoCoordinateDatatype, предназначенного для атрибутов, хранящих географические координаты.</para>
+          <para>Создаем класс в модуле <structname>global</structname>:<programlisting>public class GeoCoordinateDatatype extends DoubleDatatype {
+
+    public static final String NAME = &quot;geocoordinate&quot;;
+    
+    // формат общий для всех локалей, отличаться могут только символы десятичной точки 
+    public static final String FORMAT = &quot;#0.000000&quot;;
+
+    public GeoCoordinateDatatype(Element element) {
+        super(element);
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public String format(Double value, Locale locale) {
+        if (value == null)
+            return &quot;&quot;;
+        FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
+        if (formatStrings == null)
+            return format(value); // FormatStrings для локали не определены, форматируем по данным datatypes.xml
+
+        NumberFormat format = new DecimalFormat(FORMAT, formatStrings.getFormatSymbols());
+        return format.format(value);
+    }
+
+    @Override
+    public Double parse(String value, Locale locale) throws ParseException {
+        if (StringUtils.isBlank(value))
+            return null;
+        FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
+        if (formatStrings == null)
+            return parse(value); // FormatStrings для локали не определены, парсим по данным datatypes.xml
+
+        NumberFormat format = new DecimalFormat(FORMAT, formatStrings.getFormatSymbols());
+        return parse(value, format).doubleValue();
+    }
+}</programlisting></para>
+          <para>Создаем файл <filename>datatypes.xml</filename> в корне каталога <filename>src</filename> модуля <structname>global</structname> проекта приложения и копируем в него все из файла <filename>/com/haulmont/chile/core/datatypes/datatypes.xml</filename>, расположенного в модуле <structname>global</structname> базового проекта <structname>cuba</structname>. Затем добавляем в него регистрацию нового типа:<programlisting>&lt;datatypes&gt;
+
+    &lt;datatype class=&quot;com.sample.sales.entity.GeoCoordinateDatatype&quot;
+              format=&quot;#0.000000&quot; decimalSeparator=&quot;.&quot; groupingSeparator=&quot;&quot;/&gt;
+...</programlisting></para>
+          <para>Указываем новый тип данных для требуемых атрибутов:<programlisting>@MetaProperty(datatype = GeoCoordinateDatatype.NAME)
+@Column(name = &quot;LATITUDE&quot;)
+private Double latitude;</programlisting></para>
+          <para>После выполнения перечисленных действий атрибут <code>latitude</code> везде в приложении будет отображаться в нужном формате.</para>
         </section>
       </section>
       <section id="meta_annotations">

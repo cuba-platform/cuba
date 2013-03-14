@@ -108,6 +108,7 @@ public class Datatypes {
      * @param locale selected locale
      * @return {@link FormatStrings} object, or null if no formats are registered for the locale
      */
+    @Nullable
     public static FormatStrings getFormatStrings(Locale locale) {
         return instance.getFormat(locale);
     }
