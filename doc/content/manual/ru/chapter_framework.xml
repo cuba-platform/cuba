@@ -1369,35 +1369,38 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
         <para>Форматы для преобразований без учета локали задаются в вышеупомянутом файле <filename>
             <link linkend="datatypes.xml">datatypes.xml</link>
           </filename>.</para>
-        <para>Форматы для преобразований с учетом локали задаются в <link linkend="main_message_pack">главных пакетах локализованных сообщений</link>, в  строках со следующими ключами:<itemizedlist>
+        <para>Форматы для преобразований с учетом локали задаются в <link linkend="main_message_pack">главном пакете локализованных сообщений</link>, в  строках со следующими ключами:<itemizedlist>
             <listitem>
-              <para><literal>numberDecimalSeparator</literal></para>
+              <para><literal>numberDecimalSeparator</literal> - задает символ разделителя целой и дробной части для числовых типов</para>
             </listitem>
             <listitem>
-              <para><literal>numberGroupingSeparator</literal></para>
+              <para><literal>numberGroupingSeparator</literal> - задает символ разделителя групп разрядов  для числовых типов</para>
             </listitem>
             <listitem>
-              <para><literal>integerFormat</literal></para>
+              <para><literal>integerFormat</literal> - формат для  типов <code>Integer</code> и <code>Long</code></para>
             </listitem>
             <listitem>
-              <para><literal>doubleFormat</literal></para>
+              <para><literal>doubleFormat</literal> - формат для типа <code>Double</code></para>
             </listitem>
             <listitem>
-              <para><literal>dateTimeFormat</literal></para>
+              <para><literal>decimalFormat</literal> - формат для типа <code>BigDecimal</code></para>
             </listitem>
             <listitem>
-              <para><literal>dateFormat</literal></para>
+              <para><literal>dateTimeFormat</literal> - формат для типа <code>java.util.Date</code></para>
             </listitem>
             <listitem>
-              <para><literal>timeFormat</literal></para>
+              <para><literal>dateFormat</literal> - формат для типа <code>java.sql.Date</code></para>
             </listitem>
             <listitem>
-              <para><literal>trueString</literal></para>
+              <para><literal>timeFormat</literal> - формат для типа <code>java.sql.Time</code></para>
             </listitem>
             <listitem>
-              <para><literal>falseString</literal></para>
+              <para><literal>trueString</literal> - строка, соответствующая <code>Boolean.TRUE</code></para>
             </listitem>
-          </itemizedlist>Все перечисленные форматы по умолчанию заданы в <link linkend="main_message_pack">главных пакетах локализованных сообщений</link> <link linkend="base_projects">базового проекта</link> <structname>cuba</structname>, и могут быть переопределены в аналогичных файлах проекта приложения.</para>
+            <listitem>
+              <para><literal>falseString</literal> - строка, соответствующая <code>Boolean.FALSE</code></para>
+            </listitem>
+          </itemizedlist>Все перечисленные форматы по умолчанию заданы в главном пакете локализованных сообщений <link linkend="base_projects">базового проекта</link> <structname>cuba</structname>, и могут быть переопределены в аналогичных файлах проекта приложения.</para>
         <section>
           <title>Пример форматирования даты в UI</title>
           <para>Рассмотрим отображение атрибута <code>Order.date</code> в таблице браузера заказов.</para>
@@ -3667,7 +3670,7 @@ public void someServiceMethod() {
               <colspec colnum="1" colname="c0"/>
               <colspec colnum="2" colname="c1"/>
               <colspec colnum="3" colname="c2"/>
-              <colspec colname="cgen1" colnum="4"/>
+              <colspec colnum="4" colname="cgen1"/>
               <thead>
                 <row>
                   <entry>Java</entry>
@@ -3690,10 +3693,28 @@ public void someServiceMethod() {
                   <entry>timestamp</entry>
                 </row>
                 <row>
+                  <entry>BigDecimal</entry>
+                  <entry>decimal(p, s)</entry>
+                  <entry>decimal(p, s)</entry>
+                  <entry>number(p, s)</entry>
+                </row>
+                <row>
                   <entry>Boolean</entry>
                   <entry>boolean</entry>
                   <entry>tinyint</entry>
                   <entry>char(1)</entry>
+                </row>
+                <row>
+                  <entry>String (limited)</entry>
+                  <entry>varchar(n)</entry>
+                  <entry>varchar(n)</entry>
+                  <entry>varchar2(n)</entry>
+                </row>
+                <row>
+                  <entry>String (unlimited)</entry>
+                  <entry>text</entry>
+                  <entry>varchar(max)</entry>
+                  <entry>clob</entry>
                 </row>
                 <row>
                   <entry>byte[]</entry>
