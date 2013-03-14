@@ -46,7 +46,7 @@ public class RuntimePropertiesMetaProperty extends MetadataObjectImpl<MetaProper
         } else if (Entity.class.isAssignableFrom(javaClass)) {
             range = new ClassRange(metadataSession.getClass(javaClass));
         } else {
-            this.range = new DatatypeRange(Datatypes.get(javaClass));
+            this.range = new DatatypeRange(Datatypes.getNN(javaClass));
         }
     }
 

@@ -84,6 +84,7 @@ public abstract class AbstractMessages implements Messages {
                             getMessage(mainMessagePack, "numberGroupingSeparator", locale).charAt(0),
                             getMessage(mainMessagePack, "integerFormat", locale),
                             getMessage(mainMessagePack, "doubleFormat", locale),
+                            getMessage(mainMessagePack, "decimalFormat", locale),
                             getMessage(mainMessagePack, "dateFormat", locale),
                             getMessage(mainMessagePack, "dateTimeFormat", locale),
                             getMessage(mainMessagePack, "timeFormat", locale),

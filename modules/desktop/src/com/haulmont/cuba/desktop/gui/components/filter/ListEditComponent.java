@@ -10,8 +10,10 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
@@ -49,6 +51,8 @@ public class ListEditComponent extends Picker {
     private Map<Object, String> values = new LinkedHashMap<>();
 
     private List<ValueListener> listeners = new ArrayList<>();
+
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     public ListEditComponent(Class itemClass) {
         setOpaque(false);
@@ -338,7 +342,8 @@ public class ListEditComponent extends Picker {
         }
 
         private String addDate(Date date) {
-            String str = Datatypes.get(itemClass).format(date, UserSessionProvider.getUserSession().getLocale());
+            //noinspection unchecked
+            String str = Datatypes.getNN(itemClass).format(date, userSessionSource.getLocale());
 
             values.put(date, str);
             return str;

@@ -7,11 +7,13 @@
 package com.haulmont.chile.core.loader;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.*;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.*;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +28,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
@@ -108,24 +111,17 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     protected boolean isMandatory(Field field) {
-        final com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
+        com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
                 field.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
-
-        return metaPropertyAnnotation.mandatory();
+        return metaPropertyAnnotation != null && metaPropertyAnnotation.mandatory();
     }
 
     protected boolean isMetaPropertyField(Field field) {
-        final com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
-                field.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
-
-        return metaPropertyAnnotation != null;
+        return field.isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class);
     }
 
     protected boolean isMetaPropertyMethod(Method method) {
-        final com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
-                method.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
-
-        return metaPropertyAnnotation != null;
+        return method.isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class);
     }
 
     protected MetaClassImpl createMetaClass(String modelName, String className) {
@@ -301,8 +297,10 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         Range.Cardinality cardinality = getCardinality(field);
         Map<String, Object> map = new HashMap<>();
         map.put("cardinality", cardinality);
-        final boolean mandatory = isMandatory(field);
+        boolean mandatory = isMandatory(field);
         map.put("mandatory", mandatory);
+        Datatype datatype = getDatatype(field);
+        map.put("datatype", datatype);
 
         Class<?> type;
         Class typeOverride = getTypeOverride(field);
@@ -334,6 +332,13 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return new MetadataObjectInfo<MetaProperty>(property, tasks);
     }
 
+    @Nullable
+    protected Datatype getDatatype(AnnotatedElement annotatedElement) {
+        com.haulmont.chile.core.annotations.MetaProperty annotation =
+                annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
+        return annotation != null && !annotation.datatype().equals("") ? Datatypes.get(annotation.datatype()) : null;
+    }
+
     private boolean setterExists(Field field) {
         String name = "set" + StringUtils.capitalize(field.getName());
         Method[] methods = field.getDeclaringClass().getDeclaredMethods();
@@ -353,6 +358,8 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         Map<String, Object> map = new HashMap<>();
         map.put("cardinality", Range.Cardinality.NONE);
         map.put("mandatory", false);
+        Datatype datatype = getDatatype(method);
+        map.put("datatype", datatype);
 
         Class<?> type;
         Class typeOverride = getTypeOverride(method);
@@ -409,9 +416,14 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     protected MetadataObjectInfo<Range> __loadRange(MetaProperty metaProperty, Class type, Map<String, Object> map) {
-        @SuppressWarnings({"unchecked"})
-        final Datatype datatype = Datatypes.get(type);
+        Datatype datatype = (Datatype) map.get("datatype");
+        if (datatype != null) {
+            return new MetadataObjectInfo<Range>(new DatatypeRange(datatype));
+        }
+
+        datatype = Datatypes.get(type);
         if (datatype != null) {
             final MetaClass metaClass = metaProperty.getDomain();
             final Class javaClass = metaClass.getJavaClass();
@@ -420,20 +432,18 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                 final String name = "get" + StringUtils.capitalize(metaProperty.getName());
                 final Method method = javaClass.getMethod(name);
 
-                @SuppressWarnings({"unchecked"})
                 final Class<Enum> returnType = (Class<Enum>) method.getReturnType();
                 if (returnType.isEnum()) {
-                    return new MetadataObjectInfo<Range>(
-                            new EnumerationRange(new EnumerationImpl<>(returnType)));
+                    return new MetadataObjectInfo<Range>(new EnumerationRange(new EnumerationImpl<>(returnType)));
                 }
             } catch (NoSuchMethodException e) {
-                // Do noting
+                // ignore
             }
-
             return new MetadataObjectInfo<Range>(new DatatypeRange(datatype));
+
         } else if (type.isEnum()) {
-            return new MetadataObjectInfo<Range>(
-                    new EnumerationRange(new EnumerationImpl<Enum>(type)));
+            return new MetadataObjectInfo<Range>(new EnumerationRange(new EnumerationImpl<Enum>(type)));
+
         } else {
             MetaClassImpl rangeClass = (MetaClassImpl) session.getClass(type);
             if (rangeClass != null) {
@@ -456,6 +466,9 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         } else {
             type = getFieldTypeAccordingAnnotations(field);
         }
+        if (type == null)
+            throw new IllegalArgumentException("Field " + field
+                    + " must either be of parameterized type or have a JPA annotation declaring a targetEntity");
         return type;
     }
 
@@ -488,10 +501,10 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
 
         Class type = getFieldType(field);
 
-        final Range.Cardinality cardinality = getCardinality(field);
-        final boolean ordered = isOrdered(field);
-        final boolean mandatory = isMandatory(field);
-        final String inverseField = getInverseField(field);
+        Range.Cardinality cardinality = getCardinality(field);
+        boolean ordered = isOrdered(field);
+        boolean mandatory = isMandatory(field);
+        String inverseField = getInverseField(field);
 
         Map<String, Object> map = new HashMap<>();
         map.put("cardinality", cardinality);
@@ -501,7 +514,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
             map.put("inverseField", inverseField);
 
         MetadataObjectInfo<Range> info = __loadRange(property, type, map);
-        final Range range = info.getObject();
+        Range range = info.getObject();
         if (range != null) {
             ((AbstractRange) range).setCardinality(cardinality);
             ((AbstractRange) range).setOrdered(ordered);

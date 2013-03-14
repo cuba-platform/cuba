@@ -117,7 +117,7 @@ public class UserSessionServiceBean implements UserSessionService
                 }
             }
             if (!messages.isEmpty()) {
-                Datatype<Date> datatype = Datatypes.get(Date.class);
+                Datatype<Date> datatype = Datatypes.getNN(Date.class);
                 StringBuilder sb = new StringBuilder();
                 for (Map.Entry<String, String> entry : messages.entrySet()) {
                     if (sb.length() != 0)

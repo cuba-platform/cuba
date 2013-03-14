@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -10,16 +10,17 @@ import java.text.DecimalFormatSymbols;
 
 /**
  * Localized format strings container.
- * An instance of this object can be acquired through {@link Datatypes#getFormatStrings(java.util.Locale)}
- *
- * <p>$Id: FormatStrings.java 5816 2011-09-05 07:21:39Z devyatkin $</p>
+ * <p/> An instance of this class can be acquired through {@link Datatypes#getFormatStrings(java.util.Locale)}.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public class FormatStrings {
-    private DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
+
+    private DecimalFormatSymbols formatSymbols;
     private String integerFormat;
     private String doubleFormat;
+    private String decimalFormat;
     private String dateFormat;
     private String dateTimeFormat;
     private String timeFormat;
@@ -27,15 +28,15 @@ public class FormatStrings {
     private String falseString;
 
     public FormatStrings(char decimalSeparator, char groupingSeparator,
-                         String integerFormat, String doubleFormat,
+                         String integerFormat, String doubleFormat, String decimalFormat,
                          String dateFormat, String dateTimeFormat,
-                         String timeFormat, String trueString, String falseString)
-    {
+                         String timeFormat, String trueString, String falseString) {
         formatSymbols = new DecimalFormatSymbols();
         formatSymbols.setDecimalSeparator(decimalSeparator);
         formatSymbols.setGroupingSeparator(groupingSeparator);
         this.integerFormat = integerFormat;
         this.doubleFormat = doubleFormat;
+        this.decimalFormat = decimalFormat;
         this.dateFormat = dateFormat;
         this.dateTimeFormat = dateTimeFormat;
         this.timeFormat = timeFormat;
@@ -53,6 +54,10 @@ public class FormatStrings {
 
     public String getDoubleFormat() {
         return doubleFormat;
+    }
+
+    public String getDecimalFormat() {
+        return decimalFormat;
     }
 
     public String getDateFormat() {

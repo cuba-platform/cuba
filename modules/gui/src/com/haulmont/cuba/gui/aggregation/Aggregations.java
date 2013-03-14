@@ -14,11 +14,11 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.aggregation.impl.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.UUID;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class Aggregations {
 
@@ -35,16 +35,16 @@ public class Aggregations {
     public static Aggregations getInstance() {
         if (instance == null) {
             instance = new Aggregations();
-            instance.register(Datatypes.getInstance().get(BigDecimal.class), new BigDecimalAggregation());
-            instance.register(Datatypes.getInstance().get(Integer.class), new LongAggregation());
-            instance.register(Datatypes.getInstance().get(Long.class), new LongAggregation());
-            instance.register(Datatypes.getInstance().get(Double.class), new DoubleAggregation());
-            instance.register(Datatypes.getInstance().get(Date.class), new DateAggregation());
-            instance.register(Datatypes.getInstance().get(Boolean.class), new BasicAggregation<Boolean>(Boolean.class));
-            instance.register(Datatypes.getInstance().get(byte[].class), new BasicAggregation<byte[]>(byte[].class));
-//            instance.register(Datatypes.getInstance().get(Enum.class), new BasicAggregation());
-            instance.register(Datatypes.getInstance().get(String.class), new BasicAggregation<String>(String.class));
-            instance.register(Datatypes.getInstance().get(UUID.class), new BasicAggregation<UUID>(UUID.class));
+            instance.register(Datatypes.getNN(BigDecimal.class), new BigDecimalAggregation());
+            instance.register(Datatypes.getNN(Integer.class), new LongAggregation());
+            instance.register(Datatypes.getNN(Long.class), new LongAggregation());
+            instance.register(Datatypes.getNN(Double.class), new DoubleAggregation());
+            instance.register(Datatypes.getNN(Date.class), new DateAggregation());
+            instance.register(Datatypes.getNN(Boolean.class), new BasicAggregation<Boolean>(Boolean.class));
+            instance.register(Datatypes.getNN(byte[].class), new BasicAggregation<byte[]>(byte[].class));
+//            instance.register(Datatypes.getNN(Enum.class), new BasicAggregation());
+            instance.register(Datatypes.getNN(String.class), new BasicAggregation<String>(String.class));
+            instance.register(Datatypes.getNN(UUID.class), new BasicAggregation<UUID>(UUID.class));
         }
         return instance;
     }

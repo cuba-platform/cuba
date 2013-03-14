@@ -342,7 +342,7 @@ public class DesktopDateField
                     Object obj = value;
                     Datatype<Object> datatype = metaProperty.getRange().asDatatype();
                     if (!datatype.getJavaClass().equals(Date.class)) {
-                        String str = Datatypes.get(Date.class).format(value);
+                        String str = Datatypes.getNN(Date.class).format(value);
                         try {
                             obj = datatype.parse(str);
                         } catch (ParseException e) {

@@ -295,7 +295,7 @@ public class ExcelExporter {
 
         if (cellValue instanceof Number) {
             Number n = (Number) cellValue;
-            final Datatype datatype = Datatypes.get(n.getClass());
+            final Datatype datatype = Datatypes.getNN(n.getClass());
             String str;
             if (sizersIndex == 0) {
                 str = createSpaceString(level) + datatype.format(n);

@@ -76,52 +76,36 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
     }
 
     protected boolean isMetaPropertyField(Field field) {
-        final com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
-                field.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
-
-        final Column columnAnnotation = field.getAnnotation(Column.class);
-
-        final OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
-        final OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
-        final ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
-        final ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
-        final Embedded embeddedAnnotation = field.getAnnotation(Embedded.class);
-
-        final boolean annotated =
-                metaPropertyAnnotation != null ||
-                        columnAnnotation != null ||
-                        oneToOneAnnotation != null ||
-                        oneToManyAnnotation != null ||
-                        manyToOneAnnotation != null ||
-                        manyToManyAnnotation != null ||
-                        embeddedAnnotation != null;
-
-        final String name = field.getName();
-        return annotated && !"serialVersionUID".equals(name);
+        return field.isAnnotationPresent(Column.class)
+                || field.isAnnotationPresent(OneToOne.class)
+                || field.isAnnotationPresent(OneToMany.class)
+                || field.isAnnotationPresent(ManyToOne.class)
+                || field.isAnnotationPresent(ManyToMany.class)
+                || field.isAnnotationPresent(Embedded.class)
+                || super.isMetaPropertyField(field);
     }
 
     protected Class getFieldTypeAccordingAnnotations(Field field) {
-        final OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
-        final OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
-        final ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
-        final ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
+        OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
+        OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
+        ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
+        ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
 
+        Class result = null;
         if (oneToOneAnnotation != null) {
-            return oneToOneAnnotation.targetEntity();
+            result = oneToOneAnnotation.targetEntity();
         } else if (oneToManyAnnotation != null) {
-            return oneToManyAnnotation.targetEntity();
+            result = oneToManyAnnotation.targetEntity();
         } else if (manyToOneAnnotation != null) {
-            return manyToOneAnnotation.targetEntity();
+            result = manyToOneAnnotation.targetEntity();
         } else if (manyToManyAnnotation != null) {
-            return manyToManyAnnotation.targetEntity();
-        } else {
-            throw new UnsupportedOperationException();
+            result = manyToManyAnnotation.targetEntity();
         }
+        return result;
     }
 
     protected Class getTypeOverride(AnnotatedElement element) {
         Temporal temporal = element.getAnnotation(Temporal.class);
-        //todo refactor conditions
         if (temporal != null && temporal.value().equals(TemporalType.DATE))
             return java.sql.Date.class;
         else if (temporal != null && temporal.value().equals(TemporalType.TIME))
@@ -131,18 +115,13 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
     }
 
     protected boolean isMandatory(Field field) {
-        final com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
-                field.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
+        Column columnAnnotation = field.getAnnotation(Column.class);
+        OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
+        OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
+        ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
+        ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
 
-        final Column columnAnnotation = field.getAnnotation(Column.class);
-        final OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
-        final OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
-        final ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
-        final ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
-
-        if (metaPropertyAnnotation != null) {
-            return metaPropertyAnnotation.mandatory();
-        } else if (columnAnnotation != null) {
+        if (columnAnnotation != null) {
             return !columnAnnotation.nullable();
         } else if (oneToOneAnnotation != null) {
             return !oneToOneAnnotation.optional();
@@ -153,7 +132,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         } else if (manyToManyAnnotation != null) {
             return false;
         } else {
-            return false;
+            return super.isMandatory(field);
         }
     }
 
@@ -191,11 +170,11 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
     protected MetaClassImpl __createClass(Class<?> clazz, String modelName) {
         if (Object.class.equals(clazz)) return null;
 
-        final Entity entityAnnotation = clazz.getAnnotation(Entity.class);
-        final MappedSuperclass mappedSuperclassAnnotation = clazz.getAnnotation(MappedSuperclass.class);
+        Entity entityAnnotation = clazz.getAnnotation(Entity.class);
+        MappedSuperclass mappedSuperclassAnnotation = clazz.getAnnotation(MappedSuperclass.class);
 
-        final MetaClass metaClassAnntotation = clazz.getAnnotation(MetaClass.class);
-        final Embeddable embeddableAnnotation = clazz.getAnnotation(Embeddable.class);
+        MetaClass metaClassAnntotation = clazz.getAnnotation(MetaClass.class);
+        Embeddable embeddableAnnotation = clazz.getAnnotation(Embeddable.class);
 
         if ((entityAnnotation == null && mappedSuperclassAnnotation == null) &&
                 (embeddableAnnotation == null) && (metaClassAnntotation == null)) {
