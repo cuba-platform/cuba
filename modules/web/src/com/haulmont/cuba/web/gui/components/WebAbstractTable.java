@@ -1241,7 +1241,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
-            Embedded checkPoxImage = new Embedded();
+            Image checkPoxImage = new Image();
             checkPoxImage.setSizeUndefined();
             if (BooleanUtils.isTrue((Boolean) value))
                 checkPoxImage.setStyleName("checkbox-checked");

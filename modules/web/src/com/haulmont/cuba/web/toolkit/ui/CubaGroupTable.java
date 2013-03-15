@@ -132,6 +132,11 @@ public class CubaGroupTable extends com.vaadin.ui.Table implements GroupTableCon
     }
 
     @Override
+    protected boolean isCellPaintingNeeded(Object itemId, Object columnId) {
+        return !isGroup(itemId);
+    }
+
+    @Override
     protected void paintRowAttributes(PaintTarget target, Object itemId) throws PaintException {
         super.paintRowAttributes(target, itemId);
 

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -13,6 +14,7 @@ import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.Util;
 import com.vaadin.client.ui.VScrollTable;
 import com.vaadin.shared.ui.table.TableConstants;
 
@@ -30,8 +32,22 @@ public class CubaGroupTableWidget extends VScrollTable {
 
     protected Set<String> groupColumns;
 
+    public CubaGroupTableWidget() {
+        addStyleName("cuba-grouptable");
+    }
+
     public void updateGroupColumns(Set<String> groupColumns) {
         this.groupColumns = groupColumns;
+    }
+
+    @Override
+    protected void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
+        if (GROUP_DIVIDER_COLUMN_KEY.equals(visibleColOrder[colIndex])) {
+            w = 10;
+            isDefinedWidth = true;
+        }
+
+        super.setColWidth(colIndex, w, isDefinedWidth);
     }
 
     private void addGroupColumn(String colKey) {
@@ -281,6 +297,7 @@ public class CubaGroupTableWidget extends VScrollTable {
         }
 
         protected class GroupTableRow extends VScrollTableRow {
+            private TableCellElement groupDividerCell;
 
             public GroupTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
@@ -289,10 +306,28 @@ public class CubaGroupTableWidget extends VScrollTable {
             @Override
             protected boolean addSpecificCell(Object columnId, int colIndex) {
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
-                    addCell("", aligns[colIndex], "", false, false, null);
+                    addDividerCell(aligns[colIndex], "", false, false, null);
                     return true;
                 }
                 return false;
+            }
+
+            public void addDividerCell(char align,
+                                String style, boolean textIsHTML, boolean sorted,
+                                String description) {
+                // String only content is optimized by not using Label widget
+                final TableCellElement td = DOM.createTD().cast();
+                this.groupDividerCell = td;
+                initCellWithText("", align, style, textIsHTML, sorted, description, td);
+                td.addClassName(CLASSNAME + "-group-divider");
+            }
+
+            @Override
+            protected void updateStyleNames(String primaryStyleName) {
+                super.updateStyleNames(primaryStyleName);
+
+                if (groupDividerCell != null)
+                    groupDividerCell.addClassName(CLASSNAME + "-group-divider");
             }
         }
 
@@ -310,10 +345,31 @@ public class CubaGroupTableWidget extends VScrollTable {
             }
 
             @Override
+            protected void initCellWidths() {
+                super.initCellWidths();
+
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        setWidthForSpannedCell();
+                    }
+                });
+            }
+
+            private void setWidthForSpannedCell() {
+                int spanWidth = 0;
+                for (int ix = colIndex; ix < tHead.getVisibleCellCount(); ix++) {
+                    spanWidth += tHead.getHeaderCell(ix).getOffsetWidth();
+                }
+                Util.setWidthExcludingPaddingAndBorder((Element) getElement().getChild(colIndex),
+                        spanWidth, 13, false);
+            }
+
+            @Override
             protected void addCellsFromUIDL(UIDL uidl, char[] aligns, int colIndex, int visibleColumnIndex) {
-                colKey = uidl.getStringAttribute("colKey");
-                groupKey = uidl.getStringAttribute("groupKey");
-                expanded = uidl.hasAttribute("expanded") && uidl.getBooleanAttribute("expanded");
+                this.colKey = uidl.getStringAttribute("colKey");
+                this.groupKey = uidl.getStringAttribute("groupKey");
+                this.expanded = uidl.hasAttribute("expanded") && uidl.getBooleanAttribute("expanded");
 
                 while (colIndex < visibleColOrder.length && !visibleColOrder[colIndex].equals(colKey)) {
                     //draw empty cells
@@ -323,7 +379,9 @@ public class CubaGroupTableWidget extends VScrollTable {
                     initCellWithText("", ALIGN_LEFT, "", false, true, null, tdCell);
 
                     td.setClassName(CubaGroupTableWidget.this.getStylePrimaryName() + "-cell-content");
+                    td.addClassName(CubaGroupTableWidget.this.getStylePrimaryName() + "-cell-stub");
                     DOM.appendChild(getElement(), td);
+
                     colIndex++;
                 }
 
@@ -335,19 +393,27 @@ public class CubaGroupTableWidget extends VScrollTable {
 
                 addGroupCell(uidl.getStringAttribute("groupCaption"));
 
-                if (uidl.getChildCount() > 0) {
-                    super.addCellsFromUIDL(uidl, aligns, colIndex, visibleColumnIndex);
-                    hasCells = true;
-                } else {
-                    Element td = DOM.getChild(getElement(), DOM.getChildCount(getElement()) - 1);
-                    DOM.setElementAttribute(td, "colSpan", String.valueOf(visibleColOrder.length - this.colIndex));
-                    hasCells = false;
-                }
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        setWidthForSpannedCell();
+                    }
+                });
+            }
+
+            @Override
+            protected void setCellWidth(int cellIx, int width) {
+                if (this.colIndex > cellIx)
+                    super.setCellWidth(cellIx, width);
+                else
+                    setWidthForSpannedCell();
             }
 
             protected void addGroupCell(String text) {
                 // String only content is optimized by not using Label widget
-                final TableCellElement td = DOM.createTD().cast();
+                Element tdElement = DOM.createTD();
+                final TableCellElement td = tdElement.cast();
+                td.setColSpan(visibleColOrder.length - this.colIndex);
                 initCellWithText(text, ALIGN_LEFT, "", false, true, null, td);
 
                 // Enchance DOM for table cell
@@ -383,11 +449,11 @@ public class CubaGroupTableWidget extends VScrollTable {
             }
 
             protected void handleRowClick(Event event) {
-                if (isExpanded()) {
+                if (isExpanded())
                     client.updateVariable(paintableId, "collapse", getGroupKey(), true);
-                } else {
+                else
                     client.updateVariable(paintableId, "expand", getGroupKey(), true);
-                }
+
                 DOM.eventCancelBubble(event, true);
             }
 
@@ -432,8 +498,13 @@ public class CubaGroupTableWidget extends VScrollTable {
     protected class GroupDividerHeaderCell extends HeaderCell {
         public GroupDividerHeaderCell() {
             super(GROUP_DIVIDER_COLUMN_KEY, null);
-            setWidth("10px");
-            DOM.setElementProperty(td, "className", CLASSNAME + "-group-div");
+            addStyleName(CLASSNAME + "-group-divider-header");
+        }
+
+        @Override
+        protected void updateStyleNames(String primaryStyleName) {
+            super.updateStyleNames(primaryStyleName);
+            addStyleName(CLASSNAME + "-group-divider-header");
         }
 
         @Override
@@ -451,8 +522,13 @@ public class CubaGroupTableWidget extends VScrollTable {
 
         public GroupDividerFooterCell() {
             super(GROUP_DIVIDER_COLUMN_KEY, null);
-            setWidth("10px");
-            DOM.setElementProperty(td, "className", CLASSNAME + "-group-div");
+            addStyleName(CLASSNAME + "-group-divider-footer");
+        }
+
+        @Override
+        protected void updateStyleNames(String primaryStyleName) {
+            super.updateStyleNames(primaryStyleName);
+            addStyleName(CLASSNAME + "-group-divider-footer");
         }
 
         @Override
