@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -17,6 +18,7 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.toolkit.ui.converters.DatatypeToStringConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
 import com.vaadin.data.util.converter.Converter;
@@ -56,9 +58,9 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         component.setConverter(new Converter<String, Object>() {
             @Override
             public Object convertToModel(String value, Locale locale) throws ConversionException {
-                if (datatype != null) {
+                if (getActualDatatype() != null) {
                     try {
-                        return datatype.parse(value, locale);
+                        return getActualDatatype().parse(value, locale);
                     } catch (ParseException e) {
                         log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                         return null;
@@ -70,8 +72,8 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
 
             @Override
             public String convertToPresentation(Object value, Locale locale) throws ConversionException {
-                if (datatype != null && value != null) {
-                    return datatype.format(value, locale);
+                if (getActualDatatype() != null && value != null) {
+                    return getActualDatatype().format(value, locale);
                 } else if (value != null) {
                     return value.toString();
                 } else {
@@ -217,7 +219,13 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
 
         if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
             component.setConverter(new EntityToStringConverter());
-        else
+        else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
+            Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
+            if (datatype != null)
+                component.setConverter(new DatatypeToStringConverter(datatype));
+            else
+                component.setConverter(new StringToStringConverter());
+        } else
             component.setConverter(new StringToStringConverter());
     }
 

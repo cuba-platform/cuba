@@ -342,6 +342,7 @@ public class LoginWindow extends UIView implements Action.Handler {
             if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
+
                 String password = passwordField.getValue();
                 if (loginByRememberMe && StringUtils.isNotEmpty(password))
                     password = decryptPassword(password);
@@ -351,10 +352,12 @@ public class LoginWindow extends UIView implements Action.Handler {
 
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
+                Locale locale = getUserLocale();
+                App.getInstance().setLocale(locale);
+
                 String value = passwordField.getValue() != null ? passwordField.getValue() : "";
                 String passwd = loginByRememberMe ? value : passwordEncryption.getPlainHash(value);
-                Locale locale = getUserLocale();
-                UI.getCurrent().setLocale(locale);
+
                 login(login, passwd, locale);
             }
         } catch (LoginException e) {

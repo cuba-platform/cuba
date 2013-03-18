@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.sys.RequestContext;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -206,6 +207,9 @@ public abstract class App implements Serializable {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+
+        UI.getCurrent().setLocale(locale);
+        VaadinSession.getCurrent().setLocale(locale);
     }
 
     public String getClientAddress() {

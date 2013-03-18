@@ -2,33 +2,36 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 18:16:37
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.web.toolkit.ui.converters.DatatypeToStringConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebLabel
     extends
         WebAbstractComponent<com.vaadin.ui.Label>
@@ -71,7 +74,13 @@ public class WebLabel
 //        vaadin7 converters
         if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
             component.setConverter(new EntityToStringConverter());
-        else
+        else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
+            Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
+            if (datatype != null)
+                component.setConverter(new DatatypeToStringConverter(datatype));
+            else
+                component.setConverter(null);
+        } else
             component.setConverter(null);
     }
 
