@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.toolkit.ui.Upload;
+import com.vaadin.ui.Upload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -30,7 +30,7 @@ import java.util.UUID;
  * @author abramov
  * @version $Id$
  */
-public class WebFileUploadField extends WebAbstractComponent<com.vaadin.ui.Upload> implements FileUploadField {
+public class WebFileUploadField extends WebAbstractComponent<Upload> implements FileUploadField {
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
@@ -52,11 +52,11 @@ public class WebFileUploadField extends WebAbstractComponent<com.vaadin.ui.Uploa
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         messages = AppBeans.get(Messages.class);
         String caption = messages.getMessage(AppConfig.getMessagesPack(), "Upload");
-        component = new com.vaadin.ui.Upload(
+        component = new Upload(
                 /* Fixes caption rendering.
                 * If caption == "", the VerticalLayout reserves an empty space */
                 StringUtils.isEmpty(caption) ? null : caption,
-                new Upload.Receiver() {
+                new com.vaadin.ui.Upload.Receiver() {
                     @Override
                     public OutputStream receiveUpload(String filename, String MIMEType) {
                         fileName = filename;
