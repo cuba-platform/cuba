@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.Versioned;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
@@ -191,6 +192,24 @@ public class MetadataTools {
     public boolean isEmbedded(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
         return metaProperty.getAnnotatedElement().isAnnotationPresent(Embedded.class);
+    }
+
+    /**
+     * Determine whether the given entity is marked as {@link SystemLevel}.
+     */
+    public boolean isSystemLevel(MetaClass metaClass) {
+        Objects.requireNonNull(metaClass, "metaClass is null");
+        Boolean systemLevel = (Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName());
+        return systemLevel == null ? false : systemLevel;
+    }
+
+    /**
+     * Determine whether the given property is marked as {@link SystemLevel}.
+     */
+    public boolean isSystemLevel(MetaProperty metaProperty) {
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
+        Boolean systemLevel = (Boolean) metaProperty.getAnnotations().get(SystemLevel.class.getName());
+        return systemLevel == null ? false : systemLevel;
     }
 
     /**

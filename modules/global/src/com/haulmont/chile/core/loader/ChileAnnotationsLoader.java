@@ -279,7 +279,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
         SystemLevel systemLevel = field.getAnnotation(SystemLevel.class);
         if (systemLevel != null) {
-            metaProperty.getAnnotations().put("system", true);
+            metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
         }
     }
 
