@@ -27,11 +27,15 @@ import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
+import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.*;
+import com.vaadin.server.BrowserWindowOpener;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -59,6 +63,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     private static final long serialVersionUID = 7269808125566032433L;
 
     private Log log = LogFactory.getLog(getClass());
+
+    private CubaFileDownloader fileDownloader;
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -169,6 +175,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     private void initStaticComponents() {
         scriptHost = new JavaScriptHost();
 //        addComponent(scriptHost);
+
+        fileDownloader = new CubaFileDownloader();
+        rootLayout.addComponent(fileDownloader);
     }
 
     /**
@@ -342,6 +351,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
      */
     public JavaScriptHost getScriptHost() {
         return scriptHost;
+    }
+
+    public CubaFileDownloader getFileDownloader() {
+        return fileDownloader;
     }
 
     /**

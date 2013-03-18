@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.web.app.domain;
 
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.RestApiDataProvider;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
@@ -20,8 +21,8 @@ import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 public class DomainProvider implements Runnable {
     @Override
     public void run() {
-        WebExportDisplay exportDisplay = new WebExportDisplay(false, true);
-        String query = "printDomain?s=" + UserSessionProvider.getUserSession().getId();
+        WebExportDisplay exportDisplay = new WebExportDisplay(true);
+        String query = "printDomain?s=" + AppBeans.get(UserSessionSource.class).getUserSession().getId();
         RestApiDataProvider dataProvider = new RestApiDataProvider(query);
         exportDisplay.show(dataProvider, "Data model", ExportFormat.HTML);
     }
