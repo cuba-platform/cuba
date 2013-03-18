@@ -1517,7 +1517,7 @@ private Double latitude;</programlisting></para>
               <para><link linkend="entity_annotations">Аннотации</link>  <code>@OnDelete</code>, <code>@OnDeleteInverse</code>, <code>@Extends</code>. При этом в мета-аннотациях создаются служебные объекты связей между сущностями. </para>
             </listitem>
             <listitem>
-              <para><link linkend="entity_annotations">Аннотации</link>  <code>@SystemLevel</code>, <code>@EnableRestore</code>, <code>@TrackEditScreenHistory</code>. При этом создаются  мета-аннотации с ключами, соответствующими полному имени класса Java аннотации. </para>
+              <para><link linkend="entity_annotations">Аннотации</link> <code>@NamePattern</code>, <code>@SystemLevel</code>, <code>@EnableRestore</code>, <code>@TrackEditScreenHistory</code>. При этом создаются  мета-аннотации с ключами, соответствующими полному имени класса Java аннотации. </para>
             </listitem>
             <listitem>
               <para>Опционально: в прикладном проекте могут быть определены свои аннотации для сущностей, и в <link linkend="extension">переопределенном</link> методе <code>MetadataImpl.initMetaAnnotations()</code> отображены в соответствующие мета-аннотации. </para>
