@@ -1131,6 +1131,16 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.springContextConfig_1">
+        <term>cuba.restApiUrl</term>
+        <listitem>
+          <para>URL, по которому доступен <link linkend="rest_api">REST API</link> приложения.  </para>
+          <para>Используется, в частности, для отображения модели данных в веб-клиенте через обращение к команде REST API <code>printDomain</code>.</para>
+          <para>Интерфейс:  <code>GlobalConfig</code></para>
+          <para>Может использоваться во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+          <para>Значение по умолчанию: <literal>http://localhost:8080/app-portal/api</literal></para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.schedulingActive">
         <term>cuba.schedulingActive</term>
         <listitem>
@@ -1236,6 +1246,16 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Конфигурационный параметр, задающий набор файлов <link linkend="views.xml">views.xml</link>, автоматически развертываемых на старте приложения. См. <xref linkend="views"/></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
           <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml views.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.springContextConfig_2">
+        <term>cuba.webAppUrl</term>
+        <listitem>
+          <para>URL, по которому доступен Web Client  приложения.  </para>
+          <para>Используется, в частности, для формирования <link linkend="link_to_screen">ссылок на экраны</link> приложения извне, а также классом <code>ScreenHistorySupport</code>.</para>
+          <para>Интерфейс:  <code>GlobalConfig</code></para>
+          <para>Может использоваться во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+          <para>Значение по умолчанию: <literal>http://localhost:8080/app</literal></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.windowConfig">
