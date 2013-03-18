@@ -4769,7 +4769,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <entry align="left">
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="img/GroupTable.png"/>
+                      <imagedata fileref="img/gui_groupTable.png"/>
                     </imageobject>
                   </mediaobject>
                 </entry>
@@ -4831,11 +4831,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </mediaobject>
                 </entry>
               </row>
-              <row>
-                <entry>
-                  <link linkend="gui_Timer">Timer</link>
-                </entry>
-              </row>
             </tbody>
           </tgroup>
         </informaltable>
@@ -4870,14 +4865,10 @@ protected boolean postCommit(boolean committed, boolean close) {
             <listitem>
               <para>Пример создания кнопки с пиктограммой:</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/iconButton.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <para>Атрибут <link linkend="gui_attr_basic_icon">icon</link> указывает на местоположение пиктограммы. Подробную информацию о том, где следует располагать файлы пиктограмм, Вы можете прочитать в <xref linkend="gui_themes"/></para>
+              <para>Атрибут <link linkend="gui_attr_basic_icon">icon</link> указывает на местоположение пиктограммы. Подробную информацию о том, где следует располагать файлы пиктограмм, Вы можете прочитать в <link linkend="gui_themeCreation_example1">примере 1</link> <xref linkend="gui_themes"/></para>
             </listitem>
             <listitem>
-              <para id="gui_attr_button_stylename">Для создания кнопки с пользовательским стилем необходимо указать атрибут <link linkend="gui_attr_basic_stylename">stylename</link>, а также задать стиль компонента в файле <filename>CSS</filename>.</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/userButton.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <para>Определение стиля:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/button/cssButton.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <para>Подробную информацию о том, как создавать пользовательский стиль, Вы можете прочитать в <xref linkend="gui_themes"/></para>
+              <para>Описание кнопки с  пользовательским стилем содержится в <link linkend="gui_themeCreation_example2">примере 2</link>  <xref linkend="gui_themes"/></para>
             </listitem>
           </itemizedlist>
           <para id="gui_attr_button_invoke">Основная функция кнопки −  выполнить некоторое действие при нажатии на нее. Определить метод <glossterm linkend="screen_controller_glossentry">контроллера</glossterm>, который будет вызываться при нажатии на кнопку, можно с помощью атрибута <sgmltag>invoke</sgmltag>. Значением атрибута должно быть    имя  метода контроллера, вызываемого в ответ на событие нажатия кнопки. Метод должен:</para>
@@ -8127,68 +8118,6 @@ protected boolean postCommit(boolean committed, boolean close) {
               </tbody></tgroup>
           </informaltable>
         </section>
-        <section id="gui_Timer">
-          <title>Timer</title>
-          <para>Таймер − это невизуальный компонент, который запускается в браузере клиента и опрашивает сервер через определенные интервалы времени.</para>
-          <para>XML-имя компонента: <sgmltag>timer</sgmltag>.</para>
-          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
-          <para>При задании таймера в <link linkend="screen_xml_glossentry">xml-дескрипторе</link> таймер прекращает работу при закрытии  экрана.</para>
-          <itemizedlist>
-            <listitem>
-              <para>Пример использования таймера:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer1.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <para>Как видно из примера, описание компонента располагается между элементами экрана <sgmltag>dsContext</sgmltag> и <sgmltag>layout</sgmltag>.</para>
-            </listitem>
-            <listitem>
-              <para id="gui_attr_timer_delay">Атрибут <sgmltag>delay</sgmltag> является обязательным атрибутом, в нем задается интервал срабатывания таймера в миллисекундах.</para>
-            </listitem>
-            <listitem>
-              <para id="gui_attr_timer_repeating"><sgmltag>repeating</sgmltag> − необязательный атрибут, разрешает/запрещает повторное срабатывание таймера. Если значение атрибута равно <literal>true</literal>, то таймер выполняется циклически, через равные промежутки времени, заданные с помощью атрибута <link linkend="gui_attr_timer_delay">delay</link>. В противном случае таймер выполняется один раз.</para>
-            </listitem>
-            <listitem>
-              <para id="gui_attr_timer_onTimer"><sgmltag>onTimer</sgmltag> − необязательный атрибут, содержит метод-обработчик срабатывания таймера. Метод-обработчик должен располагаться в <link linkend="screen_controller_glossentry">контроллере</link> экрана и иметь один входной атрибут <code>com.haulmont.cuba.gui.components.Timer</code>. </para>
-              <para>Пример использования в XML-дескрипторе:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer2.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <para>Пример обработчика событий от таймера в контроллере экрана:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer3.txt" encoding="UTF-8" parse="text"/></programlisting>
-            </listitem>
-            <listitem>
-              <para>Другой способ задать обработчик событий от таймера:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer4.txt" encoding="UTF-8" parse="text"/></programlisting>
-            </listitem>
-            <listitem>
-              <para>Программно таймер можно принудительно остановить:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer5.txt" encoding="UTF-8" parse="text"/></programlisting>
-            </listitem>
-            <listitem>
-              <para>Таймер можно создавать напрямую из кода приложения следующим образом:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer6.txt" encoding="UTF-8" parse="text"/></programlisting>
-            </listitem>
-          </itemizedlist>
-          <para>Атрибуты компонента <sgmltag>timer</sgmltag>:</para>
-          <informaltable frame="none" pgwide="0" align="left">
-            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
-                <row><entry align="left">
-                    <link linkend="gui_attr_timer_delay">delay</link>
-                  </entry>editable</row>
-                <row>
-                  <entry>
-                    <link linkend="gui_attr_basic_id">id</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_timer_repeating">onTimer</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_filter_custom_name">repeating</link>
-                  </entry>
-                </row>
-              </tbody></tgroup>
-          </informaltable>
-        </section>
       </section>
       <section id="gui_layouts">
         <title>Контейнеры</title>
@@ -8750,10 +8679,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <para><emphasis role="bold">param</emphasis> − имя параметра экрана, в котором будет сохранен объект <code>AccessData</code></para>
               </listitem>
             </itemizedlist>
-            <para>В момент создания экрана загрузчик компонента <code>accessControl</code> проверяет наличие экземпляра <code>AccessData</code> в указанном параметре, и если его там нет, создает новый экземпляр.</para>
+            <para>В момент создания экрана загрузчик компонента <code>accessControl</code> проверяет наличие экземпляра <code>AccessData</code> в указанном параметре и если его там нет, создает новый экземпляр.</para>
             <para>В дальнейшем в коде контроллера можно получить экземпляр <code>AccessData</code> из параметров экрана, например:</para>
             <programlisting>AbstractWfAccessData accessData = getContext().getParamValue(&quot;accessData&quot;);</programlisting>
-            <para>При создании класса <code>AccessData</code> следует иметь в виду, что в параметры экрана-редактора всегда передается параметр <parameter>param$item</parameter>, содержащий текущий редактируемый экземпляр сущности. Однако этот экземпляр загружен по view вызывающего экрана, а не по view редактора.</para>
+            <para>При создании класса <code>AccessData</code> следует иметь в виду, что в параметры экрана-редактора всегда передается параметр <parameter>param$item</parameter>, содержащий текущий редактируемый экземпляр сущности. Однако этот экземпляр загружен по <link linkend="views">представлению</link> вызывающего экрана, а не по представлению редактора.</para>
             <para>Свойства <code>AccessData</code>, на которые можно ссылаться из компонента <code>accessControl</code>, должны быть реализованы по стандарту JavaBeans: методами с сигнатурой boolean <methodname>getXxx()</methodname></para>
             <para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/CardAccessData.java" encoding="UTF-8" parse="text"/></programlisting>
@@ -8763,33 +8692,33 @@ protected boolean postCommit(boolean committed, boolean close) {
         <section id="gui_Action">
           <title>Action</title>
           <para><code>Action</code> − интерфейс, абстрагирующий действие от визуального компонента.</para>
-          <para>Визуальный компонент, содержащий одно действие, реализует интерфейс <interface>Component.ActionOwner</interface>. Это, например, <code>Button</code>.</para>
-          <para>Визуальный компонент, содержащий несколько действий, реализует интерфейс <interface>Component.ActionsHolder</interface>. Это <code>Window</code>, <code>IFrame</code>, <code>Table</code> и ее наследники, <code>Tree</code>, <code>PopupButton</code>, <code>PickerField</code>, <code>LookupPickerField</code>.</para>
+          <para>Визуальный компонент, содержащий одно действие, реализует интерфейс <code>Component.ActionOwner</code>. Это, например, <code>Button</code>.</para>
+          <para>Визуальный компонент, содержащий несколько действий, реализует интерфейс <code>Component.ActionsHolder</code>. Это <code>Window</code>, <code>IFrame</code>, <code>Table</code> и ее наследники, <code>Tree</code>, <code>PopupButton</code>, <code>PickerField</code>, <code>LookupPickerField</code>.</para>
           <section>
             <title>Декларативное создание действий</title>
             <para>В дескрипторе экрана может быть задан набор действий для некоторого <code>ActionsHolder</code>.</para>
             <itemizedlist>
               <title>Доступные атрибуты действия</title>
               <listitem>
-                <para><parameter>id</parameter> − идентификатор, должен быть уникален в рамках данного <code>ActionsHolder</code></para>
+                <para><sgmltag>id</sgmltag> − идентификатор, должен быть уникален в рамках данного <code>ActionsHolder</code></para>
               </listitem>
               <listitem>
-                <para>caption</para>
+                <para><sgmltag>caption</sgmltag></para>
               </listitem>
               <listitem>
-                <para>icon</para>
+                <para><sgmltag>icon</sgmltag></para>
               </listitem>
               <listitem>
-                <para>enable</para>
+                <para><sgmltag>enable</sgmltag></para>
               </listitem>
               <listitem>
-                <para>visible − в отличие от компонентов Groovy-выражения не поддерживаются</para>
+                <para><sgmltag>visible</sgmltag> − в отличие от компонентов Groovy-выражения не поддерживаются</para>
               </listitem>
               <listitem>
-                <para><parameter>invoke</parameter> − имя вызываемого метода контроллера. Метод должен быть <code>public</code>, не возвращать результата, и либо не иметь аргументов, либо иметь один аргумент типа <code>Component</code>. Если метод имеет аргумент <code>Component</code>, то при вызове в него будет передан экземпляр визуального компонента, запустившего данное действие.</para>
+                <para><sgmltag>invoke</sgmltag> − имя вызываемого метода контроллера. Метод должен быть <code>public</code>, не возвращать результата и либо не иметь аргументов, либо иметь один аргумент типа <code>Component</code>. Если метод имеет аргумент <code>Component</code>, то при вызове в него будет передан экземпляр визуального компонента, запустившего данное действие.</para>
               </listitem>
               <listitem>
-                <para><parameter>shortcut</parameter> − доступен только для действий, задаваемых в окне или фрейме. Задает комбинацию клавиш для вызова.</para>
+                <para><sgmltag>shortcut</sgmltag> − доступен только для действий, задаваемых в окне или фрейме. Задает комбинацию клавиш для вызова.</para>
               </listitem>
             </itemizedlist>
             <para>Примеры:</para>
@@ -8799,46 +8728,46 @@ protected boolean postCommit(boolean committed, boolean close) {
           </section>
           <section>
             <title>Использование в кнопках</title>
-            <para>Действия, заданные для некоторого <code>ActionsHolder</code>, могут быть использованы в компонентах <code>ActionOwner</code>, например в <code>Button</code>. Для этого достаточно указать полное имя действия в соотв. атрибуте. Например:</para>
+            <para>Действия, заданные для некоторого <code>ActionsHolder</code>, могут быть использованы в компонентах <code>ActionOwner</code>, например в <code>Button</code>. Для этого достаточно указать полное имя действия в соответствующем атрибуте. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example4.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>При этом Button возьмет значения атрибутов caption, icon, enable, visible из назначенного действия.</para>
+            <para>При этом <code>Button</code> возьмет значения атрибутов <sgmltag>caption</sgmltag>, <sgmltag>icon</sgmltag>, <sgmltag>enable</sgmltag>, <sgmltag>visible</sgmltag> из назначенного действия.</para>
           </section>
           <section id="standard_actions">
             <title>Стандартные действия</title>
-            <para>Для наследников ListComponent (это Table и Tree) существует набор стандартных действий, определяемых перечислением ListActionType. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
+            <para>Для наследников <code>ListComponent</code> (это <code>Table</code> и <code>Tree</code>) существует набор стандартных действий, определяемых перечислением <code>ListActionType</code>. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>Для компонентов PickerField и LookupPickerField существует набор стандартных действий, определяемых перечислением PickerField.ActionType. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
+            <para>Для компонентов <code>PickerField</code> и <code>LookupPickerField</code> существует набор стандартных действий, определяемых перечислением <code>PickerField.ActionType</code>. Для таких действий не нужно определять никаких атрибутов, кроме идентификатора. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example6.txt" encoding="UTF-8" parse="text"/></programlisting>
           </section>
           <section>
             <title>Программное создание и управление действиями</title>
             <para>Базовым классом реализации действий является <code>AbstractAction</code>. Пример использования:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example7.txt" encoding="UTF-8" parse="text"/></programlisting>
-            <para>При выполнении метода <methodname>addAction()</methodname> реализация <code>ActionsHolder</code> проверяет, нет ли уже в нем действия с таким же идентификатором. Если есть, то имеющееся действие будет заменено на новое переданное. Поэтому можно безопасно, например, декларировать стандартное действие в дескрипторе экрана, а затем в контроллере создать новое с переопределенными методами, и добавить в <code>ActionsHolder</code>.</para>
-            <para>Кроме создания наследников <code>AbstractAction</code> или стандартных действий, возможно конфигурирование декларативно созданных действий путем получения их в контроллере и установки атрибутов. Например:</para>
+            <para>При выполнении метода <methodname>addAction()</methodname> реализация <code>ActionsHolder</code> проверяет, нет ли уже в нем действия с таким же идентификатором. Если есть, то имеющееся действие будет заменено на новое переданное. Поэтому можно безопасно, например, декларировать стандартное действие в дескрипторе экрана, а затем в контроллере создать новое с переопределенными методами и добавить в <code>ActionsHolder</code>.</para>
+            <para>Кроме создания наследников <code>AbstractAction</code> или стандартных действий возможно конфигурирование декларативно созданных действий путем получения их в контроллере и установки атрибутов. Например:</para>
             <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/action/example8.txt" encoding="UTF-8" parse="text"/></programlisting>
             <para>При этом во всех визуальных компонентах, связанных с данным действием, значение соответствующего атрибута также изменится.</para>
           </section>
         </section>
         <section id="gui_Table_aggregation">
           <title>Aggregation</title>
-          <para>Механизм задания агрегаций для колонок в Table.</para>
+          <para>Механизм задания агрегаций для колонок в <code>Table</code>.</para>
           <itemizedlist>
             <title>Атрибуты aggregation</title>
             <listitem>
-              <para>type −  функция агрегирования:</para>
+              <para><sgmltag>type</sgmltag> −  функция агрегирования:</para>
               <itemizedlist>
                 <listitem>
-                  <para>SUM − сумма</para>
+                  <para><literal>SUM</literal> − сумма</para>
                 </listitem>
                 <listitem>
-                  <para>AVG − среднее значение</para>
+                  <para><literal>AVG</literal> − среднее значение</para>
                 </listitem>
                 <listitem>
-                  <para>COUNT − количество</para>
+                  <para><literal>COUNT</literal> − количество</para>
                 </listitem>
                 <listitem>
-                  <para>MIN − минимальное значение</para>
+                  <para><literal>MIN</literal> − минимальное значение</para>
                 </listitem>
                 <listitem>
                   <para>MAX − максимальное значение</para>
@@ -8846,17 +8775,140 @@ protected boolean postCommit(boolean committed, boolean close) {
               </itemizedlist>
             </listitem>
             <listitem>
-              <para>formatter − задает формат вывода агрегированного значения.</para>
+              <para><sgmltag>formatter</sgmltag> − задает формат вывода агрегированного значения.</para>
             </listitem>
           </itemizedlist>
-          <para>Логика применения форматирования к агрегированному значению следующая: если в элементе <code>aggregation</code> указан <parameter>formatter</parameter>, то применяется он; иначе применяется <parameter>formatter</parameter> соответствующего агрегированному значению <parameter>datatype</parameter>.</para>
-          <para>
-          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/aggregation/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Логика применения форматирования к агрегированному значению следующая: если в элементе <code>aggregation</code> указан <sgmltag>formatter</sgmltag>, то применяется он; иначе применяется <sgmltag>formatter</sgmltag> соответствующего агрегированному значению <sgmltag>datatype</sgmltag>.</para>
+          <para><programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/aggregation/example1.txt" encoding="UTF-8" parse="text"/></programlisting>
           </para>
         </section>
         <section id="gui_Table_presentations">
           <title>Presentation </title>
-          <para>TODO</para>
+          <para>Механизм представлений позволяет пользователям системы управлять настройками отображения компонентов.</para>
+          <para><emphasis role="bold">Возможности</emphasis>:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Сохранение представлений под уникальными именами</para>
+            </listitem>
+            <listitem>
+              <para>Редактирование и удаление представлений</para>
+            </listitem>
+            <listitem>
+              <para>Быстрое переключение между представлениями</para>
+            </listitem>
+            <listitem>
+              <para>Задание представления по умолчанию, которое будет применятся при открытии экрана с компонентом</para>
+            </listitem>
+            <listitem>
+              <para>Автосохранение настроек отображения в активном представлении</para>
+            </listitem>
+            <listitem>
+              <para>Глобальные представления, которые доступны всем пользователям системы</para>
+            </listitem>
+          </itemizedlist>
+          <para><emphasis role="bold">Классы и интерфейсы</emphasis></para>
+          <para>Для применения представлений класс компонента должен реализовывать интерфейс <code>com.haulmont.cuba.gui.components.Component.HasPresentations</code>. В платформе такими компонентами являются:</para>
+          <itemizedlist>
+            <listitem>
+              <para><link linkend="gui_Table">Table</link></para>
+            </listitem>
+            <listitem>
+              <para><link linkend="gui_GroupTable">GroupTable</link></para>
+            </listitem>
+            <listitem>
+              <para><link linkend="gui_TreeTable">TreeTable</link></para>
+            </listitem>
+          </itemizedlist>
+          <para><code>Presentation</code> − POJO объект представления.</para>
+          <para><code>Presentations</code> содержит список представлений компонента и набор методов по работе с ними. Основные методы:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>getCurrent()</code> − возвращает текущее активное представление или <code>null</code>, если представление не выбрано</para>
+            </listitem>
+            <listitem>
+              <para><code>setCurrent(Presentation p)</code> − уставнавливает активное представление</para>
+            </listitem>
+            <listitem>
+              <para><code>getSettings(Presentation p)</code> − возвращает XML-элемент настроек отображения для указанного представления</para>
+            </listitem>
+            <listitem>
+              <para><code>setSettings(Presentation p, Element e)</code> − модифицирует настройки отображения для указанного представления</para>
+            </listitem>
+            <listitem>
+              <para><code>getPresentation(Object id)</code> − возвращает представление по его идентификатору</para>
+            </listitem>
+            <listitem>
+              <para><code>getPresentations()</code> − возвращает список идентификаторов представлений для данного компонента</para>
+            </listitem>
+            <listitem>
+              <para><code>commit()</code> − сохраняет представления в базу данных</para>
+            </listitem>
+          </itemizedlist>
+          <para><code>PresentationsImpl</code> − реализация интерфейса <code>Presentations</code>.</para>
+          <para><code>PresentationsChangeListener</code> − интерфейс слушателя изменений представлений.</para>
+          <para>Для создания, изменения, удаления глобальных представлений пользователь должен иметь права <property>cuba.gui.presentations.global</property>. Подробнее см. руководство <productname>Платформа CUBA. Подсистема безопасности</productname>.</para>
+        </section>
+        <section id="gui_Timer">
+          <title>Timer</title>
+          <para>Таймер − это невизуальный компонент, который запускается в браузере клиента и опрашивает сервер через определенные интервалы времени.</para>
+          <para>XML-имя компонента: <sgmltag>timer</sgmltag>.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
+          <para>При задании таймера в <link linkend="screen_xml_glossentry">xml-дескрипторе</link> таймер прекращает работу при закрытии  экрана.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Пример использования таймера:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer1.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Как видно из примера, описание компонента располагается между элементами экрана <sgmltag>dsContext</sgmltag> и <sgmltag>layout</sgmltag>.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_timer_delay">Атрибут <sgmltag>delay</sgmltag> является обязательным атрибутом, в нем задается интервал срабатывания таймера в миллисекундах.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_timer_repeating"><sgmltag>repeating</sgmltag> − необязательный атрибут, разрешает/запрещает повторное срабатывание таймера. Если значение атрибута равно <literal>true</literal>, то таймер выполняется циклически, через равные промежутки времени, заданные с помощью атрибута <link linkend="gui_attr_timer_delay">delay</link>. В противном случае таймер выполняется один раз.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_timer_onTimer"><sgmltag>onTimer</sgmltag> − необязательный атрибут, содержит метод-обработчик срабатывания таймера. Метод-обработчик должен располагаться в <link linkend="screen_controller_glossentry">контроллере</link> экрана и иметь один входной атрибут <code>com.haulmont.cuba.gui.components.Timer</code>. </para>
+              <para>Пример использования в XML-дескрипторе:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer2.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Пример обработчика событий от таймера в контроллере экрана:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer3.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+            <listitem>
+              <para>Другой способ задать обработчик событий от таймера:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer4.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+            <listitem>
+              <para>Программно таймер можно принудительно остановить:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer5.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+            <listitem>
+              <para>Таймер можно создавать напрямую из кода приложения следующим образом:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/timer/timer6.txt" encoding="UTF-8" parse="text"/></programlisting>
+            </listitem>
+          </itemizedlist>
+          <para>Атрибуты компонента <sgmltag>timer</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="gui_attr_timer_delay">delay</link>
+                  </entry>editable</row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_timer_repeating">onTimer</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_filter_custom_name">repeating</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
         </section>
       </section>
       <section>
@@ -8865,11 +8917,11 @@ protected boolean postCommit(boolean committed, boolean close) {
           <varlistentry id="gui_element_basic_formatter">
             <term>formatter</term>
             <listitem>
-              <para>XML-элемент formatter задает класс, который будет применен для преобразования значения в строку.</para>
+              <para>XML-элемент <sgmltag>formatter</sgmltag> задает класс, который будет применен для преобразования значения в строку.</para>
               <para>Атрибуты:</para>
               <itemizedlist>
                 <listitem>
-                  <para>class − имя класса, реализующего интерфейс <code>com.haulmont.cuba.gui.components.Formatter</code></para>
+                  <para><sgmltag>class</sgmltag> − имя класса, реализующего интерфейс <code>com.haulmont.cuba.gui.components.Formatter</code></para>
                 </listitem>
               </itemizedlist>
             </listitem>
@@ -8881,29 +8933,29 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para>Атрибуты:</para>
               <itemizedlist>
                 <listitem>
-                  <para>script − путь к скрипту Groovy, осуществляющему валидацию</para>
+                  <para><sgmltag>script</sgmltag> − путь к скрипту Groovy, осуществляющему валидацию</para>
                 </listitem>
                 <listitem>
-                  <para>class − имя класса Java, реализующего интерфейс <code>Field.Validator</code></para>
+                  <para><sgmltag>class</sgmltag> − имя класса Java, реализующего интерфейс <code>Field.Validator</code></para>
                 </listitem>
                 <listitem>
-                  <para>message − сообщение, выводимое пользователю в случае ошибки валидации. Атрибут должен содержать ключ сообщения в пакете, например, message=&quot;msg://infoTextField.validationMsg&quot;</para>
+                  <para><sgmltag>message</sgmltag> − сообщение, выводимое пользователю в случае ошибки валидации. Атрибут должен содержать ключ сообщения в пакете, например, <literal>message=&quot;msg://infoTextField.validationMsg&quot;</literal></para>
                 </listitem>
               </itemizedlist>
               <para>Выбор механизма валидации осуществляется следующим образом:</para>
               <itemizedlist>
                 <listitem>
-                  <para>Если не указано значение атрибута script, и сам элемент validator не содержит текста выражения Groovy, то в качестве валидатора используется класс, указанный в атрибуте class.</para>
+                  <para>Если не указано значение атрибута <sgmltag>script</sgmltag>, и сам элемент <sgmltag>validator</sgmltag> не содержит текста выражения Groovy, то в качестве валидатора используется класс, указанный в атрибуте <sgmltag>class</sgmltag>.</para>
                 </listitem>
                 <listitem>
-                  <para>Если элемент validator содержит текст, то он будет использован как выражение Groovy и выполнен с помощью <link linkend="scripting">Scripting</link>.</para>
+                  <para>Если элемент <sgmltag>validator</sgmltag> содержит текст, то он будет использован как выражение Groovy и выполнен с помощью <link linkend="scripting">Scripting</link>.</para>
                 </listitem>
                 <listitem>
-                  <para>В противном случае с помощью <link linkend="scripting">Scripting</link> будет выполнен скрипт Groovy, указанный в атрибуте script.</para>
+                  <para>В противном случае с помощью <link linkend="scripting">Scripting</link> будет выполнен скрипт Groovy, указанный в атрибуте <sgmltag>script</sgmltag>.</para>
                 </listitem>
               </itemizedlist>
-              <para>В выражение или скрипт Groovy будет передана одна переменная value, содержащая значение, введенное в визуальном компоненте.</para>
-              <para>Выражение или скрипт должны вернуть boolean значение: true − valid, false − not valid.</para>
+              <para>В выражение или скрипт Groovy будет передана одна переменная <code>value</code>, содержащая значение, введенное в визуальном компоненте.</para>
+              <para>Выражение или скрипт должны вернуть <literal>boolean</literal> значение: <literal>true</literal> − <literal>valid</literal>, <literal>false</literal> − <literal>not valid</literal>.</para>
               <para>CUBA уже содержит несколько реализаций наиболее часто используемых валидаторов (см. пакет <code>com.haulmont.cuba.gui.components.validators</code>), которые можно применять в своих проектах:</para>
               <itemizedlist>
                 <listitem>
@@ -8952,31 +9004,31 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para>Возможные значения:</para>
               <itemizedlist>
                 <listitem>
-                  <para>TOP_RIGHT</para>
+                  <para><literal>TOP_RIGHT</literal></para>
                 </listitem>
                 <listitem>
-                  <para>TOP_LEFT</para>
+                  <para><literal>TOP_LEFT</literal></para>
                 </listitem>
                 <listitem>
-                  <para>TOP_CENTER</para>
+                  <para><literal>TOP_CENTER</literal></para>
                 </listitem>
                 <listitem>
-                  <para>MIDDLE_RIGHT</para>
+                  <para><literal>MIDDLE_RIGHT</literal></para>
                 </listitem>
                 <listitem>
-                  <para>MIDDLE_LEFT</para>
+                  <para><literal>MIDDLE_LEFT</literal></para>
                 </listitem>
                 <listitem>
-                  <para>MIDDLE_CENTER</para>
+                  <para><literal>MIDDLE_CENTER</literal></para>
                 </listitem>
                 <listitem>
-                  <para>BOTTOM_RIGHT</para>
+                  <para><literal>BOTTOM_RIGHT</literal></para>
                 </listitem>
                 <listitem>
-                  <para>BOTTOM_LEFT</para>
+                  <para><literal>BOTTOM_LEFT</literal></para>
                 </listitem>
                 <listitem>
-                  <para>BOTTOM_CENTER</para>
+                  <para><literal>BOTTOM_CENTER</literal></para>
                 </listitem>
               </itemizedlist>
             </listitem>
@@ -8985,7 +9037,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <term>caption</term>
             <listitem>
               <para>XML-атрибут, устанавливающий заголовок для визуального компонента.</para>
-              <para>Значением атрибута должна быть либо собственно строка сообщения, либо ключ в пакете сообщений. В случае ключа значение должно начинаться с префикса msg://</para>
+              <para>Значением атрибута должна быть либо  строка сообщения, либо ключ в пакете сообщений. В случае ключа значение должно начинаться с префикса <literal>msg://</literal></para>
               <para>Способы задания ключа:</para>
               <itemizedlist>
                 <listitem>
@@ -9004,7 +9056,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <listitem>
               <para>XML-атрибут визуального компонента, реализующего интерфейс <code>OptionsField</code>.</para>
               <para>Задает имя атрибута сущности, которую содержит <link linkend="datasources">источник данных</link>, используемый для формирования списка опций (<link linkend="attr_optionsDatasource">optionsDatasource</link>).</para>
-              <para>Если данный атрибут не задан, список опций будет содержать Instance Name экземпляров, содержащихся в списке.</para>
+              <para>Если данный атрибут не задан, список опций будет содержать <code>Instance Name</code> экземпляров, содержащихся в списке.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_clickAction">
@@ -9024,7 +9076,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </figure>
                 </listitem>
                 <listitem>
-                  <para><code>invoke</code> − вызывает метод <glossterm linkend="screen_controller_glossentry">контроллера</glossterm> экрана с указанным именем, например: <code>clickAction=&quot;invoke:onClick&quot;</code>. Метод должен иметь единственный параметр типа <type>Object</type>, в который будет передан экземпляр сущности, отображаемой в ячейке.</para>
+                  <para><code>invoke</code> − вызывает метод <glossterm linkend="screen_controller_glossentry">контроллера</glossterm> экрана с указанным именем, например: <code>clickAction=&quot;invoke:onClick&quot;</code>. Метод должен иметь единственный параметр типа <code>Object</code>, в который будет передан экземпляр сущности, отображаемой в ячейке.</para>
                 </listitem>
               </itemizedlist>
             </listitem>
@@ -9033,9 +9085,8 @@ protected boolean postCommit(boolean committed, boolean close) {
             <term>datasource</term>
             <listitem>
               <para>XML-атрибут компонента, реализующего интерфейс <code>DatasourceComponent</code>.</para>
-              <para>Предназначен для задания <link linkend="datasources">источника данных</link> и должен содержать имя источника данных, описанного в секции <parameter>dsContext</parameter> <link linkend="screen_xml_glossentry">дескриптора</link> экрана.</para>
-              <para>Атрибут property является обязательным, иначе возникает ошибка java.lang.IllegalStateException: Can&apos;t set assign datasource &apos;sampleDs&apos; for component &apos;labelInfo&apos; due &apos;property&apos; attribute is not defined. </para>
-              <para>Смотрите также атрибут property.</para>
+              <para>Предназначен для задания <link linkend="datasources">источника данных</link> и должен содержать имя источника данных, описанного в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml_glossentry">дескриптора</link> экрана.</para>
+              <para>Атрибут <sgmltag>property</sgmltag> является обязательным, иначе возникает ошибка <errorname>java.lang.IllegalStateException: Can&apos;t set assign datasource &apos;sampleDs&apos; for component &apos;labelInfo&apos; due &apos;property&apos; attribute is not defined</errorname>. </para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_description">
@@ -9048,34 +9099,34 @@ protected boolean postCommit(boolean committed, boolean close) {
             <term>editable</term>
             <listitem>
               <para>XML-атрибут, указывающий на возможность редактирования содержимого (не путать с <link linkend="attr_enable">enable</link>).</para>
-              <para>Возможные значения − true, false. По умолчанию true.</para>
+              <para>Возможные значения − <literal>true</literal>, <literal>false</literal>. По умолчанию <literal>true</literal>.</para>
+              <para>На возможность редактирования содержимого для компонента, связанного с данными (наследника <code>DatasourceComponent</code> или <code>List</code>), влияет также подсистема безопасности. Если по данным подсистемы безопасности данный компонент должен быть недоступен для редактирования, значение атрибута <sgmltag>editable</sgmltag> не принимается во внимание.</para>
             </listitem>
-            <listitem>На возможность редактирования содержимого для компонента, связанного с данными (наследника DatasourceComponent или List), влияет также Security. Если по данным security данный компонент должен быть недоступен для редактирования, значение атрибута editable не принимается во внимание.</listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_enable">
             <term>enable</term>
             <listitem>
-              <para>Атрибут компонента, устанавливающий его состояние &quot;enabled/disabled&quot; − доступен/недоступен.</para>
+              <para>Атрибут компонента, устанавливающий его состояние: <literal>enabled</literal> − доступен, <literal>disabled</literal> − недоступен.</para>
               <para>Если компонент недоступен, то он не принимает фокус ввода. Недоступность контейнера приводит к тому, что все его компоненты также становятся недоступными.
 
-Возможные значения − true, false.
+Возможные значения − <literal>true</literal>, <literal>false</literal>.
 
-По умолчанию у всех компонентов enable = true.</para>
+По умолчанию у всех компонентов <literal>enable = true</literal>.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_expand">
             <term>expand</term>
             <listitem>
               <para>Атрибут контейнера для управления его внутренней компоновкой.</para>
-              <para>Задает компонент внутри контейнера, который необходимо &quot;развернуть&quot;, т.е. установить ему максимально возможную высоту и ширину.</para>
+              <para>Задает компонент внутри контейнера, который необходимо &quot;развернуть&quot;, то есть установить ему максимально возможную высоту и ширину.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_height">
             <term>height</term>
             <listitem>
               <para>Атрибут, устанавливающий высоту компонента.</para>
-              <para>Может быть задана в пикселях либо в процентах от высоты вышестоящего контейнера. Например: 100px, 100%, 50. Если единица измерения не указана, подразумевается высота в пикселях.</para>
-              <para>Простановка значения в % означает, что компонент по высоте займет соответствующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
+              <para>Может быть задана в пикселях либо в процентах от высоты вышестоящего контейнера. Например: <literal>100px</literal>, <literal>100%</literal>, <literal>50</literal>. Если единица измерения не указана, подразумевается высота в пикселях.</para>
+              <para>Установка значения в <literal>%</literal> означает, что компонент по высоте займет соответствующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_icon">
@@ -9084,7 +9135,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para>XML-атрибут, устанавливающий пиктограмму для визуального компонента.</para>
               <para>Значением атрибута должен быть путь к файлу пиктограммы относительно каталога темы. Например:</para>
               <programlisting>icon=&quot;icons/create.png&quot;</programlisting>
-              <para>Если пиктограмма должна быть выбрана в зависимости от языка пользователя, можно указать путь к ней в пакете сообщений, а в атрибуте icon − ключ сообщения, например:</para>
+              <para>Если пиктограмма должна быть выбрана в зависимости от языка пользователя, можно указать путь к ней в пакете сообщений, а в атрибуте <sgmltag>icon</sgmltag> − ключ сообщения, например:</para>
               <programlisting>icon=&quot;msg://addIcon&quot;</programlisting>
             </listitem>
           </varlistentry>
@@ -9106,14 +9157,14 @@ protected boolean postCommit(boolean committed, boolean close) {
           <varlistentry id="gui_attr_basic_margin">
             <term>margin</term>
             <listitem>
-              <para>Атрибут margin устанавливает наличие отступа между внешними границами и содержимым контейнера.</para>
+              <para>Атрибут <sgmltag>margin</sgmltag> устанавливает наличие отступа между внешними границами и содержимым контейнера.</para>
               <para>Может иметь 2 вида значений:</para>
               <itemizedlist>
                 <listitem>
-                  <para>margin=&quot;true&quot; − установить отступ со всех сторон сразу</para>
+                  <para><sgmltag>margin</sgmltag>=<literal>&quot;true&quot;</literal> − установить отступ со всех сторон сразу</para>
                 </listitem>
                 <listitem>
-                  <para>margin=&quot;true;false;true;false;&quot; −  установить отступ только сверху и снизу (формат значения &quot;сверху,справа,снизу,слева&quot;)</para>
+                  <para><sgmltag>margin</sgmltag>=<literal>&quot;true;false;true;false;&quot;</literal> −  установить отступ только сверху и снизу (формат значения &quot;сверху,справа,снизу,слева&quot;)</para>
                 </listitem>
               </itemizedlist>
               <para>По умолчанию отступы отсутствуют.</para>
@@ -9124,37 +9175,37 @@ protected boolean postCommit(boolean committed, boolean close) {
             <listitem>
               <para>XML-атрибут визуального компонента, реализующего интерфейс <code>OptionsField</code>.</para>
               <para>Задает имя <link linkend="datasources">источника данных</link>, используемого для формирования списка опций.</para>
-              <para>Совместно с optionsDatasource может использоваться атрибут <link linkend="attr_captionProperty">captionProperty</link>.</para>
+              <para>Совместно с <sgmltag>optionsDatasource</sgmltag> может использоваться атрибут <link linkend="attr_captionProperty">captionProperty</link>.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_property">
             <term>property</term>
             <listitem>
               <para>XML-атрибут компонента, реализующего интерфейс <code>DatasourceComponent</code>.</para>
-              <para>Предназначен для задания имени атрибута сущности, значение которого будет отображаться/редактироваться данным визуальным компонентом.</para>
+              <para>Предназначен для задания имени атрибута сущности, значение которого будет отображаться или редактироваться данным визуальным компонентом.</para>
               <para>Используется всегда совместно с атрибутом <link linkend="attr_datasource">datasource</link>.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_required">
             <term>required</term>
             <listitem>
-              <para>XML-атрибут визуального компонента, реализующего интерфейс Field. Указывает, что в данное поле обязательно должно быть введено значение.</para>
-              <para>Возможные значения атрибута − true, false. По умолчанию false.</para>
-              <para>Совместно с required может использоваться атрибут requiredMessage.</para>
+              <para>XML-атрибут визуального компонента, реализующего интерфейс <code>Field</code>. Указывает, что в данное поле обязательно должно быть введено значение.</para>
+              <para>Возможные значения атрибута − <literal>true</literal>, <literal>false</literal>. По умолчанию <literal>false</literal>.</para>
+              <para>Совместно с <sgmltag>required</sgmltag> может использоваться атрибут <sgmltag>requiredMessage</sgmltag>.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_requiredMessage">
             <term>requiredMessage</term>
             <listitem>
               <para>XML-атрибут, используемый совместно с атрибутом <link linkend="attr_required">required</link>. Позволяет установить сообщение, выводимое пользователю в случае нарушения требования <link linkend="attr_required">required</link>.</para>
-              <para>Атрибут должен содержать ключ сообщения в пакете, например: requiredMessage=&quot;msg://infoTextField.requiredMessage&quot;</para>
+              <para>Атрибут должен содержать ключ сообщения в пакете, например: <sgmltag>requiredMessage</sgmltag>=&quot;<literal>msg://infoTextField.requiredMessage</literal>&quot;</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_spacing">
             <term>spacing</term>
             <listitem>
-              <para>Атрибут spacing устанавливает наличие отступов между компонентами внутри контейнера.</para>
-              <para>Возможные значения − true, false.</para>
+              <para>Атрибут <sgmltag>spacing</sgmltag> устанавливает наличие отступов между компонентами внутри контейнера.</para>
+              <para>Возможные значения − <literal>true</literal>, <literal>false</literal>.</para>
               <para>По умолчанию отступы отсутствуют.</para>
             </listitem>
           </varlistentry>
@@ -9169,21 +9220,128 @@ protected boolean postCommit(boolean committed, boolean close) {
             <term>visible</term>
             <listitem>
               <para>Атрибут   либо элемент видимости компонента.</para>
-              <para>Возможные значения − true, false, либо выражение Groovy с boolean-результатом. Если выражение длинное, имеет смысл использовать не атрибут, а элемент visible внутри текущего компонента − эффект тот же. Если контейнер невидим, не видны и все его компоненты. По умолчанию все компоненты видимы.</para>
+              <para>Возможные значения − <literal>true</literal>, <literal>false</literal>, либо выражение Groovy с <literal>boolean</literal>-результатом. Если выражение длинное, имеет смысл использовать не атрибут, а элемент <sgmltag>visible</sgmltag> внутри текущего компонента − эффект тот же. Если контейнер невидим, не видны и все его компоненты. По умолчанию все компоненты видимы.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_width">
             <term>width</term>
             <listitem>
               <para>Атрибут, устанавливающий ширину компонента.</para>
-              <para>Значение может быть задано в пикселях или в процентах от ширины вышестоящего контейнера. Например: 100px, 100%, 50. Если единица измерения не указана, подразумевается ширина в пикселях. Простановка значения в % означает, что компонент по ширине займет соответствующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
+              <para>Значение может быть задано в пикселях или в процентах от ширины вышестоящего контейнера. Например: <literal>100px</literal>, <literal>100%</literal>, <literal>50</literal>. Если единица измерения не указана, подразумевается ширина в пикселях. Простановка значения в <literal>%</literal> означает, что компонент по ширине займет соответствующую часть пространства, предоставляемого контейнером более высокого уровня.</para>
             </listitem>
           </varlistentry>
         </variablelist>
       </section>
       <section id="gui_themes">
         <title>Создание темы приложения</title>
-        <para>TODO</para>
+        <para>Тема служит для управления визуальным представлением приложения. </para>
+        <section>
+          <title>Тема в веб-приложениях</title>
+          <para>Тема состоит из файлов <filename>.css</filename> и других ресурсов, например, картинок.</para>
+          <para>В платформе темой по умолчанию является тема <code>havana</code>.</para>
+          <para>Если Вы хотите создать новую тему приложения, лучше начать с наследования Вашей темы от уже существующей. Пользовательская тема должна быть расположена в модуле <structname>web</structname> проекта в директории <code>web/VAADIN/themes</code>. Тема целиком содержится в директории с названием темы. В корне директории темы должны располагаться файлы <filename>themeName.css</filename> и <filename>styles.css</filename>. Таким образом, в Вашем проекте в модуле <structname>web</structname> должна быть следующая структура файлов:</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_themes_structure.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Содержимое файла <filename>styles.css</filename>:</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/styles.css" encoding="UTF-8" parse="text"/></programlisting>
+          <para>В файле <filename>themeName.css</filename> должны содержаться конструкции на языке <code>CSS</code>.</para>
+          <para><emphasis role="bold">Примеры</emphasis></para>
+          <orderedlist numeration="arabic">
+            <listitem id="gui_themeCreation_example1">
+              <para>Пример кнопки с пиктограммой.</para>
+              <para>Описываем <link linkend="gui_Button">кнопку</link> в <link linkend="screen_xml_glossentry">дескрипторе</link>:</para>
+              <programlisting>&lt;button id=&quot;button1&quot; caption=&quot;Attention&quot;  icon=&quot;icons/attention.png&quot;/&gt;</programlisting>
+              <para>В проекте создаем директорию с темой приложения, а в ней − директорию <code>icons</code>:</para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_themes_example1.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+              <para>После рестарта приложения кнопка выглядит следующим образом:</para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_themes_example1_1.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+            <listitem id="gui_themeCreation_example2">
+              <para>Пример кнопки с фоном синего цвета</para>
+              <para>Описываем <link linkend="gui_Button">кнопку</link> в <link linkend="screen_xml_glossentry">дескрипторе</link>, указывая название стиля в атрибуте <link linkend="gui_attr_basic_stylename">stylename</link>:</para>
+              <programlisting>&lt;button id=&quot;button2&quot; caption=&quot;Attention&quot; stylename=&quot;test&quot;/&gt;</programlisting>
+              <para>В проекте создаем директорию с темой приложения, аналогичную директории из примера 1.</para>
+              <para>В файле <filename>sales.css</filename> определяем стиль кнопки:</para>
+              <programlisting>.v-button.test {
+   background: #74c6fc;
+   font-weight: bold;
+}</programlisting>
+              <para>Элемент <code>.v-button</code> соответствует компоненту <link linkend="gui_Button">кнопки</link>, после элемента через точку следует названия стиля. В фигурных скобках содержится определение стиля. Стиль <code>test</code> будет применен для всех кнопок, имеющих атрибут <link linkend="gui_attr_basic_stylename">stylename</link> со значением <literal>test</literal>.</para>
+              <para>После рестарта приложения кнопка выглядит следующим образом:</para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_themes_example2.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+            <listitem>
+              <para>Если необходимо изменить визуальное представление какого-либо компонента, нужно найти директорию, соответствующую данному компоненту, в структуре папок <code>build\tomcat\webapps\app\VAADIN\themes\havana\</code>, скопировать ее  в папку с темой и изменить требуемые значки. </para>
+            </listitem>
+          </orderedlist>
+        </section>
+        <section>
+          <title>Тема в десктоп-приложениях</title>
+          <para>В десктоп-приложениях базовой темой является тема <code>Nimbus</code>.</para>
+          <para>Для внесения изменения в стандартную тему нужно создать пакет <code>rex.nimbus</code> в пакете <code>com.haulmont.ext.desktop</code> модуля <structname>desktop</structname>. В пакете <code>rex.nimbus</code> будут храниться файлы темы.</para>
+          <para>В <link linkend="app_properties">файле свойств</link> для десктоп-приложения нужно установить свойство </para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para><emphasis role="bold">Примеры</emphasis></para>
+          <orderedlist>
+            <listitem>
+              <para>Изменение пиктограммы для кнопки</para>
+              <para>Если стоит задача заменить в десктоп-приложении какую-либо пиктограмму, нужно создать пакет <code>rex.nimbus.icons</code> в пакете <code>com.haulmont.ext.desktop</code> модуля <structname>desktop</structname> и поместить в него требуемое изображение.</para>
+              <para>Ниже представлена кнопка с переопределенной пиктограммой <filename>save.png</filename></para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_themes_example3.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+            <listitem>
+              <para>Изменение цвета фона тесктовых полей, обязательных для ввода</para>
+              <para>В пакете <code>res.nimbus</code> нужно создать файл <filename>nimbus.xml</filename> следующего содержания:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/exapmle1_1.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Элемент <sgmltag>ui-defaults</sgmltag> служит для переопределения значений свойств темы платформы, установленных по умолчанию.</para>
+              <para>В элементе <sgmltag>ui-defaults</sgmltag> присутствуют как свойства, содержащиеся в стандартной  теме <code>Nimbus</code> (<ulink url="http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary">http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary</ulink>), так и свойства, созданные в платформе <trademark>CUBA</trademark>.</para>
+              <para>В данном примере переопределено значение свойства платформы  <trademark>CUBA</trademark> <sgmltag>cubaRequiredBackground</sgmltag>, хранящего цвет фона поля, обязательного для заполнения. Данное изменение коснется всех полей, обязательных для ввода.</para>
+            </listitem>
+            <listitem>
+              <para>Выделение надписи жирным цветом</para>
+              <para>Для того чтобы выделить текст надписи жирным цветом, необходимо определить элемент <sgmltag>style</sgmltag> в файле темы <filename>nimbus.xml</filename> следующим образом:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example3_1.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Элемент <sgmltag>style</sgmltag> может содержать  другие элементы, в которых можно определять те или иные свойства: <sgmltag>background</sgmltag>, <sgmltag>foreground</sgmltag>, <sgmltag>icon</sgmltag>.</para>
+              <para>В описании компонента надписи в <link linkend="screen_xml_glossentry">xml-дескрипторе</link>, к которой нужно применить созданный стиль, нужно указать атрибут <link linkend="gui_attr_basic_stylename">stylename</link> с именем стиля:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example3_2.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Таким образом, данный стиль будет применен только к тем надписям, для которых  определен атрибут <link linkend="gui_attr_basic_stylename">stylename</link> со значением <literal>boldlabel</literal>.</para>
+            </listitem>
+          </orderedlist>
+        </section>
       </section>
     </section>
     <section id="datasources">
@@ -9662,10 +9820,6 @@ taskHandler.execute();</programlisting><para>Подробная информац
           </listitem>
         </itemizedlist>
       </section>
-    </section>
-    <section>
-      <title>Таймеры</title>
-      <para>TODO</para>
     </section>
   </section>
   <section id="portal">
