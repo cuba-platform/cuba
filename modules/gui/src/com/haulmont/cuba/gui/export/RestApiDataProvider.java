@@ -6,11 +6,9 @@
 
 package com.haulmont.cuba.gui.export;
 
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -23,7 +21,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 /**
  * Class providing data using Rest API by the query given
@@ -33,19 +30,20 @@ import java.util.Iterator;
  */
 public class RestApiDataProvider implements ExportDataProvider {
 
-    public static final String API_URL = "/api/";
-
-    private Log log = LogFactory.getLog(getClass());
+    protected Log log = LogFactory.getLog(getClass());
 
     protected ClientConnectionManager connectionManager;
     protected String query;
     protected InputStream inputStream;
     protected boolean closed = false;
 
-    protected ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
+    protected String restApiUrl;
 
     public RestApiDataProvider(String query) {
         this.query = query;
+        restApiUrl = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getRestApiUrl();
+        if (!restApiUrl.endsWith("/"))
+            restApiUrl = restApiUrl + "/";
     }
 
     @Override
@@ -53,48 +51,30 @@ public class RestApiDataProvider implements ExportDataProvider {
         if (closed)
             throw new IllegalStateException("DataProvider is closed");
 
-        int remotingServletPathLen = clusterInvocationSupport.getServletPath().length() + 1;
+        String url = restApiUrl + query;
 
-        for (Iterator<String> iterator = clusterInvocationSupport.getUrlList().iterator(); iterator.hasNext(); ) {
-            String remotingUrl = iterator.next();
-            String url = remotingUrl.substring(0, remotingUrl.length() - remotingServletPathLen) + API_URL + query;
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(url);
 
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpGet = new HttpGet(url);
-
-            try {
-                HttpResponse response = httpClient.execute(httpGet);
-                int status = response.getStatusLine().getStatusCode();
-                if (status == HttpStatus.SC_OK) {
-                    HttpEntity httpEntity = response.getEntity();
-                    if (httpEntity != null) {
-                        inputStream = httpEntity.getContent();
-                        break;
-                    } else {
-                        log.debug("Unable to retrieve data using REST API from " + url + "\nHttpEntity is null");
-                        if (iterator.hasNext())
-                            log.debug("Trying next URL");
-                        else
-                            throw new RuntimeException("Unable to retrieve data using REST API from " + url
-                                    + "\nHttpEntity is null");
-                    }
+        try {
+            HttpResponse response = httpClient.execute(httpGet);
+            int status = response.getStatusLine().getStatusCode();
+            if (status == HttpStatus.SC_OK) {
+                HttpEntity httpEntity = response.getEntity();
+                if (httpEntity != null) {
+                    inputStream = httpEntity.getContent();
                 } else {
-                    log.debug("Unable to retrieve data using REST API from " + url + "\n" + response.getStatusLine());
-                    if (iterator.hasNext())
-                        log.debug("Trying next URL");
-                    else
-                        throw new RuntimeException("Unable to retrieve data using REST API from " + url + "\n"
-                                + response.getStatusLine());
+                    throw new RuntimeException("Unable to retrieve data using REST API from " + url
+                            + "\nHttpEntity is null");
                 }
-            } catch (IOException e) {
-                log.debug("Unable to retrieve data using REST API from " + url + "\n" + e);
-                if (iterator.hasNext())
-                    log.debug("Trying next URL");
-                else
-                    throw new RuntimeException(e);
-            } finally {
-                connectionManager = httpClient.getConnectionManager();
+            } else {
+                throw new RuntimeException("Unable to retrieve data using REST API from " + url + "\n"
+                        + response.getStatusLine());
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            connectionManager = httpClient.getConnectionManager();
         }
 
         return inputStream;

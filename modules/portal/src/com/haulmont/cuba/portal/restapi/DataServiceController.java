@@ -267,28 +267,25 @@ public class DataServiceController {
         try {
             AbstractViewRepository viewRepository = (AbstractViewRepository) metadata.getViewRepository();
             List<View> views = viewRepository.getAll();
-            Map<MetaClass, List<View>> meta2views = new HashMap<>();
-            for (View view : views) {
-                MetaClass metaClass = metadata.getSession().getClass(view.getEntityClass());
-                if (!readPermitted(metaClass))
-                    continue;
-
-                List<View> viewList = meta2views.get(metaClass);
-                if (viewList == null) {
-                    viewList = new ArrayList<>();
-                    meta2views.put(metaClass, viewList);
-                }
-                viewList.add(view);
-            }
 
             List<MetaClassRepresentation> classes = new ArrayList<>();
 
             Set<MetaClass> metas = new HashSet<>(metadataTools.getAllPersistentMetaClasses());
             metas.addAll(metadataTools.getAllEmbeddableMetaClasses());
             for (MetaClass meta : metas) {
+                if (metadata.getExtendedEntities().getExtendedClass(meta) != null)
+                    continue;
                 if (!readPermitted(meta))
                     continue;
-                MetaClassRepresentation rep = new MetaClassRepresentation(meta, meta2views.get(meta));
+
+                List<View> metaClassViews = new ArrayList<>();
+                for (View view : views) {
+                    if (view.getEntityClass().equals(meta.getJavaClass())) {
+                        metaClassViews.add(view);
+                    }
+                }
+
+                MetaClassRepresentation rep = new MetaClassRepresentation(meta, metaClassViews);
                 classes.add(rep);
             }
             Collections.sort(classes, new Comparator<MetaClassRepresentation>() {
