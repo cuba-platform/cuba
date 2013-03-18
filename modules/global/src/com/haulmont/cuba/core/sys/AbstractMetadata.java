@@ -7,6 +7,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
@@ -119,6 +120,8 @@ public abstract class AbstractMetadata implements Metadata {
         loadMetadata(transientEntitiesMetadataLoader, metadataBuildInfo.getTransientEntitiesPackages());
         transientEntitiesMetadataLoader.postProcess();
 
+        initExtensionMetaAnnotations(session);
+
         for (MetaClass metaClass : session.getClasses()) {
             initMetaAnnotations(session, metaClass);
             addMetaAnnotationsFromXml(metadataBuildInfo.getEntityAnnotations(), metaClass);
@@ -131,6 +134,33 @@ public abstract class AbstractMetadata implements Metadata {
     protected abstract MetadataBuildInfo getMetadataBuildInfo();
 
     /**
+     * Initialize connections between extended and base entities.
+     *
+     * @param session metadata session which is being initialized
+     */
+    protected void initExtensionMetaAnnotations(Session session) {
+        for (MetaClass metaClass : session.getClasses()) {
+            Class<?> javaClass = metaClass.getJavaClass();
+
+            Extends extendsAnnotation = javaClass.getAnnotation(Extends.class);
+            if (extendsAnnotation != null) {
+                Class<? extends Entity> superClass = extendsAnnotation.value();
+                metaClass.getAnnotations().put(Extends.class.getName(), superClass);
+
+                MetaClass superMetaClass = session.getClass(superClass);
+                if (superMetaClass == null)
+                    throw new IllegalStateException("No meta class found for " + superClass);
+
+                Object extendedBy = superMetaClass.getAnnotations().get(ExtendedBy.class.getName());
+                if (extendedBy != null && !javaClass.equals(extendedBy))
+                    throw new IllegalStateException(superClass + " is already extended by " + extendedBy);
+
+                superMetaClass.getAnnotations().put(ExtendedBy.class.getName(), javaClass);
+            }
+        }
+    }
+
+    /**
      * Initialize entity annotations from class-level Java annotations.
      * <p>Can be overridden in application projects to handle application-specific annotations.</p>
      *
@@ -138,34 +168,65 @@ public abstract class AbstractMetadata implements Metadata {
      * @param metaClass MetaClass instance to assign annotations
      */
     protected void initMetaAnnotations(Session session, MetaClass metaClass) {
-        Class<?> javaClass = metaClass.getJavaClass();
+        addMetaAnnotation(metaClass, NamePattern.class.getName(),
+                new AnnotationValue() {
+                    @Override
+                    public Object get(Class<?> javaClass) {
+                        NamePattern annotation = javaClass.getAnnotation(NamePattern.class);
+                        return annotation == null ? null : annotation.value();
+                    }
+                }
+        );
 
-        SystemLevel systemLevel = javaClass.getAnnotation(SystemLevel.class);
-        if (systemLevel != null)
-            metaClass.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
+        addMetaAnnotation(metaClass, SystemLevel.class.getName(),
+                new AnnotationValue() {
+                    @Override
+                    public Object get(Class<?> javaClass) {
+                        SystemLevel annotation = javaClass.getAnnotation(SystemLevel.class);
+                        return annotation == null ? null : annotation.value();
+                    }
+                }
+        );
 
-        EnableRestore enableRestore = javaClass.getAnnotation(EnableRestore.class);
-        if (enableRestore != null)
-            metaClass.getAnnotations().put(EnableRestore.class.getName(), enableRestore.value());
+        addMetaAnnotation(metaClass, EnableRestore.class.getName(),
+                new AnnotationValue() {
+                    @Override
+                    public Object get(Class<?> javaClass) {
+                        EnableRestore annotation = javaClass.getAnnotation(EnableRestore.class);
+                        return annotation == null ? null : annotation.value();
+                    }
+                }
+        );
 
-        TrackEditScreenHistory trackEditScreenHistory = javaClass.getAnnotation(TrackEditScreenHistory.class);
-        if (trackEditScreenHistory != null)
-            metaClass.getAnnotations().put(TrackEditScreenHistory.class.getName(), trackEditScreenHistory.value());
+        addMetaAnnotation(metaClass, TrackEditScreenHistory.class.getName(),
+                new AnnotationValue() {
+                    @Override
+                    public Object get(Class<?> javaClass) {
+                        TrackEditScreenHistory annotation = javaClass.getAnnotation(TrackEditScreenHistory.class);
+                        return annotation == null ? null : annotation.value();
+                    }
+                }
+        );
+    }
 
-        Extends extendsAnnotation = javaClass.getAnnotation(Extends.class);
-        if (extendsAnnotation != null) {
-            Class<? extends Entity> superClass = extendsAnnotation.value();
-            metaClass.getAnnotations().put(Extends.class.getName(), superClass);
-
-            MetaClass superMetaClass = session.getClass(superClass);
-            if (superMetaClass == null)
-                throw new IllegalStateException("No meta class found for " + superClass);
-
-            Object extendedBy = superMetaClass.getAnnotations().get(ExtendedBy.class.getName());
-            if (extendedBy != null && !javaClass.equals(extendedBy))
-                throw new IllegalStateException(superClass + " is already extended by " + extendedBy);
-
-            superMetaClass.getAnnotations().put(ExtendedBy.class.getName(), javaClass);
+    /**
+     * Add a meta-annotation from class annotation.
+     *
+     * @param metaClass         entity's meta-class
+     * @param name              meta-annotation name
+     * @param annotationValue   annotation value extractor instance
+     */
+    protected void addMetaAnnotation(MetaClass metaClass, String name, AnnotationValue annotationValue) {
+        Object value = annotationValue.get(metaClass.getJavaClass());
+        if (value == null) {
+            for (MetaClass ancestor : metaClass.getAncestors()) {
+                value = annotationValue.get(ancestor.getJavaClass());
+                if (value != null)
+                    break;
+            }
+        }
+        if (value != null) {
+            metaClass.getAnnotations().put(name, value);
         }
     }
 
@@ -198,5 +259,14 @@ public abstract class AbstractMetadata implements Metadata {
         } else
             val = str;
         return val;
+    }
+
+    /**
+     * Annotation value extractor.
+     * <p/> Implementations are supposed to be passed to {@link #addMetaAnnotation(MetaClass, String, AnnotationValue)}
+     * method.
+     */
+    protected interface AnnotationValue {
+        Object get(Class<?> javaClass);
     }
 }

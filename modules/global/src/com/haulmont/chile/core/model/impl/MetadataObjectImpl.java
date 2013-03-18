@@ -24,8 +24,8 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
 
     private transient T ancestor;
 
-    protected transient Collection<T> ancestors = new HashSet<T>(1);
-    protected transient Collection<T> descendants = new HashSet<T>(1);
+    protected transient Collection<T> ancestors = new LinkedHashSet<>(1);
+    protected transient Collection<T> descendants = new LinkedHashSet<>(1);
 
     protected String name;
 
