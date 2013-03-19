@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 10.12.2008 12:42:44
- *
- * $Id$
  */
 package com.haulmont.cuba.core;
 
@@ -26,8 +21,12 @@ import com.haulmont.cuba.security.entity.UserSessionEntity;
 
 import java.util.Collection;
 
-public class MetadataTest extends CubaTestCase
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class MetadataTest extends CubaTestCase {
+
     public void test() {
         Session session = AppBeans.get(Metadata.class).getSession();
         assertNotNull(session);

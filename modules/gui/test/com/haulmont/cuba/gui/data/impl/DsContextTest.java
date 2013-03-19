@@ -73,9 +73,7 @@ public class DsContextTest extends CubaClientTestCase {
 
     @Before
     public void setUp() throws Exception {
-        addEntityPackage("com.haulmont.cuba.security.entity");
-        addEntityPackage("com.haulmont.cuba.core.entity");
-        addEntityPackage("com.haulmont.cuba.gui.data.impl.testmodel1");
+        addEntityPackage("com.haulmont.cuba");
         setViewConfig("/com/haulmont/cuba/gui/data/impl/testmodel1/test-views.xml");
         setupInfrastructure();
 

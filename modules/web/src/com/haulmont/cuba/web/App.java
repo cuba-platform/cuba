@@ -112,23 +112,28 @@ public abstract class App extends Application
     }
 
     protected App() {
-        Configuration configuration = AppBeans.get(Configuration.class);
-        webConfig = configuration.getConfig(WebConfig.class);
-        globalConfig = configuration.getConfig(GlobalConfig.class);
+        try {
+            Configuration configuration = AppBeans.get(Configuration.class);
+            webConfig = configuration.getConfig(WebConfig.class);
+            globalConfig = configuration.getConfig(GlobalConfig.class);
 
-        appLog = new AppLog();
-        connection = createConnection();
-        windowManager = createWindowManager();
-        exceptionHandlers = new ExceptionHandlers(this);
-        cookies = new AppCookies() {
-            @Override
-            protected void addCookie(Cookie cookie) {
-                response.addCookie(cookie);
-            }
-        };
-        cookies.setCookiesEnabled(true);
-        timers = new AppTimers(this);
-        backgroundTaskManager = new BackgroundTaskManager();
+            appLog = new AppLog();
+            connection = createConnection();
+            windowManager = createWindowManager();
+            exceptionHandlers = new ExceptionHandlers(this);
+            cookies = new AppCookies() {
+                @Override
+                protected void addCookie(Cookie cookie) {
+                    response.addCookie(cookie);
+                }
+            };
+            cookies.setCookiesEnabled(true);
+            timers = new AppTimers(this);
+            backgroundTaskManager = new BackgroundTaskManager();
+        } catch (Exception e) {
+            log.fatal("Error initializing application", e);
+            throw new Error("Error initializing application. See log for details.");
+        }
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {

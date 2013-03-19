@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 
 package com.haulmont.cuba.desktop.exception;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DialogWindow;
-import com.haulmont.cuba.gui.AppConfig;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 
@@ -18,15 +18,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public boolean handle(Thread thread, Throwable exception) {
-        final DialogWindow lastDialogWindow = App.getInstance().getMainFrame().getWindowManager().getLastDialogWindow();
+        final DialogWindow lastDialogWindow = getLastDialogWindow();
 
         ErrorInfo ei = new ErrorInfo(
                 getMessage("errorPane.title"), getMessage("errorPane.message"),
@@ -56,7 +55,16 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         return true;
     }
 
+    private DialogWindow getLastDialogWindow() {
+        try {
+            return App.getInstance().getMainFrame().getWindowManager().getLastDialogWindow();
+        } catch (Exception e) {
+            // this may happen in case of initialization error
+            return null;
+        }
+    }
+
     private String getMessage(String key) {
-        return MessageProvider.getMessage(AppConfig.getMessagesPack(), key, App.getInstance().getLocale());
+        return AppBeans.get(Messages.class).getMainMessage(key, App.getInstance().getLocale());
     }
 }

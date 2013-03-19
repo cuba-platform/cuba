@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -7,19 +7,18 @@
 package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.chile.core.loader.MetadataLoader;
-import com.haulmont.chile.core.model.Session;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.*;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.sys.MetadataImpl;
+import com.haulmont.cuba.core.sys.PersistentEntitiesMetadataLoader;
 
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class TestMetadataClient extends AbstractMetadata {
+public class TestMetadataClient extends MetadataImpl {
 
     private List<String> packages;
 
@@ -41,20 +40,6 @@ public class TestMetadataClient extends AbstractMetadata {
         }
         persistentEntitiesMetadataLoader.postProcess();
 
-        Session session = persistentEntitiesMetadataLoader.getSession();
-
-        TransientEntitiesMetadataLoader transientEntitiesMetadataLoader = new TransientEntitiesMetadataLoader();
-        transientEntitiesMetadataLoader.setSession(session);
-        for (String p : packages) {
-            transientEntitiesMetadataLoader.loadPackage(p, p);
-        }
-        transientEntitiesMetadataLoader.postProcess();
-
-        this.session = session;
-    }
-
-    @Override
-    protected MetadataBuildInfo getMetadataBuildInfo() {
-        return null;
+        this.session = persistentEntitiesMetadataLoader.getSession();
     }
 }

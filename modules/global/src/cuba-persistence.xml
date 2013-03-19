@@ -42,7 +42,6 @@
         <class>com.haulmont.cuba.security.entity.LoggedEntity</class>
         <class>com.haulmont.cuba.security.entity.LoggedAttribute</class>
         <class>com.haulmont.cuba.security.entity.EntityLogItem</class>
-        <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
         <class>com.haulmont.cuba.security.entity.FilterEntity</class>
         <class>com.haulmont.cuba.security.entity.SearchFolder</class>
         <class>com.haulmont.cuba.security.entity.Presentation</class>

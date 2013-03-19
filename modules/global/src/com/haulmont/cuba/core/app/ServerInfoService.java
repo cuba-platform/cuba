@@ -6,11 +6,9 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.View;
 
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -27,8 +25,6 @@ public interface ServerInfoService {
     String getReleaseNumber();
 
     String getReleaseTimestamp();
-
-    MetadataBuildInfo getMetadataBuildInfo();
 
     List<View> getViews();
 

@@ -43,7 +43,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
     }
 
     protected List<Class<?>> getClasses(Resource[] resources) {
-        List<Class<?>> annotated = new ArrayList<Class<?>>();
+        List<Class<?>> result = super.getClasses(resources);
 
         for (Resource resource : resources) {
             if (resource.isReadable()) {
@@ -62,7 +62,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
                     if (isAnnotated) {
                         ClassMetadata classMetadata = metadataReader.getClassMetadata();
                         Class c = ReflectionHelper.getClass(classMetadata.getClassName());
-                        annotated.add(c);
+                        result.add(c);
                     }
 
                 } catch (IOException e) {
@@ -72,7 +72,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
             }
         }
 
-        return annotated;
+        return result;
     }
 
     protected boolean isMetaPropertyField(Field field) {

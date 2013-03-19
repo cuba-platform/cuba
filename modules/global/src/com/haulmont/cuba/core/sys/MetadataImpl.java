@@ -11,12 +11,14 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Map;
@@ -26,7 +28,8 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-public abstract class AbstractMetadata implements Metadata {
+@ManagedBean(Metadata.NAME)
+public class MetadataImpl implements Metadata {
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -42,10 +45,13 @@ public abstract class AbstractMetadata implements Metadata {
     protected MetadataTools tools;
 
     @Inject
-    private PersistentEntitiesMetadataLoader persistentEntitiesMetadataLoader;
+    protected PersistentEntitiesMetadataLoader metadataLoader;
 
     @Inject
-    private TransientEntitiesMetadataLoader transientEntitiesMetadataLoader;
+    protected Resources resources;
+
+    @Inject
+    protected MetadataBuildSupport metadataBuildSupport;
 
     private static final Pattern JAVA_CLASS_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
 
@@ -109,29 +115,24 @@ public abstract class AbstractMetadata implements Metadata {
         log.info("Initializing metadata");
         long startTime = System.currentTimeMillis();
 
-        MetadataBuildInfo metadataBuildInfo = getMetadataBuildInfo();
+        loadMetadata(metadataLoader, metadataBuildSupport.getEntityPackages());
+        metadataLoader.postProcess();
 
-        loadMetadata(persistentEntitiesMetadataLoader, metadataBuildInfo.getPersistentEntitiesPackages());
-        persistentEntitiesMetadataLoader.postProcess();
-
-        Session session = persistentEntitiesMetadataLoader.getSession();
-
-        transientEntitiesMetadataLoader.setSession(session);
-        loadMetadata(transientEntitiesMetadataLoader, metadataBuildInfo.getTransientEntitiesPackages());
-        transientEntitiesMetadataLoader.postProcess();
+        Session session = metadataLoader.getSession();
 
         initExtensionMetaAnnotations(session);
 
         for (MetaClass metaClass : session.getClasses()) {
             initMetaAnnotations(session, metaClass);
-            addMetaAnnotationsFromXml(metadataBuildInfo.getEntityAnnotations(), metaClass);
+            addMetaAnnotationsFromXml(metadataBuildSupport.getEntityAnnotations(), metaClass);
         }
 
         this.session = new CachingMetadataSession(session);
+
+        SessionImpl.setSerializationSupportSession(this.session);
+
         log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
     }
-
-    protected abstract MetadataBuildInfo getMetadataBuildInfo();
 
     /**
      * Initialize connections between extended and base entities.

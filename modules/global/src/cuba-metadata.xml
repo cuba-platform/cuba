@@ -7,22 +7,7 @@
 
 <metadata xmlns="http://schemas.haulmont.com/cuba/4.0/metadata.xsd">
 
-    <metadata-model>
-        <class>com.haulmont.cuba.security.entity.ui.AbstractPermissionTarget</class>
-        <class>com.haulmont.cuba.security.entity.ui.BasicPermissionTarget</class>
-        <class>com.haulmont.cuba.security.entity.ui.OperationPermissionTarget</class>
-        <class>com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget</class>
-        <class>com.haulmont.cuba.security.entity.ui.UiPermissionTarget</class>
-        <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
-        <class>com.haulmont.cuba.core.global.LockInfo</class>
-        <class>com.haulmont.cuba.security.entity.EntityLogAttrWrapper</class>
-        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanDomain</class>
-        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo</class>
-        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute</class>
-        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation</class>
-        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter</class>
-        <class>com.haulmont.cuba.core.sys.SetValueEntity</class>
-    </metadata-model>
+    <metadata-model root-package="com.haulmont.cuba"/>
 
     <!-- Use this element to define or override entity annotations available through MetaClass.getAnnotations()
     <annotations>
