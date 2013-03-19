@@ -6,10 +6,7 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
@@ -67,6 +64,8 @@ public abstract class App implements Serializable {
 
     protected boolean testModeRequest = false;
 
+    protected String webResourceTimestamp = "null";
+
     static {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
@@ -87,6 +86,13 @@ public abstract class App implements Serializable {
         cookies = new AppCookies();
         timers = new AppTimers(this);
         backgroundTaskManager = new BackgroundTaskManager();
+
+        String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+        if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
+            String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
+            if (StringUtils.isNotEmpty(timestamp))
+                this.webResourceTimestamp = timestamp;
+        }
     }
 
     /**
@@ -236,5 +242,9 @@ public abstract class App implements Serializable {
 
     public boolean isTestModeRequest() {
         return testModeRequest;
+    }
+
+    public String getWebResourceTimestamp() {
+        return webResourceTimestamp;
     }
 }

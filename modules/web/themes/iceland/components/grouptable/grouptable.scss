@@ -6,14 +6,14 @@
       margin-top: 4px;
       margin-right: 2px;
       background: transparent no-repeat center left;
-      background-image: url(sprites/expand.png); /** sprite-ref: components; */
+      background-image: url(sprites/expand.png?v=THEME_BUILD_VERSION); /** sprite-ref: components; */
       display: inline-block;
       cursor: pointer;
     }
 
     .v-expanded .cuba-grouptable-group-cell {
       background: transparent no-repeat center left;
-      background-image: url(sprites/collapse.png); /** sprite-ref: components; */
+      background-image: url(sprites/collapse.png?v=THEME_BUILD_VERSION); /** sprite-ref: components; */
     }
 
     .cuba-grouptable-float {

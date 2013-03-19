@@ -27,6 +27,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
@@ -1027,7 +1028,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
             selectAction = new SelectAction(this);
             selectButton = WebComponentsHelper.createButton();
             selectButton.setCaption(messages.getMessage(messagesPackage, "actions.Select"));
-            selectButton.setIcon(new ThemeResource("icons/ok.png"));
+            selectButton.setIcon(new VersionedThemeResource("icons/ok.png"));
             selectButton.addClickListener(selectAction);
             selectButton.setStyleName("cuba-window-action-button");
 
@@ -1040,7 +1041,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                 }
             });
             cancelButton.setStyleName("cuba-window-action-button");
-            cancelButton.setIcon(new ThemeResource("icons/cancel.png"));
+            cancelButton.setIcon(new VersionedThemeResource("icons/cancel.png"));
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);

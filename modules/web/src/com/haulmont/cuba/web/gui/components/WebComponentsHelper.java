@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
@@ -15,7 +16,6 @@ import com.vaadin.event.Action;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
@@ -40,7 +40,7 @@ public class WebComponentsHelper {
         } else if (resURL.startsWith("jar:")) {
             return new ClassResource(resURL.substring("jar:".length()));
         } else if (resURL.startsWith("theme:")) {
-            return new ThemeResource(resURL.substring("theme:".length()));
+            return new VersionedThemeResource(resURL.substring("theme:".length()));
         } else {
             throw new UnsupportedOperationException();
         }

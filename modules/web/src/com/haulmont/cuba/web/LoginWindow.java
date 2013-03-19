@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.auth.DomainAliasesResolver;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
@@ -202,7 +203,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
         okButton.addClickListener(new SubmitListener());
         okButton.setStyleName(getStyle("submit"));
-        okButton.setIcon(new ThemeResource("app/login-button.png"));
+        okButton.setIcon(new VersionedThemeResource("app/login-button.png"));
 
         loginFormLayout.addComponent(okButton);
         loginFormLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
@@ -232,7 +233,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         if ("loginWindow.logoImage".equals(loginLogoImagePath))
             return null;
 
-        return new Image(null, new ThemeResource(loginLogoImagePath));
+        return new Image(null, new VersionedThemeResource(loginLogoImagePath));
     }
 
     protected void initUI() {

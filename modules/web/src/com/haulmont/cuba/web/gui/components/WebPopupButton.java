@@ -2,17 +2,12 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 08.06.2010 13:54:46
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.server.ThemeResource;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +74,7 @@ public class WebPopupButton
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(new ThemeResource(icon));
+            component.setIcon(new VersionedThemeResource(icon));
             component.addStyleName(WebButton.ICON_STYLE);
         } else {
             component.setIcon(null);
@@ -110,8 +105,7 @@ public class WebPopupButton
 
     @Override
     public void setPopupVisible(boolean popupVisible) {
-//            vaadin7
-        //component.setPopupVisible(popupVisible);
+        component.setPopupVisible(popupVisible);
     }
 
     @Override
@@ -146,8 +140,7 @@ public class WebPopupButton
             vButton.setSizeFull();
             vButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-//            vaadin7
-            //vPopupComponent.setVisible(false); // do not requestRepaint
+            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
 //            vaadin7
 //            component.setAutoClose(true);
@@ -159,7 +152,7 @@ public class WebPopupButton
     public void removeAction(Action action) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
 //            vaadin7
-            //vPopupComponent.setVisible(false); // do not requestRepaint
+            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap((Component) action.getOwner()));
         }
     }

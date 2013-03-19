@@ -12,7 +12,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.vaadin.server.ThemeResource;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
@@ -30,7 +30,7 @@ public class RuntimePropOperationEditor extends OperationEditor implements HasAc
     public RuntimePropOperationEditor(final AbstractCondition condition) {
         super(condition);
         btn.setStyleName(BaseTheme.BUTTON_LINK);
-        btn.setIcon(new ThemeResource("icons/edit.png"));
+        btn.setIcon(new VersionedThemeResource("icons/edit.png"));
         setCaption(btn);
 
         btn.addClickListener(new Button.ClickListener() {

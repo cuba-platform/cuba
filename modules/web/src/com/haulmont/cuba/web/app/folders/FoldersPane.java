@@ -12,25 +12,29 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.toolkit.Timer;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
@@ -452,12 +456,12 @@ public class FoldersPane extends VerticalLayout {
             if (webConfig.getShowFolderIcons()) {
                 if (folder instanceof SearchFolder) {
                     if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
-                        tree.setItemIcon(folder, new ThemeResource("icons/set-small.png"));
+                        tree.setItemIcon(folder, new VersionedThemeResource("icons/set-small.png"));
                     } else {
-                        tree.setItemIcon(folder, new ThemeResource("icons/search-folder-small.png"));
+                        tree.setItemIcon(folder, new VersionedThemeResource("icons/search-folder-small.png"));
                     }
                 } else if (folder instanceof AppFolder) {
-                    tree.setItemIcon(folder, new ThemeResource("icons/app-folder-small.png"));
+                    tree.setItemIcon(folder, new VersionedThemeResource("icons/app-folder-small.png"));
                 }
             }
         }
@@ -487,11 +491,10 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Resource getMenuItemIcon() {
-        if (visible) {
-            return new ThemeResource("icons/folders_pane_icon_active.png");
-        } else {
-            return new ThemeResource("icons/folders_pane_icon.png");
-        }
+        if (visible)
+            return new VersionedThemeResource("icons/folders_pane_icon_active.png");
+        else
+            return new VersionedThemeResource("icons/folders_pane_icon.png");
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
@@ -505,7 +508,7 @@ public class FoldersPane extends VerticalLayout {
 
         WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         WindowParams.DISABLE_AUTO_REFRESH.set(params, true);
         WindowParams.DISABLE_APPLY_SETTINGS.set(params, true);
@@ -519,17 +522,15 @@ public class FoldersPane extends VerticalLayout {
 
         WindowParams.FOLDER_ID.set(params, folder.getId());
             
-        // vaadin7
-//        Window window = AppUI.getInstance().getWindowManager().openWindow(windowInfo,
-//                WindowManager.OpenType.NEW_TAB, params);
+        com.haulmont.cuba.gui.components.Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
+                WindowManager.OpenType.NEW_TAB, params);
 
         Filter filterComponent = null;
 
         if (strings.length > 1) {
             String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');
 
-        // vaadin7
-//            filterComponent = window.getComponent(filterComponentId);
+            filterComponent = window.getComponent(filterComponentId);
 
             FilterEntity filterEntity = new FilterEntity();
             filterEntity.setFolder(folder);
@@ -548,8 +549,7 @@ public class FoldersPane extends VerticalLayout {
             }
             filterComponent.setFilterEntity(filterEntity);
         }
-        // vaadin7
-//        window.applySettings(new SettingsImpl(window.getId()));
+        window.applySettings(new SettingsImpl(window.getId()));
 
         if (filterComponent != null && folder instanceof SearchFolder) {
             final SearchFolder searchFolder = (SearchFolder) folder;
@@ -559,8 +559,7 @@ public class FoldersPane extends VerticalLayout {
             }
         }
             
-        // vaadin7
-//        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
 
     protected boolean isNeedRootAppFolder() {

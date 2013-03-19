@@ -18,16 +18,12 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.gui.components.WebButton;
-//import com.vaadin.server.Sizeable;
-//import com.vaadin.server.Sizeable;
-//import com.vaadin.server.ThemeResource;
-import com.vaadin.server.ThemeResource;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -137,14 +133,14 @@ public class FolderEditWindow extends Window {
         layout.addComponent(buttonsLayout);
 
         okBtn = new Button(getMessage("actions.Ok"));
-        okBtn.setIcon(new ThemeResource("icons/ok.png"));
+        okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
         okBtn.addStyleName(WebButton.ICON_STYLE);
 
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
         Button cancelBtn = new Button(getMessage("actions.Cancel"));
-        cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
+        cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addClickListener(new Button.ClickListener() {
             @Override
@@ -160,13 +156,13 @@ public class FolderEditWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
-                if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
+                if (StringUtils.trimToNull(nameField.getValue()) == null) {
                     String msg = messages.getMainMessage("folders.folderEditWindow.emptyName");
                     UI.getCurrent().showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
                     return;
                 }
-                folder.setName((String) nameField.getValue());
-                folder.setTabName((String) tabNameField.getValue());
+                folder.setName(nameField.getValue());
+                folder.setTabName(tabNameField.getValue());
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     folder.setSortOrder(null);
@@ -194,7 +190,7 @@ public class FolderEditWindow extends Window {
 
                 folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
                 if (globalCb != null) {
-                    if (BooleanUtils.isTrue((Boolean) globalCb.getValue())) {
+                    if (BooleanUtils.isTrue(globalCb.getValue())) {
                         folder.setUser(null);
                     } else {
                         folder.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());

@@ -27,7 +27,9 @@ import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
+import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.data.Property;
@@ -35,7 +37,6 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -178,6 +179,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         fileDownloader = new CubaFileDownloader();
         rootLayout.addComponent(fileDownloader);
+
+        CubaMultiUpload m = new CubaMultiUpload();
+        rootLayout.addComponent(m);
     }
 
     /**
@@ -428,7 +432,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         }
 
         if (webConfig.getUseLightHeader()) {
-            Embedded appIcon = getLogoImage();
+            Image appIcon = getLogoImage();
             if (appIcon != null) {
                 layout.addComponent(appIcon);
                 layout.setComponentAlignment(appIcon, Alignment.MIDDLE_LEFT);
@@ -455,7 +459,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
             Button searchBtn = new Button();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            searchBtn.setIcon(new ThemeResource("select/img/fts-btn.png"));
+            searchBtn.setIcon(new VersionedThemeResource("select/img/fts-btn.png"));
             searchBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
@@ -513,7 +517,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
         menuBar.setWidth("100%");
         menuBar.setMoreMenuItem(null);
-        menuBar.getMoreMenuItem().setIcon(new ThemeResource("icons/more-item.png"));
+        menuBar.getMoreMenuItem().setIcon(new VersionedThemeResource("icons/more-item.png"));
 
         if (globalConfig.getTestMode()) {
 //            AppUI.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
@@ -583,7 +587,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         titleLayout.setMargin(new MarginInfo(false, true, false, true));
         titleLayout.setSpacing(true);
 
-        Embedded logoImage = getLogoImage();
+        Image logoImage = getLogoImage();
         if (logoImage != null) {
             titleLayout.addComponent(logoImage);
             titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
@@ -631,12 +635,12 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     @Nullable
-    protected Embedded getLogoImage() {
+    protected Image getLogoImage() {
         String logoImagePath = messages.getMainMessage("application.logoImage");
         if ("application.logoImage".equals(logoImagePath))
             return null;
 
-        return new Embedded(null, new ThemeResource(logoImagePath));
+        return new Image(null, new VersionedThemeResource(logoImagePath));
     }
 
     private void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
@@ -733,7 +737,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         );
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("cuba-buttons-white-border");
-        logoutBtn.setIcon(new ThemeResource("app/exit.png"));
+        logoutBtn.setIcon(new VersionedThemeResource("app/exit.png"));
 //        AppUI.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
@@ -762,7 +766,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("cuba-buttons-white-border");
-        newWindowBtn.setIcon(new ThemeResource("app/new-window.png"));
+        newWindowBtn.setIcon(new VersionedThemeResource("app/new-window.png"));
         return newWindowBtn;
     }
 

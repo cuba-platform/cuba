@@ -44,6 +44,7 @@ import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
@@ -257,7 +258,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         Button button = new Button();
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("remove-applied-filter");
-        button.setIcon(new ThemeResource("icons/close.png"));
+        button.setIcon(new VersionedThemeResource("icons/close.png"));
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

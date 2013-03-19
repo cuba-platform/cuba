@@ -315,4 +315,11 @@ public interface WebConfig extends Config {
     @Property("cuba.systemId")
     @DefaultString("CUBA")
     String getSystemID();
+
+    /**
+     * @return Path to resource containing the release timestamp
+     */
+    @Property("cuba.web.resourcesTimestampPath")
+    @DefaultString("/com/haulmont/cuba/web/resources.timestamp")
+    String getResourcesTimestampPath();
 }
