@@ -318,12 +318,12 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <para><sgmltag>metadata</sgmltag> - корневой элемент</para>
       <para>Элементы <sgmltag>metadata</sgmltag>:<itemizedlist>
           <listitem>
-            <para><sgmltag>metadata-model</sgmltag> - корень элементов регистрации неперсистентных сущностей</para>
-            <para>Элементы <sgmltag>
+            <para><sgmltag>metadata-model</sgmltag> - описатель метамодели проекта</para>
+            <para>Атрибуты <sgmltag>
                 <sgmltag>metadata-model</sgmltag>
-              </sgmltag>:<itemizedlist>
+              </sgmltag>: <itemizedlist>
                 <listitem>
-                  <para><sgmltag>class</sgmltag> - класс неперсистентной сущности</para>
+                  <para><sgmltag>root-package</sgmltag> - корневой пакет проекта, начиная с которого будет производиться поиск классов сущностей</para>
                 </listitem>
               </itemizedlist></para>
           </listitem>
@@ -332,7 +332,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
             <para>Элементы <sgmltag>annotations</sgmltag>:<itemizedlist>
                 <listitem>
                   <para><sgmltag>entity</sgmltag> - элемент сущности, которой присваиваются мета-аннотации</para>
-                  <para>Атрибуты entity:<itemizedlist>
+                  <para>Атрибуты <sgmltag>entity</sgmltag>:<itemizedlist>
                       <listitem>
                         <para><sgmltag>class</sgmltag> - класс сущности</para>
                       </listitem>
@@ -356,27 +356,14 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         </itemizedlist></para>
       <para>Пример:<programlisting>&lt;metadata xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/metadata.xsd&quot;&gt;
 
-    &lt;metadata-model&gt;
-        &lt;class&gt;com.haulmont.refapp.core.entity.TransientDriver&lt;/class&gt;
-        &lt;class&gt;com.haulmont.refapp.core.entity.UserContainer&lt;/class&gt;
-    &lt;/metadata-model&gt;
+    &lt;metadata-model root-package=&quot;com.sample.sales&quot;/&gt;
 
     &lt;annotations&gt;
-        &lt;entity class=&quot;com.haulmont.refapp.core.entity.Driver&quot;&gt;
+        &lt;entity class=&quot;com.haulmont.cuba.security.entity.User&quot;&gt;
             &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory&quot; 
                         value=&quot;true&quot;/&gt;
             &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.EnableRestore&quot; 
                         value=&quot;true&quot;/&gt;
-        &lt;/entity&gt;
-
-        &lt;entity class=&quot;com.haulmont.refapp.core.entity.Doc&quot;&gt;
-            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.ExtendedBy&quot;
-                        value=&quot;com.haulmont.refapp.core.entity.ExtDoc&quot;/&gt;
-        &lt;/entity&gt;
-
-        &lt;entity class=&quot;com.haulmont.refapp.core.entity.ExtDoc&quot;&gt;
-            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.Extends&quot;
-                        value=&quot;com.haulmont.refapp.core.entity.Doc&quot;/&gt;
         &lt;/entity&gt;
     &lt;/annotations&gt;
 

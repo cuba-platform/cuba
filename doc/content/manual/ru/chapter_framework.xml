@@ -1157,7 +1157,9 @@ assert metaClass1 == metaClass2;</programlisting></para>
             </term>
             <listitem>
               <para>Редко используемый интерфейс, служит для группировки мета-классов. </para>
-              <para>Группировка осуществляется по первым  трем частям имени пакета Java класса сущности. Например, мета-класс сущности <code>com.abc.sales.entity.Customer</code> принадлежит мета-модели с именем <code>com.abc.sales</code></para>
+              <para>Группировка осуществляется по  имени корневого Java пакета  проекта, указываемого в файле <filename>
+                  <link linkend="metadata.xml">metadata.xml</link>
+                </filename>.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="metaClass">
@@ -1300,14 +1302,14 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
         <para>Основной источник формирования структуры метаданных - <link linkend="entity_annotations">аннотированные</link> классы сущностей. </para>
         <para>Класс сущности отражается в метаданные в следующих случаях: <itemizedlist>
             <listitem>
-              <para>Класс персистентной сущности аннотирован <code>@Entity</code>, <code>@Embeddable</code>, <code>@MappedSuperclass</code> и зарегистрирован в файле <filename>
-                  <link linkend="persistence.xml">persistence.xml</link>
-                </filename></para>
+              <para>Класс персистентной сущности аннотирован <code>@Entity</code>, <code>@Embeddable</code>, <code>@MappedSuperclass</code> и расположен в пределах корневого пакета, указанного в <filename>
+                  <link linkend="metadata.xml">metadata.xml</link>
+                </filename>.</para>
             </listitem>
             <listitem>
-              <para>Класс неперсистентной сущности аннотирован <code>@MetaClass</code> и зарегистрирован в файле <filename>
+              <para>Класс неперсистентной сущности аннотирован <code>@MetaClass</code> и расположен в пределах корневого пакета, указанного в <filename>
                   <link linkend="metadata.xml">metadata.xml</link>
-                </filename></para>
+                </filename>.</para>
             </listitem>
           </itemizedlist></para>
         <para>Атрибут сущности отражается в метаданных, если: <itemizedlist>
@@ -1319,17 +1321,6 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
             </listitem>
           </itemizedlist></para>
         <para>Параметры мета-класса и мета-свойств формируются на основе параметров перечисленных <link linkend="entity_annotations">аннотаций</link>, а также типов полей и методов класса. Кроме того, если у атрибута отсутствует метод доступа на запись (setter), атрибут становится неизменяемым (read only). </para>
-        <warning>
-          <title>Внимание</title>
-          <para>Текущая реализация сборки метаданных имеет следующие ограничения:<itemizedlist>
-              <listitem>
-                <para>Классы сущностей должны размещаться в пакетах, имеющих не менее 3-х уровней иерархии, например, <code>com.abc.sales</code>, <code>com.abc.sales.entity</code></para>
-              </listitem>
-              <listitem>
-                <para>Персистентные сущности не могут ссылаться на неперсистентные. Обратное возможно, т.е. неперсистентная сущность может иметь атрибут типа некоторой персистентной сущности.</para>
-              </listitem>
-            </itemizedlist> </para>
-        </warning>
       </section>
       <section id="datatype">
         <title>Datatype</title>
