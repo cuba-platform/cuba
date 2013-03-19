@@ -224,7 +224,7 @@ Order.amount=Сумма</programlisting></para>
         <para>Чтобы вызывать экран из главного меню приложения, добавьте в файл <filename>web-menu.xml</filename> модуля <structname>web</structname> следующий элемент:<programlisting>&lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
     &lt;item id=&quot;sales$Customer.lookup&quot;/&gt;
 &lt;/menu&gt;</programlisting></para>
-        <para>Для того, чтобы пункт меню содержал локализованное имя экрана, добавьте в <link linkend="main_message_pack">главный пакет сообщений</link> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.sample.sales.web</code> следующие строки:</para>
+        <para>Для того чтобы пункт меню содержал локализованное имя экрана, добавьте в <link linkend="main_message_pack">главный пакет сообщений</link> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.sample.sales.web</code> следующие строки:</para>
         <para>    <filename>messages.properties</filename></para>
         <programlisting>menu-config.sales=Sales
 menu-config.sales$Customer.lookup=Customers</programlisting>
