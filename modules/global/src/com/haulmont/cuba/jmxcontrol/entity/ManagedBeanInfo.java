@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.JmxInstance;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * @version $Id$
  */
 @MetaClass(name = "jmxcontrol$ManagedBeanInfo")
+@SystemLevel
 public class ManagedBeanInfo extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = 7397761789851370883L;
 

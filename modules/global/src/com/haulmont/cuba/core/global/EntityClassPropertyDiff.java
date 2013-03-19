@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  * @version $Id$
  */
 @MetaClass(name = "sys$EntityClassPropertyDiff")
+@SystemLevel
 public class EntityClassPropertyDiff extends EntityPropertyDiff {
     private static final long serialVersionUID = -6783119655414015181L;
 

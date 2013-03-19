@@ -17,7 +17,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$OperationTarget")
 @SystemLevel
 public class OperationPermissionTarget extends AbstractPermissionTarget
-        implements Cloneable, AssignableTarget {
+        implements Cloneable, EntityPermissionTarget {
 
     @MetaProperty(mandatory = true)
     private PermissionVariant createPermissionVariant = PermissionVariant.NOTSET;
@@ -64,6 +64,7 @@ public class OperationPermissionTarget extends AbstractPermissionTarget
                 (deletePermissionVariant == PermissionVariant.DISALLOWED);
     }
 
+    @Override
     public Class getEntityClass() {
         return entityClass;
     }

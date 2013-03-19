@@ -148,10 +148,12 @@ public class PermissionConfig {
                     // Filter base entity classes
                     if (name.contains("$")) {
                         // Entity target
-                        entities.add(new OperationPermissionTarget(metaClass.getJavaClass(), "entity:" + name, name, name));
+                        entities.add(new OperationPermissionTarget(metaClass.getJavaClass(),
+                                "entity:" + name, name, name));
 
                         // Target with entity attributes
-                        MultiplePermissionTarget attrs = new MultiplePermissionTarget("entity:" + name, name, name);
+                        MultiplePermissionTarget attrs = new MultiplePermissionTarget(metaClass.getJavaClass(),
+                                "entity:" + name, name, name);
 
                         List<MetaProperty> propertyList = new ArrayList<MetaProperty>(metaClass.getProperties());
                         Collections.sort(propertyList, new MetadataObjectAlphabetComparator());

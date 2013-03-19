@@ -7,10 +7,13 @@
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.google.common.base.Predicate;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.ui.AssignableTarget;
+import com.haulmont.cuba.security.entity.ui.EntityPermissionTarget;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -22,12 +25,18 @@ import javax.annotation.Nullable;
  */
 public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T> {
 
+    private Metadata metadata;
     private final CheckBox assignedOnlyCheckBox;
+
+    private final CheckBox systemLevelCheckBox;
 
     private final TextField entityFilter;
 
-    public EntityNameFilter(CheckBox assignedOnlyCheckBox, TextField entityFilter) {
+    public EntityNameFilter(Metadata metadata, CheckBox assignedOnlyCheckBox, CheckBox systemLevelCheckBox,
+                            TextField entityFilter) {
+        this.metadata = metadata;
         this.assignedOnlyCheckBox = assignedOnlyCheckBox;
+        this.systemLevelCheckBox = systemLevelCheckBox;
         this.entityFilter = entityFilter;
     }
 
@@ -36,6 +45,13 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
         if (target != null) {
             if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue()) && !target.isAssigned())
                 return false;
+
+            if (Boolean.FALSE.equals(systemLevelCheckBox.getValue()) && (target instanceof EntityPermissionTarget)) {
+                MetaClass metaClass = metadata.getSession().getClassNN(
+                        ((EntityPermissionTarget) target).getEntityClass());
+                if (metadata.getTools().isSystemLevel(metaClass))
+                    return false;
+            }
 
             String filterValue = StringUtils.trimToEmpty(entityFilter.<String>getValue());
             if (StringUtils.isNotBlank(filterValue)) {

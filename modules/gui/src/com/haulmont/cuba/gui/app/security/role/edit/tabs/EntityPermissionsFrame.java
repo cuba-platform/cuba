@@ -68,6 +68,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
     @Inject
     private CheckBox assignedOnlyCheckBox;
 
+    @Inject
+    private CheckBox systemLevelCheckBox;
+
     /* Panels */
 
     @Inject
@@ -162,9 +165,11 @@ public class EntityPermissionsFrame extends AbstractFrame {
         super.init(params);
 
         assignedOnlyCheckBox.setValue(Boolean.TRUE);
+        systemLevelCheckBox.setValue(Boolean.FALSE);
 
         entityTargetsDs.setPermissionDs(entityPermissionsDs);
-        entityTargetsDs.setFilter(new EntityNameFilter<OperationPermissionTarget>(assignedOnlyCheckBox, entityFilter));
+        entityTargetsDs.setFilter(new EntityNameFilter<OperationPermissionTarget>(
+                metadata, assignedOnlyCheckBox, systemLevelCheckBox, entityFilter));
 
         initCheckBoxesControls();
 

@@ -9,6 +9,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.io.Serializable;
 
@@ -19,6 +20,7 @@ import java.io.Serializable;
  * @author artamonov
  */
 @MetaClass(name = "sys$EntityPropertyDiff")
+@SystemLevel
 public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity implements Serializable {
 
     protected static final int CAPTION_CHAR_COUNT = 30;

@@ -178,16 +178,6 @@ public abstract class AbstractMetadata implements Metadata {
                 }
         );
 
-        addMetaAnnotation(metaClass, SystemLevel.class.getName(),
-                new AnnotationValue() {
-                    @Override
-                    public Object get(Class<?> javaClass) {
-                        SystemLevel annotation = javaClass.getAnnotation(SystemLevel.class);
-                        return annotation == null ? null : annotation.value();
-                    }
-                }
-        );
-
         addMetaAnnotation(metaClass, EnableRestore.class.getName(),
                 new AnnotationValue() {
                     @Override
@@ -207,6 +197,12 @@ public abstract class AbstractMetadata implements Metadata {
                     }
                 }
         );
+
+        // @SystemLevel is not propagated down to the hierarchy
+        Class<?> javaClass = metaClass.getJavaClass();
+        SystemLevel annotation = javaClass.getAnnotation(SystemLevel.class);
+        if (annotation != null)
+            metaClass.getAnnotations().put(SystemLevel.class.getName(), annotation.value());
     }
 
     /**
