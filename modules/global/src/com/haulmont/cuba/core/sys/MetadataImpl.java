@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -82,7 +82,7 @@ public class MetadataImpl implements Metadata {
         return tools;
     }
 
-    protected void loadMetadata(MetadataLoader loader, Collection<String> packages) {
+    protected void loadMetadata(MetadataLoader loader, List<String> packages) {
         for (String p : packages) {
             loader.loadPackage(p, p);
         }

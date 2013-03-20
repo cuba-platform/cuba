@@ -41,32 +41,23 @@ public class MetadataBuildSupport {
         return config;
     }
 
-    public Collection<String> getEntityPackages() {
+    public List<String> getEntityPackages() {
         String config = getMetadataConfig();
-        Collection<String> packages = new ArrayList<>();
+        List<String> packages = new ArrayList<>();
         StrTokenizer tokenizer = new StrTokenizer(config);
         for (String fileName : tokenizer.getTokenArray()) {
-            getPackages(packages, fileName);
-        }
-        return packages;
-    }
+            Element root = readXml(fileName);
+            //noinspection unchecked
+            for (Element element : (List<Element>) root.elements("metadata-model")) {
+                String rootPackage = element.attributeValue("root-package");
+                if (StringUtils.isBlank(rootPackage))
+                    throw new IllegalStateException("metadata-model/@root-package is empty in " + fileName);
 
-    private void getPackages(Collection<String> packages, String path) {
-        Element root = readXml(path);
-
-        for (Element element : Dom4j.elements(root, "include")) {
-            String fileName = element.attributeValue("file");
-            if (!StringUtils.isBlank(fileName)) {
-                getPackages(packages, fileName);
+                if (!packages.contains(rootPackage))
+                    packages.add(rootPackage);
             }
         }
-
-        //noinspection unchecked
-        for (Element unitElem : (List<Element>) root.elements("metadata-model")) {
-            String rootPackage = unitElem.attributeValue("root-package");
-            if (!packages.contains(rootPackage))
-                packages.add(rootPackage);
-        }
+        return packages;
     }
 
     public Element readXml(String path) {
