@@ -4,17 +4,16 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.global;
+package com.haulmont.cuba.core.entity.diff;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.View;
 
-import javax.print.attribute.standard.NumberUp;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

@@ -17,13 +17,13 @@
         </collectionDatasource>
 
         <datasource id="entityDiffDs"
-                    class="com.haulmont.cuba.core.global.EntityDiff"
+                    class="com.haulmont.cuba.core.entity.diff.EntityDiff"
                     view="_local"
                     datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffDatasource">
         </datasource>
 
         <collectionDatasource id="diffDs"
-                              class="com.haulmont.cuba.core.global.EntityPropertyDiff"
+                              class="com.haulmont.cuba.core.entity.diff.EntityPropertyDiff"
                               view="_local"
                               datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource">
         </collectionDatasource>

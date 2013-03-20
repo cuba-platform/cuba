@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.jmxcontrol.export;
+package com.haulmont.cuba.core.sys.jmx;
 
 import javax.management.DynamicMBean;
 import javax.management.JMException;

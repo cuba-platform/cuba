@@ -4,12 +4,15 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.global;
+package com.haulmont.cuba.core.entity.diff;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.ViewProperty;
 
 import java.io.Serializable;
 

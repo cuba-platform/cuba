@@ -8,8 +8,8 @@ package com.haulmont.cuba.gui.app.core.entitydiff;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
-import com.haulmont.cuba.core.global.EntityDiff;
-import com.haulmont.cuba.core.global.EntityPropertyDiff;
+import com.haulmont.cuba.core.entity.diff.EntityDiff;
+import com.haulmont.cuba.core.entity.diff.EntityPropertyDiff;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;

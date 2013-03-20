@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.security.entity.ui;
+package com.haulmont.cuba.gui.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
@@ -14,35 +14,34 @@ import org.apache.commons.lang.ObjectUtils;
  *
  * @author artamonov
  */
-public enum AttributePermissionVariant implements EnumClass<Integer> {
+public enum PermissionVariant implements EnumClass<Integer> {
 
     /**
-     * Full access
+     * Allowed
      */
-    MODIFY(10, "green"),
+    ALLOWED(10, "green"),
 
     /**
-     * Read-only
+     * Disallowed
      */
-    READ_ONLY(20, "blue"),
-
-    /**
-     * Hide
-     */
-    HIDE(30, "red"),
+    DISALLOWED(20, "red"),
 
     /**
      * Permission not selected
      */
-    NOTSET(40, "black");
+    NOTSET(30, "black");
 
     private Integer id;
 
     private String color;
 
-    AttributePermissionVariant(Integer id, String color) {
+    PermissionVariant(Integer id, String color) {
         this.id = id;
         this.color = color;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     @Override
@@ -50,12 +49,8 @@ public enum AttributePermissionVariant implements EnumClass<Integer> {
         return id;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public static AttributePermissionVariant fromId(Integer id) {
-        for (AttributePermissionVariant variant : AttributePermissionVariant.values()) {
+    public static PermissionVariant fromId(Integer id) {
+        for (PermissionVariant variant : PermissionVariant.values()) {
             if (ObjectUtils.equals(variant.getId(), id)) {
                 return variant;
             }

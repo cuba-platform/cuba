@@ -8,15 +8,12 @@
  * $Id$
  */
 
-package com.haulmont.cuba.jmxcontrol.entity;
+package com.haulmont.cuba.web.jmx.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
-
-import java.lang.reflect.Array;
 
 @MetaClass(name = "jmxcontrol$ManagedBeanAttribute")
 @SystemLevel

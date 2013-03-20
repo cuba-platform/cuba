@@ -7,10 +7,10 @@
 package com.haulmont.cuba.gui.app.core.entitydiff;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityBasicPropertyDiff;
-import com.haulmont.cuba.core.global.EntityClassPropertyDiff;
-import com.haulmont.cuba.core.global.EntityCollectionPropertyDiff;
-import com.haulmont.cuba.core.global.EntityPropertyDiff;
+import com.haulmont.cuba.core.entity.diff.EntityBasicPropertyDiff;
+import com.haulmont.cuba.core.entity.diff.EntityClassPropertyDiff;
+import com.haulmont.cuba.core.entity.diff.EntityCollectionPropertyDiff;
+import com.haulmont.cuba.core.entity.diff.EntityPropertyDiff;
 import com.haulmont.cuba.gui.components.Table;
 
 /**

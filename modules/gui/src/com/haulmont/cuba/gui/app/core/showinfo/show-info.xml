@@ -19,7 +19,7 @@
     <dsContext>
         <collectionDatasource id="paramsDs"
                               view="_local"
-                              class="com.haulmont.cuba.core.global.KeyValueEntity"
+                              class="com.haulmont.cuba.gui.app.core.showinfo.KeyValueEntity"
                               datasourceClass="com.haulmont.cuba.gui.app.core.showinfo.EntityParamsDatasource">
         </collectionDatasource>
     </dsContext>

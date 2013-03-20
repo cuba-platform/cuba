@@ -14,8 +14,8 @@ import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
-import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.security.entity.AttributePermissionVariant;
+import com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;

@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.jmxcontrol.export;
+package com.haulmont.cuba.core.sys.jmx;
 
 import com.google.common.collect.Maps;
 import org.springframework.aop.support.AopUtils;

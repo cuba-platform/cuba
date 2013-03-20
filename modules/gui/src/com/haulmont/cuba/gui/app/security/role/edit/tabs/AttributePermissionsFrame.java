@@ -20,9 +20,9 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
-import com.haulmont.cuba.security.entity.ui.AttributeTarget;
-import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.security.entity.AttributePermissionVariant;
+import com.haulmont.cuba.gui.security.entity.AttributeTarget;
+import com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 

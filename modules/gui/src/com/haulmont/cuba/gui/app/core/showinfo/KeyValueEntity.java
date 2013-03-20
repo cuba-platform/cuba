@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.global;
+package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
@@ -16,9 +16,9 @@ import java.io.Serializable;
 
 /**
  * Simple key:value entity
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 @NamePattern("%s|keyValue")
 @MetaClass(name = "sys$KeyValueItem")

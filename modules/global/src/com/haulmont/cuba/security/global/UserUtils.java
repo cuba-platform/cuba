@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Valery Novikov
- * Created: 13.09.2010 15:27:27
- *
- * $Id$
  */
 
 package com.haulmont.cuba.security.global;
@@ -15,6 +10,12 @@ import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
 
+/**
+ * Utility class for {@link com.haulmont.cuba.security.entity.User} full name creation.
+ *
+ * @author Novikov
+ * @version $Id$
+ */
 public class UserUtils {
 
     public static String formatName(String pattern, String firstName, String lastName, String middleName) throws ParseException {

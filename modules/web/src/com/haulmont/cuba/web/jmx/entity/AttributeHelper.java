@@ -8,7 +8,7 @@
  * $Id$
  */
 
-package com.haulmont.cuba.jmxcontrol.util;
+package com.haulmont.cuba.web.jmx.entity;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;

@@ -7,10 +7,10 @@
 package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.cuba.core.entity.JmxInstance;
-import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
-import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanDomain;
-import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
-import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanDomain;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanOperation;
 
 import java.util.List;
 

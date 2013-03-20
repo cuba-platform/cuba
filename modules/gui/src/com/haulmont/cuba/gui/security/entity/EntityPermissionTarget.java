@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.security.entity.ui;
+package com.haulmont.cuba.gui.security.entity;
 
 /**
  * @author krivopustov
