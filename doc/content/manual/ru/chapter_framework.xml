@@ -1300,18 +1300,19 @@ assert groupNameProp.getDomain().getName().equals(&quot;sec$Group&quot;);</progr
       <section id="metadata_building">
         <title>Формирование метаданных</title>
         <para>Основной источник формирования структуры метаданных - <link linkend="entity_annotations">аннотированные</link> классы сущностей. </para>
-        <para>Класс сущности отражается в метаданные в следующих случаях: <itemizedlist>
+        <para>Класс сущности отражается в метаданных в следующих случаях: <itemizedlist>
             <listitem>
               <para>Класс персистентной сущности аннотирован <code>@Entity</code>, <code>@Embeddable</code>, <code>@MappedSuperclass</code> и расположен в пределах корневого пакета, указанного в <filename>
                   <link linkend="metadata.xml">metadata.xml</link>
                 </filename>.</para>
             </listitem>
             <listitem>
-              <para>Класс неперсистентной сущности аннотирован <code>@MetaClass</code> и расположен в пределах корневого пакета, указанного в <filename>
-                  <link linkend="metadata.xml">metadata.xml</link>
-                </filename>.</para>
+              <para>Класс неперсистентной сущности аннотирован <code>@MetaClass</code> и расположен в пределах корневого пакета, указанного в <filename>metadata.xml</filename>.</para>
             </listitem>
           </itemizedlist></para>
+        <para>Все сущности внутри одного корневого пакета помещаются в один экземпляр <code>MetaModel</code>, которому присваивается имя этого пакета. Между сущностями внутри одной <code>MetaModel</code> можно устанавливать произвольные связи, между разными - в порядке объявления файлов <filename>metadata.xml</filename> в свойстве <property>
+            <link linkend="cuba.metadataConfig">cuba.metadataConfig</link>
+          </property>. </para>
         <para>Атрибут сущности отражается в метаданных, если: <itemizedlist>
             <listitem>
               <para>поле класса аннотировано <code>@Column</code>, <code>@OneToOne</code>, <code>@OneToMany</code>, <code>@ManyToOne</code>, <code>@ManyToMany</code>, <code>@Embedded</code></para>
