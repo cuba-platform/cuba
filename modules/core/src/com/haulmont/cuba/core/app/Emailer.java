@@ -35,10 +35,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -282,7 +279,23 @@ public class Emailer implements EmailerAPI {
         msg.addRecipients(Message.RecipientType.TO, address);
         msg.setSubject(caption, "UTF-8");
         msg.setSentDate(new Date());
-        msg.setFrom(new InternetAddress(from));
+
+        InternetAddress[] internetAddresses = InternetAddress.parse(from);
+        for (InternetAddress internetAddress : internetAddresses) {
+            if (org.apache.commons.lang.StringUtils.isNotEmpty(internetAddress.getPersonal())) {
+                try {
+                    internetAddress.setPersonal(internetAddress.getPersonal(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new MessagingException("Unsupported encoding type", e);
+                }
+            }
+        }
+
+        if (internetAddresses.length == 1) {
+            msg.setFrom(internetAddresses[0]);
+        } else {
+            msg.addFrom(internetAddresses);
+        }
 
         MimeMultipart content = new MimeMultipart("mixed");
         MimeBodyPart textBodyPart = new MimeBodyPart();
