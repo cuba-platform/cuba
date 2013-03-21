@@ -29,7 +29,6 @@ import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
-import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.data.Property;
@@ -179,9 +178,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         fileDownloader = new CubaFileDownloader();
         rootLayout.addComponent(fileDownloader);
-
-        CubaMultiUpload m = new CubaMultiUpload();
-        rootLayout.addComponent(m);
     }
 
     /**

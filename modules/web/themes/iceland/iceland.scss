@@ -6,9 +6,10 @@
 
 // Components
 @import "components/table/table.scss";
+@import "components/panel/panel.scss";
 @import "components/groupbox/groupbox.scss";
 @import "components/grouptable/grouptable.scss";
-@import "components/panel/panel.scss";
+@import "components/multiupload/multiupload.scss";
 
 @mixin iceland {
   //@include base;
@@ -18,6 +19,7 @@
   @include v-panel;
   @include cuba-groupbox;
   @include cuba-grouptable;
+  @include cuba-multiupload;
 }
 
 .v-theme-version {

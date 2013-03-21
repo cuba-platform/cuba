@@ -117,13 +117,13 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     private void notifyErrorListeners(File file, String message) {
         for (UploadListener uploadListener : listeners)
-            uploadListener.errorNotify(file.getName(), message, 0);
+            uploadListener.uploadError(file.getName());
     }
 
     private void notifyFileSizeExceedLimit(File file) {
         String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
-        for (UploadListener uploadListener : listeners)
-            uploadListener.errorNotify(file.getName(), warningMsg, FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT);
+//        for (UploadListener uploadListener : listeners)
+//            uploadListener.errorNotify(file.getName(), warningMsg, FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT);
     }
 
     @Override
@@ -139,6 +139,11 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     @Override
     public Map<UUID, String> getUploadsMap() {
         return filesMap;
+    }
+
+    @Override
+    public void clearUploads() {
+        filesMap.clear();
     }
 
     @Override

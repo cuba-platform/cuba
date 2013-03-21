@@ -2,95 +2,151 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 17.11.2010 18:05:20
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.ValueProvider;
-import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
+import com.vaadin.server.Sizeable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.*;
 
-public class WebFileMultiUploadField /*extends
-        WebAbstractComponent<MultiUpload>
-        implements
-        FileMultiUploadField*/ {
-/*
-    private List<UploadListener> listeners = new ArrayList<UploadListener>();
+/**
+ * @author artamonov
+ * @version $Id$
+ */
+public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUpload> implements FileMultiUploadField {
 
-    private Map<UUID, String> files = new HashMap<UUID, String>();
+    private static final Log log = LogFactory.getLog(WebFileMultiUploadField.class);
 
-    private String description = "";
+    protected FileUploadingAPI fileUploading;
+    protected Messages messages;
 
-    // Client control parameters
-    private ValueProvider componentParams = new ValueProvider() {
-        Map<String, Object> params = new HashMap<String, Object>();
+    protected final List<UploadListener> listeners = new LinkedList<>();
 
-        public Map<String, Object> getValues() {
-            return params;
-        }
+    protected final Map<UUID, String> files = new HashMap<>();
 
-        public Map<String, Object> getParameters() {
-            return params;
-        }
-    };
+    protected String fileName;
+
+    protected UUID tempFileId;
 
     public WebFileMultiUploadField() {
-        String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "Upload");
-        MultiUpload uploader = new MultiUpload(caption);
+        fileUploading = AppBeans.get(FileUploadingAPI.NAME);
+        messages = AppBeans.get(Messages.class);
 
-        componentParams.getParameters().put("caption", "");
-        componentParams.getParameters().put("fileSizeLimit",
-                ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb().toString() + " MB");
+        CubaMultiUpload uploader = new CubaMultiUpload();
 
-        uploader.setValueProvider(componentParams);
-        uploader.setWidth("90px");
-        uploader.setHeight("25px");
-        setExpandable(false);
-        //Add listeners
-        uploader.addListener(new MultiUpload.FileProgressListener() {
-            // On file uploading
-            public void progressChanged(String fileName, int receivedBytes, int contentLength) {
-                for (UploadListener listener : listeners)
-                    listener.progressChanged(fileName, receivedBytes, contentLength);
+        uploader.setWidth(90, Sizeable.Unit.PIXELS);
+        uploader.setHeight(25, Sizeable.Unit.PIXELS);
+
+        uploader.setButtonWidth(90);
+        uploader.setButtonHeight(25);
+
+        uploader.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "multiupload.submit"));
+        uploader.setFileSizeLimitMB(AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb());
+
+        uploader.setButtonImage(new VersionedThemeResource("components/multiupload/button.png"));
+        uploader.setBootstrapFailureHandler(new CubaMultiUpload.BootstrapFailureHandler() {
+            @Override
+            public void loadWebResourcesFailed() {
+                String resourcesLoadFailed = messages.getMessage(WebFileMultiUploadField.class, "multiupload.resources.notLoaded");
+                App.getInstance().getWindowManager().showNotification(resourcesLoadFailed, IFrame.NotificationType.ERROR);
+            }
+
+            @Override
+            public void flashNotInstalled() {
+                String swfNotSupported = messages.getMessage(WebFileMultiUploadField.class, "multiupload.resources.swfNotSupported");
+                App.getInstance().getWindowManager().showNotification(swfNotSupported, IFrame.NotificationType.ERROR);
             }
         });
-        uploader.addListener(new MultiUpload.FileUploadStartListener() {
-            // On file upload start 
+
+        uploader.setReceiver(new CubaMultiUpload.Receiver() {
+            @Override
+            public OutputStream receiveUpload(String filename, String mimeType) {
+                FileOutputStream outputStream;
+                fileName = filename;
+                try {
+                    tempFileId = fileUploading.createEmptyFile();
+                    File tmpFile = fileUploading.getFile(tempFileId);
+                    outputStream = new FileOutputStream(tmpFile);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                return outputStream;
+            }
+        });
+
+        setExpandable(false);
+
+        uploader.addUploadListener(new CubaMultiUpload.UploadListener() {
+            @Override
             public void fileUploadStart(String fileName) {
                 for (UploadListener listener : listeners)
                     listener.fileUploadStart(fileName);
             }
-        });
-        uploader.addListener(new MultiUpload.FileUploadCompleteListener() {
-            // On file uploaded
-            public void fileUploaded(String fileName, UUID uuid) {
-                files.put(uuid, fileName);
+
+            @Override
+            public void fileUploaded(String fileName) {
+                files.put(tempFileId, fileName);
+
                 for (UploadListener listener : listeners)
                     listener.fileUploaded(fileName);
             }
-        });
-        uploader.addListener(new MultiUpload.QueueCompleteListener() {
-            // On queue complete
+
+            @Override
             public void queueUploadComplete() {
                 for (UploadListener listener : listeners)
                     listener.queueUploadComplete();
             }
-        });
-        uploader.addListener(new MultiUpload.FileErrorHandler(){
-            // On upload error
-            public void errorNotify(String fileName, String message, int errorCode) {
-                for (UploadListener listener : listeners)
-                    listener.errorNotify(fileName, message, errorCode);
+
+            @Override
+            public void errorNotify(String fileName, String message, CubaMultiUpload.UploadErrorType errorCode) {
+                log.warn(String.format("Error while uploading file '%s' with code '%s': %s", fileName, errorCode.getId(), message));
+
+                WebWindowManager wm = App.getInstance().getWindowManager();
+                switch (errorCode) {
+                    case QUEUE_LIMIT_EXCEEDED:
+                        wm.showNotification(messages.getMessage(WebFileMultiUploadField.class, "multiupload.queueLimitExceed"),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    case FILE_EXCEEDS_SIZE_LIMIT:
+                        wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    case SECURITY_ERROR:
+                        wm.showNotification(messages.getMessage(WebFileMultiUploadField.class, "multiupload.securityError"),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    case ZERO_BYTE_FILE:
+                        wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.zerobyteFile", fileName),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    default:
+                        boolean handled = false;
+                        for (UploadListener listener : listeners)
+                            handled = handled | listener.uploadError(fileName);
+                        if (!handled) {
+                            String uploadError = messages.formatMessage(WebFileMultiUploadField.class, "multiupload.uploadError", fileName);
+                            wm.showNotification(uploadError, IFrame.NotificationType.ERROR);
+                        }
+                        break;
+
+                }
             }
         });
 
@@ -99,26 +155,77 @@ public class WebFileMultiUploadField /*extends
 
     @Override
     public String getCaption() {
-        if (componentParams.getParameters().containsKey("caption"))
-            return (String) componentParams.getParameters().get("caption");
-        else
-            return "";
+        return component.getCaption();
     }
 
     @Override
     public void setCaption(String caption) {
-        this.componentParams.getParameters().put("caption", caption);
-        component.requestRepaint();
+        component.setCaption(caption);
     }
 
     @Override
     public String getDescription() {
-        return description;
+        return "";
     }
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
+    }
+
+    public int getButtonWidth() {
+        return component.getButtonWidth();
+    }
+
+    public void setButtonWidth(int buttonWidth) {
+        component.setButtonWidth(buttonWidth);
+    }
+
+    public void setButtonHeight(int buttonHeight) {
+        component.setButtonHeight(buttonHeight);
+    }
+
+    public int getButtonHeight() {
+        return component.getButtonHeight();
+    }
+
+    public String getFileTypesMask() {
+        return component.getFileTypesMask();
+    }
+
+    public void setFileTypesMask(String fileTypesMask) {
+        component.setFileTypesMask(fileTypesMask);
+    }
+
+    public String getFileTypesDescription() {
+        return component.getFileTypesDescription();
+    }
+
+    public void setFileTypesDescription(String fileTypesDescription) {
+        component.setFileTypesDescription(fileTypesDescription);
+    }
+
+    public double getFileSizeLimitMB() {
+        return component.getFileSizeLimitMB();
+    }
+
+    public void setFileSizeLimitMB(double filesizeLimit) {
+        component.setFileSizeLimitMB(filesizeLimit);
+    }
+
+    public double getQueueUploadLimitMB() {
+        return component.getQueueUploadLimitMB();
+    }
+
+    public void setQueueUploadLimitMB(double queueUploadLimit) {
+        component.setQueueUploadLimitMB(queueUploadLimit);
+    }
+
+    public int getQueueSizeLimit() {
+        return component.getQueueSizeLimit();
+    }
+
+    public void setQueueSizeLimit(int queueSizeLimit) {
+        component.setQueueSizeLimit(queueSizeLimit);
     }
 
     @Override
@@ -131,16 +238,18 @@ public class WebFileMultiUploadField /*extends
         listeners.remove(listener);
     }
 
-    *//**
+    /**
      * Get uploads map
      *
      * @return Map (UUID - Id of file in FileUploadService, String - FileName )
-     *//*
+     */
+    @Override
     public Map<UUID, String> getUploadsMap() {
         return files;
     }
 
-    public ValueProvider getComponentParameters() {
-        return componentParams;
-    }*/
+    @Override
+    public void clearUploads() {
+        files.clear();
+    }
 }

@@ -16,15 +16,7 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
 
     String NAME = "multiUpload";
 
-    int QUEUE_LIMIT_EXCEEDED = -100;
-    int FILE_EXCEEDS_SIZE_LIMIT = -110;
-    int ZERO_BYTE_FILE = -120;
-    int INVALID_FILETYPE = -130;
-
     public abstract class UploadListener {
-        public void progressChanged(String fileName, int totalBytes, int contentLength) {
-        }
-
         public void fileUploaded(String fileName) {
         }
 
@@ -34,8 +26,8 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
         public void queueUploadComplete() {
         }
 
-        public void errorNotify(String fileName, String message, int errorCode) {
-
+        public boolean uploadError(String fileName) {
+            return false;
         }
     }
 
@@ -49,4 +41,6 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
      * @return Map ( UUID - Id of file in FileUploadService, String - FileName )
      */
     Map<UUID, String> getUploadsMap();
+
+    void clearUploads();
 }

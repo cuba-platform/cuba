@@ -1,0 +1,29 @@
+@mixin cuba-multiupload {
+  .cuba-multiupload {
+    z-index: auto;
+  }
+
+  .cuba-multiupload-disabled {
+    z-index: auto;
+    border: #000000 solid 1px;
+    background-color: gray;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .cuba-multiupload-progress {
+    position: fixed;
+    padding: 10px;
+    left: 50%;
+    top: 50%;
+    height: 50px;
+    width: 250px;
+    margin-left: -125px;
+    margin-top: -25px;
+    background-color: #eaeef2;
+    border: 2px solid #4e7bb3;
+    overflow: visible;
+    z-index: 15000;
+  }
+}
