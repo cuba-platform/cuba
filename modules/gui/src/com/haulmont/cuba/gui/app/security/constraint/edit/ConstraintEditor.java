@@ -7,38 +7,54 @@
 package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
 import com.haulmont.cuba.gui.autocomplete.Suggestion;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.AutoCompleteTextField;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.DsContext;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import javax.inject.Inject;
+import java.util.*;
 
 /**
- * Author: Alexander Chevelev
- * Date: 23.12.2010
- * Time: 13:41:17
+ * @author Chevelev
+ * @version $Id$
  */
 public class ConstraintEditor extends AbstractEditor {
-    private TextField entityName;
-    private AutoCompleteTextField joinClause;
-    private AutoCompleteTextField whereClause;
 
-    private static volatile Collection<MetaClass> metaClasses;
+    @Inject
+    protected LookupField entityName;
+
+    @Inject
+    protected AutoCompleteTextField joinClause;
+
+    @Inject
+    protected AutoCompleteTextField whereClause;
+
+    @Inject
+    protected Metadata metadata;
+
+    protected Map<Object, String> entities;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        entityName = getComponent("entityName");
-        // casts to concrete classes !
-        joinClause = getComponent("joinClause");
-        whereClause = getComponent("whereClause");
+
+        Map<String, Object> options = new TreeMap<>();
+        entities = new HashMap<>();
+        for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
+            if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                String originalName = originalMetaClass == null ? metaClass.getName() : originalMetaClass.getName();
+                options.put(metaClass.getName(), originalName);
+                entities.put(originalName, metaClass.getName());
+            }
+        }
+        entityName.setOptionsMap(options);
 
         joinClause.setSuggester(new Suggester() {
             public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
@@ -51,10 +67,9 @@ public class ConstraintEditor extends AbstractEditor {
                 return requestHint(whereClause, text, cursorPosition);
             }
         });
-
     }
 
-    private List<Suggestion> requestHint(AutoCompleteTextField sender, String text, int cursorPosition) {
+    protected List<Suggestion> requestHint(AutoCompleteTextField sender, String text, int cursorPosition) {
         String joinStr = (String) joinClause.getValue();
         String whereStr = (String) whereClause.getValue();
 
@@ -67,7 +82,7 @@ public class ConstraintEditor extends AbstractEditor {
         queryBuilder.append("select ");
         queryBuilder.append(entityNameAlias);
         queryBuilder.append(" from ");
-        queryBuilder.append(entityName.getValue());
+        queryBuilder.append(entities.get(entityName.getValue()));
         queryBuilder.append(" ");
         queryBuilder.append(entityNameAlias);
         queryBuilder.append(" ");

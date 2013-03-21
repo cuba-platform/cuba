@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.app.security.group.browse;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
@@ -16,7 +17,9 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
@@ -68,11 +71,14 @@ public class GroupBrowser extends AbstractWindow {
     @Inject
     protected Metadata metadata;
 
-    private boolean constraintsTabInitialized, attributesTabInitialized;
+    @Inject
+    protected ComponentsFactory componentsFactory;
 
-    private GroupPropertyCreateAction attributeCreateAction;
-    private GroupPropertyCreateAction constraintCreateAction;
-    private GroupPropertyCreateAction userCreateAction;
+    protected boolean constraintsTabInitialized, attributesTabInitialized;
+
+    protected GroupPropertyCreateAction attributeCreateAction;
+    protected GroupPropertyCreateAction constraintCreateAction;
+    protected GroupPropertyCreateAction userCreateAction;
 
     public void init(final Map<String, Object> params) {
         groupCreateAction.setCaption(getMessage("action.create"));
@@ -183,7 +189,7 @@ public class GroupBrowser extends AbstractWindow {
         }
     }
 
-    private void initConstraintsTab() {
+    protected void initConstraintsTab() {
         if (constraintsTabInitialized)
             return;
 
@@ -191,10 +197,24 @@ public class GroupBrowser extends AbstractWindow {
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
 
+        constraintsTable.addGeneratedColumn(
+                "entityName",
+                new Table.ColumnGenerator<Constraint>() {
+                    @Override
+                    public Component generateCell(Constraint constraint) {
+                        MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(
+                                metadata.getClassNN(constraint.getEntityName()));
+                        Label label = componentsFactory.createComponent(Label.NAME);
+                        label.setValue(effectiveMetaClass.getName());
+                        return label;
+                    }
+                }
+        );
+
         constraintsTabInitialized = true;
     }
 
-    private void initAttributesTab() {
+    protected void initAttributesTab() {
         if (attributesTabInitialized)
             return;
 
@@ -208,7 +228,7 @@ public class GroupBrowser extends AbstractWindow {
     /**
      * Create action for the objects associated with the group
      */
-    private class GroupPropertyCreateAction extends CreateAction {
+    protected class GroupPropertyCreateAction extends CreateAction {
 
         public GroupPropertyCreateAction(ListComponent owner) {
             super(owner);

@@ -7,10 +7,12 @@ package com.haulmont.cuba.security.sys;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
@@ -32,26 +34,28 @@ import java.util.UUID;
 /**
  * System-level class managing {@link UserSession}s.
  *
- * @version $Id$
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UserSessionManager.NAME)
-public class UserSessionManager
-{
+public class UserSessionManager {
+
     public static final String NAME = "cuba_UserSessionManager";
 
     @Inject
     protected UuidSource uuidSource;
 
     @Inject
-    private UserSessionsAPI sessions;
+    protected UserSessionsAPI sessions;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
+
+    @Inject
+    protected Metadata metadata;
 
     private static Log log = LogFactory.getLog(UserSessionManager.class);
 
@@ -63,7 +67,7 @@ public class UserSessionManager
      * @return          new session instance
      */
     public UserSession createSession(User user, Locale locale, boolean system) {
-        List<Role> roles = new ArrayList<Role>();
+        List<Role> roles = new ArrayList<>();
         for (UserRole userRole : user.getUserRoles()) {
             if (userRole.getRole() != null) {
                 roles.add(userRole.getRole());
@@ -84,7 +88,7 @@ public class UserSessionManager
      * @return      new session with the same ID as existing
      */
     public UserSession createSession(UserSession src, User user) {
-        List<Role> roles = new ArrayList<Role>();
+        List<Role> roles = new ArrayList<>();
         for (UserRole userRole : user.getUserRoles()) {
             if (userRole.getRole() != null) {
                 roles.add(userRole.getRole());
@@ -108,27 +112,44 @@ public class UserSessionManager
             for (Permission permission : role.getPermissions()) {
                 PermissionType type = permission.getType();
                 if (type != null && permission.getValue() != null) {
-                    session.addPermission(type, permission.getTarget(), permission.getValue());
+                    session.addPermission(type,
+                            permission.getTarget(), convertToExtendedEntityTarget(permission), permission.getValue());
                 }
             }
         }
     }
 
-    private void compileConstraints(UserSession session, Group group) {
+    protected String convertToExtendedEntityTarget(Permission permission) {
+        if (permission.getType() == PermissionType.ENTITY_OP || permission.getType() == PermissionType.ENTITY_ATTR) {
+            String target = permission.getTarget();
+            int pos = target.indexOf(Permission.TARGET_PATH_DELIMETER);
+            if (pos > -1) {
+                String entityName = target.substring(0, pos);
+                Class extendedClass = metadata.getExtendedEntities().getExtendedClass(metadata.getClassNN(entityName));
+                if (extendedClass != null) {
+                    MetaClass extMetaClass = metadata.getClassNN(extendedClass);
+                    return extMetaClass.getName() + Permission.TARGET_PATH_DELIMETER + target.substring(pos + 1);
+                }
+            }
+        }
+        return null;
+    }
+
+    protected void compileConstraints(UserSession session, Group group) {
         EntityManager em = persistence.getEntityManager();
         Query q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
                 "where h.group.id = ?1");
         q.setParameter(1, group);
         List<Constraint> constraints = q.getResultList();
-        List<Constraint> list = new ArrayList<Constraint>(constraints);
+        List<Constraint> list = new ArrayList<>(constraints);
         list.addAll(group.getConstraints());
         for (Constraint constraint : list) {
             session.addConstraint(constraint.getEntityName(), constraint.getJoinClause(), constraint.getWhereClause());
         }
     }
 
-    private void compileSessionAttributes(UserSession session, Group group) {
-        List<SessionAttribute> list = new ArrayList<SessionAttribute>(group.getSessionAttributes());
+    protected void compileSessionAttributes(UserSession session, Group group) {
+        List<SessionAttribute> list = new ArrayList<>(group.getSessionAttributes());
 
         EntityManager em = persistence.getEntityManager();
         Query q = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
@@ -193,7 +214,7 @@ public class UserSessionManager
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {
         Integer result;
-        List<Role> roles = new ArrayList<Role>();
+        List<Role> roles = new ArrayList<>();
 
         Transaction tx = persistence.createTransaction();
         try {

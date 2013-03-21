@@ -52,9 +52,7 @@
 
     <!-- Various beans with non-standard configuration -->
 
-    <bean id="cuba_Security" name="cuba_PersistenceSecurity" class="com.haulmont.cuba.core.sys.PersistenceSecurityImpl">
-        <property name="userSessionSource" ref="cuba_UserSessionSource"/>
-    </bean>
+    <bean id="cuba_Security" name="cuba_PersistenceSecurity" class="com.haulmont.cuba.core.sys.PersistenceSecurityImpl"/>
 
     <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
         <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>

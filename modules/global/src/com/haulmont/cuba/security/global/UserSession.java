@@ -6,8 +6,6 @@
 package com.haulmont.cuba.security.global;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.security.entity.*;
 
 import java.io.Serializable;
@@ -44,26 +42,6 @@ public class UserSession implements Serializable {
     protected Map<String, List<String[]>> constraints;
 
     protected Map<String, Serializable> attributes;
-
-    public static String getScreenPermissionTarget(String windowAlias) {
-        return windowAlias;
-    }
-
-    public static String getEntityOpPermissionTarget(MetaClass metaClass, EntityOp operation) {
-        return metaClass.getName() + Permission.TARGET_PATH_DELIMETER + operation.getId();
-    }
-
-    public static String getEntityAttrPermissionTarget(MetaClass metaClass, String attribute) {
-        return metaClass.getName() + Permission.TARGET_PATH_DELIMETER + attribute;
-    }
-
-    public static String getUiComponentPermissionTarget(String screen, String component) {
-        return screen + Permission.TARGET_PATH_DELIMETER + component;
-    }
-
-    public static String getSpecificPermissionTarget(String name) {
-        return name;
-    }
 
     public UserSession(UUID id, User user, Collection<Role> roles, Locale locale, boolean system) {
         this.id = id;
@@ -187,10 +165,12 @@ public class UserSession implements Serializable {
     /**
      * This method is used by security subsystem
      */
-    public void addPermission(PermissionType type, String target, int value) {
+    public void addPermission(PermissionType type, String target, String extTarget, int value) {
         Integer currentValue = permissions[type.ordinal()].get(target);
         if (currentValue == null || currentValue < value) {
             permissions[type.ordinal()].put(target, value);
+            if (extTarget != null)
+                permissions[type.ordinal()].put(extTarget, value);
         }
     }
 
@@ -208,27 +188,25 @@ public class UserSession implements Serializable {
 
     /** Check user permission for the screen */
     public boolean isScreenPermitted(String windowAlias) {
-        return isPermitted(PermissionType.SCREEN,
-                getScreenPermissionTarget(windowAlias));
+        return isPermitted(PermissionType.SCREEN, windowAlias);
     }
 
     /** Check user permission for the entity operation */
     public boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
         return isPermitted(PermissionType.ENTITY_OP,
-                getEntityOpPermissionTarget(metaClass, entityOp));
+                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + entityOp.getId());
     }
 
     /** Check user permission for the entity attribute */
     public boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access) {
         return isPermitted(PermissionType.ENTITY_ATTR,
-                getEntityAttrPermissionTarget(metaClass, property),
+                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + property,
                 access.getId());
     }
 
     /** Check specific user permission */
     public boolean isSpecificPermitted(String name) {
-        return isPermitted(PermissionType.SPECIFIC,
-                getSpecificPermissionTarget(name));
+        return isPermitted(PermissionType.SPECIFIC, name);
     }
 
     /**
