@@ -105,6 +105,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     private boolean editable = true;
     private boolean required = false;
+    private boolean folderActionsEnabled = true;
 
     private Component applyTo;
 
@@ -375,12 +376,30 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 && filterEntity.getIsSet() == null) {
             actionsButton.addAction(new MakeDefaultAction());
         }
+        updateFolderActions();
+    }
 
-        if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
-            actionsButton.addAction(new SaveAsFolderAction(false));
-        if (checkGlobalAppFolderPermission()) {
-            if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
-                actionsButton.addAction(new SaveAsFolderAction(true));
+    private void updateFolderActions() {
+        Action saveAsFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_FOLDER);
+        Action saveAsAppFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_APP_FOLDER);
+
+        if (isFolderActionsEnabled()) {
+            if (filterEntity.getCode() == null && foldersPane != null
+                    && filterEntity.getFolder() == null && saveAsFolderAction == null) {
+                actionsButton.addAction(new SaveAsFolderAction(false));
+            }
+            if (checkGlobalAppFolderPermission()) {
+                if (filterEntity.getCode() == null && foldersPane != null
+                        && filterEntity.getFolder() == null && saveAsAppFolderAction == null)
+                    actionsButton.addAction(new SaveAsFolderAction(true));
+            }
+        } else {
+            if (saveAsAppFolderAction != null) {
+                actionsButton.removeAction(saveAsAppFolderAction);
+            }
+            if (saveAsFolderAction != null) {
+                actionsButton.removeAction(saveAsFolderAction);
+            }
         }
     }
 
@@ -1526,6 +1545,17 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return required;
     }
 
+    @Override
+    public void setFolderActionsEnabled(boolean enabled) {
+        this.folderActionsEnabled = enabled;
+        updateFolderActions();
+    }
+
+    @Override
+    public boolean isFolderActionsEnabled() {
+        return folderActionsEnabled;
+    }
+
     private boolean getResultingManualApplyRequired() {
         return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
@@ -1661,10 +1691,13 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     private class SaveAsFolderAction extends AbstractAction {
 
+        public static final String SAVE_AS_APP_FOLDER = "saveAsAppFolderAction";
+        public static final String SAVE_AS_FOLDER = "saveAsFolderAction";
+
         private boolean isAppFolder;
 
         protected SaveAsFolderAction(boolean isAppFolder) {
-            super(isAppFolder ? ("saveAsAppFolderAction") : ("saveAsFolderAction"));
+            super(isAppFolder ? SAVE_AS_APP_FOLDER : SAVE_AS_FOLDER);
             this.isAppFolder = isAppFolder;
         }
 

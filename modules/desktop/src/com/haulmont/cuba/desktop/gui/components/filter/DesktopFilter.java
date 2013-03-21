@@ -102,6 +102,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private boolean editable = true;
     private boolean required = false;
+    private boolean folderActionsEnabled = true;
 
     private DesktopPopupButton actionsButton;
 
@@ -1224,6 +1225,16 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public boolean isRequired() {
         return required;
+    }
+
+    @Override
+    public void setFolderActionsEnabled(boolean enabled) {
+        folderActionsEnabled = enabled;
+    }
+
+    @Override
+    public boolean isFolderActionsEnabled() {
+        return folderActionsEnabled;
     }
 
     private boolean getResultingManualApplyRequired() {

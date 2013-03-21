@@ -52,6 +52,11 @@ public class FilterLoader extends ComponentLoader {
         String editable = element.attributeValue("editable");
         filter.setEditable(editable == null || Boolean.valueOf(editable));
 
+        String folderActionsEnabled = element.attributeValue("folderActionsEnabled");
+        if (folderActionsEnabled != null) {
+            filter.setFolderActionsEnabled(Boolean.valueOf(folderActionsEnabled));
+        }
+
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             CollectionDatasource ds = context.getDsContext().get(datasource);
