@@ -9297,26 +9297,46 @@ protected boolean postCommit(boolean committed, boolean close) {
         <section>
           <title>Тема в десктоп-приложениях</title>
           <para>В десктоп-приложениях базовой темой является тема <code>Nimbus</code>.</para>
-          <para>Для внесения изменения в стандартную тему нужно создать пакет <code>res.nimbus</code> в пакете <code>com.haulmont.ext.desktop</code> модуля <structname>desktop</structname>. В пакете <code>res.nimbus</code> будут храниться файлы темы.</para>
-          <para>В <link linkend="app_properties">файле свойств</link> для десктоп-приложения нужно установить свойство </para>
+          <para>Для внесения изменения в стандартную тему нужно создать пакет <code>res.nimbus</code> в пакете <code>com.sample.sales.desktop</code> модуля <structname>desktop</structname>. В пакете <code>res.nimbus</code> будут храниться файлы темы.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/gui_themes_desktop_structure.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>В папке <code>icons</code> хранятся файлы пиктограмм, в файле <filename>nimbus.xml</filename> − описание стиля темы.</para>
+          <para>В <link linkend="app_properties">файле свойств</link> для десктоп-приложения нужно установить свойство <property>cuba.desktop.resourceLocations</property> (задает набор директорий, в которых расположены файлы стилей)</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para><emphasis role="bold">Примеры</emphasis></para>
           <orderedlist>
             <listitem>
-              <para>Изменение пиктограммы для кнопки</para>
-              <para>Если стоит задача заменить в десктоп-приложении какую-либо пиктограмму, нужно создать пакет <code>res.nimbus.icons</code> в пакете <code>com.haulmont.ext.desktop</code> модуля <structname>desktop</structname> и поместить в него требуемое изображение.</para>
-              <para>Ниже представлена кнопка с переопределенной пиктограммой <filename>save.png</filename></para>
+              <para>Добавление пиктограммы</para>
+              <para>Если в десктоп-приложении требуется добавить новую пиктограмму, например, для кнопки,   нужно создать пакет <code>res.nimbus.icons</code> в пакете <code>com.sample.sales.desktop</code> модуля <structname>desktop</structname> и поместить в него требуемое изображение.</para>
               <figure>
                 <title/>
                 <mediaobject>
                   <imageobject>
-                    <imagedata align="center" fileref="img/gui_themes_example3.png"/>
+                    <imagedata align="center" fileref="img/gui_themes_example4.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+              <para>Описываем <link linkend="gui_Button">кнопку</link> в <link linkend="screen_xml_glossentry">дескрипторе</link>, указывая в атрибуте <link linkend="gui_attr_basic_icon">icon</link> путь до пиктограммы:</para>
+              <programlisting>&lt;button id=&quot;button1&quot; caption=&quot;Attention&quot;  icon=&quot;icons/attention.png&quot;/&gt;</programlisting>
+              <para>Ниже представлена кнопка с  пиктограммой <filename>attention.png</filename></para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_themes_example5.png"/>
                   </imageobject>
                 </mediaobject>
               </figure>
             </listitem>
             <listitem>
-              <para>Изменение цвета фона текстовых полей, обязательных для ввода</para>
+              <para>Переопределение значений свойств темы, установленных по умолчанию</para>
+              <para>Рассмотрим на примере изменения цвета фона текстовых полей, обязательных для ввода.</para>
               <para>В пакете <code>res.nimbus</code> нужно создать файл <filename>nimbus.xml</filename> следующего содержания:</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/exapmle1_1.txt" encoding="UTF-8" parse="text"/></programlisting>
               <para>Элемент <sgmltag>ui-defaults</sgmltag> служит для переопределения значений свойств темы платформы, установленных по умолчанию.</para>
@@ -9324,13 +9344,35 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para>В данном примере переопределено значение свойства платформы  <trademark>CUBA</trademark> <sgmltag>cubaRequiredBackground</sgmltag>, хранящего цвет фона поля, обязательного для заполнения. Данное изменение коснется всех полей, обязательных для ввода.</para>
             </listitem>
             <listitem>
-              <para>Выделение надписи жирным цветом</para>
-              <para>Для того чтобы выделить текст надписи жирным цветом, необходимо определить элемент <sgmltag>style</sgmltag> в файле темы <filename>nimbus.xml</filename> следующим образом:</para>
+              <para>Создание стиля для элемента с помощью стандартных средств</para>
+              <para>Рассмотрим пример выделения надписи жирным цветом.</para>
+              <para>Для того чтобы создать такой стиль, необходимо определить элемент <sgmltag>style</sgmltag> в файле темы <filename>nimbus.xml</filename> следующим образом:</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example3_1.txt" encoding="UTF-8" parse="text"/></programlisting>
               <para>Элемент <sgmltag>style</sgmltag> может содержать  другие элементы, в которых можно определять те или иные свойства: <sgmltag>background</sgmltag>, <sgmltag>foreground</sgmltag>, <sgmltag>icon</sgmltag>.</para>
               <para>В описании компонента надписи в <link linkend="screen_xml_glossentry">xml-дескрипторе</link>, к которой нужно применить созданный стиль, нужно указать атрибут <link linkend="gui_attr_basic_stylename">stylename</link> с именем стиля:</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example3_2.txt" encoding="UTF-8" parse="text"/></programlisting>
               <para>Таким образом, данный стиль будет применен только к тем надписям, для которых  определен атрибут <link linkend="gui_attr_basic_stylename">stylename</link> со значением <literal>boldlabel</literal>.</para>
+            </listitem>
+            <listitem>
+              <para>Создание пользовательского стиля</para>
+              <para>Если не хватает стандартных средств изменения стиля компонента, есть возможность создать пользовательский стиль. </para>
+              <para>Создадим пользовательский стиль, который будет применяться для компонента <link linkend="gui_Label">Label</link>. С помощью стиля содержимое компонента  <link linkend="gui_Label">Label</link> будет отображаться подчеркнутым.</para>
+              <para>В первую очередь создадим класс-декоратор <code>UnderlinedLabelDecorator</code>:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example4.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>Определим пользовательский стиль в файле <filename>nimbus.xml</filename>:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example5.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <para>В  атрибуте <sgmltag>component</sgmltag> элемента <sgmltag>style</sgmltag> содержится название компонента, к которому может быть применен стиль с названием <literal>label-underlined</literal>.</para>
+              <para>В элементе <sgmltag>custom</sgmltag> указывается путь до класса-декоратора, определенного ранее.</para>
+              <para>При описании элемента надписи, к которой нужно применить пользовательский стиль, нужно в атрибуте <sgmltag>stylename</sgmltag> указать название стиля:</para>
+              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/example6.txt" encoding="UTF-8" parse="text"/></programlisting>
+              <figure>
+                <title>Компонент надписи с пользовательским стилем</title>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_themes_example6.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
             </listitem>
           </orderedlist>
         </section>
