@@ -138,6 +138,12 @@
                 link.removeClass('toc-search-result');
             }
 
+            function isTouchDevice() {
+                var el = document.createElement('div');
+                el.setAttribute('ongesturestart', 'return;');
+                return typeof el.ongesturestart === "function";
+            }
+
             $(document).ready(function() {
                 // use template from document for panel
                 var tocPanel = $('div#toc-panel-template').clone()[0];
@@ -156,10 +162,31 @@
                 var button = $('#toc-btn');
                 allLinksInToc = $('#toc-panel-content a');
 
+                var isPanelActive = false;
+                var isPanelTouched = false;
+
+                if (isTouchDevice() == true){
+                    document.addEventListener('touchmove', function(e) {
+                        if ( isPanelTouched == false){
+                            if (isPanelActive == true){
+                                e.preventDefault();
+                                panel.hide('fast');
+                                button.removeClass('active');
+                                isPanelActive = false;
+                            }
+                        }
+                        isPanelTouched = false;
+                    }, false);
+                    document.getElementById('toc-panel-content').addEventListener('touchmove', function(e) {
+                        isPanelTouched = true;
+                    },false);
+                }
+
                 button.attr( 'href', 'javascript:void(0)' ).mousedown(function() {
                     panel.toggle('medium');
                     button.toggleClass('active');
                     document.getElementById('toc-search-box').focus();
+                    isPanelActive = true;
                     return false;
                 });
 
