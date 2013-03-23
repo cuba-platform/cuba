@@ -1604,6 +1604,10 @@ private Double latitude;</programlisting></para>
               </listitem>
             </itemizedlist></para>
         </warning>
+        <para>Незагруженные атрибуты имеют значение <code>null</code>. По умолчанию попытка установки значения незагруженного атрибута (вызов setter) для <link linkend="entity_states">Detached</link> сущности вызывает исключение. Это поведение можно изменить с помощью свойства приложения <property>
+            <link linkend="cuba.allowSetNotLoadedAttributes">cuba.allowSetNotLoadedAttributes</link>
+          </property>. Если данное свойство установлено в <code>true</code>, то вызов setter не приведет к исключению, но значение все равно сохранено не будет.</para>
+        <para>Следует иметь в виду, что незагруженные ссылочные атрибуты Detached сущности, соответствующие внешним ключам (т.е. ManyToOne, OneToOne), можно установить в новое ненулевое значение в любом случае, и изменения будут сохранены при последующем <code>merge()</code>.</para>
       </section>
       <section>
         <title>Создание представлений</title>
@@ -9340,7 +9344,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para>В пакете <code>res.nimbus</code> нужно создать файл <filename>nimbus.xml</filename> следующего содержания:</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/themes/desktop/exapmle1_1.txt" encoding="UTF-8" parse="text"/></programlisting>
               <para>Элемент <sgmltag>ui-defaults</sgmltag> служит для переопределения значений свойств темы платформы, установленных по умолчанию.</para>
-              <para>В элементе <sgmltag>ui-defaults</sgmltag> присутствуют как свойства, содержащиеся в стандартной  теме <code>Nimbus</code> (<ulink url="http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary">http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary</ulink>), так и свойства, созданные в платформе <trademark>CUBA</trademark>.</para>
+              <para>В элементе <sgmltag>ui-defaults</sgmltag> присутствуют как свойства, содержащиеся в стандартной  теме <code>Nimbus</code> (<ulink url="http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html">http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html</ulink>), так и свойства, созданные в платформе <trademark>CUBA</trademark>.</para>
               <para>В данном примере переопределено значение свойства платформы  <trademark>CUBA</trademark> <sgmltag>cubaRequiredBackground</sgmltag>, хранящего цвет фона поля, обязательного для заполнения. Данное изменение коснется всех полей, обязательных для ввода.</para>
             </listitem>
             <listitem>
