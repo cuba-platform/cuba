@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PasswordEncryption;
@@ -95,6 +96,9 @@ public abstract class CubaTestCase extends TestCase
     }
 
     protected void initPersistenceConfig() {
+        BaseUuidEntity.allowSetNotLoadedAttributes =
+                Boolean.valueOf(AppContext.getProperty("cuba.allowSetNotLoadedAttributes"));
+
         String configProperty = AppContext.getProperty(AppContextLoader.PERSISTENCE_CONFIG);
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
 

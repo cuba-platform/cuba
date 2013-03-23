@@ -6,10 +6,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
@@ -56,7 +53,12 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
         AppContext.setSecurityContextHolder(new SingleSecurityContextHolder());
 
         initAppProperties();
+        afterInitAppProperties();
+
+        beforeInitAppContext();
         initAppContext();
+        afterInitAppContext();
+
         initEnvironment();
 
         AppContext.startContext();
@@ -64,7 +66,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
     }
 
     protected void initEnvironment() {
-        String tempPath = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
+        String tempPath = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTempDir();
         File tempDir = new File(tempPath);
         if (!tempDir.exists()) {
             try {

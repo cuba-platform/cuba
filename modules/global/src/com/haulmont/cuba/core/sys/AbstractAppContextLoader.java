@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.springframework.context.ApplicationContext;
@@ -21,6 +22,14 @@ public class AbstractAppContextLoader {
 
     public static final String SPRING_CONTEXT_CONFIG = "cuba.springContextConfig";
 
+    protected void afterInitAppProperties() {
+        BaseUuidEntity.allowSetNotLoadedAttributes =
+                Boolean.valueOf(AppContext.getProperty("cuba.allowSetNotLoadedAttributes"));
+    }
+
+    protected void beforeInitAppContext() {
+    }
+
     protected void initAppContext() {
         String configProperty = AppContext.getProperty(SPRING_CONTEXT_CONFIG);
         if (StringUtils.isBlank(configProperty)) {
@@ -32,5 +41,8 @@ public class AbstractAppContextLoader {
 
         ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
+    }
+
+    protected void afterInitAppContext() {
     }
 }

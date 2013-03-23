@@ -10,11 +10,14 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.UUID;
 
@@ -107,4 +110,25 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
     public String toString() {
         return getClass().getName() + "-" + id;
     }
+
+    /**
+     * Called from enhanced setters before property is changed.
+     *
+     * @param name          property name
+     * @param fieldIndex    corresponding OpenJPA field index
+     * @param value         new value
+     */
+    protected void propertyChanging(String name, int fieldIndex, Object value) {
+        if (!allowSetNotLoadedAttributes
+                && fieldIndex > -1
+                && this instanceof PersistenceCapable
+                && ((PersistenceCapable) this).pcGetStateManager() instanceof DetachedStateManager) {
+            BitSet loaded = ((DetachedStateManager) ((PersistenceCapable) this).pcGetStateManager()).getLoaded();
+            if (!loaded.get(fieldIndex))
+                throw new IllegalStateException("Property '" + name + "' is not loaded");
+        }
+    }
+
+    /** For internal use only. */
+    public static boolean allowSetNotLoadedAttributes;
 }
