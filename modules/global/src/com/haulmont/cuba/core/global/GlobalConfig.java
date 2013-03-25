@@ -138,5 +138,11 @@ public interface GlobalConfig extends Config {
     @Property("cuba.allowQueryFromSelected")
     @DefaultBoolean(true)
     boolean getAllowQueryFromSelected();
+
+    /**
+     * @return Classpath directories for dynamic class loader. Separated by ;
+     */
+    @Property("cuba.classpath.directories")
+    String getCubaClasspathDirectories();
 }
 
