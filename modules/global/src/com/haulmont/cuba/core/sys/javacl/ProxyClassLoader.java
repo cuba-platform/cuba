@@ -25,16 +25,12 @@ class ProxyClassLoader extends ClassLoader {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        try {
-            return super.loadClass(name, resolve);
-        } catch (ClassNotFoundException e) {
-            //do nothing
-        }
         TimestampClass tsClass = compiled.get(name);
         if (tsClass != null) {
             return tsClass.clazz;
+        } else {
+            return super.loadClass(name, resolve);
         }
-        throw new ClassNotFoundException(name);
     }
 
     public TimestampClass removeFromCache(String className) {
@@ -62,7 +58,7 @@ class ProxyClassLoader extends ClassLoader {
         removedFromCompilation.remove();
     }
 
-    public void cleanupRemoved(){
+    public void cleanupRemoved() {
         removedFromCompilation.remove();
     }
 }

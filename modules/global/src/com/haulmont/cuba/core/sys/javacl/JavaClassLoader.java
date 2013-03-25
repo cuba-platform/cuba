@@ -27,6 +27,7 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -90,14 +91,10 @@ public class JavaClassLoader extends URLClassLoader {
         Log4JStopWatch loadingWatch = new Log4JStopWatch("LoadClass");
         try {
             lock(className);
-            Class clazz = null;
-            try {
-                clazz = super.loadClass(className, resolve);
-            } catch (ClassNotFoundException e) {
-                //
-            }
+            Class clazz;
 
-            if (clazz != null) {
+            if (!sourceProvider.getSourceFile(className).exists()) {
+                clazz = super.loadClass(className);
                 return clazz;
             }
 
@@ -142,6 +139,30 @@ public class JavaClassLoader extends URLClassLoader {
             unlock(className);
             loadingWatch.stop();
         }
+    }
+
+    @Override
+    public URL findResource(String name) {
+        if (name.startsWith("/"))
+            name = name.substring(1);
+        File file = new File(rootDir, name);
+        if (file.exists()) {
+            try {
+                return file.toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        } else
+            return null;
+    }
+
+    @Override
+    public URL getResource(String name) {
+        URL resource = findResource(name);
+        if (resource != null)
+            return resource;
+        else
+            return super.getResource(name);
     }
 
     protected Date getCurrentTimestamp() {
