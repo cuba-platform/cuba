@@ -94,7 +94,7 @@ public class JavaClassLoader extends URLClassLoader {
             Class clazz;
 
             if (!sourceProvider.getSourceFile(className).exists()) {
-                clazz = super.loadClass(className);
+                clazz = super.loadClass(className, resolve);
                 return clazz;
             }
 
