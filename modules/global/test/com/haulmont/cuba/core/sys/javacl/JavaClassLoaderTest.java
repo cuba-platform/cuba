@@ -104,7 +104,7 @@ public class JavaClassLoaderTest {
 
     private void modifyFile(String path) {
         File file = new File(path);
-        file.setLastModified(System.currentTimeMillis() + 10);
+        file.setLastModified(System.currentTimeMillis());
     }
 
 
