@@ -44,7 +44,7 @@ import java.util.*;
 @Controller
 public class DataServiceController {
 
-    private static Log log = LogFactory.getLog(DataServiceController.class);
+    private Log log = LogFactory.getLog(DataServiceController.class);
 
     //todo wire
     private ConversionFactory conversionFactory = new ConversionFactory();
@@ -73,21 +73,21 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-        EntityLoadInfo loadInfo = EntityLoadInfo.parse(entityRef);
-        if (loadInfo == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-        MetaClass metaClass = loadInfo.getMetaClass();
-        if (!readPermitted(metaClass)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        UUID idObject = loadInfo.getId();
-
         try {
+            EntityLoadInfo loadInfo = EntityLoadInfo.parse(entityRef);
+            if (loadInfo == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+            MetaClass metaClass = loadInfo.getMetaClass();
+            if (!readPermitted(metaClass)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            UUID idObject = loadInfo.getId();
+
             LoadContext loadCtx = new LoadContext(metaClass);
             loadCtx.setId(idObject);
             loadCtx.setUseSecurityConstraints(true);
@@ -102,6 +102,9 @@ public class DataServiceController {
                 Object result = convertor.process(entity, metaClass, request.getRequestURI());
                 convertor.write(response, result);
             }
+        } catch (Throwable e) {
+            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             authentication.forget();
         }
@@ -123,27 +126,27 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        MetaClass metaClass = getMetaClass(entityName);
-        if (metaClass == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown entity name " + entityName);
-        }
-
-        EntityOp queryEntityOp = getQueryEntityOp(queryStr);
-        if (!entityOpPermitted(metaClass, queryEntityOp)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        Map<String, String[]> queryParams = new HashMap<String, String[]>(request.getParameterMap());
-        queryParams.remove("e");
-        queryParams.remove("q");
-        queryParams.remove("view");
-        queryParams.remove("first");
-        queryParams.remove("s");
-        queryParams.remove("max");
         try {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            MetaClass metaClass = getMetaClass(entityName);
+            if (metaClass == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown entity name " + entityName);
+            }
+
+            EntityOp queryEntityOp = getQueryEntityOp(queryStr);
+            if (!entityOpPermitted(metaClass, queryEntityOp)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            Map<String, String[]> queryParams = new HashMap<String, String[]>(request.getParameterMap());
+            queryParams.remove("e");
+            queryParams.remove("q");
+            queryParams.remove("view");
+            queryParams.remove("first");
+            queryParams.remove("s");
+            queryParams.remove("max");
+
             LoadContext loadCtx = new LoadContext(metaClass);
             loadCtx.setUseSecurityConstraints(true);
             LoadContext.Query query = new LoadContext.Query(queryStr);
@@ -172,6 +175,9 @@ public class DataServiceController {
             Convertor convertor = conversionFactory.getConvertor(type);
             Object result = convertor.process(entities, metaClass, request.getRequestURI());
             convertor.write(response, result);
+        } catch (Throwable e) {
+            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             authentication.forget();
         }
@@ -190,11 +196,11 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-
-        Convertor convertor = conversionFactory.getConvertor(contentType);
         try {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+
+            Convertor convertor = conversionFactory.getConvertor(contentType);
+
             CommitRequest commitRequest = convertor.parseCommitRequest(requestContent);
             Collection commitInstances = commitRequest.getCommitInstances();
             Collection newInstanceIds = commitRequest.getNewInstanceIds();
@@ -220,6 +226,9 @@ public class DataServiceController {
 
             Object converted = convertor.process(result, request.getRequestURI());
             convertor.write(response, converted);
+        } catch (Throwable e) {
+            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             authentication.forget();
         }
@@ -237,11 +246,13 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        ViewRepository viewRepository = metadata.getViewRepository();
         try {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            ViewRepository viewRepository = metadata.getViewRepository();
             ((AbstractViewRepository) viewRepository).deployViews(new StringReader(requestContent));
+        } catch (Throwable e) {
+            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             authentication.forget();
         }
@@ -249,6 +260,7 @@ public class DataServiceController {
 
     @RequestMapping(value = "/api/printDomain", method = RequestMethod.GET)
     public void printDomain(@RequestParam(value = "s") String sessionId,
+                            HttpServletRequest request,
                             HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, TemplateException {
 
@@ -257,14 +269,13 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
-        response.setLocale(userSessionSource.getLocale());
-        PrintWriter writer = response.getWriter();
-
         try {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.setContentType("text/html");
+            response.setCharacterEncoding("UTF-8");
+            response.setLocale(userSessionSource.getLocale());
+            PrintWriter writer = response.getWriter();
+
             AbstractViewRepository viewRepository = (AbstractViewRepository) metadata.getViewRepository();
             List<View> views = viewRepository.getAll();
 
@@ -306,6 +317,9 @@ public class DataServiceController {
             cfg.setObjectWrapper(new DefaultObjectWrapper());
             Template template = cfg.getTemplate("domain.ftl");
             template.process(values, writer);
+        } catch (Throwable e) {
+            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             authentication.forget();
         }

@@ -40,7 +40,7 @@ public class ViewRepositoryClientImpl extends AbstractViewRepository implements 
         if (!lazyLoadServerViews) {
             List<View> views = serverInfoService.getViews();
             for (View view : views) {
-                MetaClass metaClass = metadata.getSession().getClass(view.getEntityClass());
+                MetaClass metaClass = metadata.getSession().getClassNN(view.getEntityClass());
                 storeView(metaClass, view);
             }
         }
