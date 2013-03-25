@@ -10,12 +10,13 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Date;
-import java.util.HashMap;
 
 public class JavaClassLoaderTest {
     @Test
     public void testDependencies() throws Exception {
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, ".\\modules\\global\\sourcefiles\\", "") {
+        System.out.println(new File(".").getAbsolutePath());
+
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -24,7 +25,7 @@ public class JavaClassLoaderTest {
 
         Class<?> class1 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
         System.out.println("Class loaded");
-        modifyFile(".\\modules\\global\\sourcefiles\\com\\haulmont\\cuba\\core\\sys\\javacl\\test\\SimpleClass.java");
+        modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test/SimpleClass.java");
         System.out.println("SimpleClass modified");
         Class<?> class2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
         Assert.assertNotSame(class1, class2);
@@ -36,7 +37,7 @@ public class JavaClassLoaderTest {
         Assert.assertEquals(class2, class3);
         System.out.println("Class reloaded, same class received");
 
-        modifyFile(".\\modules\\global\\sourcefiles\\com\\haulmont\\cuba\\core\\sys\\javacl\\test\\pack1\\SimpleClass1.java");
+        modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test/pack1/SimpleClass1.java");
         System.out.println("SimpleClass1 modified");
 
         Class<?> class4 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
@@ -46,7 +47,7 @@ public class JavaClassLoaderTest {
 
     @Test
     public void testDependent() throws Exception {
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, ".\\modules\\global\\sourcefiles\\", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -58,7 +59,7 @@ public class JavaClassLoaderTest {
         Class<?> simpleClass = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
         System.out.println("SimpleClass loaded " + simpleClass.hashCode());
 
-        modifyFile(".\\modules\\global\\sourcefiles\\com\\haulmont\\cuba\\core\\sys\\javacl\\test\\SimpleClass.java");
+        modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test/SimpleClass.java");
 
         Class<?> simpleClass_2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
         System.out.println("SimpleClass loaded " + simpleClass_2.hashCode());
@@ -79,7 +80,7 @@ public class JavaClassLoaderTest {
 
     @Test
     public void testLinkageError() throws Exception {
-        JavaClassLoader javaClassLoader = new JavaClassLoader(null, ".\\modules\\global\\sourcefiles\\", "") {
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
             @Override
             protected Date getCurrentTimestamp() {
                 return new Date();
@@ -92,7 +93,7 @@ public class JavaClassLoaderTest {
         Object o = class1.newInstance();
         System.out.println(o.toString());
 
-        modifyFile(".\\modules\\global\\sourcefiles\\com\\haulmont\\cuba\\core\\sys\\javacl\\test\\pack2\\SimpleClass2.java");
+        modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test/pack2/SimpleClass2.java");
 
         Class<?> class2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
         System.out.println("Class loaded " + class2.hashCode());

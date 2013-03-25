@@ -126,7 +126,7 @@ public class JavaClassLoader extends URLClassLoader {
 
                 Map<String, Class> compiledClasses = createCompiler().compile(sourcesForCompilation, errs);
 
-                Map<String, TimestampClass> compiledTimestampClasses = convertCompiledClassesAndDependencies(compiledClasses, sourcesAndDependencies.dependecies);
+                Map<String, TimestampClass> compiledTimestampClasses = convertCompiledClassesAndDependencies(compiledClasses, sourcesAndDependencies.dependencies);
 
                 compiled.putAll(compiledTimestampClasses);
 

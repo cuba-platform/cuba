@@ -36,27 +36,27 @@ class SourceProvider {
 
     public File getSourceFile(String name) {
         String path = name.replace(".", "/");
-        File srcFile = new File(String.format("%s/%s.java", rootDir, path));
+        File srcFile = new File(rootDir, path + JAVA_EXT);
         return srcFile;
     }
 
     public boolean sourceExistsInFileSystem(String className) {
         String path = className.replace('.', '/');
-        File file = new File(rootDir + "/" + path + JAVA_EXT);
+        File file = new File(rootDir, path + JAVA_EXT);
         return file.exists();
     }
 
     public boolean directoryExistsInFileSystem(String packageName) {
         String path = packageName.replace('.', '/');
-        File dir = new File(rootDir + "/" + path);
+        File dir = new File(rootDir, path);
         return dir.exists();
     }
 
     public List<String> getAllClassesFromPackage(String packageName) {
         String path = packageName.replace(".", "/");
-        File srcDir = new File(String.format("%s/%s", rootDir, path));
+        File srcDir = new File(rootDir, path);
         String[] fileNames = srcDir.list();
-        List<String> classNames = new ArrayList<String>();
+        List<String> classNames = new ArrayList<>();
         for (String fileName : fileNames) {
             if (fileName.endsWith(JAVA_EXT)) {
                 classNames.add(packageName + "." + fileName.replace(JAVA_EXT, ""));

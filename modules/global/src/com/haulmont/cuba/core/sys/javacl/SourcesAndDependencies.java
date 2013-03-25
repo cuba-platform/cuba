@@ -23,8 +23,8 @@ class SourcesAndDependencies {
     private static final String IMPORT_STATIC_PATTERN = "import static (.+)\\..+?;";
     public static final String WHOLE_PACKAGE_PLACEHOLDER = ".*";
 
-    final Map<String, CharSequence> sources = new HashMap<String, CharSequence>();
-    final Multimap<String, String> dependecies = HashMultimap.create();
+    final Map<String, CharSequence> sources = new HashMap<>();
+    final Multimap<String, String> dependencies = HashMultimap.create();
 
     private final SourceProvider sourceProvider;
 
@@ -39,7 +39,6 @@ class SourcesAndDependencies {
     /**
      * Recursively collects all dependencies for class using imports
      *
-     * @param className
      * @throws IOException
      */
     public void collectDependencies(String className) throws IOException {
@@ -58,9 +57,9 @@ class SourcesAndDependencies {
         }
     }
 
-    private void addDependency(String dependendFrom, String dependency) {
-        if (!dependendFrom.equals(dependency)) {
-            dependecies.put(dependendFrom, dependency);
+    private void addDependency(String dependentFrom, String dependency) {
+        if (!dependentFrom.equals(dependency)) {
+            dependencies.put(dependentFrom, dependency);
         }
     }
 
@@ -82,7 +81,7 @@ class SourcesAndDependencies {
     }
 
     private List<String> getDynamicallyLoadedImports(CharSequence src) {
-        List<String> importedClassNames = new ArrayList<String>();
+        List<String> importedClassNames = new ArrayList<>();
 
         List<String> importValues = getMatchedStrings(src, IMPORT_PATTERN, 1);
         for (String importValue : importValues) {
@@ -97,7 +96,7 @@ class SourcesAndDependencies {
     }
 
     private List<String> getMatchedStrings(CharSequence source, String pattern, int groupNumber) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         Pattern importPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = importPattern.matcher(source);
         while (matcher.find()) {
