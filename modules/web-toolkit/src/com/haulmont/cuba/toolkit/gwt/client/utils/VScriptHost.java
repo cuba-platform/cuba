@@ -6,8 +6,10 @@
 
 package com.haulmont.cuba.toolkit.gwt.client.utils;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.haulmont.cuba.toolkit.gwt.client.ResourcesLoader;
 import com.vaadin.terminal.gwt.client.*;
 
 /**
@@ -17,6 +19,9 @@ import com.vaadin.terminal.gwt.client.*;
  * @version $Id$
  */
 public class VScriptHost extends SimplePanel implements Paintable {
+
+    private static final boolean DEBUG = false;
+
     public static final String COMMAND_PARAM_KEY = "command";
 
     // System commands
@@ -51,7 +56,9 @@ public class VScriptHost extends SimplePanel implements Paintable {
         this.paintableId = uidl.getId();
 
         if (client.getConfiguration().isHandleHistoryBack() && !historyHandlerInitialized) {
-            initHistoryHandler();
+            if (!BrowserInfo.get().isIE7()) {
+                injectAndInitHistory(client);
+            }
 
             historyHandlerInitialized = true;
         }
@@ -86,10 +93,33 @@ public class VScriptHost extends SimplePanel implements Paintable {
         }
     }
 
+    private void injectAndInitHistory(ApplicationConnection client) {
+        ResourcesLoader.injectJs(null, client.getAppUri(), "/js/json2.js");
+        ResourcesLoader.injectJs(null, client.getAppUri(), "/js/jquery.history.js");
+
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                HistoryInjectAPI.onReady(new Runnable() {
+                    @Override
+                    public void run() {
+                        initHistorySupport();
+                    }
+                });
+            }
+        });
+    }
+
     public void handleHistoryBackAction() {
-        if (historyHandlerInitialized) {
+        if (historyHandlerInitialized)
             client.updateVariable(paintableId, HISTORY_BACK_ACTION, "performed", true);
-        }
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        disableHistoryHandler();
     }
 
     public void makeServerCall(String[] params) {
@@ -114,35 +144,130 @@ public class VScriptHost extends SimplePanel implements Paintable {
         setTimeout(timedAction, 50);
     }-*/;
 
-    private native void initHistoryHandler()
+    public static boolean isIE() {
+        return BrowserInfo.get().isIE();
+    }
+
+    public static void log(String info) {
+        if (DEBUG)
+            VConsole.log(info);
+    }
+
+    private native void disableHistoryHandler()/*-{
+        $wnd.historyBackListener = undefined;
+    }-*/;
+
+    private native void initHistorySupport()
     /*-{
         var vScriptHost = this;
-        (function (window) {
-            var History = window.History;
 
-            var location = window.location.href;
+        function logInfo(info) {
+            @com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::log(Ljava/lang/String;)(info);
+        }
 
-            var defaultState = 0;
+        function initHandlers(wnd, History) {
+            var timestamps = [];
 
-            if (location.indexOf('?a') >= 0) {
-                History.pushState({state: 1, rand: 1}, window.document.title, '?b');
-                defaultState = 1;
-            } else {
-                History.pushState({state: 2, rand: 2}, window.document.title, '?a');
-                defaultState = 2;
-            }
+            logInfo('>>> Init historyBackListener');
+            wnd.historyBackListener = function() {
+                if (!vScriptHost.@com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::isAttached()()) {
+                    logInfo('>>> Detached history handler');
+                    return;
+                }
 
-            History.Adapter.bind(window, 'statechange', function () {
                 var State = History.getState();
 
-                if (!State.data || State.data.state != defaultState) {
-                    // one step forward
-                    History.go(1);
-                    // call handler
-                    vScriptHost.@com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::handleHistoryBackAction()();
+                if (State.data.timestamp in timestamps) {
+                    logInfo('>>> Skip fake history step');
+
+                    delete timestamps[State.data.timestamp];
+                } else {
+                    var goForward = function () {
+                        var time = new Date().getTime();
+                        timestamps[time] = time;
+
+                        var currentLocation = window.location.href;
+                        if (!currentLocation)
+                            currentLocation = window.location;
+
+                        logInfo('>>> Current location: ' + currentLocation);
+
+                        // one step forward
+                        var title = window.document.title;
+                        logInfo('>>> Current title:  ' + title);
+
+                        var state = '?a';
+                        if (currentLocation.indexOf('?a') >= 0)
+                            state = '?b';
+                        var data = {state: time, timestamp: time, rand: 2};
+                        timestamps.push(time);
+
+                        logInfo('>>> Push history step');
+                        History.pushState(data, title, state);
+
+                        logInfo('>>> Call server-side');
+                        // call handler
+                        vScriptHost.@com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::handleHistoryBackAction()();
+                    };
+
+                    if (!@com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::isIE()())
+                        goForward();
+                    else
+                        setTimeout(goForward, 200);
                 }
-            });
-        })($wnd);
+            };
+
+            if (!wnd.callHistoryBackListener) {
+                logInfo('>>> Init callHistoryBackListener');
+
+                wnd.callHistoryBackListener = function () {
+                    if (wnd.historyBackListener)
+                        wnd.historyBackListener();
+                };
+
+                logInfo('>>> Bind callHistoryBackListener');
+                History.Adapter.bind(wnd, 'statechange', wnd.callHistoryBackListener);
+            }
+        }
+
+        function prepareHistory(wnd, History) {
+            var currentLocation = wnd.location.href;
+            if (!currentLocation)
+                currentLocation = wnd.location;
+
+            logInfo('>>> Current location: ' + currentLocation);
+
+            var title = wnd.document.title;
+            logInfo('>>> Current title: ' + title);
+
+            var state = '?a';
+            if (currentLocation.indexOf('?a') >= 0)
+                state = '?b';
+
+            var time = new Date().getTime();
+            var data = {state: time, timestamp: time, rand: 2};
+
+            // base state for hash change
+            if (@com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost::isIE()()) {
+                logInfo('>>> Push base state: ');
+                History.pushState(data, title, '?c' + state);
+            }
+
+            logInfo('>>> Deffer history step init');
+            // deffered change state
+            setTimeout(function() {
+                logInfo('>>> Init special state');
+                History.pushState(data, title, state);
+
+                logInfo('>>> Deffer history init handlers');
+                setTimeout(function(){
+                    logInfo('>>> Init history handlers');
+                    initHandlers(wnd, History);
+                }, 200);
+            }, 200);
+        }
+
+        prepareHistory($wnd, $wnd.historyProvider.get());
     }-*/;
 
     private native void initJsApi() /*-{

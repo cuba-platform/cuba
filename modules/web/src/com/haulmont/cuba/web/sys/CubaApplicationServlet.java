@@ -338,12 +338,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
         writeScriptResource(request, page, "jquery-1.4.2.min.js", false);
         writeScriptResource(request, page, "jquery.blockUI.js", false);
         writeScriptResource(request, page, "scripts.js", true);
-
-        // history control
-        if (webConfig.getAllowHandleBrowserHistoryBack()) {
-            writeScriptResource(request, page, "jquery.history.js", false);
-            writeScriptResource(request, page, "json2.js", false);
-        }
     }
 
     private void writeScriptResource(HttpServletRequest request, BufferedWriter page, String fileName, boolean nocache) throws IOException {
