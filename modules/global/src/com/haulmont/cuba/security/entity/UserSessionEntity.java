@@ -11,6 +11,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Non-persistent entity to show user sessions list in UI.
@@ -23,6 +24,8 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
 
     private static final long serialVersionUID = 7730031482721158275L;
 
+    @MetaProperty
+    private UUID id;
     @MetaProperty
     private String login;
     @MetaProperty
@@ -37,6 +40,16 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
     private Date lastUsedTs;
     @MetaProperty
     private Boolean system;
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public String getLogin() {
         return login;
@@ -96,6 +109,6 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
 
     @Override
     public String toString() {
-        return "id=" + uuid + ", login=" + login + ", user=" + userName + ", since=" + since + ", last=" + lastUsedTs;
+        return "id=" + id + ", login=" + login + ", user=" + userName + ", since=" + since + ", last=" + lastUsedTs;
     }
 }

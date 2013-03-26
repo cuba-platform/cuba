@@ -11,10 +11,6 @@
         messagesPack="com.haulmont.cuba.gui.app.security.session.browse"
         focusComponent="sessionsTable">
 
-    <metadataContext>
-        <deployViews name="/com/haulmont/cuba/gui/app/security/session/session.views.xml"/>
-    </metadataContext>
-
     <dsContext>
         <groupDatasource id="sessionsDs" class="com.haulmont.cuba.security.entity.UserSessionEntity"
                          view="session.browse"
