@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.Date;
 
 public class JavaClassLoaderTest {
-    @Test
+//    @Test
     public void testDependencies() throws Exception {
         System.out.println(new File(".").getAbsolutePath());
 
@@ -45,7 +45,7 @@ public class JavaClassLoaderTest {
         System.out.println("Class reloaded");
     }
 
-    @Test
+//    @Test
     public void testDependent() throws Exception {
         JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
             @Override
@@ -78,7 +78,7 @@ public class JavaClassLoaderTest {
         Assert.assertEquals(simpleClass4_2, simpleClass4_3);
     }
 
-    @Test
+//    @Test
     public void testLinkageError() throws Exception {
         JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
             @Override
