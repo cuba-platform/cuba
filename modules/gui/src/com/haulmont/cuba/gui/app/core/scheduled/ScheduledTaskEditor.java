@@ -83,19 +83,19 @@ public class ScheduledTaskEditor extends AbstractEditor {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if (ScheduledTaskDefinedBy.BEAN == value) {
-                    clearAll();
+                    clear(classNameField, scriptNameField);
                     hideAll();
                     show(beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodParamsBox);
                 } else if (ScheduledTaskDefinedBy.CLASS == value) {
-                    clearAll();
+                    clear(beanNameField, methodNameField, scriptNameField);
                     hideAll();
                     show(classNameField, classNameLabel);
                 } else if (ScheduledTaskDefinedBy.SCRIPT == value) {
-                    clearAll();
+                    clear(beanNameField, methodNameField, classNameField);
                     hideAll();
                     show(scriptNameField, scriptNameLabel);
                 } else {
-                    clearAll();
+                    clear(beanNameField, methodNameField, classNameField, scriptNameField);
                     hideAll();
                 }
             }
@@ -118,11 +118,10 @@ public class ScheduledTaskEditor extends AbstractEditor {
                 methodParamsBox.setVisible(false);
             }
 
-            private void clearAll() {
-                classNameField.setValue(null);
-                scriptNameField.setValue(null);
-                beanNameField.setValue(null);
-                methodNameField.setValue(null);
+            private void clear(Field... fields) {
+                for (Field component : fields) {
+                    component.setValue(null);
+                }
             }
         });
 
@@ -179,6 +178,7 @@ public class ScheduledTaskEditor extends AbstractEditor {
      * Method reads values of methodName and parameters from item,
      * finds appropriate MethodInfo object in methodInfoField's optionsList
      * and sets founded value to methodInfoField
+     *
      * @param task
      */
     private void setInitialMethodNameValue(ScheduledTask task) {
