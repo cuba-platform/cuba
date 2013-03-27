@@ -9,11 +9,11 @@ package com.haulmont.cuba.web.filestorage;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.DownloadStream;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -22,9 +22,9 @@ import java.net.URLEncoder;
 
 /**
  * Window for show/download resources
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class ResourceWindow extends Window {
 
@@ -67,7 +67,7 @@ public class ResourceWindow extends Window {
         String contentType;
         if (exportFormat != null) {
             contentType = exportFormat.getContentType();
-            if (StringUtils.isEmpty(FileDownloadHelper.getFileExt(fileName)))
+            if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName)))
                 fileName += "." + exportFormat.getFileExt();
         } else {
             contentType = "application/octet-stream";

@@ -39,6 +39,8 @@
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:type=ConfigStorage" value-ref="cuba_ConfigStorageMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=JmxNodeIdentifier" value-ref="cuba_JmxNodeIdentifierMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=JmxLogControl" value-ref="cuba_JmxLogControlMBean"/>
             </map>
         </property>
     </bean>
@@ -73,7 +75,6 @@
                 <entry key="cuba_ResourceService" value="com.haulmont.cuba.core.app.ResourceService"/>
                 <entry key="cuba_ScheduledTasksService" value="com.haulmont.cuba.core.app.SchedulingService"/>
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
-                <entry key="cuba_LogManagerService" value="com.haulmont.cuba.core.app.LogManagerService"/>
             </map>
         </property>
     </bean>

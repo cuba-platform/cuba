@@ -112,7 +112,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
             }
         });
 
-        jmxConnectionField.addAction(new AbstractAction("add") {
+        jmxConnectionField.addAction(new AbstractAction("actions.Add") {
             @Override
             public void actionPerform(Component component) {
                 final JmxInstanceEditor instanceEditor = openEditor("sys$JmxInstance.edit", new JmxInstance(), WindowManager.OpenType.DIALOG);

@@ -8,41 +8,83 @@
         xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         class="com.haulmont.cuba.web.app.ui.serverlogviewer.ServerLogWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.serverlogviewer"
-        caption="msg://serverLog"
-        focusComponent="logFileNamesField">
+        caption="msg://serverLog.caption"
+        focusComponent="logFileNameField">
+
+    <dsContext>
+        <collectionDatasource id="jmxInstancesDs"
+                              class="com.haulmont.cuba.core.entity.JmxInstance"
+                              view="_local"
+                              datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource"/>
+    </dsContext>
 
     <timers>
-        <timer id="timer" delay="5000" repeating="true"/>
+        <timer id="updateLogTailTimer" delay="5000" repeating="true" onTimer="invoke:updateLogTail"/>
     </timers>
 
-    <layout expand="logsBox" spacing="true">
+    <layout expand="logFieldBox" spacing="true">
+        <groupBox>
+            <grid spacing="true">
+                <columns>
+                    <column/>
+                    <column/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://jmx.localJmxNode"/>
+                        <label id="localJmxField" stylename="h2" width="400px"/>
+                    </row>
+                    <row>
+                        <label value="msg://jmx.targetJmxNode"/>
+                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
+                    </row>
+                </rows>
+            </grid>
+        </groupBox>
+
         <tabSheet width="100%">
-            <tab id="viewTab" caption="msg://viewTab" margin="true">
+            <tab id="viewTab" caption="msg://tab.view" margin="true">
                 <hbox id="logSelectBox" spacing="true" expandable="false">
-                    <label id="labelLogFile" value="msg://logFile"/>
-                    <lookupField id="logFileNamesField" width="210px"/>
-                    <button id="downloadButton" caption="msg://downloadButton" invoke="download"/>
-                    <button id="showTailButton" caption="msg://showTailButton" invoke="showTail"/>
-                    <checkBox id="autoRefreshCheck" caption="msg://autoRefreshCheck"/>
+                    <label id="labelLogFile" value="msg://log.file"/>
+                    <lookupField id="logFileNameField" width="300px"/>
+                    <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
+                    <button id="showTailButton" caption="msg://actions.ShowTail" invoke="showLogTail"/>
+                    <checkBox id="autoRefreshCheck" caption="msg://actions.autoRefresh"/>
                 </hbox>
             </tab>
-            <tab id="optionsTab" caption="msg://optionsTab" margin="true">
+            <tab id="optionsTab" caption="msg://tab.options" margin="true">
                 <hbox id="logLevelBox" spacing="true" expandable="false">
-                    <label id="labelLogName" value="msg://loggerName"/>
-                    <lookupField id="logNameField" width="300px"/>
-                    <label id="labelLevel" value="msg://level"/>
-                    <lookupField id="levelField" width="80px"/>
-                    <button id="getButton" invoke="getLevel" caption="msg://getButton"/>
-                    <button id="setButton" invoke="setLevel" caption="msg://setButton"/>
-                    <button id="controlLoggerButton" invoke="callControlLogger" caption="msg://control"/>
+                    <grid spacing="true">
+                        <columns count="5"/>
+                        <rows>
+                            <row>
+                                <label value="msg://logger.name"/>
+                                <lookupField id="loggerNameField" width="300px"/>
+                                <label value="msg://logger.level"/>
+                                <lookupField id="loggerLevelField" width="80px"/>
+                                <hbox spacing="true">
+                                    <button caption="msg://actions.Get" invoke="getLoggerLevel"/>
+                                    <button caption="msg://actions.Set" invoke="setLoggerLevel"/>
+                                    <button caption="msg://actions.Control" invoke="openLoggerControlDialog"/>
+                                </hbox>
+                            </row>
+                            <row>
+                                <label value="msg://appender.name"/>
+                                <lookupField id="appenderNameField" width="300px"/>
+                                <label value="msg://appender.level"/>
+                                <lookupField id="appenderLevelField" width="80px"/>
+                                <hbox spacing="true">
+                                    <button caption="msg://actions.Get" invoke="getAppenderLevel"/>
+                                    <button caption="msg://actions.Set" invoke="setAppenderLevel"/>
+                                </hbox>
+                            </row>
+                        </rows>
+                    </grid>
                 </hbox>
             </tab>
         </tabSheet>
 
-        <groupBox id="logsBox" width="100%" caption="msg://logs">
-            <hbox id="logFieldBox" height="100%" width="100%">
-            </hbox>
+        <groupBox id="logFieldBox" width="100%" caption="msg://log.content">
         </groupBox>
     </layout>
 </window>
-

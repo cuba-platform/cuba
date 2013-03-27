@@ -55,13 +55,13 @@
     <screen id="sys$Categories.browse"
             template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
 
-    <screen id="serverLog"
+    <screen id="logcontrol$ServerLog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml" multipleOpen="true"/>
 
-    <screen id="additionLogger"
+    <screen id="logcontrol$AddLoggerDialog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/addition-logger-window.xml" multipleOpen="true"/>
 
-    <screen id="controlLogger"
+    <screen id="logcontrol$LoggerControlDialog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/control-logger-window.xml" multipleOpen="true"/>
 
     <screen id="printDomain"

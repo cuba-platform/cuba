@@ -914,3 +914,39 @@
 /*
  * End of thesis styles
  */
+
+/*
+ * Server logs
+ */
+
+.v-label.v-label-code-monospace {
+    font-family: monospace;
+}
+
+.v-label span.log-level {
+    font-weight: bold;
+}
+
+.v-label span.log-level-DEBUG {
+    color: #000000;
+}
+
+.v-label span.log-level-INFO {
+    color: blue;
+}
+
+.v-label span.log-level-ERROR {
+    color: red;
+}
+
+.v-label span.log-level-WARN {
+    color: orange;
+}
+
+.v-label span.log-level-TRACE {
+    color: #c0c0c0;
+}
+
+.v-label span.log-level-FATAL {
+    color: red;
+}

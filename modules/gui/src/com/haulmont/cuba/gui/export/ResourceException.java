@@ -7,11 +7,10 @@
 package com.haulmont.cuba.gui.export;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
-public abstract class ResourceException extends RuntimeException {
+public class ResourceException extends RuntimeException {
 
     public ResourceException() {
     }
@@ -27,6 +26,4 @@ public abstract class ResourceException extends RuntimeException {
     public ResourceException(Throwable cause) {
         super(cause);
     }
-
-    public abstract String getResourceName();
 }

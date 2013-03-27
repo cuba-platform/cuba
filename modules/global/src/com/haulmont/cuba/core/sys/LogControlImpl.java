@@ -1,0 +1,152 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.core.sys;
+
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.LogControl;
+import com.haulmont.cuba.core.sys.logging.AppenderThresholdNotSupported;
+import com.haulmont.cuba.core.sys.logging.LogControlException;
+import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.*;
+
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.*;
+
+/**
+ * @author artamonov
+ * @version $Id$
+ */
+@ManagedBean(LogControl.NAME)
+public class LogControlImpl implements LogControl {
+
+    private static final Log log = LogFactory.getLog(LogControl.class);
+
+    private static final long LOG_TAIL_AMOUNT_BYTES = 51200;
+
+    protected File logDir;
+
+    @Inject
+    private void setConfiguration(Configuration configuration) {
+        logDir = new File(configuration.getConfig(GlobalConfig.class).getLogDir());
+    }
+
+    @Override
+    public List<String> getLogFileNames() {
+        List<String> filenames = new ArrayList<>();
+        if (logDir.isDirectory()) {
+            filenames = Arrays.asList(logDir.list());
+        }
+        Collections.sort(filenames);
+        return filenames;
+    }
+
+    @Override
+    public String getTail(String fileName) throws LogControlException {
+        // security check, supported only valid file names
+        fileName = FilenameUtils.getName(fileName);
+
+        StringBuilder sb = new StringBuilder();
+        RandomAccessFile randomAccessFile = null;
+        try {
+            File logFile = new File(logDir, fileName);
+            if (!logFile.exists())
+                throw new LogFileNotFoundException(fileName);
+
+            randomAccessFile = new RandomAccessFile(logFile, "r");
+            long lengthFile = randomAccessFile.length();
+            if (lengthFile >= LOG_TAIL_AMOUNT_BYTES) {
+                randomAccessFile.seek(lengthFile - LOG_TAIL_AMOUNT_BYTES);
+            }
+            String str;
+            while (randomAccessFile.read() != -1) {
+                randomAccessFile.seek(randomAccessFile.getFilePointer() - 1);
+                String line = randomAccessFile.readLine();
+                if (line != null) {
+                    str = new String(line.getBytes(), "UTF-8");
+                    sb.append(str).append("\n");
+                }
+            }
+        } catch (IOException e) {
+            log.error("Error reading log file", e);
+            throw new LogControlException("Error reading log file: " + fileName);
+        } finally {
+            if (randomAccessFile != null) {
+                try {
+                    randomAccessFile.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public File getLogFile(String fileName) throws LogFileNotFoundException {
+        File logFile = new File(logDir, FilenameUtils.getName(fileName));
+        if (!logFile.exists())
+            throw new LogFileNotFoundException(fileName);
+
+        return logFile;
+    }
+
+    @Override
+    public List<Logger> getLoggers() {
+        Enumeration currentLoggers = LogManager.getCurrentLoggers();
+        List<Logger> loggers = new ArrayList<>();
+        while (currentLoggers.hasMoreElements()) {
+            Logger logger = (Logger) currentLoggers.nextElement();
+            if (logger.getLevel() != null)
+                loggers.add(logger);
+        }
+        return loggers;
+    }
+
+    @Override
+    public Level getLoggerLevel(Logger logger) {
+        return logger.getLevel();
+    }
+
+    @Override
+    public void setLoggerLevel(Logger logger, Level level) {
+        logger.setLevel(level);
+        logger.setAdditivity(true);
+
+        log.info(String.format("Level for logger '%s' set to '%s'", logger.getName(), level));
+    }
+
+    @Override
+    public List<Appender> getAppenders() {
+        return Collections.list(LogManager.getRootLogger().getAllAppenders());
+    }
+
+    @Override
+    public Level getAppenderThreshold(Appender appender) throws AppenderThresholdNotSupported {
+        if (appender instanceof AppenderSkeleton) {
+            Priority threshold = ((AppenderSkeleton) appender).getThreshold();
+            return (Level) threshold;
+        } else
+            throw new AppenderThresholdNotSupported(appender.getName());
+    }
+
+    @Override
+    public void setAppenderThreshold(Appender appender, Level threshold) throws AppenderThresholdNotSupported {
+        if (appender instanceof AppenderSkeleton) {
+            ((AppenderSkeleton) appender).setThreshold(threshold);
+
+            log.info(String.format("Threshold for appender '%s' set to '%s'", appender.getName(), threshold));
+        } else
+            throw new AppenderThresholdNotSupported(appender.getName());
+    }
+}
