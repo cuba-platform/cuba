@@ -204,7 +204,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         initField(field, cubaField, propertyPath, false);
 
         if (!field.isReadOnly()) {
-            field.setReadOnly(!security.isEntityAttrModificationPermitted(getDatasource().getMetaClass(), propertyPath.getMetaProperty()));
+            field.setReadOnly(!security.isEntityAttrModificationPermitted(propertyPath.getMetaProperty()));
         }
 
         return field;

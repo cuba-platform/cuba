@@ -108,8 +108,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                     && ((DatasourceComponent) component).getDatasource() != null) {
                 DatasourceComponent dsComponent = (DatasourceComponent) component;
                 if (dsComponent.getMetaProperty() != null) {
-                    if (!security.isEntityAttrModificationPermitted(dsComponent.getDatasource().getMetaClass(),
-                            dsComponent.getMetaProperty())) {
+                    if (!security.isEntityAttrModificationPermitted(dsComponent.getMetaProperty())) {
                         ((Component.Editable) component).setEditable(false);
                         return;
                     }

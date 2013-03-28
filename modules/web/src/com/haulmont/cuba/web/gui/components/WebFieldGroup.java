@@ -411,7 +411,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(security.isEntityAttrModificationPermitted(getDatasource().getMetaClass(), metaProperty)
+                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
                         && dsComponent.isEditable());
             }
         }
@@ -422,7 +422,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (propertyPath != null) {
             MetaProperty metaProperty = propertyPath.getMetaProperty();
 
-            setEditable(fieldConf, security.isEntityAttrModificationPermitted(getDatasource().getMetaClass(), metaProperty)
+            setEditable(fieldConf, security.isEntityAttrModificationPermitted(metaProperty)
                     && isEditable(fieldConf));
         }
     }

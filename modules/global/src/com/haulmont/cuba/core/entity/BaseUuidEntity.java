@@ -7,7 +7,8 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -25,8 +26,8 @@ import java.util.UUID;
  * @version $Id$
  */
 @MappedSuperclass
-public abstract class BaseUuidEntity extends AbstractInstance implements BaseEntity<UUID>
-{
+public abstract class BaseUuidEntity extends AbstractInstance implements BaseEntity<UUID> {
+
     private static final long serialVersionUID = -2217624132287086972L;
 
     @Id
@@ -44,6 +45,7 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
         id = UuidProvider.createUuid();
     }
 
+    @Override
     public UUID getId() {
         return id;
     }
@@ -52,27 +54,32 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
         this.id = id;
     }
 
+    @Override
     public UUID getUuid() {
         return id;
     }
 
     @Override
     public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(getClass());
+        return AppBeans.get(Metadata.class).getSession().getClass(getClass());
     }
 
+    @Override
     public Date getCreateTs() {
         return createTs;
     }
 
+    @Override
     public void setCreateTs(Date createTs) {
         this.createTs = createTs;
     }
 
+    @Override
     public String getCreatedBy() {
         return createdBy;
     }
 
+    @Override
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }

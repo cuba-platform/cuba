@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -7,6 +7,7 @@
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.app.security.role.edit.BasicPermissionTreeStyleProvider;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -21,7 +22,6 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.PermissionVariant;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
@@ -29,9 +29,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class ScreenPermissionsFrame extends AbstractFrame {
 
@@ -61,7 +60,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     private CheckBox disallowCheckBox;
 
     @Inject
-    protected UserSession userSession;
+    protected Security security;
 
     @Inject
     protected Metadata metadata;
@@ -166,8 +165,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             }
         });
 
-        boolean hasPermissionsToCreatePermission = userSession.isEntityOpPermitted(
-                metadata.getSession().getClass(Permission.class), EntityOp.CREATE);
+        boolean hasPermissionsToCreatePermission = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
 
         allowCheckBox.setEditable(hasPermissionsToCreatePermission);
         disallowCheckBox.setEditable(hasPermissionsToCreatePermission);

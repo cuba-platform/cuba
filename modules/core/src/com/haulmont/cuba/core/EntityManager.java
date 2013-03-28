@@ -201,6 +201,7 @@ public interface EntityManager {
 
     /**
      * Reload an entity from DB according to a combined view defined by the given array of views.
+     * <p/> Ensures all combined view attributes, including lazy, are loaded.
      * <p/> If there is a managed entity with the given id in the current persistence context, the method returns it.
      * Otherwise the method returns a new object instance.
      *
@@ -214,6 +215,7 @@ public interface EntityManager {
 
     /**
      * Reload an entity from DB according to a combined view defined by the given array of views.
+     * <p/> Ensures all combined view attributes, including lazy, are loaded.
      * <p/> If the given entity is in managed state, the method returns the same object instance. If the entity is
      * detached, the method returns a new object instance.
      *
