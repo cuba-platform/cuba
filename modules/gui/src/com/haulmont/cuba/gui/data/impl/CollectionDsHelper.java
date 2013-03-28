@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -21,9 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class CollectionDsHelper {
 
@@ -38,9 +37,7 @@ public class CollectionDsHelper {
                 if (range == null) continue;
 
                 final Range.Cardinality cardinality = range.getCardinality();
-                if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
-                        Range.Cardinality.MANY_TO_ONE.equals(cardinality))
-                {
+                if (!cardinality.isMany()) {
                     properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
                 }
             }
@@ -50,9 +47,7 @@ public class CollectionDsHelper {
                 if (range == null) continue;
 
                 final Range.Cardinality cardinality = range.getCardinality();
-                if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
-                        Range.Cardinality.MANY_TO_ONE.equals(cardinality))
-                {
+                if (!cardinality.isMany()) {
                     properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
                 }
             }

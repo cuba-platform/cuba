@@ -1,11 +1,20 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model.impl;
 
-import com.haulmont.chile.core.model.Range.Cardinality;
+/**
+ * @author abramov
+ * @version $Id$
+ */
 import com.haulmont.chile.core.model.Range;
 
 public abstract class AbstractRange implements Range {
 
-	private Cardinality cardinality;
+	private Cardinality cardinality = Cardinality.NONE;
 	private boolean ordered;
 
 	public AbstractRange() {

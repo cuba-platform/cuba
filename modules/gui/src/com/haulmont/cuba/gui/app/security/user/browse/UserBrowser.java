@@ -142,7 +142,7 @@ public class UserBrowser extends AbstractLookup {
                 public void windowClosed(String actionId) {
                     if (COMMIT_ACTION_ID.equals(actionId)) {
                         User item = (User) changePasswordDialog.getItem();
-                        usersDs.updateItem(item);
+                        usersDs.updateItem(dataSupplier.reload(item, "user.browse"));
                     }
                 }
             });

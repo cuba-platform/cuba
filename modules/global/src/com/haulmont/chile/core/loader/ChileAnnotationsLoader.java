@@ -26,10 +26,6 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
@@ -302,8 +298,9 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
 
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, field.getName());
 
+        Range.Cardinality cardinality = getCardinality(field);
         Map<String, Object> map = new HashMap<>();
-        map.put("cardinality", Range.Cardinality.ONE_TO_ONE);
+        map.put("cardinality", cardinality);
         final boolean mandatory = isMandatory(field);
         map.put("mandatory", mandatory);
 
@@ -317,7 +314,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         MetadataObjectInfo<Range> info = __loadRange(property, type, map);
         final Range range = info.getObject();
         if (range != null) {
-            ((AbstractRange) range).setCardinality(Range.Cardinality.ONE_TO_ONE);
+            ((AbstractRange) range).setCardinality(cardinality);
             property.setRange(range);
             assignPropertyType(field, property, range);
         }
@@ -354,7 +351,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, name);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("cardinality", Range.Cardinality.ONE_TO_ONE);
+        map.put("cardinality", Range.Cardinality.NONE);
         map.put("mandatory", false);
 
         Class<?> type;
@@ -367,7 +364,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         MetadataObjectInfo<Range> info = __loadRange(property, type, map);
         final Range range = info.getObject();
         if (range != null) {
-            ((AbstractRange) range).setCardinality(Range.Cardinality.ONE_TO_ONE);
+            ((AbstractRange) range).setCardinality(Range.Cardinality.NONE);
             property.setRange(range);
             assignPropertyType(method, property, range);
         }
@@ -467,22 +464,17 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     protected Range.Cardinality getCardinality(Field field) {
-        final OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
-        final OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
-        final ManyToOne manyToOneAnnotation = field.getAnnotation(ManyToOne.class);
-        final ManyToMany manyToManyAnnotation = field.getAnnotation(ManyToMany.class);
-
-        if (oneToOneAnnotation != null) {
-            return Range.Cardinality.ONE_TO_ONE;
-        } else if (oneToManyAnnotation != null) {
+        Class<?> type = field.getType();
+        if (Collection.class.isAssignableFrom(type)) {
             return Range.Cardinality.ONE_TO_MANY;
-        } else if (manyToOneAnnotation != null) {
+        } else if (type.isPrimitive()
+                || type.equals(String.class)
+                || Number.class.isAssignableFrom(type)
+                || Date.class.isAssignableFrom(type)
+                || UUID.class.isAssignableFrom(type)) {
+            return Range.Cardinality.NONE;
+        } else
             return Range.Cardinality.MANY_TO_ONE;
-        } else if (manyToManyAnnotation != null) {
-            return Range.Cardinality.MANY_TO_MANY;
-        } else {
-            return null;
-        }
     }
 
     protected String getInverseField(Field field) {
