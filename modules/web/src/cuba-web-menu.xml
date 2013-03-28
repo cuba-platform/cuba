@@ -16,7 +16,7 @@
         <item id="entityInspector.browse"/>
         <item id="-"/>
         <item id="jmxcontrol$DisplayMbeans"/>
-        <item id="serverLog"/>
+        <item id="logcontrol$ServerLog"/>
     </menu>
 
     <menu id="help">

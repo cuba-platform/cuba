@@ -6,11 +6,11 @@
 
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
-import com.haulmont.cuba.core.app.LogManagerService;
+import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.components.TextField;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 
 import javax.inject.Inject;
@@ -23,46 +23,44 @@ import java.util.Map;
 public class AdditionLoggerWindow extends AbstractWindow {
 
     @Inject
-    private TextField loggerNameField;
+    protected TextField loggerNameField;
 
     @Inject
-    private OptionsField logLevelField;
+    protected OptionsField logLevelField;
 
-    @Inject
-    private LogManagerService logManagerService;
+    protected Level selectedLevel;
 
-    private ServerLogWindow serverLogWindow;
-
-    public AdditionLoggerWindow(IFrame frame) {
-        super(frame);
-
-    }
+    protected String selectedLoggerName;
 
     @Override
     public void init(Map<String, Object> params) {
-        logLevelField.setOptionsList(ServerLogWindow.getAllLevels());
-        serverLogWindow = (ServerLogWindow) params.get("winLog");
+        logLevelField.setOptionsList(LoggingHelper.getLevels());
     }
 
-    public void setButton() {
-        if (loggerNameField.getValue() != null && loggerNameField.getValue().toString().trim().length() != 0) {
+    public void addLogger() {
+        if (StringUtils.isNotBlank(loggerNameField.<String>getValue())) {
             if (logLevelField.getValue() != null) {
-                String logName = loggerNameField.getValue();
-                Level level = logLevelField.getValue();
-                logManagerService.setLogLevel(logName, level);
-                serverLogWindow.refreshLogs();
-                serverLogWindow.showNotification(String.format(getMessage("logSetMessage"), logName, level.toString()),
-                        NotificationType.HUMANIZED);
-                close(this.getId());
+                this.selectedLoggerName = loggerNameField.getValue();
+                this.selectedLevel = logLevelField.getValue();
+
+                close(COMMIT_ACTION_ID);
             } else
-                showNotification(getMessage("noSelectedLevel"), NotificationType.HUMANIZED);
+                showNotification(getMessage("logger.notSelectedLevel"), NotificationType.HUMANIZED);
         } else {
             loggerNameField.setValue(null);
-            showNotification(getMessage("noRegName"), NotificationType.HUMANIZED);
+            showNotification(getMessage("logger.notSelected"), NotificationType.HUMANIZED);
         }
     }
 
-    public void cancelButton() {
-        close(this.getId());
+    public Level getSelectedLevel() {
+        return selectedLevel;
+    }
+
+    public String getSelectedLoggerName() {
+        return selectedLoggerName;
+    }
+
+    public void cancel() {
+        close(CLOSE_ACTION_ID);
     }
 }

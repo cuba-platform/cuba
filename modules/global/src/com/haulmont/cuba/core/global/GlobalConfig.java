@@ -22,9 +22,8 @@ import java.util.Map;
 /**
  * Configuration parameters interface used by all layers: CORE, WEB, DESKTOP.
  *
- * <p>$Id</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Source(type = SourceType.APP)
 public interface GlobalConfig extends Config {
@@ -56,6 +55,12 @@ public interface GlobalConfig extends Config {
     @Property("cuba.webAppUrl")
     @DefaultString("http://localhost:8080/app")
     String getWebAppUrl();
+
+    /**
+     * @return Base url for dispatcher servlet of web application. Specific for core, web and portal blocks.
+     */
+    @Property("cuba.dispatcherBaseUrl")
+    String getDispatcherBaseUrl();
 
     /**
      * @return REST API connection URL

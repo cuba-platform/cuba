@@ -6,18 +6,23 @@
 
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
-import com.haulmont.cuba.core.app.LogManagerService;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.cuba.core.sys.logging.LoggingHelper;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebGridLayout;
-import com.haulmont.cuba.web.gui.components.WebLookupField;
-import com.haulmont.cuba.web.gui.components.WebTextField;
+import com.vaadin.ui.Component;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author shatokhin
@@ -25,148 +30,86 @@ import java.util.*;
  */
 public class ControlLoggerWindow extends AbstractWindow {
 
-    int amountLog;
-    private WebGridLayout loggersGrid;
-    private String PREFIX_ID = "logger";
-    private Map<String, Component> loggerMap = new HashMap<>();
-    private ServerLogWindow serverLogWindow;
-    private List<String> listNewLoggers = new ArrayList<>();
+    @Inject
+    protected TextField newLoggerTextField;
 
     @Inject
-    private LogManagerService logManagerService;
+    protected GridLayout loggersGrid;
 
-    @Inject
-    private OptionsField lookupFieldLogger;
+    protected final Map<String, LookupField> fieldMap = new HashMap<>();
 
-    public ControlLoggerWindow(IFrame frame) {
-        super(frame);
-    }
+    protected final Map<String, Level> levels = new HashMap<>();
 
     @Override
     public void init(Map<String, Object> params) {
-        serverLogWindow = ((ServerLogWindow) params.get("controlWin"));
+        getDialogParams()
+                .setWidth(480)
+                .setHeight(420)
+                .setResizable(true);
 
-        /*final ScrollBoxLayout loggersBox;
-        loggersBox = getComponent("loggersGroupBox");
-        loggersGrid = getComponent("loggersGrid");
-        lookupFieldLogger.setOptionsList(getOptionsLoggers());
-        lookupFieldLogger.addListener(new ValueListener<Object>() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                for (String id : listNewLoggers) {
-                    TextField textField = (TextField) loggersGrid.getComponent(id);
-                    if (textField.getValue() == null || textField.getValue().toString().trim().length() == 0) {
-                        textField.setValue(value);
-                    }
-                }
-            }
-        });
+        Map<String, Level> loggersMap = (Map<String, Level>) params.get("loggersMap");
 
-        createFieldsLoggers();
-        loggersBox.add(loggersGrid);*/
-    }
+        for (String loggerName : loggersMap.keySet()) {
+            Level level = loggersMap.get(loggerName);
 
-    public void setButton() {
-        /*Collection<Component> components = loggersGrid.getComponents();
-        for (Component component : components) {
-            if (component.getId() != null ? component.getId().startsWith(PREFIX_ID) : false) {
-                Object value = ((TextField) component).getValue();
-                String logName = value != null ? value.toString() : null;
-                if (logName == null || logName.trim().length() == 0) {
-                    close(this.getId());
-                    continue;
-                }
-                Level logLevel = logManagerService.getLogLevel(logName);
-                Level newLevel = ((LookupField) loggerMap.get(component.getId())).getValue();
-                if (logLevel != null) {
-                    if (!logLevel.equals(newLevel)) {
-                        logManagerService.setLogLevel(logName, newLevel);
-                    }
-                } else {
-                    logManagerService.setLogLevel(logName, newLevel);
-                }
-            }
+            Pair<TextField, LookupField> editComponents = createEditComponents(loggerName, level);
+
+            fieldMap.put(loggerName, editComponents.getSecond());
+
+            loggersGrid.add(editComponents.getFirst());
+            loggersGrid.add(editComponents.getSecond());
         }
-        serverLogWindow.showNotification(getMessage("addLogger"), NotificationType.HUMANIZED);
-        serverLogWindow.refreshLogs();
-        close(this.getId());*/
-
     }
 
-    public void cancelButton() {
-        close(this.getId());
-    }
+    public void apply() {
+        levels.clear();
+        for (String loggerName : fieldMap.keySet()) {
+            Level logLevel = fieldMap.get(loggerName).getValue();
 
-    /*public void addLogger() {
-        Object value = lookupFieldLogger.getValue();
-        if (value != null)
-            listNewLoggers.add(addLogger(value.toString(), null, 1, true));
-        else
-            listNewLoggers.add(addLogger(null, null, 1, true));
-    }
-
-    private String addLogger(String name, Level level, int position, boolean isEditable) {
-        final WebTextField loggerNameField = new WebTextField();
-        loggerNameField.setWidth("300px");
-        loggerNameField.setValue(name);
-        loggerNameField.setEditable(isEditable);
-        String id = PREFIX_ID + UUID.randomUUID().toString();
-        loggerNameField.setId(id);
-
-        final WebLookupField levelsField = new WebLookupField();
-        levelsField.setWidth("80px");
-        levelsField.setOptionsList(ServerLogWindow.getAllLevels());
-        levelsField.setValue(level);
-
-        loggerMap.put(id, levelsField);
-
-        loggersGrid.insertRow(position);
-        loggersGrid.add(loggerNameField, 0, position);
-        loggersGrid.add(levelsField, 1, position);
-        return id;
-    }*/
-
-    private List<String> getLogs() {
-        List<Logger> listLogs = Collections.list(LogManager.getCurrentLoggers());
-        List<String> listNameLogs = new ArrayList<>();
-        for (Logger logger : listLogs) {
-            if (logger.getLevel() != null) {
-                listNameLogs.add(logger.getName());
-            }
+            levels.put(loggerName, logLevel);
         }
-        Collections.sort(listNameLogs);
-        return listNameLogs;
+        close(COMMIT_ACTION_ID);
     }
 
-/*    private void createFieldsLoggers() {
-        Level level;
-        for (String logName : getLogs()) {
-            level = logManagerService.getLogLevel(logName);
-            amountLog++;
-            addLogger(logName, level, amountLog, false);
-        }
-        if (amountLog == 0) {
-            addLogger(null, null, 1, true);
-        }
-    }*/
-
-    private List<String> getOptionsLoggers() {
-        List<String> list = getLogs();
-        List<String> newList = new ArrayList<>();
-        StringTokenizer tokenizer;
-        for (String str : list) {
-            String nextVariant = "";
-            tokenizer = new StringTokenizer(str, ".");
-            while (tokenizer.hasMoreTokens()) {
-                nextVariant += nextVariant.equals("") ? tokenizer.nextToken() : "." + tokenizer.nextToken();
-                if (!list.contains(nextVariant) && !newList.contains(nextVariant)) {
-                    newList.add(nextVariant);
-                }
-            }
-            newList.add(str);
-        }
-        Collections.sort(newList);
-        return newList;
+    public void cancel() {
+        close(CLOSE_ACTION_ID);
     }
 
+    public void addLogger() {
+        String loggerName = newLoggerTextField.getValue();
+        if (StringUtils.isNotBlank(loggerName) && !fieldMap.containsKey(loggerName)) {
+            addLogger(loggerName, Level.INFO);
+        }
+    }
+
+    public Map<String, Level> getLevels() {
+        return Collections.unmodifiableMap(levels);
+    }
+
+    protected Pair<TextField, LookupField> createEditComponents(String loggerName, Level level) {
+        final TextField loggerNameField = AppConfig.getFactory().createComponent(TextField.NAME);
+        loggerNameField.setValue(loggerName);
+        loggerNameField.setEditable(false);
+        loggerNameField.setFrame(this);
+        loggerNameField.setWidth("100%");
+
+        final LookupField logLevelField = AppConfig.getFactory().createComponent(LookupField.NAME);
+        logLevelField.setWidth("80px");
+        logLevelField.setOptionsList(LoggingHelper.getLevels());
+        logLevelField.setValue(level);
+        logLevelField.setFrame(this);
+
+        return new Pair<>(loggerNameField, logLevelField);
+    }
+
+    protected void addLogger(String loggerName, Level level) {
+        Pair<TextField, LookupField> editComponents = createEditComponents(loggerName, level);
+
+        fieldMap.put(loggerName, editComponents.getSecond());
+
+        com.vaadin.ui.GridLayout vGrid = (com.vaadin.ui.GridLayout) WebComponentsHelper.unwrap(loggersGrid);
+        vGrid.insertRow(1);
+        loggersGrid.add(editComponents.getFirst(), 0, 1);
+        loggersGrid.add(editComponents.getSecond(), 1, 1);
+    }
 }

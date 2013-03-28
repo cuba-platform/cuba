@@ -13,21 +13,14 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifier;
 import com.haulmont.cuba.web.jmx.entity.*;
-import com.haulmont.cuba.jmxcontrol.entity.*;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.jmx.support.MBeanServerConnectionFactoryBean;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.management.*;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
@@ -39,10 +32,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @ManagedBean(JmxControlAPI.NAME)
 public class JmxControlBean implements JmxControlAPI {
-
-    private static final String NODE_NAME_ATTRIBUTE = "NodeName";
-
-    private final JmxInstance LOCAL_JMX_INSTANCE = new JmxInstance("Local");
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -85,7 +74,7 @@ public class JmxControlBean implements JmxControlAPI {
     @Override
     public JmxInstance getLocalInstance() {
         JmxInstance localJmxInstance = new JmxInstance();
-        InstanceUtils.copy(LOCAL_JMX_INSTANCE, localJmxInstance);
+        InstanceUtils.copy(JmxConnectionHelper.LOCAL_JMX_INSTANCE, localJmxInstance);
         return localJmxInstance;
     }
 
@@ -100,25 +89,15 @@ public class JmxControlBean implements JmxControlAPI {
 
         String remoteNodeName;
 
-        final MBeanServerConnection connection = getConnection(instance);
+        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
         try {
-            Set<ObjectName> names = connection.queryNames(null, null);
-            ObjectName nodeIdentifierBeanInfo = (ObjectName) CollectionUtils.find(names, new Predicate() {
-                @Override
-                public boolean evaluate(Object o) {
-                    ObjectName objectName = (ObjectName) o;
-                    MBeanInfo info;
-                    try {
-                        info = connection.getMBeanInfo(objectName);
-                    } catch (Exception e) {
-                        throw new JmxControlException(e);
-                    }
-                    return StringUtils.equals(JmxNodeIdentifier.class.getName(), info.getClassName());
-                }
-            });
+            ObjectName nodeIdentifierBeanInfo = JmxConnectionHelper.getObjectName(connection, JmxNodeIdentifier.class);
 
             if (nodeIdentifierBeanInfo != null) {
-                Object nodeName = connection.getAttribute(nodeIdentifierBeanInfo, NODE_NAME_ATTRIBUTE);
+                JmxNodeIdentifier identifier =
+                        JmxConnectionHelper.getProxy(connection, nodeIdentifierBeanInfo, JmxNodeIdentifier.class);
+
+                Object nodeName = identifier.getNodeName();
                 if (nodeName != null)
                     remoteNodeName = nodeName.toString();
                 else
@@ -126,8 +105,7 @@ public class JmxControlBean implements JmxControlAPI {
             } else {
                 remoteNodeName = getDefaultNodeName(instance);
             }
-        } catch (IOException | ReflectionException | InstanceNotFoundException
-                | AttributeNotFoundException | MBeanException e) {
+        } catch (IOException e) {
             throw new JmxControlException(e);
         }
 
@@ -138,7 +116,7 @@ public class JmxControlBean implements JmxControlAPI {
     public List<ManagedBeanInfo> getManagedBeans(JmxInstance instance) {
         checkNotNull(instance);
 
-        MBeanServerConnection connection = getConnection(instance);
+        MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
 
         try {
             Set<ObjectName> names = connection.queryNames(null, null);
@@ -171,7 +149,7 @@ public class JmxControlBean implements JmxControlAPI {
         checkNotNull(mbinfo.getJmxInstance());
 
         try {
-            MBeanServerConnection connection = getConnection(mbinfo.getJmxInstance());
+            MBeanServerConnection connection = JmxConnectionHelper.getConnection(mbinfo.getJmxInstance());
             ObjectName name = new ObjectName(mbinfo.getObjectName());
             MBeanInfo info = connection.getMBeanInfo(name);
             List<ManagedBeanAttribute> attrs = new ArrayList<>();
@@ -216,7 +194,7 @@ public class JmxControlBean implements JmxControlAPI {
         checkNotNull(attribute.getMbean().getJmxInstance());
 
         try {
-            MBeanServerConnection connection = getConnection(attribute.getMbean().getJmxInstance());
+            MBeanServerConnection connection = JmxConnectionHelper.getConnection(attribute.getMbean().getJmxInstance());
 
             ObjectName name = new ObjectName(attribute.getMbean().getObjectName());
 
@@ -242,7 +220,7 @@ public class JmxControlBean implements JmxControlAPI {
         checkNotNull(attribute.getMbean().getJmxInstance());
 
         try {
-            MBeanServerConnection connection = getConnection(attribute.getMbean().getJmxInstance());
+            MBeanServerConnection connection = JmxConnectionHelper.getConnection(attribute.getMbean().getJmxInstance());
 
             ObjectName name = new ObjectName(attribute.getMbean().getObjectName());
 
@@ -269,7 +247,7 @@ public class JmxControlBean implements JmxControlAPI {
         checkNotNull(operation.getMbean().getJmxInstance());
 
         try {
-            MBeanServerConnection connection = getConnection(operation.getMbean().getJmxInstance());
+            MBeanServerConnection connection = JmxConnectionHelper.getConnection(operation.getMbean().getJmxInstance());
             ObjectName name = new ObjectName(operation.getMbean().getObjectName());
 
             String[] types = new String[operation.getParameters().size()];
@@ -294,7 +272,7 @@ public class JmxControlBean implements JmxControlAPI {
     public List<ManagedBeanDomain> getDomains(JmxInstance instance) {
         checkNotNull(instance);
 
-        MBeanServerConnection connection = getConnection(instance);
+        MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
 
         try {
             String[] domains = connection.getDomains();
@@ -308,37 +286,6 @@ public class JmxControlBean implements JmxControlAPI {
             return domainList;
         } catch (IOException e) {
             throw new JmxControlException(e);
-        }
-    }
-
-    private MBeanServerConnection getConnection(JmxInstance instance) {
-        if (ObjectUtils.equals(instance, LOCAL_JMX_INSTANCE))
-            return getLocalConnection();
-        else
-            return getRemoteConnection(instance);
-    }
-
-    private MBeanServerConnection getLocalConnection() {
-        return ManagementFactory.getPlatformMBeanServer();
-    }
-
-    private MBeanServerConnection getRemoteConnection(JmxInstance instance) {
-        MBeanServerConnectionFactoryBean factoryBean = new MBeanServerConnectionFactoryBean();
-        try {
-            factoryBean.setServiceUrl("service:jmx:rmi:///jndi/rmi://" + instance.getAddress() + "/jmxrmi");
-
-            String username = instance.getLogin();
-            if (StringUtils.isNotEmpty(username)) {
-                Properties properties = new Properties();
-                properties.put("jmx.remote.credentials", new String[]{username, instance.getPassword()});
-                factoryBean.setEnvironment(properties);
-            }
-
-            factoryBean.afterPropertiesSet();
-
-            return factoryBean.getObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -398,7 +345,7 @@ public class JmxControlBean implements JmxControlAPI {
             mba.setValue(value.toString());
     }
 
-    private String getDefaultNodeName(JmxInstance instance) {
+    private String getDefaultNodeName(@SuppressWarnings("unused") JmxInstance instance) {
         return "Unknown JMX interface";
     }
 
