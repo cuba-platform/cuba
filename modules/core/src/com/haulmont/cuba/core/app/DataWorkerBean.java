@@ -306,6 +306,14 @@ public class DataWorkerBean implements DataWorker {
         // to ensure correct paging
 
         int requestedMax = context.getQuery().getMaxResults();
+
+        if (requestedMax == 0) {
+            ArrayList result = new ArrayList(set.size());
+            result.addAll(set);
+            // set contains all items if query without paging
+            return result;
+        }
+
         int setSize = list.size() + requestedFirst;
         int factor = list.size() / set.size() * 2;
 
