@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.AddAction;
@@ -49,6 +50,12 @@ public class EntityInspectorEditor extends AbstractEditor {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected ViewRepository viewRepository;
+
+    @Inject
+    protected UserSession userSession;
 
     @Inject
     protected DataSupplier dataSupplier;
@@ -123,7 +130,7 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         createRequest = item == null || item.getId() == null;
         if (createRequest) {
-            item = MetadataProvider.create(meta);
+            item = metadata.create(meta);
             createEmbeddedFields(meta, item);
             setParentField(item, parentProperty, parent);
         } else {
@@ -453,11 +460,11 @@ public class EntityInspectorEditor extends AbstractEditor {
         buttonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
         commitButton = componentsFactory.createComponent(Button.NAME);
         commitButton.setIcon("icons/ok.png");
-        commitButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "commit"));
+        commitButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "commit"));
         commitButton.setAction(new CommitAction());
         cancelButton = componentsFactory.createComponent(Button.NAME);
         cancelButton.setIcon("icons/cancel.png");
-        cancelButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "cancel"));
+        cancelButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "cancel"));
         cancelButton.setAction(new CancelAction());
         buttonsPanel.add(commitButton);
         buttonsPanel.add(cancelButton);
@@ -575,7 +582,7 @@ public class EntityInspectorEditor extends AbstractEditor {
 
     private String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
         int idx = meta.getName().indexOf('$') + 1;
-        String caption = MessageProvider.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
+        String caption = messages.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
                 + "." + metaProperty.getFullName());
         if (caption.length() < CAPTION_MAX_LENGTH)
             return caption;
@@ -661,20 +668,20 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         Button createButton = componentsFactory.createComponent(Button.NAME);
         createButton.setAction(new CreateAction(metaProperty, propertyDs, propertyMetaClass));
-        createButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "create"));
+        createButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "create"));
         createButton.setIcon("icons/create.png");
 
         Button addButton = componentsFactory.createComponent(Button.NAME);
         AddAction addAction = createAddAction(metaProperty, propertyDs, table, propertyMetaClass);
         addButton.setAction(addAction);
-        addButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "add"));
+        addButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "add"));
         addButton.setIcon("icons/add.png");
 
         Button editButton = componentsFactory.createComponent(Button.NAME);
         EditAction editAction = new EditAction(metaProperty, table, propertyDs);
         propertyDs.addListener(editAction);
         editButton.setAction(editAction);
-        editButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "edit"));
+        editButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "edit"));
         editButton.setIcon("icons/edit.png");
         table.setItemClickAction(editAction);
         table.setEnterPressAction(editAction);
@@ -683,7 +690,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         propertyDs.addListener(removeAction);
         Button removeButton = componentsFactory.createComponent(Button.NAME);
         removeButton.setAction(removeAction);
-        removeButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "remove"));
+        removeButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "remove"));
         removeButton.setIcon("icons/remove.png");
 
         propertyButtonsPanel.addButton(createButton);
@@ -804,15 +811,14 @@ public class EntityInspectorEditor extends AbstractEditor {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    View propView = MetadataProvider.getViewRepository()
-                            .getView(metaProperty.getRange().asClass(), View.MINIMAL);
+                    View propView = viewRepository.getView(metaProperty.getRange().asClass(), View.MINIMAL);
                     view.addProperty(metaProperty.getName(), propView);
                     break;
                 default:
                     throw new IllegalStateException("unknown property type");
             }
         }
-        MetadataProvider.getViewRepository().storeView(propertyMeta, view);
+        ((AbstractViewRepository) viewRepository).storeView(propertyMeta, view);
         return view;
     }
 
@@ -940,12 +946,10 @@ public class EntityInspectorEditor extends AbstractEditor {
     }
 
     private boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        UserSession session = UserSessionProvider.getUserSession();
-        return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+        return userSession.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
     private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = UserSessionProvider.getUserSession();
-        return session.isEntityOpPermitted(metaClass, entityOp);
+        return userSession.isEntityOpPermitted(metaClass, entityOp);
     }
 }

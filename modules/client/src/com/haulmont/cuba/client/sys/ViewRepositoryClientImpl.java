@@ -7,30 +7,45 @@
 package com.haulmont.cuba.client.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.ServerInfoService;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class ViewRepositoryClient extends ViewRepository {
-
-    private Log log = LogFactory.getLog(getClass());
+@ManagedBean(ViewRepository.NAME)
+public class ViewRepositoryClientImpl extends AbstractViewRepository implements ViewRepository {
 
     private boolean lazyLoadServerViews;
+
+    @Inject
     private ServerInfoService serverInfoService;
 
-    public ViewRepositoryClient(Metadata metadata, Resources resources,
-                                boolean lazyLoadServerViews, ServerInfoService serverInfoService) {
-        super(metadata, resources);
-        this.lazyLoadServerViews = lazyLoadServerViews;
-        this.serverInfoService = serverInfoService;
+    @Inject
+    private Configuration configuration;
+
+    @Override
+    protected void init() {
+        lazyLoadServerViews = configuration.getConfig(ClientConfig.class).getLazyLoadServerViews();
+
+        if (!lazyLoadServerViews) {
+            List<View> views = serverInfoService.getViews();
+            for (View view : views) {
+                MetaClass metaClass = metadata.getSession().getClass(view.getEntityClass());
+                storeView(metaClass, view);
+            }
+        }
+
+        super.init();
     }
 
     @Override
