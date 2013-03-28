@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 07.11.2008 19:09:04
- * $Id$
  */
 package com.haulmont.cuba.core.sys.persistence;
 
@@ -18,9 +14,15 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 
 import java.util.UUID;
 
-public class UuidStringValueHandler extends AbstractValueHandler
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class UuidStringValueHandler extends AbstractValueHandler {
+
     private static final long serialVersionUID = -8302367450468711877L;
+
+    public boolean compact = false;
 
     public Column[] map(ValueMapping vm, String name, ColumnIO io, boolean adapt) {
         Column col = new Column();
@@ -31,10 +33,27 @@ public class UuidStringValueHandler extends AbstractValueHandler
     }
 
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
-        return val == null ? null : val.toString();
+        if (val == null)
+            return null;
+        else {
+            return compact ? val.toString().replace("-", "") : val.toString();
+        }
     }
 
     public Object toObjectValue(ValueMapping vm, Object val) {
-        return val == null ? null : UUID.fromString((String) val);
+        if (val == null)
+            return null;
+        else {
+            String str = (String) val;
+            if (compact) {
+                StringBuilder sb = new StringBuilder((String) val);
+                sb.insert(8, '-');
+                sb.insert(13, '-');
+                sb.insert(18, '-');
+                sb.insert(23, '-');
+                str = sb.toString();
+            }
+            return UUID.fromString(str);
+        }
     }
 }

@@ -6,28 +6,17 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
 import com.haulmont.cuba.core.sys.persistence.EntityTransactionListener;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.HSQLDictionary;
-import org.apache.openjpa.jdbc.sql.PostgresDictionary;
-import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.kernel.StateManagerImpl;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.jdbc.sql.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.util.ObjectId;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -40,7 +29,6 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -104,6 +92,8 @@ public class PersistenceImpl implements Persistence {
                     dbDialect = new PostgresDbDialect();
                 } else if (dictionary instanceof SQLServerDictionary) {
                     dbDialect = new MssqlDbDialect();
+                } else if (dictionary instanceof OracleDictionary) {
+                    dbDialect = new OracleDbDialect();
                 } else {
                     throw new UnsupportedOperationException("Unsupported DBDictionary class: " + dictionary.getClass());
                 }

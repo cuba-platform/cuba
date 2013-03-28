@@ -18,7 +18,7 @@ import javax.persistence.Entity;
 @Entity(name = "sys$Folder")
 @Table(name = "SYS_FOLDER")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "FOLDER_TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("F")
 @SystemLevel
 public class Folder extends StandardEntity {

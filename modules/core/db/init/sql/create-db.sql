@@ -55,7 +55,7 @@ create table SYS_FILE (
     --
     NAME varchar(500),
     EXT varchar(20),
-    SIZE integer,
+    FILE_SIZE integer,
     CREATE_DATE timestamp,
     --
     primary key (ID)
@@ -164,7 +164,7 @@ create table SEC_ROLE (
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE smallint,
-    TYPE integer,
+    ROLE_TYPE integer,
     --
     primary key (ID)
 );
@@ -201,7 +201,7 @@ create table SEC_GROUP_HIERARCHY (
     --
     GROUP_ID varchar(36),
     PARENT_ID varchar(36),
-    LEVEL integer,
+    HIERARCHY_LEVEL integer,
     --
     primary key (ID),
     constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
@@ -238,7 +238,6 @@ create table SEC_USER (
     GROUP_ID varchar(36),
     DEFAULT_SUBSTITUTED_USER_ID varchar(36),
     IP_MASK varchar(200),
-    TYPE varchar(1),
     CHANGE_PASSWORD_AT_LOGON smallint,
     --
     primary key (ID),
@@ -293,14 +292,14 @@ create table SEC_PERMISSION (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    TYPE integer,
+    PERMISSION_TYPE integer,
     TARGET varchar(100),
     VALUE integer,
     ROLE_ID varchar(36),
     --
     primary key (ID),
     constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID),
-    constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, TYPE, TARGET, DELETE_TS)
+    constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, PERMISSION_TYPE, TARGET, DELETE_TS)
 );
 
 -- alter table SEC_PERMISSION add constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID);
@@ -446,7 +445,7 @@ create table SEC_ENTITY_LOG (
     --
     EVENT_TS timestamp,
     USER_ID varchar(36),
-    TYPE char(1),
+    CHANGE_TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID varchar(36),
     CHANGES longvarchar,
@@ -512,7 +511,7 @@ create table SYS_FOLDER (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    TYPE char(1),
+    FOLDER_TYPE char(1),
     PARENT_ID varchar(36),
     NAME varchar(100),
     TAB_NAME varchar(100),
@@ -606,12 +605,12 @@ create table SYS_FTS_QUEUE (
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin',
 'cc2229d1b8a052423d9e1c9ef0113b850086586a',
-'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C');
+'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true);
 
-insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)
+insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 10);
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
@@ -687,9 +686,9 @@ alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_SEND
 CREATE INDEX SYS_SENDING_ATTACHMENT_MESSAGE_IDX
   ON SYS_SENDING_ATTACHMENT(MESSAGE_ID );
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', null,
-'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C');
+'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true);
 
 ------------------------------------------------------------------------------------------------------------
 

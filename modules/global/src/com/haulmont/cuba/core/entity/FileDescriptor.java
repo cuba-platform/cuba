@@ -37,7 +37,7 @@ public class FileDescriptor extends StandardEntity {
     @Column(name = "EXT", length = 20)
     private String extension;
 
-    @Column(name = "SIZE")
+    @Column(name = "FILE_SIZE")
     private Integer size;
 
     @Column(name = "CREATE_DATE")

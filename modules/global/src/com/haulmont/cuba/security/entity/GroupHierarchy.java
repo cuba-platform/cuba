@@ -33,7 +33,7 @@ public class GroupHierarchy extends BaseUuidEntity
     @JoinColumn(name = "PARENT_ID")
     private Group parent;
 
-    @Column(name = "LEVEL")
+    @Column(name = "HIERARCHY_LEVEL")
     private Integer level;
 
     public Group getGroup() {

@@ -48,7 +48,7 @@ create table SYS_FILE (
     --
     NAME varchar(500),
     EXT varchar(20),
-    SIZE integer,
+    FILE_SIZE integer,
     CREATE_DATE timestamp,
     --
     primary key (ID)
@@ -160,7 +160,7 @@ create table SEC_ROLE (
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE boolean, 
-    TYPE integer,
+    ROLE_TYPE integer,
     --
     primary key (ID)
 )^
@@ -195,7 +195,7 @@ create table SEC_GROUP_HIERARCHY (
     --
     GROUP_ID uuid,
     PARENT_ID uuid,
-    LEVEL integer,
+    HIERARCHY_LEVEL integer,
     --
     primary key (ID),
     constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
@@ -228,7 +228,6 @@ create table SEC_USER (
     GROUP_ID uuid,
     DEFAULT_SUBSTITUTED_USER_ID uuid,
     IP_MASK varchar(200),
-    TYPE varchar(1),
     CHANGE_PASSWORD_AT_LOGON boolean,
     --
     primary key (ID),
@@ -272,7 +271,7 @@ create table SEC_PERMISSION (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    TYPE integer,
+    PERMISSION_TYPE integer,
     TARGET varchar(100),
     VALUE integer,
     ROLE_ID uuid,
@@ -281,7 +280,7 @@ create table SEC_PERMISSION (
     constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)
 )^
 
-create unique index IDX_SEC_PERMISSION_UNIQUE on SEC_PERMISSION (ROLE_ID, TYPE, TARGET) where DELETE_TS is null^
+create unique index IDX_SEC_PERMISSION_UNIQUE on SEC_PERMISSION (ROLE_ID, PERMISSION_TYPE, TARGET) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -345,8 +344,6 @@ create table SEC_USER_SETTING (
     constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID),
     constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE)
 )^
-
-create index IDX_SEC_USER_SETTING_USER_NAME_CLIENT on SEC_USER_SETTING (USER_ID, NAME, CLIENT_TYPE)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -413,7 +410,7 @@ create table SEC_ENTITY_LOG (
     --
     EVENT_TS timestamp,
     USER_ID uuid,
-    TYPE char(1),
+    CHANGE_TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID uuid,
     CHANGES text,
@@ -479,7 +476,7 @@ create table SYS_FOLDER (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    TYPE char(1),
+    FOLDER_TYPE char(1),
     PARENT_ID uuid,
     NAME varchar(100),
     TAB_NAME varchar(100),
@@ -777,27 +774,19 @@ volatile strict language c^
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', now(), 0, 'Company', null)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f93', now(), 0, 'admin', 'admin',
 'cc2229d1b8a052423d9e1c9ef0113b850086586a',
-'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C')^
+'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', null,
-'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C')^
+'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true)^
 
-insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)
+insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', now(), 0, 'Administrators', 10)^
 
-insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,UPDATE_TS,UPDATED_BY,DELETE_TS,DELETED_BY,COMPONENT,NAME,XML,USER_ID) values
-(
-  'b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',
-  {ts '2010-03-01 11:14:06.830'},
-  'admin',2,
-  {ts '2010-03-01 11:52:53.170'},
-  'admin',null,null,
-  '[sec$User.browse].genericFilter',
-  'Search by role',
+insert into SEC_FILTER (ID, CREATE_TS, CREATED_BY, VERSION, COMPONENT, NAME, XML, USER_ID)
+values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd', now(), 'admin', 0, '[sec$User.browse].genericFilter', 'Search by role',
   '<?xml version="1.0" encoding="UTF-8"?>\n<filter>\n  <and>\n    <c name="UrMxpkfMGn" class="com.haulmont.cuba.security.entity.Role" type="CUSTOM" locCaption="Role" entityAlias="u" join="join u.userRoles ur">ur.role.id = :component$genericFilter.UrMxpkfMGn32565\n      <param name="component$genericFilter.UrMxpkfMGn32565">NULL</param>\n    </c>\n  </and>\n</filter>\n',
-  '60885987-1b61-4247-94c7-dff348347f93'
-)^
+  '60885987-1b61-4247-94c7-dff348347f93')^

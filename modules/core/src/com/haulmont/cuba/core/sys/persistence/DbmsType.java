@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -16,9 +16,8 @@ import java.util.Map;
  * System level enum encapsulating ORM initialization differences.
  * <p>In an application code use {@link com.haulmont.cuba.core.global.DbDialect} instead.</p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public enum DbmsType {
 
@@ -54,6 +53,19 @@ public enum DbmsType {
                     "com.haulmont.cuba.core.sys.persistence.CubaMssqlDictionary(RequiresCastForComparisons=true)");
             params.put("openjpa.jdbc.MappingDefaults",
                     "FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidMssqlValueHandler'");
+            return params;
+        }
+    },
+
+    ORACLE(new OracleTypeConverter()) {
+        @Override
+        public Map<String, String> getJpaParameters() {
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("openjpa.jdbc.DBDictionary",
+                    "com.haulmont.cuba.core.sys.persistence.CubaOracleDictionary(RequiresCastForComparisons=true)");
+            params.put("openjpa.jdbc.MappingDefaults",
+                    "FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidStringValueHandler(Compact=true)," +
+                            "java.lang.Boolean=com.haulmont.cuba.core.sys.persistence.BooleanCharValueHandler'");
             return params;
         }
     };
