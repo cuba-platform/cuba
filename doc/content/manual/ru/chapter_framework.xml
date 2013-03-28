@@ -1611,7 +1611,9 @@ String formattedValue = format.format(value);</programlisting></para>
     </section>
     <section id="infrastructure_interfaces">
       <title>Интерфейсы инфраструктуры</title>
-      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Большинство из этих интерфейсов расположены в <link linkend="app_modules">модуле</link> <structname>global</structname> и могут быть использованы как на среднем слое, так и в <link linkend="app_tiers">блоках</link> клиентского уровня, но некоторые доступны только коду среднего слоя.</para>
+      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Большинство из этих интерфейсов расположены в <link linkend="app_modules">модуле</link> <structname>global</structname> и могут быть использованы как на среднем слое, так и в <link linkend="app_tiers">блоках</link> клиентского уровня, но некоторые (например <code>
+          <link linkend="persistence">Persistence</link>
+        </code>) доступны только коду среднего слоя.</para>
       <para>Интерфейсы инфраструктуры реализуются бинами <application>Spring Framework</application>, поэтому они могут быть инжектированы в любые другие управляемые компоненты (<link linkend="managed_beans">Managed Beans</link>, <link linkend="services">сервисы среднего слоя</link>, <link linkend="screen_controller">контроллеры</link> экранов универсального пользовательского интерфейса.</para>
       <para>Кроме того, как и любые другие бины, интерфейсы инфраструктуры могут быть получены с помощью статических методов класса <code>AppBeans</code>, и использоваться в неуправляемых компонентах (<glossterm linkend="pojo">POJO</glossterm>, вспомогательных классах и пр.).</para>
       <section id="configuration">
@@ -1760,92 +1762,6 @@ tools.foo();</programlisting><programlisting>((MyMessageTools) messages.getTools
             </itemizedlist></para>
           <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>MetadataTools</code> можно <link linkend="bean_extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMetadataTools tools = metadata.getTools();
 tools.foo();</programlisting><programlisting>((MyMetadataTools) metadata.getTools()).foo();</programlisting></para>
-        </section>
-      </section>
-      <section id="persistence">
-        <title>Persistence</title>
-        <para>Интерфейс <link linkend="app_tiers">уровня</link> <structname>Middleware</structname>, являющийся точкой входа в функциональность хранения данных в БД.<tip>
-            <para>Интерфейс <code>Persistence</code> доступен только в <link linkend="app_modules">модуле</link> <structname>core</structname> проекта приложения.</para>
-          </tip></para>
-        <para>Методы интерфейса:<itemizedlist>
-            <listitem>
-              <para><code>createTransaction()</code>, <code>getTransaction()</code> - получить интерфейс управления <link linkend="transactions">транзакциями</link></para>
-            </listitem>
-            <listitem>
-              <para><code>isInTransaction()</code> - определяет, существует ли в данный момент активная транзакция</para>
-            </listitem>
-            <listitem>
-              <para><code>getEntityManager()</code> - возвращает экземпляр <code>
-                  <link linkend="entityManager">EntityManager</link>
-                </code> для текущей транзакции</para>
-            </listitem>
-            <listitem>
-              <para><code>isSoftDeletion()</code> - позволяет определить, активен ли режим <link linkend="soft_deletion">мягкого удаления</link></para>
-            </listitem>
-            <listitem>
-              <para><code>setSoftDeletion()</code> - устанавливает или отключает режим мягкого удаления. Влияет на аналогичный признак всех создаваемых экземпляров <code>EntityManager</code>. По умолчанию мягкое удаление включено.</para>
-            </listitem>
-            <listitem>
-              <para><code>getDbDialect()</code> - возвращает диалект используемой в данный момент базы данных. Интерфейс <code>DbDialect</code> определяет тип БД и некоторые специфические для данной БД параметры.</para>
-              <para>В прикладном коде данный метод можно использовать для определения типа используемой БД, например:<programlisting>@Inject
-protected Persistence persistence;
-...
-if (persistence.getDbDialect() instanceof PostgresDbDialect) 
-...</programlisting></para>
-            </listitem>
-            <listitem>
-              <para><code>getDataSource()</code> - получить <code>javax.sql.DataSource</code> для используемой в данный момент базы данных.</para>
-              <warning>
-                <para>Для всех объектов <code>javax.sql.Connection</code>, получаемых методом <code>getDataSource().getConnection()</code>, необходимо после использования соединения вызвать метод <code>close()</code> в секции <code>finally</code>. В противном случае соединение не вернется в пул, через какое-то время пул переполнится, и приложение не сможет выполнять запросы к базе данных. </para>
-              </warning>
-            </listitem>
-            <listitem>
-              <para><code>getTools()</code> - возвращает экземпляр интерфейса  <code>PersistenceTools</code> (см. ниже).</para>
-            </listitem>
-          </itemizedlist></para>
-        <section id="persistenceTools">
-          <title>PersistenceTools</title>
-          <para><link linkend="managed_beans">ManagedBean</link>, содержащий вспомогательные методы работы с хранилищем данных. Интерфейс <code>PersistenceTools</code> можно получить либо методом <code>Persistence.getTools()</code>, либо как любой другой бин - инжекцией или через класс <code>AppBeans</code>.</para>
-          <para>Методы <code>PersistenceTools</code>:<itemizedlist>
-              <listitem>
-                <para><code>getDirtyFields()</code> - возвращает коллекцию имен атрибутов сущности, измененных со времени последней загрузки экземпляра из БД. Для новых экземпляров возвращает пустую коллекцию.</para>
-              </listitem>
-              <listitem>
-                <para><code>isLoaded()</code> - определяет, загружен ли из БД указанный атрибут экземпляра. Атрибут может быть <emphasis>не</emphasis> загружен, если он не указан в примененном при загрузке <link linkend="views">представлении</link>. </para>
-                <para>Данный метод работает только для экземпляров в  состоянии <link linkend="entity_states">Managed</link>.</para>
-              </listitem>
-              <listitem>
-                <para><code>getReferenceId()</code> - возвращает идентификатор связанной сущности без загрузки ее из БД. </para>
-                <para>Предположим, в <glossterm linkend="persistence_context">персистентный контекст</glossterm> загружен экземпляр <code>Order</code>, и нужно получить значение идентификатора экземпляра <code>Customer</code>, связанного с данным Заказом. Стандартное решение <code>order.getCustomer().getId()</code> приведет к выполнению SQL запроса к БД для загрузки экземпляра <code>Customer</code>, что в данном случае избыточно, так как значение идентификатора Покупателя физически находится также и в таблице Заказов. Выполнение же <programlisting>persistence.getTools().getReferenceId(order, &quot;customer&quot;)</programlisting>не вызывет никаких дополнительных запросов к базе данных. </para>
-                <para>Данный метод работает только для экземпляров в  состоянии <link linkend="entity_states">Managed</link>.</para>
-              </listitem>
-              <listitem>
-                <para><code>reloadEntity()</code> - перезагрузить экземпляр сущности с указанным <link linkend="views">представлением</link>. Данный метод должен вызываться внутри активной <link linkend="transactions">транзакции</link>.</para>
-              </listitem>
-            </itemizedlist></para>
-          <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>PersistenceTools</code> можно <link linkend="bean_extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyPersistenceTools tools = persistence.getTools();
-tools.foo();</programlisting><programlisting>((MyPersistenceTools) persistence.getTools()).foo();</programlisting></para>
-        </section>
-        <section id="persistenceHelper">
-          <title>PersistenceHelper</title>
-          <para>Вспомогательный класс для получения информации о персистентных сущностях. В отличие от бинов <code>Persistence</code> и <code>PersistenceTools</code> доступен на всех <link linkend="app_tiers">уровнях</link> приложения.</para>
-          <para>Методы <code>PersistenceHelper</code>:<itemizedlist>
-              <listitem>
-                <para><code>isNew()</code> - определяет, является ли переданный экземпляр только что созданным, т.е. находящимся в состоянии <link linkend="entity_states">New</link>. Возвращает <code>true</code> также если экземпляр не является персистентной сущностью.</para>
-              </listitem>
-              <listitem>
-                <para><code>isDetached()</code> - определяет, находится ли переданный экземпляр в состоянии <link linkend="entity_states">Detached</link>. Возвращает <code>true</code> также если экземпляр не является персистентной сущностью.</para>
-              </listitem>
-              <listitem>
-                <para><code>isSoftDeleted()</code> - определяет, поддерживает ли переданный класс сущности <link linkend="soft_deletion">мягкое удаление</link></para>
-              </listitem>
-              <listitem>
-                <para><code>getEntityName()</code> - возвращает имя сущности, заданное в <link linkend="entity_annotations">аннотации</link> <code>@Entity</code></para>
-              </listitem>
-              <listitem>
-                <para><code>getTableName()</code> - возвращает имя таблицы БД, хранящей экземпляры сущности, заданное в <link linkend="entity_annotations">аннотации</link> <code>@Table</code></para>
-              </listitem>
-            </itemizedlist></para>
         </section>
       </section>
       <section id="resources">
@@ -2959,6 +2875,90 @@ public String foo(String value) {
         <para>Например,  вызов метода JMX-бина из встроенной в <structname>Web Client</structname> консоли JMX, если бин находится в той же JVM, что и блок WebClient, к которому в данный момент подключен пользователь, будет выполнен от имени текущего зарегистрированного в системе пользователя, независимо от наличия системной аутентификации.</para>
       </warning>
     </section>
+    <section id="persistence">
+      <title>Интерфейс Persistence</title>
+      <para>Интерфейс инфраструктуры, являющийся точкой входа в функциональность хранения данных в БД.</para>
+      <para>Методы интерфейса:<itemizedlist>
+          <listitem>
+            <para><code>createTransaction()</code>, <code>getTransaction()</code> - получить интерфейс управления <link linkend="transactions">транзакциями</link></para>
+          </listitem>
+          <listitem>
+            <para><code>isInTransaction()</code> - определяет, существует ли в данный момент активная транзакция</para>
+          </listitem>
+          <listitem>
+            <para><code>getEntityManager()</code> - возвращает экземпляр <code>
+                <link linkend="entityManager">EntityManager</link>
+              </code> для текущей транзакции</para>
+          </listitem>
+          <listitem>
+            <para><code>isSoftDeletion()</code> - позволяет определить, активен ли режим <link linkend="soft_deletion">мягкого удаления</link></para>
+          </listitem>
+          <listitem>
+            <para><code>setSoftDeletion()</code> - устанавливает или отключает режим мягкого удаления. Влияет на аналогичный признак всех создаваемых экземпляров <code>EntityManager</code>. По умолчанию мягкое удаление включено.</para>
+          </listitem>
+          <listitem>
+            <para><code>getDbDialect()</code> - возвращает диалект используемой в данный момент базы данных. Интерфейс <code>DbDialect</code> определяет тип БД и некоторые специфические для данной БД параметры.</para>
+            <para>В прикладном коде данный метод можно использовать для определения типа используемой БД, например:<programlisting>@Inject
+protected Persistence persistence;
+...
+if (persistence.getDbDialect() instanceof PostgresDbDialect)
+...</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>getDataSource()</code> - получить <code>javax.sql.DataSource</code> для используемой в данный момент базы данных.</para>
+            <warning>
+              <para>Для всех объектов <code>javax.sql.Connection</code>, получаемых методом <code>getDataSource().getConnection()</code>, необходимо после использования соединения вызвать метод <code>close()</code> в секции <code>finally</code>. В противном случае соединение не вернется в пул, через какое-то время пул переполнится, и приложение не сможет выполнять запросы к базе данных. </para>
+            </warning>
+          </listitem>
+          <listitem>
+            <para><code>getTools()</code> - возвращает экземпляр интерфейса  <code>PersistenceTools</code> (см. ниже).</para>
+          </listitem>
+        </itemizedlist></para>
+      <section id="persistenceTools">
+        <title>PersistenceTools</title>
+        <para><link linkend="managed_beans">ManagedBean</link>, содержащий вспомогательные методы работы с хранилищем данных. Интерфейс <code>PersistenceTools</code> можно получить либо методом <code>Persistence.getTools()</code>, либо как любой другой бин - инжекцией или через класс <code>AppBeans</code>.</para>
+        <para>Методы <code>PersistenceTools</code>:<itemizedlist>
+            <listitem>
+              <para><code>getDirtyFields()</code> - возвращает коллекцию имен атрибутов сущности, измененных со времени последней загрузки экземпляра из БД. Для новых экземпляров возвращает пустую коллекцию.</para>
+            </listitem>
+            <listitem>
+              <para><code>isLoaded()</code> - определяет, загружен ли из БД указанный атрибут экземпляра. Атрибут может быть <emphasis>не</emphasis> загружен, если он не указан в примененном при загрузке <link linkend="views">представлении</link>. </para>
+              <para>Данный метод работает только для экземпляров в  состоянии <link linkend="entity_states">Managed</link>.</para>
+            </listitem>
+            <listitem>
+              <para><code>getReferenceId()</code> - возвращает идентификатор связанной сущности без загрузки ее из БД. </para>
+              <para>Предположим, в <glossterm linkend="persistence_context">персистентный контекст</glossterm> загружен экземпляр <code>Order</code>, и нужно получить значение идентификатора экземпляра <code>Customer</code>, связанного с данным Заказом. Стандартное решение <code>order.getCustomer().getId()</code> приведет к выполнению SQL запроса к БД для загрузки экземпляра <code>Customer</code>, что в данном случае избыточно, так как значение идентификатора Покупателя физически находится также и в таблице Заказов. Выполнение же <programlisting>persistence.getTools().getReferenceId(order, &quot;customer&quot;)</programlisting>не вызывет никаких дополнительных запросов к базе данных. </para>
+              <para>Данный метод работает только для экземпляров в  состоянии <link linkend="entity_states">Managed</link>.</para>
+            </listitem>
+            <listitem>
+              <para><code>reloadEntity()</code> - перезагрузить экземпляр сущности с указанным <link linkend="views">представлением</link>. Данный метод должен вызываться внутри активной <link linkend="transactions">транзакции</link>.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>PersistenceTools</code> можно <link linkend="bean_extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyPersistenceTools tools = persistence.getTools();
+tools.foo();</programlisting><programlisting>((MyPersistenceTools) persistence.getTools()).foo();</programlisting></para>
+      </section>
+      <section id="persistenceHelper">
+        <title>PersistenceHelper</title>
+        <para>Вспомогательный класс для получения информации о персистентных сущностях. В отличие от бинов <code>Persistence</code> и <code>PersistenceTools</code> доступен на всех <link linkend="app_tiers">уровнях</link> приложения.</para>
+        <para>Методы <code>PersistenceHelper</code>:<itemizedlist>
+            <listitem>
+              <para><code>isNew()</code> - определяет, является ли переданный экземпляр только что созданным, т.е. находящимся в состоянии <link linkend="entity_states">New</link>. Возвращает <code>true</code> также если экземпляр не является персистентной сущностью.</para>
+            </listitem>
+            <listitem>
+              <para><code>isDetached()</code> - определяет, находится ли переданный экземпляр в состоянии <link linkend="entity_states">Detached</link>. Возвращает <code>true</code> также если экземпляр не является персистентной сущностью.</para>
+            </listitem>
+            <listitem>
+              <para><code>isSoftDeleted()</code> - определяет, поддерживает ли переданный класс сущности <link linkend="soft_deletion">мягкое удаление</link></para>
+            </listitem>
+            <listitem>
+              <para><code>getEntityName()</code> - возвращает имя сущности, заданное в <link linkend="entity_annotations">аннотации</link> <code>@Entity</code></para>
+            </listitem>
+            <listitem>
+              <para><code>getTableName()</code> - возвращает имя таблицы БД, хранящей экземпляры сущности, заданное в <link linkend="entity_annotations">аннотации</link> <code>@Table</code></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+    </section>
     <section id="orm">
       <title>Слой ORM</title>
       <section>
@@ -3015,10 +3015,32 @@ public String foo(String value) {
 </para>
         <para>Экземпляр <code>EntityManager</code> содержит в себе &quot;персистентный контекст&quot; – набор экземпляров сущностей, загруженных из БД или только что созданных. Персистентный контекст является своего рода кэшем данных в рамках  транзакции.
 <code>EntityManager</code> автоматически сбрасывает в БД все изменения, сделанные в его персистентном контексте, в момент коммита транзакции, либо при явном вызове метода  <code>flush()</code>.</para>
-        <para>Интерфейс <code>EntityManager</code>, используемый в CUBA-приложениях, в основном повторяет стандартный <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/EntityManager.html">javax.persistence.EntityManager</ulink>. Рассмотрим специфичные методы:<itemizedlist>
+        <para>Интерфейс <code>EntityManager</code>, используемый в CUBA-приложениях, в основном повторяет стандартный <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/EntityManager.html">javax.persistence.EntityManager</ulink>. Рассмотрим его основные методы:<itemizedlist>
             <listitem>
-              <para><code>setView()</code> - устанавливает <link linkend="views">представление</link>, с которым будет производиться последующая загрузка сущностей методом <code>find()</code> либо JPQL запросами. В результате <glossterm linkend="eager_fetching">энергично загружены</glossterm> будут все не-<literal>lazy</literal> атрибуты представления.</para>
+              <para><code>persist()</code> - вводит <link linkend="entity_states">новый экземпляр</link> сущности в персистентный контекст. При коммите транзакции командой SQL <code>INSERT</code>  в БД будет создана соответствующая запись.</para>
+            </listitem>
+            <listitem>
+              <para><code>merge()</code> - переносит состояние <link linkend="entity_states">отсоединенного экземпляра</link> сущности в персистентный контекст следующим образом: из БД  загружается экземпляр с тем же идентификатором, в него переносится состояние переданного Detached экземпляра и возвращается загруженный Managed экземпляр. Далее надо работать именно с возвращенным Managed экземпляром. При коммите транзакции командой SQL <code>UPDATE</code>  в БД будет сохранено состояние данного экземпляра.</para>
+            </listitem>
+            <listitem>
+              <para><code>remove()</code> - удалить объект из базы данных, либо, если  включен режим <link linkend="soft_deletion">мягкого удаления</link>, установить атрибуты <code>deleteTs</code> и <code>deletedBy</code>.</para>
+              <para>Если переданный экземпляр находится в Detached состоянии, сначала выполняется <code>merge()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>find()</code> - загружает экземпляр сущности по идентификатору. </para>
+              <para>При формировании запроса к БД учитывается <link linkend="views">представление</link>, переданное в параметре данного метода, либо установленное для всего <code>EntityManager</code> методом <code>setView()</code>. В результате в персистентном контексте окажется граф объектов, для которого загружены все не-lazy атрибуты представления. Остальные атрибуты можно дозагрузить обращением к соответствующим методам доступа объектов, либо вызовом метода <code>fetch()</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>createQuery()</code> - создать объект <code>Query</code> для выполнения <link linkend="query">JPQL запроса</link>. </para>
+              <para>Рекомендуется использовать вариант метода с передачей класса сущности для получения экземпляра <code>TypedQuery</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>createNativeQuery()</code> - создать объект <code>Query</code> для выполнения <link linkend="nativeQuery">SQL запроса</link>. </para>
+            </listitem>
+            <listitem>
+              <para><code>setView()</code> - устанавливает <link linkend="views">представление</link> по умолчанию, с которым будет производиться последующая загрузка сущностей методом <code>find()</code> либо JPQL запросами. В результате <glossterm linkend="eager_fetching">энергично загружены</glossterm> будут все не-<literal>lazy</literal> атрибуты представления.</para>
               <para>Если в данный метод передать <code>null</code>, либо не вызывать его вообще, загрузка будет производиться в соответствие с правилами <link linkend="entity_annotations">аннотаций сущностей</link>.</para>
+              <para>Представления, явно переданные в метод <code>find()</code> или установленные в объекте <code>Query</code> имеют приоритет над установленным данным методом.</para>
             </listitem>
             <listitem>
               <para><code>addView()</code> - аналогичен методу <code>setView()</code>, но в случае наличия уже установленного в <code>EntityManager</code> представления, не заменяет его, а добавляет атрибуты переданного представления.</para>
@@ -3026,6 +3048,9 @@ public String foo(String value) {
             <listitem>
               <para><code>fetch()</code> - обеспечивает для экземпляра сущности загрузку всех атрибутов указанного <link linkend="views">представления</link>, включая <literal>lazy</literal> атрибуты. Экземпляр сущности должен быть в <link linkend="entity_states">Managed</link> состоянии.</para>
               <para>Данный метод рекомендуется вызывать перед коммитом транзакции, если представление содержит <literal>lazy</literal> атрибуты, а экземпляр сущности нужно отправить на клиентский уровень. В этом случае только после вызова <code>fetch()</code> можно быть уверенным, что все нужные клиентсткому коду атрибуты действительно загружены.</para>
+            </listitem>
+            <listitem>
+              <para><code>reload()</code> - перезагрузить экземпляр сущности с указанным <link linkend="views">представлением</link>. Обеспечивает загрузку всех атрибутов представления, вызывая внутри себя метод <code>fetch()</code>. </para>
             </listitem>
             <listitem>
               <para><code>isSoftDeletion()</code> - проверяет, находится ли данный <code>EntityManager</code> в режиме <link linkend="soft_deletion">мягкого удаления</link>.</para>
@@ -3064,7 +3089,6 @@ public String foo(String value) {
                 <para>Экземпляр, загруженный из БД и отсоединенный от своего персистентного контекста (вследствие закрытия транзакции или сериализации).</para>
                 <para>Изменения, вносимые в Detached экземпляр, запоминаются в самом этом экземпляре (в полях, добавленных с помощью bytecode enhancement).
 Эти изменения будут сохранены в БД, только если данный экземпляр будет снова переведен в состояние Managed путем передачи в метод <methodname>EntityManager.merge()</methodname>. </para>
-                <para>Метод <methodname>merge()</methodname> выполняет следующее: загружает из БД экземпляр с тем же идентификатором, переносит в него состояние переданного Detached экземпляра и возвращает загруженный Managed экземпляр. Далее надо работать именно с возвращенным Managed экземпляром.</para>
               </listitem>
             </varlistentry>
           </variablelist></para>
@@ -10623,15 +10647,14 @@ public class ExtUser extends User {
         </link>.</para>
       <para>Создаем класс с нужным методом:<programlisting>public class ExtPersistenceTools extends PersistenceTools {
 
-    public Entity reloadStartingTransaction(Entity entity, String... viewNames) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            Entity reloadedEntity = reloadEntity(entity, viewNames);
-            tx.commit();
-            return reloadedEntity;
-        } finally {
-            tx.end();
-        }
+    public Entity reloadInSeparateTransaction(final Entity entity, final String... viewNames) {
+        Entity result = persistence.createTransaction().execute(new Transaction.Callable&lt;Entity&gt;() {
+            @Override
+            public Entity call(EntityManager em) {
+                return em.reload(entity, viewNames);
+            }
+        });
+        return result;
     }
 }</programlisting></para>
       <para>Регистрируем класс в <filename>spring.xml</filename> модуля <structname>core</structname> проекта с тем же идентификатором, что и бин платформы:<programlisting>&lt;bean id=&quot;cuba_PersistenceTools&quot; class=&quot;com.sample.sales.core.ExtPersistenceTools&quot;/&gt;</programlisting></para>

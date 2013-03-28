@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 13.11.2008 18:15:55
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys;
 
@@ -29,13 +24,11 @@ import javax.persistence.TemporalType;
 import java.util.*;
 
 /**
- * Implementation of {@link TypedQuery} interface based on OpenJPA.
- *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class QueryImpl<T> implements TypedQuery<T> {
+
     private Log log = LogFactory.getLog(QueryImpl.class);
 
     private EntityManagerImpl em;
@@ -44,12 +37,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private OpenJPAQuery query;
     private boolean isNative;
     private String queryString;
-    private Class<T> resultClass;
+    private Class resultClass;
     private FetchPlanManager fetchPlanMgr;
 
     private Collection<QueryMacroHandler> macroHandlers;
 
-    public QueryImpl(EntityManagerImpl entityManager, boolean isNative, @Nullable Class<T> resultClass,
+    public QueryImpl(EntityManagerImpl entityManager, boolean isNative, @Nullable Class resultClass,
                      Metadata metadata, FetchPlanManager fetchPlanMgr) {
         this.em = entityManager;
         this.metadata = metadata;
@@ -217,13 +210,45 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return this;
     }
 
+    @Override
     public Query setView(View view) {
         fetchPlanMgr.setView(getQuery().getFetchPlan(), view);
         return this;
     }
 
+    @Override
+    public Query setViewName(String viewName) {
+        if (resultClass == null)
+            throw new IllegalStateException("resultClass is null");
+
+        setView(metadata.getViewRepository().getView(resultClass, viewName));
+        return this;
+    }
+
+    @Override
+    public Query setView(Class<? extends Entity> entityClass, String viewName) {
+        setView(metadata.getViewRepository().getView(entityClass, viewName));
+        return this;
+    }
+
+    @Override
     public Query addView(View view) {
         fetchPlanMgr.addView(getQuery().getFetchPlan(), view);
+        return this;
+    }
+
+    @Override
+    public Query addViewName(String viewName) {
+        if (resultClass == null)
+            throw new IllegalStateException("resultClass is null");
+
+        addView(metadata.getViewRepository().getView(resultClass, viewName));
+        return this;
+    }
+
+    @Override
+    public Query addView(Class<? extends Entity> entityClass, String viewName) {
+        addView(metadata.getViewRepository().getView(entityClass, viewName));
         return this;
     }
 
@@ -232,10 +257,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return getQuery();
     }
 
+    @Override
     public String getQueryString() {
         return queryString;
     }
 
+    @Override
     public void setQueryString(String queryString) {
         if (query != null)
             throw new IllegalStateException("Unable to set query string: query is already created");

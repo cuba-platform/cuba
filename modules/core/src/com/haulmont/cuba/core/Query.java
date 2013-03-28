@@ -1,28 +1,26 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 13.11.2008 18:02:40
- *
- * $Id$
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.Nullable;
 import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
 import java.util.List;
 import java.util.Date;
 
 /**
- * Interface to control query execution.
+ * Interface used to control query execution.
  *
- * <p>$Id$</p>
+ * <p/> Consider use of {@link TypedQuery} instead of this interface.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Query {
 
@@ -152,18 +150,41 @@ public interface Query {
 
     /**
      * Set View for this Query instance.
-     * @param view view instance. May be null, in this case eager fetching will be performed according to JPA mappings.
+     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     *
+     * @param view view instance. If null, eager fetching is performed according to JPA mappings.
      * @return the same query instance
      */
-    Query setView(View view);
+    Query setView(@Nullable View view);
 
     /**
-     * Adds View for this Query instance.<br/>
-     * Eager fetching will be performed for fields specified in all added views.
+     * Set View for this Query instance.
+     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     *
+     * @param entityClass   entity class to get a view instance by the name provided
+     * @param viewName      view name
+     * @return the same query instance
+     */
+    Query setView(Class<? extends Entity> entityClass, String viewName);
+
+    /**
+     * Adds View for this Query instance.
+     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     *
      * @param view view instance - must not be null
      * @return the same query instance
      */
     Query addView(View view);
+
+    /**
+     * Adds View for this Query instance.
+     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     *
+     * @param entityClass   entity class to get a view instance by the name provided
+     * @param viewName      view name - must not be null
+     * @return the same query instance
+     */
+    Query addView(Class<? extends Entity> entityClass, String viewName);
 
     /**
      * @return  underlying implementation provided by ORM

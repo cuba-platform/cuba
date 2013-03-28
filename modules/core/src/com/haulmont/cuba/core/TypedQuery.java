@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -10,10 +10,10 @@ import java.util.List;
 
 /**
  * Type-safe extension of Query interface.
- * <p/>
- * <p>$Id$</p>
  *
  * @author Alexander Budarov
+ * @version $Id$
+ *
  */
 public interface TypedQuery<T> extends Query {
 
@@ -37,4 +37,21 @@ public interface TypedQuery<T> extends Query {
      */
     T getSingleResult();
 
+    /**
+     * Set View for this Query instance.
+     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     *
+     * @param viewName      view name - must not be null
+     * @return the same query instance
+     */
+    Query setViewName(String viewName);
+
+    /**
+     * Adds View for this Query instance.
+     * <p/> All non-lazy view properties contained in a combination of all added views are eagerly fetched.
+     *
+     * @param viewName      view name - must not be null
+     * @return the same query instance
+     */
+    Query addViewName(String viewName);
 }

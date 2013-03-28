@@ -171,7 +171,6 @@ public class EmailManager implements EmailManagerAPI {
                     .addProperty("attemptsMade")
                     .addProperty("version")
                     .addProperty("status");
-            em.setView(view);
             Query query = em.createQuery("select sm from sys$SendingMessage sm " +
                     "where sm.status=:statusQueue \n" +
                     "\t or (sm.status = :statusSending and sm.updateTs<:time)" +
@@ -179,6 +178,7 @@ public class EmailManager implements EmailManagerAPI {
                     .setParameter("statusQueue", SendingStatus.QUEUE.getId())
                     .setParameter("time", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()))
                     .setParameter("statusSending", SendingStatus.SENDING.getId());
+            query.setView(view);
             List<SendingMessage> res = query.setMaxResults(config.getMessageQueueCapacity()).getResultList();
             tx.commit();
             return res;

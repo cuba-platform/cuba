@@ -1,37 +1,41 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.12.2008 12:03:22
- *
- * $Id$
  */
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
-public class ViewTest extends CubaTestCase
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class ViewTest extends CubaTestCase {
+
+    private TimeSource timeSource;
+
     private UUID userId;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Transaction tx = PersistenceProvider.createTransaction();
+        timeSource = AppBeans.get(TimeSource.NAME);
+
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
@@ -47,7 +51,6 @@ public class ViewTest extends CubaTestCase
         } finally {
             tx.end();
         }
-
     }
 
     @Override
@@ -57,9 +60,9 @@ public class ViewTest extends CubaTestCase
     }
 
     public void testQuery() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query q = em.createQuery("select u from sec$User u where u.id = ?1");
             q.setParameter(1, userId);
 
@@ -68,7 +71,7 @@ public class ViewTest extends CubaTestCase
                     .addProperty("login")
                     .addProperty("group",
                             new View(Group.class)
-                                .addProperty("name")
+                                    .addProperty("name")
                     );
             q.setView(view);
 
@@ -84,9 +87,9 @@ public class ViewTest extends CubaTestCase
     }
 
     public void testEntityManager() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             View view = new View(User.class)
                     .addProperty("name")
@@ -111,9 +114,9 @@ public class ViewTest extends CubaTestCase
     }
 
     public void testViewWithoutSystemProperties() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             View view = new View(User.class, false)
                     .addProperty("name")
@@ -147,14 +150,14 @@ public class ViewTest extends CubaTestCase
                                 .addProperty("name")
                 );
 
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             // First stage: change managed
 
-            Date ts = TimeProvider.currentTimestamp();
+            Date ts = timeSource.currentTimestamp();
             Thread.sleep(1000);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.setView(view);
             User user = em.find(User.class, userId);
             user.setName(new Date().toString());
@@ -165,17 +168,17 @@ public class ViewTest extends CubaTestCase
 
             // Second stage: change detached
 
-            ts = TimeProvider.currentTimestamp();
+            ts = timeSource.currentTimestamp();
             Thread.sleep(1000);
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             em.setView(view);
             user = em.find(User.class, userId);
             
             tx.commitRetaining();
             
             user.setName(new Date().toString());
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             em.merge(user);
 
             tx.commit();
@@ -189,7 +192,7 @@ public class ViewTest extends CubaTestCase
 
     private Date getCurrentUpdateTs() {
         String sql = "select UPDATE_TS from SEC_USER where ID = '" + userId.toString() + "'";
-        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
         try {
             return runner.query(sql, new ResultSetHandler<Date>() {
                 @Override

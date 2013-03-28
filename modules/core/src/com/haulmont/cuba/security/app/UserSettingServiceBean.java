@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 17.03.2009 11:36:02
- *
- * $Id$
  */
 package com.haulmont.cuba.security.app;
 
@@ -16,7 +11,6 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.*;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -30,12 +24,15 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Service providing current user settings functionality:
- * an application can save/load some "setting" (plain or XML string) for current user.
- * <br>Ususally used by UI forms and components.
+ * @author krivopustov
+ * @version $Id$
  */
 @Service(UserSettingService.NAME)
 public class UserSettingServiceBean implements UserSettingService {
+
+    @Inject
+    protected Persistence persistence;
+
     @Inject
     private UserSessionSource userSessionSource;
 
@@ -48,16 +45,17 @@ public class UserSettingServiceBean implements UserSettingService {
 
     public String loadSetting(ClientType clientType, String name) {
         String value;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
-            Query q = em.createQuery(
-                    "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3");
+            TypedQuery<UserSetting> q = em.createQuery(
+                    "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3",
+                    UserSetting.class);
             q.setParameter(1, userSessionSource.getUserSession().getUser().getId());
             q.setParameter(2, name);
             q.setParameter(3, clientType == null ? null : clientType.getId());
-            q.setView(new View(UserSetting.class, false).addProperty("value"));
+            q.setViewName("userSetting.value");
 
             List<UserSetting> list = q.getResultList();
 
@@ -76,22 +74,21 @@ public class UserSettingServiceBean implements UserSettingService {
     }
 
     public void saveSetting(ClientType clientType, String name, String value) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
-            Query q = em.createQuery(
-                    "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3");
+            TypedQuery<UserSetting> q = em.createQuery(
+                    "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3",
+                    UserSetting.class);
             q.setParameter(1, userSessionSource.getUserSession().getUser().getId());
             q.setParameter(2, name);
             q.setParameter(3, clientType == null ? null : clientType.getId());
-            q.setView(new View(UserSetting.class, false).addProperty("value"));
 
             List<UserSetting> list = q.getResultList();
             if (list.isEmpty()) {
                 UserSetting us = new UserSetting();
-                em.setView(new View(User.class, false));
-                us.setUser(em.find(User.class, userSessionSource.getUserSession().getUser().getId()));
+                us.setUser(em.getReference(User.class, userSessionSource.getUserSession().getUser().getId()));
                 us.setName(name);
                 us.setClientType(clientType);
                 us.setValue(value);
@@ -112,15 +109,15 @@ public class UserSettingServiceBean implements UserSettingService {
         copyUserFolders(fromUser, toUser, presentationsMap);
         Map<UUID, FilterEntity> filtersMap = copyFilters(fromUser, toUser);
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Query deleteSettingsQuery = em.createQuery("delete from sec$UserSetting s where s.user.id = ?1");
             deleteSettingsQuery.setParameter(1, toUser);
             deleteSettingsQuery.executeUpdate();
             tx.commitRetaining();
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             Query q = em.createQuery("select s from sec$UserSetting s where s.user.id = ?1");
             q.setParameter(1, fromUser);
             List<UserSetting> fromUserSettings = q.getResultList();
@@ -172,9 +169,9 @@ public class UserSettingServiceBean implements UserSettingService {
 
     private Map<UUID, Presentation> copyPresentations(User fromUser, User toUser) {
         Map<UUID, Presentation> presentationMap = new HashMap<UUID, Presentation>();
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query delete = em.createQuery();
             delete.setQueryString("delete from sec$Presentation p where p.user.id=?1");
             delete.setParameter(1, toUser);
@@ -203,10 +200,10 @@ public class UserSettingServiceBean implements UserSettingService {
 
 
     private void copyUserFolders(User fromUser, User toUser, Map<UUID, Presentation> presentationsMap) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query deleteSettingsQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
             deleteSettingsQuery.setParameter(1, toUser);
             deleteSettingsQuery.executeUpdate();
@@ -262,7 +259,7 @@ public class UserSettingServiceBean implements UserSettingService {
             }
         }
         copiedFolders.put(searchFolder, newFolder);
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         em.persist(newFolder);
         return newFolder;
     }
@@ -278,12 +275,12 @@ public class UserSettingServiceBean implements UserSettingService {
     }
 
     private Map<UUID, FilterEntity> copyFilters(User fromUser, User toUser) {
-        Map<UUID, FilterEntity> filtersMap = new HashMap<UUID, FilterEntity>();
-        Transaction tx = Locator.createTransaction();
+        Map<UUID, FilterEntity> filtersMap = new HashMap<>();
+        Transaction tx = persistence.createTransaction();
         try {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query deleteFiltersQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " f where f.user.id = ?1");
             deleteFiltersQuery.setParameter(1, toUser);
             deleteFiltersQuery.executeUpdate();

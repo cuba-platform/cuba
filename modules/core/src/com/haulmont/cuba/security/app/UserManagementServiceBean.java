@@ -73,9 +73,8 @@ public class UserManagementServiceBean implements UserManagementService {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            em.setView(metadata.getViewRepository().getView(Group.class, GROUP_COPY_VIEW));
 
-            Group accessGroup = em.find(Group.class, accessGroupId);
+            Group accessGroup = em.find(Group.class, accessGroupId, GROUP_COPY_VIEW);
             if (accessGroup == null)
                 throw new IllegalStateException("Unable to find specified access group with id: " + accessGroupId);
 
@@ -109,10 +108,9 @@ public class UserManagementServiceBean implements UserManagementService {
                     throw new IllegalStateException("Could not found target access group with id: " + targetAccessGroupId);
             }
 
-            em.setView(metadata.getViewRepository().getView(User.class, MOVE_USER_TO_GROUP_VIEW));
-
             TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in (:userIds)", User.class);
             query.setParameter("userIds", userIds);
+            query.setViewName(MOVE_USER_TO_GROUP_VIEW);
 
             List<User> users = query.getResultList();
             if (users == null || users.size() != userIds.size())
@@ -121,7 +119,6 @@ public class UserManagementServiceBean implements UserManagementService {
             for (User user : users) {
                 if (!ObjectUtils.equals(user.getGroup(), targetAccessGroup)) {
                     user.setGroup(targetAccessGroup);
-                    em.merge(user);
                     modifiedUsers++;
                 }
             }
@@ -198,9 +195,8 @@ public class UserManagementServiceBean implements UserManagementService {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            em.setView(metadata.getViewRepository().getView(User.class, RESET_PASSWORD_VIEW));
 
-            User user = em.find(User.class, userId);
+            User user = em.find(User.class, userId, RESET_PASSWORD_VIEW);
             if (user == null)
                 throw new RuntimeException("Unable to find user with id: " + userId);
 
@@ -323,10 +319,9 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            em.setView(metadata.getViewRepository().getView(User.class, RESET_PASSWORD_VIEW));
-
             TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in (:userIds)", User.class);
             query.setParameter("userIds", userIds);
+            query.setViewName(RESET_PASSWORD_VIEW);
 
             List<User> users = query.getResultList();
 
