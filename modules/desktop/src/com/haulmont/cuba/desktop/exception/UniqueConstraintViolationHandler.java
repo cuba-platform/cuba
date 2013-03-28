@@ -20,9 +20,8 @@ import java.util.regex.Pattern;
  * Handles database unique constraint violations. Determines the exception type by searching a special marker string
  * in the messages of all exceptions in the chain.
  *
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class UniqueConstraintViolationHandler implements ExceptionHandler {
 
@@ -33,13 +32,6 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
     private Messages messages = AppBeans.get(Messages.class);
 
     private DataService dataService = AppBeans.get(DataService.class);
-
-    private String getMarker() {
-        if (marker == null) {
-            marker = dataService.getDbDialect().getUniqueConstraintViolationMarker();
-        }
-        return marker;
-    }
 
     private Pattern getPattern() {
         if (pattern == null) {
@@ -54,7 +46,7 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
         Throwable t = exception;
         try {
             while (t != null) {
-                if (t.toString().contains(getMarker())) {
+                if (t.toString().contains("org.apache.openjpa.persistence.EntityExistsException")) {
                     doHandle(thread, t);
                     return true;
                 }

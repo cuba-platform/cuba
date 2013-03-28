@@ -252,10 +252,18 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
         if (action != null && action.isEnabled()) {
             Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
-            if (!(window instanceof Window.Lookup))
+
+            if (!(window instanceof Window.Lookup)) {
                 action.actionPerform(DesktopAbstractTable.this);
-            else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
-                action.actionPerform(DesktopAbstractTable.this);
+            } else {
+                Window.Lookup lookup = (Window.Lookup) window;
+
+                com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
+                if (lookupComponent != this)
+                    action.actionPerform(DesktopAbstractTable.this);
+                else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                    action.actionPerform(DesktopAbstractTable.this);
+                }
             }
         }
     }

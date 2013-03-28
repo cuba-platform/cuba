@@ -33,13 +33,6 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
     private Messages messages = AppBeans.get(Messages.class);
     private DataService dataService = AppBeans.get(DataService.class);
 
-    private String getMarker() {
-        if (marker == null) {
-            marker = dataService.getDbDialect().getUniqueConstraintViolationMarker();
-        }
-        return marker;
-    }
-
     private Pattern getPattern() {
         if (pattern == null) {
             String s = dataService.getDbDialect().getUniqueConstraintViolationPattern();
@@ -53,7 +46,7 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
         Throwable t = event.getThrowable();
         try {
             while (t != null) {
-                if (t.toString().contains(getMarker())) {
+                if (t.toString().contains("org.apache.openjpa.persistence.EntityExistsException")) {
                     doHandle(t, app);
                     return true;
                 }
