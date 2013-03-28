@@ -14,6 +14,9 @@ import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
@@ -29,12 +32,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
+@ManagedBean(BackgroundWorker.NAME)
 public class DesktopBackgroundWorker implements BackgroundWorker {
 
     private Log log = LogFactory.getLog(DesktopBackgroundWorker.class);
 
     private WatchDog watchDog;
 
+    @Inject
     public DesktopBackgroundWorker(WatchDog watchDog) {
         this.watchDog = watchDog;
     }
@@ -98,6 +103,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                     }
 
                     @Override
+                    @Nonnull
                     public Map<String, Object> getParams() {
                         return params;
                     }

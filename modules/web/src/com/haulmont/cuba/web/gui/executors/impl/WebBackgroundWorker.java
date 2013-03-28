@@ -6,7 +6,10 @@
 
 package com.haulmont.cuba.web.gui.executors.impl;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Timer;
@@ -19,6 +22,9 @@ import com.haulmont.cuba.web.gui.WebTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,11 +35,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
+@ManagedBean(BackgroundWorker.NAME)
 public class WebBackgroundWorker implements BackgroundWorker {
     private Log log = LogFactory.getLog(WebBackgroundWorker.class);
 
     private WatchDog watchDog;
 
+    @Inject
+    private UserSessionSource userSessionSource;
+
+    @Inject
+    private Configuration configuration;
+
+    @Inject
     public WebBackgroundWorker(WatchDog watchDog) {
         this.watchDog = watchDog;
     }
@@ -192,7 +206,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 this.params = Collections.emptyMap();
 
             securityContext = AppContext.getSecurityContext();
-            userId = UserSessionProvider.getUserSession().getId();
+            userId = userSessionSource.getUserSession().getId();
         }
 
         @Override
@@ -217,6 +231,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     }
 
                     @Override
+                    @Nonnull
                     public Map<String, Object> getParams() {
                         return params;
                     }
@@ -305,7 +320,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public final void startExecution() {
-            WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+            WebConfig webConfig = configuration.getConfig(WebConfig.class);
             int activeTasksCount = watchDog.getActiveTasksCount();
 
             if (activeTasksCount >= webConfig.getMaxActiveBackgroundTasksCount())

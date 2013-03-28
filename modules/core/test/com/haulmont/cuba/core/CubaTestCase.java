@@ -7,16 +7,14 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
-import com.haulmont.cuba.testsupport.TestTransactionManager;
-import com.haulmont.cuba.testsupport.TestUserTransaction;
 import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +28,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
-import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +80,6 @@ public abstract class CubaTestCase extends TestCase
             initAppProperties();
             initPersistenceConfig();
             initAppContext();
-            initTxManager();
 
             initialized = true;
         }
@@ -181,11 +177,6 @@ public abstract class CubaTestCase extends TestCase
 
     protected String getTestLog4jConfig() {
         return "test-log4j.xml";
-    }
-
-    protected void initTxManager() throws NamingException {
-        JndiContextHolder.getContext().bind("java:/TransactionManager", new TestTransactionManager());
-        JndiContextHolder.getContext().bind("UserTransaction", new TestUserTransaction());
     }
 
     protected void deleteRecord(String table, UUID id) {

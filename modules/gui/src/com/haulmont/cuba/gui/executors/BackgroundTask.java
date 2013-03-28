@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -15,13 +15,26 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Background task for execute in {@link BackgroundWorker}
- * <p>
- * <b>It is strongly recommended to be able to interrupt working thread. <br/>
- * Don't ignore {@link InterruptedException} or its ancestors.</b>
- * </p>
+ * Background task for execute by {@link BackgroundWorker}.
+ * <p/> If the task is associated with a screen through ownerWindow constructor parameter, it will be canceled when
+ * the screen is closed.
+ * <p/> If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
  *
- * @param <T> measure unit which shows progress of task
+ * <p/> Simplest usage example:
+ * <pre>
+ *    BackgroundTask<Integer, Void> task = new BackgroundTask<Integer, Void>(10, this) {
+ *        public Void run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
+ *            for (int i = 0; i < 5; i++) {
+ *                TimeUnit.SECONDS.sleep(1);
+ *            }
+ *            return null;
+ *        }
+ *    };
+ *    BackgroundTaskHandler taskHandler = backgroundWorker.handle(task);
+ *    taskHandler.execute();
+ * </pre>
+ *
+ * @param <T> task progress measurement unit
  * @param <V> result type
  * @author artamonov
  * @version $Id$
@@ -37,11 +50,11 @@ public abstract class BackgroundTask<T, V> {
             Collections.synchronizedList(new ArrayList<ProgressListener<T, V>>());
 
     /**
-     * Task with timeout
+     * Create a task with timeout.
      *
-     * @param timeout     Timeout
-     * @param timeUnit    Time unit
-     * @param ownerWindow Owner window
+     * @param timeout     timeout
+     * @param timeUnit    timeout time unit
+     * @param ownerWindow owner window
      */
     protected BackgroundTask(long timeout, TimeUnit timeUnit, Window ownerWindow) {
         this.ownerWindow = ownerWindow;
@@ -49,10 +62,11 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Task with timeout
+     * Create a task with timeout.
+     * <p/> The task will not be associated with any window.
      *
-     * @param timeout  Timeout
-     * @param timeUnit Time unit
+     * @param timeout  timeout
+     * @param timeUnit timeout time unit
      */
     protected BackgroundTask(long timeout, TimeUnit timeUnit) {
         this.ownerWindow = null;
@@ -60,9 +74,10 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Task with timeout in default SECONDS unit
+     * Create a task with timeout in default SECONDS unit.
+     * <p/> The task will not be associated with any window.
      *
-     * @param timeoutSeconds Timeout in seconds
+     * @param timeoutSeconds timeout in seconds
      */
     protected BackgroundTask(long timeoutSeconds) {
         this.ownerWindow = null;
@@ -70,10 +85,10 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Task with timeout in default SECONDS unit
+     * Create a task with timeout in default SECONDS unit.
      *
-     * @param timeoutSeconds Timeout in seconds
-     * @param ownerWindow    Owner window
+     * @param timeoutSeconds timeout in seconds
+     * @param ownerWindow    owner window
      */
     protected BackgroundTask(long timeoutSeconds, Window ownerWindow) {
         this.ownerWindow = ownerWindow;
@@ -81,112 +96,148 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Main tasks method
+     * Main method that performs a task.
+     * <p/> Called by the execution environment in a separate working thread.
      *
-     * @param taskLifeCycle Task life cycle
-     * @return Result
-     * @throws Exception exception in worker thread
+     * <p/> Implementation of this method should support interruption:
+     * <ul>
+     *     <li/> In long loops check {@link TaskLifeCycle#isInterrupted()} and return if it is true
+     *     <li/> Don't swallow {@link InterruptedException} - return from the method or don't catch it at all
+     * </ul>
+     *
+     * @param taskLifeCycle lifecycle object that allows the main method to interact with the execution environment
+     * @return task result
+     * @throws Exception exception in working thread
      */
     public abstract V run(TaskLifeCycle<T> taskLifeCycle) throws Exception;
 
     /**
-     * Task completed handler
+     * Called by the execution environment in UI thread when the task is completed.
      *
-     * @param result of execution
+     * @param result result of execution returned by {@link #run(TaskLifeCycle)} method
      */
     public void done(V result) {
     }
 
     /**
-     * Task canceled handler
+     * Called by the execution environment in UI thread if the task is canceled by
+     * {@link BackgroundTaskHandler#cancel()} invocation.
+     * <p/> This method is not called in case of timeout expiration or owner window closing.
      */
     public void canceled() {
     }
 
     /**
-     * Task canceled by watchdog handler
+     * Called by the execution environment in UI thread if the task timeout is exceeded.
      *
-     * @return True if handled
+     * @return true if this method implementation actualy handles this event. Used for chaining handlers.
      */
     public boolean handleTimeoutException() {
         return false;
     }
 
     /**
-     * Handle exception
+     * Called by the execution environment in UI thread if the task {@link #run(TaskLifeCycle)} method raised an
+     * exception.
      *
-     * @param ex Exception
-     * @return True if exception handled
+     * @param ex exception
+     * @return true if this method implementation actualy handles the exception. Used for chaining handlers.
      */
     public boolean handleException(Exception ex) {
         return false;
     }
 
     /**
-     * On progress change
+     * Called by the execution environment in UI thread on progress change.
      *
-     * @param changes Changes list
+     * @param changes list of changes since previous invocation
      */
     public void progress(List<T> changes) {
     }
 
     /**
-     * Synchronous get parameters for run from UI
+     * Called by the execution environment in UI thread to prepare some execution parameters. These parameters can be
+     * requested by the working thread inside the {@link #run(TaskLifeCycle)} method by calling
+     * {@link TaskLifeCycle#getParams()}.
      *
-     * @return Run parameters
+     * @return parameters map or null if parameters are not needed
      */
     public Map<String, Object> getParams() {
         return null;
     }
 
+    /**
+     * @return owner window
+     */
     public final Window getOwnerWindow() {
         return ownerWindow;
     }
 
+    /**
+     * @return timeout in ms
+     */
     public final long getTimeoutMilliseconds() {
         return timeoutMilliseconds;
     }
 
+    /**
+     * @return timeout in sec
+     */
     public final long getTimeoutSeconds() {
         return TimeUnit.MILLISECONDS.toSeconds(timeoutMilliseconds);
     }
 
+    /**
+     * Add additional progress listener.
+     * @param progressListener listener
+     */
     public final void addProgressListener(ProgressListener<T, V> progressListener) {
         if (!progressListeners.contains(progressListener))
             progressListeners.add(progressListener);
     }
 
+    /**
+     * Additional progress listeners.
+     * @return copy of the progress listeners collection
+     */
     public final List<ProgressListener<T, V>> getProgressListeners() {
         return new ArrayList<>(progressListeners);
     }
 
+    /**
+     * Remove a progress listener.
+     * @param progressListener listener
+     */
     public final void removeProgressListener(ProgressListener<T, V> progressListener) {
         progressListeners.remove(progressListener);
     }
 
     /**
-     * Listener for task life cycle
+     * Listener of the task life cycle events, complementary to the tasks own methods:
+     * {@link BackgroundTask#progress(java.util.List)}, {@link BackgroundTask#done(Object)},
+     * {@link com.haulmont.cuba.gui.executors.BackgroundTask#canceled()}.
      *
-     * @param <T> Progress unit
-     * @param <V> Result
+     * @param <T> progress measurement unit
+     * @param <V> result type
      */
     public interface ProgressListener<T, V> {
+
         /**
-         * On task progress changed
+         * Called by the execution environment in UI thread on progress change.
          *
-         * @param changes Progress units
+         * @param changes list of changes since previous invocation
          */
         void onProgress(List<T> changes);
 
         /**
-         * On task completed
+         * Called by the execution environment in UI thread when the task is completed.
          *
-         * @param result Result
+         * @param result result of execution returned by {@link #run(TaskLifeCycle)} method
          */
         void onDone(V result);
 
         /**
-         * On task canceled
+         * Called by the execution environment in UI thread if the task is canceled.
          */
         void onCancel();
     }

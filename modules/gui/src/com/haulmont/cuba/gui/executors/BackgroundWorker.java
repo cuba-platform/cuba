@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -7,20 +7,22 @@
 package com.haulmont.cuba.gui.executors;
 
 /**
- * Task executor service for GUI layer
+ * Entry point to {@link BackgroundTask} execution functionality.
  *
  * @author artamonov
  * @version $Id$
  */
 public interface BackgroundWorker {
+
     String NAME = "cuba_BackgroundWorker";
 
     /**
-     * Create handler for background task
+     * Create handler for a background task. The handler is used to control the task execution.
      *
      * @param <T>  progress measure unit
-     * @param task heavy background task
-     * @return Task handler
+     * @param <V>  task result type
+     * @param task background task instance
+     * @return task handler
      */
     <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task);
 }

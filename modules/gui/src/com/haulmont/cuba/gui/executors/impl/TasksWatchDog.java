@@ -1,28 +1,32 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 
 package com.haulmont.cuba.gui.executors.impl;
 
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.WatchDog;
 
+import javax.inject.Inject;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 /**
- * WatchDog for BackgroundWorker
+ * WatchDog for {@link com.haulmont.cuba.gui.executors.BackgroundWorker}.
  *
  * @author artamonov
  * @version $Id$
  */
 public abstract class TasksWatchDog implements WatchDog {
+
+    @Inject
+    protected TimeSource timeSource;
 
     private final Set<TaskHandlerImpl> watches;
 
@@ -38,7 +42,7 @@ public abstract class TasksWatchDog implements WatchDog {
         if (!AppContext.isStarted())
             return;
 
-        long actual = TimeProvider.currentTimestamp().getTime();
+        long actual = timeSource.currentTimestamp().getTime();
 
         List<BackgroundTaskHandler> forRemove = new LinkedList<>();
         for (TaskHandlerImpl task : watches) {

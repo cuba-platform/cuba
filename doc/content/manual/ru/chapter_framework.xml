@@ -3559,7 +3559,7 @@ public void someServiceMethod() {
         <title>Выбор и подключение</title>
         <para>Тип используемой СУБД определяется свойством приложения <property>
             <link linkend="cuba.dbmsType">cuba.dbmsType</link>
-          </property> и настройкой источника данных. Конфигурационный файл для Tomcat, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
+          </property> и настройкой источника данных. Конфигурационный файл для <application>Tomcat</application>, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
         <warning>
           <para>Обратите внимание на применимость СУБД в зависимости от используемых <link linkend="base_projects">базовых проектов</link> платформы:<itemizedlist>
               <listitem>
@@ -3569,10 +3569,14 @@ public void someServiceMethod() {
                 <para><application>PostgreSQL</application> - поддерживается всеми базовыми проектами платформы</para>
               </listitem>
               <listitem>
-                <para><application>Microsoft SQL Server</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>workflow</structname>, <structname>fts</structname></para>
+                <para><application>Microsoft SQL Server</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname></para>
+              </listitem>
+              <listitem>
+                <para><application>Oracle</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname>, <structname>ccpayments</structname></para>
               </listitem>
             </itemizedlist></para>
         </warning>
+        <para>При использовании <application>Oracle</application> имеется следующая особенность: в связи с политикой распространения JDBC драйвера Oracle его можно скачать только вручную с сайта <ulink url="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html">http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html</ulink>. После скачивания разместите JAR с драйвером в подкаталоге <filename>lib</filename> установленного сервера <application>Tomcat</application>.</para>
       </section>
       <section id="db_scripts">
         <title>Создание и обновление БД</title>
@@ -3659,15 +3663,17 @@ public void someServiceMethod() {
           <title>Соответствие типов данных</title>
           <para>В таблице приведено соответствие типов данных, отличающихся для разных СУБД.</para>
           <informaltable frame="all">
-            <tgroup cols="3">
+            <tgroup cols="4">
               <colspec colnum="1" colname="c0"/>
               <colspec colnum="2" colname="c1"/>
               <colspec colnum="3" colname="c2"/>
+              <colspec colname="cgen1" colnum="4"/>
               <thead>
                 <row>
                   <entry>Java</entry>
                   <entry>PostgreSQL</entry>
                   <entry>MS SQL Server</entry>
+                  <entry>Oracle</entry>
                 </row>
               </thead>
               <tbody>
@@ -3675,21 +3681,25 @@ public void someServiceMethod() {
                   <entry>UUID</entry>
                   <entry>uuid</entry>
                   <entry>uniqueidentifier</entry>
+                  <entry>varchar2(32)</entry>
                 </row>
                 <row>
                   <entry>Date</entry>
                   <entry>timestamp</entry>
                   <entry>datetime</entry>
+                  <entry>timestamp</entry>
                 </row>
                 <row>
                   <entry>Boolean</entry>
                   <entry>boolean</entry>
                   <entry>tinyint</entry>
+                  <entry>char(1)</entry>
                 </row>
                 <row>
                   <entry>byte[]</entry>
                   <entry>bytea</entry>
                   <entry>image</entry>
+                  <entry>blob</entry>
                 </row>
               </tbody>
             </tgroup>
@@ -3794,7 +3804,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         <title>Типы экранов</title>
         <section id="frame">
           <title>Фрейм</title>
-          <para>Фреймы представляют собой части экранов, которые можно использовать для декомпозиции и многократного использования.</para>
+          <para>Фреймы представляют собой части экранов, которые применяются для декомпозиции и многократного использования.</para>
           <para>Для подключения фрейма в XML экрана используется элемент <link linkend="gui_IFrame">
               <sgmltag>iframe</sgmltag>
             </link> c указанием либо пути к файлу XML фрейма, либо идентификатора фрейма, если он зарегистрирован в  <link linkend="screens.xml">
@@ -3820,7 +3830,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
         </section>
         <section id="screen_simple">
           <title>Простой экран</title>
-          <para>Простой экран предназначен для отображения и редактирования произвольной информации, в том числе отдельных экемпляров и списков сущностей. Данный тип экрана имеет только базовую функциональность, позволяющую отобразить его в главном окне системы, закрыть, а также работать с <link linkend="datasources">источниками данных</link>.</para>
+          <para>Простой экран предназначен для отображения и редактирования произвольной информации, в том числе отдельных экземпляров и списков сущностей. Данный тип экрана имеет только базовую функциональность, позволяющую отобразить его в главном окне системы, закрыть, а также работать с <link linkend="datasources">источниками данных</link>.</para>
           <para>Идентификатор экрана в файле <link linkend="screens.xml">
               <filename>screens.xml</filename>
             </link> может быть произвольного вида.</para>
@@ -9448,116 +9458,123 @@ where
     </section>
     <section id="background_tasks">
       <title>Фоновые задачи</title>
-      <para><emphasis role="bold">Предназначение</emphasis></para>
-      <para>Фоновые задачи используются на клиентском уровне для выполнения длительных процессов без заморозки пользовательского интерфейса. </para>
-      <para>В платформе реализован объект <code>BackgroundWorker</code>, который предоставляется окружением и управляет фоновыми задачами</para>
-      <programlisting>BackgroundWorker backgroundWorker = AppConfig.getBackgroundWorker();</programlisting>
-      <para><emphasis role="bold">Использование</emphasis></para>
-      <orderedlist>
-        <listitem>
-          <para>Задача описывается как наследник абстрактного класса <code>BackgroundTask</code>. Для нее необходимо задать окно, которому принадлежит задача, и описать главный метод <methodname>run()</methodname>.</para>
-        </listitem>
-        <listitem>
-          <para>Создается объект управления задачей − <code>BackgroundTaskHandler</code>. Для этого задачу необходимо передать классу <code>BackgroundWorker</code>.</para>
-        </listitem>
-        <listitem>
-          <para>Выполняется запуск задачи</para>
-          <programlisting>// Задача с ограничением 10 секунд и с текущим окном в качестве родителя
-final BackgroundTask&lt;Integer, Void&gt; progressIndicator = new BackgroundTask&lt;Integer, Void&gt;(10, this) {
+      <section>
+        <title>Назначение</title>
+        <para>Фоновые задачи используются на клиентском уровне для асинхронного выполнения длительных операций без заморозки пользовательского интерфейса. </para>
+        <para>В платформе реализован бин <code>BackgroundWorker</code>, который  управляет фоновыми задачами. Ссылка на него может быть получена инжекцией в <link linkend="screen_controller">контроллер экрана</link>, либо статическим методом класса <code>AppBeans</code>.</para>
+      </section>
+      <section><title>Использование</title><orderedlist>
+          <listitem>
+            <para>Задача описывается как наследник абстрактного класса <code>BackgroundTask</code>. В конструктор задачи необходимо передать ссылку на контроллер экрана, с которым будет связана задача, и значение таймаута ее выполнения.</para>
+            <para>Если экран указан, то при его закрытии пользователем активная задача будет прервана. Кроме того, задача будет автоматически прервана по истечении указанного таймаута.</para>
+            <para>Собственно действия, выполняемые задачей, реализуются в методе <code>run()</code>.</para>
+          </listitem>
+          <listitem>
+            <para>Создается объект управления задачей − <code>BackgroundTaskHandler</code>. Для этого экземпляр задачи необходимо передать методу <code>handle()</code> бина <code>BackgroundWorker</code>.</para>
+          </listitem>
+          <listitem>
+            <para>Выполняется запуск задачи.</para>
+          </listitem>
+        </orderedlist>Пример:<programlisting>// Задача с ограничением 10 секунд и с текущим экраном в качестве владельца
+BackgroundTask&lt;Integer, Void&gt; task = new BackgroundTask&lt;Integer, Void&gt;(10, this) {
     @Override
-    public Void run(TaskLifeCycle&lt;T&gt; taskLifeCycle) {
-        // 1 2 3 4 5 :-)
+    public Void run(TaskLifeCycle&lt;Integer&gt; taskLifeCycle) throws Exception {
         for (int i = 0; i &lt; 5; i++) {
-            Long res;
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ignored) {
-                return null;
-            }
-            // Оглашаем прогресс
-            taskLifeCycle.publish(i);
+            TimeUnit.SECONDS.sleep(1);
         }
         return null;
     }
 
     @Override
     public void canceled() {
-        // отменено
+        // Действия в UI потоке при прерывании задачи
     }
 
     @Override
     public void done(Void result) {
-        // завершено
+        // Действия в UI потоке при завершении задачи
     }
 
     @Override
     public void progress(List&lt;Integer&gt; changes) {
-        // индикация прогресса
-    }
-
-    @Override
-    public Map&lt;String, Object&gt; getParams() {
-        // передаём параметры
-        return Collections.emptyMap();
+        // Действия в UI потоке для индикации прогресса
     }
 };
-
 // Получение управляющего объекта и запуск
-BackgroundTaskHandler taskHandler = backgroundWorker.handle(progressIndicator);
-taskHandler.execute();</programlisting>
-        </listitem>
-      </orderedlist>
-      <para><emphasis role="bold">Объект задачи</emphasis></para>
-      <para><code>BackgroundTask&lt;T, V&gt;</code> − параметризованный класс:</para>
-      <itemizedlist>
-        <listitem>
-          <para><code>T</code> − тип объектов, показывающих прогресс задачи. Они передаются в метод <methodname>progress()</methodname> при вызове <methodname>publish()</methodname> в рабочем потоке</para>
-        </listitem>
-        <listitem>
-          <para><code>V</code> − тип результата задачи, его можно получить после выполнения задачи или вызвать синхронно <methodname>getResult()</methodname> для ожидания.</para>
-        </listitem>
-      </itemizedlist>
-      <para>Метод <methodname>canceled()</methodname> вызывается только в случае управляемой отмены задачи (то есть при вызове <methodname>cancel()</methodname> у <code>TaskHandler</code>).</para>
-      <para>Если у задачи истек таймаут, или было закрыто окно, в котором она исполнялась, то задача будет завершена без уведомлений.</para>
-      <warning>
-        <para>Следует помнить, что в Java невозможно прервать поток, если он не использует операций, выбрасывающих <errorname>InterrruptedException</errorname>. Никогда не перехватывайте это исключение или все исключения с целью тихо завершить операцию. Хорошим тоном является проверка флага <code>isInterrupted()</code> у объекта <code>TaskLifeCycle</code> в различных циклических операциях, для того чтобы вовремя отменить выполнение при прерывании задачи.</para>
-      </warning>
-      <para>Объекты <code>BackgroundTask</code> не имеют состояния. Если придерживаться этого подхода и не заводить полей для хранения промежуточных данных, то можно использовать множество параллельно работающих задач, используя всего один объект задачи.</para>
-      <para>Объект <code>BackgroundHandler</code> можно запускать всего один раз; если требуется частый перезапуск задач, то используйте <code>BackgroundTaskWrapper</code></para>
-      <para><emphasis role="bold">Отображение фоновых действий для пользователя</emphasis></para>
-      <para>Иногда необходимо показывать пользователю окно с прогрессом и кнопкой <guibutton>Отмена</guibutton>. Для этого есть <code>BackgroundWorkWindow&lt;T,V&gt;</code> с набором статических методов.
-В окне можно отображать статус задачи и разрешать/запрещать отмену фонового процесса.</para>
-      <para><emphasis role="bold">Отслеживание исполнения задач</emphasis></para>
-      <para>Если Вы хотите использовать параметры из UI компонентов, то необходимо переопределить метод <methodname>Map&lt;String, Object&gt; getParams()</methodname> . Он выполняется один раз при запуске задачи в потоке UI. В методе <methodname>run</methodname> они доступны в объекте <code>TaskLifeCycle</code>, аксессор − <methodname>getParams()</methodname>.</para>
-      <para>При возникновении исключительных ситуаций вызывается метод <methodname>handleException</methodname>, в котором можно отобразить ошибку на UI.</para>
-      <para>Для отмены и удаления зависших задач предусмотрены следующие меры:</para>
-      <orderedlist>
-        <listitem>
-          <para><code>WatchDog</code> − поток, постоянно проверяющий задачи на истечение таймаута. Зависшие задачи прерываются и удаляются из обработки</para>
-        </listitem>
-        <listitem>
-          <para>При закрытии родительского окна задачи она прерывается</para>
-        </listitem>
-        <listitem>
-          <para>По истечению сессии пользователя все его задачи прерываются.
-Для этого в <filename>web.xml</filename> указать:</para>
-          <programlisting>&lt;listener&gt;
-    &lt;listener-class&gt;com.haulmont.cuba.web.gui.utils.BackgroundWorkerListener&lt;/listener-class&gt;
-&lt;/listener&gt;</programlisting>
-        </listitem>
-      </orderedlist>
-      <para><emphasis role="bold">Объявление WatchDog</emphasis></para>
-      <para>В <filename>app-web-spring.xml</filename> и <filename>app-desktop-spring.xml</filename> добавить объявление задачи по расписанию:</para>
-      <programlisting>&lt;bean id=&quot;backgroundWorkerScheduler&quot; class=&quot;org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler&quot;&gt;
+BackgroundTaskHandler taskHandler = backgroundWorker.handle(task);
+taskHandler.execute();</programlisting><para>Подробная информация о назначении методов приведена в JavaDocs классов <code>BackgroundTask</code>, <code>TaskLifeCycle</code>, <code>BackgroundTaskHandler</code>. </para><para>Ниже приведены моменты, на которые следует обратить внимание:</para><itemizedlist>
+          <listitem>
+            <para><code>BackgroundTask&lt;T, V&gt;</code> − параметризованный класс:</para>
+            <itemizedlist>
+              <listitem>
+                <para><code>T</code> − тип объектов, показывающих прогресс задачи. Объекты этого типа передаются в метод <code>progress()</code> задачи при вызове <code>TaskLifeCycle.publish()</code> в рабочем потоке.</para>
+              </listitem>
+              <listitem>
+                <para><code>V</code> − тип результата задачи, он передается в метод <code>done()</code>. Его также можно получить вызовом метода  <code>BackgroundTaskHandler.getResult()</code>, что приведет к ожиданию завершения задачи.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para>Метод <code>canceled()</code> вызывается только в случае управляемой отмены задачи, то есть при вызове <code>cancel()</code> у <code>TaskHandler</code>.</para>
+          </listitem>
+          <listitem>
+            <para>Если у задачи истек таймаут, или было закрыто окно, в котором она исполнялась, то задача будет завершена без уведомлений. В блоке Web Client завершение по таймауту производится с задержкой, задаваемой свойством приложения <property>
+                <link linkend="cuba.backgroundWorker.maxClientLatencySeconds">cuba.backgroundWorker.maxClientLatencySeconds</link>
+              </property>.</para>
+          </listitem>
+          <listitem>
+            <para>Метод <code>run()</code> задачи должен поддерживать возможность прерывания извне. Для этого в долгих процессах желательно периодически проверять флаг <code>TaskLifeCycle.isInterrupted()</code>, и соответственно завершать выполнение. Кроме того, нельзя тихо проглатывать исключение <code>InterruptedException</code> (или вообще все исключения). Вместо этого нужно либо вообще не перехватывать его, либо выполнять корректный выход из метода.</para>
+          </listitem>
+          <listitem>
+            <para>Объекты <code>BackgroundTask</code> не имеют состояния. Если при реализации конкретного класса задачи не заводить полей для хранения промежуточных данных, то можно запускать несколько параллельно работающих процессов, используя единственный экземпляр задачи.</para>
+          </listitem>
+          <listitem>
+            <para>Объект <code>BackgroundHandler</code> можно запускать (т.е. вызывать его метод <code>execute()</code>) всего один раз. Если требуется частый перезапуск задачи, то используйте класс <code>BackgroundTaskWrapper</code>.</para>
+          </listitem>
+          <listitem>
+            <para>Для  показа пользователю модального окна с прогрессом и кнопкой <guibutton>Отмена</guibutton> используйте классы <code>BackgroundWorkWindow</code> или <code>BackgroundWorkProgressWindow</code> с набором статических методов.
+Для окна можно задать режим отображения прогресса и разрешить или запретить отмену фоновой задачи.</para>
+          </listitem>
+          <listitem>
+            <para>Если внутри потока задачи необходимо использовать некоторые значения визуальных компонентов, то нужно реализовать их получение в  методе <code>getParams()</code>, который выполняется  в потоке UI один раз при запуске задачи. В методе <methodname>run()</methodname> эти параметры будут доступны через метод <code>getParams()</code>  объекта <code>TaskLifeCycle</code>.</para>
+          </listitem>
+          <listitem>
+            <para>При возникновении исключительных ситуаций в потоке UI вызывается метод <code>BackgroundTask.handleException()</code>,  в котором можно отобразить ошибку.</para>
+          </listitem>
+        </itemizedlist></section>
+      <section>
+        <title>Настройка окружения</title>
+        <para>Для корректной работы фоновых задач в проекте приложения необходимо произвести следующие настройки:</para>
+        <itemizedlist>
+          <listitem>
+            <para>Прерывание задач по таймауту реализуется бином <code>WatchDog</code>. Для его периодического вызова в файлы <filename>
+                <link linkend="spring.xml">spring.xml</link>
+              </filename> блоков Web Client и Desktop Client необходимо добавить следующее объявление:<programlisting>&lt;bean id=&quot;backgroundWorkerScheduler&quot; class=&quot;org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler&quot;&gt;
     &lt;property name=&quot;daemon&quot; value=&quot;true&quot;/&gt;
     &lt;property name=&quot;poolSize&quot; value=&quot;1&quot;/&gt;
 &lt;/bean&gt;
 
 &lt;task:scheduled-tasks scheduler=&quot;backgroundWorkerScheduler&quot;&gt;
     &lt;task:scheduled ref=&quot;cuba_BackgroundWorker_WatchDog&quot; method=&quot;cleanupTasks&quot; fixed-delay=&quot;2000&quot;/&gt;
-&lt;/task:scheduled-tasks&gt; </programlisting>
-      <para><emphasis role="bold">Настройки</emphasis></para>
-      <para>Для Web слоя в WebConfig настраивается частота проверки изменений на стороне клиента (браузера): <parameter>cuba.backgroundWorker.uiCheckInterval</parameter> (По умолчанию 2000 мс)</para>
+&lt;/task:scheduled-tasks&gt; </programlisting></para>
+          </listitem>
+          <listitem>
+            <para>В блоке Web Client необходимо прерывать все задачи пользователя при истечении его HTTP сессии. Для этого нужно в файл <filename>web.xml</filename> модуля web добавить следующий элемент:<programlisting>&lt;listener&gt;
+    &lt;listener-class&gt;com.haulmont.cuba.web.gui.utils.BackgroundWorkerListener&lt;/listener-class&gt;
+&lt;/listener&gt;</programlisting></para>
+          </listitem>
+          <listitem>
+            <para>В блоке Web Client опрос состояния задачи инициируется клиентским кодом, выполняющимся в  веб-браузере. Периодичность опроса задается свойством приложения <property>
+                <link linkend="cuba.backgroundWorker.uiCheckInterval">cuba.backgroundWorker.uiCheckInterval</link>
+              </property>, по умолчанию - 2 сек.</para>
+            <para>Кроме того, на выполнение фоновых задач в блоке Web Client влияют свойства приложения <property>
+                <link linkend="cuba.backgroundWorker.maxActiveTasksCount">cuba.backgroundWorker.maxActiveTasksCount</link>
+              </property> и <property>
+                <link linkend="cuba.backgroundWorker.maxClientLatencySeconds">cuba.backgroundWorker.maxClientLatencySeconds</link>
+              </property>.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
     </section>
     <section>
       <title>Таймеры</title>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -7,7 +7,7 @@
 package com.haulmont.cuba.gui.executors;
 
 /**
- * Task handler for {@link BackgroundTask}
+ * Task handler for {@link BackgroundTask}.
  *
  * @author artamonov
  * @version $Id$
@@ -15,43 +15,37 @@ package com.haulmont.cuba.gui.executors;
 public interface BackgroundTaskHandler<V> {
 
     /**
-     * Execute<br/>
-     * If the task appears to hang then it will be canceled
+     * Execute the {@link BackgroundTask}.
+     * <p/> This method must be called only once for a handler instance.
      */
     void execute();
 
     /**
-     * Try to cancel task
+     * Cancel task.
      *
-     * @return True if canceled
+     * @return true if canceled, false if the task was not started or is already stopped
      */
     boolean cancel();
 
     /**
-     * Synchronous get result from execution
+     * Wait for the task completion and return its result.
      *
-     * @return Result
+     * @return task's result returned from {@link BackgroundTask#run(TaskLifeCycle)} method
      */
     V getResult();
 
     /**
-     * Done flag
-     *
-     * @return True if task is already done
+     * @return true if the task is completed
      */
     boolean isDone();
 
     /**
-     * Canceled flag
-     *
-     * @return True if task has been canceled
+     * @return true if the task has been canceled
      */
     boolean isCancelled();
 
     /**
-     * Alive flag
-     *
-     * @return True if task is running
+     * @return true if the task is running
      */
     boolean isAlive();
 }

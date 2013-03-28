@@ -118,7 +118,7 @@
       <para>Пример определения источника данных для <application>PostgreSQL</application>:<programlisting>&lt;Resource
     name=&quot;jdbc/CubaDS&quot;
     type=&quot;javax.sql.DataSource&quot;
-    maxActive=&quot;20&quot;
+    maxActive=&quot;100&quot;
     maxIdle=&quot;2&quot;
     maxWait=&quot;5000&quot;
     driverClassName=&quot;org.postgresql.Driver&quot;
@@ -128,13 +128,23 @@
       <para>Пример определения источника данных для <application>Microsoft SQL Server</application>:<programlisting>&lt;Resource
     name=&quot;jdbc/CubaDS&quot;
     type=&quot;javax.sql.DataSource&quot;
-    maxActive=&quot;20&quot;
+    maxActive=&quot;100&quot;
     maxIdle=&quot;2&quot;
     maxWait=&quot;5000&quot;
     driverClassName=&quot;net.sourceforge.jtds.jdbc.Driver&quot;
     username=&quot;sa&quot;
     password=&quot;saPass1&quot;
     url=&quot;jdbc:jtds:sqlserver://localhost/sales&quot;/&gt;</programlisting></para>
+      <para>Пример определения источника данных для <application>Oracle</application>:<programlisting>&lt;Resource
+  name=&quot;jdbc/CubaDS&quot;
+  type=&quot;javax.sql.DataSource&quot;
+  maxActive=&quot;100&quot;
+  maxIdle=&quot;2&quot;
+  maxWait=&quot;5000&quot;
+  driverClassName=&quot;oracle.jdbc.OracleDriver&quot;
+  username=&quot;sales&quot;
+  password=&quot;sales&quot;
+  url=&quot;jdbc:oracle:thin:@//localhost:1521/orcl&quot;/&gt;</programlisting></para>
       <para>Для всех <link linkend="app_tiers">блоков</link>, являющихся веб-приложениями, данный файл может содержать код, отключающий сериализацию HTTP-сессий:<programlisting>&lt;Manager className=&quot;org.apache.catalina.session.PersistentManager&quot; debug=&quot;0&quot; distributable=&quot;false&quot;
          saveOnRestart=&quot;false&quot;&gt;
     &lt;Store className=&quot;org.apache.catalina.session.FileStore&quot;/&gt;
@@ -732,6 +742,33 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.backgroundWorker.maxActiveTasksCount">
+        <term>cuba.backgroundWorker.maxActiveTasksCount</term>
+        <listitem>
+          <para>Максимальное количество активных  <link linkend="background_tasks">фоновых задач</link>.</para>
+          <para>Значение по умолчанию: <literal>100</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.backgroundWorker.maxClientLatencySeconds">
+        <term>cuba.backgroundWorker.maxClientLatencySeconds</term>
+        <listitem>
+          <para>Задержка в секундах, которая добавляется к таймауту   <link linkend="background_tasks">фоновой задачи</link>, прежде чем она будет прервана механизмом <code>WatchDog</code>. Отражает возможные сетевые задержки при опросе статуса задачи.</para>
+          <para>Значение по умолчанию: <literal>60</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.backgroundWorker.uiCheckInterval">
+        <term>cuba.backgroundWorker.uiCheckInterval</term>
+        <listitem>
+          <para>Период опроса состояния <link linkend="background_tasks">фоновых задач</link>.</para>
+          <para>Значение по умолчанию: <literal>2000</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.confDir">
         <term>cuba.confDir</term>
         <listitem>
@@ -783,7 +820,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <varlistentry id="cuba.dbmsType">
         <term>cuba.dbmsType</term>
         <listitem>
-          <para>Задает тип используемой базы данных. Возможные значения соответствуют значениям перечисления <code>DbmsType</code> без учета регистра: <literal>hsql</literal>, <literal>postgres</literal>, <literal>mssql</literal>.</para>
+          <para>Задает тип используемой базы данных. Возможные значения соответствуют значениям перечисления <code>DbmsType</code> без учета регистра: <literal>hsql</literal>, <literal>postgres</literal>, <literal>mssql</literal>, <literal>oracle</literal>.</para>
           <para>Значение по умолчанию: <literal>hsql</literal></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>

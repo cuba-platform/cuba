@@ -1,24 +1,27 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
 
 package com.haulmont.cuba.gui.executors;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 /**
- * Life cycle object for task
+ * Lifecycle object that is passed to {@link BackgroundTask#run(TaskLifeCycle)} method to allow working thread to
+ * interact with the execution environment.
  *
- * @param <T> measure unit which shows progress of task
+ * @param <T> task progress measurement unit
+ *
  * @author artamonov
  * @version $Id$
  */
 public interface TaskLifeCycle<T> {
 
     /**
-     * Publish changes from working thread
+     * Publish changes to show progress.
      *
      * @param changes Changes
      */
@@ -26,12 +29,13 @@ public interface TaskLifeCycle<T> {
     void publish(T... changes);
 
     /**
-     * @return True if working thread is interrupted
+     * @return true if the working thread has been interrupted
      */
     boolean isInterrupted();
 
     /**
-     * @return Read-only run parameters
+     * @return execution parameters that was set by {@link BackgroundTask#getParams()}
      */
+    @Nonnull
     Map<String, Object> getParams();
 }

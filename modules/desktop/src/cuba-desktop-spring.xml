@@ -85,27 +85,4 @@
         </property>
     </bean>
 
-    <!-- Background Tasks -->
-
-    <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.desktop.gui.executors.impl.DesktopTasksWatchDog"/>
-
-    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker">
-        <constructor-arg index="0" ref="cuba_BackgroundWorker_WatchDog"/>
-    </bean>
-
-    <!--
-
-    To use BackgroundWorker in a project add to {app}-desktop-spring.xml this scheduler definition:
-
-    <bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
-        <property name="daemon" value="true"/>
-        <property name="poolSize" value="1"/>
-    </bean>
-
-    <task:scheduled-tasks scheduler="backgroundWorkerScheduler">
-        <task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks" fixed-delay="2000"/>
-    </task:scheduled-tasks>
-
-    -->
-
 </beans>
