@@ -45,7 +45,7 @@ public class LogDownloadController {
     @Inject
     protected UserSessionService userSessionService;
 
-    @RequestMapping(value = "/log/{file:[a-zA-Z0-9\\.\\-]+}", method = RequestMethod.GET)
+    @RequestMapping(value = "/log/{file:[a-zA-Z0-9\\.\\-_]+}", method = RequestMethod.GET)
     public void getLogFile(HttpServletResponse response,
                            @RequestParam(value = "s") String sessionId,
                            @PathVariable(value = "file") String logFileName) throws IOException {
