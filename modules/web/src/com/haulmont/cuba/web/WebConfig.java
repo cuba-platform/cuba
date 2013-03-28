@@ -209,9 +209,16 @@ public interface WebConfig extends Config {
     boolean getUseUiBlocking();
 
     /**
+     * @return Whether to handle back button click in browser on server-side.
+     */
+    @Property("cuba.web.allowHandleBrowserHistoryBack")
+    @DefaultBoolean(true)
+    boolean getAllowHandleBrowserHistoryBack();
+
+    /**
      * @return Theme
      */
-    @Default("iceland")
+    @Default("havana")
     @Property("cuba.web.theme")
     String getAppWindowTheme();
 
@@ -322,4 +329,21 @@ public interface WebConfig extends Config {
     @Property("cuba.web.resourcesTimestampPath")
     @DefaultString("/com/haulmont/cuba/web/resources.timestamp")
     String getResourcesTimestampPath();
+
+    /**
+     * @return an action to force login.
+     * <p/> An action is represented by the last part of URL.
+     */
+    @Property("cuba.web.loginAction")
+    @DefaultString("login")
+    String getLoginAction();
+
+    /**
+     * @return list of URL actions to call {@link com.haulmont.cuba.web.sys.LinkHandler}
+     * <p/> An action is represented by the last part of URL.
+     */
+    @Property("cuba.web.linkHandlerActions")
+    @Factory(factory = StringListTypeFactory.class)
+    @Default("open|o")
+    List<String> getLinkHandlerActions();
 }
