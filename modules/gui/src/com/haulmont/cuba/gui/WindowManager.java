@@ -126,6 +126,8 @@ public abstract class WindowManager {
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, params);
         Element element = processor.getResultRoot();
 
+        preloadMainScreenClass(element);//try to load main screen class to resolve dynamic compilation dependencies issues
+
         WindowCreationHelper.deployViews(element);
 
         final DsContext dsContext = loadDsContext(element);
@@ -166,6 +168,13 @@ public abstract class WindowManager {
         uiPermissionsWatch.stop();
 
         return windowWrapper;
+    }
+
+    private void preloadMainScreenClass(Element element) {
+        final String screenClass = element.attributeValue("class");
+        if (!StringUtils.isBlank(screenClass)) {
+            scripting.loadClass(screenClass);
+        }
     }
 
     protected void initDebugIds(final Window window) {

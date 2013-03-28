@@ -193,14 +193,15 @@ public class MetaClassRepresentation {
     }
 
     private static MetaClass getMetaClass(Class clazz) {
-        return AppBeans.get(Metadata.class).getSession().getClass(clazz);
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return metadata.getExtendedEntities().getEffectiveMetaClass(metadata.getClassNN(clazz));
     }
 
     private static boolean viewPropertyReadPermitted(MetaClass meta, ViewProperty viewProperty) {
         if (!attrViewPermitted(meta, viewProperty.getName()))
             return false;
 
-        MetaProperty metaProperty = meta.getProperty(viewProperty.getName());
+        MetaProperty metaProperty = meta.getPropertyNN(viewProperty.getName());
         if (metaProperty.getType() == MetaProperty.Type.DATATYPE
                 || metaProperty.getType() == MetaProperty.Type.ENUM)
             return true;

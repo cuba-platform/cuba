@@ -27,9 +27,6 @@ import java.util.Map;
 public class FeedbackWindow extends AbstractWindow {
 
     @Inject
-    protected Messages messages;
-
-    @Inject
     protected TimeSource timeSource;
 
     @Inject

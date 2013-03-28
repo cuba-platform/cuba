@@ -102,9 +102,10 @@ public class JavaClassLoaderTest {
         System.out.println(o.toString());
     }
 
-    private void modifyFile(String path) {
+    private void modifyFile(String path) throws InterruptedException {
+        Thread.sleep(1000l);
         File file = new File(path);
-        file.setLastModified(System.currentTimeMillis());
+        boolean result = file.setLastModified(System.currentTimeMillis());
     }
 
 
