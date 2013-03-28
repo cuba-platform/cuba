@@ -1,13 +1,18 @@
 ﻿<dsContext>
-   <hierarchicalDatasource id="sampleDs" class="com.haulmont.refapp.core.entity.SampleHierarchicalEntity" view="_local"
-                           hierarchyProperty="parent" refreshMode="NEVER"/>
+    <hierarchicalDatasource id="sellersDs" class="com.sample.sales.entity.Seller" 
+                            view="browse"  hierarchyProperty="seller">
+        <query>
+            select s from sales$Seller s
+        </query>
+    </hierarchicalDatasource>
 </dsContext>
 <!--...-->
-<treeTable id="treeTable" width="600px" height="400px">
-   <columns>
-      <column id="name"/>
-      <column id="active"/>
-      <column id="test" caption="Generated"/>
-   </columns>
-   <rows datasource="sampleDs"/>
+<treeTable id="sellersTable"
+           editable="false" width="100%">
+    <columns>
+        <column id="seller"/>
+        <column id="name"/>
+        <column id="email"/>
+    </columns>
+    <rows datasource="sellersDs"/>
 </treeTable>

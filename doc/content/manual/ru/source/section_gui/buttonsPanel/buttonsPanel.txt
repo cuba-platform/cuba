@@ -1,18 +1,20 @@
-<table id="testTable" height="150" width="100%">
-   <actions>
-      <action id="refresh"/>
-      <action id="excel"/>
-      <action id="create"/>
-   </actions>
-   <buttonsPanel>
-      <button action="testTable.create"/>
-      <button action="testTable.refresh"/>
-      <button action="testTable.excel"/>
-   </buttonsPanel>
-   <columns>
-      <column id="name"/>
-      <column id="date"/>
-      <column id="unit"/>
-   </columns>
-   <rows datasource="sampleDs"/>
+<table id="customersTable"
+       editable="false" width="100%">
+    <actions>
+        <action id="create"/>
+        <action id="edit"/>
+        <action id="remove"/>
+        <action id="excel"/>
+    </actions>
+    <buttonsPanel>
+        <button action="customersTable.create"/>
+        <button action="customersTable.edit"/>
+        <button action="customersTable.remove"/>
+        <button action="customersTable.excel"/>
+    </buttonsPanel>
+    <columns>
+        <column id="name"/>
+        <column id="email"/>
+    </columns>
+    <rows datasource="customersDs"/>
 </table>

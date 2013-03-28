@@ -58,6 +58,9 @@ public class SecurityImpl implements Security {
 
     @Override
     public boolean isEntityAttrModificationPermitted(MetaProperty metaProperty) {
+        if (metaProperty.getModel() == null)
+            return true;
+
         MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaProperty.getDomain());
 
         return (isEntityOpPermitted(metaClass, EntityOp.CREATE) || isEntityOpPermitted(metaClass, EntityOp.UPDATE))

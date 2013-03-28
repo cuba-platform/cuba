@@ -39,8 +39,9 @@ public interface MetaProperty extends MetadataObject<MetaProperty> {
     }
 
     /**
-     * @return containing MetaModel instance
+     * @return containing MetaModel instance. Null signifies a temporary metaclass, not associated with an entity class.
      */
+    @Nullable
     MetaModel getModel();
 
     /**

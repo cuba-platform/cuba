@@ -18,8 +18,10 @@ import java.util.Collection;
 public interface MetaClass extends MetadataObject<MetaClass> {
 
     /**
-     * @return containing MetaModel instance
+     * @return containing MetaModel instance. Null signifies a temporary metaclass, not associated with an entity class.
+     *
      */
+    @Nullable
     MetaModel getModel();
 
     /**

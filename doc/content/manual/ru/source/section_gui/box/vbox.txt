@@ -1,5 +1,5 @@
-﻿<vbox width="100%" height="20%" margin="true" spacing="true">
-   <hbox margin="false;true;false;false;" spacing="true"...>
-   <label id="labelStyle" value="msg://labelVal4" stylename="h2"/>
-   <button action="saveTestComp" align="BOTTOM_RIGHT"/>
+﻿<vbox spacing="true" margin="true">
+    <dateField id="dateField1" datasource="orderDs" property="date" caption="Date"/>
+    <lookupField id="lookupField1" datasource="orderDs" optionsDatasource="customersDs" property="customer" caption="Customer"/>
+    <textField id="textField1" datasource="orderDs" property="amount" caption="Amount"/>
 </vbox>

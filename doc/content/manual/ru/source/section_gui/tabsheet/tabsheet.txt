@@ -1,29 +1,11 @@
 ﻿<tabSheet>
-   <tab id="gridTab" caption="GridTab" margin="true" spacing="true" detachable="true">
-      <grid spacing="true" margin="true" >
-         <columns>
-            <column flex="1"/>
-            <column flex="1"/>
-            <column flex="1"/>
-            <column flex="1"/>
-         </columns>
-         <rows>
-            <row>
-               <label value="msg://name1"/>
-               <textField id="name1" width="100px"/>
-               <label value="msg://name2"/>
-               <textField id="name2" width="100px"/>
-            </row>
-            <row>
-               <label value="msg://name3"/>
-               <textField id="name3" width="100px"/>
-               <label value="msg://name4"/>
-               <textField id="name4" width="100px"/>
-            </row>
-         </rows>
-      </grid>
-   </tab>
-   <tab id="scrollTab" caption="ButtonTab" margin="true" spacing="true" lazy="true" detachable="false">
-      <button caption="Vertical" width="170"/>
-   </tab>
+    <tab id="fieldGroupTab" caption="Tab1" margin="true" spacing="true">
+        <vbox spacing="true" margin="true">
+            <dateField id="dateField1" datasource="orderDs" property="date" caption="Date"/>
+            <lookupField id="lookupField1" datasource="orderDs" optionsDatasource="customersDs" property="customer" caption="Customer"/>
+        </vbox>
+    </tab>
+    <tab id="scrollTab" caption="Tab2" margin="true" spacing="true" lazy="true" detachable="false">
+        <textField id="textField1" datasource="orderDs" property="amount" caption="Amount"/>
+    </tab>
 </tabSheet>

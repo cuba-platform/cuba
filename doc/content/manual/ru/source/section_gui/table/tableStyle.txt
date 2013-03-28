@@ -1,7 +1,7 @@
 ﻿testTable.setStyleProvider(new Table.StyleProvider() {
     @Override
     public String getStyleName(@Nullable Entity entity, @Nullable String property) {
-        return "budget-yellow";
+        return "table-yellow";
     }
 
     public String getItemIcon(Entity item) {

@@ -1,0 +1,3 @@
+<timers>
+    <timer id="countTimer" delay="3000" repeating="false" onTimer="invoke:someMethod1"/>
+</timers>

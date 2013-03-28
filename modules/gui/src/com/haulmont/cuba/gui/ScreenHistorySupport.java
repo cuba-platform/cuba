@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,9 +27,8 @@ import java.util.*;
  * Class that encapsulates screen opening history functionality. It is used by WindowManager and should not be invoked
  * from application code.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ScreenHistorySupport {
 
@@ -58,8 +58,9 @@ public class ScreenHistorySupport {
         }
     }
 
-    public void saveScreenHistory(Window window, WindowManager.OpenType openType){
-        if (window.getFrame() != null
+    public void saveScreenHistory(Window window, WindowManager.OpenType openType) {
+        if (AppBeans.get(Security.class).isEntityOpPermitted(ScreenHistoryEntity.class, EntityOp.CREATE)
+                && window.getFrame() != null
                 && (window.getFrame() instanceof Window.Editor)
                 && !openType.equals(WindowManager.OpenType.DIALOG)
                 && (screenIds == null || screenIds.contains(window.getId())))

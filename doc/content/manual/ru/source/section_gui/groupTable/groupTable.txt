@@ -1,16 +1,19 @@
 ﻿<dsContext>
-   <groupDatasource id="testDs" class="com.haulmont.refapp.core.entity.sample.TestEntity" 
-                    view="_local" refreshMode="NEVER"/>
+   <groupDatasource id="ordersDs"
+                    class="com.sample.sales.entity.Order"
+                   view="orderWithCustomer1">
+       <query>
+           select o from sales$Order o order by o.date
+       </query>
+   </groupDatasource>
 </dsContext>
 <!--...-->
-<groupTable id="testGroupTable" width="100%" height="150">
-   <columns>
-      <group>
-         <column id="count" />
-      </group>
-      <column id="name"/>
-      <column id="date"/>
-      <column id="unit"/>
-   </columns>
-   <rows datasource="testDs"/>
+<groupTable id="ordersTable"
+            editable="false" width="100%" >
+    <columns>
+        <column id="date"/>
+        <column id="customer"/>
+        <column id="amount"/>
+    </columns>
+    <rows datasource="ordersDs"/>
 </groupTable>
