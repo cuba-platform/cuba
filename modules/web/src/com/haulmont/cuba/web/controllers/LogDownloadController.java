@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.sys.logging.LogArchiver;
 import com.haulmont.cuba.core.sys.logging.LogFileNotFoundException;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
@@ -47,7 +45,7 @@ public class LogDownloadController {
     @Inject
     protected UserSessionService userSessionService;
 
-    @RequestMapping(value = "/log/{file:[a-zA-Z0-9\\.\\-]+}", method = RequestMethod.GET)
+    @RequestMapping(value = "/log/{file:[a-zA-Z0-9\\.\\-_]+}", method = RequestMethod.GET)
     public void getLogFile(HttpServletResponse response,
                            @RequestParam(value = "s") String sessionId,
                            @PathVariable(value = "file") String logFileName) throws IOException {
