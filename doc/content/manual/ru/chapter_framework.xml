@@ -289,7 +289,7 @@
         <section>
           <title>Аннотации класса</title>
           <variablelist>
-            <varlistentry>
+            <varlistentry id="entity_annotation">
               <term>
                 <code>
                   <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Entity.html">@javax.persistence.Entity</ulink>
@@ -315,7 +315,7 @@
                 <para>Определяет, что данный класс является предком некоторых сущностей, и его атрибуты должны быть использованы в составе сущностей-наследников. Такой класс не сопоставляется никакой отдельной таблице БД.</para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="table_annotation">
               <term>
                 <code>@<ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Table.html">javax.persistence.Table</ulink></code>
               </term>
@@ -342,7 +342,7 @@
                   </link>.</para>
               </listitem>
             </varlistentry>
-            <varlistentry>
+            <varlistentry id="inheritance_annotation">
               <term>
                 <code>
                   <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Inheritance.html">@javax.persistence.Inheritance</ulink>
@@ -1697,7 +1697,7 @@ msg://com.abc.sales.web.customer/someMessage</programlisting></para>
                 <para><code>getMessageRef()</code> - формирует для <link linkend="metaProperty">мета-свойства</link> <link linkend="messageTools.loadString">ссылку на сообщение</link>, по которой  можно получить локализованное название атрибута сущности</para>
               </listitem>
             </itemizedlist></para>
-          <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>MessageTools</code> можно <link linkend="extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMessageTools tools = messages.getTools();
+          <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>MessageTools</code> можно <link linkend="bean_extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMessageTools tools = messages.getTools();
 tools.foo();</programlisting><programlisting>((MyMessageTools) messages.getTools()).foo();</programlisting> </para>
         </section>
       </section>
@@ -1758,8 +1758,8 @@ tools.foo();</programlisting><programlisting>((MyMessageTools) messages.getTools
                   </code>.</para>
               </listitem>
             </itemizedlist></para>
-          <para><para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>MetadataTools</code> можно <link linkend="extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMetadataTools tools = metadata.getTools();
-tools.foo();</programlisting><programlisting>((MyMetadataTools) metadata.getTools()).foo();</programlisting></para></para>
+          <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>MetadataTools</code> можно <link linkend="bean_extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyMetadataTools tools = metadata.getTools();
+tools.foo();</programlisting><programlisting>((MyMetadataTools) metadata.getTools()).foo();</programlisting></para>
         </section>
       </section>
       <section id="persistence">
@@ -1803,7 +1803,7 @@ if (persistence.getDbDialect() instanceof PostgresDbDialect)
               <para><code>getTools()</code> - возвращает экземпляр интерфейса  <code>PersistenceTools</code> (см. ниже).</para>
             </listitem>
           </itemizedlist></para>
-        <section>
+        <section id="persistenceTools">
           <title>PersistenceTools</title>
           <para><link linkend="managed_beans">ManagedBean</link>, содержащий вспомогательные методы работы с хранилищем данных. Интерфейс <code>PersistenceTools</code> можно получить либо методом <code>Persistence.getTools()</code>, либо как любой другой бин - инжекцией или через класс <code>AppBeans</code>.</para>
           <para>Методы <code>PersistenceTools</code>:<itemizedlist>
@@ -1822,8 +1822,9 @@ if (persistence.getDbDialect() instanceof PostgresDbDialect)
               <listitem>
                 <para><code>reloadEntity()</code> - перезагрузить экземпляр сущности с указанным <link linkend="views">представлением</link>. Данный метод должен вызываться внутри активной <link linkend="transactions">транзакции</link>.</para>
               </listitem>
-            </itemizedlist><para><para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>PersistenceTools</code> можно <link linkend="extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyPersistenceTools tools = persistence.getTools();
-tools.foo();</programlisting><programlisting>((MyPersistenceTools) persistence.getTools()).foo();</programlisting></para></para></para>
+            </itemizedlist></para>
+          <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>PersistenceTools</code> можно <link linkend="bean_extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyPersistenceTools tools = persistence.getTools();
+tools.foo();</programlisting><programlisting>((MyPersistenceTools) persistence.getTools()).foo();</programlisting></para>
         </section>
         <section id="persistenceHelper">
           <title>PersistenceHelper</title>
@@ -10477,10 +10478,175 @@ public void init(Map&lt;String, Object&gt; params) {
   </section>
   <section id="extension">
     <title>Расширение функциональности </title>
-    <para>TODO</para>
+    <para>Платформа позволяет расширять и переопределять свою функциональность в приложениях в следующих аспектах:
+<itemizedlist>
+        <listitem>
+          <para>расширение набора атрибутов сущностей</para>
+        </listitem>
+        <listitem>
+          <para>расширение функциональности экранов</para>
+        </listitem>
+        <listitem>
+          <para>расширение и переопределение бизнес-логики, сосредоточенной в  бинах <application>Spring</application> </para>
+        </listitem>
+      </itemizedlist></para>
+    <para>Рассмотрим две первые задачи на примере добавления поля &quot;Адрес&quot; в сущность <code>User</code> подсистемы безопасности платформы. </para>
     <section id="entity_extension">
-      <title>Расширение сущностей</title>
-      <para>TODO</para>
+      <title>Расширение сущности</title>
+      <para>Создадим в проекте приложения класс сущности, унаследованный от <code>com.haulmont.cuba.security.entity.User</code> и добавим в него требуемый атрибут с соответствующими методами доступа: <programlisting>@Entity(name = &quot;sales$User&quot;)
+@Extends(User.class)
+public class ExtUser extends User {
+    
+    @Column(name = &quot;ADDRESS&quot;, length = 100)
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}</programlisting></para>
+      <para>В аннотации <code>
+          <link linkend="entity_annotation">@Entity</link>
+        </code> должно быть указано новое имя сущности. Так как базовая сущность не объявляет <link linkend="inheritance_annotation">стратегию наследования</link>, то по умолчанию это <code>SINGLE_TABLE</code>. Это означает, что унаследованная сущность будет хранится в той же таблице, что и базовая, и аннотация <code>
+          <link linkend="table_annotation">@Table</link>
+        </code> не требуется. Другие аннотации базовой сущности - <code>
+          <link linkend="namePattern">@NamePattern</link>
+        </code>, <code>
+           <link linkend="listeners_annotation">@Listeners</link>
+        </code> и прочие - автоматически применяются к расширяющей сущности, но могут быть переопределены в ее классе.  </para>
+      <para>Важным элементом класса новой сущности является аннотация <code>@Extends</code> с базовым классом в качестве параметра. Она позволяет сформировать реестр расширяющих сущностей, и заставить механизмы платформы использовать их повсеместно вместо базовых. Реестр реализуется классом <code>ExtendedEntities</code>, который является бином <application>Spring</application> с именем <code>cuba_ExtendedEntities</code>, и доступен также через интерфейс <code>
+          <link linkend="metadata">Metadata</link>
+        </code>.</para>
+      <para>Добавим локализованное название нового атрибута в <link linkend="message_packs">пакет</link> <code>com.sample.sales.entity</code>:</para>
+      <para><filename>messages.properties</filename><programlisting>ExtUser.address=Address</programlisting></para>
+      <para><filename>messages_ru.properties</filename><programlisting>ExtUser.address=Адрес</programlisting></para>
+      <para>Зарегистрируем новую сущность в файле <filename>
+          <link linkend="persistence.xml">persistence.xml</link>
+        </filename> проекта:<programlisting>&lt;class&gt;com.sample.sales.entity.ExtUser&lt;/class&gt;</programlisting></para>
+      <para>Добавим в <link linkend="db_scripts">скрипты создания и обновления базы данных</link> команду модификации соответствующей таблицы:<programlisting>alter table SEC_USER add ADDRESS varchar(100)</programlisting></para>
+    </section>
+    <section>
+      <title>Расширение экранов</title>
+      <para>Платформа позволяет создавать новые <link linkend="screen_xml">XML-дескрипторы</link> экранов путем наследования от существующих.</para>
+      <para>Наследование XML выполняется путем указания в корневом элементе <sgmltag>window</sgmltag> атрибута <sgmltag>extends</sgmltag>, содержащего путь к базовому дескриптору.</para>
+      <para>Правила переопределения элементов XML экрана:<itemizedlist>
+          <listitem>
+            <para>Если в расширяющем дескрипторе указан некоторый элемент, в базовом дескрипторе будет произведен поиск соответствующего элемента по следующему алгоритму:<itemizedlist>
+                <listitem>
+                  <para>Если переопределяющий элемент - <sgmltag>view</sgmltag>, то ищется соответствующий элемент по атрибутам <sgmltag>name</sgmltag>, <sgmltag>class</sgmltag>, <sgmltag>entity</sgmltag>.</para>
+                </listitem>
+                <listitem>
+                  <para>Если переопределяющий элемент - <sgmltag>property</sgmltag>, то ищется соответствующий элемент по атрибуту <sgmltag>name</sgmltag>.</para>
+                </listitem>
+                <listitem>
+                  <para>В других случаях, если в переопределяющем элементе указан атрибут <sgmltag>id</sgmltag>, ищется соответствующий элемент с таким же <sgmltag>id</sgmltag>. </para>
+                </listitem>
+                <listitem>
+                  <para role="bold">Если поиск дал результат, то  найденный элемент <emphasis role="bold">переопределяется</emphasis>.</para>
+                </listitem>
+                <listitem>
+                  <para>Если поиск не дал результата, то определяется сколько в базовом дескрипторе элементов по данному пути и с данным именем. Если ровно один - он <emphasis role="bold">переопределяется</emphasis>.</para>
+                </listitem>
+                <listitem>
+                  <para>Если поиск не дал результата, и в базовом дескрипторе по данному пути с данным именем нет элементов либо их больше одного, <emphasis role="bold">добавляется</emphasis> новый элемент.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para>В переопределяемом либо добавляемом элементе устанавливается текст из расширяющего элемента. </para>
+          </listitem>
+          <listitem>
+            <para>В переопределяемый либо добавляемый элемент копируются все атрибуты из расширяющего элемента. При совпадении имени атрибута значение берется из расширяющего элемента.</para>
+          </listitem>
+          <listitem>
+            <para>Добавление нового элемента по умолчанию производится в конец списка соседних элементов. Чтобы добавить новый элемент в начало или с произвольным индексом, необходимо выполнить следующее: <itemizedlist>
+                <listitem>
+                  <para>определить в расширяющем дескрипторе дополнительный namespace: <code>xmlns:ext=&quot;http://schemas.haulmont.com/cuba/4.0/window-ext.xsd&quot;</code></para>
+                </listitem>
+                <listitem>
+                  <para>добавить в расширяющий элемент атрибут <sgmltag>ext:index</sgmltag> с желаемым индексом, например: <code>ext:index=&quot;0&quot;.</code></para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Для отладки преобразования дескрипторов можно включить вывод в журнал сервера результирующего XML. Делается это путем указания уровня <code>TRACE</code> для логгера <code>com.haulmont.cuba.gui.xml.XmlInheritanceProcessor</code> в файле конфигурации <application>Log4j</application>:<programlisting>&lt;appender name=&quot;FILE&quot; ...
+        &lt;param name=&quot;Threshold&quot; value=&quot;TRACE&quot;/&gt;
+...        
+&lt;category name=&quot;com.haulmont.cuba.gui.xml.XmlInheritanceProcessor&quot;&gt;
+    &lt;priority value=&quot;TRACE&quot;/&gt;
+&lt;/category&gt;</programlisting></para>
+      <para>Пример XML-дескриптора экрана браузера сущностей <code>ExtUser</code>:<programlisting>&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/window.xsd&quot;
+        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/4.0/window-ext.xsd&quot;
+        extends=&quot;/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml&quot;&gt;
+    &lt;layout&gt;
+        &lt;groupTable id=&quot;usersTable&quot;&gt;
+            &lt;columns&gt;
+                &lt;column id=&quot;address&quot; ext:index=&quot;2&quot;/&gt;
+            &lt;/columns&gt;
+        &lt;/groupTable&gt;
+    &lt;/layout&gt;
+&lt;/window&gt;</programlisting></para>
+      <para>В данном примере дескриптор унаследован от стандартного браузера сущностей <code>User</code> платформы, и в таблицу добавлена колонка <code>address</code> с индексом <code>2</code>, т.е. отображающаяся после <code>login</code> и <code>name</code>.</para>
+      <para>Зарегистрируем новый экран в <filename>
+          <link linkend="screens.xml">screens.xml</link>
+        </filename> с теми же идентификаторами, которые использовались для базового экрана. После этого новый экран будет повсеместно вызываться взамен старого.<programlisting>&lt;screen id=&quot;sec$User.browse&quot;
+        template=&quot;com/sample/sales/gui/extuser/extuser-browse.xml&quot;/&gt;
+&lt;screen id=&quot;sec$User.lookup&quot;
+        template=&quot;com/sample/sales/gui/extuser/extuser-browse.xml&quot;/&gt;</programlisting></para>
+      <para>Аналогично создаем экран редактирования:<programlisting>&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/window.xsd&quot;
+        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/4.0/window-ext.xsd&quot;
+        extends=&quot;/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml&quot;&gt;
+    &lt;layout&gt;
+        &lt;fieldGroup id=&quot;fieldGroup&quot;&gt;
+            &lt;column id=&quot;fieldGroupColumn2&quot;&gt;
+                &lt;field id=&quot;address&quot; ext:index=&quot;4&quot;/&gt;
+            &lt;/column&gt;
+        &lt;/fieldGroup&gt;
+    &lt;/layout&gt;
+&lt;/window&gt;</programlisting></para>
+      <para>Регистрируем его в <filename>screens.xml</filename> с идентификатором базового экрана:<programlisting>&lt;screen id=&quot;sec$User.edit&quot;
+        template=&quot;com/sample/sales/gui/extuser/extuser-edit.xml&quot;/&gt;</programlisting></para>
+      <para>После выполнения описанных выше действий в приложении вместо платформенной сущности <code>User</code> будет использоваться <code>ExtUser</code> с соответствующими экранами.</para>
+      <para>Контроллер экрана  может быть расширен путем создания нового класса, унаследованного от контроллера базового экрана. Имя класса указывается в атрибуте <sgmltag>class</sgmltag> корневого элемента расширяющего XML дескриптора, при этом выполняются обычные правила наследования XML, описанные выше. </para>
+    </section>
+    <section id="bean_extension">
+      <title>Расширение бизнес-логики</title>
+      <para>Основная часть бизнес-логики платформы сосредоточена в бинах <application>Spring</application>, что позволяет легко расширить или переопределить ее в приложении.</para>
+      <para>Для подмены реализации бина достаточно создать свой класс, реализующий  интерфейс или расширяющий базовый класс платформы, и зарегистрировать его в <link linkend="spring.xml">
+          <filename>spring.xml</filename>
+        </link> приложения. Аннотацию <code>@ManagedBean</code> в расширяющем классе применять нельзя, переопределение бинов возможно только с помощью конфигурации в XML.</para>
+      <para>Рассмотрим пример добавления метода в бин <link linkend="persistenceTools">
+          <code>PersistenceTools</code>
+        </link>.</para>
+      <para>Создаем класс с нужным методом:<programlisting>public class ExtPersistenceTools extends PersistenceTools {
+
+    public Entity reloadStartingTransaction(Entity entity, String... viewNames) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            Entity reloadedEntity = reloadEntity(entity, viewNames);
+            tx.commit();
+            return reloadedEntity;
+        } finally {
+            tx.end();
+        }
+    }
+}</programlisting></para>
+      <para>Регистрируем класс в <filename>spring.xml</filename> модуля <structname>core</structname> проекта с тем же идентификатором, что и бин платформы:<programlisting>&lt;bean id=&quot;cuba_PersistenceTools&quot; class=&quot;com.sample.sales.core.ExtPersistenceTools&quot;/&gt;</programlisting></para>
+      <para>После этого контекст <application>Spring</application>  вместо экземпляра базового класса <code>PersistenceTools</code> будет всегда возвращать <code>ExtPersistenceTools</code>, например:<programlisting>Persistence persistence;
+PersistenceTools tools;
+
+persistence = AppBeans.get(Persistence.class);
+tools = persistence.getTools();
+assertTrue(tools instanceof ExtPersistenceTools);
+
+tools = AppBeans.get(PersistenceTools.class);
+assertTrue(tools instanceof ExtPersistenceTools);
+
+tools = AppBeans.get(PersistenceTools.NAME);
+assertTrue(tools instanceof ExtPersistenceTools);</programlisting></para>
     </section>
   </section>
 </chapter>

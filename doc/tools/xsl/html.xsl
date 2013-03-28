@@ -74,4 +74,8 @@
         </div>
     </xsl:template>
 
+    <xsl:output method="html"
+            encoding="UTF-8"
+            indent="yes"/>
+
 </xsl:stylesheet>

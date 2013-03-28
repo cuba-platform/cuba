@@ -155,6 +155,8 @@ public class FoldersServiceBean implements FoldersService {
     protected void loadFolderQuantity(Binding binding, AppFolder folder) {
         try {
             if (!StringUtils.isBlank(folder.getQuantityScript())) {
+                binding.setVariable("persistence", persistence);
+                binding.setVariable("metadata", metadata);
                 String variable = "style";
                 binding.setVariable("folder", folder);
                 binding.setVariable(variable, null);

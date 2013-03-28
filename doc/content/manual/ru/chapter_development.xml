@@ -210,18 +210,414 @@
   </section>
   <section>
     <title>Описание скриптов сборки</title>
-    <para>TODO</para>
+    <para>Для  сборки проектов на основе платформы используется <application>
+        <ulink url="http://www.gradle.org">Gradle</ulink>
+      </application>. Скрипты сборки  представляют собой два файла в корневом каталоге проекта: <itemizedlist>
+        <listitem>
+          <para><filename>settings.gradle</filename> - задает название и состав <link linkend="app_modules">модулей</link> проекта</para>
+        </listitem>
+        <listitem>
+          <para><filename>build.gradle</filename> - определяет конфигурацию сборки.</para>
+        </listitem>
+      </itemizedlist></para>
+    <section>
+      <title>Структура build.gradle</title>
+      <para>Секция <code>allprojects</code> задает группу и версию собираемых <link linkend="artifact">артефактов</link> проекта. Имена артефактов формируются на основе имен модулей, заданных в <filename>settings.gradle</filename>. Если свойство <code>ext.isSnapshot</code> равно <code>true</code>, то в именах  артефактов будет присутствовать суффикс <code>SNAPSHOT</code>. Свойство <code>ext.tomcatDir</code> задает расположение каталога установки <application>Tomcat</application>.</para>
+      <para>Основная часть секции <code>buildscript</code> - объявить зависимость от плагина <structname>cuba-plugin</structname>, в котором сосредоточена специфика сборки проектов на платформе. Плагин подключается далее в конфигурацию сборки модулей с помощью метода<programlisting>apply(plugin: &apos;cuba&apos;)</programlisting></para>
+      <para>Кроме того, секция <code>buildscript</code> задает параметры подключения к репозиторию артефактов, из которого будут загружены зависимости. Имя и пароль для подключения могут быть как заданы явно, так и получены из переменных окружения - как правило это переменные <code>HAULMONT_REPOSITORY_USER</code> и <code>HAULMONT_REPOSITORY_PASSWORD</code>. </para>
+      <para>В этой секции также могут быть объявлены свойства <code>ext.cubaVersion</code> и <code>ext.cubaPluginVersion</code>, задающие версию базовых проектов и плагина сборки. Если эти переменные отсутствуют, то версии задаются непосредственно при объявлении зависимостей.</para>
+      <para>Далее в секциях <code>configure</code> определяются параметры сборки модулей приложения.</para>
+      <para>Исполняемыми единицами в Gradle являются <firstterm>задачи</firstterm> (tasks). Они задаются как внутри плагинов, так и в самом скрипте сборки. Рассмотрим задачи, параметры которых могут быть сконфигурированы в <filename>build.gradle</filename>.<itemizedlist>
+          <listitem>
+            <para><code>enhance</code> - задача типа <code>CubaEnhancing</code>, выполняющая bytecode enhancement классов сущностей. Объявляется в <link linkend="app_modules">модуле</link> <structname>global</structname>. Параметры:<itemizedlist>
+                <listitem>
+                  <para><code>persistenceXml</code> - путь к файлу <link linkend="persistence.xml">
+                      <filename>persistence.xml</filename>
+                    </link> проекта.</para>
+                </listitem>
+                <listitem>
+                  <para><code>metadataXml</code> - путь к файлу <filename>
+                      <link linkend="metadata.xml">metadata.xml</link>
+                    </filename> проекта.</para>
+                </listitem>
+              </itemizedlist></para>
+            <para>Например:<programlisting>task enhance(type: CubaEnhancing) {
+    persistenceXml = &quot;${globalModule.projectDir}/src/persistence.xml&quot;
+    metadataXml = &quot;${globalModule.projectDir}/src/metadata.xml&quot;
+}</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>deploy</code> - задача типа <code>CubaDeployment</code>, выполняющая развертывание модуля в <application>Tomcat</application>. Объявляется в модулях <structname>core</structname>, <structname>web</structname>, <structname>portal</structname>. Параметры:<itemizedlist>
+                <listitem>
+                  <para><code>appName</code> - имя веб-приложения, которое будет создано из модуля. Фактически это имя подкаталога внутри <filename>tomcat/webapps</filename>.</para>
+                </listitem>
+                <listitem>
+                  <para><code>jarNames</code> - список имен JAR файлов (без версии), получающихся в результате сборки модуля, которые надо поместить в каталог <filename>WEB-INF/lib</filename> веб-приложения. Все остальные артефакты модуля и зависимостей будут записаны в <filename>tomcat/shared/lib</filename>.</para>
+                </listitem>
+              </itemizedlist></para>
+            <para>Например:<programlisting>task deploy(dependsOn: assemble, type: CubaDeployment) {
+    appName = &apos;app-core&apos;
+    jarNames = [&apos;cuba-global&apos;, &apos;cuba-core&apos;, &apos;app-global&apos;, &apos;app-core&apos;]
+}</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>buildWar</code> - задача типа <code>CubaWarBuilding</code>, выполняющая сборку модуля в WAR файл. Может быть объявлена в модулях <structname>core</structname>, <structname>web</structname>, <structname>portal</structname>, если требуется развертывание приложения в контейнер, отличный от стандартного Tomcat. </para>
+            <para>Параметр <code>appName</code> - имя результирующего WAR.</para>
+            <para>Например:<programlisting>task buildWar(dependsOn: assemble, type: CubaWarBuilding) {
+    appName = &apos;app-core&apos;
+}</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>createDb</code> - задача типа <code>CubaDbCreation</code>, выполняющая создание базы данных приложения и выполнение соответствующих <link linkend="db_scripts">скриптов</link>. Объявляется в модуле <structname>core</structname>. Параметры:<itemizedlist>
+                <listitem>
+                  <para><code>dbms</code> - тип СУБД, задается строкой <code>postgres</code> или <code>mssql</code>.</para>
+                </listitem>
+                <listitem>
+                  <para><code>dbName</code> - имя базы данных. </para>
+                </listitem>
+                <listitem>
+                  <para><code>dbUser</code> - имя пользователя СУБД.</para>
+                </listitem>
+                <listitem>
+                  <para><code>dbPassword</code> - пароль пользователя СУБД.</para>
+                </listitem>
+                <listitem>
+                  <para><code>host</code> - имя хоста СУБД. Если не задан, используется <code>localhost</code>.</para>
+                </listitem>
+                <listitem>
+                  <para><code>dropDbSql</code> - команда SQL для удаления БД. Если не задана, используется значение по умолчанию, зависящее от типа СУБД. </para>
+                </listitem>
+                <listitem>
+                  <para><code>createDbSql</code> - команда SQL для создания БД. Если не задана, используется значение по умолчанию, зависящее от типа СУБД. </para>
+                </listitem>
+              </itemizedlist></para>
+            <para>Например:<programlisting>task createDb(dependsOn: assemble, description: &apos;Creates local database&apos;, type: CubaDbCreation) {
+    dbms = &apos;postgres&apos;
+    dbName = &apos;sales&apos;
+    dbUser = &apos;cuba&apos;
+    dbPassword = &apos;cuba&apos;
+}</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>updateDb</code> - задача типа <code>CubaDbUpdate</code>, выполняющая обновление базы данных приложения путем выполнения соответствующих <link linkend="db_scripts">скриптов</link>. Аналогична задаче <code>createDb</code>, за исключением отсутствия параметров <code>dropDbSql</code> и <code>createDbSql</code>.</para>
+          </listitem>
+        </itemizedlist></para>
+    </section>
+    <section>
+      <title>Типичные задачи сборки</title>
+      <para>Задачи (tasks) Gradle запускаются из командной строки и выполняют различные действия по сборке проекта. Например, чтобы выполнить компиляцию Java файлов и сборку JAR файлов артефактов проекта, необходимо запустить следующую команду:</para>
+      <para><prompt>gradle assemble</prompt></para>
+      <para>Для ускорения повторной сборки желательно вызывать <application>Gradle</application> в режиме демона (его процесс будет оставаться в памяти):</para>
+      <para><prompt>gradle --daemon assemble</prompt></para>
+      <para>Для удаления демона из памяти используется следующая команда:</para>
+      <para><prompt>gradle --stop</prompt></para>
+      <para>Рассмотрим типичные задачи сборки в обычном порядке их использования.</para>
+      <itemizedlist>
+        <listitem>
+          <para><code>idea</code> - создать проектные файлы <application>IntelliJ IDEA</application>. При выполнении этой задачи из репозитория артефактов в локальный кэш <application>Gradle</application> загружаются зависимости вместе со своими исходными кодами.</para>
+        </listitem>
+        <listitem>
+          <para><code>cleanIdea</code> - удалить проектные файлы <application>IntelliJ IDEA</application>.</para>
+        </listitem>
+        <listitem>
+          <para><code>assemble</code> - выполнить компиляцию Java файлов и сборку JAR файлов артефактов проекта в подкаталогах <filename>build</filename> модулей.</para>
+        </listitem>
+        <listitem>
+          <para><code>clean</code> - удалить подкаталоги <filename>build</filename> всех модулей проекта.</para>
+        </listitem>
+        <listitem>
+          <para><code>setupTomcat</code> - установить сервер <application>Tomcat</application> в путь, заданный свойством <code>ext.tomcatDir</code> скрипта <filename>build.gradle</filename>. Если данное свойство не задано, установка производится в каталог <filename>tomcat</filename> на одном уровне с каталогом проекта, т.е. в <filename>${rootDir}/../tomcat</filename>.</para>
+          <para>Версия <application>Tomcat</application> задается в плагине сборки <structname>cuba-plugin</structname>. В процессе установки конфигурация Tomcat модифицируется для поддержки стандартного механизма развертывания приложений платформы. В частности, добавляются командные файлы <filename>setenv.bat</filename> и <filename>setenv.sh</filename>, а также конфигурационный файл журнала <filename>conf/log4j.xml</filename>.</para>
+        </listitem>
+        <listitem>
+          <para><code>deploy</code> - развертывание приложения на сервере <application>Tomcat</application>, предварительно установленном задачей <code>setupTomcat</code>.</para>
+        </listitem>
+        <listitem>
+          <para><code>createDb</code> - создание базы данных приложения и выполнение соответствующих <link linkend="db_scripts">скриптов</link>.</para>
+        </listitem>
+        <listitem>
+          <para><code>updateDb</code> - обновление существующей базы данных приложения путем выполнения соответствующих <link linkend="db_scripts">скриптов</link>.</para>
+        </listitem>
+        <listitem>
+          <para><code>start</code> - запуск сервера <application>Tomcat</application>.</para>
+        </listitem>
+        <listitem>
+          <para><code>stop</code> - остановка запущенного сервера <application>Tomcat</application>. </para>
+        </listitem>
+        <listitem>
+          <para><code>restart</code> - последовательное выполнение задач <code>stop</code>, <code>deploy</code>, <code>start</code>. </para>
+        </listitem>
+      </itemizedlist>
+    </section>
   </section>
   <section>
     <title>Создание проекта</title>
-    <para>TODO</para>
+    <para>Рекомендуемый способ создания нового проекта - использование <application>CUBA Studio</application>. Пример рассмотрен в главе &quot;Быстрый старт&quot; данного руководства: <xref linkend="qs_studio_setup"/></para>
+    <para>Если применение <application>CUBA Studio</application> невозможно, для создания нового проекта необходимо выполнить следующее:<itemizedlist>
+        <listitem>
+          <para>Загрузить шаблон проекта, описанного в <xref linkend="qs_setup"/> главы &quot;Быстрый старт&quot;, и распаковать его в локальный каталог.</para>
+        </listitem>
+        <listitem>
+          <para>Выбрать название проекта. Оно должно состоять только из латинских букв в нижнем регистре, и быть не слишком длинным. Далее для примера используется название <code>bookstore</code>.</para>
+        </listitem>
+        <listitem>
+          <para>Выбрать корневой Java пакет. Далее для примера используется  <code>com.sample.bookstore</code>.</para>
+        </listitem>
+        <listitem>
+          <para>В файле <filename>settings.gradle</filename>  изменить строку с именем проекта:<programlisting>rootProject.name = &apos;bookstore&apos;</programlisting></para>
+          <para>Если модуль <structname>portal</structname> не нужен, удалить из объявления <code>include</code> элемент <code>&apos;:app-portal&apos;</code>, и удалить соответствующее объявление <code>project(&apos;:app-portal&apos;).projectDir</code>.</para>
+        </listitem>
+        <listitem>
+          <para>В файле <filename>build.gradle</filename> произвести следующие изменения:<itemizedlist>
+              <listitem>
+                <para>В переменной <code>ext.artifactGroup</code> указать желаемое название группы для артефактов. Этот параметр играет роль только при выгрузке собранных артефактов приложения в <link linkend="artifact_repository">репозиторий</link>. Например:<programlisting>allprojects {
+    ext.artifactGroup = &apos;com.sample.bookstore&apos;
+...</programlisting></para>
+              </listitem>
+              <listitem>
+                <para>В секции конфигурации модуля <structname>core</structname> указать для задач <code>createDb</code> и <code>updateDb</code> желаемое имя базы данных. Например:<programlisting>configure(coreModule) {
+...
+    task createDb(dependsOn: assemble, description: &apos;Creates local database&apos;, type: CubaDbCreation) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;bookstore&apos;
+        dbUser = &apos;cuba&apos;
+        dbPassword = &apos;cuba&apos;
+    }
+
+    task updateDb(dependsOn: assemble, description: &apos;Updates local database&apos;, type: CubaDbUpdate) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;bookstore&apos;
+        dbUser = &apos;cuba&apos;
+        dbPassword = &apos;cuba&apos;
+    }
+...</programlisting></para>
+              </listitem>
+              <listitem>
+                <para>Если модуль <structname>portal</structname> не используется, удалить объявление переменной <code>portalModule</code>, ее использование в списке <code>configure([...])</code>, и всю секцию <code>configure(portalModule)</code>.</para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+        <listitem>
+          <para>В модуле <structname>core</structname>: </para>
+          <para>В файле <link linkend="context.xml">
+              <filename>context.xml</filename>
+            </link>  изменить URL подключения к базе данных:<programlisting>&lt;Context&gt;
+    &lt;!-- PostgreSQL connection --&gt;
+    &lt;Resource
+...
+      username=&quot;cuba&quot;
+      password=&quot;cuba&quot;
+      url=&quot;jdbc:postgresql://localhost/bookstore&quot;/&gt;
+...</programlisting></para>
+          <para>В файле <filename>
+              <link linkend="spring.xml">spring.xml</link>
+            </filename> изменить базовый пакет поиска аннотированных бинов:<programlisting>&lt;context:component-scan base-package=&quot;com.sample.bookstore&quot;/&gt;</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>В модуле <structname>web</structname>: </para>
+          <para>Перенести класс <code>App</code> и <link linkend="main_message_pack">файлы локализованных сообщений</link> в пакет <code>com.sample.bookstore.web</code>, и в файле <filename>web/WEB-INF/<link linkend="web.xml">web.xml</link></filename> указать новое расположение этого класса для сервлета <code>app_servlet</code>:<programlisting>&lt;servlet&gt;
+    &lt;servlet-name&gt;app_servlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.haulmont.cuba.web.sys.CubaApplicationServlet&lt;/servlet-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;application&lt;/param-name&gt;
+        &lt;param-value&gt;com.sample.bookstore.web.App&lt;/param-value&gt;
+    &lt;/init-param&gt;
+...</programlisting></para>
+          <para>Изменить значение свойства приложения <property>
+              <link linkend="cuba.mainMessagePack">cuba.mainMessagePack</link>
+            </property> в <filename>web-app.properties</filename>:<programlisting>cuba.mainMessagePack=com.haulmont.cuba.web com.sample.bookstore.web</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Если используется модуль <structname>portal</structname>, изменить в нем соответственно пакет расположения классов контроллеров и ссылку на него в <filename>portal-dispatcher-spring.xml</filename>.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>После выполнения вышеописанных действий можно собрать новый проект:</para>
+    <para><prompt>gradle idea assemble setupTomcat deploy</prompt></para>
   </section>
   <section>
     <title>Отладка и тестирование</title>
-    <para>TODO</para>
-  </section>
-  <section>
-    <title>Интеграция со сторонними приложениями</title>
-    <para>TODO</para>
+    <section>
+      <title>Подключение отладчика</title>
+      <para>Запустить сервер Tomcat в режиме отладки можно либо выполнением команды сборки</para>
+      <para><prompt>gradle start</prompt></para>
+      <para>либо запуском командного файла <filename>bin/debug.*</filename> установленного <application>Tomcat</application>.</para>
+      <para>После этого сервер будет принимать подключения отладчика на порту 8787. Порт можно изменить в файле <filename>bin/setenv.*</filename> в переменной <code>JPDA_OPTS</code>.</para>
+      <para>Для пошаговой отладки в <application>Intellij IDEA</application> необходимо в проекте приложения создать новый элемент  <guilabel>Run/Debug Configuration</guilabel> типа <guilabel>Remote</guilabel>, и в его поле <guilabel>Port</guilabel> указать 8787.</para>
+    </section>
+    <section>
+      <title>Тестирование</title>
+      <section>
+        <title>Модульные тесты</title>
+        <para>Модульные тесты (unit tests) можно создавать и выполнять и на <link linkend="app_tiers">уровне</link> Middleware, и на клиентском уровне. Для этого платформа включает в себя фреймворки <ulink url="http://junit.org">JUnit</ulink> и <ulink url="http://code.google.com/p/jmockit">JMockit</ulink>.</para>
+        <para>Допустим, имеется следующий контроллер экрана:<programlisting>public class OrderEditor extends AbstractEditor {
+
+    @Named(&quot;itemsTable.add&quot;)
+    protected AddAction addAction;
+
+    @Override
+    public void init(Map&lt;String, Object&gt; params) {
+        addAction.setWindowId(&quot;sales$Product.lookup&quot;);
+        addAction.setHandler(new Lookup.Handler() {
+            @Override
+            public void handleLookup(Collection items) {
+                // some code
+            }
+        });
+    }
+}</programlisting></para>
+        <para>Тогда можно написать следющий тест, проверяющий работу метода <code>init()</code>:<programlisting>public class OrderEditorTest {
+
+    OrderEditor editor;
+
+    @Mocked
+    Window.Editor frame;
+
+    @Mocked
+    AddAction addAction;
+
+    @Before
+    public void setUp() throws Exception {
+        editor = new OrderEditor();
+        editor.setWrappedFrame(frame);
+        editor.addAction = addAction;
+    }
+
+    @Test
+    public void testInit() {
+        editor.init(Collections.&lt;String, Object&gt;emptyMap());
+        editor.setItem(new Order());
+
+        new Verifications() {
+            {
+                addAction.setWindowId(&quot;sales$Product.lookup&quot;);
+                addAction.setHandler(withInstanceOf(Window.Lookup.Handler.class));
+            }
+        };
+    }
+}</programlisting></para>
+      </section>
+      <section>
+        <title>Интеграционные тесты Middleware</title>
+        <para>На уровне Middleware можно создавать интеграционные тесты, которые выполняются в полнофункциональном контейнере <application>Spring</application> с подключением к базе данных. В тестах такого типа можно выполнять код любого слоя внутри Middleware - от сервисов до ORM. </para>
+        <para>Для создания интеграционных тестов в модуле <structname>core</structname> проекта приложения должен быть создан базовый класс - наследник <code>CubaTestCase</code>. В этом классе должны быть переопределены методы инициализации доступа к данным  и получения списка файлов конфигурации. Например: <programlisting>public class SalesTestCase extends CubaTestCase {
+
+    @Override
+    protected void initDataSources() throws Exception {
+        Class.forName(&quot;org.postgresql.Driver&quot;);
+        TestDataSource ds = new TestDataSource(&quot;jdbc:postgresql://localhost/sales_test&quot;, &quot;cuba&quot;, &quot;cuba&quot;);
+        TestContext.getInstance().bind(&quot;java:comp/env/jdbc/CubaDS&quot;, ds);
+    }
+
+    @Override
+    protected List&lt;String&gt; getTestAppProperties() {
+        String[] files = {
+                &quot;cuba-app.properties&quot;,
+                &quot;app.properties&quot;,
+                &quot;test-app.properties&quot;,
+        };
+        return Arrays.asList(files);
+    }
+}</programlisting></para>
+        <para>В качестве базы данных  рекомендуется использовать отдельную тестовую БД, которую можно создавать, например, следующей задачей в <filename>build.gradle</filename>: <programlisting>configure(coreModule) {
+...
+    task createTestDb(dependsOn: assemble, description: &apos;Creates local Postgres database for tests&apos;, type: CubaDbCreation) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;sales_test&apos;
+        dbUser = &apos;cuba&apos;
+        dbPassword = &apos;cuba&apos;
+    }</programlisting></para>
+        <para>Класс <code>CubaTestCase</code>  содержит следующие поля и методы, которые можно использовать в коде тестов:<itemizedlist>
+            <listitem>
+              <para><code>persistence</code> - ссылка на интерфейс <code>
+                  <link linkend="persistence">Persistence</link>
+                </code></para>
+            </listitem>
+            <listitem>
+              <para><code>metadata</code> - ссылка на интерфейс <code>
+                  <link linkend="metadata">Metadata</link>
+                </code></para>
+            </listitem>
+            <listitem>
+              <para><code>deleteRecord()</code> - метод, который удобно использовать в <code>tearDown()</code> для удаления тестовых объектов из БД.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Пример теста, проверяющего чтение сущностей из базы данных:<programlisting>public class CustomerLoadTest extends SalesTestCase {
+
+    private UUID customerId;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        persistence.createTransaction().execute(new Transaction.Runnable() {
+            @Override
+            public void run(EntityManager em) {
+                Customer customer = new Customer();
+                customerId = customer.getId();
+                customer.setName(&quot;testCustomer&quot;);
+                em.persist(customer);
+            }
+        });
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        deleteRecord(&quot;SALES_CUSTOMER&quot;, customerId);
+        super.tearDown();
+    }
+
+    public void test() {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            TypedQuery&lt;Customer&gt; query = em.createQuery(
+                &quot;select c from sales$Customer c&quot;, Customer.class);
+            List&lt;Customer&gt; list = query.getResultList();
+            tx.commit();
+            assertTrue(list.size() &gt; 0);
+        } finally {
+            tx.end();
+        }
+    }
+}</programlisting></para>
+      </section>
+      <section>
+        <title>Интеграционные тесты клиентского уровня</title>
+        <para>Интеграционные тесты на клиентском уровне реализуются с применением  фреймворка <application>
+            <ulink url="http://code.google.com/p/jmockit">JMockit</ulink>
+          </application>. С его помощью тест изолируется от Middleware, а также создаются необходимые объекты инфраструктуры. </para>
+        <para>Класс клиентского интеграционного теста должен быть унаследован от <code>CubaClientTestCase</code>. В методе <code>@Before</code> необходимо вызвать унаследованные методы <code>addEntityPackage()</code>, <code>setViewConfig()</code> и затем <code>setupInfrastructure()</code> для создания объектов <code>
+            <link linkend="metadata">Metadata</link>
+          </code> и <code>
+            <link linkend="configuration">Configuration</link>
+          </code> и развертывания метаданных по выбранным сущностям. Далее в методе <code>@Before</code> можно дополнить инфраструктуру необходимыми мок-объектами с помощью конструкции <code>Expectations</code> или <code>NonStrictExpectations</code>. </para>
+        <para>Пример инициализирующего метода <code>@Before</code> одного из тестов платформы:<programlisting>@Before
+public void setUp() throws Exception {
+    addEntityPackage(&quot;com.haulmont.cuba.security.entity&quot;);
+    addEntityPackage(&quot;com.haulmont.cuba.core.entity&quot;);
+    addEntityPackage(&quot;com.haulmont.cuba.gui.data.impl.testmodel1&quot;);
+    setViewConfig(&quot;/com/haulmont/cuba/gui/data/impl/testmodel1/test-views.xml&quot;);
+    setupInfrastructure();
+
+    metadataSession = metadata.getSession();
+    dataService = new TestDataSupplier();
+
+    dataService.commitCount = 0;
+
+    new NonStrictExpectations() {
+        @Mocked ClientConfig clientConfig;
+        @Mocked PersistenceHelper persistenceHelper;
+        {
+            configuration.getConfig(ClientConfig.class); result = clientConfig;
+
+            clientConfig.getCollectionDatasourceDbSortEnabled(); result = true;
+
+            persistenceManager.getMaxFetchUI(anyString); result = 10000;
+
+            PersistenceHelper.isNew(any); result = false;
+        }
+    };
+}</programlisting></para>
+      </section>
+    </section>
   </section>
 </chapter>
