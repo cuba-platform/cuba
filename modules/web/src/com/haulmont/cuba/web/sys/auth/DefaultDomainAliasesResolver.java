@@ -12,6 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,11 +21,13 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
+@ManagedBean(DomainAliasesResolver.NAME)
 public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
 
     private Map<String, String> aliases = new HashMap<>();
     private Log log = LogFactory.getLog(DomainAliasesResolver.class);
 
+    @Inject
     public DefaultDomainAliasesResolver(Configuration configuration) {
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
         String aliasesConfig = webConfig.getActiveDirectoryAliases();
