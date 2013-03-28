@@ -92,7 +92,7 @@ public class JmxLogControl implements JmxLogControlMBean {
     public void setLoggerLevel(String loggerName, String level) throws LogControlException {
         Logger logger = getLogger(loggerName);
         if (logger == null)
-            throw new LoggerNotFoundException(loggerName);
+            logger = Logger.getLogger(loggerName);
 
         Level logLevel = LoggingHelper.getLevelFromString(level);
         if (logLevel == null)
@@ -145,7 +145,7 @@ public class JmxLogControl implements JmxLogControlMBean {
             if (StringUtils.equals(nextLogger.getName(), loggerName))
                 logger = nextLogger;
         }
-        return logger;
+        return Logger.getLogger(loggerName);
     }
 
     protected Appender getAppender(String appenderName) {

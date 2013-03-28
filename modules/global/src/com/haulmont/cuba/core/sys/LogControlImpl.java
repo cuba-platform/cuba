@@ -19,6 +19,7 @@ import org.apache.log4j.*;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -72,7 +73,7 @@ public class LogControlImpl implements LogControl {
             String str;
             while (randomAccessFile.read() != -1) {
                 randomAccessFile.seek(randomAccessFile.getFilePointer() - 1);
-                String line = randomAccessFile.readLine();
+                String line = readUtf8Line(randomAccessFile);
                 if (line != null) {
                     str = new String(line.getBytes(), "UTF-8");
                     sb.append(str).append("\n");
@@ -148,5 +149,35 @@ public class LogControlImpl implements LogControl {
             log.info(String.format("Threshold for appender '%s' set to '%s'", appender.getName(), threshold));
         } else
             throw new AppenderThresholdNotSupported(appender.getName());
+    }
+
+    protected String readUtf8Line(RandomAccessFile logFile) throws IOException {
+        int c = -1;
+        boolean eol = false;
+        ByteArrayOutputStream input = new ByteArrayOutputStream();
+
+        while (!eol) {
+            switch (c = logFile.read()) {
+                case -1:
+                case '\n':
+                    eol = true;
+                    break;
+                case '\r':
+                    eol = true;
+                    long cur = logFile.getFilePointer();
+                    if ((logFile.read()) != '\n') {
+                        logFile.seek(cur);
+                    }
+                    break;
+                default:
+                    input.write((byte)c);
+                    break;
+            }
+        }
+        if ((c == -1) && (input.size() == 0)) {
+            return null;
+        }
+
+        return new String(input.toByteArray(), "UTF-8");
     }
 }
