@@ -308,10 +308,8 @@ public class DataWorkerBean implements DataWorker {
         int requestedMax = context.getQuery().getMaxResults();
 
         if (requestedMax == 0) {
-            ArrayList result = new ArrayList(set.size());
-            result.addAll(set);
             // set contains all items if query without paging
-            return result;
+            return new ArrayList(set);
         }
 
         int setSize = list.size() + requestedFirst;
