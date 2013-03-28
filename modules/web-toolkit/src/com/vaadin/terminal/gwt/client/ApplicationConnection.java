@@ -161,6 +161,10 @@ public class ApplicationConnection {
             if (!applicationTimers.containsValue(this))
                 return;
 
+            // stop timer if error shown
+            if (errorShown)
+                return;
+
             runTimerAction();
         }
 
