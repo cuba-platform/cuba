@@ -10,7 +10,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.*;
@@ -73,7 +73,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         impl = new TokenListImpl();
 
         addButton = new DesktopButton();
-        addButton.setCaption(MessageProvider.getMessage(TokenList.class, "actions.Add"));
+        addButton.setCaption(AppBeans.get(Messages.class).getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new DesktopLookupPickerField();
 
@@ -242,7 +242,6 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setMultiSelect(boolean multiselect) {
         this.multiselect = multiselect;
-        lookupPickerField.setMultiSelect(multiselect);
     }
 
     @Override
