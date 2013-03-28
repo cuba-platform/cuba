@@ -10425,11 +10425,54 @@ return count</programlisting></para>
     </section>
     <section>
       <title>Инспектор сущностей</title>
-      <para>TODO</para>
+      <para>Инспектор сущностей позволяет работать с любыми объектами предметной области без создания специфических экранов. Инспектор динамически генерирует экраны просмотра списка и редактирования экземпляра выбранной сущности.</para>
+      <para>Это дает возможность администратору системы просматривать и редактировать данные, которые недоступны в стандартных экранах в силу их дизайна, а  на этапе прототипирования создать только модель данных и пункты главного меню, ссылающиеся на инспектор сущностей.</para>
+      <para>Точкой входа в инспектор является экран <filename>com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml</filename>. </para>
+      <para>Если в экран передан параметр <code>entity</code> типа <code>String</code> с именем сущности, то инспектор отобразит список экземпляров этой сущности с возможностью фильтрации, выбора и редактирования экземпляров. Параметр может быть указан при регистрации экрана в <link linkend="screens.xml">
+          <filename>screens.xml</filename>
+        </link>, например:</para>
+      <para><filename>screens.xml</filename><programlisting>&lt;screen id=&quot;sales$Product.lookup&quot; 
+        template=&quot;/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml&quot;&gt;
+    &lt;param name=&quot;entity&quot; 
+           value=&quot;sales$Product&quot;/&gt;
+&lt;/screen&gt;</programlisting></para>
+      <para><filename>menu.xml</filename><programlisting>&lt;item id=&quot;sales$Product.lookup&quot;/&gt;</programlisting></para>
+      <para>Идентификатор экрана вида <code>{имя_сущности}.lookup</code>  дает возможность использовать этот экран компонентам <code>
+          <link linkend="gui_PickerField">PickerField</link>
+        </code> и <code>
+          <link linkend="gui_LookupPickerField">LookupPickerField</link>
+        </code> в стандартном действии <code>PickerField.LookupAction</code>.</para>
+      <para>В общем случае данный экран можно вызывать без передачи параметров, тогда в его верхней части отображается поле для выбора сущности. В базовом проекте <structname>cuba</structname> экран инспектора зарегистрирован с идентификатором <code>entityInspector.browse</code>, поэтому для его вызова достаточно наличия пункта меню:<programlisting>&lt;item id=&quot;entityInspector.browse&quot;/&gt;</programlisting></para>
     </section>
-    <section>
+    <section id="credits">
       <title>Информация об используемом ПО</title>
-      <para>TODO</para>
+      <para>Платформа предоставляет средства для регистрации и отображения в пользовательском интерфейсе информации об используемом в приложении стороннем программном обеспечении (credits). Информация включает в себя название, ссылку на веб-сайт и текст лицензии.</para>
+      <para><link linkend="base_projects">Базовые проекты</link> платформы содержат собственные файлы описаний <filename>cuba-credits.xml</filename>, <filename>reports-credits.xml</filename> и т.д. В проекте приложения можно создать аналогичный файл и в свойстве приложения <property>
+          <link linkend="cuba.creditsConfig">cuba.creditsConfig</link>
+        </property> определить список файлов описаний в зависимости от используемых базовых проектов.</para>
+      <para>Структура файла <filename>credits.xml</filename>: <itemizedlist>
+          <listitem>
+            <para>Элемент <sgmltag>items</sgmltag> - перечисление используемых библиотек с указанием текста лицензии либо во вложенном элементе <sgmltag>license</sgmltag>, либо атрибутом <sgmltag>license</sgmltag> со ссылкой на текст в секции <sgmltag>licenses</sgmltag>.</para>
+            <para>Cсылаться можно на лицензии, объявленные не только в этом же файле, но и в любом другом файле, объявленном в переменной <property>cuba.creditsConfig</property> раньше, чем текущий. </para>
+          </listitem>
+          <listitem>
+            <para>Элемент <sgmltag>licenses</sgmltag> - перечисление текстов общеупотребительных лицензий.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Для отображения общего списка используемого ПО  предназначен фрейм <filename>com/haulmont/cuba/gui/app/core/credits/credits-frame.xml</filename>, загружающий информацию из файлов, заданных в свойстве <property>cuba.creditsConfig</property>. Пример использования фрейма в экране:<programlisting>&lt;layout expand=&quot;creditsBox&quot;&gt;
+    &lt;groupBox id=&quot;creditsBox&quot; 
+              caption=&quot;msg://credits&quot; 
+              width=&quot;100%&quot;&gt;
+        &lt;iframe id=&quot;credits&quot; 
+                src=&quot;/com/haulmont/cuba/gui/app/core/credits/credits-frame.xml&quot; 
+                width=&quot;100%&quot; 
+                height=&quot;100%&quot;/&gt;
+    &lt;/groupBox&gt;
+&lt;/layout&gt;</programlisting></para>
+      <para>Если экран с фреймом открывается в модальном режиме (<code>WindowManager.OpenType.DIALOG</code>), ему необходимо задать высоту, иначе возможна неправильная работа скроллинга. Это можно сделать, например, в контроллере экрана, выводящего фрейм: <programlisting>@Override
+public void init(Map&lt;String, Object&gt; params) {
+    getDialogParams().setWidth(500).setHeight(400);
+}</programlisting></para>
     </section>
   </section>
   <section id="extension">
