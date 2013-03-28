@@ -241,16 +241,18 @@ public class JavaClassLoader extends URLClassLoader {
     private String buildClasspath() {
         StringBuilder classpathBuilder = new StringBuilder(JAVA_CLASSPATH).append(PATH_SEPARATOR);
 
-        String[] directories = cubaClassPath.split(";");
-        for (String directoryPath : directories) {
-            if (StringUtils.isNotBlank(directoryPath)) {
-                classpathBuilder.append(directoryPath).append(PATH_SEPARATOR);
-                File directory = new File(directoryPath);
-                File[] directoryFiles = directory.listFiles();
-                if (directoryFiles != null) {
-                    for (File file : directoryFiles) {
-                        if (file.getName().endsWith(JAR_EXT)) {
-                            classpathBuilder.append(file.getAbsolutePath()).append(PATH_SEPARATOR);
+        if (cubaClassPath != null) {
+            String[] directories = cubaClassPath.split(";");
+            for (String directoryPath : directories) {
+                if (StringUtils.isNotBlank(directoryPath)) {
+                    classpathBuilder.append(directoryPath).append(PATH_SEPARATOR);
+                    File directory = new File(directoryPath);
+                    File[] directoryFiles = directory.listFiles();
+                    if (directoryFiles != null) {
+                        for (File file : directoryFiles) {
+                            if (file.getName().endsWith(JAR_EXT)) {
+                                classpathBuilder.append(file.getAbsolutePath()).append(PATH_SEPARATOR);
+                            }
                         }
                     }
                 }
