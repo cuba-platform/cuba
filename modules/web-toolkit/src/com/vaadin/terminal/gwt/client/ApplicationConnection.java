@@ -1184,11 +1184,16 @@ public class ApplicationConnection {
                         }
 
                         if (html.length() != 0) {
+                            if (errorNotification != null)
+                                errorNotification.hide();
+
                             /* 45 min */
                             VNotification n = new VNotification(1000 * 60 * 45);
                             n.addEventListener(new NotificationRedirect(url));
                             n.show(html, VNotification.CENTERED_TOP,
                                     VNotification.STYLE_SYSTEM);
+
+                            errorNotification = n;
                         } else {
                             redirect(url);
                         }
