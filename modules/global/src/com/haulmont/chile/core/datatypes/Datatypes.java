@@ -20,6 +20,8 @@ import java.util.*;
 
 import com.haulmont.bali.util.ReflectionHelper;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.ejb.Local;
 
 /**
@@ -37,10 +39,10 @@ public class Datatypes {
 
     private static Datatypes instance = new Datatypes();
 
-    private Map<Class, Datatype> datatypeByClass = new HashMap<Class, Datatype>();
-    private Map<String, Datatype> datatypeByName = new HashMap<String, Datatype>();
+    private Map<Class<?>, Datatype> datatypeByClass = new HashMap<>();
+    private Map<String, Datatype> datatypeByName = new HashMap<>();
 
-    private Map<Locale, FormatStrings> formatStringsMap = new HashMap<Locale, FormatStrings>();
+    private Map<Locale, FormatStrings> formatStringsMap = new HashMap<>();
 
     private boolean useLocaleLanguageOnly = true;
 
@@ -106,6 +108,7 @@ public class Datatypes {
      * @param locale selected locale
      * @return {@link FormatStrings} object, or null if no formats are registered for the locale
      */
+    @Nullable
     public static FormatStrings getFormatStrings(Locale locale) {
         return instance.getFormat(locale);
     }
@@ -121,31 +124,53 @@ public class Datatypes {
 
     /**
      * Get Datatype instance by its unique name
-     * @return Datatype instance or null if not found
+     * @return Datatype instance
+     * @throws IllegalArgumentException if no datatype with the given name found
      */
+    @Nonnull
     public static <T extends Datatype> T get(String name) {
-        return (T) instance.datatypeByName.get(name);
+        Datatype datatype = instance.datatypeByName.get(name);
+        if (datatype == null)
+            throw new IllegalArgumentException("Datatype " + name + " is not found");
+        //noinspection unchecked
+        return (T) datatype;
     }
 
     /**
      * Get Datatype instance by the corresponding Java class. This method tries to find matching supertype too.
      * @return Datatype instance or null if not found
      */
+    @Nullable
     public static <T> Datatype<T> get(Class<T> clazz) {
         Datatype datatype = instance.datatypeByClass.get(clazz);
         if (datatype == null) {
             // if no exact type found, try to find matching super-type
-            for (Map.Entry<Class, Datatype> entry : instance.datatypeByClass.entrySet()) {
+            for (Map.Entry<Class<?>, Datatype> entry : instance.datatypeByClass.entrySet()) {
                 if (entry.getKey().isAssignableFrom(clazz)) {
-                    return entry.getValue();
+                    datatype = entry.getValue();
+                    break;
                 }
             }
         }
+        //noinspection unchecked
         return datatype;
     }
 
     /**
-     * All registered Datatype names
+     * Get Datatype instance by the corresponding Java class. This method tries to find matching supertype too.
+     * @return Datatype instance
+     * @throws IllegalArgumentException if no datatype suitable for the given type found
+     */
+    @Nonnull
+    public static <T> Datatype<T> getNN(Class<T> clazz) {
+        Datatype<T> datatype = get(clazz);
+        if (datatype == null)
+            throw new IllegalArgumentException("A datatype for " + clazz + " is not found");
+        return datatype;
+    }
+
+    /**
+     * @return all registered Datatype names.
      */
     public static Set<String> getNames() {
         return Collections.unmodifiableSet(instance.datatypeByName.keySet());

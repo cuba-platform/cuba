@@ -31,10 +31,10 @@
     <layout expand="contentPane">
         <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
-            <label value="msg://screen"/>
+            <label value="msg://screen" align="MIDDLE_RIGHT"/>
             <lookupField id="screenFilter" width="300"/>
             <label width="20"/>
-            <label value="msg://component"/>
+            <label value="msg://component" align="MIDDLE_RIGHT"/>
             <textField id="componentTextField" width="250"/>
             <button id="addPermissionBtn" caption="msg://action.add" invoke="addUiPermission"/>
             <label id="spacer"/>

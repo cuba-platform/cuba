@@ -9,12 +9,14 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 /**
  * @author artamonov
  * @version $Id$
  */
 @MetaClass(name = "sys$EntityBasicPropertyDiff")
+@SystemLevel
 public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     private static final long serialVersionUID = -1532265990429557046L;

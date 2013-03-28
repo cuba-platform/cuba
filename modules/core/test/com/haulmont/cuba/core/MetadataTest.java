@@ -1,17 +1,13 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 10.12.2008 12:42:44
- *
- * $Id$
  */
 package com.haulmont.cuba.core;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.utils.PrintUtils;
 import com.haulmont.cuba.core.entity.Folder;
@@ -20,12 +16,17 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.security.entity.EntityLogItem;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 
 import java.util.Collection;
 
-public class MetadataTest extends CubaTestCase
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class MetadataTest extends CubaTestCase {
+
     public void test() {
         Session session = AppBeans.get(Metadata.class).getSession();
         assertNotNull(session);
@@ -38,7 +39,6 @@ public class MetadataTest extends CubaTestCase
     }
 
     public void testPersistentAndTransientProperties() throws Exception {
-        Metadata metadata = AppBeans.get(Metadata.class);
         MetadataTools tools = metadata.getTools();
 
         // User
@@ -61,5 +61,14 @@ public class MetadataTest extends CubaTestCase
         // UserSessionEntity
         metaClass = metadata.getSession().getClassNN(UserSessionEntity.class);
         assertTrue(tools.isTransient(metaClass.getPropertyNN("login")));
+    }
+
+    public void testSystemLevel() throws Exception {
+        MetadataTools tools = metadata.getTools();
+
+        assertTrue(tools.isSystemLevel(metadata.getSession().getClassNN(UserRole.class)));
+
+        MetaClass metaClass = metadata.getSession().getClassNN(User.class);
+        assertTrue(tools.isSystemLevel(metaClass.getPropertyNN("password")));
     }
 }

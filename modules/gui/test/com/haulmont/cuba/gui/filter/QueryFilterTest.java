@@ -28,7 +28,7 @@ public class QueryFilterTest extends CubaClientTestCase {
 
     @Before
     public void setUp() {
-        addEntityPackage("com.haulmont.cuba.core.entity");
+        addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
 
         new NonStrictExpectations() {

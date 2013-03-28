@@ -13,12 +13,17 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.Versioned;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -190,6 +195,24 @@ public class MetadataTools {
     }
 
     /**
+     * Determine whether the given entity is marked as {@link SystemLevel}.
+     */
+    public boolean isSystemLevel(MetaClass metaClass) {
+        Objects.requireNonNull(metaClass, "metaClass is null");
+        Boolean systemLevel = (Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName());
+        return systemLevel == null ? false : systemLevel;
+    }
+
+    /**
+     * Determine whether the given property is marked as {@link SystemLevel}.
+     */
+    public boolean isSystemLevel(MetaProperty metaProperty) {
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
+        Boolean systemLevel = (Boolean) metaProperty.getAnnotations().get(SystemLevel.class.getName());
+        return systemLevel == null ? false : systemLevel;
+    }
+
+    /**
      * Determine whether the given annotation is present in the object's class or in any of its superclasses.
      * @param object            entity instance
      * @param property          property name
@@ -227,18 +250,36 @@ public class MetadataTools {
     }
 
     /**
-     * @return collection of the properties included into entity's name pattern (see {@link NamePattern}) for the given
-     * metaclass
+     * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
+     * @param metaClass     entity metaclass
+     * @return collection of the name pattern properties
      */
+    @Nonnull
     public Collection<MetaProperty> getNamePatternProperties(MetaClass metaClass) {
+        return getNamePatternProperties(metaClass, false);
+    }
+
+    /**
+     * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
+     * @param metaClass     entity metaclass
+     * @param useOriginal   if true, and if the given metaclass doesn't define a {@link NamePattern} and if it is an
+     *                      extended entity, this method tries to find a name pattern in an original entity
+     * @return collection of the name pattern properties
+     */
+    @Nonnull
+    public Collection<MetaProperty> getNamePatternProperties(MetaClass metaClass, boolean useOriginal) {
         Collection<MetaProperty> properties = new ArrayList<>();
-        Class javaClass = metaClass.getJavaClass();
-        Annotation annotation = javaClass.getAnnotation(NamePattern.class);
-        if (annotation != null) {
-            String value = StringUtils.substringAfter(((NamePattern) annotation).value(), "|");
+        String pattern = (String) metaClass.getAnnotations().get(NamePattern.class.getName());
+        if (pattern == null && useOriginal) {
+            MetaClass original = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+            if (original != null)
+                pattern = (String) original.getAnnotations().get(NamePattern.class.getName());
+        }
+        if (!StringUtils.isBlank(pattern)) {
+            String value = StringUtils.substringAfter(pattern, "|");
             String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
             for (String field : fields) {
-                properties.add(metaClass.getProperty(field));
+                properties.add(metaClass.getPropertyNN(field));
             }
         }
         return properties;

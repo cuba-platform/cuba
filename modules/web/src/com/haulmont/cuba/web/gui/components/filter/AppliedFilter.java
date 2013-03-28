@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 /**
  * @author krivopustov
  * @version $Id$
@@ -30,6 +29,10 @@ public class AppliedFilter {
 
     private FilterEntity filterEntity;
     private LinkedHashMap<String, String> params = new LinkedHashMap<>();
+
+    protected Messages messages = AppBeans.get(Messages.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+
 
     public AppliedFilter(FilterEntity filterEntity, ComponentContainer container) {
         this.filterEntity = filterEntity;
@@ -67,11 +70,11 @@ public class AppliedFilter {
             return ((Instance) value).getInstanceName();
 
         if (value instanceof Enum)
-            return AppBeans.get(Messages.class).getMessage((Enum) value);
+            return messages.getMessage((Enum) value);
 
         Datatype datatype = Datatypes.get(value.getClass());
         if (datatype != null)
-            return datatype.format(value, AppBeans.get(UserSessionSource.class).getLocale());
+            return datatype.format(value, userSessionSource.getLocale());
 
         return value.toString();
     }

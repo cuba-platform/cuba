@@ -92,8 +92,7 @@ public class ExtendedEntities {
      */
     @Nullable
     public Class getExtendedClass(MetaClass originalMetaClass) {
-        Class extClass = (Class) originalMetaClass.getAnnotations().get(ExtendedBy.class.getName());
-        return extClass == null ? originalMetaClass.getJavaClass() : extClass;
+        return (Class) originalMetaClass.getAnnotations().get(ExtendedBy.class.getName());
     }
 
     /**
@@ -103,8 +102,7 @@ public class ExtendedEntities {
      */
     @Nullable
     public Class getOriginalClass(MetaClass extendedMetaClass) {
-        Class originalClass = (Class) extendedMetaClass.getAnnotations().get(Extends.class.getName());
-        return originalClass == null ? null : originalClass;
+        return (Class) extendedMetaClass.getAnnotations().get(Extends.class.getName());
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -13,11 +13,11 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.SetValueEntity;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.ObjectUtils;
@@ -28,9 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractParam<T> {
 
@@ -56,6 +55,9 @@ public abstract class AbstractParam<T> {
     protected boolean required;
     protected List<String> runtimeEnum;
     protected UUID categoryAttrId;
+
+    protected Messages messages = AppBeans.get(Messages.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     private List<ValueListener> listeners = new ArrayList<ValueListener>();
 
@@ -157,9 +159,7 @@ public abstract class AbstractParam<T> {
 
             case DATATYPE:
             case UNARY:
-                Datatype datatype = Datatypes.get(javaClass);
-                if (datatype == null)
-                    throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
+                Datatype datatype = Datatypes.getNN(javaClass);
                 //hardcode for compatibility with old datatypes
                 if (datatype instanceof DateTimeDatatype) {
                     try {
@@ -187,9 +187,8 @@ public abstract class AbstractParam<T> {
     }
 
     private Object loadEntity(String id) {
-        DataService service = ServiceLocator.getDataService();
         LoadContext ctx = new LoadContext(javaClass).setId(UUID.fromString(id));
-        Entity entity = service.load(ctx);
+        Entity entity = AppBeans.get(DataService.class).load(ctx);
         return entity;
     }
 
@@ -226,10 +225,7 @@ public abstract class AbstractParam<T> {
 
             case DATATYPE:
             case UNARY:
-                Datatype datatype = Datatypes.get(javaClass);
-                if (datatype == null)
-                    throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
-
+                Datatype<Object> datatype = Datatypes.getNN(javaClass);
                 return datatype.format(v);
 
             default:
@@ -249,18 +245,15 @@ public abstract class AbstractParam<T> {
                     v.toString();
 
             case ENUM:
-                return MessageProvider.getMessage((Enum) v);
+                return messages.getMessage((Enum) v);
 
             case RUNTIME_ENUM:
                 return (String) v;
 
             case DATATYPE:
             case UNARY:
-                Datatype datatype = Datatypes.get(javaClass);
-                if (datatype == null)
-                    throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
-
-                return datatype.format(v, UserSessionProvider.getLocale());
+                Datatype<Object> datatype = Datatypes.getNN(javaClass);
+                return datatype.format(v, userSessionSource.getLocale());
 
             default:
                 throw new IllegalStateException("Param type unknown");

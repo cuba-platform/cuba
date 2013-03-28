@@ -1,17 +1,14 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Ilya Grachev
- * Created: 03.06.2009 18:42:08
- *
- * $Id$
  */
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
@@ -20,7 +17,10 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.UUID;
 
 /**
- * Base class for non-persistent entities
+ * Base class for not persistent entities.
+ *
+ * @author Grachev
+ * @version $Id$
  */
 public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID> {
 
@@ -42,16 +42,23 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
         }
     }
 
+    @Override
     public UUID getUuid() {
         return uuid;
     }
 
+    @Override
     public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(getClass());
+        return AppBeans.get(Metadata.class).getSession().getClass(getClass());
     }
 
+    @Override
     public UUID getId() {
         return uuid;
+    }
+
+    public void setId(UUID id) {
+        this.uuid = id;
     }
 
     @Override

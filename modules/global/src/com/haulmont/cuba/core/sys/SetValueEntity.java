@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 /**
  * <p>$Id$</p>
@@ -18,6 +19,7 @@ import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
  */
 @NamePattern("%s|value")
 @MetaClass(name = "sys$SetValue")
+@SystemLevel
 public class SetValueEntity extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = -1652898874022057451L;
 

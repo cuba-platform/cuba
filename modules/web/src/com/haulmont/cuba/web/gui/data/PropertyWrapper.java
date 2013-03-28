@@ -105,7 +105,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
                     if (newValue.getClass().equals(datatype.getJavaClass())) {
                         return newValue;
                     } else {
-                        Datatype newValueDatatype = Datatypes.get(newValue.getClass());
+                        Datatype newValueDatatype = Datatypes.getNN(newValue.getClass());
                         String str = newValueDatatype.format(newValue);
                         try {
                             obj = datatype.parse(str);

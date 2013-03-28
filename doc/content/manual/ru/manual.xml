@@ -111,7 +111,7 @@
     <title>Конфигурационные файлы</title>
     <section id="context.xml">
       <title>context.xml</title>
-      <para>Файл <filename>context.xml</filename> является дескриптором развертывания приложения на сервере <application>Apache Tomcat</application>. В развернутом приложении этот файл располагается  в подкаталоге <filename>META-INF</filename> каталога веб-приложения или WAR-файла, например <filename>tomcat/webapps/app-core/META-INF/context.xml</filename>. В проекте файлы данного типа находятся в каталогах <filename>/web/META-INF</filename> модулей <structname>core</structname>, <structname>web</structname>, <structname>portal</structname>.</para>
+      <para>Файл <filename>context.xml</filename> является дескриптором развертывания приложения на сервере <application>Apache Tomcat</application>. В развернутом приложении этот файл располагается  в подкаталоге <filename>META-INF</filename> каталога веб-приложения или WAR-файла, например, <filename>tomcat/webapps/app-core/META-INF/context.xml</filename>. В проекте файлы данного типа находятся в каталогах <filename>/web/META-INF</filename> модулей <structname>core</structname>, <structname>web</structname>, <structname>portal</structname>.</para>
       <para>Основное предназначение файла для блока <structname>Middleware</structname> - определить источник данных и поместить его в JNDI под именем, заданным свойством приложения <property>
           <link linkend="cuba.dataSourceJndiName">cuba.dataSourceJndiName</link>
         </property>.</para>
@@ -229,7 +229,7 @@
                   <para><sgmltag>id</sgmltag> - идентификатор элемента, использующийся для формирования локализованного  названия (см. ниже)</para>
                 </listitem>
                 <listitem>
-                  <para><sgmltag>insertBefore</sgmltag>, <sgmltag>insertAfter</sgmltag> - идентификатор элемента меню, перед/после которого нужно вставить данный элемент. Используется в прикладном проекте для вставки элемента в нужное место меню, определенного в аналогичных файлах базовых проектов. Разумеется использовать для данного элемента нужно какой-нибудь один из этих атрибутов.</para>
+                  <para><sgmltag>insertBefore</sgmltag>, <sgmltag>insertAfter</sgmltag> - идентификатор элемента меню, перед/после которого нужно вставить данный элемент. Используется в прикладном проекте для вставки элемента в нужное место меню, определенного в аналогичных файлах базовых проектов. Разумеется, использовать для данного элемента нужно какой-нибудь один из этих атрибутов.</para>
                 </listitem>
               </itemizedlist></para>
             <para>Элементы menu:<itemizedlist>
@@ -318,12 +318,12 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <para><sgmltag>metadata</sgmltag> - корневой элемент</para>
       <para>Элементы <sgmltag>metadata</sgmltag>:<itemizedlist>
           <listitem>
-            <para><sgmltag>metadata-model</sgmltag> - корень элементов регистрации неперсистентных сущностей</para>
-            <para>Элементы <sgmltag>
+            <para><sgmltag>metadata-model</sgmltag> - описатель метамодели проекта</para>
+            <para>Атрибуты <sgmltag>
                 <sgmltag>metadata-model</sgmltag>
-              </sgmltag>:<itemizedlist>
+              </sgmltag>: <itemizedlist>
                 <listitem>
-                  <para><sgmltag>class</sgmltag> - класс неперсистентной сущности</para>
+                  <para><sgmltag>root-package</sgmltag> - корневой пакет проекта, начиная с которого будет производиться поиск классов сущностей</para>
                 </listitem>
               </itemizedlist></para>
           </listitem>
@@ -332,7 +332,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
             <para>Элементы <sgmltag>annotations</sgmltag>:<itemizedlist>
                 <listitem>
                   <para><sgmltag>entity</sgmltag> - элемент сущности, которой присваиваются мета-аннотации</para>
-                  <para>Атрибуты entity:<itemizedlist>
+                  <para>Атрибуты <sgmltag>entity</sgmltag>:<itemizedlist>
                       <listitem>
                         <para><sgmltag>class</sgmltag> - класс сущности</para>
                       </listitem>
@@ -356,27 +356,14 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         </itemizedlist></para>
       <para>Пример:<programlisting>&lt;metadata xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/metadata.xsd&quot;&gt;
 
-    &lt;metadata-model&gt;
-        &lt;class&gt;com.haulmont.refapp.core.entity.TransientDriver&lt;/class&gt;
-        &lt;class&gt;com.haulmont.refapp.core.entity.UserContainer&lt;/class&gt;
-    &lt;/metadata-model&gt;
+    &lt;metadata-model root-package=&quot;com.sample.sales&quot;/&gt;
 
     &lt;annotations&gt;
-        &lt;entity class=&quot;com.haulmont.refapp.core.entity.Driver&quot;&gt;
+        &lt;entity class=&quot;com.haulmont.cuba.security.entity.User&quot;&gt;
             &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory&quot; 
                         value=&quot;true&quot;/&gt;
             &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.EnableRestore&quot; 
                         value=&quot;true&quot;/&gt;
-        &lt;/entity&gt;
-
-        &lt;entity class=&quot;com.haulmont.refapp.core.entity.Doc&quot;&gt;
-            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.ExtendedBy&quot;
-                        value=&quot;com.haulmont.refapp.core.entity.ExtDoc&quot;/&gt;
-        &lt;/entity&gt;
-
-        &lt;entity class=&quot;com.haulmont.refapp.core.entity.ExtDoc&quot;&gt;
-            &lt;annotation name=&quot;com.haulmont.cuba.core.entity.annotation.Extends&quot;
-                        value=&quot;com.haulmont.refapp.core.entity.Doc&quot;/&gt;
         &lt;/entity&gt;
     &lt;/annotations&gt;
 
@@ -442,7 +429,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
             <para><sgmltag>screen</sgmltag> - описатель экрана</para>
             <para>Атрибуты <sgmltag>screen</sgmltag>:<itemizedlist>
                 <listitem>
-                  <para><sgmltag>id</sgmltag> - идентификатор экрана, по которому он доступен в программном коде (например в методах <code>IFrame.openWindow()</code> и т.п.) и в <filename>
+                  <para><sgmltag>id</sgmltag> - идентификатор экрана, по которому он доступен в программном коде (например, в методах <code>IFrame.openWindow()</code> и т.п.) и в <filename>
                       <link linkend="menu.xml">menu.xml</link>
                     </filename>.</para>
                 </listitem>
@@ -540,7 +527,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
                       </listitem>
                       <listitem>
                         <para><sgmltag>lazy</sgmltag> - для ссылочных атрибутов признак того, что данный атрибут нужно не  включать в Fetch Plan, а загружать отдельным SQL запросом, инициированным обращением к атрибуту. Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
-                        <para>Рекомендуется использовать <sgmltag>lazy</sgmltag> для атрибутов-коллекций, если таких атрибутов больше одного для данного графа представлениий. Т.е. устанавливайте  <literal>lazy = &quot;true&quot;</literal> для всех коллекций, кроме одной.</para>
+                        <para>Рекомендуется использовать <sgmltag>lazy</sgmltag> для атрибутов-коллекций, если таких атрибутов больше одного для данного графа представлений. Т.е. устанавливайте  <literal>lazy = &quot;true&quot;</literal> для всех коллекций, кроме одной.</para>
                       </listitem>
                     </itemizedlist></para>
                   <para>Элементы <sgmltag>property</sgmltag>:<itemizedlist>
@@ -636,7 +623,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         &lt;url-pattern&gt;/api/*&lt;/url-pattern&gt;
     &lt;/servlet-mapping&gt;
 &lt;/web-app&gt;</programlisting></para>
-      <para>В элементах <sgmltag>context-param</sgmltag> задаются иницилизирующие параметры объекта <code>ServletContext</code> данного веб-приложения. Здесь определен параметр <literal>appPropertiesConfig</literal>, значением которого является список <link linkend="app_properties_files">файлов свойств приложения</link>.</para>
+      <para>В элементах <sgmltag>context-param</sgmltag> задаются инициализирующие параметры объекта <code>ServletContext</code> данного веб-приложения. Здесь определен параметр <literal>appPropertiesConfig</literal>, значением которого является список <link linkend="app_properties_files">файлов свойств приложения</link>.</para>
       <para>В элементе <sgmltag>listener</sgmltag> задается класс слушателя, реализующего интерфейс <code>ServletContextListener</code>. В блоке <structname>Middleware</structname> CUBA-приложения в качестве слушателя должен использоваться класс <code>AppContextLoader</code>, выполняющий инициализацию <code>
           <link linkend="appContext">AppContext</link>
         </code>.</para>
@@ -773,7 +760,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <term>cuba.confDir</term>
         <listitem>
           <para>Конфигурационный параметр, задающий расположение <link linkend="conf_dir">каталога конфигурации</link> данного <link linkend="app_tiers">блока приложения</link>.</para>
-          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/conf/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/conf</filename> в подкаталоге с именем текущего веб-приложения, например <filename>tomcat/conf/app-core</filename>.</para>
+          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/conf/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/conf</filename> в подкаталоге с именем текущего веб-приложения, например, <filename>tomcat/conf/app-core</filename>.</para>
           <para>Значение по умолчанию для блока <structname>Desktop Client</structname>: <literal>${<link linkend="cuba.desktop.home">cuba.desktop.home</link>}/conf</literal>. </para>
           <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
@@ -802,7 +789,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <term>cuba.dataDir</term>
         <listitem>
           <para>Конфигурационный параметр, задающий расположение <link linkend="work_dir">рабочего каталога</link>  данного <link linkend="app_tiers">блока приложения</link>.</para>
-          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/work/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/work</filename> в подкаталоге с именем текущего веб-приложения, например <filename>tomcat/work/app-core</filename>.</para>
+          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/work/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/work</filename> в подкаталоге с именем текущего веб-приложения, например, <filename>tomcat/work/app-core</filename>.</para>
           <para>Значение по умолчанию для блока <structname>Desktop Client</structname>: <literal>${<link linkend="cuba.desktop.home">cuba.desktop.home</link>}/work</literal>. </para>
           <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
@@ -829,7 +816,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <term>cuba.defaultQueryTimeoutSec</term>
         <listitem>
           <para>Задает <link linkend="transaction_timeout">таймаут транзакции</link> по умолчанию.</para>
-          <para>Значение по умолчанию: <literal>0</literal>, означает что таймаут отсутствует.</para>
+          <para>Значение по умолчанию: <literal>0</literal>, означает, что таймаут отсутствует.</para>
           <para>Интерфейс: <code>ServerConfig</code></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
@@ -932,8 +919,8 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <term>cuba.gui.useSaveConfirmation</term>
         <listitem>
           <para>Определяет форму диалога, возникающего при попытке закрытия <link linkend="screens">экрана</link>, имеющего несохраненные изменения в источниках данных.</para>
-          <para>Значение <literal>true</literal> задает форму с тремя варантами выбора: сохранить изменения, не сохранять, либо не закрывать экран.</para>
-          <para>Значение <literal>false</literal> задает форму с двумя варантами: закрыть экран не сохраняя изменений, либо не закрывать экран.</para>
+          <para>Значение <literal>true</literal> задает форму с тремя вариантами выбора: сохранить изменения, не сохранять, либо не закрывать экран.</para>
+          <para>Значение <literal>false</literal> задает форму с двумя вариантами: закрыть экран не сохраняя изменений, либо не закрывать экран.</para>
           <para>Значение по умолчанию: <code>true</code></para>
           <para>Интерфейс: <code>ClientConfig</code></para>
           <para>Используется в блоках <structname>Web Client</structname> и   <structname>Desktop Client</structname>.</para>
@@ -1108,7 +1095,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <varlistentry id="cuba.portal.anonymousUserLogin">
         <term>cuba.portal.anonymousUserLogin</term>
         <listitem>
-          <para>Логин пользователя системы, который используется для создания аниномной пользовательской сессии в блоке <structname>Web Portal</structname>. </para>
+          <para>Логин пользователя системы, который используется для создания анонимной пользовательской сессии в блоке <structname>Web Portal</structname>. </para>
           <para>Пользователь с таким логином должен быть создан в подсистеме безопасности, и ему должны быть назначены соответствующие права. Пароль пользователя игнорируется, так как анонимная сессия портала создается методом <code>
               <link linkend="login">loginTrusted()</link>
             </code> с передачей пароля, указанного в свойстве <property>
@@ -1129,6 +1116,16 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
             </code>.</para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
           <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.springContextConfig_1">
+        <term>cuba.restApiUrl</term>
+        <listitem>
+          <para>URL, по которому доступен <link linkend="rest_api">REST API</link> приложения.  </para>
+          <para>Используется, в частности, для отображения модели данных в веб-клиенте через обращение к команде REST API <code>printDomain</code>.</para>
+          <para>Интерфейс:  <code>GlobalConfig</code></para>
+          <para>Может использоваться во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+          <para>Значение по умолчанию: <literal>http://localhost:8080/app-portal/api</literal></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.schedulingActive">
@@ -1157,7 +1154,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <term>cuba.tempDir</term>
         <listitem>
           <para>Конфигурационный параметр, задающий расположение <link linkend="temp_dir">временного каталога</link>  данного <link linkend="app_tiers">блока приложения</link>.</para>
-          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/temp/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/temp</filename> в подкаталоге с именем текущего веб-приложения, например <filename>tomcat/temp/app-core</filename>.</para>
+          <para>Значение по умолчанию для блоков <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>: <literal>${catalina.home}/temp/${<link linkend="cuba.webContextName">cuba.webContextName</link>}</literal>, что в случае стандартного развертывания в <application>Tomcat</application> означает расположение внутри каталога <filename>tomcat/temp</filename> в подкаталоге с именем текущего веб-приложения, например, <filename>tomcat/temp/app-core</filename>.</para>
           <para>Значение по умолчанию для блока <structname>Desktop Client</structname>: <literal>${<link linkend="cuba.desktop.home">cuba.desktop.home</link>}/temp</literal>. </para>
           <para>Интерфейс: <code>GlobalConfig</code></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
@@ -1236,6 +1233,16 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Конфигурационный параметр, задающий набор файлов <link linkend="views.xml">views.xml</link>, автоматически развертываемых на старте приложения. См. <xref linkend="views"/></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
           <para>Пример:<programlisting>cuba.viewsConfig=cuba-views.xml reports-views.xml views.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.springContextConfig_2">
+        <term>cuba.webAppUrl</term>
+        <listitem>
+          <para>URL, по которому доступен Web Client  приложения.  </para>
+          <para>Используется, в частности, для формирования <link linkend="link_to_screen">ссылок на экраны</link> приложения извне, а также классом <code>ScreenHistorySupport</code>.</para>
+          <para>Интерфейс:  <code>GlobalConfig</code></para>
+          <para>Может использоваться во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
+          <para>Значение по умолчанию: <literal>http://localhost:8080/app</literal></para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.windowConfig">

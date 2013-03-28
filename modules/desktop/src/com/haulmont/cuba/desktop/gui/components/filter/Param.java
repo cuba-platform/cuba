@@ -69,7 +69,7 @@ public class Param extends AbstractParam<JComponent> {
 
         switch (type) {
             case DATATYPE:
-                component = createDatatypeField(Datatypes.get(javaClass));
+                component = createDatatypeField(Datatypes.getNN(javaClass));
                 break;
             case ENTITY:
                 component = createEntityLookup();
@@ -106,9 +106,6 @@ public class Param extends AbstractParam<JComponent> {
     }
 
     private JComponent createDatatypeField(Datatype datatype) {
-        if (datatype == null)
-            throw new IllegalStateException("Unable to find Datatype for " + javaClass);
-
         JComponent component;
 
         if (String.class.equals(javaClass)) {

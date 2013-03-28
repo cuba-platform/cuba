@@ -73,25 +73,30 @@ public abstract class App implements Serializable {
     private String clientAddress;
 
     public App() {
-        Configuration configuration = AppBeans.get(Configuration.class);
+        try {
+            Configuration configuration = AppBeans.get(Configuration.class);
 
-        webConfig = configuration.getConfig(WebConfig.class);
-        globalConfig = configuration.getConfig(GlobalConfig.class);
+            webConfig = configuration.getConfig(WebConfig.class);
+            globalConfig = configuration.getConfig(GlobalConfig.class);
 
-        appLog = new AppLog();
+            appLog = new AppLog();
 
-        connection = createConnection();
-        windowManager = createWindowManager();
-        exceptionHandlers = new ExceptionHandlers(this);
-        cookies = new AppCookies();
-        timers = new AppTimers(this);
-        backgroundTaskManager = new BackgroundTaskManager();
+            connection = createConnection();
+            windowManager = createWindowManager();
+            exceptionHandlers = new ExceptionHandlers(this);
+            cookies = new AppCookies();
+            timers = new AppTimers(this);
+            backgroundTaskManager = new BackgroundTaskManager();
 
-        String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
-        if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
-            String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
-            if (StringUtils.isNotEmpty(timestamp))
-                this.webResourceTimestamp = timestamp;
+            String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+            if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
+                String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
+                if (StringUtils.isNotEmpty(timestamp))
+                    this.webResourceTimestamp = timestamp;
+            }
+        } catch (Exception e) {
+            log.fatal("Error initializing application", e);
+            throw new Error("Error initializing application. See log for details.");
         }
     }
 

@@ -11,7 +11,7 @@
       </imageobject>
     </mediaobject>
   </figure>
-  <para>В приведенном варианте приложение обеспечивает отсутствие единой точки отказа, балансировку нагрузки и подключение различных типов клиентов. Однако в простейшем случае серверная часть приложения может быть развернута на одном компьютере, содержащем в том числе и базу данных. </para>
+  <para>В приведенном варианте приложение обеспечивает отсутствие единой точки отказа, балансировку нагрузки и подключение различных типов клиентов. Однако в простейшем случае серверная часть приложения может быть развернута на одном компьютере, содержащем, в том числе, и базу данных. </para>
   <section>
     <title>Каталоги приложения</title>
     <para>В данном разделе описываются каталоги файловой системы, используемые различными <link linkend="app_tiers">блоками приложения</link> во время выполнения.</para>
@@ -53,7 +53,7 @@
         </itemizedlist></para>
       <para>Расположение конфигурационного каталога определяется свойством приложения <property>
           <link linkend="cuba.confDir">cuba.confDir</link>
-        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/conf</filename>.</para>
+        </property>. Для блоков Middleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/conf</filename>.</para>
     </section>
     <section id="work_dir">
       <title>Рабочий каталог</title>
@@ -63,7 +63,7 @@
         </filename> и <filename>orm.xml</filename>.</para>
       <para>Расположение рабочего каталога определяется свойством приложения <property>
           <link linkend="cuba.dataDir">cuba.dataDir</link>
-        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/work</filename>.</para>
+        </property>. Для блоков Middleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/work</filename>.</para>
     </section>
     <section id="log_dir">
       <title>Каталог журналов</title>
@@ -73,13 +73,13 @@
         </literal>.</para>
       <para>Данный каталог может быть также использован для сохранения произвольной информации о выполнении приложения. Путь к каталогу журналов определяется свойством приложения <property>
           <link linkend="cuba.logDir">cuba.logDir</link>
-        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это каталог <filename>tomcat/logs</filename>.</para>
+        </property>. Для блоков Middleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это каталог <filename>tomcat/logs</filename>.</para>
     </section>
     <section id="temp_dir">
       <title>Временный каталог</title>
       <para>Данный каталог может быть использован для создания произвольных временных файлов во время  выполнения приложения. Путь к временному каталогу определяется свойством приложения <property>
           <link linkend="cuba.tempDir">cuba.tempDir</link>
-        </property>. Для блоков Midlleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/temp</filename>.</para>
+        </property>. Для блоков Middleware, Web Client и Web Portal  в стандартном варианте развертывания в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/temp</filename>.</para>
     </section>
     <section id="db_dir">
       <title>Каталог скриптов базы данных</title>
@@ -87,7 +87,7 @@
       <para>Структура каталога скриптов повторяет описанную в <xref linkend="db_scripts"/>, но имеет один дополнительный верхний уровень, разделяющий скрипты используемых <link linkend="base_projects">базовых проектов</link> и самого приложения. Нумерация каталогов верхнего уровня определяется во время сборки проекта.</para>
       <para>Расположение рабочего каталога определяется свойством приложения <property>
           <link linkend="cuba.dbDir">cuba.dbDir</link>
-        </property>. В стандартном варианте развертывания в <application>Tomcat</application> это подкаталог <filename>WEB-INF/db</filename>  каталога веб-приложения среднего слоя, например <filename>tomcat/webapps/app-core/WEB-INF/db</filename>.</para>
+        </property>. В стандартном варианте развертывания в <application>Tomcat</application> это подкаталог <filename>WEB-INF/db</filename>  каталога веб-приложения среднего слоя, например, <filename>tomcat/webapps/app-core/WEB-INF/db</filename>.</para>
     </section>
   </section>
   <section>
@@ -96,8 +96,8 @@
       <title>Встроенная JMX консоль</title>
       <para>Модуль Web Client базового проекта <structname>cuba</structname> платформы содержит средство просмотра и редактирования JMX объектов. Точкой входа в этот инструмент является экран <filename>com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml</filename>, зарегистрированный под идентификатором <code>jmxcontrol$DisplayMbeans</code> и в стандартном меню доступный через пункт <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Консоль JMX</guimenuitem>.</para>
       <para>Без дополнительной настройки консоль отображает все JMX объекты, зарегистрированные в JVM, на которой работает блок Web Client, к которому в данный момент подключен пользователь. Соответственно, в простейшем случае развертывания всех блоков приложения в одном экземпляре веб-контейнера консоль имеет доступ к JMX бинам всех уровней, а также к JMX объектам самой JVM и веб-контейнера. </para>
-      <para>Имена бинов приложения имеют префикс, соответсвующий имени веб-приложения, их содержащего. Например, бин <code>app-core.cuba:type=CachingFacade</code> загружен веб-приложением <structname>app-core</structname>, реализующим блок Middleware, а бин <code>app.cuba:type=CachingFacade</code> загружен веб-приложением <structname>app</structname>, реализующим блок Web Client.</para>
-      <para>Консоль JMX может также работать с JMX объектами произвольной удаленной JVM. Это актуально в случае развертывания блоков приложения на нескольких экземплярах веб-контейнера, например отдельно Web Client и Middleware. </para>
+      <para>Имена бинов приложения имеют префикс, соответствующий имени веб-приложения, их содержащего. Например, бин <code>app-core.cuba:type=CachingFacade</code> загружен веб-приложением <structname>app-core</structname>, реализующим блок Middleware, а бин <code>app.cuba:type=CachingFacade</code> загружен веб-приложением <structname>app</structname>, реализующим блок Web Client.</para>
+      <para>Консоль JMX может также работать с JMX объектами произвольной удаленной JVM. Это актуально в случае развертывания блоков приложения на нескольких экземплярах веб-контейнера, например, отдельно Web Client и Middleware. </para>
       <para>Для подключения к удаленной JVM необходимо в поле <guilabel>Соединение JMX</guilabel>  консоли выбрать созданное ранее соединение, либо вызвать экран создания нового соединения:</para>
       <figure>
         <title>Редактирование JMX соединения</title>

@@ -80,6 +80,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
     @Inject
     private CheckBox assignedOnlyCheckBox;
 
+    @Inject
+    private CheckBox systemLevelCheckBox;
+
     /* Checkboxes */
 
     private CheckBox allModifyCheck;
@@ -230,7 +233,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         attributeTargetsDs.setPermissionDs(propertyPermissionsDs);
         attributeTargetsDs.setFilter(
-                new EntityNameFilter<MultiplePermissionTarget>(assignedOnlyCheckBox, entityFilter));
+                new EntityNameFilter<MultiplePermissionTarget>(
+                        metadata, assignedOnlyCheckBox, systemLevelCheckBox, entityFilter));
 
         propertyPermissionsDs.refresh();
 

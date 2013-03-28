@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 17.03.2009 17:12:25
- *
- * $Id$
  */
 package com.haulmont.cuba.security.entity;
 
@@ -25,17 +20,18 @@ import org.apache.openjpa.persistence.Persistent;
 
 /**
  * Record containing information about entity lifecycle event.
- * Created by <code>EntityLog</code> MBean.
+ * Created by <code>EntityLog</code> bean.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$EntityLog")
 @Table(name = "SEC_ENTITY_LOG")
 @Listeners("com.haulmont.cuba.security.listener.EntityLogItemDetachListener")
 @SystemLevel
-public class EntityLogItem extends BaseUuidEntity
-{
-    private static final long serialVersionUID = 5859030306889056606L;
+public class EntityLogItem extends BaseUuidEntity {
 
-    public static final int VALUE_LEN = 1500;
+    private static final long serialVersionUID = 5859030306889056606L;
 
     public enum Type implements EnumClass<String>
     {
@@ -82,7 +78,6 @@ public class EntityLogItem extends BaseUuidEntity
     @Persistent
     private UUID entityId;
 
-//    @OneToMany(mappedBy = "logItem", fetch = FetchType.LAZY)
     @Transient
     @MetaProperty
     private Set<EntityLogAttr> attributes;

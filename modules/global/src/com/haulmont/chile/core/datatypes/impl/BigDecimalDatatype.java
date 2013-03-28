@@ -52,7 +52,7 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
             return format(value);
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
-        NumberFormat format = new DecimalFormat(formatStrings.getDoubleFormat(), formatSymbols);
+        NumberFormat format = new DecimalFormat(formatStrings.getDecimalFormat(), formatSymbols);
         return format.format(value);
     }
 
@@ -89,7 +89,7 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
             return parse(value);
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
-        DecimalFormat format = new DecimalFormat(formatStrings.getDoubleFormat(), formatSymbols);
+        DecimalFormat format = new DecimalFormat(formatStrings.getDecimalFormat(), formatSymbols);
         format.setParseBigDecimal(true);
         return (BigDecimal) parse(value, format);
     }

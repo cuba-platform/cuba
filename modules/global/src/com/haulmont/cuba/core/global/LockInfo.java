@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.Date;
  * @version $Id$
  */
 @MetaClass(name = "sys$LockInfo")
+@SystemLevel
 public class LockInfo extends AbstractNotPersistentEntity {
 
     private static final long serialVersionUID = -1991047219638006414L;

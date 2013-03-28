@@ -31,8 +31,9 @@
     <layout expand="contentPane">
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
             <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly" align="MIDDLE_LEFT"/>
+            <checkBox id="systemLevelCheckBox" caption="msg://systemLevel" align="MIDDLE_LEFT"/>
             <label width="20"/>
-            <label value="msg://entityFilter"/>
+            <label value="msg://entityFilter" align="MIDDLE_RIGHT"/>
             <textField id="entityFilter" width="300"/>
             <button id="applyFilterBtn" caption="msg://action.apply" invoke="applyFilter"/>
             <label id="spacer"/>

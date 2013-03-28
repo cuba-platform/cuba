@@ -1,0 +1,2 @@
+cuba.desktop.resourceLocations = com/haulmont/cuba/desktop/res \
+                                 com/haulmont/ext/desktop/res

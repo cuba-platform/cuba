@@ -164,7 +164,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                         messages.getMainMessage("entityLocked.msg"),
                         String.format(messages.getMainMessage("entityLocked.desc"),
                                 lockInfo.getUser().getLogin(),
-                                Datatypes.get(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
+                                Datatypes.getNN(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
                         ),
                         IFrame.NotificationType.HUMANIZED
                 );

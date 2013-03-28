@@ -196,7 +196,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             TextField textField = factory.createComponent(TextField.NAME);
             textField.setId("defaultValue");
             textField.setCaption(getMessage("defaultValue"));
-            textField.setDatatype(Datatypes.get(String.class));
+            textField.setDatatype(Datatypes.getNN(String.class));
             textField.setWidth(FIELD_WIDTH);
 
             textField.addListener(new ValueListener() {

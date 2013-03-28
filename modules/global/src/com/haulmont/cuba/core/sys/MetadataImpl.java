@@ -7,15 +7,18 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Map;
@@ -25,7 +28,8 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-public abstract class AbstractMetadata implements Metadata {
+@ManagedBean(Metadata.NAME)
+public class MetadataImpl implements Metadata {
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -41,10 +45,13 @@ public abstract class AbstractMetadata implements Metadata {
     protected MetadataTools tools;
 
     @Inject
-    private PersistentEntitiesMetadataLoader persistentEntitiesMetadataLoader;
+    protected PersistentEntitiesMetadataLoader metadataLoader;
 
     @Inject
-    private TransientEntitiesMetadataLoader transientEntitiesMetadataLoader;
+    protected Resources resources;
+
+    @Inject
+    protected MetadataBuildSupport metadataBuildSupport;
 
     private static final Pattern JAVA_CLASS_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
 
@@ -108,27 +115,51 @@ public abstract class AbstractMetadata implements Metadata {
         log.info("Initializing metadata");
         long startTime = System.currentTimeMillis();
 
-        MetadataBuildInfo metadataBuildInfo = getMetadataBuildInfo();
+        loadMetadata(metadataLoader, metadataBuildSupport.getEntityPackages());
+        metadataLoader.postProcess();
 
-        loadMetadata(persistentEntitiesMetadataLoader, metadataBuildInfo.getPersistentEntitiesPackages());
-        persistentEntitiesMetadataLoader.postProcess();
+        Session session = metadataLoader.getSession();
 
-        Session session = persistentEntitiesMetadataLoader.getSession();
-
-        transientEntitiesMetadataLoader.setSession(session);
-        loadMetadata(transientEntitiesMetadataLoader, metadataBuildInfo.getTransientEntitiesPackages());
-        transientEntitiesMetadataLoader.postProcess();
+        initExtensionMetaAnnotations(session);
 
         for (MetaClass metaClass : session.getClasses()) {
             initMetaAnnotations(session, metaClass);
-            addMetaAnnotationsFromXml(metadataBuildInfo.getEntityAnnotations(), metaClass);
+            addMetaAnnotationsFromXml(metadataBuildSupport.getEntityAnnotations(), metaClass);
         }
 
         this.session = new CachingMetadataSession(session);
+
+        SessionImpl.setSerializationSupportSession(this.session);
+
         log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
-    protected abstract MetadataBuildInfo getMetadataBuildInfo();
+    /**
+     * Initialize connections between extended and base entities.
+     *
+     * @param session metadata session which is being initialized
+     */
+    protected void initExtensionMetaAnnotations(Session session) {
+        for (MetaClass metaClass : session.getClasses()) {
+            Class<?> javaClass = metaClass.getJavaClass();
+
+            Extends extendsAnnotation = javaClass.getAnnotation(Extends.class);
+            if (extendsAnnotation != null) {
+                Class<? extends Entity> superClass = extendsAnnotation.value();
+                metaClass.getAnnotations().put(Extends.class.getName(), superClass);
+
+                MetaClass superMetaClass = session.getClass(superClass);
+                if (superMetaClass == null)
+                    throw new IllegalStateException("No meta class found for " + superClass);
+
+                Object extendedBy = superMetaClass.getAnnotations().get(ExtendedBy.class.getName());
+                if (extendedBy != null && !javaClass.equals(extendedBy))
+                    throw new IllegalStateException(superClass + " is already extended by " + extendedBy);
+
+                superMetaClass.getAnnotations().put(ExtendedBy.class.getName(), javaClass);
+            }
+        }
+    }
 
     /**
      * Initialize entity annotations from class-level Java annotations.
@@ -138,34 +169,61 @@ public abstract class AbstractMetadata implements Metadata {
      * @param metaClass MetaClass instance to assign annotations
      */
     protected void initMetaAnnotations(Session session, MetaClass metaClass) {
+        addMetaAnnotation(metaClass, NamePattern.class.getName(),
+                new AnnotationValue() {
+                    @Override
+                    public Object get(Class<?> javaClass) {
+                        NamePattern annotation = javaClass.getAnnotation(NamePattern.class);
+                        return annotation == null ? null : annotation.value();
+                    }
+                }
+        );
+
+        addMetaAnnotation(metaClass, EnableRestore.class.getName(),
+                new AnnotationValue() {
+                    @Override
+                    public Object get(Class<?> javaClass) {
+                        EnableRestore annotation = javaClass.getAnnotation(EnableRestore.class);
+                        return annotation == null ? null : annotation.value();
+                    }
+                }
+        );
+
+        addMetaAnnotation(metaClass, TrackEditScreenHistory.class.getName(),
+                new AnnotationValue() {
+                    @Override
+                    public Object get(Class<?> javaClass) {
+                        TrackEditScreenHistory annotation = javaClass.getAnnotation(TrackEditScreenHistory.class);
+                        return annotation == null ? null : annotation.value();
+                    }
+                }
+        );
+
+        // @SystemLevel is not propagated down to the hierarchy
         Class<?> javaClass = metaClass.getJavaClass();
+        SystemLevel annotation = javaClass.getAnnotation(SystemLevel.class);
+        if (annotation != null)
+            metaClass.getAnnotations().put(SystemLevel.class.getName(), annotation.value());
+    }
 
-        SystemLevel systemLevel = javaClass.getAnnotation(SystemLevel.class);
-        if (systemLevel != null)
-            metaClass.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
-
-        EnableRestore enableRestore = javaClass.getAnnotation(EnableRestore.class);
-        if (enableRestore != null)
-            metaClass.getAnnotations().put(EnableRestore.class.getName(), enableRestore.value());
-
-        TrackEditScreenHistory trackEditScreenHistory = javaClass.getAnnotation(TrackEditScreenHistory.class);
-        if (trackEditScreenHistory != null)
-            metaClass.getAnnotations().put(TrackEditScreenHistory.class.getName(), trackEditScreenHistory.value());
-
-        Extends extendsAnnotation = javaClass.getAnnotation(Extends.class);
-        if (extendsAnnotation != null) {
-            Class<? extends Entity> superClass = extendsAnnotation.value();
-            metaClass.getAnnotations().put(Extends.class.getName(), superClass);
-
-            MetaClass superMetaClass = session.getClass(superClass);
-            if (superMetaClass == null)
-                throw new IllegalStateException("No meta class found for " + superClass);
-
-            Object extendedBy = superMetaClass.getAnnotations().get(ExtendedBy.class.getName());
-            if (extendedBy != null && !javaClass.equals(extendedBy))
-                throw new IllegalStateException(superClass + " is already extended by " + extendedBy);
-
-            superMetaClass.getAnnotations().put(ExtendedBy.class.getName(), javaClass);
+    /**
+     * Add a meta-annotation from class annotation.
+     *
+     * @param metaClass         entity's meta-class
+     * @param name              meta-annotation name
+     * @param annotationValue   annotation value extractor instance
+     */
+    protected void addMetaAnnotation(MetaClass metaClass, String name, AnnotationValue annotationValue) {
+        Object value = annotationValue.get(metaClass.getJavaClass());
+        if (value == null) {
+            for (MetaClass ancestor : metaClass.getAncestors()) {
+                value = annotationValue.get(ancestor.getJavaClass());
+                if (value != null)
+                    break;
+            }
+        }
+        if (value != null) {
+            metaClass.getAnnotations().put(name, value);
         }
     }
 
@@ -198,5 +256,14 @@ public abstract class AbstractMetadata implements Metadata {
         } else
             val = str;
         return val;
+    }
+
+    /**
+     * Annotation value extractor.
+     * <p/> Implementations are supposed to be passed to {@link #addMetaAnnotation(MetaClass, String, AnnotationValue)}
+     * method.
+     */
+    protected interface AnnotationValue {
+        Object get(Class<?> javaClass);
     }
 }

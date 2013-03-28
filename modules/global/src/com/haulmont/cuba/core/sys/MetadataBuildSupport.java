@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -21,15 +20,13 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
 
     public static final String METADATA_CONFIG = "cuba.metadataConfig";
-    public static final String DEFAULT_METADATA_CONFIG = "cuba-metadata.xml";
 
     @Inject
     private Resources resources;
@@ -38,69 +35,37 @@ public class MetadataBuildSupport {
      * Get the location of non-persistent metadata descriptor
      */
     public String getMetadataConfig() {
-        String xmlPath = AppContext.getProperty(METADATA_CONFIG);
-        if (StringUtils.isBlank(xmlPath))
-            xmlPath = DEFAULT_METADATA_CONFIG;
-        return xmlPath;
+        String config = AppContext.getProperty(METADATA_CONFIG);
+        if (StringUtils.isBlank(config))
+            throw new IllegalStateException(METADATA_CONFIG + " application property is not defined");
+        return config;
     }
 
-    public List<String> getPersistentClassNames() {
-        Object emfBean = AppContext.getApplicationContext().getBean("entityManagerFactory");
-        return ((EntityManagerFactoryInfo) emfBean).getPersistenceUnitInfo().getManagedClassNames();
-    }
-
-    public Collection<String> getPersistentEntitiesPackages() {
-        return getPackages(getPersistentClassNames());
-    }
-
-    public Collection<String> getTransientEntitiesPackages() {
+    public Collection<String> getEntityPackages() {
         String config = getMetadataConfig();
-        Collection<String> packages = new ArrayList<String>();
+        Collection<String> packages = new ArrayList<>();
         StrTokenizer tokenizer = new StrTokenizer(config);
         for (String fileName : tokenizer.getTokenArray()) {
-            getPackages(packages, fileName, "metadata-model");
+            getPackages(packages, fileName);
         }
         return packages;
     }
 
-    private Collection<String> getPackages(List<String> classNames) {
-        List<String> packages = new ArrayList<String>();
-        for (String className : classNames) {
-            String[] parts = className.split("\\.");
-            if (parts.length < 4)
-                throw new IllegalStateException("Invalid persistent class definition: " + className);
-            String packageName = parts[0] + "." + parts[1] + "." + parts[2];
-            if (!packages.contains(packageName))
-                packages.add(packageName);
-        }
-        return packages;
-    }
-
-    private void getPackages(Collection<String> packages, String path, String unitTag, String...unitNames) {
+    private void getPackages(Collection<String> packages, String path) {
         Element root = readXml(path);
 
         for (Element element : Dom4j.elements(root, "include")) {
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
-                getPackages(packages, fileName, unitTag);
+                getPackages(packages, fileName);
             }
         }
 
         //noinspection unchecked
-        for (Element unitElem : (List<Element>) root.elements(unitTag)) {
-            String name = unitElem.attributeValue("name");
-            if (unitNames == null || unitNames.length == 0 || Arrays.binarySearch(unitNames, name) >= 0) {
-                //noinspection unchecked
-                for (Element classElem : ((List<Element>) unitElem.elements("class"))) {
-                    String className = classElem.getText().trim();
-                    String[] parts = className.split("\\.");
-                    if (parts.length < 4)
-                        throw new IllegalStateException("Invalid persistent class definition: " + className);
-                    String packageName = parts[0] + "." + parts[1] + "." + parts[2];
-                    if (!packages.contains(packageName))
-                        packages.add(packageName);
-                }
-            }
+        for (Element unitElem : (List<Element>) root.elements("metadata-model")) {
+            String rootPackage = unitElem.attributeValue("root-package");
+            if (!packages.contains(rootPackage))
+                packages.add(rootPackage);
         }
     }
 

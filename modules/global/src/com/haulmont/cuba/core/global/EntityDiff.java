@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.print.attribute.standard.NumberUp;
 import java.io.Serializable;
@@ -25,6 +26,7 @@ import java.util.List;
  * @author artamonov
  */
 @MetaClass(name = "sys$EntityDiff")
+@SystemLevel
 public class EntityDiff extends AbstractNotPersistentEntity implements Serializable {
 
     private static final long serialVersionUID = -3884249873393845439L;

@@ -103,7 +103,7 @@
         <para>Скачайте последнюю версию <application>JDK 7</application>, например, <filename>jdk-7u5-windows-x64.exe.</filename></para>
       </listitem>
       <listitem>
-        <para>Запустите файл <filename>jdk-7u5-windows-x64.exe</filename> и установите все компоненты следуя инструкциям программы-устновщика.</para>
+        <para>Запустите файл <filename>jdk-7u5-windows-x64.exe</filename> и установите все компоненты следуя инструкциям программы-установщика.</para>
       </listitem>
       <listitem id="path_setting">
         <para>Создайте переменную среды <envar>JAVA_HOME</envar>. В качестве значения переменной окружения <envar>JAVA_HOME</envar> установите путь к  каталогу установки  <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.7.0_05</filename>.</para>

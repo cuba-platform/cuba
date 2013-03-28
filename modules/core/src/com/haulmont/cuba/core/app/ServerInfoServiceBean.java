@@ -6,7 +6,10 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewNotFoundException;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.MetadataBuildSupport;
 
@@ -46,15 +49,6 @@ public class ServerInfoServiceBean implements ServerInfoService {
     @Override
     public String getReleaseTimestamp() {
         return serverInfo.getReleaseTimestamp();
-    }
-
-    @Override
-    public MetadataBuildInfo getMetadataBuildInfo() {
-        return new MetadataBuildInfo(
-                metadataBuildSupport.getPersistentEntitiesPackages(),
-                metadataBuildSupport.getTransientEntitiesPackages(),
-                metadataBuildSupport.getEntityAnnotations()
-        );
     }
 
     @Override

@@ -215,11 +215,14 @@ public class InstanceUtils {
     public static String getInstanceName(Instance instance) {
         Objects.requireNonNull(instance, "instance is null");
 
-        NamePattern annotation = instance.getClass().getAnnotation(NamePattern.class);
-        if (annotation == null) {
+        MetaClass metaClass = instance.getMetaClass();
+        if (metaClass == null)
+            throw new IllegalStateException("Unable to get metaclass for " + instance);
+
+        String pattern = (String) metaClass.getAnnotations().get(NamePattern.class.getName());
+        if (StringUtils.isBlank(pattern)) {
             return instance.toString();
         } else {
-            String pattern = annotation.value();
             int pos = pattern.indexOf("|");
             if (pos < 0)
                 throw new IllegalArgumentException("Invalid name pattern: " + pattern);
@@ -250,8 +253,7 @@ public class InstanceUtils {
                     values[i] = value;
             }
 
-            String result = String.format(format, values);
-            return result;
+            return String.format(format, values);
         }
     }
 }

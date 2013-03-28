@@ -45,10 +45,7 @@ public class NumberFormatter implements Formatter<Number> {
         String pattern = element != null ? element.attributeValue("format") : null;
 
         if (pattern == null) {
-            Datatype datatype = Datatypes.get(value.getClass());
-            if (datatype == null)
-                throw new IllegalArgumentException("No datatype for " + value.getClass());
-
+            Datatype datatype = Datatypes.getNN(value.getClass());
             return datatype.format(value, userSessionSource.getLocale());
         } else {
             if (pattern.startsWith("msg://")) {

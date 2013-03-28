@@ -53,14 +53,14 @@ public class SessionBrowser extends AbstractLookup {
 
     public void init(Map<String, Object> params) {
         super.init(params);
-        // TODO remove after implementing #1558
+        // TODO remove after implementing #1588
         if (!ClientType.WEB.equals(AppConfig.getClientType())) {
             messageAction.setVisible(false);
         }
         sessionsDs.addListener(new CollectionDsListenerAdapter<UserSessionEntity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<UserSessionEntity> items) {
-                String time = Datatypes.get(Date.class).format(sessionsDs.getUpdateTs(), userSessionSource.getLocale());
+                String time = Datatypes.getNN(Date.class).format(sessionsDs.getUpdateTs(), userSessionSource.getLocale());
                 lastUpdateTsLab.setValue(time);
             }
         });

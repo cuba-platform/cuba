@@ -1,31 +1,28 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: DEGTYARJOV EUGENIY
- * Created: 11.09.2009 15:13:58
- *
- * $Id$
  */
 
 package com.haulmont.cuba.security.entity;
 
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 
-import java.util.UUID;
 import java.util.Date;
 
 /**
- * Non-persistent entity to show user sessions list in UI 
+ * Non-persistent entity to show user sessions list in UI.
+ *
+ * @author degtyarjov
+ * @version $Id$
  */
 @MetaClass(name = "sec$UserSessionEntity")
 public class UserSessionEntity extends AbstractNotPersistentEntity {
+
     private static final long serialVersionUID = 7730031482721158275L;
-    @MetaProperty
-    private UUID id;
+
     @MetaProperty
     private String login;
     @MetaProperty
@@ -40,14 +37,6 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
     private Date lastUsedTs;
     @MetaProperty
     private Boolean system;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getLogin() {
         return login;
@@ -107,6 +96,6 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
 
     @Override
     public String toString() {
-        return "id-"+id+" login-"+login+" user-"+userName+" since-"+since+" last-"+lastUsedTs;
+        return "id=" + uuid + ", login=" + login + ", user=" + userName + ", since=" + since + ", last=" + lastUsedTs;
     }
 }

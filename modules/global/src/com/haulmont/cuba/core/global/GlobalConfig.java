@@ -54,8 +54,15 @@ public interface GlobalConfig extends Config {
      * @return Web-client connection URL. Used for making external links to the application screens and for other purposes.
      */
     @Property("cuba.webAppUrl")
-    @DefaultString("http://localhost:8080/cuba")
+    @DefaultString("http://localhost:8080/app")
     String getWebAppUrl();
+
+    /**
+     * @return REST API connection URL
+     */
+    @Property("cuba.restApiUrl")
+    @DefaultString("http://localhost:8080/app-portal/api")
+    String getRestApiUrl();
 
     /**
      * @return Configuration directory. {@link Scripting} searches for dynamic resources here.

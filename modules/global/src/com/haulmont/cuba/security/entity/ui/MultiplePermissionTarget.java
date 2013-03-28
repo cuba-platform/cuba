@@ -21,17 +21,24 @@ import java.util.List;
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$MultipleTarget")
 @SystemLevel
 public class MultiplePermissionTarget extends AbstractPermissionTarget
-        implements AssignableTarget, Cloneable {
+        implements EntityPermissionTarget, Cloneable {
 
     public static final int SHOW_PERMISSIONS_COUNT = 8;
 
     @MetaProperty(mandatory = true)
     private List<AttributeTarget> permissions = new LinkedList<>();
+    private Class entityClass;
 
-    public MultiplePermissionTarget(String id, String caption, String permissionValue) {
+    public MultiplePermissionTarget(Class entityClass, String id, String caption, String permissionValue) {
         super(id, caption);
+        this.entityClass = entityClass;
         this.caption = caption;
         this.permissionValue = permissionValue;
+    }
+
+    @Override
+    public Class getEntityClass() {
+        return entityClass;
     }
 
     public List<AttributeTarget> getPermissions() {

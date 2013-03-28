@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -146,23 +145,9 @@ public class AbstractViewRepository implements ViewRepository {
                 }
             }
         } else if (View.MINIMAL.equals(name)) {
-            NamePattern annotation = javaClass.getAnnotation(NamePattern.class);
-            if (annotation == null) {
-                Class<?> originalClass = metadata.getExtendedEntities().getOriginalClass(metaClass);
-                if (originalClass != null)
-                    annotation = originalClass.getAnnotation(NamePattern.class);
-            }
-
-            if (annotation != null) {
-                String pattern = annotation.value();
-                int pos = pattern.indexOf("|");
-                if (pos >= 0) {
-                    String fieldsStr = StringUtils.substring(pattern, pos + 1);
-                    String[] fields = fieldsStr.split("[,;]");
-                    for (String field : fields) {
-                        view.addProperty(field);
-                    }
-                }
+            Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
+            for (MetaProperty metaProperty : metaProperties) {
+                view.addProperty(metaProperty.getName());
             }
         } else
             throw new UnsupportedOperationException("Unsupported default view: " + name);
