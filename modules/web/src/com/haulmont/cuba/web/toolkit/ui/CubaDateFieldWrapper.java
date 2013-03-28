@@ -89,10 +89,13 @@ public class CubaDateFieldWrapper extends CustomField {
 
     @Override
     public void setPropertyDataSource(Property newDataSource) {
+        Object newValue = newDataSource != null ? newDataSource.getValue() : null;
+        Object oldValue = getValue();
+
         super.setPropertyDataSource(newDataSource);
         // support dateField in editable table
-        if (newDataSource != null && !ObjectUtils.equals(newDataSource.getValue(), getValue()))
-            dateField.setValue(newDataSource.getValue());
+        if (newDataSource != null && !ObjectUtils.equals(newValue, oldValue))
+            dateField.setValue(newValue);
     }
 
     @Override
