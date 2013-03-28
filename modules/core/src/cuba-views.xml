@@ -158,4 +158,10 @@
         <property name="value"/>
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.Constraint" name="edit">
+        <property name="entityName"/>
+        <property name="joinClause"/>
+        <property name="whereClause"/>
+    </view>
+
 </views>

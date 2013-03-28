@@ -46,17 +46,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
             ServletContext sc = servletContextEvent.getServletContext();
 
             initAppProperties(sc);
-
-            File file = new File(AppContext.getProperty("cuba.confDir"));
-            if (!file.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                file.mkdirs();
-            }
-            file = new File(AppContext.getProperty("cuba.tempDir"));
-            if (!file.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                file.mkdirs();
-            }
+            afterInitAppProperties();
 
             beforeInitAppContext();
             initAppContext();
@@ -74,12 +64,6 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         AppContext.stopContext();
         AppContext.setApplicationContext(null);
-    }
-
-    protected void beforeInitAppContext() {
-    }
-
-    protected void afterInitAppContext() {
     }
 
     protected void initAppProperties(ServletContext sc) {
@@ -144,6 +128,22 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         for (Object key : properties.keySet()) {
             String value = substitutor.replace(properties.getProperty((String) key));
             AppContext.setProperty((String) key, value);
+        }
+    }
+
+    @Override
+    protected void afterInitAppProperties() {
+        super.afterInitAppProperties();
+
+        File file = new File(AppContext.getProperty("cuba.confDir"));
+        if (!file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.mkdirs();
+        }
+        file = new File(AppContext.getProperty("cuba.tempDir"));
+        if (!file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.mkdirs();
         }
     }
 }

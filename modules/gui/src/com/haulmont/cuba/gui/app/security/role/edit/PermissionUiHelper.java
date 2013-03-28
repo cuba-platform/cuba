@@ -13,9 +13,9 @@ import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
-import com.haulmont.cuba.security.entity.ui.PermissionVariant;
-import com.haulmont.cuba.security.entity.ui.UiPermissionVariant;
+import com.haulmont.cuba.gui.security.entity.AttributePermissionVariant;
+import com.haulmont.cuba.gui.security.entity.PermissionVariant;
+import com.haulmont.cuba.gui.security.entity.UiPermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;

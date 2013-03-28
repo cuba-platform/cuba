@@ -26,7 +26,7 @@
 
     <!-- MBeans registration -->
 
-    <bean id="cuba_web_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
+    <bean id="cuba_web_MBeanExporter" class="com.haulmont.cuba.core.sys.jmx.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:type=ConfigStorage" value-ref="cuba_ConfigStorageMBean"/>

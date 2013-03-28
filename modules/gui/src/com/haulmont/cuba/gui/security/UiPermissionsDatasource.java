@@ -10,8 +10,8 @@ import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.ui.UiPermissionTarget;
-import com.haulmont.cuba.security.entity.ui.UiPermissionVariant;
+import com.haulmont.cuba.gui.security.entity.UiPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.UiPermissionVariant;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;

@@ -15,7 +15,7 @@ import com.haulmont.chile.core.model.Session;
  * @author krivopustov
  * @version $Id$
  */
-public interface Metadata {
+public interface Metadata extends Session {
 
     String NAME = "cuba_Metadata";
 

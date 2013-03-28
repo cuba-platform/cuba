@@ -45,4 +45,7 @@ public interface Filter
 
     void setRequired(boolean required);
     boolean isRequired();
+
+    void setFolderActionsEnabled(boolean enabled);
+    boolean isFolderActionsEnabled();
 }

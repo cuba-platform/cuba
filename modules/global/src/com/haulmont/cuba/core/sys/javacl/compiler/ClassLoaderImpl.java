@@ -10,15 +10,13 @@
  */
 package com.haulmont.cuba.core.sys.javacl.compiler;
 
-import com.haulmont.cuba.core.sys.javacl.compiler.JavaFileObjectImpl;
-
 import javax.tools.JavaFileObject;
-import java.util.Map;
-import java.util.HashMap;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A custom ClassLoader which maps class names to JavaFileObjectImpl instances.

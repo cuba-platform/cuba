@@ -10,7 +10,7 @@ import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.config.PermissionConfig;
-import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
 
 /**
  * @author abramov

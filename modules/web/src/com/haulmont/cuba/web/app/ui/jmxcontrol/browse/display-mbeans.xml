@@ -13,7 +13,7 @@
         </collectionDatasource>
 
         <collectionDatasource id="mbeanDs"
-                              class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo"
+                              class="com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo"
                               view="_local"
                               datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource">
         </collectionDatasource>

@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
+import com.haulmont.cuba.core.entity.diff.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import org.apache.commons.lang.ObjectUtils;

@@ -9,9 +9,9 @@
     </metadataContext>
 
     <dsContext>
-        <datasource id="mbeanDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo" view="_local"/>
+        <datasource id="mbeanDs" class="com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo" view="_local"/>
         <collectionDatasource id="attrDs"
-                              class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute"
+                              class="com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute"
                               view="_local"
                               datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanAttributeDatasource">
         </collectionDatasource>

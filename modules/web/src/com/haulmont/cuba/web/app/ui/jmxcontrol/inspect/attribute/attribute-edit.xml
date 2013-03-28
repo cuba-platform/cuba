@@ -6,7 +6,7 @@
         caption="msg://editAttribute.title">
 
     <dsContext>
-        <datasource id="attrDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute" view="_local"/>
+        <datasource id="attrDs" class="com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute" view="_local"/>
     </dsContext>
 
     <layout expand="windowActions">

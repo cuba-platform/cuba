@@ -12,8 +12,8 @@ import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
-import com.haulmont.cuba.security.entity.ui.PermissionVariant;
+import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;

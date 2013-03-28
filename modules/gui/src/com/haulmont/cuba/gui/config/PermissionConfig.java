@@ -15,11 +15,10 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.security.entity.ui.AttributeTarget;
-import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
-import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
-import com.haulmont.cuba.security.entity.ui.OperationPermissionTarget;
-import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.gui.security.entity.AttributeTarget;
+import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.security.entity.OperationPermissionTarget;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -69,17 +68,17 @@ public class PermissionConfig {
         }
 
         private void compileScreens() {
-            Node<BasicPermissionTarget> menuRoot = new Node<BasicPermissionTarget>(
+            Node<BasicPermissionTarget> menuRoot = new Node<>(
                     new BasicPermissionTarget("root:menu", getMessage("permissionConfig.mainMenu"), null)
             );
             walkMenu(menuRoot);
 
-            Node<BasicPermissionTarget> othersRoot = new Node<BasicPermissionTarget>(
+            Node<BasicPermissionTarget> othersRoot = new Node<>(
                     new BasicPermissionTarget("root:others", getMessage("permissionConfig.otherScreens"), null)
             );
             walkOtherScreens(othersRoot, menuRoot);
 
-            screens = new Tree<BasicPermissionTarget>(Arrays.asList(menuRoot, othersRoot));
+            screens = new Tree<>(Arrays.asList(menuRoot, othersRoot));
         }
 
         private void walkMenu(Node<BasicPermissionTarget> node) {
@@ -94,15 +93,14 @@ public class PermissionConfig {
             caption = StringEscapeUtils.unescapeHtml(caption);
 
             if (info.getChildren() != null && !info.getChildren().isEmpty()) {
-                Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(new BasicPermissionTarget("category:" + id, caption, UserSession.getScreenPermissionTarget(id)));
+                Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("category:" + id, caption, id));
                 node.addChild(n);
                 for (MenuItem item : info.getChildren()) {
                     walkMenu(item, n);
                 }
             } else {
                 if (!"-".equals(info.getId())) {
-                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
-                            new BasicPermissionTarget("item:" + id, caption, UserSession.getScreenPermissionTarget(id)));
+                    Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("item:" + id, caption, id));
                     node.addChild(n);
                 }
             }
@@ -110,15 +108,14 @@ public class PermissionConfig {
 
         private void walkOtherScreens(Node<BasicPermissionTarget> othersRoot, Node<BasicPermissionTarget> menuRoot) {
             Set<String> menuItems = new HashSet<>();
-            for (Node<BasicPermissionTarget> node : new Tree<BasicPermissionTarget>(menuRoot).toList()) {
+            for (Node<BasicPermissionTarget> node : new Tree<>(menuRoot).toList()) {
                 menuItems.add(node.getData().getId());
             }
 
             for (WindowInfo info : windowConfig.getWindows()) {
                 String id = info.getId();
                 if (!menuItems.contains("item:" + id)) {
-                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
-                               new BasicPermissionTarget("item:" + id, id, UserSession.getScreenPermissionTarget(id)));
+                    Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("item:" + id, id, id));
                     othersRoot.addChild(n);
                 }
             }
@@ -131,31 +128,39 @@ public class PermissionConfig {
         }
 
         private void compileEntitiesAndAttributes() {
-            entities = new ArrayList<OperationPermissionTarget>();
-            entityAttributes = new ArrayList<MultiplePermissionTarget>();
+            entities = new ArrayList<>();
+            entityAttributes = new ArrayList<>();
 
             Session session = metadata.getSession();
-            List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
+            List<MetaModel> modelList = new ArrayList<>(session.getModels());
             Collections.sort(modelList, new MetadataObjectAlphabetComparator());
 
             for (MetaModel model : modelList) {
 
-                List<MetaClass> classList = new ArrayList<MetaClass>(model.getClasses());
+                List<MetaClass> classList = new ArrayList<>(model.getClasses());
                 Collections.sort(classList, new MetadataObjectAlphabetComparator());
 
                 for (MetaClass metaClass : classList) {
                     String name = metaClass.getName();
                     // Filter base entity classes
                     if (name.contains("$")) {
+                        // Skip classes that have extensions
+                        if (metadata.getExtendedEntities().getExtendedClass(metaClass) != null)
+                            continue;
+
+                        // For extended entities use original metaclass name
+                        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                        String entityName = originalMetaClass == null ? name : originalMetaClass.getName();
+
                         // Entity target
                         entities.add(new OperationPermissionTarget(metaClass.getJavaClass(),
-                                "entity:" + name, name, name));
+                                "entity:" + entityName, name, entityName));
 
                         // Target with entity attributes
                         MultiplePermissionTarget attrs = new MultiplePermissionTarget(metaClass.getJavaClass(),
-                                "entity:" + name, name, name);
+                                "entity:" + entityName, name, entityName);
 
-                        List<MetaProperty> propertyList = new ArrayList<MetaProperty>(metaClass.getProperties());
+                        List<MetaProperty> propertyList = new ArrayList<>(metaClass.getProperties());
                         Collections.sort(propertyList, new MetadataObjectAlphabetComparator());
 
                         for (MetaProperty metaProperty : propertyList) {
@@ -169,9 +174,9 @@ public class PermissionConfig {
         }
 
         private void compileSpecific() {
-            Node<BasicPermissionTarget> root = new Node<BasicPermissionTarget>(
+            Node<BasicPermissionTarget> root = new Node<>(
                     new BasicPermissionTarget("specific", getMessage("permissionConfig.specificRoot"), null));
-            specific = new Tree<BasicPermissionTarget>(root);
+            specific = new Tree<>(root);
 
             final String configName = AppContext.getProperty(PERMISSION_CONFIG_XML_PROP);
             StrTokenizer tokenizer = new StrTokenizer(configName);
@@ -222,12 +227,12 @@ public class PermissionConfig {
                 String id = elem.attributeValue("id");
                 String caption = getMessage("permission-config." + id);
                 if ("category".equals(elem.getName())) {
-                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
+                    Node<BasicPermissionTarget> n = new Node<>(
                             new BasicPermissionTarget("category:" + id, caption, null));
                     node.addChild(n);
                     walkSpecific(elem, n);
                 } else if ("permission".equals(elem.getName())) {
-                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
+                    Node<BasicPermissionTarget> n = new Node<>(
                             new BasicPermissionTarget("permission:" + id, caption, id));
                     node.addChild(n);
                 }
@@ -252,7 +257,7 @@ public class PermissionConfig {
 
     private ClientType clientType;
 
-    private List<Item> items = new ArrayList<Item>();
+    private List<Item> items = new ArrayList<>();
 
     private Log log = LogFactory.getLog(PermissionConfig.class);
 

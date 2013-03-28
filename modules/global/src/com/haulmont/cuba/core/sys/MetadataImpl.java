@@ -10,6 +10,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.entity.Entity;
@@ -19,8 +20,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -82,7 +85,7 @@ public class MetadataImpl implements Metadata {
         return tools;
     }
 
-    protected void loadMetadata(MetadataLoader loader, Collection<String> packages) {
+    protected void loadMetadata(MetadataLoader loader, List<String> packages) {
         for (String p : packages) {
             loader.loadPackage(p, p);
         }
@@ -256,6 +259,43 @@ public class MetadataImpl implements Metadata {
         } else
             val = str;
         return val;
+    }
+
+    @Override
+    public MetaModel getModel(String name) {
+        return getSession().getModel(name);
+    }
+
+    @Override
+    public Collection<MetaModel> getModels() {
+        return getSession().getModels();
+    }
+
+    @Nullable
+    @Override
+    public MetaClass getClass(String name) {
+        return getSession().getClass(name);
+    }
+
+    @Override
+    public MetaClass getClassNN(String name) {
+        return getSession().getClass(name);
+    }
+
+    @Nullable
+    @Override
+    public MetaClass getClass(Class<?> clazz) {
+        return getSession().getClass(clazz);
+    }
+
+    @Override
+    public MetaClass getClassNN(Class<?> clazz) {
+        return getSession().getClassNN(clazz);
+    }
+
+    @Override
+    public Collection<MetaClass> getClasses() {
+        return getSession().getClasses();
     }
 
     /**

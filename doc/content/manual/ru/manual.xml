@@ -707,6 +707,14 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоках <structname>Web Client</structname> и <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.allowSetNotLoadedAttributes">
+        <term>cuba.allowSetNotLoadedAttributes</term>
+        <listitem>
+          <para>Разрешает вызывать setter для незагруженных атрибутов <link linkend="entity_states">Detached</link> сущностей. Подробнее см. <xref linkend="views"/></para>
+          <para>Значение по умолчанию: <code>false</code></para>
+          <para>Используется во всех блоках приложения.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.automaticDatabaseUpdate">
         <term>cuba.automaticDatabaseUpdate</term>
         <listitem>

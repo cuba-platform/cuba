@@ -11,9 +11,9 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.AttributePermissionsFra
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
-import com.haulmont.cuba.security.entity.ui.AttributeTarget;
-import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
+import com.haulmont.cuba.gui.security.entity.AttributePermissionVariant;
+import com.haulmont.cuba.gui.security.entity.AttributeTarget;
+import com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 import java.util.Iterator;

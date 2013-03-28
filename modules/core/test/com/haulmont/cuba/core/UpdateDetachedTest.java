@@ -1,17 +1,13 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.02.2009 18:33:47
- *
- * $Id$
  */
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
@@ -24,15 +20,19 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class UpdateDetachedTest extends CubaTestCase
 {
     private UUID roleId, role2Id, permissionId;
 
     protected void setUp() throws Exception {
         super.setUp();
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Role role = new Role();
             roleId = role.getId();
@@ -58,9 +58,9 @@ public class UpdateDetachedTest extends CubaTestCase
     }
 
     protected void tearDown() throws Exception {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Query q;
             q = em.createNativeQuery("delete from SEC_PERMISSION where ID = ?");
@@ -81,9 +81,9 @@ public class UpdateDetachedTest extends CubaTestCase
 
     public void test() {
         Permission p;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             em.setView(new View(Permission.class)
                     .addProperty("target")
@@ -98,7 +98,7 @@ public class UpdateDetachedTest extends CubaTestCase
 
             p.setTarget("newTarget");
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             p = em.merge(p);
 
             tx.commit();
@@ -113,9 +113,9 @@ public class UpdateDetachedTest extends CubaTestCase
 
     public void testRollback() {
         Permission p = null;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             em.setView(new View(Permission.class)
                     .addProperty("target")
@@ -130,7 +130,7 @@ public class UpdateDetachedTest extends CubaTestCase
 
             p.setTarget("newTarget");
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             p = em.merge(p);
 
             throwException();
@@ -150,7 +150,7 @@ public class UpdateDetachedTest extends CubaTestCase
 
     public void testDataService() {
         Permission p;
-        DataService ds = Locator.lookup(DataService.NAME);
+        DataService ds = AppBeans.get(DataService.NAME);
 
         LoadContext ctx = new LoadContext(Permission.class);
         ctx.setId(permissionId);
@@ -180,9 +180,9 @@ public class UpdateDetachedTest extends CubaTestCase
 
     public void testUpdateNotLoaded() {
         Permission p;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             em.setView(new View(Permission.class)
                     .addProperty("target")
@@ -191,34 +191,20 @@ public class UpdateDetachedTest extends CubaTestCase
             p = em.find(Permission.class, permissionId);
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             Role role = em.find(Role.class, role2Id);
-            tx.commitRetaining();
-
-            p.setRole(role); // change Role in detached object
-
-            em = PersistenceProvider.getEntityManager();
-            p = em.merge(p);
             tx.commit();
+
+            assertNull(p.getRole());
+            try {
+                p.setRole(role); // try to change Role in detached object
+                fail();
+            } catch (Exception e) {
+                // ok
+            }
+
         } finally {
             tx.end();
         }
-        assertNull(p.getRole());
-
-        tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-
-            em.setView(new View(Permission.class)
-                    .addProperty("target")
-                    .addProperty("role")
-            );
-            p = em.find(Permission.class, permissionId);
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        assertEquals(roleId, p.getRole().getId()); // Role has not been changed
     }
-
 }

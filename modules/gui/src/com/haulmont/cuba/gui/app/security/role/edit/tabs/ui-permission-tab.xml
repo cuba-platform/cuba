@@ -22,7 +22,7 @@
         </collectionDatasource>
 
         <groupDatasource id="uiPermissionTargetsDs"
-                         class="com.haulmont.cuba.security.entity.ui.UiPermissionTarget"
+                         class="com.haulmont.cuba.gui.security.entity.UiPermissionTarget"
                          view="_local"
                          datasourceClass="com.haulmont.cuba.gui.security.UiPermissionsDatasource">
         </groupDatasource>

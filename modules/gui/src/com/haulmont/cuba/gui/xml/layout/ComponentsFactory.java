@@ -1,17 +1,20 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 15:17:56
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 
+/**
+ * Factory to create UI components in client independent manner.
+ * <p/> An instance of the factory can be injected into screen controllers or obtained through {@link com.haulmont.cuba.core.global.AppBeans}.
+ *
+ * @author Abramov
+ * @version $Id$
+ */
 public interface ComponentsFactory {
 
     String NAME = "cuba_ComponentsFactory";

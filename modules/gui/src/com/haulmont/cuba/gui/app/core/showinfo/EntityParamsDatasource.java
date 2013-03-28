@@ -8,7 +8,6 @@ package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.*;
-import com.haulmont.cuba.core.global.KeyValueEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 

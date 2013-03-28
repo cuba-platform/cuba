@@ -61,7 +61,7 @@ public class SecurityImpl implements Security {
         if (metaProperty.getModel() == null)
             return true;
 
-        MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaProperty.getDomain());
+        MetaClass metaClass = metaProperty.getDomain();
 
         return (isEntityOpPermitted(metaClass, EntityOp.CREATE) || isEntityOpPermitted(metaClass, EntityOp.UPDATE))
                 && isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);

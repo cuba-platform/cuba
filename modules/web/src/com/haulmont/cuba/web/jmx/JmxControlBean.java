@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.NodeIdentifier;
 import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifier;
+import com.haulmont.cuba.web.jmx.entity.*;
 import com.haulmont.cuba.jmxcontrol.entity.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;

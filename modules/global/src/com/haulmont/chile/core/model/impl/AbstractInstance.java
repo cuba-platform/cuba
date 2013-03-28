@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 17.03.2009 14:29:04
- * $Id: AbstractInstance.java 5033 2011-06-10 15:21:47Z krivopustov $
  */
 
 package com.haulmont.chile.core.model.impl;
@@ -23,12 +19,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author Abramov
+ * @version $Id$
+ */
 public abstract class AbstractInstance implements Instance {
 
     protected transient Collection<WeakReference<ValueListener>> __valueListeners;
 
-    private static transient Map<Class, MethodsCache> methodCacheMap =
-            new ConcurrentHashMap<Class, MethodsCache>();
+    private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
 
     protected void propertyChanged(String s, Object obj, Object obj1) {
         if (__valueListeners != null) {

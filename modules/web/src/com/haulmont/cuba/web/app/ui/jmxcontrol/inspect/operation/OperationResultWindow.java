@@ -7,7 +7,7 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.operation;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
+import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLabel;
 

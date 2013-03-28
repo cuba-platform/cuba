@@ -803,6 +803,7 @@
         <xs:attribute name="manualApplyRequired" type="xs:boolean" use="optional"/>
         <xs:attribute name="required" type="xs:boolean" use="optional"/>
         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="folderActionsEnabled" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- FieldGroup.Field -->

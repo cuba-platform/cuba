@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;

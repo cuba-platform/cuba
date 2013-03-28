@@ -20,8 +20,8 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
-import com.haulmont.cuba.security.entity.ui.PermissionVariant;
+import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;

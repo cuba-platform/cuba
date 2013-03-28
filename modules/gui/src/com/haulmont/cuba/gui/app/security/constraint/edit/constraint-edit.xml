@@ -11,26 +11,18 @@
         focusComponent="entityName"
         >
 
-    <metadataContext>
-        <view class="com.haulmont.cuba.security.entity.Constraint" name="edit">
-            <property name="entityName"/>
-            <property name="joinClause"/>
-            <property name="whereClause"/>
-        </view>
-    </metadataContext>
-
     <dsContext>
         <datasource id="constraint" class="com.haulmont.cuba.security.entity.Constraint" view="edit"/>
     </dsContext>
 
     <layout expand="windowActions">
         <vbox margin="true">
-            <grid id="grid" margin="true" spacing="true" expandable="false" stylename="edit-area">
+            <grid id="grid" margin="true" spacing="true" stylename="edit-area">
                 <columns count="2"/>
                 <rows>
                     <row>
                         <label value="msg://entityName"/>
-                        <textField id="entityName" datasource="constraint" property="entityName"
+                        <lookupField id="entityName" datasource="constraint" property="entityName"
                                    width="500px"/>
                     </row>
                     <row>
