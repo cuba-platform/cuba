@@ -1,28 +1,37 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.impl.MetaModelImpl;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 
 import java.util.Collection;
 
 /**
- * Author: Alexander Chevelev
- * Date: 08.11.2010
- * Time: 22:24:22
+ * @author Alexander Chevelev
+ * @version $Id$
  */
 public class DomainModelBuilder {
-    public DomainModel produce(MetaModelImpl metaModel) {
-        Collection<MetaClass> classes = metaModel.getClasses();
-        return produce(classes);
+
+
+    private MetadataTools metadataTools;
+    private MessageTools messageTools;
+
+    public DomainModelBuilder(MetadataTools metadataTools, MessageTools messageTools) {
+        this.metadataTools = metadataTools;
+        this.messageTools = messageTools;
     }
 
-    public DomainModel produce(Collection<MetaClass> classes) {
+    public DomainModel produce() {
+        Collection<MetaClass> classes = metadataTools.getAllPersistentMetaClasses();
         DomainModel result = new DomainModel();
         EntityBuilder builder = new EntityBuilder();
         for (MetaClass aClass : classes) {
@@ -30,7 +39,8 @@ public class DomainModelBuilder {
 
             Collection<MetaProperty> props = aClass.getProperties();
             for (MetaProperty prop : props) {
-                addProperty(builder, prop);
+                if (metadataTools.isPersistent(prop))
+                    addProperty(builder, prop);
             }
 
             Entity entity = builder.produce();
@@ -41,7 +51,7 @@ public class DomainModelBuilder {
 
     private void addProperty(EntityBuilder builder, MetaProperty prop) {
         String name = prop.getName();
-        String userFriendlyName = AppBeans.get(MessageTools.class).getPropertyCaption(prop);
+        String userFriendlyName = messageTools.getPropertyCaption(prop);
         MetaProperty.Type type = prop.getType();
         Class<?> javaType = prop.getJavaType();
         Range range = prop.getRange();
