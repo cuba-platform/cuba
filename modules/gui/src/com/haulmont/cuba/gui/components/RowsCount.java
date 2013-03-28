@@ -26,4 +26,10 @@ public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDesc
 
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
+
+    /**
+     * @return a component that displays data from the same datasource, usually a {@link Table}. Can be null.
+     */
+    ListComponent getOwner();
+    void setOwner(ListComponent owner);
 }

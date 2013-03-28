@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -18,6 +19,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXHyperlink;
+import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,6 +37,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     protected State state;
     protected int start;
     protected int size;
+    protected ListComponent owner;
 
     public DesktopRowsCount() {
         impl = new RowsCountComponent();
@@ -84,6 +87,16 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 onCollectionChanged();
             }
         }
+    }
+
+    @Override
+    public ListComponent getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(ListComponent owner) {
+        this.owner = owner;
     }
 
     protected void onCollectionChanged() {
@@ -195,6 +208,10 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
             refreshDatasource(ds);
             ds.setMaxResults(maxResults);
         }
+        if (owner instanceof DesktopAbstractTable) {
+            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+            table.scrollRowToVisible(0);
+        }
     }
 
     private void onPrevClick() {
@@ -205,6 +222,10 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         int newStart = ds.getFirstResult() - ds.getMaxResults();
         ds.setFirstResult(newStart < 0 ? 0 : newStart);
         refreshDatasource(ds);
+        if (owner instanceof DesktopAbstractTable) {
+            JXTable table = (JXTable) ((DesktopAbstractTable) owner).getComponent();
+            table.scrollRowToVisible(0);
+        }
     }
 
     private void refreshDatasource(CollectionDatasource.SupportsPaging ds) {
