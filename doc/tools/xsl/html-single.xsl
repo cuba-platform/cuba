@@ -112,7 +112,7 @@
                     }
                 });
             }
-            function keyDownTextField(e){
+            function keyDownTextField(event){
                 var searchQuery = $('#toc-search-box')[0].value;
                 if ( searchBoxCheck(searchQuery) == true){
                     var keyCode = event.keyCode;
@@ -210,7 +210,7 @@
             <div style="display: table; width:100%">
                 <div style="display: table-row" class="toc-search">
                     <div style="display: table-cell;width: 100%;">
-                        <input style="width: 100%" type="text" id="toc-search-box" onkeydown="keyDownTextField()"/>
+                        <input style="width: 100%" type="text" id="toc-search-box" onkeydown="keyDownTextField(event)"/>
                     </div>
                     <input style="display: table-cell;" type="button" id="searchButton" value="Поиск" onclick ="searchButtonClick()"/>
 
