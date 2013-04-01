@@ -1,0 +1,10 @@
+@import "havana";
+
+.havana {
+  @include havana;
+}
+
+// hide Vaadin warning about theme version
+.v-theme-version {
+  display: none;
+}

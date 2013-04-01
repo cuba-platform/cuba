@@ -1,0 +1,27 @@
+
+@mixin common {
+
+  .v-ui {
+    background: #F6F6F6;
+    font-family: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+    color: #000;
+    font-size: 12px;
+    line-height: 18px;
+    height: 100%;
+    width: 100%;
+
+    // Global font styles
+    div,
+    input,
+    table,
+    select,
+    button,
+    label,
+    textarea,
+    .v-widget {
+      font-family: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+      color: #464f52;
+      font-size: 12px;
+    }
+  }
+}

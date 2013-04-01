@@ -66,8 +66,4 @@
 
     <screen id="printDomain"
             class="com.haulmont.cuba.web.app.domain.DomainProvider"/>
-
-    <!-- Test vaadin7 -->
-    <screen id="testScreen"
-            template="/com/haulmont/cuba/web/app/ui/test/test-vaadin-window.xml"/>
 </screen-config>

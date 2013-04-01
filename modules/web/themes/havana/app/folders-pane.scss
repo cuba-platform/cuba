@@ -1,0 +1,33 @@
+@mixin cuba-folders-pane {
+  .cuba-folders-pane {
+    background: #fff url(images/folders-pane-bg.png) top repeat-x;
+
+    .v-tree {
+      border: 0;
+      overflow: auto;
+
+      .v-tree-node {
+        .cuba-clickable-folder span {
+          cursor: pointer;
+        }
+
+        .cuba-clickable-folder span:hover {
+          text-decoration: underline;
+          background: transparent none;
+        }
+
+        .cuba-nonclickable-folder span:hover {
+          background: transparent none;
+        }
+      }
+    }
+  }
+
+  .v-label.cuba-folders-pane-caption {
+    font-size: 14px;
+    color: #2B4766;
+    background: url("images/folders-pane-header-bg.png") no-repeat 5px bottom;
+    padding-top: 5px;
+    padding-left: 5px;
+  }
+}

@@ -310,7 +310,7 @@ configure(webModule) {
     task buildScssThemes(type: CubaWebScssThemeCreation) {
         buildTimeStamp = resourceBuildTimeStamp
         scssDir = 'themes'
-        themes = ['iceland']
+        themes = ['havana']
         destDir = "${project.buildDir}/web/VAADIN/themes"
 //        compress = true
 //        sprites = false

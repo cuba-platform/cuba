@@ -1,0 +1,56 @@
+/** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
+
+// Inherit theme
+@import "../base/base";
+
+// Common
+@import "components/common/common";
+
+// Components
+@import "components/table/table";
+@import "components/panel/panel";
+@import "components/window/window";
+@import "components/button/button";
+@import "components/menubar/menubar";
+@import "components/groupbox/groupbox";
+@import "components/grouptable/grouptable";
+@import "components/multiupload/multiupload";
+
+// Application specific
+@import "app/app-window";
+@import "app/login-window";
+@import "app/breadcrumbs";
+@import "app/folders-pane";
+@import "app/log-control";
+
+/**
+ * Havana - Generic Platform SCSS theme
+ *
+ * @param $headerBackground - CSS background statement for app window header
+ * @param $submenuBackground - CSS background statement for sub menu background
+ * @param $menuHighlightColor - CSS color statement for highlight menu items and buttons in app window header
+ */
+@mixin havana($headerBackground: #315379,
+              $submenuBackground: #315379,
+              $menuHighlightColor: #506D8D) {
+
+  @include base;
+
+  @include common;
+
+  @include v-table;
+  @include v-panel;
+  @include v-window;
+  @include v-button;
+  @include v-menubar($submenuBackground, $menuHighlightColor);
+
+  @include cuba-groupbox;
+  @include cuba-grouptable;
+  @include cuba-multiupload;
+
+  @include cuba-login-window;
+  @include cuba-application-window($headerBackground, $menuHighlightColor);
+  @include cuba-folders-pane;
+  @include cuba-breadcrumbs;
+  @include cuba-log-control;
+}

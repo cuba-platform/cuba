@@ -1,0 +1,35 @@
+
+@mixin v-checkbox {
+
+  .v-checkbox {
+    padding-bottom: 3px;
+    border: transparent 1px solid;
+
+    label,
+    input,
+    .v-icon {
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .v-icon {
+      margin: 0 2px;
+    }
+
+    .v-errorindicator {
+      float: none;
+      display: inline;
+      display: inline-block;
+      zoom: 1;
+    }
+
+    .v-disabled {
+      opacity: 0.8;
+      filter: Alpha(opacity = 80);
+    }
+  }
+
+  .v-checkbox-focus {
+    border: 1px dotted #4d7ab2;
+  }
+}

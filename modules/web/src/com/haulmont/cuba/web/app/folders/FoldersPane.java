@@ -101,7 +101,7 @@ public class FoldersPane extends VerticalLayout {
         parentAppWindow = appWindow;
 
         setHeight(100, Unit.PERCENTAGE);
-        setStyleName("cuba-folderspane");
+        setStyleName("cuba-folders-pane");
     }
 
     public void init(Component parent) {
@@ -171,7 +171,7 @@ public class FoldersPane extends VerticalLayout {
                 appFoldersPane.setWidth("96%");
                 if (isNeedFoldersTitle()) {
                     appFoldersLabel = new Label(messages.getMainMessage("folders.appFoldersRoot"));
-                    appFoldersLabel.setStyleName("cuba-folderspane-caption");
+                    appFoldersLabel.setStyleName("cuba-folders-pane-caption");
                 } else {
                     appFoldersLabel = null;
                 }
@@ -198,7 +198,7 @@ public class FoldersPane extends VerticalLayout {
                 searchFoldersPane.setWidth("96%");
                 if (isNeedFoldersTitle()) {
                     searchFoldersLabel = new Label(messages.getMainMessage("folders.searchFoldersRoot"));
-                    searchFoldersLabel.setStyleName("cuba-folderspane-caption");
+                    searchFoldersLabel.setStyleName("cuba-folders-pane-caption");
                 } else {
                     searchFoldersLabel = null;
                 }
@@ -622,9 +622,9 @@ public class FoldersPane extends VerticalLayout {
                 String style = "";
                 // clickable tree item
                 if (getItemClickable(folder))
-                    style = "clickable-folder";
+                    style = "cuba-clickable-folder";
                 else
-                    style = "nonclickable-folder";
+                    style = "cuba-nonclickable-folder";
                 // handle custom styles
                 if (StringUtils.isNotBlank(folder.getItemStyle())) {
                     if (style.equals(""))

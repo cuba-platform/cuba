@@ -1,0 +1,66 @@
+// Application Window styles
+
+@mixin cuba-application-window($headerBackground: #315379, $controlHighLightColor: #506D8D) {
+
+  .v-button.cuba-buttons-white-border {
+    background: none;
+    border: 2px solid transparent;
+
+    .v-button-wrap {
+      padding-top: 0;
+      padding-right: 0;
+      height: 23px;
+
+      .v-button-caption {
+        margin-left: 2px;
+        margin-right: 2px;
+        color: #fff;
+      }
+
+      .v-icon {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .v-button.cuba-buttons-white-border:hover {
+    background: none;
+    border: solid 2px $controlHighLightColor;
+    .v-button-caption {
+      text-shadow: black 1px 1px;
+    }
+  }
+
+  .cuba-app-titlebar {
+    .v-button:hover {
+      background: transparent;
+    }
+
+    .v-label.cuba-user-select-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: normal;
+      font-family: Verdana, Arial, sans-serif;
+      text-shadow: black 1px 1px;
+    }
+  }
+
+  .cuba-app-menubar {
+    border-bottom: 1px solid #fff;
+    background: $headerBackground;
+    padding-bottom: 0;
+    padding-top: 0;
+
+    .v-label.cuba-user-select-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: normal;
+      font-family: Verdana, Arial, sans-serif;
+      text-shadow: black 1px 1px;
+    }
+  }
+
+  .cuba-app-icon {
+    padding-left: 10px;
+  }
+}

@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 
 import javax.inject.Inject;
@@ -19,9 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class SystemInfoWindow extends AbstractWindow {
 
@@ -35,14 +33,12 @@ public class SystemInfoWindow extends AbstractWindow {
     @Inject
     protected Table infoTable;
 
-    public SystemInfoWindow(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
         getDialogParams().setHeight(250);
+        getDialogParams().setResizable(true);
 
         paramsDs.setInstance((Entity) params.get("item"));
         paramsDs.setInstanceMetaClass((MetaClass) params.get("metaClass"));

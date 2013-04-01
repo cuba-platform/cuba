@@ -430,6 +430,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         if (webConfig.getUseLightHeader()) {
             Image appIcon = getLogoImage();
             if (appIcon != null) {
+                appIcon.setStyleName("cuba-app-icon");
                 layout.addComponent(appIcon);
                 layout.setComponentAlignment(appIcon, Alignment.MIDDLE_LEFT);
             }
@@ -733,7 +734,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         );
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("cuba-buttons-white-border");
-        logoutBtn.setIcon(new VersionedThemeResource("app/exit.png"));
+        logoutBtn.setIcon(new VersionedThemeResource("app/images/exit.png"));
 //        AppUI.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
@@ -762,7 +763,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("cuba-buttons-white-border");
-        newWindowBtn.setIcon(new VersionedThemeResource("app/new-window.png"));
+        newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
         return newWindowBtn;
     }
 

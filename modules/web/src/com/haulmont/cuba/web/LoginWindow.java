@@ -14,9 +14,8 @@ import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.WebBrowser;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.codec.binary.Hex;
@@ -127,26 +126,25 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         FormLayout loginFormLayout = new FormLayout();
         Panel form = new Panel(loginFormLayout);
-        form.setStyleName(getStyle("login-form"));
-        form.setWidth("-1px");
-        form.setHeight("-1px");
+        form.setStyleName(getStyle("form"));
+        form.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
+        form.setHeight(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
 
         loginFormLayout.setSpacing(true);
-        loginFormLayout.setWidth("-1px");
+        loginFormLayout.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
 
         HorizontalLayout welcomeLayout = new HorizontalLayout();
         welcomeLayout.setStyleName(getStyle("form-caption"));
-        welcomeLayout.setWidth("-1px");
-        welcomeLayout.setHeight("-1px");
+        welcomeLayout.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
+        welcomeLayout.setHeight(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
         welcomeLayout.setSpacing(true);
 
         Label label = new Label(messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
-        label.setWidth("-1px");
+        label.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
         label.setStyleName(getStyle("caption"));
 
         VerticalLayout centerLayout = new VerticalLayout();
         centerLayout.setStyleName(getStyle("bottom"));
-        centerLayout.setMargin(new MarginInfo(true, false, false, false));
         centerLayout.setSpacing(false);
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
@@ -203,7 +201,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
         okButton.addClickListener(new SubmitListener());
         okButton.setStyleName(getStyle("submit"));
-        okButton.setIcon(new VersionedThemeResource("app/login-button.png"));
+        okButton.setIcon(new VersionedThemeResource("app/images/login-button.png"));
 
         loginFormLayout.addComponent(okButton);
         loginFormLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);

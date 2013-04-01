@@ -25,8 +25,6 @@
         <item id="sec$ScreenHistory.browse"/>
         <item id="logWindow"/>
         <item id="printDomain"/>
-        <!-- Test vaadin7 -->
-        <item id="testScreen"/>
     </menu>
 
 </menu-config>

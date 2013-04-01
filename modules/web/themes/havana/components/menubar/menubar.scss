@@ -1,0 +1,156 @@
+
+@mixin v-menubar($submenuBackground: #315379, $highlightColor: #506D8D) {
+
+  .v-menubar {
+    height: 23px;
+    padding: 0 8px;
+    margin-top: -2px;
+    white-space: nowrap;
+
+    .v-menubar-menuitem {
+      height: 17px;
+      line-height: 16px;
+      padding: 3px 8px;
+      display: inline-block;
+      vertical-align: middle;
+      white-space: nowrap;
+      cursor: pointer;
+      padding-left: 10px;
+      padding-right: 10px;
+      background: transparent;
+      height: 19px;
+      font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
+      font-size: 12px;
+      text-shadow: black 1px 1px;
+
+      .v-menubar-menuitem-caption {
+        .v-icon {
+          margin-right: 3px;
+        }
+      }
+
+      span {
+        color: #fff;
+        text-shadow: black 1px 1px;
+        font-size: 13px;
+      }
+
+      div {
+        white-space: nowrap;
+      }
+    }
+
+    .v-menubar-menuitem-selected {
+      padding-left: 10px;
+      padding-right: 10px;
+      color: #000000;
+      text-shadow: black 1px 1px;
+      height: 19px;
+      background-color: $highlightColor;
+    }
+
+    .v-menubar-menuitem:hover {
+      padding-left: 10px;
+      padding-right: 10px;
+      color: #000000;
+      text-shadow: black 1px 1px;
+      height: 19px;
+      background-color: $highlightColor;
+    }
+
+    .v-menubar-submenu-indicator {
+      display: none;
+    }
+  }
+
+  .v-menubar-separator {
+    overflow: hidden;
+
+    span {
+      border-top: 1px solid #DDDDDD;
+      display: block;
+      font-size: 1px;
+      line-height: 1px;
+      margin: 3px 0 2px;
+      overflow: hidden;
+      text-indent: -9999px;
+    }
+  }
+
+  .v-menubar-submenu {
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    background: $submenuBackground;
+    padding: 5px;
+    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
+    font-size: 12px;
+    border: solid 2px $highlightColor;
+
+    .v-menubar-menuitem {
+      line-height: 16px;
+      padding: 1px 26px 1px 10px;
+      display: block;
+      padding-right: 1.5em;
+      position: relative;
+      cursor: pointer;
+      padding-left: 6px;
+      padding-right: 6px;
+      background: transparent;
+      text-shadow: black 1px 1px;
+
+      .v-menubar-menuitem-caption {
+        color: #fff;
+        display: inline-block;
+        padding-right: 4px;
+
+        .v-icon {
+          vertical-align: middle;
+          white-space: nowrap;
+          margin-right: 3px;
+        }
+      }
+    }
+
+    .v-menubar-menuitem-selected,
+    .v-menubar-menuitem-shortcut-selected {
+      background-color: $highlightColor;
+    }
+
+    .v-menubar-menuitem-shortcut,
+    .v-menubar-menuitem-shortcut-selected {
+      padding: 0;
+      color: #c0c0c0;
+      display: inline-block;
+    }
+
+    .v-menubar-menuitem-selected div {
+      color: #fff;
+    }
+
+    .v-menubar-submenu-indicator {
+      background: transparent no-repeat scroll right center;
+      background-image: url(sprites/submenu-icon.png);  /** sprite-ref: components; */
+      height: 16px;
+      text-indent: -9999px;
+      width: 16px;
+      display: inline-block;
+      min-width: 10px;
+    }
+
+    .v-menubar-submenu-check-column {
+      padding-left: 6px;
+
+      .v-menubar-menuitem {
+        padding-left: 6px;
+        .v-menubar-menuitem-caption {
+          padding-left: 18px;
+        }
+      }
+    }
+
+    .v-menubar-submenu-check-column .v-menubar-menuitem-caption {
+      padding-left: 18px;
+    }
+  }
+}

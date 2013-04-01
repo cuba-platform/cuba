@@ -39,7 +39,7 @@ public class WebPopupButton
         component.setImmediate(true);
 
         vPopupComponent = new VerticalLayout();
-        vPopupComponent.addStyleName("popupmenu");
+        vPopupComponent.addStyleName("cuba-popupmenu");
         ((VerticalLayout) vPopupComponent).setMargin(false);
         vPopupComponent.setSizeUndefined();
         component.setContent(vPopupComponent);
@@ -140,10 +140,8 @@ public class WebPopupButton
             vButton.setSizeFull();
             vButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
-//            vaadin7
-//            component.setAutoClose(true);
+            component.markAsDirty();
             actionOrder.add(action);
         }
     }
@@ -151,8 +149,6 @@ public class WebPopupButton
     @Override
     public void removeAction(Action action) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
-//            vaadin7
-            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap((Component) action.getOwner()));
         }
     }

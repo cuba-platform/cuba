@@ -8,12 +8,12 @@
   .v-table {
     .checkbox-checked {
       @include v-table-checkbox;
-      background-image: url(sprites/checkbox-checked.png?v=THEME_BUILD_VERSION}); /** sprite-ref: components; */
+      background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
     }
 
     .checkbox-unchecked {
       @include v-table-checkbox;
-      background-image: url(sprites/checkbox-unchecked.png?v=THEME_BUILD_VERSION); /** sprite-ref: components; */
+      background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
     }
   }
 }

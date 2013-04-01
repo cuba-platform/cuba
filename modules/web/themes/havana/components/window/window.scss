@@ -1,0 +1,89 @@
+@mixin v-window {
+
+  .v-window {
+    color: #000;
+    line-height: 18px;
+    background: transparent;
+
+    .v-window-wrap {
+      font-family: verdana, Tahoma, Arial, sans-serif;
+      color: #fff;
+
+      .v-window-outerheader {
+        margin-left: 0;
+        padding: 0 0 0 5px;
+        background: #2b4666 no-repeat left top;
+        cursor: move;
+        height: auto;
+
+        .v-window-header {
+          font-size: 13px;
+          padding: 6px 5px 5px 7px;
+          font-weight: bold;
+          letter-spacing: 0;
+          background: #2b4666 no-repeat right top;
+          color: #ffffff;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          font-family: verdana, "Trebuchet MS", tahoma, arial, sans-serif;
+
+          .v-icon {
+            vertical-align: middle; /* This has to be 'middle', not 'bottom', to allow larger icons than 16px */
+          }
+        }
+      }
+
+      .v-window-closebox {
+        position: absolute;
+        top: 10px;
+        right: 7px;
+        width: 9px;
+        height: 9px;
+        background: transparent no-repeat;
+        background-image: url(sprites/close.png);  /** sprite-ref: components; */
+        cursor: pointer;
+        overflow: hidden;
+      }
+
+      .v-window-closebox:hover {
+        background: transparent no-repeat;
+        background-image: url(sprites/close-active.png); /** sprite-ref: components; */
+      }
+
+      .v-window-contents {
+        background: #fff;
+        color: #1E3146;
+        padding: 8px;
+        font-size: 12px;
+        border: 1px solid #8aa9d1;
+      }
+
+      .v-window-footer {
+        height: 8px;
+        background: transparent;
+
+        .v-window-resizebox {
+          position: absolute; /* Needed to position the element over ScrollPanel, which is also relatively positioned */
+          right: 1px;
+          bottom: 1px;
+          width: 8px;
+          height: 8px;
+          cursor: se-resize;
+          background: transparent;
+          background-image: url(sprites/resize.png); /** sprite-ref: components; */
+          overflow: hidden;
+        }
+
+        .v-window-resizebox-disabled {
+          cursor: default;
+          background: transparent;
+        }
+      }
+
+      .v-window-footer-noresize {
+        height: 8px;
+      }
+    }
+  }
+}
