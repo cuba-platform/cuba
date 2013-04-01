@@ -69,6 +69,7 @@ public class LogControlImpl implements LogControl {
             long lengthFile = randomAccessFile.length();
             if (lengthFile >= LOG_TAIL_AMOUNT_BYTES) {
                 randomAccessFile.seek(lengthFile - LOG_TAIL_AMOUNT_BYTES);
+                skipFirstLine(randomAccessFile);
             }
             String str;
             while (randomAccessFile.read() != -1) {
@@ -149,6 +150,27 @@ public class LogControlImpl implements LogControl {
             log.info(String.format("Threshold for appender '%s' set to '%s'", appender.getName(), threshold));
         } else
             throw new AppenderThresholdNotSupported(appender.getName());
+    }
+
+    protected void skipFirstLine(RandomAccessFile logFile) throws IOException {
+        boolean eol = false;
+        while (!eol) {
+            switch (logFile.read()) {
+                case -1:
+                case '\n':
+                    eol = true;
+                    break;
+                case '\r':
+                    eol = true;
+                    long cur = logFile.getFilePointer();
+                    if ((logFile.read()) != '\n') {
+                        logFile.seek(cur);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     protected String readUtf8Line(RandomAccessFile logFile) throws IOException {
