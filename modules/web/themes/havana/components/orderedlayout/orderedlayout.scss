@@ -1,0 +1,27 @@
+@mixin v-orderedlayout {
+  .v-horizontallayout,
+  .v-verticallayout {
+    overflow: hidden;
+    outline: 0;
+  }
+
+  .v-horizontallayout.v-margin-top,
+  .v-verticallayout.v-margin-top {
+    padding-top: 5px;
+  }
+
+  .v-horizontallayout.v-margin-right,
+  .v-verticallayout.v-margin-right {
+    padding-right: 5px;
+  }
+
+  .v-horizontallayout.v-margin-bottom,
+  .v-verticallayout.v-margin-bottom {
+    padding-bottom: 5px;
+  }
+
+  .v-horizontallayout.v-margin-left,
+  .v-verticallayout.v-margin-left {
+    padding-left: 5px;
+  }
+}

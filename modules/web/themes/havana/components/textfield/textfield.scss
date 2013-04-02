@@ -1,0 +1,22 @@
+
+@mixin v-textfield {
+  .v-textfield {
+    padding: 2px;
+    border: 1px solid $theme_fieldBorderColor;
+    margin: 0;
+    font-size: 12px;
+    height: 25px;
+    text-align: left;
+    background: #ffffff;
+  }
+
+  .v-textfield:focus {
+    border-color: $theme_fieldFocusedBorderColor;
+    outline: 0;
+  }
+
+  .v-textfield.v-readonly {
+    background: transparent;
+    border: $theme_fieldReadonlyBorderColor 1px solid;
+  }
+}

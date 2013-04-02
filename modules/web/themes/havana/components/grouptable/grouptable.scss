@@ -5,14 +5,15 @@
       height: 9px;
       margin-top: 4px;
       margin-right: 2px;
-      background: transparent no-repeat center left;
+      background: transparent;
+      background-repeat: no-repeat;
+      background-position: center left;
       background-image: url(sprites/expand.png); /** sprite-ref: components; */
       display: inline-block;
       cursor: pointer;
     }
 
     .v-expanded .cuba-grouptable-group-cell {
-      background: transparent no-repeat center left;
       background-image: url(sprites/collapse.png); /** sprite-ref: components; */
     }
 

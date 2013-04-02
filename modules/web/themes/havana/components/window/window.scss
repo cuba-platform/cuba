@@ -6,13 +6,13 @@
     background: transparent;
 
     .v-window-wrap {
-      font-family: verdana, Tahoma, Arial, sans-serif;
+      font-family: $theme_fonts;
       color: #fff;
 
       .v-window-outerheader {
         margin-left: 0;
         padding: 0 0 0 5px;
-        background: #2b4666 no-repeat left top;
+        background: $theme_windowHeaderColor no-repeat left top;
         cursor: move;
         height: auto;
 
@@ -21,12 +21,12 @@
           padding: 6px 5px 5px 7px;
           font-weight: bold;
           letter-spacing: 0;
-          background: #2b4666 no-repeat right top;
+          background: $theme_windowHeaderColor no-repeat right top;
           color: #ffffff;
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
-          font-family: verdana, "Trebuchet MS", tahoma, arial, sans-serif;
+          font-family: $theme_fonts;
 
           .v-icon {
             vertical-align: middle; /* This has to be 'middle', not 'bottom', to allow larger icons than 16px */
@@ -40,14 +40,14 @@
         right: 7px;
         width: 9px;
         height: 9px;
-        background: transparent no-repeat;
+        background: transparent;
+        background-repeat: no-repeat;
         background-image: url(sprites/close.png);  /** sprite-ref: components; */
         cursor: pointer;
         overflow: hidden;
       }
 
       .v-window-closebox:hover {
-        background: transparent no-repeat;
         background-image: url(sprites/close-active.png); /** sprite-ref: components; */
       }
 
@@ -56,7 +56,8 @@
         color: #1E3146;
         padding: 8px;
         font-size: 12px;
-        border: 1px solid #8aa9d1;
+        font-family: $theme_fonts;
+        border: 1px solid $theme_windowBorderColor;
       }
 
       .v-window-footer {

@@ -18,7 +18,7 @@ allprojects {
 }
 
 buildscript {
-	def cubaPluginVersion = '1.5-SNAPSHOT'
+	def cubaPluginVersion = '1.5.1'
 	def docPluginVersion = '1.2.0-SNAPSHOT'
 	
 	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
@@ -313,7 +313,7 @@ configure(webModule) {
         themes = ['havana']
         destDir = "${project.buildDir}/web/VAADIN/themes"
 //        compress = true
-//        sprites = false
+        sprites = true
 //        cleanup = true
     }
 

@@ -37,15 +37,16 @@ $groupBoxCaptionLineHeight: 18px;
           width: 9px;
           height: 9px;
           float: left;
+          cursor: pointer;
           margin-top: 4px;
           margin-right: 2px;
-          background: transparent no-repeat center left;
+          background: transparent;
+          background-repeat: no-repeat;
+          background-position: center left;
           background-image: url(sprites/expand.png); /** sprite-ref: components; */
-          cursor: pointer;
         }
 
         .cuba-groupbox-expander.expanded {
-          background: transparent no-repeat center left;
           background-image: url(sprites/collapse.png); /** sprite-ref: components; */
         }
 

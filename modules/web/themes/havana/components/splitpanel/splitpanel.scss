@@ -1,0 +1,64 @@
+@mixin v-splitpanel {
+  .v-splitpanel-horizontal, .v-splitpanel-vertical {
+    overflow: hidden;
+  }
+
+  .v-splitpanel-horizontal {
+    .v-splitpanel-hsplitter {
+      width: 4px;
+
+      div {
+        width: 4px;
+        font-size: 1px; /* for IE6 */
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: $theme_splitPanelSplitterColor url(images/ruler-vertical.png) center no-repeat;
+        cursor: e-resize;
+        margin: 0 0;
+      }
+    }
+  }
+
+  .v-splitpanel-vertical {
+    .v-splitpanel-vsplitter {
+      height: 10px;
+
+      div {
+        height: 6px;
+        background: $theme_splitPanelSplitterColor url(images/ruler-horizontal.png) center no-repeat;
+        border: 0;
+        cursor: n-resize;
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* IE specific styles */
+
+* html .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
+  height: 99%;
+}
+
+* html .v-splitpanel-vertical .v-splitpanel-vsplitter {
+  height: 10px;
+}
+
+* html .v-splitpanel-vertical .v-splitpanel-vsplitter div {
+  margin: 0;
+}
+
+/* Webkit fix */
+
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-second-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.v-webkit .v-splitpanel-vertical .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-vertical .v-splitpanel-second-container {
+  overflow-x: hidden;
+  overflow-y: auto;
+}

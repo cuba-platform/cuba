@@ -1,5 +1,5 @@
 
-@mixin v-menubar($submenuBackground: #315379, $highlightColor: #506D8D) {
+@mixin v-menubar {
 
   .v-menubar {
     height: 23px;
@@ -19,7 +19,7 @@
       padding-right: 10px;
       background: transparent;
       height: 19px;
-      font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
+      font-family: $theme_fonts;
       font-size: 12px;
       text-shadow: black 1px 1px;
 
@@ -46,7 +46,7 @@
       color: #000000;
       text-shadow: black 1px 1px;
       height: 19px;
-      background-color: $highlightColor;
+      background-color: $theme_appMenuHighlightColor;
     }
 
     .v-menubar-menuitem:hover {
@@ -55,7 +55,7 @@
       color: #000000;
       text-shadow: black 1px 1px;
       height: 19px;
-      background-color: $highlightColor;
+      background-color: $theme_appMenuHighlightColor;
     }
 
     .v-menubar-submenu-indicator {
@@ -81,11 +81,11 @@
     overflow: hidden;
     white-space: nowrap;
     border: 0;
-    background: $submenuBackground;
+    background: $theme_appSubmenuBackgroundColor;
     padding: 5px;
-    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
+    font-family: $theme_fonts;
     font-size: 12px;
-    border: solid 2px $highlightColor;
+    border: solid 2px $theme_appMenuHighlightColor;
 
     .v-menubar-menuitem {
       line-height: 16px;
@@ -114,7 +114,7 @@
 
     .v-menubar-menuitem-selected,
     .v-menubar-menuitem-shortcut-selected {
-      background-color: $highlightColor;
+      background-color: $theme_appMenuHighlightColor;
     }
 
     .v-menubar-menuitem-shortcut,
@@ -129,7 +129,10 @@
     }
 
     .v-menubar-submenu-indicator {
-      background: transparent no-repeat scroll right center;
+
+      background: transparent;
+      background-repeat: no-repeat;
+      background-position: right center;
       background-image: url(sprites/submenu-icon.png);  /** sprite-ref: components; */
       height: 16px;
       text-indent: -9999px;

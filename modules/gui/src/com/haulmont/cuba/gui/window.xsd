@@ -525,6 +525,7 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasNullName"/>
+                <xs:attributeGroup ref="hasAlign"/>
 
                 <xs:attribute name="filterMode" type="filterMode" use="optional"/>
             </xs:extension>

@@ -7,7 +7,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Layout;
 import org.dom4j.Element;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @param <T>
@@ -17,6 +22,11 @@ import org.dom4j.Element;
 public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     implements
         Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
+
+    private static final List<Sizeable.Unit> UNIT_SYMBOLS = Arrays.asList(
+            Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
+            Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
+            Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE);
 
     private String id;
     protected T component;
@@ -102,8 +112,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public int getHeightUnits() {
-        return 0;
-//        return component.getHeightUnits();
+        return UNIT_SYMBOLS.indexOf(component.getHeightUnits());
     }
 
     @Override
@@ -118,8 +127,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public int getWidthUnits() {
-        return 0;
-//        return component.getWidthUnits();
+        return UNIT_SYMBOLS.indexOf(component.getWidthUnits());
     }
 
     @Override
@@ -141,12 +149,12 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setAlignment(Alignment alignment) {
-/*        this.alignment = alignment;
+        this.alignment = alignment;
         final com.vaadin.ui.Component component = this.component.getParent();
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this.component,
                     WebComponentsHelper.convertAlignment(alignment));
-        }*/
+        }
     }
 
     @Override

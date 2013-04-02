@@ -1,0 +1,198 @@
+@mixin v-datefield {
+  .v-datefield {
+    white-space: nowrap;
+  }
+
+  .v-datefield-popupcalendar {
+    padding-right: 25px;
+  }
+
+  .v-datefield-button {
+    font-size: 12px;
+    height: 25px;
+    width: 25px;
+    margin: 0;
+    border: solid 1px $theme_fieldBorderColor;
+    border-left: 0;
+    background: #fff;
+    background-repeat: no-repeat;
+    background-origin: border-box;
+    background-clip: border-box;
+    background-image: url(sprites/date-select-button.png);  /** sprite-ref: components; */
+    vertical-align: top;
+    cursor: pointer;
+  }
+
+  .v-datefield-button-focus {
+    border: $theme_fieldFocusedBorderColor solid 1px ;
+    border-left: 0;
+  }
+
+  .v-datefield-button-readonly {
+    display: none;
+    visibility: hidden;
+  }
+
+  .v-datefield-popup {
+    font-family: $theme_fonts;
+    color: #000;
+    font-size: 12px;
+    background: #fff;
+    border: $theme_fieldPopupBorderColor solid 1px;
+    padding: 6px;
+
+    .v-datefield-calendarpanel-header td {
+      text-align: center;
+    }
+
+    .v-datefield-calendarpanel {
+      outline: none;
+      width: 19em;
+      font-size: 12px;
+      width: 16em;
+
+      table {
+        width: 100%;
+
+        td {
+          text-align: right;
+          width: 14.2%;
+          padding: 0;
+          margin: 0;
+
+          button {
+            outline: none;
+          }
+
+          span {
+            display: block;
+          }
+        }
+      }
+
+      .v-button-prevyear,
+      .v-button-nextyear,
+      .v-button-nextmonth,
+      .v-button-prevmonth {
+        display: block;
+        width: 15px;
+        height: 15px;
+        border: none;
+        padding: 0;
+        text-indent: -90000px;
+        margin: 0 auto;
+        background: transparent;
+        background-position: middle center;
+        background-repeat: no-repeat;
+      }
+
+      .v-button-prevmonth {
+        background-image: url(sprites/prevmonth.png); /** sprite-ref: components; */
+      }
+
+      .v-button-prevmonth:hover {
+        background-image: url(sprites/prevmonth-hover.png); /** sprite-ref: components; */
+      }
+
+      .v-button-nextmonth {
+        background-image: url(sprites/nextmonth.png); /** sprite-ref: components; */
+      }
+
+      .v-button-nextmonth:hover {
+        background-image: url(sprites/nextmonth-hover.png); /** sprite-ref: components; */
+      }
+
+      .v-button-nextyear {
+        background-image: url(sprites/nextyear.png); /** sprite-ref: components; */
+      }
+
+      .v-button-nextyear:hover {
+        background-image: url(sprites/nextyear-hover.png); /** sprite-ref: components; */
+      }
+
+      .v-button-prevyear {
+        background-image: url(sprites/prevyear.png); /** sprite-ref: components; */
+      }
+
+      .v-button-prevyear:hover {
+        background-image: url(sprites/prevyear-hover.png); /** sprite-ref: components; */
+      }
+    }
+
+    .v-datefield-calendarpanel-month {
+      font-weight: bold;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    strong {
+      color: #cd3331;
+      display: block;
+      width: 20px;
+      font-size: 12px;
+    }
+
+    .v-datefield-calendarpanel-day-today {
+      border: 1px solid $theme_fieldSelectionColor;
+      height: 14px
+    }
+
+    .v-disabled .v-datefield-calendarpanel-day,
+    .v-disabled .v-datefield-calendarpanel-day-today {
+      cursor: default;
+    }
+
+    .v-datefield-calendarpanel-day-entry {
+      color: #6a98b5;
+    }
+
+    .v-datefield-calendarpanel-day-disabled {
+      font-weight: normal;
+      color: #dddddd;
+      cursor: default;
+      opacity: 0.5;
+    }
+
+    .v-datefield-calendarpanel-day-entry.v-datefield-calendarpanel-day-disabled {
+      color: #afd6f8;
+    }
+
+    .v-datefield-calendarpanel-day {
+      height: 16px;
+      width: 14px;
+      padding: 1px 3px;
+      outline: 0;
+    }
+
+    .v-datefield-calendarpanel-day-selected {
+      font-weight: bold;
+      color: #fff;
+      background: $theme_fieldSelectionColor;
+      cursor: default;
+      border-right: 2px solid $theme_fieldSelectionColor;
+    }
+  }
+
+  .v-datefield-time {
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .v-datefield-time .v-label {
+    display: inline;
+  }
+
+  .v-datefield-time .v-select {
+    font-size: 10px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .v-datefield-popup:focus {
+    outline: none;
+  }
+
+  .v-datefield-calendarpanel:focus {
+    outline: none;
+  }
+}

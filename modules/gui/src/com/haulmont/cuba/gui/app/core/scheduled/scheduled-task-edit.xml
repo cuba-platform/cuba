@@ -63,19 +63,19 @@
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.period"/>
-                    <textField id="periodField" datasource="taskDs" property="period" width="150px"/>
+                    <textField id="periodField" datasource="taskDs" property="period" width="180px"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeout"/>
-                    <textField id="timeoutField" datasource="taskDs" property="timeout" width="150px"/>
+                    <textField id="timeoutField" datasource="taskDs" property="timeout" width="180px"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDate"/>
-                    <dateField id="startDateField" datasource="taskDs" property="startDate" width="150px"/>
+                    <dateField id="startDateField" datasource="taskDs" property="startDate" width="180px"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeFrame"/>
-                    <textField id="timeFrameField" datasource="taskDs" property="timeFrame" width="150px"/>
+                    <textField id="timeFrameField" datasource="taskDs" property="timeFrame" width="180px"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.permittedServers"/>

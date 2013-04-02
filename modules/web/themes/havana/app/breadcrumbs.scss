@@ -3,9 +3,9 @@
   .cuba-breadcrumbs {
 
     .v-label {
-      font-family: Verdana, tahoma, sans-serif;
+      font-family: $theme_fonts;
       font-size: 10px;
-      color: #2B4666;
+      color: $theme_breadcrumbsColor;
       font-weight: normal;
       padding-top: 0;
     }
@@ -14,11 +14,18 @@
       background: transparent;
     }
 
-    .v-button-link .v-button-caption {
-      color: #2B4666;
-      font-size: 10px;
-      padding-top: 2px;
-      display: block;
+    .v-button-link {
+      border: none;
+
+      .v-button-caption {
+        color: $theme_breadcrumbsColor;
+        font-size: 10px;
+        display: block;
+      }
+    }
+
+    .v-button-link:focus {
+      border-style: none;
     }
   }
 

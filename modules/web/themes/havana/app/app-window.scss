@@ -1,6 +1,6 @@
 // Application Window styles
 
-@mixin cuba-application-window($headerBackground: #315379, $controlHighLightColor: #506D8D) {
+@mixin cuba-application-window {
 
   .v-button.cuba-buttons-white-border {
     background: none;
@@ -25,7 +25,7 @@
 
   .v-button.cuba-buttons-white-border:hover {
     background: none;
-    border: solid 2px $controlHighLightColor;
+    border: solid 2px $theme_appMenuHighlightColor;
     .v-button-caption {
       text-shadow: black 1px 1px;
     }
@@ -40,14 +40,14 @@
       color: #fff;
       font-size: 12px;
       font-weight: normal;
-      font-family: Verdana, Arial, sans-serif;
+      font-family: $theme_fonts;
       text-shadow: black 1px 1px;
     }
   }
 
   .cuba-app-menubar {
     border-bottom: 1px solid #fff;
-    background: $headerBackground;
+    background: $theme_appHeaderBackgroundColor;
     padding-bottom: 0;
     padding-top: 0;
 
@@ -55,7 +55,7 @@
       color: #fff;
       font-size: 12px;
       font-weight: normal;
-      font-family: Verdana, Arial, sans-serif;
+      font-family: $theme_fonts;
       text-shadow: black 1px 1px;
     }
   }

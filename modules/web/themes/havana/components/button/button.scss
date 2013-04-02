@@ -5,7 +5,7 @@
     zoom: 1;
     text-align: center;
     text-decoration: none;
-    border: #9BB3D3 1px solid;
+    border: $theme_buttonBorderColor 1px solid;
     background: transparent url(images/button.gif) repeat-x;
     cursor: pointer;
     white-space: nowrap;
@@ -32,7 +32,7 @@
       .v-button-caption {
         font: inherit;
         font-size: 12px;
-        font-family: verdana, Tahoma, sans-serif;
+        font-family: $theme_fonts;
         vertical-align: middle;
         white-space: nowrap;
         color: #1E3146;
@@ -47,5 +47,33 @@
 
   .v-disabled.v-button:hover {
     background: transparent url(images/button.gif) repeat-x;
+  }
+
+  .v-button-link {
+    border: 1px solid transparent;
+    text-align: left;
+    background: transparent;
+    padding: 0;
+
+    .v-button-caption {
+      text-decoration: underline;
+      color: $theme_linkColor;
+      text-align: left;
+    }
+
+    .v-button-wrap {
+      background: transparent;
+      height: inherit;
+      padding: 0;
+    }
+  }
+
+  .v-button-link:focus {
+    outline: none;
+    border: 1px dashed $theme_linkColor;
+  }
+
+  .v-button-link:hover {
+    background: transparent;
   }
 }

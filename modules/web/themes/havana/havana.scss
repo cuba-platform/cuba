@@ -11,10 +11,15 @@
 @import "components/panel/panel";
 @import "components/window/window";
 @import "components/button/button";
+@import "components/select/select";
 @import "components/menubar/menubar";
 @import "components/groupbox/groupbox";
+@import "components/textfield/textfield";
+@import "components/datefield/datefield";
+@import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
 @import "components/multiupload/multiupload";
+@import "components/orderedlayout/orderedlayout";
 
 // Application specific
 @import "app/app-window";
@@ -25,15 +30,8 @@
 
 /**
  * Havana - Generic Platform SCSS theme
- *
- * @param $headerBackground - CSS background statement for app window header
- * @param $submenuBackground - CSS background statement for sub menu background
- * @param $menuHighlightColor - CSS color statement for highlight menu items and buttons in app window header
  */
-@mixin havana($headerBackground: #315379,
-              $submenuBackground: #315379,
-              $menuHighlightColor: #506D8D) {
-
+@mixin havana {
   @include base;
 
   @include common;
@@ -42,14 +40,19 @@
   @include v-panel;
   @include v-window;
   @include v-button;
-  @include v-menubar($submenuBackground, $menuHighlightColor);
+  @include v-menubar;
+  @include v-textfield;
+  @include v-datefield;
+  @include v-splitpanel;
+  @include v-filterselect;
+  @include v-orderedlayout;
 
   @include cuba-groupbox;
   @include cuba-grouptable;
   @include cuba-multiupload;
 
   @include cuba-login-window;
-  @include cuba-application-window($headerBackground, $menuHighlightColor);
+  @include cuba-application-window;
   @include cuba-folders-pane;
   @include cuba-breadcrumbs;
   @include cuba-log-control;
