@@ -224,8 +224,19 @@ public class LinkHandler {
 
     protected void openWindow(WindowInfo windowInfo) {
         String itemStr = requestParams.get("item");
+        String openTypeParam = requestParams.get("openType");
+        WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
+
+        if (StringUtils.isNotBlank(openTypeParam)) {
+            try {
+                openType = WindowManager.OpenType.valueOf(openTypeParam);
+            } catch (IllegalArgumentException e) {
+                log.warn("Unknown open type (" + openTypeParam + ") in request parameters");
+            }
+        }
+
         if (itemStr == null) {
-            app.getWindowManager().openWindow(windowInfo, WindowManager.OpenType.NEW_TAB, getParamsMap());
+            app.getWindowManager().openWindow(windowInfo, openType, getParamsMap());
         } else {
             EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
             if (info == null) {
@@ -233,7 +244,7 @@ public class LinkHandler {
             } else {
                 Entity entity = loadEntityInstance(info);
                 if (entity != null)
-                    app.getWindowManager().openEditor(windowInfo, entity, WindowManager.OpenType.NEW_TAB, getParamsMap());
+                    app.getWindowManager().openEditor(windowInfo, entity, openType, getParamsMap());
                 else
                     throw new EntityAccessException();
             }
