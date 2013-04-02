@@ -7,19 +7,23 @@
         attributeFormDefault="unqualified"
         >
 
-    <xs:element name="menu-config" type="menuConfigType"/>
+    <xs:element name="menu-config" type="menuOrItem"/>
 
-    <xs:complexType name="menuConfigType">
+    <xs:complexType name="menuOrItem">
         <xs:sequence>
-            <xs:element type="menuType" name="menu" maxOccurs="unbounded" minOccurs="0"/>
-            <xs:element type="itemType" name="item" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element type="itemType" name="item"/>
+                <xs:element type="menuType" name="menu"/>
+            </xs:choice>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="menuType">
         <xs:sequence>
-            <xs:element type="itemType" name="item" maxOccurs="unbounded" minOccurs="0"/>
-            <xs:element type="menuType" name="menu" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element type="itemType" name="item"/>
+                <xs:element type="menuType" name="menu"/>
+            </xs:choice>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
         <xs:attribute type="xs:string" name="insertBefore" use="optional"/>
