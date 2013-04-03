@@ -9,17 +9,25 @@
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 	overflow: hidden;
+    max-width: 80%;
 }
+
 .v-Notification h1,
 .v-Notification p,
 .v-Notification.error h1,
 .v-Notification.error p,
 .v-Notification.warning h1,
 .v-Notification.warning p {
-	display: inline;
-	font-weight: normal;
-	white-space: nowrap;
-	margin: 0 10px 0 0;
+    margin: 0 10px 0 0;
+}
+
+.v-Notification h1 {
+    display: block;
+    text-align: center;
+}
+
+.v-Notification p {
+    white-space: normal;
 }
 
 .v-Notification.warning {
@@ -41,8 +49,8 @@
 	border-radius: 6px;
 }
 
-
 .v-Notification.tray {
+    max-width: 50%;
 	background: #575e60;
 	padding: 0.5em;
 	margin: 0 5px 5px 0;
