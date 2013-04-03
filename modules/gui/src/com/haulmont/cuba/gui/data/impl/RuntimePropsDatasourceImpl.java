@@ -92,7 +92,7 @@ public class RuntimePropsDatasourceImpl
         LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a " +
                 "where a.category.id=:cat order by a.orderNo");
         attributeQuery.addParameter("cat", entity.getCategory());
-        valuesContext.setView("_local");
+        attributesContext.setView(View.LOCAL);
         List<CategoryAttribute> attributes = dataSupplier.loadList(attributesContext);
 
         Map<String, Object> variables = new HashMap<>();
