@@ -11,6 +11,8 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.util.FileTypeResolver;
 
 /**
+ * Web resource with versioning support
+ *
  * @author artamonov
  * @version $Id$
  */

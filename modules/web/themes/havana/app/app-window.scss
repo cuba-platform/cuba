@@ -31,6 +31,12 @@
     }
   }
 
+  .v-button.cuba-buttons-white-border.nocaption {
+    .v-button-caption {
+      display: none;
+    }
+  }
+
   .cuba-app-titlebar {
     .v-button:hover {
       background: transparent;

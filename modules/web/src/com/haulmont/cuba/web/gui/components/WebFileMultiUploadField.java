@@ -60,7 +60,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
         uploader.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "multiupload.submit"));
         uploader.setFileSizeLimitMB(AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb());
 
-        uploader.setButtonImage(new VersionedThemeResource("components/multiupload/button.png"));
+        uploader.setButtonImage(new VersionedThemeResource("components/multiupload/images/multiupload-button.png"));
         uploader.setBootstrapFailureHandler(new CubaMultiUpload.BootstrapFailureHandler() {
             @Override
             public void loadWebResourcesFailed() {

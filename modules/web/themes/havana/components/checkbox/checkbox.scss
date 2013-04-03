@@ -1,7 +1,7 @@
 
-@mixin v-checkbox {
+@mixin havana-checkbox($primaryStyleName : v-checkbox) {
 
-  .v-checkbox {
+  .#{$primaryStyleName} {
     padding-bottom: 3px;
     border: transparent 1px solid;
 
@@ -29,7 +29,7 @@
     }
   }
 
-  .v-checkbox-focus {
+  .#{$primaryStyleName}-focus {
     border: 1px dotted #4d7ab2;
   }
 }

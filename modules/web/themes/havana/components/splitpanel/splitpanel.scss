@@ -1,10 +1,10 @@
-@mixin v-splitpanel {
-  .v-splitpanel-horizontal, .v-splitpanel-vertical {
+@mixin havana-splitpanel($primaryStyleName: v-splitpanel) {
+  .#{$primaryStyleName}-horizontal, .#{$primaryStyleName}-vertical {
     overflow: hidden;
   }
 
-  .v-splitpanel-horizontal {
-    .v-splitpanel-hsplitter {
+  .#{$primaryStyleName}-horizontal {
+    .#{$primaryStyleName}-hsplitter {
       width: 4px;
 
       div {
@@ -20,8 +20,8 @@
     }
   }
 
-  .v-splitpanel-vertical {
-    .v-splitpanel-vsplitter {
+  .#{$primaryStyleName}-vertical {
+    .#{$primaryStyleName}-vsplitter {
       height: 10px;
 
       div {
@@ -33,32 +33,32 @@
       }
     }
   }
-}
 
-/* IE specific styles */
+  /* IE specific styles */
 
-* html .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
-  height: 99%;
-}
+  * html .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-hsplitter div {
+    height: 99%;
+  }
 
-* html .v-splitpanel-vertical .v-splitpanel-vsplitter {
-  height: 10px;
-}
+  * html .#{$primaryStyleName}-vertical .#{$primaryStyleName}-vsplitter {
+    height: 10px;
+  }
 
-* html .v-splitpanel-vertical .v-splitpanel-vsplitter div {
-  margin: 0;
-}
+  * html .#{$primaryStyleName}-vertical .#{$primaryStyleName}-vsplitter div {
+    margin: 0;
+  }
 
-/* Webkit fix */
+  /* Webkit fix */
 
-.v-webkit .v-splitpanel-horizontal .v-splitpanel-first-container,
-.v-webkit .v-splitpanel-horizontal .v-splitpanel-second-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-}
+  .v-webkit .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-first-container,
+  .v-webkit .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-second-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
 
-.v-webkit .v-splitpanel-vertical .v-splitpanel-first-container,
-.v-webkit .v-splitpanel-vertical .v-splitpanel-second-container {
-  overflow-x: hidden;
-  overflow-y: auto;
+  .v-webkit .#{$primaryStyleName}-vertical .#{$primaryStyleName}-first-container,
+  .v-webkit .#{$primaryStyleName}-vertical .#{$primaryStyleName}-second-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 }

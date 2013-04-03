@@ -131,7 +131,7 @@ public class FoldersPane extends VerticalLayout {
                     createMenuBarCommand(),
                     firstItem);
 
-            menuBar.setStyleName("cuba-folders-pane");
+            menuItem.setStyleName("cuba-folders-pane");
         }
     }
 

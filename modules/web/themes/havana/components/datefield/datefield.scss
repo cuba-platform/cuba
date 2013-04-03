@@ -1,13 +1,14 @@
-@mixin v-datefield {
-  .v-datefield {
+
+@mixin havana-datefield($primaryStyleName : v-datafield) {
+  .#{$primaryStyleName}  {
     white-space: nowrap;
   }
 
-  .v-datefield-popupcalendar {
+  .#{$primaryStyleName}-popupcalendar {
     padding-right: 25px;
   }
 
-  .v-datefield-button {
+  .#{$primaryStyleName}-button {
     font-size: 12px;
     height: 25px;
     width: 25px;
@@ -23,17 +24,17 @@
     cursor: pointer;
   }
 
-  .v-datefield-button-focus {
+  .#{$primaryStyleName}-button-focus {
     border: $theme_fieldFocusedBorderColor solid 1px ;
     border-left: 0;
   }
 
-  .v-datefield-button-readonly {
+  .#{$primaryStyleName}-button-readonly {
     display: none;
     visibility: hidden;
   }
 
-  .v-datefield-popup {
+  .#{$primaryStyleName}-popup {
     font-family: $theme_fonts;
     color: #000;
     font-size: 12px;
@@ -41,11 +42,11 @@
     border: $theme_fieldPopupBorderColor solid 1px;
     padding: 6px;
 
-    .v-datefield-calendarpanel-header td {
+    .#{$primaryStyleName}-calendarpanel-header td {
       text-align: center;
     }
 
-    .v-datefield-calendarpanel {
+    .#{$primaryStyleName}-calendarpanel {
       outline: none;
       width: 19em;
       font-size: 12px;
@@ -119,7 +120,7 @@
       }
     }
 
-    .v-datefield-calendarpanel-month {
+    .#{$primaryStyleName}-calendarpanel-month {
       font-weight: bold;
       text-align: center;
       white-space: nowrap;
@@ -132,39 +133,39 @@
       font-size: 12px;
     }
 
-    .v-datefield-calendarpanel-day-today {
+    .#{$primaryStyleName}calendarpanel-day-today {
       border: 1px solid $theme_fieldSelectionColor;
       height: 14px
     }
 
-    .v-disabled .v-datefield-calendarpanel-day,
-    .v-disabled .v-datefield-calendarpanel-day-today {
+    .v-disabled .#{$primaryStyleName}-calendarpanel-day,
+    .v-disabled .#{$primaryStyleName}-calendarpanel-day-today {
       cursor: default;
     }
 
-    .v-datefield-calendarpanel-day-entry {
+    .#{$primaryStyleName}-calendarpanel-day-entry {
       color: #6a98b5;
     }
 
-    .v-datefield-calendarpanel-day-disabled {
+    .#{$primaryStyleName}-calendarpanel-day-disabled {
       font-weight: normal;
       color: #dddddd;
       cursor: default;
       opacity: 0.5;
     }
 
-    .v-datefield-calendarpanel-day-entry.v-datefield-calendarpanel-day-disabled {
+    .#{$primaryStyleName}-calendarpanel-day-entry.#{$primaryStyleName}-calendarpanel-day-disabled {
       color: #afd6f8;
     }
 
-    .v-datefield-calendarpanel-day {
+    .#{$primaryStyleName}-calendarpanel-day {
       height: 16px;
       width: 14px;
       padding: 1px 3px;
       outline: 0;
     }
 
-    .v-datefield-calendarpanel-day-selected {
+    .#{$primaryStyleName}-calendarpanel-day-selected {
       font-weight: bold;
       color: #fff;
       background: $theme_fieldSelectionColor;
@@ -173,26 +174,26 @@
     }
   }
 
-  .v-datefield-time {
+  .#{$primaryStyleName}-time {
     white-space: nowrap;
     font-size: 11px;
   }
 
-  .v-datefield-time .v-label {
+  .#{$primaryStyleName}-time .v-label {
     display: inline;
   }
 
-  .v-datefield-time .v-select {
+  .#{$primaryStyleName}-time .v-select {
     font-size: 10px;
     padding: 0;
     margin: 0;
   }
 
-  .v-datefield-popup:focus {
+  .#{$primaryStyleName}-popup:focus {
     outline: none;
   }
 
-  .v-datefield-calendarpanel:focus {
+  .#{$primaryStyleName}-calendarpanel:focus {
     outline: none;
   }
 }

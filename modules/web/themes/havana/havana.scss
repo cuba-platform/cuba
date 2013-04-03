@@ -19,6 +19,7 @@
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
 @import "components/multiupload/multiupload";
+@import "components/notification/notification";
 @import "components/orderedlayout/orderedlayout";
 
 // Application specific
@@ -34,22 +35,23 @@
 @mixin havana {
   @include base;
 
-  @include common;
+  @include havana-common;
 
-  @include v-table;
-  @include v-panel;
-  @include v-window;
-  @include v-button;
-  @include v-menubar;
-  @include v-textfield;
-  @include v-datefield;
-  @include v-splitpanel;
-  @include v-filterselect;
-  @include v-orderedlayout;
+  @include havana-table;
+  @include havana-panel;
+  @include havana-window;
+  @include havana-button;
+  @include havana-menubar;
+  @include havana-textfield;
+  @include havana-datefield;
+  @include havana-splitpanel;
+  @include havana-filterselect;
+  @include havana-notification;
+  @include havana-orderedlayout;
 
-  @include cuba-groupbox;
-  @include cuba-grouptable;
-  @include cuba-multiupload;
+  @include havana-cuba-groupbox;
+  @include havana-cuba-grouptable;
+  @include havana-cuba-multiupload;
 
   @include cuba-login-window;
   @include cuba-application-window;

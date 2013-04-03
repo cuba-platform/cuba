@@ -7,8 +7,9 @@
 $groupBoxInnerPadding: 5px;
 $groupBoxCaptionLineHeight: 18px;
 
-@mixin cuba-groupbox {
-  .cuba-groupbox.v-widget {
+@mixin havana-cuba-groupbox($primaryStyleName : cuba-groupbox) {
+
+  .#{$primaryStyleName}.v-widget {
     @include cuba-groupbox-defaults;
 
     fieldset {
@@ -28,12 +29,12 @@ $groupBoxCaptionLineHeight: 18px;
         white-space: nowrap;
       }
 
-      .cuba-groupbox-caption {
+      .#{$primaryStyleName}-caption {
         @include cuba-groupbox-defaults;
         padding: 0 4px;
         line-height: $groupBoxCaptionLineHeight;
 
-        .cuba-groupbox-expander {
+        .#{$primaryStyleName}-expander {
           width: 9px;
           height: 9px;
           float: left;
@@ -46,7 +47,7 @@ $groupBoxCaptionLineHeight: 18px;
           background-image: url(sprites/expand.png); /** sprite-ref: components; */
         }
 
-        .cuba-groupbox-expander.expanded {
+        .#{$primaryStyleName}-expander.expanded {
           background-image: url(sprites/collapse.png); /** sprite-ref: components; */
         }
 
@@ -63,7 +64,7 @@ $groupBoxCaptionLineHeight: 18px;
         }
       }
 
-      .cuba-groupbox-content {
+      .#{$primaryStyleName}-content {
         @include cuba-groupbox-defaults;
         overflow: hidden;
         border: none;
@@ -74,14 +75,14 @@ $groupBoxCaptionLineHeight: 18px;
         height: 100%;
       }
 
-      .cuba-groupbox-deco {
+      .#{$primaryStyleName}-deco {
         @include cuba-groupbox-defaults;
         height: 0;
         background: transparent;
         margin: 0;
       }
 
-      .cuba-groupbox-deco:before {
+      .#{$primaryStyleName}-deco:before {
         display: block;
         content: "";
         width: 0;
@@ -92,38 +93,28 @@ $groupBoxCaptionLineHeight: 18px;
     }
   }
 
-  .cuba-groupbox.cuba-groupbox-nocaption > fieldset {
+  .#{$primaryStyleName}.#{$primaryStyleName}-nocaption > fieldset {
     border: none;
     padding: 0;
   }
-}
 
-@mixin cuba-groupbox-content-fix {
-  .cuba-groupbox.v-widget {
-    fieldset {
-      .cuba-groupbox-content.first-child-expanded {
-        padding-bottom: $groupBoxCaptionLineHeight;
+  .v-webkit,
+  .v-ie,
+  .v-opera {
+    .#{$primaryStyleName}.v-widget {
+      fieldset {
+        .#{$primaryStyleName}-content.first-child-expanded {
+          padding-bottom: $groupBoxCaptionLineHeight;
+        }
+      }
+    }
+
+    .#{$primaryStyleName}.v-widget.first-child-expanded.#{$primaryStyleName}-nocaption {
+      fieldset {
+        .#{$primaryStyleName}-content {
+          padding-bottom: 0;
+        }
       }
     }
   }
-
-  .cuba-groupbox.v-widget.first-child-expanded.cuba-groupbox-nocaption {
-    fieldset {
-      .cuba-groupbox-content {
-        padding-bottom: 0;
-      }
-    }
-  }
-}
-
-.v-webkit {
-  @include cuba-groupbox-content-fix;
-}
-
-.v-ie {
-  @include cuba-groupbox-content-fix;
-}
-
-.v-opera {
-  @include cuba-groupbox-content-fix;
 }

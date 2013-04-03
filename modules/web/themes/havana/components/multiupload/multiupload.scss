@@ -1,9 +1,9 @@
-@mixin cuba-multiupload {
-  .cuba-multiupload {
+@mixin havana-cuba-multiupload($primaryStyleName : cuba-multiupload) {
+  .#{$primaryStyleName} {
     z-index: auto;
   }
 
-  .cuba-multiupload-disabled {
+  .#{$primaryStyleName}-disabled {
     z-index: auto;
     border: #000000 solid 1px;
     background-color: gray;
@@ -12,7 +12,7 @@
     box-sizing: border-box;
   }
 
-  .cuba-multiupload-progress {
+  .#{$primaryStyleName}-progress {
     position: fixed;
     padding: 10px;
     left: 50%;

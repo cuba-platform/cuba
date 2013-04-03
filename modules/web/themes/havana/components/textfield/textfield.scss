@@ -1,6 +1,6 @@
 
-@mixin v-textfield {
-  .v-textfield {
+@mixin havana-textfield($primaryStyleName: v-textfield) {
+  .#{$primaryStyleName} {
     padding: 2px;
     border: 1px solid $theme_fieldBorderColor;
     margin: 0;
@@ -10,12 +10,12 @@
     background: #ffffff;
   }
 
-  .v-textfield:focus {
+  .#{$primaryStyleName}:focus {
     border-color: $theme_fieldFocusedBorderColor;
     outline: 0;
   }
 
-  .v-textfield.v-readonly {
+  .#{$primaryStyleName}.v-readonly {
     background: transparent;
     border: $theme_fieldReadonlyBorderColor 1px solid;
   }

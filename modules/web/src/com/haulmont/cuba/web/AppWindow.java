@@ -205,6 +205,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             layout.addComponent(titleLayout);
         }
 
+        if (webConfig.getUseLightHeader())
+            layout.addStyleName("cuba-app-light-header");
+
         menuBarLayout = createMenuBarLayout();
 
         layout.addComponent(menuBarLayout);
@@ -422,6 +425,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         layout.setStyleName("cuba-app-menubar");
         layout.setWidth(100, Unit.PERCENTAGE);
         if (webConfig.getUseLightHeader()){
+            layout.addStyleName("cuba-app-light-header");
             layout.setHeight(40, Unit.PIXELS);
         } else {
             layout.setHeight(28, Unit.PIXELS);
@@ -728,13 +732,16 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         if (!webConfig.getUseLightHeader())
             buttonTitle = messages.getMessage(getMessagesPack(), "logoutBtn");
 
-        Button logoutBtn = new Button(
-                buttonTitle,
-                new LogoutBtnClickListener()
-        );
+        Button logoutBtn = new Button(buttonTitle, new LogoutBtnClickListener());
+
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("cuba-buttons-white-border");
+
+        if (webConfig.getUseLightHeader())
+            logoutBtn.addStyleName("nocaption");
+
         logoutBtn.setIcon(new VersionedThemeResource("app/images/exit.png"));
+//        vaadin7 Debug ids disabled
 //        AppUI.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
@@ -745,6 +752,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             buttonTitle = messages.getMessage(getMessagesPack(), "newWindowBtn");
 
         Button newWindowBtn = new Button(buttonTitle);
+
         URL pageUrl = null;
         try {
             pageUrl = Page.getCurrent().getLocation().toURL();
@@ -763,6 +771,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("cuba-buttons-white-border");
+
+        if (webConfig.getUseLightHeader())
+            newWindowBtn.addStyleName("nocaption");
+
         newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
         return newWindowBtn;
     }

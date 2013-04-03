@@ -1,22 +1,22 @@
-@mixin v-window {
+@mixin havana-window($primaryStyleName: v-window) {
 
-  .v-window {
+  .#{$primaryStyleName} {
     color: #000;
     line-height: 18px;
     background: transparent;
 
-    .v-window-wrap {
+    .#{$primaryStyleName}-wrap {
       font-family: $theme_fonts;
       color: #fff;
 
-      .v-window-outerheader {
+      .#{$primaryStyleName}-outerheader {
         margin-left: 0;
         padding: 0 0 0 5px;
         background: $theme_windowHeaderColor no-repeat left top;
         cursor: move;
         height: auto;
 
-        .v-window-header {
+        .#{$primaryStyleName}-header {
           font-size: 13px;
           padding: 6px 5px 5px 7px;
           font-weight: bold;
@@ -34,7 +34,7 @@
         }
       }
 
-      .v-window-closebox {
+      .#{$primaryStyleName}-closebox {
         position: absolute;
         top: 10px;
         right: 7px;
@@ -47,11 +47,11 @@
         overflow: hidden;
       }
 
-      .v-window-closebox:hover {
+      .#{$primaryStyleName}-closebox:hover {
         background-image: url(sprites/close-active.png); /** sprite-ref: components; */
       }
 
-      .v-window-contents {
+      .#{$primaryStyleName}-contents {
         background: #fff;
         color: #1E3146;
         padding: 8px;
@@ -60,11 +60,11 @@
         border: 1px solid $theme_windowBorderColor;
       }
 
-      .v-window-footer {
+      .#{$primaryStyleName}-footer {
         height: 8px;
         background: transparent;
 
-        .v-window-resizebox {
+        .#{$primaryStyleName}-resizebox {
           position: absolute; /* Needed to position the element over ScrollPanel, which is also relatively positioned */
           right: 1px;
           bottom: 1px;
@@ -76,13 +76,13 @@
           overflow: hidden;
         }
 
-        .v-window-resizebox-disabled {
+        .#{$primaryStyleName}-resizebox-disabled {
           cursor: default;
           background: transparent;
         }
       }
 
-      .v-window-footer-noresize {
+      .#{$primaryStyleName}-footer-noresize {
         height: 8px;
       }
     }

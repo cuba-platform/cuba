@@ -4,8 +4,8 @@
   background-position: center center;
 }
 
-@mixin v-table {
-  .v-table {
+@mixin havana-table($primaryStyleName : v-table) {
+  .#{$primaryStyleName} {
     .checkbox-checked {
       @include v-table-checkbox;
       background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */

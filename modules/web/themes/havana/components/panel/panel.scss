@@ -1,14 +1,14 @@
-@mixin v-panel {
-  .v-panel {
-    .v-panel-content {
+@mixin havana-panel($primaryStyleName : v-panel) {
+  .#{$primaryStyleName} {
+    .#{$primaryStyleName}-content {
       border: 0;
     }
 
-    .v-panel-deco {
+    .#{$primaryStyleName}-deco {
       display: none;
     }
 
-    .v-panel-captionwrap {
+    .#{$primaryStyleName}-captionwrap {
       display: none;
     }
   }

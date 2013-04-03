@@ -313,7 +313,7 @@ configure(webModule) {
         themes = ['havana']
         destDir = "${project.buildDir}/web/VAADIN/themes"
 //        compress = true
-        sprites = true
+//        sprites = true
 //        cleanup = true
     }
 

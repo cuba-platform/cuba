@@ -1,6 +1,6 @@
-@mixin cuba-grouptable {
-  .cuba-grouptable {
-    .cuba-grouptable-group-cell {
+@mixin havana-cuba-grouptable($primaryStyleName : cuba-grouptable) {
+  .#{$primaryStyleName} {
+    .#{$primaryStyleName}-group-cell {
       width: 9px;
       height: 9px;
       margin-top: 4px;
@@ -13,11 +13,11 @@
       cursor: pointer;
     }
 
-    .v-expanded .cuba-grouptable-group-cell {
+    .v-expanded .#{$primaryStyleName}-group-cell {
       background-image: url(sprites/collapse.png); /** sprite-ref: components; */
     }
 
-    .cuba-grouptable-float {
+    .#{$primaryStyleName}-float {
       display: inline-block;
     }
   }

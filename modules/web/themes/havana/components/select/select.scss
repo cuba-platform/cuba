@@ -1,9 +1,9 @@
-@mixin v-filterselect {
+@mixin havana-filterselect($primaryStyleName: v-filterselect) {
   $comboBoxBorder: 1px solid $theme_fieldBorderColor;
   $comboBoxBorderFocused: 1px solid $theme_fieldFocusedBorderColor;
   $comboBoxBorderReadonly: 1px solid $theme_fieldReadonlyBorderColor;
 
-  .v-filterselect {
+  .#{$primaryStyleName} {
     height: 25px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */
@@ -21,7 +21,7 @@
       float: left;
     }
 
-    .v-filterselect-input {
+    .#{$primaryStyleName}-input {
       -moz-box-sizing: border-box;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -36,7 +36,7 @@
       font-size: 8pt;
     }
 
-    .v-filterselect-button {
+    .#{$primaryStyleName}-button {
       cursor: pointer;
       height: 100%;
       width: 25px;
@@ -56,40 +56,40 @@
     }
   }
 
-  .v-filterselect-focus {
+  .#{$primaryStyleName}-focus {
     background: #fff;
     border-left: $comboBoxBorderFocused;
 
-    .v-filterselect-button {
+    .#{$primaryStyleName}-button {
       border: $comboBoxBorderFocused;
       border-left: 0;
 
       background-image: url(sprites/filter-button-focus-bg.png);
     }
 
-    .v-filterselect-input:focus {
+    .#{$primaryStyleName}-input:focus {
       border: $comboBoxBorderFocused;
       border-left: 0;
     }
   }
 
-  .v-filterselect.v-readonly {
+  .#{$primaryStyleName}.v-readonly {
     border-left: $comboBoxBorderReadonly;
 
-    .v-filterselect-button {
+    .#{$primaryStyleName}-button {
       border: $comboBoxBorderReadonly;
       border-left: 0;
 
       background-image: url(sprites/filter-button-readonly-bg.png);
     }
 
-    .v-filterselect-input-readonly {
+    .#{$primaryStyleName}-input-readonly {
       border: $comboBoxBorderReadonly;
       border-left: 0;
     }
   }
 
-  .v-filterselect-suggestpopup {
+  .#{$primaryStyleName}-suggestpopup {
     border: 1px solid $theme_fieldPopupBorderColor;
     font-family: $theme_fonts;
     color: #000;
@@ -120,10 +120,10 @@
     }
   }
 
-  .v-filterselect-nextpage,
-  .v-filterselect-nextpage-off,
-  .v-filterselect-prevpage-off,
-  .v-filterselect-prevpage {
+  .#{$primaryStyleName}-nextpage,
+  .#{$primaryStyleName}-nextpage-off,
+  .#{$primaryStyleName}-prevpage-off,
+  .#{$primaryStyleName}-prevpage {
     height: 12px;
     width: 100%;
     background: transparent no-repeat 50% 0;
@@ -132,15 +132,15 @@
     overflow: hidden;
   }
 
-  .v-filterselect-nextpage-off span,
-  .v-filterselect-prevpage-off span {
+  .#{$primaryStyleName}-nextpage-off span,
+  .#{$primaryStyleName}-prevpage-off span {
     cursor: default;
   }
 
-  .v-filterselect-nextpage span,
-  .v-filterselect-nextpage-off span,
-  .v-filterselect-prevpage-off span,
-  .v-filterselect-prevpage span {
+  .#{$primaryStyleName}-nextpage span,
+  .#{$primaryStyleName}-nextpage-off span,
+  .#{$primaryStyleName}-prevpage-off span,
+  .#{$primaryStyleName}-prevpage span {
     display: block;
     height: 12px;
     width: 100%;
@@ -149,7 +149,7 @@
     overflow: hidden;
   }
 
-  .v-filterselect-status {
+  .#{$primaryStyleName}-status {
     font-size: 11px;
     line-height: 11px;
     width: 100%;
@@ -160,19 +160,19 @@
     border-top: 1px solid #b6bbbc;
   }
 
-  .v-filterselect-nextpage {
+  .#{$primaryStyleName}-nextpage {
     background-image: url(sprites/popup-down.png);  /** sprite-ref: components; */
   }
 
-  .v-filterselect-prevpage {
+  .#{$primaryStyleName}-prevpage {
     background-image: url(sprites/popup-up.png);    /** sprite-ref: components; */
   }
 
-  .v-filterselect-nextpage-off {
+  .#{$primaryStyleName}-nextpage-off {
     background-image: url(sprites/popup-down-disabled.png); /** sprite-ref: components; */
   }
 
-  .v-filterselect-prevpage-off {
+  .#{$primaryStyleName}-prevpage-off {
     background-image: url(sprites/popup-up-disabled.png);  /** sprite-ref: components; */
   }
 }
