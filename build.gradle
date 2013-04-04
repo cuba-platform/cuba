@@ -4,21 +4,21 @@
 * Use is subject to license terms.
 */
 
-def defaultVersion = '4.0'
+def defaultVersion = '4.1'
 
 def BUILD_VERSION = 'buildVersion'
-def BUILD_RELEASE = 'buildRelease'
 def BUILD_VCS_NUMBER = 'buildVcsNumber'
 
 allprojects {
     ext.artifactGroup = 'com.haulmont.cuba'
-    ext.artifactVersion = rootProject.hasProperty(BUILD_VERSION) ? rootProject[BUILD_VERSION] : defaultVersion
-    ext.isSnapshot = !(rootProject.hasProperty(BUILD_RELEASE) && Boolean.valueOf(rootProject[BUILD_RELEASE]))
+    ext.artifactVersion = rootProject.hasProperty(BUILD_VERSION) ? 
+                                    rootProject[BUILD_VERSION].replace('-SNAPSHOT', '') : defaultVersion
+    ext.isSnapshot = rootProject.hasProperty(BUILD_VERSION) && rootProject[BUILD_VERSION].endsWith('-SNAPSHOT')
     //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
 
 buildscript {
-	def cubaPluginVersion = '1.5-SNAPSHOT'
+	def cubaPluginVersion = '4.1-SNAPSHOT'
 	def docPluginVersion = '1.2.0-SNAPSHOT'
 	
 	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
