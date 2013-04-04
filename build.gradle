@@ -13,7 +13,7 @@ allprojects {
     ext.artifactGroup = 'com.haulmont.cuba'
     ext.artifactVersion = rootProject.hasProperty(BUILD_VERSION) ? 
                                     rootProject[BUILD_VERSION].replace('-SNAPSHOT', '') : defaultVersion
-    ext.isSnapshot = rootProject.hasProperty(BUILD_VERSION) && rootProject[BUILD_VERSION].endsWith('-SNAPSHOT')
+    ext.isSnapshot = !rootProject.hasProperty(BUILD_VERSION) || rootProject[BUILD_VERSION].endsWith('-SNAPSHOT')
     //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
 
@@ -154,8 +154,6 @@ configure(globalModule) {
     }
     compileJava << {
         enhance.execute()
-
-        env = System.getenv()
 
         Date releaseDate = new Date()
         String timeStamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(releaseDate)
