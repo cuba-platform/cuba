@@ -222,9 +222,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         middleLayout = new HorizontalLayout();
 
         if (Mode.TABBED.equals(getMode())) {
-            middleLayout.addStyleName("work-area");
+            middleLayout.addStyleName("cuba-app-work-area");
         } else
-            middleLayout.addStyleName("work-area-single");
+            middleLayout.addStyleName("cuba-app-work-area-single");
 
         middleLayout.setSizeFull();
 

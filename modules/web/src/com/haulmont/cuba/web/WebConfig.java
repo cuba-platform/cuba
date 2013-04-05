@@ -233,7 +233,7 @@ public interface WebConfig extends Config {
     /**
      * @return Whether to use lightweight header (app icon, menu, app settings in the same row)
      */
-    @DefaultBoolean(false)
+    @DefaultBoolean(true)
     @Property("cuba.web.useLightHeader")
     boolean getUseLightHeader();
 

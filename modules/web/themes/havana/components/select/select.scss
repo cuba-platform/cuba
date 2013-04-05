@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
 @mixin havana-filterselect($primaryStyleName: v-filterselect) {
   $comboBoxBorder: 1px solid $theme_fieldBorderColor;
   $comboBoxBorderFocused: 1px solid $theme_fieldFocusedBorderColor;
@@ -45,8 +53,8 @@
 
       background: transparent;
       background-repeat: no-repeat;
-      background-position: center middle;
-      background-image: url(sprites/filter-button-bg.png);
+      background-position: middle center;
+      background-image: url(sprites/filter-button-bg.png);      /** sprite-ref: components; */
 
       -moz-box-sizing: border-box;
       -webkit-box-sizing: border-box;
@@ -64,7 +72,7 @@
       border: $comboBoxBorderFocused;
       border-left: 0;
 
-      background-image: url(sprites/filter-button-focus-bg.png);
+      background-image: url(sprites/filter-button-focus-bg.png);  /** sprite-ref: components; */
     }
 
     .#{$primaryStyleName}-input:focus {
@@ -80,7 +88,7 @@
       border: $comboBoxBorderReadonly;
       border-left: 0;
 
-      background-image: url(sprites/filter-button-readonly-bg.png);
+      background-image: url(sprites/filter-button-readonly-bg.png); /** sprite-ref: components; */
     }
 
     .#{$primaryStyleName}-input-readonly {
@@ -162,17 +170,21 @@
 
   .#{$primaryStyleName}-nextpage {
     background-image: url(sprites/popup-down.png);  /** sprite-ref: components; */
+    background-position: center;
   }
 
   .#{$primaryStyleName}-prevpage {
     background-image: url(sprites/popup-up.png);    /** sprite-ref: components; */
+    background-position: center;
   }
 
   .#{$primaryStyleName}-nextpage-off {
     background-image: url(sprites/popup-down-disabled.png); /** sprite-ref: components; */
+    background-position: center;
   }
 
   .#{$primaryStyleName}-prevpage-off {
     background-image: url(sprites/popup-up-disabled.png);  /** sprite-ref: components; */
+    background-position: center;
   }
 }

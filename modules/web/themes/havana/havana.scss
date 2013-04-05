@@ -1,6 +1,15 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Havana - Generic Platform SCSS theme
+// Version: $Id$
+
 /** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
 
-// Inherit theme
+// Inherit base theme
 @import "../base/base";
 
 // Common
@@ -13,6 +22,7 @@
 @import "components/button/button";
 @import "components/select/select";
 @import "components/menubar/menubar";
+@import "components/tabsheet/tabsheet";
 @import "components/groupbox/groupbox";
 @import "components/textfield/textfield";
 @import "components/datefield/datefield";
@@ -29,9 +39,6 @@
 @import "app/folders-pane";
 @import "app/log-control";
 
-/**
- * Havana - Generic Platform SCSS theme
- */
 @mixin havana {
   @include base;
 
@@ -42,6 +49,7 @@
   @include havana-window;
   @include havana-button;
   @include havana-menubar;
+  @include havana-tabsheet;
   @include havana-textfield;
   @include havana-datefield;
   @include havana-splitpanel;

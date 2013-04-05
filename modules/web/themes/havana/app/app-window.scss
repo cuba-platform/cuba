@@ -1,5 +1,12 @@
-// Application Window styles
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
 
+// Version: $Id$
+
+// Application Window styles
 @mixin cuba-application-window {
 
   .v-button.cuba-buttons-white-border {
@@ -38,6 +45,8 @@
   }
 
   .cuba-app-titlebar {
+    background: #373738;
+
     .v-button:hover {
       background: transparent;
     }
@@ -48,6 +57,13 @@
       font-weight: normal;
       font-family: $theme_fonts;
       text-shadow: black 1px 1px;
+    }
+
+    .cuba-app-appname-label {
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: $theme_fonts;
     }
   }
 
@@ -64,6 +80,11 @@
       font-family: $theme_fonts;
       text-shadow: black 1px 1px;
     }
+  }
+
+  .cuba-app-work-area,
+  .cuba-app-work-area-single {
+    background: $theme_appWorkAreaColor;
   }
 
   .cuba-app-icon {

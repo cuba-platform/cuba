@@ -1,18 +1,26 @@
 /*
- * Global theme constants
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
+// Global theme constants
+// Version: $Id$
 
 $theme_fonts: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
 
 $theme_appHeaderBackgroundColor: #315379;
 $theme_appMenuHighlightColor: #506d8d;
 $theme_appSubmenuBackgroundColor: #315379;
+$theme_appWorkAreaColor: #8398AF;
 
 $theme_loginFormBackgroundColor: #f4f6f8;
 $theme_loginFormBorderColor: #cde0ec;
 
 $theme_windowHeaderColor: #2b4666;
 $theme_windowBorderColor: #8aa9d1;
+
+$theme_foldersPaneCaptionColor: #2B4766;
 
 $theme_buttonBorderColor: #9bb3d3;
 
@@ -24,5 +32,7 @@ $theme_fieldSelectionColor: #4d7ab2;
 
 $theme_breadcrumbsColor: #2b4666;
 $theme_linkColor: #0066ff;
+
+$theme_tabsheetSelectedBorderColor: #647e9b;
 
 $theme_splitPanelSplitterColor: #eef3f9;
