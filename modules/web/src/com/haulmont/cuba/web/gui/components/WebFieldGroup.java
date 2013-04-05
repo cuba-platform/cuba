@@ -120,12 +120,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public Field getField(String id) {
-        for (final Map.Entry<String, Field> entry : fields.entrySet()) {
-            if (entry.getKey().equals(id)) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return fields.get(id);
     }
 
     @Override
