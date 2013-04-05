@@ -389,7 +389,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         Action saveAsFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_FOLDER);
         Action saveAsAppFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_APP_FOLDER);
 
-        if (isFolderActionsEnabled()) {
+        if (filterEntity != null && isFolderActionsEnabled()) {
             if (filterEntity.getCode() == null && foldersPane != null
                     && filterEntity.getFolder() == null && saveAsFolderAction == null) {
                 actionsButton.addAction(new SaveAsFolderAction(false));
