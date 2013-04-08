@@ -6,6 +6,157 @@
 
 // Version: $Id$
 
+@mixin havana-tabsheet-third($primaryStyleName) {
+
+  .#{$primaryStyleName} {
+    // inner tabsheet
+    // Third level
+
+    .#{$primaryStyleName}-tabitemcell {
+      .#{$primaryStyleName}-tabitem {
+        border-left: 1px solid #a4c5df; //todo $theme color
+        height: 14px;
+        line-height: 14px;
+        margin-bottom: 9px;
+        padding-top: 0;
+        padding-left: 5px;
+
+        .v-caption {
+          height: 20px;
+          padding: 0 6px 5px 4px;
+          .v-captiontext {
+            color: #2b4666;      //todo $theme color
+          }
+        }
+      }
+
+      .#{$primaryStyleName}-tabitem-selected {
+        height: 25px;
+        line-height: 14px;
+        margin-bottom: 0;
+        padding-left: 6px;
+        padding-top: 3px;
+      }
+    }
+
+    .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem {
+      border-left: 1px transparent;
+      padding-left: 0;
+    }
+
+    .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem-selected  {
+      border-left: 1px solid #a4c5df;  //todo $theme color
+      padding-left: 6px;
+    }
+
+    // after selected tab
+    // hide separator
+    .#{$primaryStyleName}-tabitemcell-selected + .#{$primaryStyleName}-tabitemcell .#{$primaryStyleName}-tabitem {
+      border-left: 1px transparent;
+      padding-left: 0;
+    }
+
+    .#{$primaryStyleName}-tabs {
+      background: transparent url(images/inner-tabsheet-bg.png) repeat-x bottom;
+    }
+
+    .#{$primaryStyleName}-tabitem-selected-first,
+    .#{$primaryStyleName}-tabitem-selected {
+      background: #ebf0f4;             //todo $theme color
+      border-color: #a4c5df;           //todo $theme color
+    }
+
+    .#{$primaryStyleName}-content {
+      background: #EBF0F4;
+      border: 1px solid #A4C5DF;
+      border-top-style: none;
+    }
+  }
+}
+
+@mixin havana-tabsheet-second($primaryStyleName) {
+
+  .#{$primaryStyleName} {
+    // inner tabsheet
+    // Second level
+
+    .#{$primaryStyleName}-spacertd div {
+      border-bottom: 0;
+    }
+
+    .#{$primaryStyleName}-tabs {
+      background: transparent url(images/middle-tabsheet-bg.png) repeat-x bottom;
+
+      .#{$primaryStyleName}-tabitem {
+        border-left: 1px solid #c9d7e9;  // todo $theme color
+        // todo $theme color
+        height: 14px;
+        line-height: 14px;
+        margin-bottom: 9px;
+        padding-top: 0;
+        padding-left: 5px;
+
+        .v-caption {
+          height: 20px;
+          padding: 0 6px 5px 4px;
+
+          .v-captiontext {
+            color: #1E3146;               // todo $theme color
+          }
+        }
+      }
+
+      .#{$primaryStyleName}-tabitem-selected {
+        height: 25px;
+        line-height: 14px;
+        margin-bottom: 0;
+        padding-left: 6px;
+        padding-top: 3px;
+        border-bottom: 0;
+        background: #f5f7f9;   // todo $theme color
+        border-color: #b4d0e4; // todo $theme color
+      }
+
+      .#{$primaryStyleName}-tabitem-selected-first {
+        border-bottom: 0;
+        background: #f5f7f9;   // todo $theme color
+        border-color: #b4d0e4; // todo $theme color
+      }
+
+      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem {
+        border-left: 1px transparent;
+        padding-left: 0;
+      }
+
+      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem-selected {
+        border-left: 1px solid #c9d7e9;  // todo $theme color
+        padding-left: 6px;
+      }
+
+      .#{$primaryStyleName}-selected,
+      .#{$primaryStyleName}-selected-first {
+        border: 0;
+        padding-left: 0;
+      }
+
+      // after selected tab
+      // hide separator
+      .#{$primaryStyleName}-tabitemcell-selected + .#{$primaryStyleName}-tabitemcell .#{$primaryStyleName}-tabitem {
+        border-left: 1px transparent;
+        padding-left: 0;
+      }
+    }
+
+    .#{$primaryStyleName}-content {
+      border: 1px solid #b4d0e4; // todo $theme color
+      border-top-style: none;
+      background: #f5f7f9;      // todo $theme color
+
+      @include havana-tabsheet-third($primaryStyleName);
+    }
+  }
+}
+
 @mixin havana-tabsheet($primaryStyleName: v-tabsheet) {
   .#{$primaryStyleName} {
 
@@ -24,7 +175,7 @@
     }
 
     .#{$primaryStyleName}-hidetabs .v-tabsheet-content {
-      border-top: 1px solid #b5babb;
+      border-top: 1px solid #b5babb;        // todo $theme color
     }
 
     .#{$primaryStyleName}-scroller {
@@ -116,6 +267,7 @@
         font-family: $theme_fonts;
         font-size: 12px;
         font-weight: normal;
+        float: left;
       }
 
       .#{$primaryStyleName}-tabitem .v-caption .v-captiontext {
@@ -143,7 +295,7 @@
           overflow: hidden;
           font-size: 20px;
           float: right;
-          margin: 4px -4px 0 0;
+          margin: 2px -4px 0 0;
         }
 
         .#{$primaryStyleName}-caption-close:hover {
@@ -179,11 +331,11 @@
 
     .#{$primaryStyleName}-deco {
       height: 1px;
-      background: none;
+      background: #fff;
       margin-left: 0;
     }
 
-    .#{$primaryStyleName}:before {
+    .#{$primaryStyleName}-deco:before {
       display: block;
       content: "";
       width: 9px;
@@ -207,83 +359,15 @@
       border: none;
       position: relative;
 
-      .#{$primaryStyleName} {
-        // inner tabsheet
-        // Second level
-
-        .#{$primaryStyleName}-spacertd div {
-          border-bottom: 0;
-        }
-
-        .#{$primaryStyleName}-tabs {
-          background: transparent url(images/middle-tabsheet-bg.png) repeat-x bottom;
-
-          .#{$primaryStyleName}-tabitem {
-            border-left: 1px solid #C9D7E9;
-            // todo $theme color
-            height: 14px;
-            line-height: 14px;
-            margin-bottom: 9px;
-            padding-top: 0;
-            padding-left: 5px;
-
-            .v-caption {
-              height: 20px;
-              padding: 0 6px 5px 4px;
-
-              .v-captiontext {
-                color: #1E3146;
-              }
-            }
-          }
-
-          .#{$primaryStyleName}-tabitem-selected {
-            height: 25px;
-            line-height: 14px;
-            margin-bottom: 0;
-            padding-left: 6px;
-            padding-top: 3px;
-            border-bottom: 0;
-            background: #F5F7F9;   // todo $theme color
-            border-color: #B4D0E4; // todo $theme color
-          }
-
-          .#{$primaryStyleName}-tabitem-selected-first {
-            border-bottom: 0;
-            background: #F5F7F9;   // todo $theme color
-            border-color: #B4D0E4; // todo $theme color
-          }
-
-          .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem {
-            border-left: 1px transparent;
-            padding-left: 0;
-          }
-
-          .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem-selected {
-            border-left: 1px solid #C9D7E9;  // todo $theme color
-            padding-left: 6px;
-          }
-
-          .#{$primaryStyleName}-selected,
-          .#{$primaryStyleName}-selected-first {
-            border: 0;
-            padding-left: 0;
-          }
-
-          // after selected tab
-          // hide separator
-          .#{$primaryStyleName}-tabitemcell-selected + .#{$primaryStyleName}-tabitemcell .#{$primaryStyleName}-tabitem {
-            border-left: 1px transparent;
-            padding-left: 0;
-          }
-        }
-
-        .#{$primaryStyleName}-content {
-          border: 1px solid #B4D0E4; // todo $theme color
-          border-top-style: none;
-          background: #F5F7F9;
-        }
-      }
+      @include havana-tabsheet-second($primaryStyleName);
     }
+  }
+
+  .v-window-contents {
+    @include havana-tabsheet-second($primaryStyleName);
+  }
+
+  .v-verticallayout-single {
+    @include havana-tabsheet-second($primaryStyleName);
   }
 }
