@@ -43,7 +43,7 @@ public class CubaGroupTableWidget extends VScrollTable {
     @Override
     protected void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         if (GROUP_DIVIDER_COLUMN_KEY.equals(visibleColOrder[colIndex])) {
-            w = 10;
+            w = 0;
             isDefinedWidth = true;
         }
 

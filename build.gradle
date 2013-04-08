@@ -62,7 +62,7 @@ def desktopModule = project(':cuba-desktop')
 def uiTestModule = project(':cuba-test-ui')
 def portalModule = project(':cuba-portal')
 
-def vaadinVersion = '7.0.2.h.M5'
+def vaadinVersion = '7.0.2.h.M8'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
@@ -313,7 +313,7 @@ configure(webModule) {
         themes = ['havana']
         destDir = "${project.buildDir}/web/VAADIN/themes"
 //        compress = true
-        sprites = true
+//        sprites = true
 //        cleanup = true
     }
 

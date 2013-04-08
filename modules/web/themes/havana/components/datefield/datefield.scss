@@ -6,7 +6,7 @@
 
 // Version: $Id$
 
-@mixin havana-datefield($primaryStyleName : v-datafield) {
+@mixin havana-datefield($primaryStyleName : v-datefield) {
   .#{$primaryStyleName}  {
     white-space: nowrap;
   }
@@ -177,6 +177,7 @@
       color: #fff;
       background: $theme_fieldSelectionColor;
       cursor: default;
+      border: 0;
       border-right: 2px solid $theme_fieldSelectionColor;
     }
   }

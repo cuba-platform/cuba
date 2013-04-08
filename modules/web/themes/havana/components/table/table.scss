@@ -25,5 +25,158 @@
       @include readonly-checkbox;
       background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
     }
+
+    .#{$primaryStyleName}-header-wrap {
+      height: 23px;
+      background: #e6eaef;   // todo $theme color
+      border: 1px solid $theme_fieldBorderColor;
+      border-bottom: none;
+      overflow: hidden;
+      position: relative;
+
+      .#{$primaryStyleName}-header {
+        height: 23px;
+
+        .#{$primaryStyleName}-caption-container {
+          float: right;
+          overflow: hidden;
+          white-space: nowrap;
+          padding-top: 3px;
+        }
+
+        .#{$primaryStyleName}-header-cell:hover,
+        .#{$primaryStyleName}-header-cell-asc:hover,
+        .#{$primaryStyleName}-header-cell-desc:hover {
+          background: #F2F5F7;            // todo $theme color
+        }
+
+        table {
+
+          td {
+            height: 23px;
+            cursor: pointer;
+          }
+        }
+      }
+
+      .#{$primaryStyleName}-resizer {
+        display: block;
+        height: 23px;
+        float: right;
+        background-color: $theme_fieldBorderColor;                 // todo $theme color
+        cursor: col-resize;
+      }
+
+      .#{$primaryStyleName}-header > div {
+        height: 23px;
+      }
+    }
+
+    .v-table-body-wrapper {
+      border: 1px solid #a5c4e0;           // todo $theme color
+    }
+
+    .#{$primaryStyleName}-body {
+      background: #fff;
+    }
+
+    .#{$primaryStyleName}-cell-content {
+      border-right-color:  #edf3f9;          // todo $theme color
+    }
+
+    .#{$primaryStyleName}-row,
+    .#{$primaryStyleName}-row-odd {
+      background-color: #fff;
+      height: 24px;
+      cursor: default;
+    }
+
+    .#{$primaryStyleName}-row-odd {
+      background-color: #f6f8fa;              // todo $theme color
+    }
+
+    .#{$primaryStyleName}-row:hover,
+    .#{$primaryStyleName}-row-odd:hover {
+      background-color: #f5f4b9;            // todo $theme color
+    }
+
+    .#{$primaryStyleName}-caption-row {
+      background-color: #c6cbcd;
+      cursor: default;
+    }
+
+    .#{$primaryStyleName}-caption-row-content {
+      white-space: nowrap;
+      overflow: hidden;
+      line-height: 15px;
+    }
+
+    .#{$primaryStyleName}-cell-content {
+      line-height: 15px;
+    }
+
+    .#{$primaryStyleName}-row.v-selected,
+    .#{$primaryStyleName}-row-odd.v-selected,
+    .#{$primaryStyleName}-caption-row.v-selected {
+      background-color: #c3e1ff;                     // todo $theme color
+    }
+
+    .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-content {
+      border-top: 0;
+      border-bottom: 0;
+    }
+
+    .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-wrapper {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .#{$primaryStyleName}-header-cell-asc .#{$primaryStyleName}-sort-indicator,
+    .#{$primaryStyleName}-header-cell-desc .#{$primaryStyleName}-sort-indicator {
+      width: 10px;
+      height: 10px;
+      background: transparent;
+      background-repeat: no-repeat;
+      margin-right: 5px;
+      margin-top: 4px;
+    }
+
+    .#{$primaryStyleName}-header-cell-asc .#{$primaryStyleName}-sort-indicator {
+      background-image: url(sprites/sort-asc.png);      /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-header-cell-desc .#{$primaryStyleName}-sort-indicator {
+      background-image: url(sprites/sort-desc.png);    /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-column-selector {
+      width: 16px;
+      height: 16px;
+      margin-top: -20px;
+      margin-right: 2px;
+      background: transparent;
+      background-repeat: no-repeat;
+      background-image: url(sprites/column-selector.png);  /** sprite-ref: components; */
+    }
+  }
+
+  .#{$primaryStyleName}-header-drag {
+    position: absolute;
+    background: #e7edf3;
+    border: 1px solid #b6bbbc;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    margin-top: 20px;
+    z-index: 30000;
+    height: 23px;
+    line-height: normal;
+  }
+
+  .#{$primaryStyleName} > div:focus {
+    outline: none;
+  }
+
+  .#{$primaryStyleName} > div:focus {
+    border-color: #4d7ab2;
   }
 }
