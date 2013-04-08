@@ -2,20 +2,19 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.08.2009 12:55:15
- *
- * $Id$
  */
 package com.haulmont.cuba.web.filestorage;
 
-import com.vaadin.terminal.DownloadStream;
+import com.vaadin.server.DownloadStream;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 
 import java.io.Closeable;
 import java.io.IOException;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CloseableDownloadStream extends DownloadStream implements Closeable {
 
     private static final long serialVersionUID = -9108244903369511793L;
@@ -27,6 +26,7 @@ public class CloseableDownloadStream extends DownloadStream implements Closeable
         this.dataProvider = dataProvider;
     }
 
+    @Override
     public void close() throws IOException {
         dataProvider.close();
     }

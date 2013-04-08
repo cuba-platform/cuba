@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin cuba-breadcrumbs {
+  .cuba-breadcrumbs {
+
+    .v-label {
+      font-family: $theme_fonts;
+      font-size: 10px;
+      color: $theme_breadcrumbsColor;
+      font-weight: normal;
+      padding-top: 0;
+    }
+
+    .v-button:hover {
+      background: transparent;
+    }
+
+    .v-button-link {
+      border: none;
+
+      .v-button-caption {
+        color: $theme_breadcrumbsColor;
+        font-size: 10px;
+        display: block;
+      }
+    }
+
+    .v-button-link:focus {
+      border-style: none;
+    }
+  }
+
+  .v-button.cuba-closetab-button {
+    border: none;
+    background: transparent none;
+
+    .v-button-wrap {
+      background: transparent none;
+      padding: 0;
+    }
+  }
+
+  .v-button.cuba-closetab-button:hover {
+    .v-button-wrap {
+      background: transparent none;
+      padding: 0;
+    }
+  }
+
+  .cuba-headline-container {
+    .v-button:hover {
+      background: transparent;
+    }
+  }
+}

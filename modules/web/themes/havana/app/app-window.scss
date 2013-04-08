@@ -1,0 +1,93 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+// Application Window styles
+@mixin cuba-application-window {
+
+  .v-button.cuba-buttons-white-border {
+    background: none;
+    border: 2px solid transparent;
+
+    .v-button-wrap {
+      padding-top: 0;
+      padding-right: 0;
+      height: 23px;
+
+      .v-button-caption {
+        margin-left: 2px;
+        margin-right: 2px;
+        color: #fff;
+      }
+
+      .v-icon {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .v-button.cuba-buttons-white-border:hover {
+    background: none;
+    border: solid 2px $theme_appMenuHighlightColor;
+    .v-button-caption {
+      text-shadow: black 1px 1px;
+    }
+  }
+
+  .v-button.cuba-buttons-white-border.nocaption {
+    .v-button-caption {
+      display: none;
+    }
+  }
+
+  .cuba-app-titlebar {
+    background: #373738;
+
+    .v-button:hover {
+      background: transparent;
+    }
+
+    .v-label.cuba-user-select-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: normal;
+      font-family: $theme_fonts;
+      text-shadow: black 1px 1px;
+    }
+
+    .cuba-app-appname-label {
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: $theme_fonts;
+    }
+  }
+
+  .cuba-app-menubar {
+    border-bottom: 1px solid #fff;
+    background: $theme_appHeaderBackgroundColor;
+    padding-bottom: 0;
+    padding-top: 0;
+
+    .v-label.cuba-user-select-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: normal;
+      font-family: $theme_fonts;
+      text-shadow: black 1px 1px;
+    }
+  }
+
+  .cuba-app-work-area,
+  .cuba-app-work-area-single {
+    background: $theme_appWorkAreaColor;
+  }
+
+  .cuba-app-icon {
+    padding-left: 10px;
+  }
+}

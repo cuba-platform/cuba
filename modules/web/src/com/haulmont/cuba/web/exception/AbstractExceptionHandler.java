@@ -12,7 +12,7 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.Terminal;
+import com.vaadin.server.ErrorEvent;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
@@ -28,9 +28,8 @@ import java.util.List;
  * and register the new handler in the definition of {@link ExceptionHandlersConfiguration} bean in the client's
  * spring.xml.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractExceptionHandler implements ExceptionHandler {
 
@@ -41,7 +40,7 @@ public abstract class AbstractExceptionHandler implements ExceptionHandler {
     }
 
     @Override
-    public boolean handle(Terminal.ErrorEvent event, App app) {
+    public boolean handle(ErrorEvent event, App app) {
         Throwable exception = event.getThrowable();
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
         for (Throwable throwable : list) {

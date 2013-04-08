@@ -2,26 +2,25 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 23.06.2010 11:02:45
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroup;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroup;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.*;
 
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
-@ClientWidget(VFieldGroup.class)
+//@ClientWidget(VFieldGroup.class)
 public class FieldGroup extends Form {
 
     private boolean expanded = true;
@@ -50,7 +49,7 @@ public class FieldGroup extends Form {
         if (collapsable) {
             this.expanded = expanded;
             getLayout().setVisible(expanded);
-            requestRepaint();
+            markAsDirty();
         }
     }
 
@@ -81,7 +80,7 @@ public class FieldGroup extends Form {
         if (isCollapsable()) {
             if (variables.containsKey("expand")) {
                 setExpanded(true);
-                getLayout().requestRepaintAll();
+                getLayout().markAsDirtyRecursive();
 
                 fireExpandListeners();
 
@@ -94,9 +93,8 @@ public class FieldGroup extends Form {
     }
 
     public void setItemDataSource(Item newDataSource, Collection propertyIds) {
-
-        if (layout instanceof GridLayout) {
-            GridLayout gl = (GridLayout) layout;
+        if (super.getLayout() instanceof GridLayout) {
+            GridLayout gl = (GridLayout) super.getLayout();
             if (gridlayoutCursorX == -1) {
                 // first setItemDataSource, remember initial cursor
                 gridlayoutCursorX = gl.getCursorX();
@@ -168,7 +166,7 @@ public class FieldGroup extends Form {
         if (propertyId == null || field == null) {
             return;
         }
-        
+
         final FieldGroupLayout layout = getLayout();
         layout.addComponent(field, currentX, currentY);
     }

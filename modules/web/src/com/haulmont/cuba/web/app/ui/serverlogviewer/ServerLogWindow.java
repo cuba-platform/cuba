@@ -20,10 +20,10 @@ import com.haulmont.cuba.web.export.LogDataProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -135,18 +135,20 @@ public class ServerLogWindow extends AbstractWindow {
         });
 
         logContainer.setSizeFull();
-        logContainer.setScrollable(true);
+//        logContainer.setScrollable(true);
 
-        ComponentContainer content = logContainer.getContent();
-        content.setWidth(Sizeable.SIZE_UNDEFINED, Sizeable.UNITS_PIXELS);
+        Panel groupBox = (Panel) WebComponentsHelper.unwrap(logFieldBox);
+        VerticalLayout logContent = new VerticalLayout();
+        logContent.setSizeUndefined();
+        logContent.addComponent(logTailLabel);
+        logContainer.setContent(logContent);
 
-        AbstractComponentContainer groupBox = (AbstractComponentContainer) WebComponentsHelper.unwrap(logFieldBox);
-        logContainer.addComponent(logTailLabel);
-        groupBox.addComponent(logContainer);
+        ComponentContainer groupBoxContent = (ComponentContainer) groupBox.getContent();
+        groupBoxContent.addComponent(logContainer);
 
         logTailLabel.setSizeUndefined();
-        logTailLabel.setContentMode(Label.CONTENT_XHTML);
-        logTailLabel.setStyleName("code-monospace");
+        logTailLabel.setContentMode(ContentMode.HTML);
+        logTailLabel.setStyleName("cuba-log-content");
 
         loggerLevelField.setOptionsList(LoggingHelper.getLevels());
         appenderLevelField.setOptionsList(LoggingHelper.getLevels());
@@ -403,7 +405,7 @@ public class ServerLogWindow extends AbstractWindow {
 
     protected String highlightLevel(String line, String level) {
         // use css classes for highlight different log levels
-        return line.replaceFirst(level, "<span class='log-level log-level-" + level + "'>" + level + "</span>");
+        return line.replaceFirst(level, "<span class='cuba-log-level cuba-log-level-" + level + "'>" + level + "</span>");
     }
 
     protected JmxInstance getSelectedConnection() {

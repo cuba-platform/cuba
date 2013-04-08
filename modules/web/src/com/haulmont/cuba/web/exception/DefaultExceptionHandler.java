@@ -5,24 +5,30 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.vaadin.terminal.*;
-import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
-import com.vaadin.ui.AbstractComponent;
 import com.haulmont.cuba.web.App;
+import com.vaadin.server.ErrorEvent;
+import com.vaadin.server.VariableOwner;
+//import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import com.vaadin.ui.AbstractComponent;
+//import com.haulmont.cuba.web.AppUI;
+import com.vaadin.ui.UI;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.net.SocketException;
 
 /**
  * This exception handler comes into play if no other handler in the chain has handled the exception.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DefaultExceptionHandler implements ExceptionHandler
-{
+public class DefaultExceptionHandler implements ExceptionHandler {
+
+    private final static Log log = LogFactory.getLog(DefaultExceptionHandler.class);
+
     @Override
-    public boolean handle(Terminal.ErrorEvent event, App app) {
+    public boolean handle(ErrorEvent event, App app) {
         // Copied from com.vaadin.Application.terminalError()
 
         Throwable t = event.getThrowable();
@@ -32,7 +38,7 @@ public class DefaultExceptionHandler implements ExceptionHandler
         }
 
         // Finds the original source of the error/exception
-        Object owner = null;
+        /*Object owner = null;
         if (event instanceof VariableOwner.ErrorEvent) {
             owner = ((VariableOwner.ErrorEvent) event).getVariableOwner();
         } else if (event instanceof URIHandler.ErrorEvent) {
@@ -52,7 +58,10 @@ public class DefaultExceptionHandler implements ExceptionHandler
                 ((AbstractComponent) owner)
                         .setComponentError(new SystemError(e));
             }
-        }
+        }*/
+
+        log.error("Unhandled error", event.getThrowable());
+
         return true;
     }
 }

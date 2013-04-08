@@ -2,17 +2,12 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 08.06.2010 13:54:46
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.terminal.ThemeResource;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
@@ -23,51 +18,63 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 public class WebPopupButton
-        extends WebAbstractComponent<PopupButton>
-        implements com.haulmont.cuba.gui.components.PopupButton{
+        extends
+            WebAbstractComponent<org.vaadin.hene.popupbutton.PopupButton>
+        implements
+            com.haulmont.cuba.gui.components.PopupButton {
 
     private Component popupComponent;
     private com.vaadin.ui.Component vPopupComponent;
     private String icon;
 
-    private List<Action> actionOrder = new LinkedList<Action>();
+    private List<Action> actionOrder = new LinkedList<>();
 
     public WebPopupButton() {
-        component = new PopupButton("");
+        component = new PopupButton();
         component.setImmediate(true);
 
         vPopupComponent = new VerticalLayout();
-        vPopupComponent.addStyleName("popupmenu");
+        vPopupComponent.addStyleName("cuba-popupmenu");
         ((VerticalLayout) vPopupComponent).setMargin(false);
         vPopupComponent.setSizeUndefined();
-        component.setComponent(vPopupComponent);
+        component.setContent(vPopupComponent);
     }
 
+    @Override
     public String getCaption() {
         return component.getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return component.getDescription();
     }
 
+    @Override
     public void setDescription(String description) {
         component.setDescription(description);
     }
 
+    @Override
     public String getIcon() {
         return icon;
     }
 
+    @Override
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(new ThemeResource(icon));
+            component.setIcon(new VersionedThemeResource(icon));
             component.addStyleName(WebButton.ICON_STYLE);
         } else {
             component.setIcon(null);
@@ -78,12 +85,12 @@ public class WebPopupButton
     public void setPopupComponent(Component component) {
         this.popupComponent = component;
         vPopupComponent = WebComponentsHelper.unwrap(popupComponent);
-        this.component.setComponent(vPopupComponent);
+        this.component.setContent(vPopupComponent);
     }
 
     public void removePopupComponent() {
         popupComponent = null;
-        this.component.removeComponent(vPopupComponent);
+        this.component.setContent(null);
         vPopupComponent = null;
     }
 
@@ -91,28 +98,37 @@ public class WebPopupButton
         return popupComponent;
     }
 
+    @Override
     public boolean isPopupVisible() {
         return component.isPopupVisible();
     }
 
+    @Override
     public void setPopupVisible(boolean popupVisible) {
         component.setPopupVisible(popupVisible);
     }
 
+    @Override
     public void setMenuWidth(String width) {
         if (vPopupComponent != null && width != null) {
             vPopupComponent.setWidth(width);    
         }
     }
 
+    @Override
     public boolean isAutoClose() {
-        return component.isAutoClose();
+        return false;
+//        vaadin7
+//        return component.isAutoClose();
     }
 
+    @Override
     public void setAutoClose(boolean autoClose) {
-        component.setAutoClose(autoClose);
+//        vaadin7
+//        component.setAutoClose(autoClose);
     }
 
+    @Override
     public void addAction(final Action action) {
         if (action != null && vPopupComponent instanceof com.vaadin.ui.Layout) {
             WebButton button = new WebButton();
@@ -124,20 +140,20 @@ public class WebPopupButton
             vButton.setSizeFull();
             vButton.setStyleName(BaseTheme.BUTTON_LINK);
 
-            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
-            component.setAutoClose(true);
+            component.markAsDirty();
             actionOrder.add(action);
         }
     }
 
+    @Override
     public void removeAction(Action action) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
-            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap((Component) action.getOwner()));
         }
     }
 
+    @Override
     public Action getAction(String id) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && id != null) {
             for (Action action : actionOrder) {
@@ -146,10 +162,10 @@ public class WebPopupButton
                 }
             }
         }
-
         return null;
     }
 
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionOrder);
     }

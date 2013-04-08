@@ -10,14 +10,17 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroupLayout;
-import com.vaadin.ui.ClientWidget;
+//import com.vaadin.server.PaintException;
+//import com.vaadin.server.PaintTarget;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroupLayout;
+//import com.vaadin.ui.ClientWidget;
+
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.GridLayout;
 
 @SuppressWarnings("serial")
-@ClientWidget(VFieldGroupLayout.class)
+//@ClientWidget(VFieldGroupLayout.class)
 public class FieldGroupLayout extends GridLayout {
 
     public static final int CAPTION_ALIGN_LEFT = 0;
@@ -37,6 +40,6 @@ public class FieldGroupLayout extends GridLayout {
 
     public void setCaptionAlignment(int captionAlignment) {
         this.captionAlignment = captionAlignment;
-        requestRepaint();
+        markAsDirty();
     }
 }

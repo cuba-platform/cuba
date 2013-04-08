@@ -15,16 +15,15 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
-import com.vaadin.Application;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.VariableOwner;
-import com.vaadin.terminal.gwt.server.CommunicationManager;
-import com.vaadin.terminal.gwt.server.JsonPaintTarget;
+import com.vaadin.server.CommunicationManager;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+//import com.vaadin.terminal.VariableOwner;
+//import com.vaadin.terminal.gwt.server.CommunicationManager;
+//import com.vaadin.terminal.gwt.server.JsonPaintTarget;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -38,8 +37,8 @@ import java.io.PrintWriter;
 import java.util.*;
 
 @SuppressWarnings("serial")
-public class CubaCommunicationManager extends CommunicationManager {
-
+public class CubaCommunicationManager /*extends CommunicationManager*/ {
+/*
     private static final int BYTES_IN_MEGABYTE = 1048576;
     private static final String TIMER_ID_PREFIX = "TID";
 
@@ -66,7 +65,7 @@ public class CubaCommunicationManager extends CommunicationManager {
             Window window,
             boolean analyzeLayouts
     ) throws PaintException {
-        final App application = App.getInstance();
+        final AppUI application = AppUI.getInstance();
 
         writer.print(", \"timers\":[");
 
@@ -259,42 +258,42 @@ public class CubaCommunicationManager extends CommunicationManager {
         return super.getVariableOwner(variable);
     }
 
-    /**
+    *//**
      * Set response status to SC_UNAUTHORIZED
      *
      * @param response
-     */
+     *//*
     protected void accessDenied(HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
-    /**
+    *//**
      * Set response status to SC_INTERNAL_SERVER_ERROR
      *
      * @param response
-     */
+     *//*
     protected void internalError(HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
-    /**
+    *//**
      * Set response status to SC_BAD_REQUEST
      *
      * @param response
-     */
+     *//*
     protected void badRequest(HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
-    /**
+    *//**
      * Handle multiple file upload
      *
      * @param request  HTTP request
      * @param response HTTP response
      * @param app      Application
-     */
+     *//*
     public synchronized void handleMultiUpload(HttpServletRequest request, HttpServletResponse response,
-                                               App app) {
+                                               AppUI app) {
         try {
             if (request.getSession() == null)
                 accessDenied(response);
@@ -340,5 +339,5 @@ public class CubaCommunicationManager extends CommunicationManager {
             log.error("Unexpected error: ", e);
             internalError(response);
         }
-    }
+    }*/
 }

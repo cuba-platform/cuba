@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -33,7 +34,6 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
@@ -41,17 +41,15 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,12 +66,12 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
+public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
         extends WebAbstractList<T> implements Table {
 
     private static final String REQUIRED_TABLE_STYLE = "table";
 
-    protected Map<Object, Table.Column> columns = new HashMap<>();
+    protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
     protected boolean editable;
@@ -84,7 +82,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
-    protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap = new HashMap<>();
+    protected Map<Table.Column, Set<Field.Validator>> validatorsMap = new HashMap<>();
 
     protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators = new LinkedHashSet<>();
 
@@ -186,17 +184,18 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
-        component.setEditableColumns(editableColumns.toArray());
+//        vaadin7
+//        component.setEditableColumns(editableColumns.toArray());
     }
 
     @Override
     public boolean isSortable() {
-        return !component.isSortDisabled();
+        return component.isSortEnabled();
     }
 
     @Override
     public void setSortable(boolean sortable) {
-        component.setSortDisabled(!sortable);
+        component.setSortEnabled(sortable);
     }
 
     @Override
@@ -245,7 +244,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
-            Component rc = WebComponentsHelper.unwrap(rowsCount);
+            com.vaadin.ui.Component rc = WebComponentsHelper.unwrap(rowsCount);
             topPanel.addComponent(rc);
             topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
         }
@@ -253,36 +252,45 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public boolean isAllowMultiStringCells() {
-        return component.isAllowMultiStringCells();
+        return false;
+//        vaadin 7
+//        return component.isAllowMultiStringCells();
     }
 
     @Override
     public void setAllowMultiStringCells(boolean value) {
-        component.setAllowMultiStringCells(value);
+//        vaadin7
+//        component.setAllowMultiStringCells(value);
     }
 
     @Override
     public boolean isAggregatable() {
-        return component.isAggregatable();
+        return false;
+//        vaadin7
+//        return component.isAggregatable();
     }
 
     @Override
     public void setAggregatable(boolean aggregatable) {
-        component.setAggregatable(aggregatable);
+//        vaadin7
+//        component.setAggregatable(aggregatable);
     }
 
     @Override
     public void setShowTotalAggregation(boolean showAggregation) {
-        component.setShowTotalAggregation(showAggregation);
+//        vaadin7
+//        component.setShowTotalAggregation(showAggregation);
     }
 
     @Override
     public boolean isShowTotalAggregation() {
-        return component.isShowTotalAggregation();
+        return false;
+//        vaadin7
+//        return component.isShowTotalAggregation();
     }
 
     @Override
-    public Component getComposition() {
+    public com.vaadin.ui.Component getComposition() {
         return componentComposition;
     }
 
@@ -293,7 +301,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public int getHeightUnits() {
-        return componentComposition.getHeightUnits();
+        return 0;
+//        vaadin7
+//        return componentComposition.getHeightUnits();
     }
 
     @Override
@@ -313,7 +323,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public int getWidthUnits() {
-        return componentComposition.getWidthUnits();
+        return 0;
+//        vaadin7
+//        return componentComposition.getWidthUnits();
     }
 
     @Override
@@ -372,13 +384,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setNullSelectionAllowed(false);
         component.setImmediate(true);
         component.setValidationVisible(false);
-        component.setStoreColWidth(true);
+//        vaadin7
+//        component.setStoreColWidth(true);
         component.setStyleName(REQUIRED_TABLE_STYLE); //It helps us to manage a caption style
         component.setPageLength(15);
 
         component.addActionHandler(new ActionsAdapter());
 
-        component.addListener(new Property.ValueChangeListener() {
+        component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
@@ -407,7 +420,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         });
 
-        component.addListener(new ItemClickEvent.ItemClickListener() {
+        component.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick() && event.getItem() != null) {
@@ -416,15 +429,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         });
 
-        component.addColumnCollapseListener(new com.haulmont.cuba.web.toolkit.ui.Table.CollapseListener() {
-            @Override
-            public void columnCollapsed(Object columnId, boolean collapsed) {
-                final Column collapsedColumn = getColumn(columnId.toString());
-                for (ColumnCollapseListener listener : columnCollapseListeners) {
-                    listener.columnCollapsed(collapsedColumn, collapsed);
-                }
-            }
-        });
+        // vaadin7
+//        component.addColumnCollapseListener(new com.haulmont.cuba.web.toolkit.ui.Table.CollapseListener() {
+//            @Override
+//            public void columnCollapsed(Object columnId, boolean collapsed) {
+//                final Column collapsedColumn = getColumn(columnId.toString());
+//                for (ColumnCollapseListener listener : columnCollapseListeners) {
+//                    listener.columnCollapsed(collapsedColumn, collapsed);
+//                }
+//            }
+//        });
 
         component.setSelectable(true);
         component.setTableFieldFactory(new FieldFactory());
@@ -440,9 +454,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
 
-        component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
+//        vaadin7
+//        component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
 
-        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
 
         addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
         addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
@@ -564,7 +579,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        UserSession userSession = UserSessionProvider.getUserSession();
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        MessageTools messageTools = AppBeans.get(MessageTools.class);
         MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
         final Collection<Object> columns;
@@ -575,7 +591,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
                     Table.Column column = new Table.Column(metaPropertyPath);
 
-                    column.setCaption(AppBeans.get(MessageTools.class).getPropertyCaption(property));
+                    column.setCaption(messageTools.getPropertyCaption(property));
                     column.setType(metaPropertyPath.getRangeJavaClass());
 
                     Element element = DocumentHelper.createElement("column");
@@ -627,10 +643,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     component.setColumnCollapsed(column.getId(), true);
                 }
 
-                if (column.getAggregation() != null && isAggregatable()) {
-                    component.addContainerPropertyAggregation(column.getId(),
-                            WebComponentsHelper.convertAggregationType(column.getAggregation().getType()));
-                }
+//                vaadin7
+//                if (column.getAggregation() != null && isAggregatable()) {
+//                    component.addContainerPropertyAggregation(column.getId(),
+//                            WebComponentsHelper.convertAggregationType(column.getAggregation().getType()));
+//                }
             }
         }
 
@@ -648,13 +665,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         }
 
-        if (aggregationCells != null) {
-            getDatasource().addListener(createAggregationDatasourceListener());
-        }
+//        vaadin7
+//        if (aggregationCells != null) {
+//            getDatasource().addListener(createAggregationDatasourceListener());
+//        }
 
         setVisibleColumns(getPropertyColumns());
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();
@@ -677,7 +695,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     private List<MetaPropertyPath> getPropertyColumns() {
-        UserSession userSession = UserSessionProvider.getUserSession();
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         List<MetaPropertyPath> result = new ArrayList<>();
         for (Column column : columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
@@ -708,11 +726,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void setRowHeaderMode(com.haulmont.cuba.gui.components.Table.RowHeaderMode rowHeaderMode) {
         switch (rowHeaderMode) {
             case NONE: {
-                component.setRowHeaderMode(com.vaadin.ui.Table.ROW_HEADER_MODE_HIDDEN);
+                component.setRowHeaderMode(com.vaadin.ui.Table.RowHeaderMode.HIDDEN);
                 break;
             }
             case ICON: {
-                component.setRowHeaderMode(com.vaadin.ui.Table.ROW_HEADER_MODE_ICON_ONLY);
+                component.setRowHeaderMode(com.vaadin.ui.Table.RowHeaderMode.ICON_ONLY);
                 break;
             }
             default: {
@@ -759,7 +777,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
-            public String getStyle(Object itemId, Object propertyId) {
+            @Override
+            public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
                 @SuppressWarnings({"unchecked"})
                 final Entity item = datasource.getItem(itemId);
                 return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
@@ -937,13 +956,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 generatedColumnId,
                 new CustomColumnGenerator(generator) {
                     @Override
-                    public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                    public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Entity entity = getDatasource().getItem(itemId);
                         com.haulmont.cuba.gui.components.Component component = getColumnGenerator().generateCell(entity);
                         if (component == null)
                             return null;
                         else {
-                            Component vComponent = WebComponentsHelper.unwrap(component);
+                            com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
                             // wrap field for show required asterisk
                             if ((vComponent instanceof com.vaadin.ui.Field)
                                 && (((com.vaadin.ui.Field) vComponent).isRequired())) {
@@ -997,7 +1016,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 component.addGeneratedColumn(generatorEntry.getFirst(), generatorEntry.getSecond());
             }
         }
-        component.requestRepaintAll();
+        component.markAsDirtyRecursive();
     }
 
     @Override
@@ -1083,7 +1102,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         @Override
-        public String toString() {
+        public String getFormattedValue() {
             final Table.Column column = WebAbstractTable.this.columns.get(propertyPath);
             if (column != null) {
                 if (column.getFormatter() != null) {
@@ -1100,7 +1119,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     }
                 }
             }
-            return super.toString();
+            return super.getFormattedValue();
         }
     }
 
@@ -1132,12 +1151,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             final Property property = item.getItemProperty(columnId);
             final Object value = property.getValue();
 
-            final com.vaadin.ui.Button component = new Button();
+            final com.vaadin.ui.Button component = new com.vaadin.ui.Button();
             component.setData(value);
             component.setCaption(value == null ? "" : property.toString());
             component.setStyleName("link");
 
-            component.addListener(new Button.ClickListener() {
+            component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Element element = column.getXmlDescriptor();
@@ -1183,7 +1202,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         @Override
-        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
 
@@ -1214,44 +1233,44 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected class ReadOnlyBooleanDatatypeGenerator implements SystemTableColumnGenerator {
         @Override
-        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
-        protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
+        protected com.vaadin.ui.Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
-            com.vaadin.ui.Embedded checkBoxImage;
-            if (BooleanUtils.isTrue((Boolean) value)){
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-checked.png"));
-            }
-            else {
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-unchecked.png"));
-            }
-            return checkBoxImage;
+            Image checkPoxImage = new Image();
+            checkPoxImage.setSizeUndefined();
+            if (BooleanUtils.isTrue((Boolean) value))
+                checkPoxImage.setStyleName("checkbox-checked");
+            else
+                checkPoxImage.setStyleName("checkbox-unchecked");
+
+            return checkPoxImage;
         }
     }
 
     protected class CalculatableColumnGenerator implements SystemTableColumnGenerator {
         @Override
-        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
-        protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
+        protected com.vaadin.ui.Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
             CollectionDatasource ds = WebAbstractTable.this.getDatasource();
             MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(columnId.toString());
 
             PropertyWrapper propertyWrapper = (PropertyWrapper) source.getContainerProperty(itemId, propertyPath);
 
-            Formatter formatter = null;
+            com.haulmont.cuba.gui.components.Formatter formatter = null;
             Table.Column column = WebAbstractTable.this.getColumn(columnId.toString());
             if (column != null) {
                 formatter = column.getFormatter();
             }
 
-            final Label label = new Label();
+            final com.vaadin.ui.Label label = new com.vaadin.ui.Label();
             WebComponentsHelper.setLabelText(label, propertyWrapper.getValue(), formatter);
             label.setWidth("-1px");
 
@@ -1264,11 +1283,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected static class CalculatablePropertyValueChangeListener implements Property.ValueChangeListener {
         private Label component;
-        private Formatter formatter;
+        private com.haulmont.cuba.gui.components.Formatter formatter;
 
         private static final long serialVersionUID = 8041384664735759397L;
 
-        private CalculatablePropertyValueChangeListener(Label component, Formatter formatter) {
+        private CalculatablePropertyValueChangeListener(Label component, com.haulmont.cuba.gui.components.Formatter formatter) {
             this.component = component;
             this.formatter = formatter;
         }
@@ -1287,7 +1306,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected com.vaadin.ui.Label createAggregationCell() {
-        com.vaadin.ui.Label label = new Label();
+        com.vaadin.ui.Label label = new com.vaadin.ui.Label();
         label.setWidth("-1px");
         label.setParent(component);
         return label;
@@ -1301,8 +1320,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         @Override
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-            final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
-            component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
+//            vaadin7
+//            final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
+//            component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
         }
     }
 
@@ -1377,7 +1397,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
 
             if (field instanceof CheckBox) {
-                ((CheckBox) field).setLayoutCaption(true);
+//                vaadin7
+//                ((CheckBox) field).setLayoutCaption(true);
             }
         }
     }
@@ -1406,12 +1427,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected void paintSpecificContent(PaintTarget target) throws PaintException {
-        target.addVariable(component, "presentations", isUsePresentations());
-        if (isUsePresentations()) {
-            target.startTag("presentations");
-            tablePresentations.paint(target);
-            target.endTag("presentations");
-        }
+//        vaadin7
+//        target.addVariable(component, "presentations", isUsePresentations());
+//        if (isUsePresentations()) {
+//            target.startTag("presentations");
+//            tablePresentations.paint(target);
+//            target.endTag("presentations");
+//        }
     }
 
     @Override
@@ -1441,7 +1463,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         if (isUsePresentations()) {
             presentations = new PresentationsImpl(this);
 
-            tablePresentations = new TablePresentations(this);
+//        vaadin7
+//            tablePresentations = new TablePresentations(this);
         } else {
             throw new UnsupportedOperationException("Component doesn't use presentations");
         }
@@ -1483,13 +1506,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         presentations.setCurrent(p);
         Element settingsElement  = presentations.getSettings(p);
         applySettings(settingsElement);
-        component.requestRepaint();
+        component.markAsDirty();
     }
 
     @Override
     public Object getDefaultPresentationId() {
-        Presentation def = presentations.getDefault();
-        return def == null ? null : def.getId();
+//        vaadin7
+//        Presentation def = presentations.getDefault();
+        return null; // def == null ? null : def.getId();
     }
 
     @Override

@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-common {
+  .v-ui {
+    background: #F6F6F6;
+    font-family: $theme_fonts;
+    color: #000;
+    font-size: 12px;
+    line-height: 18px;
+    height: 100%;
+    width: 100%;
+  }
+
+  .v-ui,
+  .v-window {
+    // Global font styles
+    div,
+    input,
+    table,
+    select,
+    button,
+    label,
+    textarea,
+    .v-widget {
+      font-family: $theme_fonts;
+      color: #464f52;
+      font-size: 12px;
+    }
+  }
+}

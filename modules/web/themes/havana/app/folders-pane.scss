@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin cuba-folders-pane {
+  .cuba-folders-pane {
+    background: #fff url(images/folders-pane-bg.png) top repeat-x;
+
+    .v-tree {
+      border: 0;
+      overflow: auto;
+
+      .v-tree-node {
+        .cuba-clickable-folder span {
+          cursor: pointer;
+        }
+
+        .cuba-clickable-folder span:hover {
+          text-decoration: underline;
+          background: transparent none;
+        }
+
+        .cuba-nonclickable-folder span:hover {
+          background: transparent none;
+        }
+      }
+    }
+  }
+
+  .v-menubar-menuitem.v-menubar-menuitem-cuba-folders-pane {
+    padding-bottom: 5px;
+    padding-top: 1px;
+  }
+
+  .v-label.cuba-folders-pane-caption {
+    font-size: 14px;
+    color: $theme_foldersPaneCaptionColor;
+    background: url(images/folders-pane-header-bg.png) no-repeat 5px bottom;
+    padding-top: 5px;
+    padding-left: 5px;
+  }
+}

@@ -14,6 +14,12 @@
         </param-value>
     </context-param>
 
+    <context-param>
+        <description>Vaadin production mode</description>
+        <param-name>productionMode</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
     <listener>
         <listener-class>com.haulmont.cuba.web.sys.WebAppContextLoader</listener-class>
     </listener>
@@ -24,15 +30,25 @@
 
     <servlet>
         <servlet-name>cuba_servlet</servlet-name>
-        <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet
-        </servlet-class>
+        <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet</servlet-class>
         <init-param>
-            <param-name>application</param-name>
+            <description>Cuba Vaadin UI</description>
+            <param-name>UI</param-name>
+            <param-value>com.haulmont.cuba.web.AppUI</param-value>
+        </init-param>
+        <init-param>
+            <param-name>UIProvider</param-name>
+            <param-value>com.haulmont.cuba.web.sys.CubaUIProvider</param-value>
+        </init-param>
+        <init-param>
+            <description>Cuba Application</description>
+            <param-name>Application</param-name>
             <param-value>com.haulmont.cuba.web.DefaultApp</param-value>
         </init-param>
         <init-param>
+            <description>Application widgetset</description>
             <param-name>widgetset</param-name>
-            <param-value>com.haulmont.cuba.toolkit.gwt.WidgetSet</param-value>
+            <param-value>com.haulmont.cuba.web.toolkit.ui.WidgetSet</param-value>
         </init-param>
         <load-on-startup>0</load-on-startup>
     </servlet>

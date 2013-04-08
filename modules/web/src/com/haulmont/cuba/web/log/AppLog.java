@@ -8,11 +8,12 @@ package com.haulmont.cuba.web.log;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
 import com.vaadin.data.Validator;
-import com.vaadin.terminal.ParameterHandler;
-import com.vaadin.terminal.Terminal;
-import com.vaadin.terminal.URIHandler;
-import com.vaadin.terminal.VariableOwner;
-import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import com.vaadin.server.ErrorEvent;
+//import com.vaadin.terminal.ParameterHandler;
+//import com.vaadin.terminal.Terminal;
+//import com.vaadin.terminal.URIHandler;
+//import com.vaadin.terminal.VariableOwner;
+//import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -66,7 +67,7 @@ public class AppLog {
         log(new LogItem(LogLevel.ERROR, message, null));
     }
 
-    public void log(Terminal.ErrorEvent event) {
+    public void log(ErrorEvent event) {
         Throwable t = event.getThrowable();
 
         if (t instanceof SilentException)
@@ -88,8 +89,9 @@ public class AppLog {
             return;
 
         // Finds the original source of the error/exception
+        // vaadin7
         Object owner = null;
-        if (event instanceof VariableOwner.ErrorEvent) {
+        /*if (event instanceof VariableOwner.ErrorEvent) {
             owner = ((VariableOwner.ErrorEvent) event).getVariableOwner();
         } else if (event instanceof URIHandler.ErrorEvent) {
             owner = ((URIHandler.ErrorEvent) event).getURIHandler();
@@ -98,7 +100,7 @@ public class AppLog {
         } else if (event instanceof ChangeVariablesErrorEvent) {
             owner = ((ChangeVariablesErrorEvent) event).getComponent();
         }
-
+*/
         StringBuilder msg = new StringBuilder();
         msg.append("Uncaught exception");
         if (owner != null)

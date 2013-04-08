@@ -2,15 +2,15 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 06.03.2009 12:33:13
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.vaadin.data.Property;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class PropertyAdapter implements Property, Property.ValueChangeNotifier {
     protected final Property itemProperty;
 
@@ -19,27 +19,42 @@ public abstract class PropertyAdapter implements Property, Property.ValueChangeN
         this.itemProperty = itemProperty;
     }
 
+    @Override
     public Class getType() {
         return itemProperty.getType();
     }
 
+    @Override
     public boolean isReadOnly() {
         return itemProperty.isReadOnly();
     }
 
+    @Override
     public void setReadOnly(boolean newStatus) {
         itemProperty.setReadOnly(newStatus);
     }
 
+    @Override
     public void addListener(ValueChangeListener listener) {
+        addValueChangeListener(listener);
+    }
+
+    @Override
+    public void removeListener(ValueChangeListener listener) {
+        removeValueChangeListener(listener);
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
         if (itemProperty instanceof ValueChangeNotifier) {
-            ((ValueChangeNotifier) itemProperty).addListener(listener);
+            ((ValueChangeNotifier) itemProperty).addValueChangeListener(listener);
         }
     }
 
-    public void removeListener(ValueChangeListener listener) {
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
         if (itemProperty instanceof ValueChangeNotifier) {
-            ((ValueChangeNotifier) itemProperty).removeListener(listener);
+            ((ValueChangeNotifier) itemProperty).removeValueChangeListener(listener);
         }
     }
 }

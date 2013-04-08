@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect;
 
 import java.util.Collection;
@@ -47,7 +48,7 @@ public class WebOptionsGroup
                     }
 
                     @Override
-                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                         final Object v = getValueFromKey(newValue);
                         itemProperty.setValue(v);
                     }

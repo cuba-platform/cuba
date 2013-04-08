@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin readonly-checkbox {
+  width: 13px;
+  height: 13px;
+  background-position: center center;
+}
+
+@mixin havana-table($primaryStyleName : v-table) {
+  .#{$primaryStyleName} {
+    text-align: left;
+
+    .checkbox-checked {
+      @include readonly-checkbox;
+      background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
+    }
+
+    .checkbox-unchecked {
+      @include readonly-checkbox;
+      background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
+    }
+  }
+}

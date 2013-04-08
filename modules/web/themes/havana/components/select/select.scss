@@ -1,0 +1,190 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-filterselect($primaryStyleName: v-filterselect) {
+  $comboBoxBorder: 1px solid $theme_fieldBorderColor;
+  $comboBoxBorderFocused: 1px solid $theme_fieldFocusedBorderColor;
+  $comboBoxBorderReadonly: 1px solid $theme_fieldReadonlyBorderColor;
+
+  .#{$primaryStyleName} {
+    height: 25px;
+    white-space: nowrap;
+    text-align: left; /* Force default alignment */
+    overflow: hidden;
+    background: #fff;
+    padding-right: 25px;
+
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+
+    border-left: $comboBoxBorder;
+
+    .v-icon {
+      float: left;
+    }
+
+    .#{$primaryStyleName}-input {
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      outline: 0;
+
+      border: $comboBoxBorder;
+      border-left: 0;
+
+      height: 25px;
+      margin: 0;
+      padding: 0;
+      font-size: 8pt;
+    }
+
+    .#{$primaryStyleName}-button {
+      cursor: pointer;
+      height: 100%;
+      width: 25px;
+      margin-right: -25px;
+      border-collapse: separate;
+
+      background: transparent;
+      background-repeat: no-repeat;
+      background-position: middle center;
+      background-image: url(sprites/filter-button-bg.png);      /** sprite-ref: components; */
+
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      border: $comboBoxBorder;
+      border-left: 0;
+    }
+  }
+
+  .#{$primaryStyleName}-focus {
+    background: #fff;
+    border-left: $comboBoxBorderFocused;
+
+    .#{$primaryStyleName}-button {
+      border: $comboBoxBorderFocused;
+      border-left: 0;
+
+      background-image: url(sprites/filter-button-focus-bg.png);  /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-input:focus {
+      border: $comboBoxBorderFocused;
+      border-left: 0;
+    }
+  }
+
+  .#{$primaryStyleName}.v-readonly {
+    border-left: $comboBoxBorderReadonly;
+
+    .#{$primaryStyleName}-button {
+      border: $comboBoxBorderReadonly;
+      border-left: 0;
+
+      background-image: url(sprites/filter-button-readonly-bg.png); /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-input-readonly {
+      border: $comboBoxBorderReadonly;
+      border-left: 0;
+    }
+  }
+
+  .#{$primaryStyleName}-suggestpopup {
+    border: 1px solid $theme_fieldPopupBorderColor;
+    font-family: $theme_fonts;
+    color: #000;
+    font-size: 12px;
+    line-height: 18px;
+    margin-top: -1px;
+    background: #f5f5f5 repeat-x;
+
+    .gwt-MenuItem {
+      padding: 1px 6px;
+      cursor: pointer;
+      height: 18px;
+      white-space: nowrap;
+
+      .v-icon {
+        margin-right: 3px;
+        vertical-align: middle;
+      }
+
+      span {
+        vertical-align: middle;
+      }
+    }
+
+    .gwt-MenuItem-selected {
+      background: $theme_fieldSelectionColor;
+      color: #fff;
+    }
+  }
+
+  .#{$primaryStyleName}-nextpage,
+  .#{$primaryStyleName}-nextpage-off,
+  .#{$primaryStyleName}-prevpage-off,
+  .#{$primaryStyleName}-prevpage {
+    height: 12px;
+    width: 100%;
+    background: transparent no-repeat 50% 0;
+    text-align: center;
+    margin: 2px 0 0 0;
+    overflow: hidden;
+  }
+
+  .#{$primaryStyleName}-nextpage-off span,
+  .#{$primaryStyleName}-prevpage-off span {
+    cursor: default;
+  }
+
+  .#{$primaryStyleName}-nextpage span,
+  .#{$primaryStyleName}-nextpage-off span,
+  .#{$primaryStyleName}-prevpage-off span,
+  .#{$primaryStyleName}-prevpage span {
+    display: block;
+    height: 12px;
+    width: 100%;
+    text-indent: -90000px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .#{$primaryStyleName}-status {
+    font-size: 11px;
+    line-height: 11px;
+    width: 100%;
+    padding: 4px 0px;
+    height: 11px;
+    white-space: nowrap;
+    text-align: center;
+    border-top: 1px solid #b6bbbc;
+  }
+
+  .#{$primaryStyleName}-nextpage {
+    background-image: url(sprites/popup-down.png);  /** sprite-ref: components; */
+    background-position: center;
+  }
+
+  .#{$primaryStyleName}-prevpage {
+    background-image: url(sprites/popup-up.png);    /** sprite-ref: components; */
+    background-position: center;
+  }
+
+  .#{$primaryStyleName}-nextpage-off {
+    background-image: url(sprites/popup-down-disabled.png); /** sprite-ref: components; */
+    background-position: center;
+  }
+
+  .#{$primaryStyleName}-prevpage-off {
+    background-image: url(sprites/popup-up-disabled.png);  /** sprite-ref: components; */
+    background-position: center;
+  }
+}

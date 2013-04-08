@@ -29,18 +29,13 @@ public class ActiveDirectoryHelper {
      * @return True if HTTP session support AD auth
      */
     public static boolean activeDirectorySupportedBySession() {
-        return currentSession.get() != null && getAuthProvider().authSupported(currentSession.get());
+        RequestContext requestContext = RequestContext.get();
+        return requestContext != null &&
+                requestContext.getSession() != null &&
+                getAuthProvider().authSupported(currentSession.get());
     }
 
     public static CubaAuthProvider getAuthProvider() {
         return AppBeans.get(CubaAuthProvider.NAME);
-    }
-
-    public static void startCurrentSession(HttpSession session) {
-        currentSession.set(session);
-    }
-
-    public static void endCurrentSession() {
-        currentSession.set(null);
     }
 }

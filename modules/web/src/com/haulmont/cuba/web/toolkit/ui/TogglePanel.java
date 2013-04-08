@@ -10,18 +10,18 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.ITogglePanel;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.ITogglePanel;
+//import com.vaadin.server.PaintException;
+//import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.*;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 
 @SuppressWarnings("serial")
-@ClientWidget(ITogglePanel.class)
+//@ClientWidget(ITogglePanel.class)
 public class TogglePanel extends Panel {
-
+/*
     private boolean expanded = false;
     private boolean hideToggle = false;
 
@@ -230,5 +230,5 @@ public class TogglePanel extends Panel {
 
         void togglePanel(TogglePanelEvent event);
 
-    }
+    }*/
 }

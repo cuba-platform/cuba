@@ -18,9 +18,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author gorbunkov
+ * @version $Id$
  */
 public class EntityOpenHistoryFrame extends AbstractFrame {
 

@@ -12,17 +12,15 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.toolkit.gwt.client.ui.VVerticalActionsLayout;
 import com.haulmont.cuba.web.App;
 import com.vaadin.event.ActionManager;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.Layout;
+import com.vaadin.ui.*;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -33,14 +31,15 @@ import java.util.*;
  * @version $Id$
  */
 @SuppressWarnings("serial")
-@ClientWidget(VVerticalActionsLayout.class)
+//@ClientWidget(VVerticalActionsLayout.class)
 public class WebFrame extends WebVBoxLayout
         implements
             IFrame,
             WrappedFrame,
             com.haulmont.cuba.gui.components.Component.HasXmlDescriptor,
-            Layout.AlignmentHandler,
-            com.vaadin.event.Action.Container
+            Layout.AlignmentHandler
+//    vaadin7
+//            com.vaadin.event.Action.Container
 {
     private String messagePack;
     private WindowContext context;
@@ -58,21 +57,22 @@ public class WebFrame extends WebVBoxLayout
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
     public WebFrame() {
-        super();
-        addActionHandler(new com.vaadin.event.Action.Handler() {
-            @Override
-            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-                return actionsHolder.getActionImplementations();
-            }
-
-            @Override
-            public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
-                Action action = actionsHolder.getAction(actionImpl);
-                if (action != null && action.isEnabled() && action.isVisible()) {
-                    action.actionPerform(WebFrame.this);
-                }
-            }
-        });
+//        vaadin7
+//        super();
+//        addActionHandler(new com.vaadin.event.Action.Handler() {
+//            @Override
+//            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+//                return actionsHolder.getActionImplementations();
+//            }
+//
+//            @Override
+//            public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+//                Action action = actionsHolder.getAction(actionImpl);
+//                if (action != null && action.isEnabled() && action.isVisible()) {
+//                    action.actionPerform(WebFrame.this);
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -269,12 +269,12 @@ public class WebFrame extends WebVBoxLayout
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
-        getWindow().showNotification(caption, description, WebComponentsHelper.convertNotificationType(type));
+        App.getInstance().getWindowManager().showNotification(caption, description, type);
     }
 
     @Override
     public void showNotification(String caption, NotificationType type) {
-        getWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+        App.getInstance().getWindowManager().showNotification(caption, type);
     }
 
     @Override
@@ -287,6 +287,17 @@ public class WebFrame extends WebVBoxLayout
         this.element = element;
     }
 
+    @Override
+    public void setComponentAlignment(com.vaadin.ui.Component childComponent, com.vaadin.ui.Alignment alignment) {
+    }
+
+    @Override
+    public com.vaadin.ui.Alignment getComponentAlignment(com.vaadin.ui.Component childComponent) {
+        return null;
+    }
+
+//    vaadin7 Actions support
+    /*
     @Override
     public void addActionHandler(com.vaadin.event.Action.Handler actionHandler) {
         getActionManager().addActionHandler(actionHandler);
@@ -320,7 +331,7 @@ public class WebFrame extends WebVBoxLayout
         if (actionManager != null) {
             actionManager.handleActions(variables, this);
         }
-    }
+    }            */
 
     @Override
     public void addAction(Action action) {

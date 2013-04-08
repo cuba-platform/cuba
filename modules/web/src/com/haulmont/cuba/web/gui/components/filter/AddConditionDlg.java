@@ -8,16 +8,21 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.filter.*;
+import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
+import com.haulmont.cuba.gui.components.filter.GroupType;
 import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
@@ -27,9 +32,8 @@ import java.util.*;
 /**
  * Window to select a new generic filter condition.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class AddConditionDlg extends Window {
 
@@ -39,13 +43,14 @@ public class AddConditionDlg extends Window {
     private Button okBtn;
 
     private SelectionHandler selectionHandler;
+    private ModelItem selectedItem;
 
     public AddConditionDlg(MetaClass metaClass,
                            List<AbstractConditionDescriptor> propertyDescriptors,
                            DescriptorBuilder descriptorBuilder,
-                           SelectionHandler selectionHandler)
-    {
-        super(MessageProvider.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
+                           SelectionHandler selectionHandler) {
+
+        super(AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
 
         this.selectionHandler = selectionHandler;
 
@@ -55,39 +60,63 @@ public class AddConditionDlg extends Window {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
+        layout.setMargin(true);
         layout.setSizeFull();
 
-        setContent(layout);
-
-        VerticalLayout topLayout = new VerticalLayout();
-        topLayout.setMargin(true);
+        Panel treePanel = new Panel();
 
         tree = new com.haulmont.cuba.web.toolkit.ui.Tree();
         tree.setWidth("100%");
         tree.setHeight("100%");
         tree.setImmediate(true);
+        tree.setSelectable(true);
         tree.setMultiSelect(false);
+
+        tree.setPropertyDataSource(new Property<ModelItem>() {
+            @Override
+            public ModelItem getValue() {
+                return selectedItem;
+            }
+
+            @Override
+            public void setValue(ModelItem newValue) throws ReadOnlyException {
+                selectedItem = newValue;
+            }
+
+            @Override
+            public Class<ModelItem> getType() {
+                return ModelItem.class;
+            }
+
+            @Override
+            public boolean isReadOnly() {
+                return false;
+            }
+
+            @Override
+            public void setReadOnly(boolean newStatus) {
+            }
+        });
+
         Model model = new Model(metaClass, propertyDescriptors, descriptorBuilder);
         tree.setContainerDataSource(model);
         tree.setItemCaptionPropertyId(MODEL_PROPERTY_IDS.get(0));
-        tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+        tree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 
-        topLayout.addComponent(tree);
-        topLayout.setSizeFull();
+//        Tree fakeTree = getFakeTree();
 
-        layout.addComponent(topLayout);
-        layout.setExpandRatio(topLayout, 1);
+        treePanel.setContent(tree);
+        treePanel.setSizeFull();
 
-        VerticalLayout bottomLayout = new VerticalLayout();
-        bottomLayout.setMargin(true);
+        layout.addComponent(treePanel);
+        layout.setExpandRatio(treePanel, 1);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         initButtonsLayout(buttonsLayout);
 
-        bottomLayout.addComponent(buttonsLayout);
-        bottomLayout.setComponentAlignment(buttonsLayout, Alignment.MIDDLE_RIGHT);
+        layout.addComponent(buttonsLayout);
 
-        layout.addComponent(bottomLayout);
+        setContent(layout);
 
         initShortcuts();
 
@@ -102,7 +131,7 @@ public class AddConditionDlg extends Window {
 //            }
 //        });
 
-        tree.addListener(new Property.ValueChangeListener() {
+        tree.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 ModelItem modelItem = (ModelItem) tree.getValue();
@@ -114,11 +143,94 @@ public class AddConditionDlg extends Window {
         tree.focus();
     }
 
+//    private Tree getFakeTree() {
+//        final Object[][] planets = new Object[][]{
+//            new Object[]{"Mercury"},
+//            new Object[]{"Venus"},
+//            new Object[]{"Earth", "The Moon"},
+//            new Object[]{"Mars", "Phobos", "Deimos"},
+//            new Object[]{"Jupiter", "Io", "Europa", "Ganymedes",
+//                    "Callisto"},
+//            new Object[]{"Saturn",  "Titan", "Tethys", "Dione",
+//                    "Rhea", "Iapetus"},
+//            new Object[]{"Uranus",  "Miranda", "Ariel", "Umbriel",
+//                    "Titania", "Oberon"},
+//            new Object[]{"Neptune", "Triton", "Proteus", "Nereid",
+//                    "Larissa"}};
+//        Tree fakeTree = new Tree();
+//
+//        fakeTree.setImmediate(true);
+//
+//        fakeTree.setPropertyDataSource(new Property<String>() {
+//            String value;
+//
+//            @Override
+//            public String getValue() {
+//                return value;
+//            }
+//
+//            @Override
+//            public void setValue(String newValue) throws ReadOnlyException {
+//                value = newValue;
+//            }
+//
+//            @Override
+//            public Class<String> getType() {
+//                return String.class;
+//            }
+//
+//            @Override
+//            public boolean isReadOnly() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void setReadOnly(boolean newStatus) {
+//            }
+//        });
+//
+//        for (Object[] planet1 : planets) {
+//            String planet = (String) (planet1[0]);
+//            fakeTree.addItem(planet);
+//
+//            if (planet1.length == 1) {
+//                // The planet has no moons so make it a leaf.
+//                fakeTree.setChildrenAllowed(planet, false);
+//            } else {
+//                // Add children (moons) under the planets.
+//                for (int j = 1; j < planet1.length; j++) {
+//                    String moon = (String) planet1[j];
+//
+//                    // Add the item as a regular item.
+//                    fakeTree.addItem(moon);
+//
+//                    // Set it to be a child.
+//                    fakeTree.setParent(moon, planet);
+//
+//                    // Make the moons look like leaves.
+//                    fakeTree.setChildrenAllowed(moon, false);
+//                }
+//
+//                // Expand the subtree.
+//                fakeTree.expandItemsRecursively(planet);
+//            }
+//        }
+//
+//        fakeTree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
+//        return fakeTree;
+//    }
+
     private void initButtonsLayout(HorizontalLayout buttonsLayout) {
+        buttonsLayout.setWidth("100%");
         buttonsLayout.setSpacing(true);
 
-        okBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
-        okBtn.addListener(new Button.ClickListener() {
+        Label spacer = new Label();
+        buttonsLayout.addComponent(spacer);
+        buttonsLayout.setExpandRatio(spacer, 1);
+
+        Messages messages = AppBeans.get(Messages.class);
+        okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
+        okBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 commit(AddConditionDlg.this.selectionHandler);
@@ -126,8 +238,8 @@ public class AddConditionDlg extends Window {
         });
         buttonsLayout.addComponent(okBtn);
 
-        Button cancelBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
-        cancelBtn.addListener(new Button.ClickListener() {
+        Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -211,7 +323,7 @@ public class AddConditionDlg extends Window {
                 }
 
                 @Override
-                public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                 }
 
                 @Override
@@ -242,12 +354,12 @@ public class AddConditionDlg extends Window {
 
         @Override
         public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
-            return false;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
-            return false;
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -284,7 +396,7 @@ public class AddConditionDlg extends Window {
         }
 
         private void initRootModelItems() {
-            rootModelItems = new ArrayList<ModelItem>();
+            rootModelItems = new ArrayList<>();
 
             rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorBuilder));
 
@@ -301,7 +413,7 @@ public class AddConditionDlg extends Window {
                 rootModelItems.add(new RootRuntimePropertiesModelItem(descriptorBuilder));
             }
 
-            if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+            if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
                 rootModelItems.add(new NewCustomConditionModelItem(descriptorBuilder));
             }
         }
@@ -328,7 +440,7 @@ public class AddConditionDlg extends Window {
 
         @Override
         public boolean areChildrenAllowed(Object itemId) {
-            return true; // always return true to get correct styles in Tree web implementation
+            return !((ModelItem) itemId).getChildren().isEmpty();
         }
 
         @Override
@@ -411,5 +523,4 @@ public class AddConditionDlg extends Window {
             return false;
         }
     }
-
 }

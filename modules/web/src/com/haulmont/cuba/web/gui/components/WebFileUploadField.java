@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.toolkit.ui.Upload;
+import com.vaadin.ui.Upload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -56,7 +56,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 /* Fixes caption rendering.
                 * If caption == "", the VerticalLayout reserves an empty space */
                 StringUtils.isEmpty(caption) ? null : caption,
-                new Upload.Receiver() {
+                new com.vaadin.ui.Upload.Receiver() {
                     @Override
                     public OutputStream receiveUpload(String filename, String MIMEType) {
                         fileName = filename;
@@ -72,9 +72,8 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 });
         // Set single click upload functional
         component.setImmediate(true);
-        component.setAction("");
 
-        component.addListener(new Upload.StartedListener() {
+        component.addStartedListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
                 final Integer maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
@@ -91,7 +90,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 }
             }
         });
-        component.addListener(new Upload.FinishedListener() {
+        component.addFinishedListener(new Upload.FinishedListener() {
             @Override
             public void uploadFinished(Upload.FinishedEvent event) {
                 if (outputStream != null)
@@ -106,7 +105,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 }
             }
         });
-        component.addListener(new Upload.SucceededListener() {
+        component.addSucceededListener(new Upload.SucceededListener() {
             @Override
             public void uploadSucceeded(Upload.SucceededEvent event) {
                 final Listener.Event e = new Listener.Event(event.getFilename());
@@ -115,7 +114,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 }
             }
         });
-        component.addListener(new Upload.FailedListener() {
+        component.addFailedListener(new Upload.FailedListener() {
             @Override
             public void uploadFailed(Upload.FailedEvent event) {
                 try {
@@ -200,13 +199,13 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
         component.setDescription(description);
     }
 
-    public String getButtonWidth() {
-        return component.getButtonWidth();
-    }
-
-    public void setButtonWidth(String buttonWidth) {
-        component.setButtonWidth(buttonWidth);
-    }
+//    public String getButtonWidth() {
+//        return component.getButtonWidth();
+//    }
+//
+//    public void setButtonWidth(String buttonWidth) {
+//        component.setButtonWidth(buttonWidth);
+//    }
 
     /**
      * @return File id for uploaded file in {@link FileUploadingAPI}

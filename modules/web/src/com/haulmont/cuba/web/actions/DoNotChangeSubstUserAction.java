@@ -9,11 +9,9 @@ package com.haulmont.cuba.web.actions;
 import com.haulmont.cuba.gui.components.AbstractAction;
 
 /**
- * <p>$Id$</p>
- *
  * @author shishov
+ * @version $Id$
  */
-
 public class DoNotChangeSubstUserAction extends AbstractAction {
 
     protected DoNotChangeSubstUserAction() {
@@ -25,6 +23,7 @@ public class DoNotChangeSubstUserAction extends AbstractAction {
         return "icons/cancel.png";
     }
 
+    @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
     }
 }

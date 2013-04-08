@@ -11,10 +11,15 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.terminal.gwt.client.ui.VHorizontalLayout;
-import com.vaadin.ui.ClientWidget;
+import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
+//import com.vaadin.terminal.gwt.client.ui.VHorizontalLayout;
+//import com.vaadin.ui.ClientWidget;
 
 @SuppressWarnings("serial")
-@ClientWidget(VHorizontalLayout.class)
+//@ClientWidget(VHorizontalLayout.class)
 public class WebHBoxLayout extends WebAbstractBox implements BoxLayout {
+
+    public WebHBoxLayout() {
+        component = new HorizontalActionsLayout();
+    }
 }

@@ -21,10 +21,11 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.vaadin.data.Item;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
 
 import java.util.*;
 
@@ -34,7 +35,7 @@ import java.util.*;
  */
 public class WebTreeTable
     extends
-        WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.TreeTable>
+        WebAbstractTable<CubaTreeTable>
     implements
         TreeTable, Component.Wrapper {
 
@@ -45,8 +46,8 @@ public class WebTreeTable
         initComponent(component);
     }
 
-    protected com.haulmont.cuba.web.toolkit.ui.TreeTable createTreeTableComponent() {
-        return new MyTreeTable();
+    protected CubaTreeTable createTreeTableComponent() {
+        return new CubaTreeTableExt();
     }
 
     @Override
@@ -77,38 +78,44 @@ public class WebTreeTable
 
     @Override
     public void expandAll() {
-        component.expandAll();
+//        component.expandAll();
     }
 
     @Override
     public void expand(Object itemId) {
-        component.setExpanded(itemId);
+//        component.setExpanded(itemId);
     }
 
     @Override
     public void collapseAll() {
-        component.collapseAll();
+//        vaadin7
+//        component.collapseAll();
     }
 
     @Override
     public void collapse(Object itemId) {
-        component.setCollapsed(itemId);
+//        vaadin7
+//        component.setCollapsed(itemId);
     }
 
     @Override
     public int getLevel(Object itemId) {
-        return component.getLevel(itemId);
+//        vaadin7
+//        return component.getLevel(itemId);
+        return 0;
     }
 
     @Override
     public boolean isExpanded(Object itemId) {
-        return component.isExpanded(itemId);
+//        vaadin7
+//        return component.isExpanded(itemId);
+        return false;
     }
 
     protected class TreeTableDsWrapper
             extends HierarchicalDsWrapper
-            implements TreeTableContainer, com.vaadin.data.Container.Sortable, AggregationContainer
-    {
+            implements TreeTableContainer, com.vaadin.data.Container.Sortable, AggregationContainer {
+
         protected boolean treeTableDatasource;
 
         private List<Object> aggregationProperties = null;
@@ -272,7 +279,7 @@ public class WebTreeTable
         }
     }
 
-    protected class MyTreeTable extends com.haulmont.cuba.web.toolkit.ui.TreeTable {
+    protected class CubaTreeTableExt extends CubaTreeTable {
         @Override
         public Resource getItemIcon(Object itemId) {
             if (styleProvider != null) {
@@ -286,12 +293,13 @@ public class WebTreeTable
             }
         }
 
-        @Override
-        protected boolean changeVariables(Map<String, Object> variables) {
-            boolean b = super.changeVariables(variables);
-            b = handleSpecificVariables(variables) || b;
-            return b;
-        }
+//        vaadin7
+//        @Override
+//        protected boolean changeVariables(Map<String, Object> variables) {
+//            boolean b = super.changeVariables(variables);
+//            b = handleSpecificVariables(variables) || b;
+//            return b;
+//        }
 
         @Override
         public void paintContent(PaintTarget target) throws PaintException {

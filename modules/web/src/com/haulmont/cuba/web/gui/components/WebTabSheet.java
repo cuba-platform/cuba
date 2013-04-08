@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 02.02.2009 17:05:00
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -19,16 +15,21 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.vaadin.ui.VerticalLayout;
 import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebTabSheet
     extends
         WebAbstractComponent<com.vaadin.ui.TabSheet>
     implements
-        TabSheet, Component.Wrapper, Component.Container
-{
+        TabSheet, Component.Wrapper, Component.Container {
+
     private boolean postInitTaskAdded;
     private boolean componentTabChangeListenerInitialized;
 
@@ -39,13 +40,13 @@ public class WebTabSheet
         component.setCloseHandler(new MyCloseHandler());
     }
 
-    protected Map<String, Tab> tabs = new HashMap<String, Tab>();
+    protected Map<String, Tab> tabs = new HashMap<>();
 
-    protected Map<Component, String> components = new HashMap<Component, String>();
+    protected Map<Component, String> components = new HashMap<>();
 
-    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<com.vaadin.ui.Component>();
+    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
 
-    protected Set<TabChangeListener> listeners = new HashSet<TabChangeListener>();
+    protected Set<TabChangeListener> listeners = new HashSet<>();
 
     @Override
     public void add(Component component) {
@@ -171,8 +172,9 @@ public class WebTabSheet
 
         @Override
         public void setCaptionStyleName(String styleName) {
-            com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
-            vaadinTab.setCaptionStyle(styleName);
+//            vaadin7
+//            com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+//            vaadinTab.setCaptionStyle(styleName);
         }
     }
 
@@ -193,11 +195,12 @@ public class WebTabSheet
 
     @Override
     public TabSheet.Tab addLazyTab(String name,
-                                                                    Element descriptor,
-                                                                    ComponentLoader loader)
-    {
+                                   Element descriptor,
+                                   ComponentLoader loader) {
+
         WebVBoxLayout tabContent = new WebVBoxLayout();
-        tabContent.setSizeFull();
+        VerticalLayout vbox = tabContent.getComponent();
+        vbox.setSizeFull();
         
         final Tab tab = new Tab(name, tabContent);
 
@@ -210,7 +213,7 @@ public class WebTabSheet
         this.component.addTab(tabComponent);
         lazyTabs.add(tabComponent);
 
-        this.component.addListener(new LazyTabChangeListener(tabContent, descriptor, loader));
+        this.component.addSelectedTabChangeListener(new LazyTabChangeListener(tabContent, descriptor, loader));
         context = loader.getContext();
 
         if (!postInitTaskAdded) {
@@ -276,7 +279,7 @@ public class WebTabSheet
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
-            component.addListener(new com.vaadin.ui.TabSheet.SelectedTabChangeListener() {
+            component.addSelectedTabChangeListener(new com.vaadin.ui.TabSheet.SelectedTabChangeListener() {
                 @Override
                 public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
                     // Fire GUI listener
@@ -330,7 +333,8 @@ public class WebTabSheet
         @Override
         public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
-            if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
+            com.vaadin.ui.Component tabComponent = tabContent.getComponent();
+            if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
                 Component comp;
                 try {
                     comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);

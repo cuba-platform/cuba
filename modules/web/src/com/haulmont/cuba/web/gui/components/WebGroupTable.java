@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 18.11.2009 12:59:54
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -27,26 +22,27 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
 import com.vaadin.data.Item;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
-import com.vaadin.ui.Label;
+import com.vaadin.server.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.*;
 
-public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable>
-        implements GroupTable, Component.Wrapper
-{
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
+public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
+        implements GroupTable, Component.Wrapper {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
     protected boolean rerender = true;
 
     public WebGroupTable() {
-        component = new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
+        component = new CubaGroupTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {
@@ -60,18 +56,20 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 }
             }
 
-            @Override
-            protected boolean changeVariables(Map<String, Object> variables) {
-                boolean b = super.changeVariables(variables);
-                b = handleSpecificVariables(variables) || b;
-                return b;
-            }
+//            vaadin7
+//            @Override
+//            protected boolean changeVariables(Map<String, Object> variables) {
+//                boolean b = super.changeVariables(variables);
+//                b = handleSpecificVariables(variables) || b;
+//                return b;
+//            }
 
-            @Override
-            public void paintContent(PaintTarget target) throws PaintException {
-                super.paintContent(target);
-                paintSpecificContent(target);
-            }
+//            vaadin7
+//            @Override
+//            public void paintContent(PaintTarget target) throws PaintException {
+//                super.paintContent(target);
+//                paintSpecificContent(target);
+//            }
 
             @Override
             public void groupBy(Object[] properties) {
@@ -80,6 +78,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         };
         initComponent(component);
 
+//        vaadin7
         component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
     }
 
@@ -110,10 +109,9 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         final Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {
             final List elements = groupPropertiesElement.elements("property");
-            final List<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>(elements.size());
+            final List<MetaPropertyPath> properties = new ArrayList<>(elements.size());
             for (final Object o : elements) {
-                final MetaPropertyPath property = datasource.getMetaClass().getPropertyEx(
-                        ((Element) o).attributeValue("id")
+                final MetaPropertyPath property = datasource.getMetaClass().getPropertyPath(((Element) o).attributeValue("id")
                 );
                 properties.add(property);
             }
@@ -132,50 +130,58 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
     @Override
     protected Map<Object, Object> __handleAggregationResults(AggregationContainer.Context context, Map<Object, Object> results) {
-        if (context instanceof com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) {
-
-            com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext groupContext =
-                    (com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) context;
-
-            for (final Map.Entry<Object, Object> entry : results.entrySet()) {
-                final Table.Column column = columns.get(entry.getKey());
-                GroupAggregationCells cells;
-                if ((cells = groupAggregationCells.get(column)) != null) {
-                    com.vaadin.ui.Label cell = cells.getCell(groupContext.getGroupId());
-                    if (cell != null) {
-                        WebComponentsHelper.setLabelText(cell, entry.getValue(), column.getFormatter());
-                        entry.setValue(cell);
-                    }
-                }
-            }
-
-            return results;
-
-        } else {
-            return super.__handleAggregationResults(context, results);
-        }
+//        vaadin7
+//        if (context instanceof com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) {
+//
+//            com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext groupContext =
+//                    (com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) context;
+//
+//            for (final Map.Entry<Object, Object> entry : results.entrySet()) {
+//                final Table.Column column = columns.get(entry.getKey());
+//                GroupAggregationCells cells;
+//                if ((cells = groupAggregationCells.get(column)) != null) {
+//                    com.vaadin.ui.Label cell = cells.getCell(groupContext.getGroupId());
+//                    if (cell != null) {
+//                        WebComponentsHelper.setLabelText(cell, entry.getValue(), column.getFormatter());
+//                        entry.setValue(cell);
+//                    }
+//                }
+//            }
+//
+//            return results;
+//
+//        } else {
+//            return super.__handleAggregationResults(context, results);
+//        }
+        return Collections.EMPTY_MAP;
     }
 
+    @Override
     public void groupBy(Object[] properties) {
         component.groupBy(properties);
     }
 
+    @Override
     public void expandAll() {
         component.expandAll();
     }
 
+    @Override
     public void expand(GroupInfo groupId) {
         component.expand(groupId);
     }
 
+    @Override
     public void collapseAll() {
         component.collapseAll();
     }
 
+    @Override
     public void collapse(GroupInfo groupId) {
         component.collapse(groupId);
     }
 
+    @Override
     public boolean isExpanded(GroupInfo groupId) {
         return component.isExpanded(groupId);
     }
@@ -188,9 +194,9 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         private List<Object> aggregationProperties = null;
 
         //Supports items expanding
-        private final Set<GroupInfo> expanded = new HashSet<GroupInfo>();
+        private final Set<GroupInfo> expanded = new HashSet<>();
 
-        private Set<GroupInfo> expandState = new HashSet<GroupInfo>();
+        private Set<GroupInfo> expandState = new HashSet<>();
 
         //Items cache
         private LinkedList<Object> cachedItemIds;
@@ -230,6 +236,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             };
         }
 
+        @Override
         public void groupBy(Object[] properties) {
             if (groupDatasource) {
                 doGroup(properties);
@@ -245,7 +252,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             if (aggregationCells != null) {
                 if (hasGroups()) {
                     if (groupAggregationCells == null) {
-                        groupAggregationCells = new HashMap<Column, GroupAggregationCells>();
+                        groupAggregationCells = new HashMap<>();
                     } else {
                         groupAggregationCells.clear();
                     }
@@ -302,6 +309,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public Collection<?> rootGroups() {
             if (hasGroups()) {
                 return ((GroupDatasource) datasource).rootGroups();
@@ -309,10 +317,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public boolean hasChildren(Object id) {
             return isGroup(id) && ((GroupDatasource) datasource).hasChildren((GroupInfo) id);
         }
 
+        @Override
         public Collection<?> getChildren(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getChildren((GroupInfo) id);
@@ -320,6 +330,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public Collection<?> getGroupItemIds(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupItemIds((GroupInfo) id);
@@ -327,6 +338,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public int getGroupItemsCount(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupItemsCount((GroupInfo) id);
@@ -334,10 +346,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return 0;
         }
 
+        @Override
         public boolean isGroup(Object id) {
             return (id instanceof GroupInfo) && ((GroupDatasource) datasource).containsGroup((GroupInfo) id);
         }
 
+        @Override
         public Object getGroupProperty(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupProperty((GroupInfo) id);
@@ -345,6 +359,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return null;
         }
 
+        @Override
         public Object getGroupPropertyValue(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupPropertyValue((GroupInfo) id);
@@ -352,10 +367,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return null;
         }
 
+        @Override
         public boolean hasGroups() {
             return groupDatasource && ((GroupDatasource) datasource).hasGroups();
         }
 
+        @Override
         public Collection<?> getGroupProperties() {
             if (hasGroups()) {
                 return ((GroupDatasource) datasource).getGroupProperties();
@@ -363,6 +380,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public void expandAll() {
             if (hasGroups()) {
                 this.expanded.clear();
@@ -380,6 +398,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public void expand(Object id) {
             if (isGroup(id)) {
                 expanded.add((GroupInfo) id);
@@ -387,6 +406,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public void collapseAll() {
             if (hasGroups()) {
                 expanded.clear();
@@ -394,17 +414,22 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public void collapse(Object id) {
             if (isGroup(id)) {
-                expanded.remove((GroupInfo) id);
+                //noinspection RedundantCast
+                expanded.remove((GroupInfo)id);
                 resetCachedItems();
             }
         }
 
+        @Override
         public boolean isExpanded(Object id) {
-            return isGroup(id) && expanded.contains((GroupInfo) id);
+            //noinspection RedundantCast
+            return isGroup(id) && expanded.contains((GroupInfo)id);
         }
 
+        @Override
         public Collection getAggregationPropertyIds() {
             if (aggregationProperties != null) {
                 return Collections.unmodifiableList(aggregationProperties);
@@ -412,19 +437,22 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public Type getContainerPropertyAggregation(Object propertyId) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
-                aggregationProperties = new LinkedList<Object>();
+                aggregationProperties = new LinkedList<>();
             } else if (aggregationProperties.contains(propertyId)) {
                 throw new IllegalStateException("Such aggregation property is already exists");
             }
             aggregationProperties.add(propertyId);
         }
 
+        @Override
         public void removeContainerPropertyAggregation(Object propertyId) {
             if (aggregationProperties != null) {
                 aggregationProperties.remove(propertyId);
@@ -435,6 +463,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }
@@ -526,7 +555,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
         protected synchronized LinkedList getCachedItemIds() {
             if (cachedItemIds == null) {
-                final LinkedList<Object> result = new LinkedList<Object>();
+                final LinkedList<Object> result = new LinkedList<>();
                 final List<GroupInfo> roots = ((GroupDatasource) datasource).rootGroups();
                 for (final GroupInfo root : roots) {
                     result.add(root);
@@ -604,9 +633,9 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
     }
 
-    protected class DefaultGroupPropertyValueFormatter
-            implements com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupPropertyValueFormatter
-    {
+    protected class DefaultGroupPropertyValueFormatter implements CubaGroupTable.GroupPropertyValueFormatter {
+
+        @Override
         public String format(Object groupId, Object value) {
             if (value == null) {
                 return "";
@@ -647,7 +676,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
-        List<Column> columns = new ArrayList<Column>(visibleColumns.length);
+        List<Column> columns = new ArrayList<>(visibleColumns.length);
         for (final Object column : visibleColumns) {
             MetaPropertyPath path = (MetaPropertyPath) column;
             columns.add(getColumn(path.toString()));
@@ -657,7 +686,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     }
 
     private class GroupAggregationCells {
-        private Map<Object, com.vaadin.ui.Label> cells = new HashMap<Object, Label>();
+        private Map<Object, com.vaadin.ui.Label> cells = new HashMap<>();
 
         public void addCell(Object groupId, com.vaadin.ui.Label cell) {
             cells.put(groupId, cell);
@@ -680,10 +709,11 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
 
         protected void recalcAggregation(GroupInfo groupInfo) {
-            component.aggregate(new com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext(
-                    component,
-                    groupInfo
-            ));
+//            vaadin7
+//            component.aggregate(new com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext(
+//                    component,
+//                    groupInfo
+//            ));
         }
     }
 }

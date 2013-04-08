@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Havana - Generic Platform SCSS theme
+// Version: $Id$
+
+/** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
+
+// Inherit base theme
+@import "../base/base";
+
+// Common
+@import "components/common/common";
+
+// Components
+@import "components/table/table";
+@import "components/panel/panel";
+@import "components/window/window";
+@import "components/button/button";
+@import "components/select/select";
+@import "components/menubar/menubar";
+@import "components/tabsheet/tabsheet";
+@import "components/groupbox/groupbox";
+@import "components/textfield/textfield";
+@import "components/datefield/datefield";
+@import "components/splitpanel/splitpanel";
+@import "components/grouptable/grouptable";
+@import "components/multiupload/multiupload";
+@import "components/notification/notification";
+@import "components/orderedlayout/orderedlayout";
+
+// Application specific
+@import "app/app-window";
+@import "app/login-window";
+@import "app/breadcrumbs";
+@import "app/folders-pane";
+@import "app/log-control";
+
+@mixin havana {
+  @include base;
+
+  @include havana-common;
+
+  @include havana-table;
+  @include havana-panel;
+  @include havana-window;
+  @include havana-button;
+  @include havana-menubar;
+  @include havana-tabsheet;
+  @include havana-textfield;
+  @include havana-datefield;
+  @include havana-splitpanel;
+  @include havana-filterselect;
+  @include havana-notification;
+  @include havana-orderedlayout;
+
+  @include havana-cuba-groupbox;
+  @include havana-cuba-grouptable;
+  @include havana-cuba-multiupload;
+
+  @include cuba-login-window;
+  @include cuba-application-window;
+  @include cuba-folders-pane;
+  @include cuba-breadcrumbs;
+  @include cuba-log-control;
+}

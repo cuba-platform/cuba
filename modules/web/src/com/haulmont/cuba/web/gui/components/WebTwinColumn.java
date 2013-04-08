@@ -19,18 +19,18 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractSelect;
 
 import java.util.*;
 
 public class WebTwinColumn
-        extends
+        /*extends
             WebAbstractOptionsField<TwinColumnSelect>
         implements
-            TwinColumn, Component.Wrapper
+            TwinColumn, Component.Wrapper*/
 {
-
+/*
     private Object nullOption;
 
     private StyleProvider styleProvider;
@@ -242,5 +242,5 @@ public class WebTwinColumn
             t = o;
         }
         return t;
-    }
+    }*/
 }

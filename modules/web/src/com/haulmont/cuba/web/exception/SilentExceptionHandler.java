@@ -7,15 +7,15 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.web.App;
+import com.vaadin.ui.UI;
 
 import javax.annotation.Nullable;
 
 /**
  * Handler that does nothing in respond to {@link SilentException}.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class SilentExceptionHandler extends AbstractExceptionHandler {
 

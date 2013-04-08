@@ -18,15 +18,15 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
 /**
  * {@link ConditionsTree} container for web-client tree table component.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 class ConditionsContainer implements Container.Hierarchical, Container.Sortable, Container.ItemSetChangeNotifier {
 
@@ -48,7 +48,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
 
     private ConditionsTree conditions;
 
-    private List<Container.ItemSetChangeListener> listeners = new ArrayList<ItemSetChangeListener>();
+    private List<Container.ItemSetChangeListener> listeners = new ArrayList<>();
 
     private ItemSetChangeEvent itemSetChangeEvent = new ItemSetChangeEvent() {
         @Override
@@ -93,12 +93,12 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
 
     @Override
     public boolean isFirstId(Object itemId) {
-        return itemId.equals(firstItemId());
+        return ObjectUtils.equals(itemId, firstItemId());
     }
 
     @Override
     public boolean isLastId(Object itemId) {
-        return itemId.equals(lastItemId());
+        return ObjectUtils.equals(itemId, lastItemId());
     }
 
     @Override
@@ -179,10 +179,10 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         final CheckBox checkBox = new CheckBox();
         checkBox.setImmediate(true);
         checkBox.setValue(condition.isHidden());
-        checkBox.addListener(new Button.ClickListener() {
+        checkBox.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                boolean hidden = BooleanUtils.isTrue((Boolean) checkBox.getValue());
+            public void valueChange(Property.ValueChangeEvent event) {
+                boolean hidden = BooleanUtils.isTrue(checkBox.getValue());
                 condition.setHidden(hidden);
             }
         });
@@ -193,10 +193,10 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         final CheckBox checkBox = new CheckBox();
         checkBox.setImmediate(true);
         checkBox.setValue(condition.isRequired());
-        checkBox.addListener(new Button.ClickListener() {
+        checkBox.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                boolean required = BooleanUtils.isTrue((Boolean) checkBox.getValue());
+            public void valueChange(Property.ValueChangeEvent event) {
+                boolean required = BooleanUtils.isTrue(checkBox.getValue());
                 condition.setRequired(required);
             }
         });
@@ -207,7 +207,8 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         Button delBtn = WebComponentsHelper.createButton("icons/close.png");
         delBtn.setStyleName(BaseTheme.BUTTON_LINK);
         delBtn.addStyleName("icon-autosize");
-        delBtn.addListener(new Button.ClickListener() {
+        delBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 deleteCondition(condition);
             }
@@ -307,14 +308,25 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
     }
 
     @Override
-    public void addListener(ItemSetChangeListener listener) {
+    public void addItemSetChangeListener(ItemSetChangeListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
+
+    }
+
+    @Override
+    public void addListener(ItemSetChangeListener listener) {
+        addItemSetChangeListener(listener);
+    }
+
+    @Override
+    public void removeItemSetChangeListener(ItemSetChangeListener listener) {
+        listeners.remove(listener);
     }
 
     @Override
     public void removeListener(ItemSetChangeListener listener) {
-        listeners.remove(listener);
+        removeItemSetChangeListener(listener);
     }
 
     public void moveUp(Node<AbstractCondition> node) {

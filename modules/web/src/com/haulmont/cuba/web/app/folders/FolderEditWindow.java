@@ -18,8 +18,8 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.gui.components.WebButton;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +56,7 @@ public class FolderEditWindow extends Window {
         messagesPack = AppConfig.getMessagesPack();
         setCaption(adding ? getMessage("folders.folderEditWindow.adding") : getMessage("folders.folderEditWindow"));
 
-        setWidth(300, Sizeable.UNITS_PIXELS);
+        setWidth(300, Unit.PIXELS);
         setResizable(false);
 
         layout = new VerticalLayout();
@@ -69,19 +69,19 @@ public class FolderEditWindow extends Window {
         nameField = new TextField();
         nameField.setRequired(true);
         nameField.setCaption(getMessage("folders.folderEditWindow.nameField"));
-        nameField.setWidth(250, Sizeable.UNITS_PIXELS);
+        nameField.setWidth(250, Unit.PIXELS);
         nameField.setValue(folder.getName());
         layout.addComponent(nameField);
 
         tabNameField = new TextField();
         tabNameField.setCaption(getMessage("folders.folderEditWindow.tabNameField"));
-        tabNameField.setWidth(250, Sizeable.UNITS_PIXELS);
+        tabNameField.setWidth(250, Unit.PIXELS);
         tabNameField.setValue(StringUtils.trimToEmpty(folder.getTabName()));
         layout.addComponent(tabNameField);
 
         parentSelect = new Select();
         parentSelect.setCaption(getMessage("folders.folderEditWindow.parentSelect"));
-        parentSelect.setWidth(250, Sizeable.UNITS_PIXELS);
+        parentSelect.setWidth(250, Unit.PIXELS);
         parentSelect.setNullSelectionAllowed(true);
         fillParentSelect();
         parentSelect.setValue(folder.getParent());
@@ -108,8 +108,8 @@ public class FolderEditWindow extends Window {
 
         sortOrderField = new TextField();
         sortOrderField.setCaption(getMessage("folders.folderEditWindow.sortOrder"));
-        sortOrderField.setWidth(250, Sizeable.UNITS_PIXELS);
-        sortOrderField.setValue(folder.getSortOrder() == null ? "" : folder.getSortOrder());
+        sortOrderField.setWidth(250, Unit.PIXELS);
+        sortOrderField.setValue(folder.getSortOrder() == null ? "" : folder.getSortOrder().toString());
         layout.addComponent(sortOrderField);
 
         if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
@@ -128,21 +128,22 @@ public class FolderEditWindow extends Window {
         layout.addComponent(applyDefaultCb);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
-        buttonsLayout.setMargin(true, false, false, false);
+        buttonsLayout.setMargin(new MarginInfo(true, false, false, false));
         buttonsLayout.setSpacing(true);
         layout.addComponent(buttonsLayout);
 
         okBtn = new Button(getMessage("actions.Ok"));
-        okBtn.setIcon(new ThemeResource("icons/ok.png"));
+        okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
         okBtn.addStyleName(WebButton.ICON_STYLE);
 
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
         Button cancelBtn = new Button(getMessage("actions.Cancel"));
-        cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
+        cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
-        cancelBtn.addListener(new Button.ClickListener() {
+        cancelBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
             }
@@ -151,16 +152,17 @@ public class FolderEditWindow extends Window {
     }
 
     protected void initButtonOkListener() {
-        okBtn.addListener(new Button.ClickListener() {
+        okBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
-                if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
+                if (StringUtils.trimToNull(nameField.getValue()) == null) {
                     String msg = messages.getMainMessage("folders.folderEditWindow.emptyName");
-                    showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
+                    UI.getCurrent().showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
                     return;
                 }
-                folder.setName((String) nameField.getValue());
-                folder.setTabName((String) tabNameField.getValue());
+                folder.setName(nameField.getValue());
+                folder.setTabName(tabNameField.getValue());
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     folder.setSortOrder(null);
@@ -174,7 +176,7 @@ public class FolderEditWindow extends Window {
                             sortOrder = Integer.parseInt((String) value);
                         } catch (NumberFormatException e) {
                             String msg = messages.getMainMessage("folders.folderEditWindow.invalidSortOrder");
-                            showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
+                            UI.getCurrent().showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
                             return;
                         }
                     folder.setSortOrder(sortOrder);
@@ -188,7 +190,7 @@ public class FolderEditWindow extends Window {
 
                 folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
                 if (globalCb != null) {
-                    if (BooleanUtils.isTrue((Boolean) globalCb.getValue())) {
+                    if (BooleanUtils.isTrue(globalCb.getValue())) {
                         folder.setUser(null);
                     } else {
                         folder.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());

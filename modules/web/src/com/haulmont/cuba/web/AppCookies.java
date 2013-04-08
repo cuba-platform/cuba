@@ -2,25 +2,24 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 26.02.2010 19:58:02
- *
- * $Id$
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.web.sys.RequestContext;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AppCookies implements Serializable {
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
+public class AppCookies implements Serializable {
 
     private static final long serialVersionUID = 5958656635050664762L;
 
@@ -29,15 +28,17 @@ public abstract class AppCookies implements Serializable {
     private transient Map<String, Cookie> requestedCookies;
 
     private String cookiePath = "/";
-    private boolean cookiesEnabled;
+    private boolean cookiesEnabled = true;
+
+    private long lastRequestTimestamp = 0L;
 
     public AppCookies() {
-        requestedCookies = new HashMap<String, Cookie>();
+        requestedCookies = new HashMap<>();
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        requestedCookies = new HashMap<String, Cookie>();
+        requestedCookies = new HashMap<>();
     }
 
     public String getCookieValue(String name) {
@@ -84,22 +85,25 @@ public abstract class AppCookies implements Serializable {
     }
 
     protected Cookie getCookie(String name) {
+        if (RequestContext.get().getRequestTimestamp() != lastRequestTimestamp)
+            updateCookies();
         return requestedCookies.get(name);
     }
 
-    protected abstract void addCookie(Cookie cookie);
+    protected void addCookie(Cookie cookie) {
+        RequestContext.get().getResponse().addCookie(cookie);
+    }
 
-    public void updateCookies(HttpServletRequest request) {
+    public void updateCookies() {
         if (isCookiesEnabled()) {
-            synchronized (requestedCookies) {
-                requestedCookies.clear();
-                Cookie[] cookies = request.getCookies();
-                if (cookies != null) {
-                    for (final Cookie cookie : cookies) {
-                        requestedCookies.put(cookie.getName(), cookie);
-                    }
+            requestedCookies.clear();
+            Cookie[] cookies = RequestContext.get().getRequest().getCookies();
+            if (cookies != null) {
+                for (final Cookie cookie : cookies) {
+                    requestedCookies.put(cookie.getName(), cookie);
                 }
             }
+            lastRequestTimestamp = RequestContext.get().getRequestTimestamp();
         }
     }
 

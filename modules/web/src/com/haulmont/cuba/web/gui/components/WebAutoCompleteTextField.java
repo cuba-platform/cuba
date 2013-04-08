@@ -15,11 +15,11 @@ import com.haulmont.cuba.gui.components.AutoCompleteTextField;
 import com.haulmont.cuba.gui.components.Component;
 
 public class WebAutoCompleteTextField
-    extends
+    /*extends
         WebAbstractTextField<com.haulmont.cuba.web.toolkit.ui.AutoCompleteTextField>
     implements
-        AutoCompleteTextField, Component.Wrapper {
-
+        AutoCompleteTextField, Component.Wrapper*/ {
+/*
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.AutoCompleteTextField createTextFieldImpl() {
         return new com.haulmont.cuba.web.toolkit.ui.AutoCompleteTextField();
@@ -31,5 +31,5 @@ public class WebAutoCompleteTextField
 
     public AutoCompleteSupport getAutoCompleteSupport() {
         return component;
-    }
+    }*/
 }

@@ -16,9 +16,8 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class UserEditorCompanion extends AbstractCompanion implements UserEditor.Companion {
 
@@ -26,12 +25,14 @@ public class UserEditorCompanion extends AbstractCompanion implements UserEditor
         super(frame);
     }
 
+    @Override
     public void initPasswordField(TextField passwordField) {
         passwordField.setRequired(!ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory());
     }
 
+    @Override
     public void initLanguageLook(LookupField languageLook) {
-        com.vaadin.ui.Select languageLookupUnwrap = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(languageLook);
-        languageLookupUnwrap.setNullSelectionAllowed(false);
+//        com.vaadin.ui.Select languageLookupUnwrap = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(languageLook);
+//        languageLookupUnwrap.setNullSelectionAllowed(false);
     }
 }

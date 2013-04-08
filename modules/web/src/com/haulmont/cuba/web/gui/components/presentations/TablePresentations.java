@@ -10,31 +10,14 @@
  */
 package com.haulmont.cuba.web.gui.components.presentations;
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
-import com.haulmont.cuba.security.entity.Presentation;
-import com.haulmont.cuba.toolkit.gwt.client.presentations.TablePresentationsPopup;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebPopupButton;
-import com.haulmont.cuba.web.toolkit.ui.MenuBar;
-import com.vaadin.ui.*;
-import org.dom4j.Element;
+import com.vaadin.ui.CustomComponent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+//import com.haulmont.cuba.toolkit.gwt.client.presentations.TablePresentationsPopup;
+//import com.haulmont.cuba.web.AppUI;
 
-@ClientWidget(TablePresentationsPopup.class)
+//@ClientWidget(TablePresentationsPopup.class)
 public class TablePresentations extends CustomComponent {
-    private MenuBar menuBar;
+    /*private MenuBar menuBar;
     private WebPopupButton button;
 
     private Table table;
@@ -204,7 +187,7 @@ public class TablePresentations extends CustomComponent {
 
     private void openEditor(Presentation presentation) {
         PresentationEditor window = new PresentationEditor(presentation, table);
-        App.getInstance().getAppWindow().addWindow(window);
+        AppUI.getInstance().getAppWindow().addWindow(window);
         window.center();
     }
 
@@ -215,5 +198,5 @@ public class TablePresentations extends CustomComponent {
 
     private String getMessage(String key) {
         return MessageProvider.getMessage(getClass(), key);
-    }
+    }*/
 }

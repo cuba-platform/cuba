@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,9 +55,9 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        com.haulmont.cuba.web.toolkit.ui.Table vaadinAttrTable =
-                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(attrTable);
-        vaadinAttrTable.setTextSelectionEnabled(true);
+        CubaTable vaadinAttrTable = (CubaTable) WebComponentsHelper.unwrap(attrTable);
+//        vaadin7
+//        vaadinAttrTable.setTextSelectionEnabled(true);
 
         attrTable.setItemClickAction(editAttributeAction);
         attrDs.addListener(new CollectionDsListenerAdapter<ManagedBeanAttribute>() {
@@ -120,7 +121,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             BoxLayout vl = new WebVBoxLayout();
             vl.setMargin(false, false, true, false);
             vl.setSpacing(true);
-            vl.setStyleName("operationContainer");
+            vl.setStyleName("cuba-mbeans-operationContainer");
 
             Label nameLbl = new WebLabel();
             nameLbl.setValue(op.getReturnType() + " " + op.getName() + "()");

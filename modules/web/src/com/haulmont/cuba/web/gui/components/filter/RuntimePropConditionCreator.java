@@ -6,19 +6,19 @@
 
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class RuntimePropConditionCreator extends ConditionCreator {
     public RuntimePropConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super(filterComponentName, datasource);
-        locCaption = MessageProvider.getMessage(MESSAGES_PACK, "runtimePropConditionCreator");
+        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "runtimePropConditionCreator");
         showImmediately = true;
     }
 

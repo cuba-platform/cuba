@@ -1,0 +1,72 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin cuba-login-window {
+
+  // login button
+  .v-button.cuba-login-submit {
+    padding: 0 12px 0 10px;
+
+    .v-button-wrap {
+      padding-top: 0;
+      padding-bottom: 0;
+      height: 25px;
+    }
+
+    .v-button-caption {
+      padding-bottom: 2px;
+    }
+  }
+
+  .cuba-login-bottom {
+    background: $theme_loginFormBackgroundColor;
+    border: thin solid $theme_loginFormBorderColor;
+    box-shadow: 0 0 5px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0 0 5px rgba(0,0,0,0.25);
+    -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.25);
+
+    .cuba-login-username-field.v-caption {
+      font-weight: bold;
+      font-size: 10pt;
+      color: #2B4666;
+    }
+
+    .v-captiontext {
+      padding-right: 5px;
+      float: none;
+    }
+  }
+
+  .cuba-login-main-layout {
+    background-color: #fff;
+  }
+
+  .cuba-login-title {
+    padding-top: 3px;
+  }
+
+  .cuba-login-form {
+    font-weight: normal;
+
+    .v-formlayout {
+      float: left;
+    }
+
+    legend {
+      display: none;
+    }
+  }
+
+  .cuba-login-form-caption {
+    padding-top: 5px;
+  }
+
+  .cuba-login-bottom > div:first-child {
+    padding-top: 5px;
+  }
+}

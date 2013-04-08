@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractRuntimePropConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
@@ -14,15 +15,15 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEditDlg<Window> {
     protected Editor impl;
@@ -41,7 +42,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
         ShortcutAction commitAction = new ShortcutAction("commit", ShortcutAction.KeyCode.ENTER,
                 new int[]{ShortcutAction.ModifierKey.CTRL});
 
-        Map<Action, Runnable> actions = new HashMap<Action, Runnable>();
+        Map<Action, Runnable> actions = new HashMap<>();
         actions.put(closeAction, new Runnable() {
             @Override
             public void run() {
@@ -57,7 +58,6 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
         });
         WebComponentsHelper.setActions(impl, actions);
     }
-
 
     @Override
     public Window getImpl() {
@@ -92,28 +92,29 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
             GridLayout grid = new GridLayout();
             grid.setColumns(2);
             grid.setSpacing(true);
-            grid.setMargin(true, false, true, false);
+            grid.setMargin(new MarginInfo(true, false, true, false));
             grid.setRows(4);
 
             grid.addComponent(WebComponentsHelper.unwrap(categoryLabel), 0, 1);
             grid.setComponentAlignment(WebComponentsHelper.unwrap(categoryLabel), Alignment.MIDDLE_RIGHT);
 
-            Select categories = (Select) WebComponentsHelper.unwrap(categorySelect);
+            ComboBox categories = (ComboBox) WebComponentsHelper.unwrap(categorySelect);
             categories.setNullSelectionAllowed(false);
             grid.addComponent(categories, 1, 1);
 
-            Label attributeLabel = new Label(MessageProvider.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
+            Label attributeLabel = new Label(AppBeans.get(Messages.class)
+                    .getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
             grid.addComponent(attributeLabel, 0, 2);
             grid.setComponentAlignment(attributeLabel, Alignment.MIDDLE_RIGHT);
 
-            Select attributes = (Select) WebComponentsHelper.unwrap(attributeSelect);
+            ComboBox attributes = (ComboBox) WebComponentsHelper.unwrap(attributeSelect);
             attributes.setNullSelectionAllowed(false);
             grid.addComponent(attributes, 1, 2);
 
             grid.addComponent(WebComponentsHelper.unwrap(operationLabel), 0, 3);
             grid.setComponentAlignment(WebComponentsHelper.unwrap(operationLabel), Alignment.MIDDLE_RIGHT);
 
-            Select operations = (Select) WebComponentsHelper.unwrap(operationSelect);
+            ComboBox operations = (ComboBox) WebComponentsHelper.unwrap(operationSelect);
             operations.setNullSelectionAllowed(false);
             grid.addComponent(operations, 1, 3);
 
@@ -121,7 +122,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
             HorizontalLayout btnLayout = new HorizontalLayout();
             btnLayout.setSpacing(true);
-            btnLayout.setMargin(true, false, false, false);
+            btnLayout.setMargin(new MarginInfo(true, false, false, false));
 
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnOk));
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnCancel));

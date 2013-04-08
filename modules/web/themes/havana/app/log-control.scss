@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin cuba-log-control {
+
+  .v-label.cuba-log-content {
+    font-family: monospace;
+  }
+
+  .v-label {
+    span.cuba-log-level {
+      font-weight: bold;
+    }
+
+    span.cuba-log-level-DEBUG {
+      color: #000000;
+    }
+
+    span.cuba-log-level-INFO {
+      color: blue;
+    }
+
+    span.cuba-log-level-ERROR {
+      color: red;
+    }
+
+    span.cuba-log-level-WARN {
+      color: orange;
+    }
+
+    span.cuba-log-level-TRACE {
+      color: #c0c0c0;
+    }
+
+    span.cuba-log-level-FATAL {
+      color: red;
+    }
+  }
+}

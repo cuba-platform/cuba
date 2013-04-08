@@ -10,28 +10,28 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+//import com.vaadin.server.PaintException;
+//import com.vaadin.server.PaintTarget;
 
 @SuppressWarnings("serial")
 public class CheckBox extends com.vaadin.ui.CheckBox {
 
-    private boolean layoutCaption = false;
-
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-        if (isLayoutCaption()) {
-            target.addAttribute("manageCaption", isLayoutCaption());
-        }
-    }
-
-    public boolean isLayoutCaption() {
-        return layoutCaption;
-    }
-
-    public void setLayoutCaption(boolean layoutCaption) {
-        this.layoutCaption = layoutCaption;
-        requestRepaint();
-    }
+//    private boolean layoutCaption = false;
+//
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        super.paintContent(target);
+//        if (isLayoutCaption()) {
+//            target.addAttribute("manageCaption", isLayoutCaption());
+//        }
+//    }
+//
+//    public boolean isLayoutCaption() {
+//        return layoutCaption;
+//    }
+//
+//    public void setLayoutCaption(boolean layoutCaption) {
+//        this.layoutCaption = layoutCaption;
+//        requestRepaint();
+//    }
 }

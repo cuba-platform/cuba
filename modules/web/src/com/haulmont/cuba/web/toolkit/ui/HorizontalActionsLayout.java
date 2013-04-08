@@ -5,11 +5,13 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.VHorizontalActionsLayout;
-import com.haulmont.cuba.toolkit.gwt.client.ui.VVerticalActionsLayout;
-import com.vaadin.ui.ClientWidget;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VHorizontalActionsLayout;
+//import com.haulmont.cuba.toolkit.gwt.client.ui.VVerticalActionsLayout;
+//import com.vaadin.ui.ClientWidget;
+
+import com.vaadin.ui.HorizontalLayout;
 
 @SuppressWarnings("serial")
-@ClientWidget(VHorizontalActionsLayout.class)
-public class HorizontalActionsLayout extends OrderedActionsLayout {
+//@ClientWidget(VHorizontalActionsLayout.class)
+public class HorizontalActionsLayout extends HorizontalLayout {
 }

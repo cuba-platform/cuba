@@ -9,7 +9,7 @@
  * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
-
+/*
 import com.haulmont.cuba.toolkit.gwt.client.ui.VTokenListLabel;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -19,10 +19,10 @@ import com.vaadin.ui.Label;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-@ClientWidget(VTokenListLabel.class)
-public class TokenListLabel extends Label {
-
+*/
+//@ClientWidget(VTokenListLabel.class)
+public class TokenListLabel /*extends Label*/ {
+/*
     private String key;
 
     private List<RemoveTokenListener> listeners;
@@ -110,5 +110,5 @@ public class TokenListLabel extends Label {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
-    }
+    }    */
 }

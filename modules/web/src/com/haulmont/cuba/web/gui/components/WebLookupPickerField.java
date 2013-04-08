@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
 
@@ -193,7 +194,7 @@ public class WebLookupPickerField
         }
 
         @Override
-        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
             if (newValue instanceof Entity)
                 newValue = ((Entity) newValue).getId();
             super.setValue(newValue);

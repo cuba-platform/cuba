@@ -1,0 +1,98 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-window($primaryStyleName: v-window) {
+
+  .#{$primaryStyleName} {
+    color: #000;
+    line-height: 18px;
+    background: transparent;
+
+    .#{$primaryStyleName}-wrap {
+      font-family: $theme_fonts;
+      color: #fff;
+
+      .#{$primaryStyleName}-outerheader {
+        margin-left: 0;
+        padding: 0 0 0 5px;
+        background: $theme_windowHeaderColor no-repeat left top;
+        cursor: move;
+        height: auto;
+
+        .#{$primaryStyleName}-header {
+          font-size: 13px;
+          padding: 6px 5px 5px 7px;
+          font-weight: bold;
+          letter-spacing: 0;
+          background: $theme_windowHeaderColor no-repeat right top;
+          color: #ffffff;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          font-family: $theme_fonts;
+
+          .v-icon {
+            vertical-align: middle; /* This has to be 'middle', not 'bottom', to allow larger icons than 16px */
+          }
+        }
+      }
+
+      .#{$primaryStyleName}-closebox {
+        position: absolute;
+        top: 10px;
+        right: 7px;
+        width: 9px;
+        height: 9px;
+        background: transparent;
+        background-repeat: no-repeat;
+        background-image: url(sprites/close.png);  /** sprite-ref: components; */
+        cursor: pointer;
+        overflow: hidden;
+      }
+
+      .#{$primaryStyleName}-closebox:hover {
+        background-image: url(sprites/close-active.png); /** sprite-ref: components; */
+      }
+
+      .#{$primaryStyleName}-contents {
+        background: #fff;
+        color: #1E3146;
+        padding: 8px;
+        font-size: 12px;
+        font-family: $theme_fonts;
+        border: 1px solid $theme_windowBorderColor;
+      }
+
+      .#{$primaryStyleName}-footer {
+        height: 8px;
+        background: transparent;
+
+        .#{$primaryStyleName}-resizebox {
+          position: absolute; /* Needed to position the element over ScrollPanel, which is also relatively positioned */
+          right: 1px;
+          bottom: 1px;
+          width: 8px;
+          height: 8px;
+          cursor: se-resize;
+          background: transparent;
+          background-image: url(sprites/resize.png); /** sprite-ref: components; */
+          overflow: hidden;
+        }
+
+        .#{$primaryStyleName}-resizebox-disabled {
+          cursor: default;
+          background: transparent;
+        }
+      }
+
+      .#{$primaryStyleName}-footer-noresize {
+        height: 8px;
+      }
+    }
+  }
+}

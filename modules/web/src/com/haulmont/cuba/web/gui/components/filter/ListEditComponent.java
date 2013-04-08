@@ -9,11 +9,12 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -21,15 +22,13 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.terminal.*;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -81,19 +80,19 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
         pickerButton = new Button();
         pickerButton.addStyleName("pickButton");
-        pickerButton.addListener(
+        pickerButton.addClickListener(
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         ListEditWindow window = new ListEditWindow(values);
-                        com.haulmont.cuba.web.App.getInstance().getAppWindow().addWindow(window);
+                        com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(window);
                     }
                 }
         );
 
         clearButton = new Button();
         clearButton.addStyleName("clearButton");
-        clearButton.addListener(
+        clearButton.addClickListener(
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -117,7 +116,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         container.setExpandRatio(field, 1);
 
         setCompositionRoot(container);
-        setStyleName("pickerfield");
+        setStyleName("cuba-pickerfield");
         setWidth(DEFAULT_WIDTH + "px");
     }
 
@@ -136,37 +135,38 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         this.runtimeEnum = values;
     }
 
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        paintCommonContent(target);
-        super.paintContent(target);
-    }
-
-    protected void paintCommonContent(PaintTarget target) throws PaintException {
-        // If the field is modified, but not committed, set modified attribute
-        if (isModified()) {
-            target.addAttribute("modified", true);
-        }
-
-        // Adds the required attribute
-        if (!isReadOnly() && isRequired()) {
-            target.addAttribute("required", true);
-        }
-
-        // Hide the error indicator if needed
-        if (isRequired() && getValue() == null && getComponentError() == null
-                && getErrorMessage() != null) {
-            target.addAttribute("hideErrors", true);
-        }
-    }
+//    vaadin7
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        paintCommonContent(target);
+//        super.paintContent(target);
+//    }
+//
+//    protected void paintCommonContent(PaintTarget target) throws PaintException {
+//        // If the field is modified, but not committed, set modified attribute
+//        if (isModified()) {
+//            target.addAttribute("modified", true);
+//        }
+//
+//        // Adds the required attribute
+//        if (!isReadOnly() && isRequired()) {
+//            target.addAttribute("required", true);
+//        }
+//
+//        // Hide the error indicator if needed
+//        if (isRequired() && getValue() == null && getComponentError() == null
+//                && getErrorMessage() != null) {
+//            target.addAttribute("hideErrors", true);
+//        }
+//    }
 
     private void updateIcons() {
         if (isReadOnly()) {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn-readonly.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn-readonly.png"));
+            setPickerButtonIcon(new VersionedThemeResource("pickerfield/img/lookup-btn-readonly.png"));
+            setClearButtonIcon(new VersionedThemeResource("pickerfield/img/clear-btn-readonly.png"));
         } else {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn.png"));
+            setPickerButtonIcon(new VersionedThemeResource("pickerfield/img/lookup-btn.png"));
+            setClearButtonIcon(new VersionedThemeResource("pickerfield/img/clear-btn.png"));
         }
     }
 
@@ -201,28 +201,18 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
+    public void setBuffered(boolean buffered) {
+        field.setBuffered(buffered);
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return field.isBuffered();
+    }
+
+    @Override
     public boolean isModified() {
         return field.isModified();
-    }
-
-    @Override
-    public boolean isWriteThrough() {
-        return field.isWriteThrough();
-    }
-
-    @Override
-    public void setWriteThrough(boolean writeTrough) throws SourceException, com.vaadin.data.Validator.InvalidValueException {
-        field.setWriteThrough(writeTrough);
-    }
-
-    @Override
-    public boolean isReadThrough() {
-        return field.isReadThrough();
-    }
-
-    @Override
-    public void setReadThrough(boolean readTrough) throws SourceException {
-        field.setReadThrough(readTrough);
     }
 
     @Override
@@ -231,7 +221,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
-    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
         if (!ObjectUtils.equals(listValue, newValue)) {
             listValue = (List) newValue;
             for (ValueChangeListener listener : listeners) {
@@ -288,6 +278,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
+    public void removeAllValidators() {
+    }
+
+    @Override
     public boolean isValid() {
         return field.isValid();
     }
@@ -308,9 +302,17 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+    }
+
+    @Override
     public void addListener(ValueChangeListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
     }
 
     @Override
@@ -346,13 +348,13 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     @Override
     public void setRequired(boolean required) {
         this.required = required;
-        requestRepaint();
+        markAsDirty();
     }
 
     @Override
     public void setRequiredError(String requiredMessage) {
         this.requiredError = requiredMessage;
-        requestRepaint();
+        markAsDirty();
     }
 
     @Override
@@ -398,7 +400,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
         private ListEditWindow(Map<Object, String> values) {
             super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
-            setWidth(200, Sizeable.UNITS_PIXELS);
+            setWidth(200, Unit.PIXELS);
             setModal(true);
 
             this.messages = AppBeans.get(Messages.class);
@@ -408,7 +410,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             VerticalLayout contentLayout = new VerticalLayout();
 
             listLayout = new VerticalLayout();
-            listLayout.setMargin(false, false, true, false);
+            listLayout.setMargin(new MarginInfo(false, false, true, false));
             listLayout.setSpacing(true);
             for (Map.Entry<Object, String> entry : values.entrySet()) {
                 addItemLayout(entry.getKey(), entry.getValue());
@@ -510,13 +512,13 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 final WebDateField dateField = new WebDateField();
 
                 field = dateField.getComponent();
-                DateField.Resolution resolution;
+                com.haulmont.cuba.gui.components.DateField.Resolution resolution;
                 String dateFormat;
                 if (itemClass.equals(java.sql.Date.class)) {
-                    resolution = DateField.Resolution.DAY;
+                    resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
                     dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
                 } else {
-                    resolution = DateField.Resolution.MIN;
+                    resolution = com.haulmont.cuba.gui.components.DateField.Resolution.MIN;
                     dateFormat = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
                 }
                 dateField.setResolution(resolution);
@@ -538,13 +540,13 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             contentLayout.addComponent(field);
 
             HorizontalLayout bottomLayout = new HorizontalLayout();
-            bottomLayout.setMargin(true, false, true, false);
+            bottomLayout.setMargin(new MarginInfo(true, false, true, false));
             bottomLayout.setSpacing(true);
 
             Button okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
-            okBtn.setIcon(new ThemeResource("icons/ok.png"));
+            okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
             okBtn.setStyleName(WebButton.ICON_STYLE);
-            okBtn.addListener(
+            okBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
@@ -555,9 +557,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             bottomLayout.addComponent(okBtn);
 
             Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
-            cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
+            cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
-            cancelBtn.addListener(
+            cancelBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
@@ -599,9 +601,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
             Button delItemBtn = new Button();
             delItemBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            delItemBtn.setIcon(new ThemeResource("icons/tab-remove.png"));
+            // vaadin7 replace icon
+            delItemBtn.setIcon(new VersionedThemeResource("icons/tab-remove.png"));
             delItemBtn.addStyleName("filter-param-list-edit-del");
-            delItemBtn.addListener(
+            delItemBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {

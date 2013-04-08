@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-textfield($primaryStyleName: v-textfield) {
+  .#{$primaryStyleName} {
+    padding: 2px;
+    border: 1px solid $theme_fieldBorderColor;
+    margin: 0;
+    font-size: 12px;
+    height: 25px;
+    text-align: left;
+    background: #ffffff;
+  }
+
+  .#{$primaryStyleName}:focus {
+    border-color: $theme_fieldFocusedBorderColor;
+    outline: 0;
+  }
+
+  .#{$primaryStyleName}.v-readonly {
+    background: transparent;
+    border: $theme_fieldReadonlyBorderColor 1px solid;
+  }
+}

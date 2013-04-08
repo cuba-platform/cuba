@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 29.12.2008 14:34:57
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -20,20 +16,25 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
+import com.haulmont.cuba.web.toolkit.ui.CubaTable;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebTable
     extends
-        WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table>
+        WebAbstractTable<CubaTable>
     implements
-        Component.Wrapper
-{
+        Component.Wrapper {
+
     public WebTable() {
-        component = new com.haulmont.cuba.web.toolkit.ui.Table() {
+        component = new CubaTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {
@@ -47,12 +48,13 @@ public class WebTable
                 }
             }
 
-            @Override
-            protected boolean changeVariables(Map<String, Object> variables) {
-                boolean b = super.changeVariables(variables);
-                b = handleSpecificVariables(variables) || b;
-                return b;
-            }
+//            vaadin7
+//            @Override
+//            protected boolean changeVariables(Map<String, Object> variables) {
+//                boolean b = super.changeVariables(variables);
+//                b = handleSpecificVariables(variables) || b;
+//                return b;
+//            }
 
             @Override
             public void paintContent(PaintTarget target) throws PaintException {
@@ -64,7 +66,7 @@ public class WebTable
     }
 
     @Override
-    protected void initComponent(com.haulmont.cuba.web.toolkit.ui.Table component) {
+    protected void initComponent(CubaTable component) {
         super.initComponent(component);
         setSortable(true);
     }

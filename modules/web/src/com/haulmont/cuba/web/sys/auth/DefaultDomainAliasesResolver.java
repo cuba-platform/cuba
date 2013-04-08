@@ -24,7 +24,7 @@ import java.util.Map;
 @ManagedBean(DomainAliasesResolver.NAME)
 public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
 
-    private Map<String, String> aliases = new HashMap<String, String>();
+    private Map<String, String> aliases = new HashMap<>();
     private Log log = LogFactory.getLog(DomainAliasesResolver.class);
 
     @Inject

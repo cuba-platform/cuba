@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-panel($primaryStyleName : v-panel) {
+  .#{$primaryStyleName} {
+    .#{$primaryStyleName}-content {
+      border: 0;
+    }
+
+    .#{$primaryStyleName}-deco {
+      display: none;
+    }
+
+    .#{$primaryStyleName}-captionwrap {
+      display: none;
+    }
+  }
+}

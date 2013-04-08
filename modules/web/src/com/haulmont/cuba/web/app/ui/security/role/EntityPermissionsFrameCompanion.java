@@ -41,8 +41,8 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
 
     private Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
         Label label = AppConfig.getFactory().createComponent(Label.NAME);
-        com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
-        vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
+//        com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
+//        vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
 
         StringBuilder builder = new StringBuilder();
         if (permissionVariant != PermissionVariant.NOTSET) {
@@ -50,7 +50,7 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
                     .append(MessageProvider.getMessage(permissionVariant)).append("</span>");
         }
 
-        vLabel.setValue(builder.toString());
+//        vLabel.setValue(builder.toString());
 
         return label;
     }

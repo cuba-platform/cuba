@@ -6,7 +6,9 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
@@ -19,13 +21,13 @@ import java.util.List;
 /**
  * Root of special conditions branch.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RootCustomConditionModelItem implements ModelItem {
 
     private List<AbstractConditionDescriptor> propertyDescriptors;
+    private List<ModelItem> modelItems;
 
     public RootCustomConditionModelItem(List<AbstractConditionDescriptor> propertyDescriptors) {
         this.propertyDescriptors = propertyDescriptors;
@@ -39,21 +41,23 @@ public class RootCustomConditionModelItem implements ModelItem {
     @Nonnull
     @Override
     public List<ModelItem> getChildren() {
-        List<ModelItem> list = new ArrayList<ModelItem>();
+        if (modelItems == null) {
+            modelItems = new ArrayList<>();
 
-        for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
-            if (descriptor instanceof AbstractCustomConditionDescriptor) {
-                list.add(new CustomConditionModelItem(this, (AbstractCustomConditionDescriptor) descriptor));
+            for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
+                if (descriptor instanceof AbstractCustomConditionDescriptor) {
+                    modelItems.add(new CustomConditionModelItem(this, (AbstractCustomConditionDescriptor) descriptor));
+                }
             }
-        }
 
-        Collections.sort(list, new ModelItemComparator());
-        return list;
+            Collections.sort(modelItems, new ModelItemComparator());
+        }
+        return modelItems;
     }
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.specialConditions");
+        return AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.specialConditions");
     }
 
     @Override

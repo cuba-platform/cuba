@@ -2,26 +2,26 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 18:12:13
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.AbstractPropertyWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.PropertyFormatter;
+import com.haulmont.cuba.web.toolkit.ui.converters.DatatypeToStringConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
+import com.vaadin.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +30,11 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Locale;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolkit.ui.TextField>
     extends
         WebAbstractField<T>
@@ -40,7 +45,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
 
     private Datatype datatype;
 
-    private Locale locale = UserSessionProvider.getLocale();
+    private Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
 
     protected Formatter formatter;
 
@@ -50,17 +55,25 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         this.component = createTextFieldImpl();
         this.component.setValidationVisible(false);
 
-        final Property p = new AbstractPropertyWrapper() {
-            public Class<?> getType() {
-                return String.class;
-            }
-        };
-
-        component.setPropertyDataSource(new PropertyFormatter(p) {
+        component.setConverter(new Converter<String, Object>() {
             @Override
-            public String format(Object value) {
-                if (datatype != null && value != null) {
-                    return datatype.format(value,locale);
+            public Object convertToModel(String value, Locale locale) throws ConversionException {
+                if (getActualDatatype() != null) {
+                    try {
+                        return getActualDatatype().parse(value, locale);
+                    } catch (ParseException e) {
+                        log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                        return null;
+                    }
+                } else {
+                    return value;
+                }
+            }
+
+            @Override
+            public String convertToPresentation(Object value, Locale locale) throws ConversionException {
+                if (getActualDatatype() != null && value != null) {
+                    return getActualDatatype().format(value, locale);
                 } else if (value != null) {
                     return value.toString();
                 } else {
@@ -69,19 +82,16 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
             }
 
             @Override
-            public Object parse(String formattedValue) throws Exception {
-                if (datatype != null) {
-                    try {
-                        return datatype.parse(formattedValue,locale);
-                    } catch (ParseException e) {
-                        log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
-                        return null;
-                    }
-                } else {
-                    return formattedValue;
-                }
+            public Class<Object> getModelType() {
+                return Object.class;
+            }
+
+            @Override
+            public Class<String> getPresentationType() {
+                return String.class;
             }
         });
+
         attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");
@@ -92,12 +102,11 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
                     @Override
                     public void validate(Object value) throws InvalidValueException {
                         if (!isValid(value)) {
-                            component.requestRepaint();
+                            component.markAsDirty();
                             throw new InvalidValueException("Unable to parse value: " + value);
                         }
                     }
 
-                    @Override
                     public boolean isValid(Object value) {
                         Datatype datatype = getActualDatatype();
                         if (value instanceof String && datatype != null) {
@@ -116,11 +125,14 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
     protected abstract T createTextFieldImpl();
 
     public int getRows() {
-        return component.getRows();
+        return 0;
+//        vaadin7
+//        return component.getRows();
     }
 
     public void setRows(int rows) {
-        component.setRows(rows);
+//        component.setRows(rows);
+//        vaadin7
     }
 
     public int getColumns() {
@@ -132,25 +144,32 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
     }
 
     public boolean isSecret() {
-        return component.isSecret();
+//        vaadin7
+//        return component.isSecret();
+        return false;
     }
 
     public void setSecret(boolean secret) {
-        component.setSecret(secret);
+//        vaadin7
+//        component.setSecret(secret);
     }
 
+    @Override
     public int getMaxLength() {
         return component.getMaxLength();
     }
 
+    @Override
     public void setMaxLength(int value) {
         component.setMaxLength(value);
     }
 
+    @Override
     public Datatype getDatatype() {
         return datatype;
     }
 
+    @Override
     public void setDatatype(Datatype datatype) {
         this.datatype = datatype;
     }
@@ -197,6 +216,17 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         if (len != null) {
             component.setMaxLength(len);
         }
+
+        if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
+            component.setConverter(new EntityToStringConverter());
+        else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
+            Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
+            if (datatype != null)
+                component.setConverter(new DatatypeToStringConverter(datatype));
+            else
+                component.setConverter(new StringToStringConverter());
+        } else
+            component.setConverter(new StringToStringConverter());
     }
 
     @Override
@@ -210,32 +240,33 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
                     private static final long serialVersionUID = -6484626348078235396L;
 
                     @Override
-                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                         if (newValue instanceof String && trimming)
                             newValue = ((String) newValue).trim();
                         super.setValue(newValue);
                     }
 
                     @Override
-                    public String toString() {
+                    public String getFormattedValue() {
                         if (formatter != null) {
                             Object value = getValue();
                             if (value instanceof Instance)
                                 value = ((Instance) value).getInstanceName();
                             return formatter.format(value);
-                        } else {
-                            return super.toString();
-                        }
+                        } else
+                            return super.getFormattedValue();
                     }
                 };
             }
         };
     }
 
+    @Override
     public Formatter getFormatter() {
         return formatter;
     }
 
+    @Override
     public void setFormatter(Formatter formatter) {
         this.formatter = formatter;
     }

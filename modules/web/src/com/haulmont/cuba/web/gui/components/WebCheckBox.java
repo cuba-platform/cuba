@@ -19,6 +19,10 @@ import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Collection;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebCheckBox
     extends
         WebAbstractField<com.haulmont.cuba.web.toolkit.ui.CheckBox>

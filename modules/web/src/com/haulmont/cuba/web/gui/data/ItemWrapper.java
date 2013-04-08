@@ -91,13 +91,23 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     }
 
     @Override
-    public void addListener(PropertySetChangeListener listener) {
+    public void addPropertySetChangeListener(PropertySetChangeListener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
     @Override
-    public void removeListener(PropertySetChangeListener listener) {
+    public void addListener(PropertySetChangeListener listener) {
+        addPropertySetChangeListener(listener);
+    }
+
+    @Override
+    public void removePropertySetChangeListener(PropertySetChangeListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void removeListener(PropertySetChangeListener listener) {
+        removePropertySetChangeListener(listener);
     }
 
     private class PropertySetChangeEvent implements Item.PropertySetChangeEvent {

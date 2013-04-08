@@ -18,13 +18,18 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.*;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -39,13 +44,15 @@ import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
-import com.vaadin.data.validator.IntegerValidator;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -54,13 +61,10 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.*;
 import org.dom4j.*;
-import org.vaadin.hene.popupbutton.PopupButton;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 /**
  * Generic filter implementation for the web-client.
@@ -134,29 +138,30 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         userSessionSource = AppBeans.get(UserSessionSource.class);
 
         defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
-        component.addActionHandler(new com.vaadin.event.Action.Handler() {
-            private com.vaadin.event.ShortcutAction shortcutAction =
-                    new com.vaadin.event.ShortcutAction("applyFilterAction",
-                            com.vaadin.event.ShortcutAction.KeyCode.ENTER,
-                            new int[]{ShortcutAction.ModifierKey.SHIFT});
-
-            @Override
-            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-                return new com.vaadin.event.Action[]{shortcutAction};
-            }
-
-            @Override
-            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-
-                if (ObjectUtils.equals(action, shortcutAction)) {
-                    apply(false);
-                }
-            }
-        });
+//        vaadin7
+//        component.addActionHandler(new com.vaadin.event.Action.Handler() {
+//            private com.vaadin.event.ShortcutAction shortcutAction =
+//                    new com.vaadin.event.ShortcutAction("applyFilterAction",
+//                            com.vaadin.event.ShortcutAction.KeyCode.ENTER,
+//                            new int[]{ShortcutAction.ModifierKey.SHIFT});
+//
+//            @Override
+//            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+//                return new com.vaadin.event.Action[]{shortcutAction};
+//            }
+//
+//            @Override
+//            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+//
+//                if (ObjectUtils.equals(action, shortcutAction)) {
+//                    apply(false);
+//                }
+//            }
+//        });
 
         // don't add margin because filter is usually placed inside a groupbox that adds margins to its content
         component.setMargin(false);
-        component.setStyleName("generic-filter");
+        component.setStyleName("cuba-generic-filter");
 
         foldersPane = App.getInstance().getAppWindow().getFoldersPane();
 
@@ -172,19 +177,19 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         noFilter.setName(messages.getMainMessage("filter.noFilter"));
 
         select = new FilterSelect();
-        select.setWidth(300, Sizeable.UNITS_PIXELS);
-        select.setStyleName("generic-filter-select");
+        select.setWidth(300, Sizeable.Unit.PIXELS);
+        select.setStyleName("cuba-generic-filter-select");
         select.setNullSelectionAllowed(true);
         select.setNullSelectionItemId(noFilter);
         select.setImmediate(true);
         select.setPageLength(20);
-        select.addListener(new SelectListener());
+        select.addValueChangeListener(new SelectListener());
         App.getInstance().getWindowManager().setDebugId(select, "genericFilterSelect");
         topLayout.addComponent(select);
 
         applyBtn = WebComponentsHelper.createButton("icons/search.png");
         applyBtn.setCaption(messages.getMainMessage("actions.Apply"));
-        applyBtn.addListener(new Button.ClickListener() {
+        applyBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 apply(false);
@@ -198,7 +203,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             pinAppliedFilterBtn.setCaption(messages.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.caption"));
             pinAppliedFilterBtn.setDescription(messages.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.description"));
             pinAppliedFilterBtn.setEnabled(false);
-            pinAppliedFilterBtn.addListener(new Button.ClickListener() {
+            pinAppliedFilterBtn.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     if (datasource instanceof CollectionDatasource.SupportsApplyToSelected) {
@@ -234,7 +239,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         if (appliedFiltersLayout == null) {
             appliedFiltersLayout = new VerticalLayout();
-            appliedFiltersLayout.setMargin(true, false, false, false);
+            appliedFiltersLayout.setMargin(new MarginInfo(true, false, false, false));
             appliedFiltersLayout.setSpacing(true);
 
             component.addComponent(appliedFiltersLayout, component.getComponentIndex(paramsLayout));
@@ -254,7 +259,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         Button button = new Button();
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("remove-applied-filter");
-        button.setIcon(new ThemeResource("icons/close.png"));
+        button.setIcon(new VersionedThemeResource("icons/close.png"));
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -294,42 +299,43 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         maxResultsCb = new CheckBox(messages.getMainMessage("filter.maxResults.label1"));
         maxResultsCb.setImmediate(true);
         maxResultsCb.setValue(true);
-        maxResultsCb.addListener(
-                new Button.ClickListener() {
+        maxResultsCb.addValueChangeListener(
+                new Property.ValueChangeListener() {
                     @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        maxResultsField.setEnabled(BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()));
+                    public void valueChange(Property.ValueChangeEvent event) {
+                        maxResultsField.setEnabled(BooleanUtils.isTrue(maxResultsCb.getValue()));
                     }
-                }
-        );
-        maxResultsCb.setStyleName("filter-maxresults");
+                });
+
+        maxResultsCb.setStyleName("cuba-filter-maxresults");
         maxResultsLayout.addComponent(maxResultsCb);
 
         maxResultsField = new TextField();
         maxResultsField.setImmediate(true);
         maxResultsField.setMaxLength(4);
-        maxResultsField.setWidth(40, UNITS_PIXELS);
+        maxResultsField.setWidth(40, Sizeable.Unit.PIXELS);
         maxResultsField.setInvalidAllowed(false);
         maxResultsField.addValidator(
-                new IntegerValidator(messages.getMainMessage("validation.invalidNumber")) {
+                new IntegerRangeValidator(messages.getMainMessage("validation.invalidNumber"), 0, Integer.MAX_VALUE) {
                     @Override
                     public void validate(Object value) throws InvalidValueException {
                         try {
                             super.validate(value);
                         } catch (InvalidValueException e) {
-                            maxResultsField.requestRepaint();
+                            maxResultsField.markAsDirty();
                             throw e;
                         }
                     }
                 }
         );
+        maxResultsField.setConverter(new StringToIntegerConverter());
         maxResultsLayout.addComponent(maxResultsField);
 
         Label maxResultsLabel2 = new Label(messages.getMainMessage("filter.maxResults.label2"));
         maxResultsLayout.addComponent(maxResultsLabel2);
         maxResultsLayout.setComponentAlignment(maxResultsLabel2, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
-        maxResultsLayout.setStyleName("filter-maxresults");
+        maxResultsLayout.setStyleName("cuba-filter-maxresults");
     }
 
     private void fillActions() {
@@ -433,8 +439,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         if (useMaxResults) {
             int maxResults;
-            if (BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()))
-                maxResults = Integer.valueOf((String) maxResultsField.getValue());  //persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+            if (BooleanUtils.isTrue(maxResultsCb.getValue()))
+                maxResults = Integer.valueOf(maxResultsField.getValue());  //persistenceManager.getFetchUI(datasource.getMetaClass().getName());
             else
                 maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
             datasource.setMaxResults(maxResults);
@@ -561,8 +567,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             WebGroupBox groupBox = new WebGroupBox();
             groupBox.setWidth("-1");
             groupBox.setCaption(messages.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
-            paramsLayout = groupBox;
-            recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), groupBox, 0);
+            ComponentContainer container = groupBox.getComponent();
+            paramsLayout = container;
+            recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), container, 0);
         } else {
             paramsLayout = recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), null, 0);
         }
@@ -594,7 +601,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         if (visibleConditionNodes.size() % columns != 0)
             rows++;
         com.vaadin.ui.GridLayout grid = new com.vaadin.ui.GridLayout(columns, rows);
-        grid.setMargin(parentContainer == null, false, false, false);
+        grid.setMargin(new MarginInfo(parentContainer == null, false, false, false));
         grid.setSpacing(true);
 
         boolean focusSet = false;
@@ -609,10 +616,11 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 groupBox.setCaption(condition.getLocCaption());
 
                 if (!node.getChildren().isEmpty()) {
+                    ComponentContainer container = groupBox.getComponent();
                     recursivelyCreateParamsLayout(
-                            focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
+                            focusOnConditions && !focusSet, node.getChildren(), container, level++);
                 }
-                cellContent = groupBox;
+                cellContent = groupBox.getComponent();
             } else {
                 HorizontalLayout paramLayout = new HorizontalLayout();
                 paramLayout.setSpacing(true);
@@ -1125,9 +1133,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     private void updateControls() {
         fillActions();
         actionsButton.setVisible(!editing);
-        ((PopupButton) actionsButton.getComponent()).setPopupVisible(false);
-        ((PopupButton) actionsButton.getComponent()).setVisible(editable);
-        ((PopupButton) actionsButton.getComponent()).setEnabled(actionsButton.getActions().size() > 0);
+        ((org.vaadin.hene.popupbutton.PopupButton) actionsButton.getComponent()).setPopupVisible(false);
+        ((org.vaadin.hene.popupbutton.PopupButton) actionsButton.getComponent()).setVisible(editable);
+        ((org.vaadin.hene.popupbutton.PopupButton) actionsButton.getComponent()).setEnabled(actionsButton.getActions().size() > 0);
 
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
@@ -1239,7 +1247,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         Boolean applyDefault = false;
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         for (FilterEntity filter : filters) {
-            if (isTrue(filter.getIsDefault())) {
+            if (BooleanUtils.isTrue(filter.getIsDefault())) {
                 defaultId = filter.getId();
                 applyDefault = filter.getApplyDefault();
                 break;
@@ -1352,7 +1360,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                     //                        for (final SearchFolder existingFolder : folders) {
                     //                            if (ObjectUtils.equals(existingFolder.getName(), folder.getName())) {
                     //                                found = true;
-                    //                                App.getInstance().getWindowManager().showOptionDialog(
+                    //                                AppUI.getInstance().getWindowManager().showOptionDialog(
                     //                                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "dialogs.Confirmation"),
                     //                                        MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderConfirmUpdate"),
                     //                                        IFrame.MessageType.CONFIRMATION,
@@ -1386,13 +1394,13 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
 
         final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, false, folder, presentations, commitHandler);
-        window.addListener(new com.vaadin.ui.Window.CloseListener() {
+        window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                App.getInstance().getAppWindow().removeWindow(window);
+                App.getInstance().getAppUI().removeWindow(window);
             }
         });
-        App.getInstance().getAppWindow().addWindow(window);
+        App.getInstance().getAppUI().addWindow(window);
     }
 
     private String submintParameters() {

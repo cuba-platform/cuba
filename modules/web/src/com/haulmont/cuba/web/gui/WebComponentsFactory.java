@@ -32,16 +32,16 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(BoxLayout.VBOX, WebVBoxLayout.class);
         classes.put(GridLayout.NAME, WebGridLayout.class);
         classes.put(ScrollBoxLayout.NAME, WebScrollBoxLayout.class);
-        classes.put(ToggleBoxLayout.NAME, WebToggleBoxLayout.class);
-        classes.put(HtmlBoxLayout.NAME, WebHtmlBoxLayout.class);
-        classes.put(FlowBoxLayout.NAME, WebFlowBoxLayout.class);
+//        classes.put(ToggleBoxLayout.NAME, WebToggleBoxLayout.class);
+//        classes.put(HtmlBoxLayout.NAME, WebHtmlBoxLayout.class);
+//        classes.put(FlowBoxLayout.NAME, WebFlowBoxLayout.class);
 
         classes.put(Button.NAME, WebButton.class);
         classes.put(LinkButton.NAME, WebLinkButton.class);
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBoxLayout.NAME, WebGroupBox.class);
-        classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
+//        classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
         //Use resizable text area instead of text field
         classes.put(ResizableTextField.NAME, WebResizableTextField.class);
         classes.put(TextArea.NAME, WebTextArea.class);
@@ -52,28 +52,28 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(DateField.NAME, WebDateField.class);
         classes.put(TimeField.NAME, WebTimeField.class);
         classes.put(LookupField.NAME, WebLookupField.class);
-        classes.put(SearchField.NAME, WebSearchField.class);
+//        classes.put(SearchField.NAME, WebSearchField.class);
         classes.put(PickerField.NAME, WebPickerField.class);
         classes.put(LookupPickerField.NAME, WebLookupPickerField.class);
-        classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
+//        classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
         classes.put(OptionsGroup.NAME, WebOptionsGroup.class);
         classes.put(FileUploadField.NAME, WebFileUploadField.class);
         classes.put(FileMultiUploadField.NAME, WebFileMultiUploadField.class);
         classes.put(SplitPanel.NAME, WebSplitPanel.class);
         classes.put(Tree.NAME, WebTree.class);
         classes.put(TabSheet.NAME, WebTabSheet.class);
-        classes.put(Embedded.NAME, WebEmbedded.class);
+//        classes.put(Embedded.NAME, WebEmbedded.class);
         classes.put(Filter.NAME, WebFilter.class);
-        classes.put(AccessControl.NAME, WebAccessControl.class);
+//        classes.put(AccessControl.NAME, WebAccessControl.class);
         classes.put(ButtonsPanel.NAME, WebButtonsPanel.class);
-        classes.put(ActionsField.NAME, WebActionsField.class);
+//        classes.put(ActionsField.NAME, WebActionsField.class);
         classes.put(PopupButton.NAME, WebPopupButton.class);
 
         classes.put(FieldGroup.NAME, WebFieldGroup.class);
-        classes.put(TokenList.NAME, WebTokenList.class);
-        classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
-        classes.put(TwinColumn.NAME, WebTwinColumn.class);
-        classes.put(ProgressBar.NAME, WebProgressBar.class);
+//        classes.put(TokenList.NAME, WebTokenList.class);
+//        classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
+//        classes.put(TwinColumn.NAME, WebTwinColumn.class);
+//        classes.put(ProgressBar.NAME, WebProgressBar.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);
     }
 
@@ -98,9 +98,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         }
         try {
             return (T) componentClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

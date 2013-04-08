@@ -25,9 +25,9 @@ import java.util.Collection;
  * @version $Id$
  */
 public class WebSearchPickerField
-        extends WebSearchField
-        implements SearchPickerField {
-    private WebPickerField pickerField;
+        /*extends WebSearchField
+        implements SearchPickerField*/ {
+    /*private WebPickerField pickerField;
 
     public WebSearchPickerField() {
         super();
@@ -198,5 +198,5 @@ public class WebSearchPickerField
                 newValue = ((Entity) newValue).getId();
             super.setValue(newValue);
         }
-    }
+    }*/
 }

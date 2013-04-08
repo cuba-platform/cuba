@@ -2,11 +2,6 @@
  * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 23.11.2010 14:18:33
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.app.core.file;
 
@@ -14,33 +9,31 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.FileMultiUploadField;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 
 import java.util.*;
-import java.util.List;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public class MultiUploader extends AbstractEditor {
-
-    private static final long serialVersionUID = 8050367710436521429L;
 
     private FileMultiUploadField uploadField = null;
     private Button okBtn;
     private boolean needSave;
     private CollectionDatasource filesDs = null;
     private Table uploadsTable = null;
-    private List<FileDescriptor> files = new ArrayList<FileDescriptor>();
+    private List<FileDescriptor> files = new ArrayList<>();
 
-    private Map<FileDescriptor, UUID> descriptors = new HashMap<FileDescriptor, UUID>();
-
-    public MultiUploader(IFrame frame) {
-        super(frame);
-    }
+    private Map<FileDescriptor, UUID> descriptors = new HashMap<>();
 
     @Override
     public void init(Map<String, Object> params) {
@@ -77,17 +70,6 @@ public class MultiUploader extends AbstractEditor {
             @Override
             public void fileUploadStart(String fileName) {
                 okBtn.setEnabled(false);
-            }
-
-            @Override
-            public void errorNotify(String fileName, String message, int errorCode) {
-                if (errorCode == FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT) {
-                    String locMessage = MessageProvider.getMessage(getClass(), "fileExceedsSizeLimit") + ":" + fileName;
-                    MultiUploader.this.showNotification(locMessage, NotificationType.WARNING);
-                } else {
-                    String locMessage = MessageProvider.getMessage(getClass(), "fileUploadError") + ":" + fileName;
-                    MultiUploader.this.showNotification(locMessage, NotificationType.ERROR);
-                }
             }
         });
     }

@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
@@ -97,7 +96,7 @@ public class SettingsWindow extends AbstractWindow {
                             String selectedTheme = theme.getValue();
                             userSettingsTools.saveAppWindowTheme(selectedTheme);
                             // set cookie
-                            App.getInstance().setUserAppTheme(selectedTheme);
+//                            AppUI.getInstance().setUserAppTheme(selectedTheme);
                         }
                         AppWindow.Mode m = modeOptions.getValue() == msgTabbed ? AppWindow.Mode.TABBED : AppWindow.Mode.SINGLE;
                         userSettingsTools.saveAppWindowMode(m);

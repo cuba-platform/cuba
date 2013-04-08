@@ -13,7 +13,9 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebGridLayout;
+import com.vaadin.ui.Component;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 
@@ -105,7 +107,8 @@ public class ControlLoggerWindow extends AbstractWindow {
 
         fieldMap.put(loggerName, editComponents.getSecond());
 
-        ((WebGridLayout) loggersGrid).insertRow(1);
+        com.vaadin.ui.GridLayout vGrid = (com.vaadin.ui.GridLayout) WebComponentsHelper.unwrap(loggersGrid);
+        vGrid.insertRow(1);
         loggersGrid.add(editComponents.getFirst(), 0, 1);
         loggersGrid.add(editComponents.getSecond(), 1, 1);
     }

@@ -21,10 +21,13 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
@@ -46,6 +49,12 @@ import java.util.*;
  */
 public class WebWindowManager extends WindowManager {
 
+    public static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
+
+    protected App app;
+
+    protected final WebConfig webConfig;
+
     protected static class WindowData {
         protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<>();
         protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
@@ -53,8 +62,6 @@ public class WebWindowManager extends WindowManager {
         protected final Map<Window, Integer> windows = new HashMap<>();
         protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<>();
     }
-
-    protected App app;
 
     protected List<ShowStartupLayoutListener> showStartupLayoutListeners = new ArrayList<>();
 
@@ -70,10 +77,6 @@ public class WebWindowManager extends WindowManager {
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
     private ShortcutListener escapeShortcut = null;
-    
-    private WebConfig webConfig;
-
-    private Messages messages;
 
     public WebWindowManager(final App app) {
         this.app = app;
@@ -337,7 +340,8 @@ public class WebWindowManager extends WindowManager {
         if (escapeShortcut == null)
             escapeShortcut = createEscapeShortcut();
 
-        appWindow.getMainLayout().getWindow().addAction(escapeShortcut);
+//        vaadin7 actions
+//        appWindow.getMainLayout().getWindow().addAction(escapeShortcut);
     }
 
     private ShortcutListener createEscapeShortcut() {
@@ -577,7 +581,7 @@ public class WebWindowManager extends WindowManager {
             TabSheet.Tab tab = tabSheet.getTab(layout);
             tab.setCaption(formatTabCaption(caption, description));
         } else
-            appWindow.getMainLayout().requestRepaintAll();
+            appWindow.getMainLayout().markAsDirtyRecursive();
 
         return layout;
     }
@@ -587,7 +591,7 @@ public class WebWindowManager extends WindowManager {
         removeWindowsWithName(window.getId());
 
         final com.vaadin.ui.Window win = createDialogWindow(window);
-        win.setName(window.getId());
+        win.setId(window.getId());
         setDebugId(win, window.getId());
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
@@ -599,7 +603,7 @@ public class WebWindowManager extends WindowManager {
 
         win.setContent(outerLayout);
 
-        win.addListener(new com.vaadin.ui.Window.CloseListener() {
+        win.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 window.close(Window.CLOSE_ACTION_ID, true);
@@ -626,19 +630,19 @@ public class WebWindowManager extends WindowManager {
                 dialogParams.getResizable() == null;
 
         if (forciblyDialog && dialogParamsIsNull) {
-            outerLayout.setHeight(100, Sizeable.UNITS_PERCENTAGE);
-            win.setWidth(800, Sizeable.UNITS_PIXELS);
-            win.setHeight(500, Sizeable.UNITS_PIXELS);
+            outerLayout.setHeight(100, Sizeable.Unit.PERCENTAGE);
+            win.setWidth(800, Sizeable.Unit.PIXELS);
+            win.setHeight(500, Sizeable.Unit.PIXELS);
             win.setResizable(true);
             window.setHeight("100%");
         } else {
             if (dialogParams.getWidth() != null)
-                win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.UNITS_PIXELS);
+                win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.Unit.PIXELS);
             else
-                win.setWidth(600, Sizeable.UNITS_PIXELS);
+                win.setWidth(600, Sizeable.Unit.PIXELS);
 
             if (dialogParams.getHeight() != null) {
-                win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
+                win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.Unit.PIXELS);
                 win.getContent().setHeight("100%");
             }
 
@@ -652,7 +656,7 @@ public class WebWindowManager extends WindowManager {
         }
         win.setModal(true);
 
-        App.getInstance().getAppWindow().addWindow(win);
+        AppUI.getCurrent().addWindow(win);
         win.center();
 
         return win;
@@ -749,13 +753,12 @@ public class WebWindowManager extends WindowManager {
         disableSavingScreenHistory = false;
         getWindowOpenMode().clear();
         getCurrentWindowData().windows.clear();
-        Collection windows = App.getInstance().getWindows();
-        for (Object win : new ArrayList<Object>(windows)) {
-            if (!win.equals(App.getInstance().getAppWindow())) {
-                App.getInstance().removeWindow((com.vaadin.ui.Window) win);
-                if (win instanceof AppWindow)
-                    appWindowMap.remove(win);
-            }
+
+        for (com.vaadin.ui.Window win : new ArrayList<>(AppUI.getCurrent().getWindows())) {
+            AppUI.getCurrent().removeWindow(win);
+            Component currentView = AppUI.getCurrent().getContent();
+            if (currentView instanceof AppWindow)
+                appWindowMap.remove(currentView);
         }
     }
 
@@ -769,7 +772,7 @@ public class WebWindowManager extends WindowManager {
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
-                App.getInstance().getAppWindow().removeWindow(win);
+                AppUI.getCurrent().removeWindow(win);
                 fireListeners(window, getTabs().size() != 0);
                 break;
             }
@@ -777,7 +780,7 @@ public class WebWindowManager extends WindowManager {
                 final Layout layout = (Layout) openMode.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
 
-                ActionsTabSheet webTabsheet = (ActionsTabSheet) appWindow.getTabSheet();
+                CubaTabSheet webTabsheet = (CubaTabSheet) appWindow.getTabSheet();
 
                 if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
                     webTabsheet.silentCloseTabAndSelectPrevious(layout);
@@ -893,16 +896,18 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        app.getAppWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+        Notification notification = new Notification(caption, WebComponentsHelper.convertNotificationType(type));
+        if (type.equals(IFrame.NotificationType.HUMANIZED))
+            notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
+        notification.show(Page.getCurrent());
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        com.vaadin.ui.Window.Notification notify =
-                new com.vaadin.ui.Window.Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
-        if(type.equals(IFrame.NotificationType.HUMANIZED))
-            notify.setDelayMsec(3000);
-        app.getAppWindow().showNotification(notify);
+        Notification notification = new Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
+        if (type.equals(IFrame.NotificationType.HUMANIZED))
+            notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
+        notification.show(Page.getCurrent());
     }
 
     @Override
@@ -914,13 +919,13 @@ public class WebWindowManager extends WindowManager {
         removeWindowsWithName("cuba-message-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
-        window.setName("cuba-message-dialog");
+        window.setId("cuba-message-dialog");
         setDebugId(window, "cuba-message-dialog");
 
-        window.addListener(new com.vaadin.ui.Window.CloseListener() {
+        window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                App.getInstance().getAppWindow().removeWindow(window);
+                AppUI.getCurrent().removeWindow(window);
             }
         });
 
@@ -939,11 +944,11 @@ public class WebWindowManager extends WindowManager {
         }
         getDialogParams().reset();
 
-        window.setWidth(width, Sizeable.UNITS_PIXELS);
+        window.setWidth(width, Sizeable.Unit.PIXELS);
         window.setResizable(false);
         window.setModal(true);
 
-        App.getInstance().getAppWindow().addWindow(window);
+        AppUI.getCurrent().addWindow(window);
         window.center();
     }
 
@@ -957,18 +962,18 @@ public class WebWindowManager extends WindowManager {
         removeWindowsWithName("cuba-option-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
-        window.setName("cuba-option-dialog");
+        window.setId("cuba-option-dialog");
         setDebugId(window, "cuba-option-dialog");
         window.setClosable(false);
 
-        window.addListener(new com.vaadin.ui.Window.CloseListener() {
+        window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                app.getAppWindow().removeWindow(window);
+                app.getAppUI().removeWindow(window);
             }
         });
 
-        Label messageBox = new Label(message, Label.CONTENT_XHTML);
+        Label messageBox = new Label(message, ContentMode.HTML);
 
         float width;
         if (getDialogParams().getWidth() != null) {
@@ -978,7 +983,7 @@ public class WebWindowManager extends WindowManager {
         }
         getDialogParams().reset();
 
-        window.setWidth(width, Sizeable.UNITS_PIXELS);
+        window.setWidth(width, Sizeable.Unit.PIXELS);
         window.setResizable(false);
         window.setModal(true);
 
@@ -988,7 +993,7 @@ public class WebWindowManager extends WindowManager {
         window.setContent(layout);
 
         HorizontalLayout actionsBar = new HorizontalLayout();
-        actionsBar.setHeight(-1, Sizeable.UNITS_PIXELS);
+        actionsBar.setHeight(-1, Sizeable.Unit.PIXELS);
 
         HorizontalLayout buttonsContainer = new HorizontalLayout();
         buttonsContainer.setSpacing(true);
@@ -996,13 +1001,13 @@ public class WebWindowManager extends WindowManager {
         for (final Action action : actions) {
             final Button button = WebComponentsHelper.createButton();
             button.setCaption(action.getCaption());
-            button.addListener(new Button.ClickListener() {
+            button.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
                     AppWindow appWindow = app.getAppWindow();
                     if (appWindow != null) // possible appWindow is null after logout
-                        appWindow.removeWindow(window);
+                        app.getAppUI().removeWindow(window);
                 }
             });
 
@@ -1021,7 +1026,7 @@ public class WebWindowManager extends WindowManager {
             }
 
             if (action.getIcon() != null) {
-                button.setIcon(new ThemeResource(action.getIcon()));
+                button.setIcon(new VersionedThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
             setDebugId(button, action.getId());
@@ -1039,20 +1044,18 @@ public class WebWindowManager extends WindowManager {
         layout.setExpandRatio(messageBox, 1);
         layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
-        App.getInstance().getAppWindow().addWindow(window);
+        AppUI.getCurrent().addWindow(window);
         window.center();
     }
 
     private void removeWindowsWithName(String name) {
-        final com.vaadin.ui.Window mainWindow = app.getAppWindow();
-
-        for (com.vaadin.ui.Window childWindow : new ArrayList<>(mainWindow.getChildWindows())) {
-            if (name.equals(childWindow.getName())) {
+        for (com.vaadin.ui.Window childWindow : new ArrayList<>(app.getAppUI().getWindows())) {
+            if (name.equals(childWindow.getId())) {
                 String msg = new StrBuilder("Another " + name + " window exists, removing it\n")
                         //.appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")
                         .toString();
                 log.warn(msg);
-                mainWindow.removeWindow(childWindow);
+                app.getAppUI().removeWindow(childWindow);
                 Set<Map.Entry<Window, WindowOpenMode>> openModeSet = getWindowOpenMode().entrySet();
                 for (Map.Entry<Window, WindowOpenMode> entry : openModeSet) {
                     WindowOpenMode openMode = entry.getValue();
@@ -1073,7 +1076,7 @@ public class WebWindowManager extends WindowManager {
 
         if (viewMode == AppWindow.Mode.SINGLE) {
             final Layout mainLayout = appWindow.getMainLayout();
-            layout = (Layout) mainLayout.getComponentIterator().next();
+            layout = (Layout) mainLayout.iterator().next();
         } else {
             layout = (Layout) appWindow.getTabSheet().getSelectedTab();
         }
@@ -1136,16 +1139,18 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
-        if (OpenType.NEW_TAB.equals(openType)) {
+    protected void checkCanOpenWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
+        if (WindowManager.OpenType.NEW_TAB.equals(openType)) {
             if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
                 //window already opened
             } else {
                 int maxCount = webConfig.getMaxTabCount();
                 if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
-                    app.getAppWindow().showNotification(
+                    new Notification(
                             messages.formatMessage(AppConfig.getMessagesPack(), "tooManyOpenTabs.message", maxCount),
-                            com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
+                            Notification.Type.WARNING_MESSAGE
+                    ).show(Page.getCurrent());
+
                     throw new SilentException();
                 }
             }
@@ -1155,9 +1160,9 @@ public class WebWindowManager extends WindowManager {
     public void setDebugId(Component component, String id) {
         if (app.isTestModeRequest()) {
             if (webConfig.getAllowIdSuffix()) {
-                component.setDebugId(generateDebugId(id));
+                component.setId(generateDebugId(id));
             } else {
-                component.setDebugId(id);
+                component.setId(id);
             }
         }
     }

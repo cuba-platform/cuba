@@ -1,0 +1,289 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-tabsheet($primaryStyleName: v-tabsheet) {
+  .#{$primaryStyleName} {
+
+    .#{$primaryStyleName}-spacertd {
+      width: 100%;
+      div {
+        height: 28px;
+        border-top: 0;
+        background: transparent;
+        border-left: 0;
+      }
+    }
+
+    .#{$primaryStyleName}-hidetabs .#{$primaryStyleName}-tabcontainer {
+      display: none;
+    }
+
+    .#{$primaryStyleName}-hidetabs .v-tabsheet-content {
+      border-top: 1px solid #b5babb;
+    }
+
+    .#{$primaryStyleName}-scroller {
+      white-space: nowrap;
+      text-align: right;
+      margin-top: -29px;
+      height: 29px;
+    }
+
+    .#{$primaryStyleName}-scrollerPrev,
+    .#{$primaryStyleName}-scrollerNext {
+      border: none;
+      width: 16px;
+      height: 16px;
+      opacity: 0.9999;
+      margin-top: -1px;
+      background: transparent;
+      background-repeat: no-repeat;
+    }
+
+    .#{$primaryStyleName}-scrollerPrev-disabled,
+    .#{$primaryStyleName}-scrollerNext-disabled {
+      border: none;
+      width: 16px;
+      height: 16px;
+      margin-top: -1px;
+      opacity: 0.9999;
+      color: #fff;
+      background: transparent none;
+    }
+
+    .#{$primaryStyleName}-scrollerNext,
+    .#{$primaryStyleName}-scrollerNext:hover {
+      background-image: url(sprites/next-tab.png); /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-scrollerPrev,
+    .#{$primaryStyleName}-scrollerPrev:hover {
+      background-image: url(sprites/prev-tab.png); /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-tabs {
+      empty-cells: hide;
+      border-collapse: collapse;
+      margin: 0;
+      padding:0;
+      border:0;
+      height: 29px;
+      width: 100%;
+      overflow:hidden;
+      background: url(images/top-tabsheet-bg.png) repeat-x bottom;
+
+      .v-caption {
+        white-space: nowrap;
+        // for IE (does not inherit)
+        span {
+          white-space: nowrap;
+        }
+      }
+
+      td {
+        margin: 0;
+        padding: 0;
+        vertical-align: bottom;
+      }
+
+      .#{$primaryStyleName}-tabitem {
+        border: 0;
+        height: 26px;
+        padding-top: 3px;
+        margin-top: 0;
+        line-height: 18px;
+        cursor: pointer;
+
+        .v-caption {
+          height: 20px;
+          padding: 0 6px 5px 12px;
+        }
+      }
+
+      .#{$primaryStyleName}-tabitemcell {
+        padding-left: 4px;
+        border-bottom: 0;
+        margin: 10px;
+      }
+
+      .#{$primaryStyleName}-tabitem .v-caption .v-captiontext,
+      .#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
+        font-family: $theme_fonts;
+        font-size: 12px;
+        font-weight: normal;
+      }
+
+      .#{$primaryStyleName}-tabitem .v-caption .v-captiontext {
+        color: #fff;
+      }
+
+      .#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
+        color: #1E3146;
+      }
+
+      .#{$primaryStyleName}-tabitem .v-disabled {
+        color: #fff;
+      }
+
+      .#{$primaryStyleName}-tabitem {
+        .#{$primaryStyleName}-caption-close {
+          cursor: pointer;
+          width: 12px;
+          height: 12px;
+          background: transparent;
+          background-position: left center;
+          background-repeat: no-repeat;
+          background-image: url(sprites/tab-remove-inactive.png);  /** sprite-ref: components; */
+          text-indent: 100px;
+          overflow: hidden;
+          font-size: 20px;
+          float: right;
+          margin: 4px -4px 0 0;
+        }
+
+        .#{$primaryStyleName}-caption-close:hover {
+          background-image: url(sprites/tab-remove-hover.png);  /** sprite-ref: components; */
+        }
+      }
+
+      .#{$primaryStyleName}-tabitem-selected {
+        .v-caption {
+          background: none;
+          margin: 0 -1px 0 0;
+          padding: 2px 4px 5px 2px;
+          overflow: visible;
+        }
+
+        .#{$primaryStyleName}-caption-close {
+          background-image: url(sprites/tab-remove-active.png); /** sprite-ref: components; */
+        }
+      }
+
+      .#{$primaryStyleName}-tabitem-selected-first,
+      .#{$primaryStyleName}-tabitem-selected {
+        border-top: 1px solid $theme_tabsheetSelectedBorderColor;
+        border-left: 1px solid $theme_tabsheetSelectedBorderColor;
+        border-right: 1px solid $theme_tabsheetSelectedBorderColor;
+        background: url(images/main-tabitem-bg.png) repeat-x;
+        border-bottom: 0;
+        height: 28px;
+        cursor: default;
+        padding: 3px 6px 0 6px;
+      }
+    }
+
+    .#{$primaryStyleName}-deco {
+      height: 1px;
+      background: none;
+      margin-left: 0;
+    }
+
+    .#{$primaryStyleName}:before {
+      display: block;
+      content: "";
+      width: 9px;
+      height: 9px;
+      margin-left: -9px;
+      background: none;
+    }
+
+    .#{$primaryStyleName}-loading .#{$primaryStyleName}-tabitem-selected .v-captiontext {
+      background: transparent;
+      margin-left: -5px;
+      padding-left: 5px;
+      margin-right: -20px;
+      padding-right: 20px;
+      margin-top: -2px;
+      padding-top: 2px;
+    }
+
+    .#{$primaryStyleName}-content {
+      background: #fff url(images/main-tabpanel-bg.png) repeat-x;
+      border: none;
+      position: relative;
+
+      .#{$primaryStyleName} {
+        // inner tabsheet
+        // Second level
+
+        .#{$primaryStyleName}-spacertd div {
+          border-bottom: 0;
+        }
+
+        .#{$primaryStyleName}-tabs {
+          background: transparent url(images/middle-tabsheet-bg.png) repeat-x bottom;
+
+          .#{$primaryStyleName}-tabitem {
+            border-left: 1px solid #C9D7E9;
+            // todo $theme color
+            height: 14px;
+            line-height: 14px;
+            margin-bottom: 9px;
+            padding-top: 0;
+            padding-left: 5px;
+
+            .v-caption {
+              height: 20px;
+              padding: 0 6px 5px 4px;
+
+              .v-captiontext {
+                color: #1E3146;
+              }
+            }
+          }
+
+          .#{$primaryStyleName}-tabitem-selected {
+            height: 25px;
+            line-height: 14px;
+            margin-bottom: 0;
+            padding-left: 6px;
+            padding-top: 3px;
+            border-bottom: 0;
+            background: #F5F7F9;   // todo $theme color
+            border-color: #B4D0E4; // todo $theme color
+          }
+
+          .#{$primaryStyleName}-tabitem-selected-first {
+            border-bottom: 0;
+            background: #F5F7F9;   // todo $theme color
+            border-color: #B4D0E4; // todo $theme color
+          }
+
+          .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem {
+            border-left: 1px transparent;
+            padding-left: 0;
+          }
+
+          .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem-selected {
+            border-left: 1px solid #C9D7E9;  // todo $theme color
+            padding-left: 6px;
+          }
+
+          .#{$primaryStyleName}-selected,
+          .#{$primaryStyleName}-selected-first {
+            border: 0;
+            padding-left: 0;
+          }
+
+          // after selected tab
+          // hide separator
+          .#{$primaryStyleName}-tabitemcell-selected + .#{$primaryStyleName}-tabitemcell .#{$primaryStyleName}-tabitem {
+            border-left: 1px transparent;
+            padding-left: 0;
+          }
+        }
+
+        .#{$primaryStyleName}-content {
+          border: 1px solid #B4D0E4; // todo $theme color
+          border-top-style: none;
+          background: #F5F7F9;
+        }
+      }
+    }
+  }
+}

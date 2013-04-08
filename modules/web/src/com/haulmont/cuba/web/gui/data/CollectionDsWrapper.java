@@ -80,12 +80,11 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         if (ignoreListeners) return;
         ignoreListeners = true;
 
-        for (ItemSetChangeListener listener : itemSetChangeListeners) {
-            listener.containerItemSetChange(new ItemSetChangeEvent() {
-                public Container getContainer() {
-                    return CollectionDsWrapper.this;
-                }
-            });
+        if (!itemSetChangeListeners.isEmpty()) {
+            StaticItemSetChangeEvent event = new StaticItemSetChangeEvent(this);
+            for (ItemSetChangeListener listener : itemSetChangeListeners) {
+                listener.containerItemSetChange(event);
+            }
         }
     }
 
@@ -178,13 +177,23 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     @Override
-    public void addListener(ItemSetChangeListener listener) {
+    public void addItemSetChangeListener(ItemSetChangeListener listener) {
         this.itemSetChangeListeners.add(listener);
     }
 
     @Override
-    public void removeListener(ItemSetChangeListener listener) {
+    public void addListener(ItemSetChangeListener listener) {
+        addItemSetChangeListener(listener);
+    }
+
+    @Override
+    public void removeItemSetChangeListener(ItemSetChangeListener listener) {
         this.itemSetChangeListeners.remove(listener);
+    }
+
+    @Override
+    public void removeListener(ItemSetChangeListener listener) {
+        removeItemSetChangeListener(listener);
     }
 
     protected void checkMaxFetchUI(CollectionDatasource ds) {

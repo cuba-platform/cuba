@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-cuba-grouptable($primaryStyleName : cuba-grouptable) {
+  .#{$primaryStyleName} {
+    .#{$primaryStyleName}-group-cell {
+      width: 9px;
+      height: 9px;
+      margin-top: 4px;
+      margin-right: 2px;
+      background: transparent;
+      background-repeat: no-repeat;
+      background-position: center left;
+      background-image: url(sprites/expand.png); /** sprite-ref: components; */
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .v-expanded .#{$primaryStyleName}-group-cell {
+      background-image: url(sprites/collapse.png); /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-float {
+      display: inline-block;
+    }
+  }
+}

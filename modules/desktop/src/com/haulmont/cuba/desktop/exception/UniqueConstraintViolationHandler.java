@@ -20,9 +20,8 @@ import java.util.regex.Pattern;
  * Handles database unique constraint violations. Determines the exception type by searching a special marker string
  * in the messages of all exceptions in the chain.
  *
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class UniqueConstraintViolationHandler implements ExceptionHandler {
 

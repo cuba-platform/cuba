@@ -29,7 +29,7 @@ public class AttributeEditor {
     }
 
     public AttributeEditor(IFrame frame, String type, Object value) {
-        this.type = type;
+        /*this.type = type;
         if (AttributeHelper.isBoolean(type)) {
             checkBox = new WebCheckBox();
             checkBox.setFrame(frame);
@@ -48,7 +48,7 @@ public class AttributeEditor {
             if (value != null) {
                 textField.setValue(value.toString());
             }
-        }
+        }*/
     }
 
     public Component getComponent() {

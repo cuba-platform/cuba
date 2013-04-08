@@ -13,16 +13,15 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.gwt.client.ui.VHorizontalLayout;
-import com.vaadin.ui.ClientWidget;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+//import com.vaadin.terminal.gwt.client.ui.VHorizontalLayout;
+//import com.vaadin.ui.ClientWidget;
+
 @SuppressWarnings("serial")
-@ClientWidget(VHorizontalLayout.class)
+//@ClientWidget(VHorizontalLayout.class)
 public class WebButtonsPanel extends WebHBoxLayout
         implements ButtonsPanel {
 
@@ -45,7 +44,7 @@ public class WebButtonsPanel extends WebHBoxLayout
     @Override
     public Collection<com.haulmont.cuba.gui.components.Button> getButtons() {
         final Collection<Component> components = getComponents();
-        final Collection<com.haulmont.cuba.gui.components.Button> buttons = new ArrayList<Button>(components.size());
+        final Collection<com.haulmont.cuba.gui.components.Button> buttons = new ArrayList<>(components.size());
         for (final Component component : components) {
             if (component instanceof Button)
                 buttons.add((Button) component);
@@ -62,9 +61,9 @@ public class WebButtonsPanel extends WebHBoxLayout
             return null;
     }
 
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        target.addAttribute("horizontal", true);
-        super.paintContent(target);
-    }
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        target.addAttribute("horizontal", true);
+//        super.paintContent(target);
+//    }
 }

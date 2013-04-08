@@ -11,13 +11,11 @@ import com.haulmont.cuba.gui.app.core.credits.CreditsItem;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LinkButton;
-import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.ExternalResource;
+import com.vaadin.server.ExternalResource;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class CreditsFrameCompanion implements CreditsFrame.Companion {
 
@@ -26,7 +24,7 @@ public class CreditsFrameCompanion implements CreditsFrame.Companion {
         button.setAction(new AbstractAction("webpage") {
             @Override
             public void actionPerform(Component component) {
-                App.getInstance().getAppWindow().open(new ExternalResource(item.getWebPage()), "_blank");
+//                AppUI.getInstance().getAppWindow().open(new ExternalResource(item.getWebPage()), "_blank");
             }
         });
     }

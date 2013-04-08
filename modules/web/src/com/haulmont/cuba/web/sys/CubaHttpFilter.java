@@ -7,11 +7,10 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.auth.CubaAuthProvider;
-import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
+//import com.vaadin.Application;
+//import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +93,7 @@ public class CubaHttpFilter implements Filter {
     }
 
     private boolean checkApplicationSession(HttpServletRequest request) {
-        if (request.getSession() == null)
+        /*if (request.getSession() == null)
             return false;
 
         final HttpSession session = request.getSession(true);
@@ -118,12 +117,12 @@ public class CubaHttpFilter implements Filter {
                 servletPath += "/";
 
             if (servletPath.equals(appPath)) {
-                if (app.isRunning() && (app instanceof App)) {
-                    if (((App) app).getConnection().isConnected())
+                if (app.isRunning() && (app instanceof AppUI)) {
+                    if (((AppUI) app).getConnection().isConnected())
                         return true;
                 }
             }
-        }
+        }*/
 
         return false;
     }

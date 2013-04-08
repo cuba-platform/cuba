@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 23.06.2010 18:13:08
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui;
 
@@ -28,11 +23,11 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
-import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
+import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -42,6 +37,10 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
     private Security security = AppBeans.get(Security.NAME);
@@ -123,17 +122,16 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                                     @Override
                                     public void validate(Object value) throws InvalidValueException {
                                         if (!isValid(value)) {
-                                            field.requestRepaint();
+                                            field.markAsDirty();
                                             throw new InvalidValueException("Unable to parse value: " + value);
                                         }
                                     }
 
-                                    @Override
                                     public boolean isValid(Object value) {
                                         Datatype datatype = range.asDatatype();
                                         if (value instanceof String && datatype != null) {
                                             try {
-                                                datatype.parse((String) value, UserSessionProvider.getLocale());
+                                                datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
                                             } catch (ParseException e) {
                                                 return false;
                                             }
@@ -242,7 +240,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             if (format != null) {
                 ((WebDateField) cubaField).setDateFormat(format);
             }
-        } else if (field instanceof Select) {
+        } else if (field instanceof ComboBox) {
             field.setWidth("100%");
         } else if (field instanceof WebPickerField) {
             field.setWidth("100%");
@@ -263,6 +261,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
                 if (field instanceof com.vaadin.ui.AbstractField) {
                     field.addValidator(new Validator() {
+                        @Override
                         public void validate(Object value) throws InvalidValueException {
                             if ((!field.isRequired() && value == null))
                                 return;
@@ -295,10 +294,11 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         if (!StringUtils.isEmpty(cols)) {
             field.setColumns(Integer.valueOf(cols));
         }
-        final String rows = xmlDescriptor.attributeValue("rows");
-        if (!StringUtils.isEmpty(rows)) {
-            field.setRows(Integer.valueOf(rows));
-        }
+//        vaadin7
+//        final String rows = xmlDescriptor.attributeValue("rows");
+//        if (!StringUtils.isEmpty(rows)) {
+//            field.setRows(Integer.valueOf(rows));
+//        }
         final String maxLength = xmlDescriptor.attributeValue("maxLength");
         if (!StringUtils.isEmpty(maxLength)) {
             field.setMaxLength(Integer.valueOf(maxLength));
@@ -311,7 +311,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     }
 
     protected void initDateField(com.vaadin.ui.Field field, MetaProperty metaProperty, Element xmlDescriptor) {
-        WebDateField cubaField = ((DateFieldWrapper) field).getCubaField();
+        WebDateField cubaField = ((CubaDateFieldWrapper) field).getCubaField();
         TemporalType tt = null;
         if (metaProperty != null) {
             if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
@@ -334,26 +334,24 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     dateFormat = "msg://dateTimeFormat";
                 }
             }
-
         } else if (tt == TemporalType.DATE) {
             cubaField.setResolution(com.haulmont.cuba.gui.components.DateField.Resolution.DAY);
         }
 
+        Messages messages = AppBeans.get(Messages.class);
+
         if (!StringUtils.isEmpty(dateFormat)) {
             if (dateFormat.startsWith("msg://")) {
-                dateFormat = MessageProvider.getMessage(
+                dateFormat = messages.getMessage(
                         AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
             }
             cubaField.setDateFormat(dateFormat);
         } else {
             String formatStr;
-            if (tt == TemporalType.DATE) {
-                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                        "dateFormat");
-            } else {
-                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                        "dateTimeFormat");
-            }
+            if (tt == TemporalType.DATE)
+                formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+            else
+                formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
             cubaField.setDateFormat(formatStr);
         }
     }

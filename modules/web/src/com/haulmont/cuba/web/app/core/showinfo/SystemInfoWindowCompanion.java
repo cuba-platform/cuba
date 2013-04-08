@@ -17,10 +17,10 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
     @Override
     public void initInfoTable(Table infoTable) {
-        com.haulmont.cuba.web.toolkit.ui.Table webTable =
-                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(infoTable);
-        webTable.setTextSelectionEnabled(true);
-        webTable.setColumnReorderingAllowed(false);
-        webTable.setSortDisabled(true);
+//        com.haulmont.cuba.web.toolkit.ui.Table webTable =
+//                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(infoTable);
+//        webTable.setTextSelectionEnabled(true);
+//        webTable.setColumnReorderingAllowed(false);
+//        webTable.setSortDisabled(true);
     }
 }

@@ -2,20 +2,12 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.10.2009 15:51:19
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -26,34 +18,37 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Map;
 
-public class FileEditor extends AbstractEditor {
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class FileEditor extends AbstractEditor<FileDescriptor> {
 
     @Inject
-    private Datasource<FileDescriptor> fileDs;
+    protected Datasource<FileDescriptor> fileDs;
 
     @Resource(name = "windowActions.windowCommit")
-    private Button okBtn;
+    protected Button okBtn;
 
     @Inject
-    private TextField nameField;
+    protected TextField nameField;
 
     @Inject
-    private Label extLabel;
+    protected Label extLabel;
 
     @Inject
-    private Label sizeLabel;
+    protected Label sizeLabel;
 
     @Inject
-    private Label createDateLabel;
+    protected Label createDateLabel;
 
     @Inject
-    private FileUploadField uploadField;
+    protected FileUploadField uploadField;
 
-    private boolean needSave;
+    protected boolean needSave;
 
-    public FileEditor(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected TimeSource timeSource;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -101,15 +96,16 @@ public class FileEditor extends AbstractEditor {
     private class FileUploadListener extends FileUploadField.ListenerAdapter {
         @Override
         public void uploadSucceeded(Event event) {
-            nameField.setValue(uploadField.getFileName());
-            extLabel.setValue(getFileExt(uploadField.getFileName()));
+            getItem().setName(uploadField.getFileName());
+            getItem().setCreateDate(timeSource.currentTimestamp());
+            getItem().setExtension(getFileExt(uploadField.getFileName()));
 
             FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             File file = fileUploading.getFile(uploadField.getFileId());
             Integer size = (int) file.length();
-            sizeLabel.setValue(size);
 
-            createDateLabel.setValue(TimeProvider.currentTimestamp());
+            getItem().setSize(size);
+
             okBtn.setEnabled(true);
 
             needSave = true;

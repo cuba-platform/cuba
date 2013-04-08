@@ -12,9 +12,8 @@ import org.dom4j.Element;
 /**
  * Web-client implementation of the grouping condition.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class GroupCondition extends AbstractGroupCondition<Param> {
 

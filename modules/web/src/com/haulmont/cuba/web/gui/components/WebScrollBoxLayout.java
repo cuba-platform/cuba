@@ -9,23 +9,18 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
-import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
-import com.vaadin.terminal.Sizeable;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayout {
-
-    private static final long serialVersionUID = 2724785666636087457L;
+public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout, Component.Wrapper {
 
     private String id;
     protected List<Component> components = new ArrayList<>();
@@ -36,12 +31,18 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     private IFrame frame;
 
     public WebScrollBoxLayout() {
-        ((AbstractOrderedLayout) getContent()).setMargin(false);
-        setScrollable(true);
+        component = new Panel();
+        component.setContent(new VerticalLayout());
+
+        getContent().setMargin(false);
+    }
+
+    private AbstractOrderedLayout getContent() {
+        return (AbstractOrderedLayout) component.getContent();
     }
 
     @Override
-    public void add(Component component) {
+    public void add(Component childComponent) {
         AbstractOrderedLayout newContent = null;
         if (orientation == Orientation.VERTICAL && !(getContent() instanceof VerticalLayout))
             newContent = new VerticalLayout();
@@ -49,15 +50,15 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
             newContent = new HorizontalLayout();
 
         if (newContent != null) {
-            newContent.setMargin(((AbstractOrderedLayout) getContent()).getMargin());
-            newContent.setSpacing(((AbstractOrderedLayout) getContent()).isSpacing());
-            setContent(newContent);
+            newContent.setMargin((getContent()).getMargin());
+            newContent.setSpacing((getContent()).isSpacing());
+            component.setContent(newContent);
 
             applyScrollBarsPolicy(scrollBarPolicy);
         }
 
-        getContent().addComponent(WebComponentsHelper.getComposition(component));
-        components.add(component);
+        getContent().addComponent(WebComponentsHelper.getComposition(childComponent));
+        components.add(childComponent);
     }
 
     @Override
@@ -78,10 +79,11 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
 
     @Override
     public void requestFocus() {
-        if (getComponentIterator().hasNext()) {
-            com.vaadin.ui.Component component = getComponentIterator().next();
-            if (component instanceof Focusable) {
-                ((Focusable) component).focus();
+        Iterator<com.vaadin.ui.Component> componentIterator = getContent().iterator();
+        if (componentIterator.hasNext()) {
+            com.vaadin.ui.Component childComponent = componentIterator.next();
+            if (childComponent instanceof com.vaadin.ui.Component.Focusable) {
+                ((com.vaadin.ui.Component.Focusable) childComponent).focus();
             }
         }
     }
@@ -122,9 +124,9 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.vaadin.ui.Component component = getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this, WebComponentsHelper.convertAlignment(alignment));
+        final com.vaadin.ui.Component parentComponent = component.getParent();
+        if (parentComponent instanceof Layout.AlignmentHandler) {
+            ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component, WebComponentsHelper.convertAlignment(alignment));
         }
     }
 
@@ -170,13 +172,13 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     private void applyScrollBarsPolicy(ScrollBarPolicy scrollBarPolicy) {
         switch (scrollBarPolicy) {
             case VERTICAL:
-                getContent().setHeight(SIZE_UNDEFINED, Sizeable.UNITS_PIXELS);
-                getContent().setWidth(100, Sizeable.UNITS_PERCENTAGE);
+                getContent().setHeight(Sizeable.SIZE_UNDEFINED, Sizeable.Unit.PIXELS);
+                getContent().setWidth(100, Sizeable.Unit.PERCENTAGE);
                 break;
 
             case HORIZONTAL:
-                getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
-                getContent().setWidth(SIZE_UNDEFINED, Sizeable.UNITS_PIXELS);
+                getContent().setHeight(100, Sizeable.Unit.PERCENTAGE);
+                getContent().setWidth(Sizeable.SIZE_UNDEFINED, Sizeable.Unit.PIXELS);
                 break;
 
             case BOTH:
@@ -191,16 +193,16 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
 
     @Override
     public void setMargin(boolean enable) {
-        ((AbstractOrderedLayout) getContent()).setMargin(enable);
+        getContent().setMargin(enable);
     }
 
     @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
-        ((AbstractOrderedLayout) getContent()).setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
+        getContent().setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
     }
 
     @Override
     public void setSpacing(boolean enabled) {
-        ((AbstractOrderedLayout) getContent()).setSpacing(enabled);
+        getContent().setSpacing(enabled);
     }
 }

@@ -28,7 +28,7 @@ import java.util.Map;
 public class AppliedFilter {
 
     private FilterEntity filterEntity;
-    private LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+    private LinkedHashMap<String, String> params = new LinkedHashMap<>();
 
     protected Messages messages = AppBeans.get(Messages.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
@@ -99,4 +99,3 @@ public class AppliedFilter {
         return result;
     }
 }
-

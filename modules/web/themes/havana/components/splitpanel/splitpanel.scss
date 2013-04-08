@@ -1,0 +1,72 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-splitpanel($primaryStyleName: v-splitpanel) {
+  .#{$primaryStyleName}-horizontal, .#{$primaryStyleName}-vertical {
+    overflow: hidden;
+  }
+
+  .#{$primaryStyleName}-horizontal {
+    .#{$primaryStyleName}-hsplitter {
+      width: 4px;
+
+      div {
+        width: 4px;
+        font-size: 1px; /* for IE6 */
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: $theme_splitPanelSplitterColor url(images/ruler-vertical.png) center no-repeat;
+        cursor: e-resize;
+        margin: 0 0;
+      }
+    }
+  }
+
+  .#{$primaryStyleName}-vertical {
+    .#{$primaryStyleName}-vsplitter {
+      height: 10px;
+
+      div {
+        height: 6px;
+        background: $theme_splitPanelSplitterColor url(images/ruler-horizontal.png) center no-repeat;
+        border: 0;
+        cursor: n-resize;
+        margin: 0;
+      }
+    }
+  }
+
+  /* IE specific styles */
+
+  * html .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-hsplitter div {
+    height: 99%;
+  }
+
+  * html .#{$primaryStyleName}-vertical .#{$primaryStyleName}-vsplitter {
+    height: 10px;
+  }
+
+  * html .#{$primaryStyleName}-vertical .#{$primaryStyleName}-vsplitter div {
+    margin: 0;
+  }
+
+  /* Webkit fix */
+
+  .v-webkit .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-first-container,
+  .v-webkit .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-second-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .v-webkit .#{$primaryStyleName}-vertical .#{$primaryStyleName}-first-container,
+  .v-webkit .#{$primaryStyleName}-vertical .#{$primaryStyleName}-second-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}

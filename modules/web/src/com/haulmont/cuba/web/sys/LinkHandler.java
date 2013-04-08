@@ -5,38 +5,38 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserSubstitution;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
-import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
-import com.haulmont.cuba.web.exception.AccessDeniedHandler;
-import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
-import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import com.haulmont.cuba.core.app.DataService;
+//import com.haulmont.cuba.core.entity.Entity;
+//import com.haulmont.cuba.core.global.*;
+//import com.haulmont.cuba.gui.NoSuchScreenException;
+//import com.haulmont.cuba.gui.WindowManager;
+//import com.haulmont.cuba.gui.components.Action;
+//import com.haulmont.cuba.gui.components.Component;
+//import com.haulmont.cuba.gui.components.DialogAction;
+//import com.haulmont.cuba.gui.components.IFrame;
+//import com.haulmont.cuba.gui.config.WindowConfig;
+//import com.haulmont.cuba.gui.config.WindowInfo;
+//import com.haulmont.cuba.security.entity.User;
+//import com.haulmont.cuba.security.entity.UserSubstitution;
+//import com.haulmont.cuba.security.global.UserSession;
+//import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
+//import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
+//import com.haulmont.cuba.web.exception.AccessDeniedHandler;
+//import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
+//import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
+//import org.apache.commons.lang.BooleanUtils;
+//import org.apache.commons.lang.StringUtils;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+//import javax.inject.Inject;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+//import java.util.UUID;
 
 /**
  * Handles links from outside of the application.
@@ -51,7 +51,7 @@ import java.util.UUID;
 public class LinkHandler {
 
     public static final String NAME = "cuba_LinkHandler";
-
+    /*
     protected Log log = LogFactory.getLog(getClass());
 
     @Inject
@@ -73,9 +73,9 @@ public class LinkHandler {
         this.requestParams = requestParams;
     }
 
-    /**
+    *//**
      * Called to handle the link.
-     */
+     *//*
     public void handle() {
         try {
             String screenName = requestParams.get("screen");
@@ -292,5 +292,5 @@ public class LinkHandler {
             return null;
         }
         return entity;
-    }
+    }*/
 }

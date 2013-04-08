@@ -59,7 +59,7 @@ public class ScreenHistoryBrowse extends AbstractWindow {
 
     private void openUrl(Entity entity) {
         ScreenHistoryEntity screenHistoryEntity = (ScreenHistoryEntity) entity;
-        Map<String, String> paramsScreen = new HashMap<String, String>();
+        Map<String, String> paramsScreen = new HashMap<>();
         String url = screenHistoryEntity.getUrl();
         url = url.substring(url.indexOf("\u003f") + 1);
         paramsScreen.put("local", "true");
@@ -69,11 +69,13 @@ public class ScreenHistoryBrowse extends AbstractWindow {
             String value = param.split("=")[1];
             paramsScreen.put(name, value);
         }
+        
+        /*
         List<String> actions = configuration.getConfig(WebConfig.class).getLinkHandlerActions();
         LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME,
                 App.getInstance(),
                 actions.isEmpty() ? "open" : actions.get(0),
                 paramsScreen);
-        linkHandler.handle();
+        linkHandler.handle();*/ 
     }
 }

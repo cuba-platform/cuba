@@ -33,7 +33,7 @@ public class WebRowsCount
 
     public WebRowsCount() {
         component = new com.haulmont.cuba.web.toolkit.ui.RowsCount();
-        component.setStyleName("table-rows-count");
+        component.setStyleName("cuba-table-rows-count");
     }
 
     @Override

@@ -17,12 +17,12 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 
 public class WebWidgetsTree
-        extends
+        /*extends
             WebAbstractList<com.haulmont.cuba.web.toolkit.ui.WidgetsTree>
         implements
-            WidgetsTree, Component.Wrapper
+            WidgetsTree, Component.Wrapper*/
 {
-
+/*
     private String hierarchyProperty;
 
     public WebWidgetsTree() {
@@ -106,5 +106,5 @@ public class WebWidgetsTree
 
     public void setCaptionProperty(String captionProperty) {
         //do nothing
-    }
+    }*/
 }

@@ -1,15 +1,12 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.Application;
 import com.vaadin.data.Buffered;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.terminal.CompositeErrorMessage;
-import com.vaadin.terminal.ErrorMessage;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Field;
@@ -111,37 +108,36 @@ public abstract class CustomField extends CustomComponent implements Field {
      */
     private boolean validationVisible = true;
 
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-
-        // The tab ordering number
-        if (tabIndex != 0) {
-            target.addAttribute("tabindex", tabIndex);
-        }
-
-        // If the field is modified, but not committed, set modified attribute
-        if (isModified()) {
-            target.addAttribute("modified", true);
-        }
-
-        // Adds the required attribute
-        if (!isReadOnly() && isRequired()) {
-            target.addAttribute("required", true);
-        }
-
-        // Hide the error indicator if needed
-        if (isRequired() && isEmpty() && getComponentError() == null
-                && getErrorMessage() != null) {
-            target.addAttribute("hideErrors", true);
-        }
-        super.paintContent(target);
-    }
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        // The tab ordering number
+//        if (tabIndex != 0) {
+//            target.addAttribute("tabindex", tabIndex);
+//        }
+//
+//        // If the field is modified, but not committed, set modified attribute
+//        if (isModified()) {
+//            target.addAttribute("modified", true);
+//        }
+//
+//        // Adds the required attribute
+//        if (!isReadOnly() && isRequired()) {
+//            target.addAttribute("required", true);
+//        }
+//
+//        // Hide the error indicator if needed
+//        if (isRequired() && isEmpty() && getComponentError() == null
+//                && getErrorMessage() != null) {
+//            target.addAttribute("hideErrors", true);
+//        }
+//        super.paintContent(target);
+//    }
 
     public abstract Class<?> getType();
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.ui.AbstractComponent#isReadOnly()
      */
     @Override
@@ -152,27 +148,30 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.BufferedValidatable#isInvalidCommitted()
      */
+    @Override
     public boolean isInvalidCommitted() {
         return invalidCommitted;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.BufferedValidatable#setInvalidCommitted(boolean)
      */
+    @Override
     public void setInvalidCommitted(boolean isCommitted) {
         invalidCommitted = isCommitted;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Buffered#commit()
      */
+    @Override
     public void commit() throws Buffered.SourceException, InvalidValueException {
         if (dataSource != null && !dataSource.isReadOnly()) {
             if ((isInvalidCommitted() || isValid())) {
@@ -187,7 +186,7 @@ public abstract class CustomField extends CustomComponent implements Field {
                     // Sets the buffering state.
                     currentBufferedSourceException = new Buffered.SourceException(
                             this, e);
-                    requestRepaint();
+                    markAsDirty();
 
                     // Throws the source exception.
                     throw currentBufferedSourceException;
@@ -213,15 +212,16 @@ public abstract class CustomField extends CustomComponent implements Field {
         }
 
         if (repaintNeeded) {
-            requestRepaint();
+            markAsDirty();
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Buffered#discard()
      */
+    @Override
     public void discard() throws Buffered.SourceException {
         if (dataSource != null) {
 
@@ -236,14 +236,14 @@ public abstract class CustomField extends CustomComponent implements Field {
                 // If successful, remove set the buffering state to be ok
                 if (currentBufferedSourceException != null) {
                     currentBufferedSourceException = null;
-                    requestRepaint();
+                    markAsDirty();
                 }
             } catch (final Throwable e) {
 
                 // Sets the buffering state
                 currentBufferedSourceException = new Buffered.SourceException(
                         this, e);
-                requestRepaint();
+                markAsDirty();
 
                 // Throws the source exception
                 throw currentBufferedSourceException;
@@ -261,23 +261,24 @@ public abstract class CustomField extends CustomComponent implements Field {
 
             // If the value did not change, but the modification status did
             else if (wasModified) {
-                requestRepaint();
+                markAsDirty();
             }
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Buffered#isModified()
      */
+    @Override
     public boolean isModified() {
         return modified;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Buffered#isWriteThrough()
      */
     public boolean isWriteThrough() {
@@ -286,7 +287,7 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Buffered#setWriteThrough(boolean)
      */
     public void setWriteThrough(boolean writeTrough)
@@ -302,7 +303,7 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Buffered#isReadThrough()
      */
     public boolean isReadThrough() {
@@ -311,7 +312,7 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Buffered#setReadThrough(boolean)
      */
     public void setReadThrough(boolean readTrough)
@@ -329,7 +330,7 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Returns the value of the Property in human readable textual format.
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -343,29 +344,30 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Gets the current value of the field.
-     * 
+     *
      * <p>
      * This is the visible, modified and possible invalid value the user have
      * entered to the field. In the read-through mode, the abstract buffer is
      * also updated and validation is performed.
      * </p>
-     * 
+     *
      * <p>
      * Note that the object returned is compatible with getType(). For example,
      * if the type is String, this returns Strings even when the underlying
      * datasource is of some other type. In order to access the datasources
      * native type, use getPropertyDatasource().getValue() instead.
      * </p>
-     * 
+     *
      * <p>
      * Note that when you extend CustomField, you must reimplement this method
      * if datasource.getValue() is not assignable to class returned by getType()
      * AND getType() is not String. In case of Strings, getValue() calls
      * datasource.toString() instead of datasource.getValue().
      * </p>
-     * 
+     *
      * @return the current value of the field.
      */
+    @Override
     public Object getValue() {
 
         // Give the value from abstract buffers if the field if possible
@@ -386,26 +388,27 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Property#setValue(java.lang.Object)
      */
+    @Override
     public void setValue(Object newValue) throws Property.ReadOnlyException,
-            Property.ConversionException {
+            Converter.ConversionException {
         setValue(newValue, false);
     }
 
     /**
      * Sets the value of the field.
-     * 
+     *
      * @param newValue
      *            the New value of the field.
      * @param repaintIsNotNeeded
      *            True iff caller is sure that repaint is not needed.
      * @throws Property.ReadOnlyException
-     * @throws Property.ConversionException
+     * @throws Converter.ConversionException
      */
     protected void setValue(Object newValue, boolean repaintIsNotNeeded)
-            throws Property.ReadOnlyException, Property.ConversionException {
+            throws Property.ReadOnlyException, Converter.ConversionException {
 
         if ((newValue == null && value != null)
                 || (newValue != null && !newValue.equals(value))) {
@@ -451,7 +454,7 @@ public abstract class CustomField extends CustomComponent implements Field {
                     // Sets the buffering state
                     currentBufferedSourceException = new Buffered.SourceException(
                             this, e);
-                    requestRepaint();
+                    markAsDirty();
 
                     // Throws the source exception
                     throw currentBufferedSourceException;
@@ -461,7 +464,7 @@ public abstract class CustomField extends CustomComponent implements Field {
             // If successful, remove set the buffering state to be ok
             if (currentBufferedSourceException != null) {
                 currentBufferedSourceException = null;
-                requestRepaint();
+                markAsDirty();
             }
 
             // Fires the value change
@@ -469,6 +472,7 @@ public abstract class CustomField extends CustomComponent implements Field {
         }
     }
 
+    @Override
     public Property getPropertyDataSource() {
         return dataSource;
     }
@@ -479,7 +483,7 @@ public abstract class CustomField extends CustomComponent implements Field {
      * uncommitted changes to the field are discarded and the value is refreshed
      * from the new data source.
      * </p>
-     * 
+     *
      * <p>
      * If the datasource has any validators, the same validators are added to
      * the field. Because the default behavior of the field is to allow invalid
@@ -488,10 +492,11 @@ public abstract class CustomField extends CustomComponent implements Field {
      * is invalid. After the value is valid, the error message is not shown and
      * the commit can be done normally.
      * </p>
-     * 
+     *
      * @param newDataSource
      *            the new data source Property.
      */
+    @Override
     public void setPropertyDataSource(Property newDataSource) {
 
         // Saves the old value
@@ -552,23 +557,25 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.data.Validatable#addValidator(com.vaadin.data.Validator)
      */
+    @Override
     public void addValidator(Validator validator) {
         if (validators == null) {
-            validators = new LinkedList<Validator>();
+            validators = new LinkedList<>();
         }
         validators.add(validator);
-        requestRepaint();
+        markAsDirty();
     }
 
     /**
      * Gets the validators of the field.
-     * 
+     *
      * @return the Unmodifiable collection that holds all validators for the
      *         field.
      */
+    @Override
     public Collection<Validator> getValidators() {
         if (validators == null || validators.isEmpty()) {
             return null;
@@ -578,23 +585,25 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Removes the validator from the field.
-     * 
+     *
      * @param validator
      *            the validator to remove.
      */
+    @Override
     public void removeValidator(Validator validator) {
         if (validators != null) {
             validators.remove(validator);
         }
-        requestRepaint();
+        markAsDirty();
     }
 
     /**
      * Tests the current value against all registered validators.
-     * 
+     *
      * @return <code>true</code> if all registered validators claim that the
      *         current value is valid, <code>false</code> otherwise.
      */
+    @Override
     public boolean isValid() {
 
         if (isEmpty()) {
@@ -609,12 +618,13 @@ public abstract class CustomField extends CustomComponent implements Field {
             return true;
         }
 
-        final Object value = getValue();
-        for (final Iterator<Validator> i = validators.iterator(); i.hasNext();) {
-            if (!(i.next()).isValid(value)) {
-                return false;
-            }
-        }
+//        vaadin7
+//        final Object value = getValue();
+//        for (final Iterator<Validator> i = validators.iterator(); i.hasNext();) {
+//            if (!(i.next()).isValid(value)) {
+//                return false;
+//            }
+//        }
 
         return true;
     }
@@ -622,13 +632,14 @@ public abstract class CustomField extends CustomComponent implements Field {
     /**
      * Checks the validity of the Validatable by validating the field with all
      * attached validators.
-     * 
+     *
      * The "required" validation is a built-in validation feature. If the field
      * is required, but empty, validation will throw an EmptyValueException with
      * the error message set with setRequiredError().
-     * 
+     *
      * @see com.vaadin.data.Validatable#validate()
      */
+    @Override
     public void validate() throws Validator.InvalidValueException {
 
         if (isEmpty()) {
@@ -690,10 +701,11 @@ public abstract class CustomField extends CustomComponent implements Field {
     /**
      * Fields allow invalid values by default. In most cases this is wanted,
      * because the field otherwise visually forget the user input immediately.
-     * 
+     *
      * @return true iff the invalid values are allowed.
      * @see com.vaadin.data.Validatable#isInvalidAllowed()
      */
+    @Override
     public boolean isInvalidAllowed() {
         return invalidAllowed;
     }
@@ -708,9 +720,10 @@ public abstract class CustomField extends CustomComponent implements Field {
      * values. The validators are automatically copied to the field when the
      * datasource is set.
      * </p>
-     * 
+     *
      * @see com.vaadin.data.Validatable#setInvalidAllowed(boolean)
      */
+    @Override
     public void setInvalidAllowed(boolean invalidAllowed)
             throws UnsupportedOperationException {
         this.invalidAllowed = invalidAllowed;
@@ -720,42 +733,44 @@ public abstract class CustomField extends CustomComponent implements Field {
      * Error messages shown by the fields are composites of the error message
      * thrown by the superclasses (that is the component error message),
      * validation errors and buffered source errors.
-     * 
+     *
      * @see com.vaadin.ui.AbstractComponent#getErrorMessage()
      */
     @Override
     public ErrorMessage getErrorMessage() {
 
-        /*
-         * Check validation errors only if automatic validation is enabled.
-         * Empty, required fields will generate a validation error containing
-         * the requiredError string. For these fields the exclamation mark will
-         * be hidden but the error must still be sent to the client.
-         */
-        ErrorMessage validationError = null;
-        if (isValidationVisible()) {
-            try {
-                validate();
-            } catch (Validator.InvalidValueException e) {
-                if (!e.isInvisible()) {
-                    validationError = e;
-                }
-            }
-        }
+//        vaadin7
+//        /*
+//         * Check validation errors only if automatic validation is enabled.
+//         * Empty, required fields will generate a validation error containing
+//         * the requiredError string. For these fields the exclamation mark will
+//         * be hidden but the error must still be sent to the client.
+//         */
+//        ErrorMessage validationError = null;
+//        if (isValidationVisible()) {
+//            try {
+//                validate();
+//            } catch (Validator.InvalidValueException e) {
+//                if (!e.isInvisible()) {
+//                    validationError = e;
+//                }
+//            }
+//        }
+//
+//        // Check if there are any systems errors
+//        final ErrorMessage superError = super.getErrorMessage();
+//
+//        // Return if there are no errors at all
+//        if (superError == null && validationError == null
+//                && currentBufferedSourceException == null) {
+//            return null;
+//        }
+//
+//        // Throw combination of the error types
+//        return new CompositeErrorMessage(new ErrorMessage[] { superError,
+//                validationError, currentBufferedSourceException });
 
-        // Check if there are any systems errors
-        final ErrorMessage superError = super.getErrorMessage();
-
-        // Return if there are no errors at all
-        if (superError == null && validationError == null
-                && currentBufferedSourceException == null) {
-            return null;
-        }
-
-        // Throw combination of the error types
-        return new CompositeErrorMessage(new ErrorMessage[] { superError,
-                validationError, currentBufferedSourceException });
-
+        return null;
     }
 
     /* Value change events */
@@ -778,18 +793,30 @@ public abstract class CustomField extends CustomComponent implements Field {
      * Adds a value change listener for the field. Don't add a JavaDoc comment
      * here, we use the default documentation from the implemented interface.
      */
+    @Override
     public void addListener(Property.ValueChangeListener listener) {
-        addListener(AbstractField.ValueChangeEvent.class, listener,
-                VALUE_CHANGE_METHOD);
+        addValueChangeListener(listener);
     }
 
     /*
-     * Removes a value change listener from the field. Don't add a JavaDoc
-     * comment here, we use the default documentation from the implemented
-     * interface.
-     */
+         * Removes a value change listener from the field. Don't add a JavaDoc
+         * comment here, we use the default documentation from the implemented
+         * interface.
+         */
+    @Override
     public void removeListener(Property.ValueChangeListener listener) {
+        removeValueChangeListener(listener);
+    }
+
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
         removeListener(AbstractField.ValueChangeEvent.class, listener,
+                VALUE_CHANGE_METHOD);
+    }
+
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+        addListener(AbstractField.ValueChangeEvent.class, listener,
                 VALUE_CHANGE_METHOD);
     }
 
@@ -800,7 +827,7 @@ public abstract class CustomField extends CustomComponent implements Field {
     protected void fireValueChange(boolean repaintIsNotNeeded) {
         fireEvent(new AbstractField.ValueChangeEvent(this));
         if (!repaintIsNotNeeded) {
-            requestRepaint();
+            markAsDirty();
         }
     }
 
@@ -809,11 +836,12 @@ public abstract class CustomField extends CustomComponent implements Field {
     /**
      * This method listens to data source value changes and passes the changes
      * forwards.
-     * 
+     *
      * @param event
      *            the value change event telling the data source contents have
      *            changed.
      */
+    @Override
     public void valueChange(Property.ValueChangeEvent event) {
         if (isReadThrough() || !isModified()) {
             fireValueChange(false);
@@ -822,34 +850,38 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.ui.Component.Focusable#focus()
      */
+    @Override
     public void focus() {
-        final Application app = getApplication();
-        if (app != null) {
+//  vaadin7
+//        final Application app = getApplication();
+//        if (app != null) {
 //            getWindow().setFocusedComponent(this);
-            delayedFocus = false;
-        } else {
-            delayedFocus = true;
-        }
+//            delayedFocus = false;
+//        } else {
+//            delayedFocus = true;
+//        }
     }
 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.ui.Component.Focusable#getTabIndex()
      */
+    @Override
     public int getTabIndex() {
         return tabIndex;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.ui.Component.Focusable#setTabIndex(int)
      */
+    @Override
     public void setTabIndex(int tabIndex) {
         this.tabIndex = tabIndex;
     }
@@ -859,14 +891,14 @@ public abstract class CustomField extends CustomComponent implements Field {
      * change the internal Field value. It does not trigger valuechange events.
      * It can be overriden by the inheriting classes to update all dependent
      * variables.
-     * 
+     *
      * @param newValue
      *            the new value to be set.
      */
     protected void setInternalValue(Object newValue) {
         value = newValue;
         if (validators != null && !validators.isEmpty()) {
-            requestRepaint();
+            markAsDirty();
         }
     }
 
@@ -883,17 +915,17 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Is this field required. Required fields must filled by the user.
-     * 
+     *
      * If the field is required, it is visually indicated in the user interface.
      * Furthermore, setting field to be required implicitly adds "non-empty"
      * validator and thus isValid() == false or any isEmpty() fields. In those
      * cases validation errors are not painted as it is obvious that the user
      * must fill in the required fields.
-     * 
+     *
      * On the other hand, for the non-required fields isValid() == true if the
      * field isEmpty() regardless of any attached validators.
-     * 
-     * 
+     *
+     *
      * @return <code>true</code> if the field is required .otherwise
      *         <code>false</code>.
      */
@@ -903,16 +935,16 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Sets the field required. Required fields must filled by the user.
-     * 
+     *
      * If the field is required, it is visually indicated in the user interface.
      * Furthermore, setting field to be required implicitly adds "non-empty"
      * validator and thus isValid() == false or any isEmpty() fields. In those
      * cases validation errors are not painted as it is obvious that the user
      * must fill in the required fields.
-     * 
+     *
      * On the other hand, for the non-required fields isValid() == true if the
      * field isEmpty() regardless of any attached validators.
-     * 
+     *
      * @param required
      *            Is the field required.
      */
@@ -926,7 +958,7 @@ public abstract class CustomField extends CustomComponent implements Field {
      * setting requiredMessage to be "" or null, no error pop-up or exclamation
      * mark is shown for a empty required field. This faults to "". Even in
      * those cases isValid() returns false for empty required fields.
-     * 
+     *
      * @param requiredMessage
      *            Message to be shown when this field is required, but empty.
      */
@@ -944,7 +976,7 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Is the field empty?
-     * 
+     *
      * In general, "empty" state is same as null..
      */
     protected boolean isEmpty() {
@@ -953,13 +985,13 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Is automatic, visible validation enabled?
-     * 
+     *
      * If automatic validation is enabled, any validators connected to this
      * component are evaluated while painting the component and potential error
      * messages are sent to client. If the automatic validation is turned off,
      * isValid() and validate() methods still work, but one must show the
      * validation in their own code.
-     * 
+     *
      * @return True, if automatic validation is enabled.
      */
     public boolean isValidationVisible() {
@@ -968,19 +1000,19 @@ public abstract class CustomField extends CustomComponent implements Field {
 
     /**
      * Enable or disable automatic, visible validation.
-     * 
+     *
      * If automatic validation is enabled, any validators connected to this
      * component are evaluated while painting the component and potential error
      * messages are sent to client. If the automatic validation is turned off,
      * isValid() and validate() methods still work, but one must show the
      * validation in their own code.
-     * 
+     *
      * @param validateAutomatically
      *            True, if automatic validation is enabled.
      */
     public void setValidationVisible(boolean validateAutomatically) {
         if (validationVisible != validateAutomatically) {
-            requestRepaint();
+            markAsDirty();
             validationVisible = validateAutomatically;
         }
     }
@@ -988,6 +1020,6 @@ public abstract class CustomField extends CustomComponent implements Field {
     public void setCurrentBufferedSourceException(
             Buffered.SourceException currentBufferedSourceException) {
         this.currentBufferedSourceException = currentBufferedSourceException;
-        requestRepaint();
+        markAsDirty();
     }
 }

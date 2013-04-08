@@ -1,0 +1,19 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@import "havana-defaults";
+@import "havana";
+
+.havana {
+  @include havana;
+}
+
+// hide Vaadin warning about theme version
+.v-theme-version {
+  display: none;
+}

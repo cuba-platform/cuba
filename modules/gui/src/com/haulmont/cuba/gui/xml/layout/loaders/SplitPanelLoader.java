@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 20.01.2009 17:20:11
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -19,24 +15,21 @@ import org.dom4j.Element;
 
 import java.util.Collection;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class SplitPanelLoader extends ContainerLoader{
     public SplitPanelLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final SplitPanel component = factory.createComponent(SplitPanel.NAME);
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
-        loadVisible(component, element);
-
-        loadStyleName(component, element);
-
-        final Collection<Component> components = loadSubComponents(component, element, "visible");
-        if (components.size() == 1) {
-            component.add(factory.createComponent(BoxLayout.VBOX));
-        }
 
         final String orientation = element.attributeValue("orientation");
         if (StringUtils.isEmpty(orientation)) {
@@ -45,6 +38,14 @@ public class SplitPanelLoader extends ContainerLoader{
             component.setOrientation(SplitPanel.ORIENTATION_VERTICAL);
         } else if ("horizontal".equalsIgnoreCase(orientation)) {
             component.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
+        }
+
+        loadVisible(component, element);
+        loadStyleName(component, element);
+
+        final Collection<Component> components = loadSubComponents(component, element, "visible");
+        if (components.size() == 1) {
+            component.add(factory.createComponent(BoxLayout.VBOX));
         }
 
         final String pos = element.attributeValue("pos");

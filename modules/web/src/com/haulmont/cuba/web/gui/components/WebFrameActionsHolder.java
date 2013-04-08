@@ -18,13 +18,12 @@ import java.util.*;
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for web frames and
  * windows.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class WebFrameActionsHolder {
 
-    protected List<Action> actionList = new LinkedList<Action>();
+    protected List<Action> actionList = new LinkedList<>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public void addAction(Action action) {

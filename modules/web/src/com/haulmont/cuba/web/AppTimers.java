@@ -13,53 +13,63 @@ import com.vaadin.ui.Window;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class AppTimers {
-
     private App app;
+
+    public AppTimers(App app) {
+        this.app = app;
+    }
+
+/*
+
 
     protected Map<Window, WindowTimers> windowTimers = new HashMap<Window, WindowTimers>();
     protected Map<Timer, Window> timerWindow = new HashMap<Timer, Window>();
 
     private boolean stopTimers = false;
 
-    public AppTimers(App app) {
-        this.app = app;
-    }
 
-    /**
+    */
+/**
      * Adds a timer on the application level
      * @param timer new timer
-     */
+     *//*
+
     public void add(final Timer timer) {
         if (!timerWindow.containsKey(timer))
             add(timer, null, app.getCurrentWindow());
     }
 
-    /**
+    */
+/**
      * Adds a timer for the defined window
      * @param timer new timer
      * @param owner component that owns a timer
-     */
+     *//*
+
     public void add(final Timer timer, com.haulmont.cuba.gui.components.Window owner) {
         if (!timerWindow.containsKey(timer))
             add(timer, owner, app.getCurrentWindow());
     }
 
-    /**
+    */
+/**
      * Do not use this method in application code
-     */
+     *//*
+
     public void add(final Timer timer, Window mainWindow) {
         if (!timerWindow.containsKey(timer))
             add(timer, null, mainWindow);
     }
 
-    /**
+    */
+/**
      * Do not use this method in application code
-     */
+     *//*
+
     public void add(final Timer timer, com.haulmont.cuba.gui.components.Window owner, Window mainWindow) {
         WindowTimers wt = windowTimers.get(mainWindow);
         if (wt == null) {
@@ -115,11 +125,13 @@ public class AppTimers {
         stopTimers = true;
     }
 
-    /**
+    */
+/**
      * Returns a timer by id
      * @param id timer id
      * @return timer or <code>null</code>
-     */
+     *//*
+
     public Timer getTimer(String id) {
         Window currentWindow = app.getCurrentWindow();
         WindowTimers wt = windowTimers.get(currentWindow);
@@ -130,11 +142,13 @@ public class AppTimers {
         }
     }
 
-    /**
+    */
+/**
      * Do not use this method in application code
      * @param currentWindow current window
      * @return collection of timers that applied for the current window
-     */
+     *//*
+
     public Collection<Timer> getAll(Window currentWindow) {
         if (stopTimers) {
             try {
@@ -156,5 +170,6 @@ public class AppTimers {
         protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
         protected Set<Timer> timers = new HashSet<Timer>();
     }
+*/
 
 }

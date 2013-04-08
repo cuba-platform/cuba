@@ -18,9 +18,8 @@ import java.util.List;
  * <strong>id</strong>, e.g. <code>refapp_ExceptionHandlersConfiguration</code>, and set the list of handler class
  * names in <code>handlerClasses</code> property.</p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ExceptionHandlersConfiguration {
 

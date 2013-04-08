@@ -15,13 +15,19 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
-import com.vaadin.terminal.gwt.server.WebBrowser;
+//import com.vaadin.terminal.gwt.server.WebApplicationContext;
+//import com.vaadin.terminal.gwt.server.WebBrowser;
+import com.haulmont.cuba.web.sys.RequestContext;
+import com.haulmont.cuba.web.sys.VaadinSessionAwareSecurityContext;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.server.WebBrowser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,11 +41,10 @@ public abstract class AbstractConnection implements Connection {
 
     protected Log log = LogFactory.getLog(getClass());
 
-    private Map<ConnectionListener, Object> connListeners = new HashMap<ConnectionListener, Object>();
-    private Map<UserSubstitutionListener, Object> usListeners = new HashMap<UserSubstitutionListener, Object>();
+    private Map<ConnectionListener, Object> connListeners = new HashMap<>();
+    private Map<UserSubstitutionListener, Object> usListeners = new HashMap<>();
 
     protected boolean connected;
-    protected UserSession session;
 
     protected LoginService loginService = AppBeans.get(LoginService.NAME);
     protected Messages messages = AppBeans.get(Messages.class);
@@ -52,20 +57,24 @@ public abstract class AbstractConnection implements Connection {
     @Override
     @Nullable
     public UserSession getSession() {
-        return session;
+        return VaadinSession.getCurrent().getAttribute(UserSession.class);
+    }
+
+    protected void setSession(ClientUserSession clientUserSession) {
+        VaadinSession.getCurrent().setAttribute(UserSession.class, clientUserSession);
     }
 
     @Override
     public void update(UserSession session) throws LoginException {
-        this.session = new ClientUserSession(session);
+        ClientUserSession clientUserSession = new ClientUserSession(session);
+
+        setSession(clientUserSession);
+
         connected = true;
 
         try {
-            internalLogin();
-        } catch (LoginException e) {
-            internalLogout();
-            throw e;
-        } catch (RuntimeException e) {
+            internalLogin(clientUserSession);
+        } catch (LoginException | RuntimeException e) {
             internalLogout();
             throw e;
         } catch (Exception e) {
@@ -74,8 +83,8 @@ public abstract class AbstractConnection implements Connection {
         }
     }
 
-    protected void internalLogin() throws LoginException {
-        AppContext.setSecurityContext(new SecurityContext(session));
+    protected void internalLogin(UserSession session) throws LoginException {
+        AppContext.setSecurityContext(new VaadinSessionAwareSecurityContext());
 
         App app = App.getInstance();
 
@@ -100,13 +109,15 @@ public abstract class AbstractConnection implements Connection {
     }
 
     protected String makeClientInfo() {
-        WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
-        return browser.getBrowserApplication();
+        Page page = AppUI.getCurrent().getPage();
+        WebBrowser webBrowser = page.getWebBrowser();
+
+        return webBrowser.getBrowserApplication();
     }
 
     @Override
     public void substituteUser(User substitutedUser) {
-        session = new ClientUserSession(loginService.substituteUser(substitutedUser));
+        setSession(new ClientUserSession(loginService.substituteUser(substitutedUser)));
         fireSubstitutionListeners();
     }
 
@@ -129,7 +140,7 @@ public abstract class AbstractConnection implements Connection {
         AppContext.setSecurityContext(null);
 
         connected = false;
-        session = null;
+        setSession(null);
     }
 
     @Override

@@ -2,20 +2,16 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 14.10.2009 17:19:08
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
@@ -26,34 +22,35 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
-import com.haulmont.cuba.web.toolkit.ui.TreeTable;
+import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 import java.util.List;
 
-import static org.apache.commons.lang.BooleanUtils.isTrue;
-
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FilterEditor extends AbstractFilterEditor {
 
     private AbstractOrderedLayout layout;
     private TextField nameField;
-    private TreeTable table;
-    private Select addSelect;
+    private CubaTreeTable table;
+    private ComboBox addSelect;
     private CheckBox defaultCb;
     private CheckBox applyDefaultCb;
 
-    private static final String EDITOR_WIDTH = "640px";
-    private static final String TABLE_WIDTH = "600px";
+    private static final String EDITOR_WIDTH = "700px";
+    private static final String TABLE_WIDTH = "660px";
     private CheckBox globalCb;
     private Button saveBtn;
-
-    private Button upBtn;
-    private Button downBtn;
 
     protected ConditionsContainer container;
 
@@ -74,7 +71,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         layout = new VerticalLayout();
         layout.setSpacing(true);
-        layout.setMargin(true, false, false, false);
+        layout.setMargin(new MarginInfo(true, false, false, false));
         layout.setWidth(EDITOR_WIDTH);
 
         GridLayout topGrid = new GridLayout(2, 1);
@@ -89,8 +86,8 @@ public class FilterEditor extends AbstractFilterEditor {
         controlLayout.setSpacing(true);
 
         // Move up button
-        upBtn = WebComponentsHelper.createButton("icons/up.png");
-        upBtn.addListener(new Button.ClickListener() {
+        Button upBtn = WebComponentsHelper.createButton("icons/up.png");
+        upBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
@@ -102,8 +99,8 @@ public class FilterEditor extends AbstractFilterEditor {
         upBtn.setEnabled(true);
 
         // Move down button
-        downBtn = WebComponentsHelper.createButton("icons/down.png");
-        downBtn.addListener(new Button.ClickListener() {
+        Button downBtn = WebComponentsHelper.createButton("icons/down.png");
+        downBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
@@ -116,8 +113,8 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Save button
         saveBtn = WebComponentsHelper.createButton("icons/ok.png");
-        saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
-        saveBtn.addListener(new Button.ClickListener() {
+        saveBtn.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+        saveBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (commit())
@@ -130,8 +127,8 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Cancel button
         Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
-        cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
-        cancelBtn.addListener(new Button.ClickListener() {
+        cancelBtn.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 ((WebFilter) filter).editorCancelled();
@@ -144,7 +141,7 @@ public class FilterEditor extends AbstractFilterEditor {
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
         globalCb.setValue(filterEntity.getUser() == null);
-        globalCb.setEnabled(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
+        globalCb.setEnabled(AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
         controlLayout.addComponent(globalCb);
 
         bottomGrid.addComponent(globalCb, 1, 0);
@@ -154,17 +151,17 @@ public class FilterEditor extends AbstractFilterEditor {
         defaultCb.setCaption(getMessage("FilterEditor.isDefault"));
         defaultCb.setImmediate(true);
 
-        defaultCb.addListener(new Property.ValueChangeListener() {
+        defaultCb.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                if ((Boolean) defaultCb.getValue()) {
+                if (defaultCb.getValue()) {
                     applyDefaultCb.setEnabled(true);
                 } else {
                     applyDefaultCb.setEnabled(false);
                     applyDefaultCb.setValue(false);
                 }
                 if (filterEntity != null) {
-                    filterEntity.setIsDefault(isTrue((Boolean) defaultCb.getValue()));
+                    filterEntity.setIsDefault(BooleanUtils.isTrue(defaultCb.getValue()));
 
                 }
             }
@@ -176,11 +173,11 @@ public class FilterEditor extends AbstractFilterEditor {
         applyDefaultCb.setCaption(getMessage("FilterEditor.applyDefault"));
         applyDefaultCb.setImmediate(true);
         applyDefaultCb.setEnabled(false);
-        applyDefaultCb.addListener(new Property.ValueChangeListener() {
+        applyDefaultCb.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (filterEntity != null) {
-                    filterEntity.setApplyDefault(isTrue((Boolean) applyDefaultCb.getValue()));
+                    filterEntity.setApplyDefault(BooleanUtils.isTrue(applyDefaultCb.getValue()));
                 }
             }
         });
@@ -205,7 +202,7 @@ public class FilterEditor extends AbstractFilterEditor {
         HorizontalLayout addLayout = new HorizontalLayout();
         addLayout.setSpacing(true);
 
-        if (ConfigProvider.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
+        if (AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
             initAddDialog(addLayout);
         } else {
             initAddSelect(addLayout);
@@ -241,7 +238,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     private void initAddDialog(HorizontalLayout addLayout) {
         Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
-        addBtn.addListener(new AddConditionClickListener());
+        addBtn.addClickListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
     }
 
@@ -249,10 +246,10 @@ public class FilterEditor extends AbstractFilterEditor {
         Label label = new Label(getMessage("FilterEditor.addCondition"));
         layout.addComponent(label);
 
-        addSelect = new Select();
+        addSelect = new ComboBox();
         addSelect.setImmediate(true);
         addSelect.setNullSelectionAllowed(true);
-        addSelect.setFilteringMode(Select.FILTERINGMODE_CONTAINS);
+        addSelect.setFilteringMode(FilteringMode.CONTAINS);
         addSelect.setWidth("100px");
         for (AbstractConditionDescriptor descriptor : descriptors) {
             addSelect.addItem(descriptor);
@@ -273,13 +270,13 @@ public class FilterEditor extends AbstractFilterEditor {
         addSelect.addItem(orGroupCreator);
         addSelect.setItemCaption(orGroupCreator, orGroupCreator.getLocCaption());
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
             ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
             addSelect.addItem(conditionCreator);
             addSelect.setItemCaption(conditionCreator, conditionCreator.getLocCaption());
         }
 
-        addSelect.addListener(new Property.ValueChangeListener() {
+        addSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (addSelect.getValue() != null) {
@@ -291,20 +288,21 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.addComponent(addSelect);
 
         Button addBtn = new Button(getMessage("FilterEditor.addMoreConditions"));
-        addBtn.addListener(new AddConditionClickListener());
+        addBtn.addClickListener(new AddConditionClickListener());
         layout.addComponent(addBtn);
     }
 
     private void initTable(AbstractLayout layout) {
-        table = new TreeTable();
+        table = new CubaTreeTable();
+
         table.setImmediate(true);
         table.setSelectable(true);
         table.setPageLength(0);
         table.setWidth(TABLE_WIDTH);
         table.setHeight("200px");
-        table.setStyleName("table filter-conditions");
+        table.setStyleName("cuba-filter-conditions");
         table.setColumnReorderingAllowed(false);
-        table.setSortDisabled(true);
+        table.setSortEnabled(false);
 
         table.setContainerDataSource(container);
 
@@ -333,9 +331,11 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setColumnWidth(ConditionsContainer.CONTROL_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.CONTROL_PROP_ID, cntrCol);
 
-        table.expandAll();
+//        vaadin7
+//        table.expandAll();
 
-        final Action showNameAction = new Action(MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
+        final Action showNameAction = new Action(AppBeans.get(Messages.class)
+                .getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
         table.addActionHandler(
                 new Action.Handler() {
                     @Override
@@ -347,7 +347,7 @@ public class FilterEditor extends AbstractFilterEditor {
                     public void handleAction(Action action, Object sender, Object target) {
                         if (action.equals(showNameAction)) {
                             App.getInstance().getWindowManager().showMessageDialog(
-                                    MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameTitle"),
+                                    AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "FilterEditor.showNameTitle"),
                                     ((Node<AbstractCondition>) target).getData().getParam().getName(),
                                     IFrame.MessageType.CONFIRMATION
                             );
@@ -361,7 +361,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     private void addCondition(AbstractConditionDescriptor descriptor) {
         AbstractCondition condition = descriptor.createCondition();
-        Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
+        Node<AbstractCondition> node = new Node<>(condition);
 
         Node<AbstractCondition> parentNode = null;
         Object selected = table.getValue();
@@ -372,7 +372,8 @@ public class FilterEditor extends AbstractFilterEditor {
             }
         }
         container.addItem(node);
-        table.setExpanded(node);
+//        vaadin7
+//        table.setExpanded(node);
 
         if (node.getData().isGroup()) {
             // Select the added node if it is a group
@@ -394,7 +395,7 @@ public class FilterEditor extends AbstractFilterEditor {
         else
             saveBtn.setEnabled(false);
         defaultCb.setVisible(filterEntity.getFolder() == null);
-        defaultCb.setValue(isTrue(filterEntity.getIsDefault()));
+        defaultCb.setValue(BooleanUtils.isTrue(filterEntity.getIsDefault()));
         applyDefaultCb.setVisible(defaultCb.isVisible() && manualApplyRequired);
         applyDefaultCb.setValue(BooleanUtils.isTrue(filterEntity.getApplyDefault()));
     }
@@ -431,17 +432,17 @@ public class FilterEditor extends AbstractFilterEditor {
 
     @Override
     protected String getName() {
-        return (String) nameField.getValue();
+        return nameField.getValue();
     }
 
     @Override
     protected boolean isGlobal() {
-        return (Boolean) globalCb.getValue();
+        return globalCb.getValue();
     }
 
     @Override
     protected void showNotification(String caption, String description) {
-        App.getInstance().getAppWindow().showNotification(caption, description, Window.Notification.TYPE_HUMANIZED_MESSAGE);
+        App.getInstance().getWindowManager().showNotification(caption, description, IFrame.NotificationType.HUMANIZED);
     }
 
     public AbstractOrderedLayout getLayout() {
@@ -467,7 +468,7 @@ public class FilterEditor extends AbstractFilterEditor {
                         }
                     });
             dlg.center();
-            App.getInstance().getAppWindow().addWindow(dlg);
+            App.getInstance().getAppUI().addWindow(dlg);
         }
     }
 }

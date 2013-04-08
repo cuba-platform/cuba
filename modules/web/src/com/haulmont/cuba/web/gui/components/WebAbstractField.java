@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 30.12.2008 16:27:03
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -24,19 +20,23 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.*;
 import java.util.List;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
-    extends
+        extends
         WebAbstractComponent<T>
-    implements
-        Component.HasValue, Component.Validatable
-{
+        implements
+        Component.HasValue, Component.Validatable {
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected List<ValueListener> listeners = new ArrayList<>();
     protected ValueChangingListener valueChangingListener;
-    protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
+    protected List<Field.Validator> validators = new ArrayList<>();
 
     protected boolean settingValue = false;
 
@@ -54,11 +54,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyEx(property);
+        metaPropertyPath = metaClass.getPropertyPath(property);
         try {
             metaProperty = metaPropertyPath.getMetaProperty();
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
         }
 
@@ -110,7 +109,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     public void setDescription(String description) {
-        component.setDescription(description);
+//        vaadin7
+//        component.setDescription(description);
     }
 
     @Override
@@ -136,7 +136,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     protected Object prevValue;
 
     protected void attachListener(T component) {
-        component.addListener(new Property.ValueChangeListener() {
+        component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (settingValue)

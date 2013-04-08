@@ -1,15 +1,15 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.web.App;
+//import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.FileResource;
-import com.vaadin.terminal.StreamResource;
-import com.vaadin.terminal.ApplicationResource;
+//import com.vaadin.terminal.ExternalResource;
+//import com.vaadin.terminal.FileResource;
+//import com.vaadin.terminal.StreamResource;
+//import com.vaadin.terminal.ApplicationResource;
 
 import java.io.File;
 import java.io.InputStream;
@@ -26,10 +26,10 @@ import java.util.Map;
  * Date: 22.06.2009
  */
 public class WebEmbedded
-        extends WebAbstractComponent<com.vaadin.ui.Embedded>
-        implements Embedded, Component.Disposable
+        /*extends WebAbstractComponent<com.vaadin.ui.Embedded>
+        implements Embedded, Component.Disposable*/
 {
-    private Map<String, String> parameters = null;
+    /*private Map<String, String> parameters = null;
     private Type type = Type.OBJECT;
     private ApplicationResource resource;
     private boolean disposed;
@@ -63,7 +63,7 @@ public class WebEmbedded
                 }
             }
 
-            resource = new FileResource(file, App.getInstance());
+            resource = new FileResource(file, AppUI.getInstance());
             component.setSource(resource);
         }
     }
@@ -80,7 +80,7 @@ public class WebEmbedded
             resource = new StreamResource(
                     source,
                     URLEncoder.encode(fileName, "UTF-8"),
-                    App.getInstance());
+                    AppUI.getInstance());
             component.setSource(resource);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -92,7 +92,7 @@ public class WebEmbedded
             resource = new WebEmbeddedApplicationResource(
                     dataProvider,
                     URLEncoder.encode(fileName, "UTF-8"),
-                    App.getInstance());
+                    AppUI.getInstance());
             component.setSource(resource);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -147,12 +147,12 @@ public class WebEmbedded
 
     public void dispose() {
         if (resource != null) {
-            App.getInstance().removeResource(resource);
+            AppUI.getInstance().removeResource(resource);
         }
         disposed = true;
     }
 
     public boolean isDisposed() {
         return disposed;
-    }
+    }*/
 }

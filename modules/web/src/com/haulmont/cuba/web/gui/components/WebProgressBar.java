@@ -14,12 +14,12 @@ import com.vaadin.ui.ProgressIndicator;
  * <p/>
  * Note that indeterminate bar implemented here just like as determinate, but with fixed 0.0 value
  * <p/>
- * <p>$Id$</p>
  *
  * @author Alexander Budarov
+ * @version $Id$
  */
-public class WebProgressBar extends WebAbstractField<ProgressIndicator> implements ProgressBar {
-
+public class WebProgressBar /*extends WebAbstractField<ProgressIndicator> implements ProgressBar*/ {
+/*
     protected boolean indeterminate;
 
     public WebProgressBar() {
@@ -43,5 +43,5 @@ public class WebProgressBar extends WebAbstractField<ProgressIndicator> implemen
         if (indeterminate) {
             component.setValue(0.0f);
         }
-    }
+    }*/
 }

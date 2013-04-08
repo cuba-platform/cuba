@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 20.11.2009 14:10:02
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app.ui.frame;
 
@@ -25,6 +20,10 @@ import com.haulmont.cuba.web.app.FileDownloadHelper;
 import java.io.File;
 import java.util.Map;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class FileFrameController extends AbstractWindow {
 
     private CollectionDatasource ds;
@@ -34,10 +33,6 @@ public class FileFrameController extends AbstractWindow {
     private FileDescriptor fd;
 
     private Table filesTable;
-
-    public FileFrameController(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -51,14 +46,17 @@ public class FileFrameController extends AbstractWindow {
         remove.setAction(new RemoveAction(filesTable, false));
 
         uploadField.addListener(new FileUploadField.Listener() {
+            @Override
             public void uploadStarted(Event event) {
                 uploadField.setEnabled(false);
             }
 
+            @Override
             public void uploadFinished(Event event) {
                 uploadField.setEnabled(true);
             }
 
+            @Override
             public void uploadSucceeded(Event event) {
                 fd = new FileDescriptor();
                 fd.setName(uploadField.getFileName());
@@ -74,6 +72,7 @@ public class FileFrameController extends AbstractWindow {
                 showNotification(MessageProvider.getMessage(getClass(), "uploadSuccess"), NotificationType.HUMANIZED);
             }
 
+            @Override
             public void uploadFailed(Event event) {
                 showNotification(MessageProvider.getMessage(getClass(), "uploadUnsuccess"), NotificationType.HUMANIZED);
             }

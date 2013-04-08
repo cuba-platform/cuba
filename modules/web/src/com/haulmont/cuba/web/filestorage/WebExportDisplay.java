@@ -12,12 +12,14 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
+import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
+import com.vaadin.server.StreamResource;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
-import java.util.UUID;
+import java.io.InputStream;
 
 /**
  * Allows to show exported data in web browser or download it
@@ -30,27 +32,23 @@ import java.util.UUID;
 public class WebExportDisplay implements ExportDisplay {
 
     private boolean newWindow;
-    private boolean attachment;
 
     // Use flags from app.properties for show/download files
     private boolean useViewList = false;
 
     /**
-     * Constructor with attachment=true, newWindow=false
-     * (see {@link WebExportDisplay#WebExportDisplay(boolean, boolean)})
+     * Constructor with newWindow=false
      */
     public WebExportDisplay() {
-        this(true, false);
+        this(false);
         useViewList = true;
     }
 
     /**
-     * @param attachment if true, force download data instead of show in browser
      * @param newWindow  if true, show data in the same browser window;
      *                   if false, open new browser window
      */
-    public WebExportDisplay(boolean attachment, boolean newWindow) {
-        this.attachment = attachment;
+    public WebExportDisplay(boolean newWindow) {
         this.newWindow = newWindow;
     }
 
@@ -59,45 +57,48 @@ public class WebExportDisplay implements ExportDisplay {
      *
      * @param dataProvider ExportDataProvider
      * @param resourceName ResourceName for client side
-     * @param format       ExportFormat
+     * @param exportFormat ExportFormat
      * @see com.haulmont.cuba.gui.export.FileDataProvider
      * @see com.haulmont.cuba.gui.export.ByteArrayDataProvider
      */
     @Override
-    public void show(ExportDataProvider dataProvider, String resourceName, final ExportFormat format) {
-
+    public void show(ExportDataProvider dataProvider, String resourceName, final ExportFormat exportFormat) {
         if (useViewList) {
             String fileExt;
 
-            if (format != null)
-                fileExt = format.getFileExt();
+            if (exportFormat != null)
+                fileExt = exportFormat.getFileExt();
             else
-                fileExt = FileDownloadHelper.getFileExt(resourceName);
+                fileExt = FilenameUtils.getExtension(resourceName);
 
             Configuration configuration = AppBeans.get(Configuration.NAME);
             WebConfig webConfig = configuration.getConfig(WebConfig.class);
             boolean viewFlag = webConfig.getViewFileExtensions().contains(fileExt);
-            attachment = !viewFlag;
             newWindow = viewFlag;
         }
 
         // Try to get stream
-        ProxyDataProvider proxyDataProvider = new ProxyDataProvider(dataProvider);
+        final ProxyDataProvider proxyDataProvider = new ProxyDataProvider(dataProvider);
 
-        final App app = App.getInstance();
-        final ResourceWindow window = new ResourceWindow(proxyDataProvider, resourceName, format, attachment);
-
-        cleanOpenedWindows(app);
-        app.addWindow(window);
-
-        JavaScriptHost webScriptHost = app.getAppWindow().getScriptHost();
-        UUID cacheKey = UUID.randomUUID();
-
-        if (newWindow) {
-            webScriptHost.viewDocument(window.getURL().toString() + "?" + cacheKey);
-        } else {
-            webScriptHost.getResource(window.getURL().toString() + "?" + cacheKey);
+        if (exportFormat != null) {
+            if (StringUtils.isEmpty(FilenameUtils.getExtension(resourceName)))
+                resourceName += "." + exportFormat.getFileExt();
         }
+
+        CubaFileDownloader fileDownloader = App.getInstance().getAppWindow().getFileDownloader();
+
+        StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+            @Override
+            public InputStream getStream() {
+                return proxyDataProvider.provide();
+            }
+        };
+        StreamResource resource = new StreamResource(streamSource, resourceName);
+
+        if (newWindow)
+            fileDownloader.viewDocument(resource);
+        else
+            fileDownloader.downloadFile(resource);
     }
 
     /**
@@ -110,7 +111,7 @@ public class WebExportDisplay implements ExportDisplay {
      */
     @Override
     public void show(ExportDataProvider dataProvider, String resourceName) {
-        String extension = FileDownloadHelper.getFileExt(resourceName);
+        String extension = FilenameUtils.getExtension(resourceName);
         ExportFormat format = ExportFormat.getByExtension(extension);
         show(dataProvider, resourceName, format);
     }
@@ -132,18 +133,5 @@ public class WebExportDisplay implements ExportDisplay {
 
     public void show(byte[] content, String resourceName, ExportFormat format) {
         show(new ByteArrayDataProvider(content), resourceName, format);
-    }
-
-    private void cleanOpenedWindows(App application) {
-        ResourceWindow window = null;
-        for (Object obj : application.getWindows()) {
-            if (obj instanceof ResourceWindow) {
-                window = (ResourceWindow) obj;
-                break;
-            }
-        }
-        if (window != null) {
-            application.removeWindow(window);
-        }
     }
 }

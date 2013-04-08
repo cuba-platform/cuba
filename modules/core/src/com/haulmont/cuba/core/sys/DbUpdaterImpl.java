@@ -16,7 +16,6 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
-import java.util.List;
 
 /**
  * @author krivopustov
