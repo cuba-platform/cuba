@@ -353,7 +353,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         MetaProperty inverseProperty = metaProperty.getInverse();
         if (inverseProperty != null)
-            item.setValue(inverseProperty.getName(), parentDs.getItem());
+            item.setValue(inverseProperty.getName(), masterDs.getItem());
 
         // attach listener only after setting value to the link property
         attachListener(item);
