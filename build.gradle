@@ -14,6 +14,7 @@ allprojects {
     ext.artifactVersion = rootProject.hasProperty(BUILD_VERSION) ?
         rootProject[BUILD_VERSION].replace('-SNAPSHOT', '') : defaultVersion
     ext.isSnapshot = !rootProject.hasProperty(BUILD_VERSION) || rootProject[BUILD_VERSION].endsWith('-SNAPSHOT')
+    ext.vcs = 'svn'
     //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
 
