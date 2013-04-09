@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -47,11 +48,11 @@ import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.converters.DatatypeToStringConverter;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.data.Validator;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.server.Sizeable;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -62,6 +63,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.*;
 import org.dom4j.*;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -138,7 +140,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         userSessionSource = AppBeans.get(UserSessionSource.class);
 
         defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
-//        vaadin7
+//        vaadin7 *ActionsLayout Required
 //        component.addActionHandler(new com.vaadin.event.Action.Handler() {
 //            private com.vaadin.event.ShortcutAction shortcutAction =
 //                    new com.vaadin.event.ShortcutAction("applyFilterAction",
@@ -260,7 +262,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("remove-applied-filter");
         button.setIcon(new VersionedThemeResource("icons/close.png"));
-        button.addListener(new Button.ClickListener() {
+        button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 removeLastApplied();
@@ -313,7 +315,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         maxResultsField = new TextField();
         maxResultsField.setImmediate(true);
         maxResultsField.setMaxLength(4);
-        maxResultsField.setWidth(40, Sizeable.Unit.PIXELS);
+        maxResultsField.setWidth(50, Sizeable.Unit.PIXELS);
         maxResultsField.setInvalidAllowed(false);
         maxResultsField.addValidator(
                 new IntegerRangeValidator(messages.getMainMessage("validation.invalidNumber"), 0, Integer.MAX_VALUE) {
@@ -328,7 +330,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                     }
                 }
         );
-        maxResultsField.setConverter(new StringToIntegerConverter());
+        maxResultsField.setConverter(new DatatypeToStringConverter(Datatypes.get(Integer.class)));
         maxResultsLayout.addComponent(maxResultsField);
 
         Label maxResultsLabel2 = new Label(messages.getMainMessage("filter.maxResults.label2"));
@@ -440,7 +442,12 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         if (useMaxResults) {
             int maxResults;
             if (BooleanUtils.isTrue(maxResultsCb.getValue()))
-                maxResults = Integer.valueOf(maxResultsField.getValue());  //persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+                try {
+                    //noinspection ConstantConditions
+                    maxResults = Datatypes.get(Integer.class).parse(maxResultsField.getValue(), userSessionSource.getLocale());
+                } catch (ParseException e) {
+                    throw new Validator.InvalidValueException("");
+                }
             else
                 maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
             datasource.setMaxResults(maxResults);
