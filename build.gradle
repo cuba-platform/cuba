@@ -144,13 +144,7 @@ configure(globalModule) {
         provided(cubaPlugin)
     }
 
-    task enhance(type: CubaEnhancing) {
-        persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
-        metadataXml = "$globalModule.projectDir/src/cuba-metadata.xml"
-    }
     compileJava << {
-        enhance.execute()
-
         env = System.getenv()
 
         Date releaseDate = new Date()
@@ -172,6 +166,11 @@ configure(globalModule) {
         releaseNumberFile.delete()
         releaseNumberFile.write(releaseNumber)
     }
+
+    task enhance(type: CubaEnhancing, dependsOn: compileJava) {
+        persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
+    }
+    classes.dependsOn += [enhance]
 }
 
 configure(coreModule) {
@@ -260,6 +259,7 @@ configure(guiModule) {
     }
 
     dependencies {
+        provided(cubaPlugin)
         compile(globalModule)
         compile(clientModule)
         compile(poi)
@@ -269,6 +269,18 @@ configure(guiModule) {
 
         testCompile(clientModule.sourceSets.test.output)
     }
+
+    task enhanceTransient(type: CubaEnhanceTransient, dependsOn: compileJava) {
+        classes = [
+                'com.haulmont.cuba.gui.security.entity.AbstractPermissionTarget',
+                'com.haulmont.cuba.gui.security.entity.AttributeTarget',
+                'com.haulmont.cuba.gui.security.entity.BasicPermissionTarget',
+                'com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget',
+                'com.haulmont.cuba.gui.security.entity.OperationPermissionTarget',
+                'com.haulmont.cuba.gui.security.entity.UiPermissionTarget'
+        ]
+    }
+    classes.dependsOn += [enhanceTransient]
 
     test {
         scanForTestClasses = false
