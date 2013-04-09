@@ -28,7 +28,7 @@
 
     .#{$primaryStyleName}-header-wrap {
       height: 23px;
-      background: #e6eaef;   // todo $theme color
+      background: $theme_tableHeaderBackgroundColor;
       border: 1px solid $theme_fieldBorderColor;
       border-bottom: none;
       overflow: hidden;
@@ -38,20 +38,21 @@
         height: 23px;
 
         .#{$primaryStyleName}-caption-container {
-          float: right;
+          height: 23px;
+          float: left;
           overflow: hidden;
           white-space: nowrap;
           padding-top: 3px;
+          margin-left: 5px;
         }
 
         .#{$primaryStyleName}-header-cell:hover,
         .#{$primaryStyleName}-header-cell-asc:hover,
         .#{$primaryStyleName}-header-cell-desc:hover {
-          background: #F2F5F7;            // todo $theme color
+          background: $theme_tableHeaderHoverBackgroundColor;
         }
 
         table {
-
           td {
             height: 23px;
             cursor: pointer;
@@ -63,7 +64,7 @@
         display: block;
         height: 23px;
         float: right;
-        background-color: $theme_fieldBorderColor;                 // todo $theme color
+        background-color: $theme_fieldBorderColor;
         cursor: col-resize;
       }
 
@@ -73,7 +74,7 @@
     }
 
     .v-table-body-wrapper {
-      border: 1px solid #a5c4e0;           // todo $theme color
+      border: 1px solid $theme_fieldBorderColor;
     }
 
     .#{$primaryStyleName}-body {
@@ -81,23 +82,23 @@
     }
 
     .#{$primaryStyleName}-cell-content {
-      border-right-color:  #edf3f9;          // todo $theme color
+      border-right-color: $theme_tableCellSeparatorColor;          // todo $theme color
     }
 
     .#{$primaryStyleName}-row,
     .#{$primaryStyleName}-row-odd {
-      background-color: #fff;
+      background-color: $theme_tableRowBackgroundColor;
       height: 24px;
       cursor: default;
     }
 
     .#{$primaryStyleName}-row-odd {
-      background-color: #f6f8fa;              // todo $theme color
+      background-color: $theme_tableRowOddBackgroundColor;
     }
 
     .#{$primaryStyleName}-row:hover,
     .#{$primaryStyleName}-row-odd:hover {
-      background-color: #f5f4b9;            // todo $theme color
+      background-color: $theme_tableRowHoverBackgroundColor;
     }
 
     .#{$primaryStyleName}-caption-row {
@@ -118,7 +119,7 @@
     .#{$primaryStyleName}-row.v-selected,
     .#{$primaryStyleName}-row-odd.v-selected,
     .#{$primaryStyleName}-caption-row.v-selected {
-      background-color: #c3e1ff;                     // todo $theme color
+      background-color: $theme_tableRowSelectionBackgroundColor;
     }
 
     .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-content {
@@ -158,6 +159,26 @@
       background-repeat: no-repeat;
       background-image: url(sprites/column-selector.png);  /** sprite-ref: components; */
     }
+
+    .#{$primaryStyleName}-scrollposition {
+      width: 160px;
+      height: 39px;
+      border: 0;
+      border-top: 5px solid transparent;
+      background: transparent;
+      background-origin: content-box;
+      background-clip: content-box;
+      background-repeat: no-repeat;
+      background-image: url(sprites/scroll-position-bg.png);  /** sprite-ref: components; */
+    }
+
+    .#{$primaryStyleName}-scrollposition span {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+      font-weight:bold;
+      border: 0;
+    }
   }
 
   .#{$primaryStyleName}-header-drag {
@@ -177,6 +198,6 @@
   }
 
   .#{$primaryStyleName} > div:focus {
-    border-color: #4d7ab2;
+    border-color: $theme_fieldFocusedBorderColor;
   }
 }
