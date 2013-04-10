@@ -23,7 +23,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     implements
         Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
 
-    private static final List<Sizeable.Unit> UNIT_SYMBOLS = Arrays.asList(
+    protected static final List<Sizeable.Unit> UNIT_SYMBOLS = Arrays.asList(
             Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
             Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
             Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE);
@@ -143,6 +143,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
         this.expandable = expandable;
     }
 
+    @Override
     public Alignment getAlignment() {
         return alignment;
     }

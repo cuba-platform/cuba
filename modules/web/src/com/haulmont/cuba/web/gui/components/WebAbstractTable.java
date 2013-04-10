@@ -41,6 +41,7 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaPlaceHolder;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
@@ -49,7 +50,6 @@ import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -301,9 +301,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
 
     @Override
     public int getHeightUnits() {
-        return 0;
-//        vaadin7
-//        return componentComposition.getHeightUnits();
+        return UNIT_SYMBOLS.indexOf(componentComposition.getHeightUnits());
     }
 
     @Override
@@ -323,9 +321,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
 
     @Override
     public int getWidthUnits() {
-        return 0;
-//        vaadin7
-//        return componentComposition.getWidthUnits();
+        return UNIT_SYMBOLS.indexOf(componentComposition.getWidthUnits());
     }
 
     @Override
@@ -1241,7 +1237,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
-            Image checkPoxImage = new Image();
+            CubaPlaceHolder checkPoxImage = new CubaPlaceHolder();
             checkPoxImage.setSizeUndefined();
             if (BooleanUtils.isTrue((Boolean) value))
                 checkPoxImage.setStyleName("checkbox-checked");
