@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-popupbutton($primaryStyleName: v-popupbutton) {
+  .#{$primaryStyleName}-popup {
+    border: 1px solid $theme_fieldBorderColor;
+
+    .v-button {
+      padding: 0 3px;
+
+      .v-button-caption {
+        padding: 2px 7px;
+        text-decoration: none;
+      }
+
+      .v-button-caption:hover {
+        color: #fff;
+        background: $theme_fieldSelectionColor;
+      }
+    }
+
+    .v-button-link:focus {
+      border: 0;
+    }
+  }
+}
