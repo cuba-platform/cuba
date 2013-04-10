@@ -36,32 +36,28 @@
     .#{$primaryStyleName}-node {
       background: transparent;
       background-repeat: no-repeat;
-      background-image: url(sprites/item-collapsed.png);
+      background-image: url(images/item-collapsed.png);
       background-position: 0 2px;
     }
 
     .#{$primaryStyleName}-node-expanded {
-      background-image: url(sprites/item-expanded.png);
+      background-image: url(images/item-expanded.png);
     }
 
     .#{$primaryStyleName}-node-children .#{$primaryStyleName}-node {
-      background-image: url(sprites/item-collapsed.png);
+      background-image: url(images/item-collapsed.png);
     }
 
     .#{$primaryStyleName}-node-children .#{$primaryStyleName}-node-expanded {
-      background-image: url(sprites/item-expanded.png);
+      background-image: url(images/item-expanded.png);
     }
 
     .#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf {
-      background-image: url(sprites/tree-line.png);
-    }
-
-    .#{$primaryStyleName}-node-children-last.#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf {
-      background-image: url(sprites/tree-line.png);
+      background-image: url(images/tree-line.png);
     }
 
     .#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf.#{$primaryStyleName}-node-leaf-last {
-      background-image: url(sprites/tree-line-last.png);
+      background-image: url(images/tree-line-last.png);
     }
 
     .#{$primaryStyleName}-node-selected span {

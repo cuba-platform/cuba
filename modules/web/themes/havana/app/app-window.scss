@@ -6,6 +6,8 @@
 
 // Version: $Id$
 
+@import "../components/tabsheet/tabsheet";
+
 // Application Window styles
 @mixin cuba-application-window {
 
@@ -85,6 +87,12 @@
   .cuba-app-work-area,
   .cuba-app-work-area-single {
     background: $theme_appWorkAreaColor;
+  }
+
+  .cuba-app-work-area-single-window {
+    background: #fff;
+
+    @include havana-tabsheet-second(v-tabsheet);
   }
 
   .cuba-app-icon {

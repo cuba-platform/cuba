@@ -72,8 +72,8 @@
     }
 
     .#{$primaryStyleName}-content {
-      background: #EBF0F4;
-      border: 1px solid #A4C5DF;
+      background: $theme_tabsheetThirdBackgroundColor;
+      border: 1px solid $theme_tabsheetThirdBorderColor;
       border-top-style: none;
     }
   }
@@ -163,10 +163,6 @@
 
 @mixin havana-tabsheet($primaryStyleName: v-tabsheet) {
   .#{$primaryStyleName} {
-
-    .#{$primaryStyleName}-tabcontainer {
-      height: 32px;
-    }
 
     .#{$primaryStyleName}-spacertd {
       width: 100%;
@@ -344,15 +340,6 @@
       margin-left: 0;
     }
 
-    .#{$primaryStyleName}-deco:before {
-      display: block;
-      content: "";
-      width: 9px;
-      height: 9px;
-      margin-left: -9px;
-      background: none;
-    }
-
     .#{$primaryStyleName}-loading .#{$primaryStyleName}-tabitem-selected .v-captiontext {
       background: transparent;
       margin-left: -5px;
@@ -373,10 +360,6 @@
   }
 
   .v-window-contents {
-    @include havana-tabsheet-second($primaryStyleName);
-  }
-
-  .v-verticallayout-single {
     @include havana-tabsheet-second($primaryStyleName);
   }
 }
