@@ -46,25 +46,6 @@ public class WebComponentsHelper {
         }
     }
 
-    /*
-    public static class ComponentPath {
-        String[] elements;
-        com.haulmont.cuba.gui.components.Component[] components;
-
-        public ComponentPath(String[] elements, com.haulmont.cuba.gui.components.Component[] components) {
-            this.elements = elements;
-            this.components = components;
-        }
-
-        public String[] getElements() {
-            return elements;
-        }
-
-        public com.haulmont.cuba.gui.components.Component[] getComponents() {
-            return components;
-        }
-    }*/
-
     public static <T extends Component> Collection<T> getComponents(ComponentContainer container, Class<T> aClass) {
         List<T> res = new ArrayList<>();
         for (Object aContainer : container) {
@@ -95,10 +76,6 @@ public class WebComponentsHelper {
 
         return (com.vaadin.ui.Component) comp;
     }
-          /*
-    public static com.haulmont.cuba.web.toolkit.Timer unwrap(com.haulmont.cuba.gui.components.Timer timer) {
-        return (com.haulmont.cuba.web.toolkit.Timer) timer;
-    }   */
 
     /**
      * Returns underlying Vaadin component, which serves as the outermost container for the supplied GUI component.
@@ -116,6 +93,7 @@ public class WebComponentsHelper {
 
         return (com.vaadin.ui.Component) comp;
     }
+
     /**
      * @deprecated Use ComponentsHelper.getComponents() instead
      */
@@ -146,15 +124,15 @@ public class WebComponentsHelper {
         if (elements.length == 1) {
             final com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(id);
 
-            if (component == null) {
-                return (T) getComponentByIterate(container, id);
-            } else {
+            if (component == null)
+                return getComponentByIterate(container, id);
+            else
                 return (T) component;
-            }
+
         } else {
             com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(elements[0]);
             if (component == null) {
-                return (T) getComponentByIterate(container, id);
+                return getComponentByIterate(container, id);
             } else {
                 final List<String> subpath = Arrays.asList(elements).subList(1, elements.length);
                 if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
@@ -169,9 +147,8 @@ public class WebComponentsHelper {
 
     protected static <T extends com.haulmont.cuba.gui.components.Component> T getComponentByIterate(ComponentContainer container, String id) {
         com.haulmont.cuba.gui.components.Component component;
-        final Iterator iterator = container.getComponentIterator();
-        while (iterator.hasNext()) {
-            Component c = (Component) iterator.next();
+        for (Object aContainer : container) {
+            Component c = (Component) aContainer;
 
             if (c instanceof com.haulmont.cuba.gui.components.Component.Container) {
                 component = ((com.haulmont.cuba.gui.components.Component.Container) c).getComponent(id);

@@ -22,21 +22,24 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
 
     protected String hierarchyPropertyName;
 
+    @Override
     public String getHierarchyPropertyName() {
         return hierarchyPropertyName;
     }
 
+    @Override
     public void setHierarchyPropertyName(String hierarchyPropertyName) {
         this.hierarchyPropertyName = hierarchyPropertyName;
     }
 
+    @Override
     public Collection<K> getChildren(K itemId) {
         if (hierarchyPropertyName != null) {
             final Entity item = getItem(itemId);
             if (item == null)
                 return Collections.emptyList();
 
-            List<K> res = new ArrayList<K>();
+            List<K> res = new ArrayList<>();
 
             Collection<K> ids = getItemIds();
             for (K id : ids) {
@@ -51,6 +54,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         return Collections.emptyList();
     }
 
+    @Override
     public K getParent(K itemId) {
         if (hierarchyPropertyName != null) {
             Instance item = getItem(itemId);
@@ -64,11 +68,12 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    @Override
     public Collection<K> getRootItemIds() {
         Collection<K> ids = getItemIds();
 
         if (hierarchyPropertyName != null) {
-            Set<K> result = new LinkedHashSet<K>();
+            Set<K> result = new LinkedHashSet<>();
             for (K id : ids) {
                 Entity<K> item = getItemNN(id);
                 Object value = item.getValue(hierarchyPropertyName);
@@ -77,10 +82,11 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             }
             return result;
         } else {
-            return new LinkedHashSet<K>(ids);
+            return new LinkedHashSet<>(ids);
         }
     }
 
+    @Override
     public boolean isRoot(K itemId) {
         Instance item = getItem(itemId);
         if (item == null) return false;
@@ -93,6 +99,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public boolean hasChildren(K itemId) {
         final Entity item = getItem(itemId);
         if (item == null) return false;
@@ -110,7 +117,8 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         return false;
     }
 
+    @Override
     public boolean canHasChildren(K itemId) {
-        return true;
+        return hasChildren(itemId);
     }
 }

@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-tree($primaryStyleName: v-tree) {
+  .#{$primaryStyleName} {
+    text-align: left;
+    background: #fff;
+    border: 1px solid $theme_fieldBorderColor;
+    overflow: auto;
+    outline: none;
+    padding: 0;
+
+    .#{$primaryStyleName}-node-caption {
+      margin-left: 16px;
+      span {
+        cursor: default;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding: 0 2px;
+        display: inline;
+        white-space: nowrap;
+        font-size: 12px;
+        color: $theme_treeCaptionColor;
+      }
+      .v-icon {
+        display: inline;
+        vertical-align: text-bottom;
+      }
+    }
+
+    .#{$primaryStyleName}-node {
+      background: transparent;
+      background-repeat: no-repeat;
+      background-image: url(sprites/item-collapsed.png);
+      background-position: 0 2px;
+    }
+
+    .#{$primaryStyleName}-node-expanded {
+      background-image: url(sprites/item-expanded.png);
+    }
+
+    .#{$primaryStyleName}-node-children .#{$primaryStyleName}-node {
+      background-image: url(sprites/item-collapsed.png);
+    }
+
+    .#{$primaryStyleName}-node-children .#{$primaryStyleName}-node-expanded {
+      background-image: url(sprites/item-expanded.png);
+    }
+
+    .#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf {
+      background-image: url(sprites/tree-line.png);
+    }
+
+    .#{$primaryStyleName}-node-children-last.#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf {
+      background-image: url(sprites/tree-line.png);
+    }
+
+    .#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf.#{$primaryStyleName}-node-leaf-last {
+      background-image: url(sprites/tree-line-last.png);
+    }
+
+    .#{$primaryStyleName}-node-selected span {
+      background: $theme_treeSelectionColor;
+      color: $theme_treeCaptionSelectedColor;
+      padding: 0 2px;
+      cursor: default;
+    }
+  }
+
+  .#{$primaryStyleName} > div {
+    padding: 5px;
+  }
+
+  .#{$primaryStyleName}:focus {
+    border-color: $theme_fieldFocusedBorderColor;
+  }
+}

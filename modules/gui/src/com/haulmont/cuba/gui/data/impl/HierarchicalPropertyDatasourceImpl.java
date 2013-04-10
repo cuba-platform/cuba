@@ -41,7 +41,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
             if (item == null)
                 return Collections.emptyList();
 
-            List<K> res = new ArrayList<K>();
+            List<K> res = new ArrayList<>();
 
             Collection<K> ids = getItemIds();
             for (K id : ids) {
@@ -136,7 +136,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public boolean canHasChildren(K itemId) {
-        return true;
+        return hasChildren(itemId);
     }
 
     /**
@@ -154,4 +154,3 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         this.sortPropertyName = sortPropertyName;
     }
 }
-

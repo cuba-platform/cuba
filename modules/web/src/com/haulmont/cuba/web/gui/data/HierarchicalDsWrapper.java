@@ -55,14 +55,13 @@ public class HierarchicalDsWrapper extends CollectionDsWrapper implements Contai
         return false;
     }
 
+    @Override
     public boolean areChildrenAllowed(Object itemId) {
-        //return true;
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).canHasChildren(itemId);
     }
 
     @Override
     public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed) throws UnsupportedOperationException {
-        //return true;
         return false; // due to vaadin javadoc, return false if method is not implemented
     }
 

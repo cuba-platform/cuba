@@ -16,6 +16,7 @@
 @import "components/common/common";
 
 // Components
+@import "components/tree/tree";
 @import "components/table/table";
 @import "components/panel/panel";
 @import "components/window/window";
@@ -44,6 +45,7 @@
 
   @include havana-common;
 
+  @include havana-tree;
   @include havana-table;
   @include havana-panel;
   @include havana-window;
