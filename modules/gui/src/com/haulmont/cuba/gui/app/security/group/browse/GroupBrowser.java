@@ -98,10 +98,6 @@ public class GroupBrowser extends AbstractWindow {
         usersTable.addAction(userCreateAction);
         usersTable.addAction(new ItemTrackingAction("moveToGroup") {
 
-            {
-                setEnabled(usersTable.getSingleSelected() != null);
-            }
-
             @Override
             public String getIcon() {
                 return "icons/move.png";
@@ -118,7 +114,7 @@ public class GroupBrowser extends AbstractWindow {
                         public void handleLookup(Collection items) {
                             if (items.size() == 1) {
                                 Group group = (Group) items.iterator().next();
-                                List<UUID> usersForModify = new ArrayList<UUID>();
+                                List<UUID> usersForModify = new ArrayList<>();
                                 for (User user : selected) {
                                     usersForModify.add(user.getId());
                                 }
