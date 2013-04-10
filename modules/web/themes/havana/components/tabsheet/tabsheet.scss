@@ -10,7 +10,6 @@
 
   .#{$primaryStyleName} {
 
-
     .#{$primaryStyleName}-deco {
       background: transparent;
     }
@@ -186,8 +185,8 @@
     .#{$primaryStyleName}-scroller {
       white-space: nowrap;
       text-align: right;
-      margin-top: -29px;
       height: 29px;
+      margin-top: -29px;
     }
 
     .#{$primaryStyleName}-scrollerPrev,
@@ -222,13 +221,17 @@
       background-image: url(sprites/prev-tab.png); /** sprite-ref: components; */
     }
 
+    .#{$primaryStyleName}-tabcontainer {
+      height: 33px;
+    }
+
     .#{$primaryStyleName}-tabs {
       empty-cells: hide;
       border-collapse: collapse;
       margin: 0;
       padding:0;
       border:0;
-      height: 29px;
+      height: 33px;
       width: 100%;
       overflow:hidden;
       background: url(images/top-tabsheet-bg.png) repeat-x bottom;

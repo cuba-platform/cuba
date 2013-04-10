@@ -8,24 +8,35 @@
 
 @mixin havana-popupbutton($primaryStyleName: v-popupbutton) {
   .#{$primaryStyleName}-popup {
+    padding: 3px 0;
     border: 1px solid $theme_fieldBorderColor;
 
     .v-button {
-      padding: 0 3px;
+      height: 20px;
+      width: 100%;
+      border: 1px solid transparent;
+      padding: 0 2px;
+
+      .v-button-wrap {
+        margin-top: 0px;
+
+        .v-button-caption {
+          padding: 1px 5px;
+          text-decoration: none;
+        }
+      }
+    }
+
+    .v-button:hover {
+      background: $theme_fieldSelectionColor;
 
       .v-button-caption {
-        padding: 2px 7px;
-        text-decoration: none;
-      }
-
-      .v-button-caption:hover {
         color: #fff;
-        background: $theme_fieldSelectionColor;
       }
     }
 
     .v-button-link:focus {
-      border: 0;
+      border: 1px solid transparent;
     }
   }
 }
