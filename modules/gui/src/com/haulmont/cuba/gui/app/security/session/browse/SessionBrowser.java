@@ -7,9 +7,7 @@
 package com.haulmont.cuba.gui.app.security.session.browse;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -31,25 +29,22 @@ import java.util.*;
 public class SessionBrowser extends AbstractLookup {
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private UserSessionService uss;
+    protected UserSessionService uss;
 
     @Inject
-    private Table sessionsTable;
+    protected Table sessionsTable;
 
     @Inject
-    private UserSessionsDatasource sessionsDs;
+    protected UserSessionsDatasource sessionsDs;
 
     @Inject
-    protected Messages messages;
-
-    @Inject
-    private Label lastUpdateTsLab;
+    protected Label lastUpdateTsLab;
 
     @Named("sessionsTable.message")
-    private Action messageAction;
+    protected Action messageAction;
 
     public void init(Map<String, Object> params) {
         super.init(params);
