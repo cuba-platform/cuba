@@ -428,7 +428,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           <para>Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Deploy</guimenu>. В подкаталоге <filename>build</filename> проекта будет установлен сервер <application>Tomcat</application> с собранным приложением.</para>
         </listitem>
         <listitem>
-          <para>Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Start application</guimenu>. Через несколько секунд в панели статуса ссылка рядом с надписью <guilabel>Web application</guilabel> станет доступной, и по ней можно осуществить переход к приложению непосредственно из Студии.</para>
+          <para>Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Start application server</guimenu>. Через несколько секунд в панели статуса ссылка рядом с надписью <guilabel>Web application</guilabel> станет доступной, и по ней можно осуществить переход к приложению непосредственно из Студии.</para>
           <para>Логин и пароль пользователя − admin / admin.</para>
           <para>Запущенное приложение содержит два главных пункта меню (<guimenu>Администрирование</guimenu> и <guimenu>Помощь</guimenu>), функциональность подсистемы безопасности и администрирования системы.</para>
         </listitem>
@@ -449,13 +449,16 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           <para>В поле  <guilabel>Parent class</guilabel> оставьте установленное значение − <link linkend="standardEntity">StandardEntity</link>. </para>
         </listitem>
         <listitem>
+          <para>Поле <guilabel>Inheritance strategy</guilabel> служит для объявления  стратегии наследования для создаваемой сущности. Это поле оставьте пустым.</para>
+        </listitem>
+        <listitem>
           <para>Нажмите на кнопку <guibutton>...</guibutton> рядом с именем сущности. На экране отобразится окно <guilabel>Localized message</guilabel>, в нем следует задать <link linkend="localization">локализацию</link> имени сущности на доступных языках.</para>
         </listitem>
       </itemizedlist>
       <para>Далее создадим атрибуты сущности. Для этого нажмите на кнопку <guibutton>New</guibutton>, находящуюся под таблицей <guilabel>Attributes</guilabel>.</para>
       <itemizedlist>
         <listitem>
-          <para>В отобразившемся окне <guilabel>Create attribute</guilabel> в поле <guilabel>Name</guilabel>  введите название атрибута сущности −  <userinput>name</userinput>,  в списке <guilabel>Attribute type</guilabel> выберите значение <link linkend="datatype">DATATYPE</link>, в поле <guilabel>Type</guilabel> укажите тип атрибута <userinput>String</userinput> и далее укажите длину текстового атрибута  в поле <guilabel>Length</guilabel>,  равной 100 символам. Установите флажок <guilabel>Mandatory</guilabel>. Установленный флажок означает, что атрибут является обязательным  к заполнению. В поле <guilabel>Column</guilabel> автоматически сгенерируется имя колонки в базе данных. Далее нажмите на кнопку <guibutton>...</guibutton>  рядом с названием атрибута. На экране отобразится окно <guilabel>Localized message</guilabel>, в нем следует задать локализацию названия  атрибута на доступных языках.</para>
+          <para>В отобразившемся окне <guilabel>Create attribute</guilabel> в поле <guilabel>Name</guilabel>  введите название атрибута сущности −  <userinput>name</userinput>,  в списке <guilabel>Attribute type</guilabel> выберите значение <link linkend="datatype">DATATYPE</link>, в поле <guilabel>Type</guilabel> укажите тип атрибута <userinput>String</userinput> и далее укажите длину текстового атрибута  в поле <guilabel>Length</guilabel>,  равной 100 символам. Установите флажок <guilabel>Mandatory</guilabel>. Установленный флажок означает, что атрибут является обязательным  к заполнению. В поле <guilabel>Column</guilabel> автоматически сгенерируется имя колонки в базе данных. Далее нажмите на кнопку <guibutton>...</guibutton>  рядом с названием атрибута. На экране отобразится окно <guilabel>Localized message</guilabel>, в нем следует задать локализацию названия  атрибута на доступных языках. Для добавления атрибута нажмите на кнопку <guibutton>Add</guibutton>.</para>
         </listitem>
         <listitem>
           <para>Атрибут <code>email</code> создается таким же образом, за исключением того, что  в поле <guilabel>Length</guilabel> следует указать значение <userinput>50</userinput>.</para>
@@ -473,14 +476,14 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           <para><guilabel>Name</guilabel> − <userinput>date</userinput>, <guilabel>Attribute type</guilabel> − <link linkend="datatype">DATATYPE</link>, <guilabel>Type</guilabel> − <userinput>Date</userinput>. Для атрибута <code>date</code> установите галочку <guilabel>Mandatory</guilabel>.</para>
         </listitem>
         <listitem>
-          <para><guilabel>Name</guilabel> − <userinput>amount</userinput>, <guilabel>Attribute type</guilabel> − <link linkend="datatype">DATATYPE</link>, <guilabel>Type</guilabel> − <userinput>Decimal</userinput>.</para>
+          <para><guilabel>Name</guilabel> − <userinput>amount</userinput>, <guilabel>Attribute type</guilabel> − <link linkend="datatype">DATATYPE</link>, <guilabel>Type</guilabel> − <userinput>BigDecimal</userinput>.</para>
         </listitem>
       </itemizedlist>
       <para>Для каждого атрибута укажите <link linkend="localization">локализованные</link> названия.</para>
     </section>
     <section>
       <title>Создание таблиц базы данных</title>
-      <para>Для создания таблиц базы данных достаточно  на вкладке <guilabel>Entities</guilabel> панели навигатора нажать на кнопку <guibutton>Generate DB scripts</guibutton>. После этого откроется страница <guilabel>Database update scripts</guilabel>. На вкладке будут сгенерированы скрипты обновления базы данных от ее текущего  состояния (<guilabel>Update scripts</guilabel>) и скрипты создания БД с нуля (<guilabel>Init tables</guilabel>, <guilabel>Init constraints</guilabel>, <guilabel>Init data</guilabel>). Нажмите на кнопку <guibutton>Save scripts</guibutton> в верхнем правом углу рабочей панели и затем <guibutton>Close</guibutton>. Для запуска скриптов обновления остановите запущенное приложение с помощью команды <guimenu>Run</guimenu> −&gt; <guimenu>Stop application</guimenu>, затем выполните <guimenu>Run</guimenu> −&gt; <guimenu>Update database</guimenu>.</para>
+      <para>Для создания таблиц базы данных достаточно  на вкладке <guilabel>Entities</guilabel> панели навигатора нажать на кнопку <guibutton>Generate DB scripts</guibutton>. После этого откроется страница <guilabel>Database update scripts</guilabel>. На вкладке будут сгенерированы скрипты обновления базы данных от ее текущего  состояния (<guilabel>Update scripts</guilabel>) и скрипты создания БД с нуля (<guilabel>Init tables</guilabel>, <guilabel>Init constraints</guilabel>, <guilabel>Init data</guilabel>). Нажмите на кнопку <guibutton>Save scripts</guibutton> в верхнем правом углу рабочей панели и затем <guibutton>Close</guibutton>. Для запуска скриптов обновления остановите запущенное приложение с помощью команды <guimenu>Run</guimenu> −&gt; <guimenu>Stop application server</guimenu>, затем выполните <guimenu>Run</guimenu> −&gt; <guimenu>Update database</guimenu>.</para>
     </section>
     <section>
       <title>Создание пользовательского интерфейса приложения</title>

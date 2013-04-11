@@ -243,7 +243,7 @@
         <para>Установите инструменты сборки и настройте окружение согласно предыдущим разделам данной главы.</para>
       </listitem>
       <listitem>
-        <para>Загрузите архив <filename>studio-0.3.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.3/studio-0.3.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.3/studio-0.3.zip</ulink> (для доступа к репозиторию используйте имя <userinput>cuba</userinput> и пароль <userinput>cuba123</userinput>).</para>
+        <para>Загрузите архив <filename>studio-0.4.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.4/studio-0.4.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.4/studio-0.4.zip</ulink>.</para>
       </listitem>
       <listitem>
         <para>Распакуйте архив в локальный путь, не содержащий пробелов, например, <filename>c:/work/studio</filename></para>
@@ -269,7 +269,7 @@
             <para><guilabel>IDE port</guilabel> − порт, на котором будет принимать подключения плагин к IDE</para>
           </listitem>
           <listitem>
-            <para><guilabel>Repository</guilabel> − URL <link linkend="artifact_repository">репозитория</link> бинарных артефактов. Нажмите кнопку <guibutton>Auth</guibutton> и укажите имя <userinput>cuba</userinput> и пароль <userinput>cuba123</userinput>.</para>
+            <para><guilabel>Repository</guilabel> − URL <link linkend="artifact_repository">репозитория</link> бинарных артефактов. Нажмите кнопку <guibutton>Auth</guibutton> и укажите имя  и пароль доступа к репозиторию.</para>
           </listitem>
         </itemizedlist>
       </listitem>

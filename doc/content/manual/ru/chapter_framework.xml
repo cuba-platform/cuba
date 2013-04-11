@@ -8279,13 +8279,15 @@ protected boolean postCommit(boolean committed, boolean close) {
           <warning>
             <para>Обязательными вложенными элементами являются элементы <sgmltag>columns</sgmltag> и <sgmltag>rows</sgmltag>. </para>
           </warning>
-          <para id="gui_attr_grid_rows"><sgmltag>rows</sgmltag> − обязательный элемент, содержит последовательность строк (<sgmltag>row</sgmltag>). Хотя бы один элемент строки является обязательным.</para>
-          <para id="gui_attr_grid_row"><sgmltag>row</sgmltag> − элемент строки, контейнер для содержимого ряда. Состоит из контейнеров или  компонентов.</para>
-          <para id="gui_attr_grid_row_flex"><sgmltag>flex</sgmltag> − необязательный атрибут для элемента <sgmltag>row</sgmltag>, задает соотношение высот рядов сетки.</para>
-          <para id="gui_attr_grid_columns"><sgmltag>columns</sgmltag> − обязательный элемент, содержит последовательность <sgmltag>column</sgmltag>.</para>
+          <para id="gui_attr_grid_columns"><sgmltag>columns</sgmltag> − обязательный элемент, содержит последовательность колонок  <sgmltag>column</sgmltag>.</para>
           <para id="gui_attr_grid_count">Атрибут <sgmltag>count</sgmltag> − необязательный атрибут, задает количество колонок, если не заданы элементы <sgmltag>column</sgmltag>.</para>
           <para id="gui_attr_grid_column"><sgmltag>column</sgmltag> − необязательный элемент для элемента <link linkend="gui_attr_grid_columns">columns</link>, декларирует атрибуты колонок сетки.</para>
           <para id="gui_attr_grid_column_flex">Атрибут <sgmltag>flex</sgmltag> − необязательный атрибут, задает соотношение ширин колонок.</para>
+          <para>Для того чтобы определить ширину колонок друг относительно друга, необходимо чтобы для контейнера <sgmltag>grid</sgmltag> была установлена ширина (атрибут <link linkend="gui_attr_basic_width">width</link>). Для каждого элемента <link linkend="gui_attr_grid_column">column</link> следует установить требуемое значение атрибута <sgmltag>flex</sgmltag>. Например, в примере, находящемся ниже, ширина колонок сетки определяется соотношением 3:0:1:0. Колонкам 2 и 4 устанавливаются ширины, равные ширинам содержащихся в них компонентов; оставшаяся часть делится в пропорции 3 к 1 (это ширины колонок 1 и 3). Таким образом,  ширина колонки, для которой задан атрибут <sgmltag>flex</sgmltag> со значением <literal>0</literal>,  равна ширине компонента, содержащегося в данной колонке. Отсутствие атрибута <sgmltag>flex</sgmltag> у элемента <link linkend="gui_attr_grid_column">column</link> приравнивается значению <code>flex=&quot;0&quot;</code>.</para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/grid/grid_flex.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para id="gui_attr_grid_rows"><sgmltag>rows</sgmltag> − обязательный элемент, содержит последовательность строк (<sgmltag>row</sgmltag>). Хотя бы один элемент строки является обязательным.</para>
+          <para id="gui_attr_grid_row"><sgmltag>row</sgmltag> − элемент строки, контейнер для содержимого ряда. Состоит из контейнеров или  компонентов.</para>
+          <para id="gui_attr_grid_row_flex"><sgmltag>flex</sgmltag> − необязательный атрибут для элемента <sgmltag>row</sgmltag>, задает соотношение высот рядов сетки. Аналогичен атрибуту <link linkend="gui_attr_grid_column_flex">flex</link> для элемента <link linkend="gui_attr_grid_column">column</link>.</para>
           <para>Атрибуты <sgmltag>grid</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
@@ -8651,46 +8653,6 @@ protected boolean postCommit(boolean committed, boolean close) {
       </section>
       <section>
         <title>Разное</title>
-        <section>
-          <title>AccessControl</title>
-          <para>Компонент <sgmltag>accessControl</sgmltag> предназначен для декларативного управления доступом к частям экрана. Он представляет собой контейнер, который никак не отображает себя на экране, а только управляет атрибутами <link linkend="gui_attr_basic_visible">visible</link> и <link linkend="gui_attr_basic_editable">editable</link> входящих в него компонентов.</para>
-          <para>Состояние управляемых компонентов определяется на основе двух элементов, вложенных в <sgmltag>accessControl</sgmltag>: <sgmltag>visible</sgmltag> и <sgmltag>editable</sgmltag>.</para>
-          <para>Соответствующее значение принимается либо из скрипта, возвращающего <code>boolean</code>, либо из свойства объекта <link linkend="AccessData">AccessData</link>, связанного с компонентом.
-Скрипт задается либо атрибутом <sgmltag>script</sgmltag>, либо непосредственно в тексте элемента. 
-Свойство объекта <link linkend="AccessData">AccessData</link> задается атрибутом <sgmltag>property</sgmltag> и имеет больший приоритет, чем скрипт.</para>
-          <warning>
-            <para>В случае <sgmltag>visible</sgmltag>=<literal>false</literal> вложенные компоненты вообще не создаются, поэтому будьте осторожны при обращении к ним из контроллера.</para>
-          </warning>
-          <para>
-                <programlisting>&lt;tab id=&quot;mainTab&quot; caption=&quot;msg://mainTab&quot;&gt;
-            &lt;accessControl data=&quot;workflow.client.web.ui.card.CardAccessData&quot; param=&quot;accessData&quot;&gt;
-            &lt;editable property=&quot;notStarted&quot;/&gt;
-
-            &lt;vbox margin=&quot;true&quot; expand=&quot;attachmentsPane&quot;&gt;
-                ...</programlisting>
-            </para>
-          <section id="AccessData">
-            <title>Объект AccessData</title>
-            <para>В связи с тем что одни и те же параметры доступа могут многократно потребоваться в разных частях экрана и в коде контроллера, компонент <sgmltag>accessControl</sgmltag> может быть связан с объектом Java или Groovy, вычисляющим и хранящим эти параметры. Таким образом,  дорогостоящая инициализация параметра доступа производится только один раз и затем доступна на протяжении жизни экрана.</para>
-            <para>Для связи компонента с данными доступа создайте класс, унаследованный от <code>AbstractAccessData</code>, и задайте следующие атрибуты компонента <code>accessControl</code>:</para>
-            <itemizedlist>
-              <listitem>
-                <para><emphasis role="bold">data</emphasis> − имя класса <code>AccessData</code></para>
-              </listitem>
-              <listitem>
-                <para><emphasis role="bold">param</emphasis> − имя параметра экрана, в котором будет сохранен объект <code>AccessData</code></para>
-              </listitem>
-            </itemizedlist>
-            <para>В момент создания экрана загрузчик компонента <code>accessControl</code> проверяет наличие экземпляра <code>AccessData</code> в указанном параметре, и если его там нет, создает новый экземпляр.</para>
-            <para>В дальнейшем в коде контроллера можно получить экземпляр <code>AccessData</code> из параметров экрана, например:</para>
-            <programlisting>AbstractWfAccessData accessData = getContext().getParamValue(&quot;accessData&quot;);</programlisting>
-            <para>При создании класса <code>AccessData</code> следует иметь в виду, что в параметры экрана-редактора всегда передается параметр <parameter>param$item</parameter>, содержащий текущий редактируемый экземпляр сущности. Однако этот экземпляр загружен по <link linkend="views">представлению</link> вызывающего экрана, а не по представлению редактора.</para>
-            <para>Свойства <code>AccessData</code>, на которые можно ссылаться из компонента <code>accessControl</code>, должны быть реализованы по стандарту JavaBeans: методами с сигнатурой boolean <methodname>getXxx()</methodname></para>
-            <para>
-            <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/CardAccessData.java" encoding="UTF-8" parse="text"/></programlisting>
-            </para>
-          </section>
-        </section>
         <section id="gui_Action">
           <title>Action</title>
           <para><code>Action</code> − интерфейс, абстрагирующий действие от визуального компонента.</para>
