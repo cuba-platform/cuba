@@ -605,7 +605,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     if (focusManager != null) {
                         focusManager.focusSelectedRow(minimalSelectionRowIndex);
                     }
+                } else if (impl.getCellEditor() != null) {
+                    if (!impl.getCellEditor().stopCellEditing())
+                        impl.getCellEditor().cancelCellEditing();
                 }
+
                 setSelected(newSelection);
             }
 
@@ -1055,7 +1059,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     public void setSelected(Collection<Entity> items) {
         if (items == null)
             items = Collections.emptyList();
-        impl.getSelectionModel().clearSelection();
+        impl.clearSelection();
         if (!items.isEmpty()) {
             Pair<Integer, Integer> selectionBounds = getSelectionBounds(items);
             if (selectionBounds.getFirst() != null && selectionBounds.getSecond() != null) {
