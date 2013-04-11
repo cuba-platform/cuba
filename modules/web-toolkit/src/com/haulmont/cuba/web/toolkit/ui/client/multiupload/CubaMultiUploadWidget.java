@@ -93,7 +93,7 @@ public class CubaMultiUploadWidget extends FormPanel {
     }
 
     public void initComponent(String uploadId) {
-        this.jsIncludeUri = baseResourcesUri + "swfupload.js?v=" + resourcesVersion;
+        this.jsIncludeUri = baseResourcesUri + "swfupload.min.js?v=" + resourcesVersion;
         this.swfUri = baseResourcesUri + "swfupload.swf?v=" + resourcesVersion;
         this.uploadId = uploadId;
 
