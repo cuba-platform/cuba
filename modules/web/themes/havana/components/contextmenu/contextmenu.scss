@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-contextmenu($primaryStyleName: v-contextmenu) {
+  .#{$primaryStyleName} {
+    font-family: $theme_fonts;
+    font-size: 12px;
+
+    color: $theme_contextmenuFontColor;
+
+    background: $theme_contextmenuBackgroundColor;
+    border: 1px solid $theme_fieldBorderColor;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -o-border-radius: 3px;
+
+    .popupContent {
+      padding: 3px;
+
+      .gwt-MenuItem {
+        border: 1px solid transparent;
+      }
+
+      .gwt-MenuItem > div {
+        padding: 3px 7px;
+      }
+
+      .gwt-MenuItem-selected > div {
+        background: $theme_fieldSelectionColor;
+      }
+    }
+  }
+}

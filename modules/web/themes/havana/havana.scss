@@ -30,6 +30,7 @@
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
 @import "components/multiupload/multiupload";
+@import "components/contextmenu/contextmenu";
 @import "components/popupbutton/popupbutton";
 @import "components/notification/notification";
 @import "components/orderedlayout/orderedlayout";
@@ -58,6 +59,7 @@
   @include havana-splitpanel;
   @include havana-filterselect;
   @include havana-popupbutton;
+  @include havana-contextmenu;
   @include havana-notification;
   @include havana-orderedlayout;
 

@@ -8,7 +8,7 @@
 
 @mixin havana-popupbutton($primaryStyleName: v-popupbutton) {
   .#{$primaryStyleName}-popup {
-    padding: 3px 0;
+    padding: 3px;
     border: 1px solid $theme_fieldBorderColor;
 
     .v-button {
@@ -21,7 +21,7 @@
         margin-top: 0px;
 
         .v-button-caption {
-          padding: 1px 5px;
+          padding: 1px 3px;
           text-decoration: none;
         }
       }
