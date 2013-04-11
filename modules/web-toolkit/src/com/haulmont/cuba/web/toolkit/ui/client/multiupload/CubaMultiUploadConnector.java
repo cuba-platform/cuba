@@ -18,9 +18,8 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(CubaMultiUpload.class)
-public class CubaMultiUploadConnector extends AbstractComponentConnector implements
-        Paintable {
+@Connect(value = CubaMultiUpload.class, loadStyle = Connect.LoadStyle.LAZY)
+public class CubaMultiUploadConnector extends AbstractComponentConnector implements Paintable {
 
     public static final String BASE_RESOURCES_PATH = "/../../resources/swfupload/";
 

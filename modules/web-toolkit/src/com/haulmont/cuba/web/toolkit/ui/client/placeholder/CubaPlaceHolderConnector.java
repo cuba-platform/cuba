@@ -16,7 +16,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(CubaPlaceHolder.class)
+@Connect(value = CubaPlaceHolder.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaPlaceHolderConnector extends AbstractComponentConnector {
 
     @Override
