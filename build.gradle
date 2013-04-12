@@ -7,7 +7,6 @@
 def defaultVersion = '4.1'
 
 def BUILD_VERSION = 'buildVersion'
-def BUILD_VCS_NUMBER = 'buildVcsNumber'
 
 allprojects {
     ext.artifactGroup = 'com.haulmont.cuba'
@@ -145,33 +144,14 @@ configure(globalModule) {
         provided(cubaPlugin)
     }
 
-    compileJava << {
-        env = System.getenv()
-
-        Date releaseDate = new Date()
-        String timeStamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(releaseDate)
-
-        String releaseNumber = project.ext.artifactVersion
-        if (project.ext.isSnapshot) {
-            if (rootProject.hasProperty(BUILD_VCS_NUMBER))
-                releaseNumber = releaseNumber + '.' + rootProject[BUILD_VCS_NUMBER]
-            releaseNumber = releaseNumber + '-SNAPSHOT'
-        }
-
-        File releaseFile = new File("$buildDir/classes/main/com/haulmont/cuba/core/global/release.timestamp")
-        File releaseNumberFile = new File("$buildDir/classes/main/com/haulmont/cuba/core/global/release.number")
-
-        releaseFile.delete()
-        releaseFile.write(timeStamp)
-
-        releaseNumberFile.delete()
-        releaseNumberFile.write(releaseNumber)
+    task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
+        releaseTimeStampPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.timestamp"
+        releaseNumberPath = "$buildDir/classes/main/com/haulmont/cuba/core/global/release.number"
     }
 
-    task enhance(type: CubaEnhancing, dependsOn: compileJava) {
+    task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
     }
-    classes.dependsOn += [enhance]
 }
 
 configure(coreModule) {
@@ -271,7 +251,7 @@ configure(guiModule) {
         testCompile(clientModule.sourceSets.test.output)
     }
 
-    task enhanceTransient(type: CubaEnhanceTransient, dependsOn: compileJava) {
+    task enhanceTransient(type: CubaEnhanceTransient) {
         classes = [
                 'com.haulmont.cuba.gui.security.entity.AbstractPermissionTarget',
                 'com.haulmont.cuba.gui.security.entity.AttributeTarget',
@@ -281,7 +261,6 @@ configure(guiModule) {
                 'com.haulmont.cuba.gui.security.entity.UiPermissionTarget'
         ]
     }
-    classes.dependsOn += [enhanceTransient]
 
     test {
         scanForTestClasses = false
@@ -366,13 +345,13 @@ configure(webToolkitModule) {
     }
 
     def webOutDir = file("$buildDir/web")
-    task buildWidgetSet(dependsOn: compileJava, type: CubaWidgetSetBuilding) {
+    task buildWidgetSet(type: CubaWidgetSetBuilding) {
         widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
         widgetSetModules = [webToolkitModule]
         dependencyModules = [webModule]
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-        compilerArgs = ['-style' : 'DETAILED', '-logLevel' : 'INFO', '-localWorkers' : '2', '-draftCompile' : 'true']
+        compilerArgs = ['-style' : 'PRETTY', '-logLevel' : 'INFO', '-localWorkers' : '2']
     }
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
