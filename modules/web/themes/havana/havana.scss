@@ -37,6 +37,7 @@
 @import "components/notification/notification";
 @import "components/orderedlayout/orderedlayout";
 @import "components/errorindicator/errorindicator";
+@import "components/loadingindicator/laodingindicator";
 
 // Application specific
 @import "app/app-window";
@@ -68,6 +69,7 @@
   @include havana-filterselect;
   @include havana-orderedlayout;
   @include havana-errorindicator;
+  @include havana-laodingindicator;
 
   @include havana-cuba-groupbox;
   @include havana-cuba-grouptable;

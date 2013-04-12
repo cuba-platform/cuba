@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-laodingindicator($primaryStyleName: v-loading-indicator) {
+  .#{$primaryStyleName},
+  .#{$primaryStyleName}-delay,
+  .#{$primaryStyleName}-wait {
+    position: absolute;
+    top: 6px;
+    right: 5px;
+    z-index: 30000;
+    width: 45px;
+    height: 45px;
+    background: transparent url(images/ajax-loader.gif);
+  }
+}
