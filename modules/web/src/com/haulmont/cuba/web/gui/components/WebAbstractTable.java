@@ -103,6 +103,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
 
     protected List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
 
+    // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
     private String customStyle;
@@ -160,13 +161,24 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
     @Override
     @Nullable
     public Printable getPrintable(Table.Column column) {
-        com.vaadin.ui.Table.ColumnGenerator vColumnGenerator = component.getColumnGenerator(column.getId());
-        if (vColumnGenerator instanceof CustomColumnGenerator) {
-            ColumnGenerator columnGenerator = ((CustomColumnGenerator) vColumnGenerator).getColumnGenerator();
-            if (columnGenerator instanceof Printable)
-                return (Printable) columnGenerator;
+        return getPrintable(String.valueOf(column.getId()));
+    }
+
+    @Nullable
+    @Override
+    public Printable getPrintable(String columnId) {
+        Printable printable = printables.get(columnId);
+        if (printable != null)  {
+            return printable;
+        } else {
+            com.vaadin.ui.Table.ColumnGenerator vColumnGenerator = component.getColumnGenerator(columnId);
+            if (vColumnGenerator instanceof CustomColumnGenerator) {
+                ColumnGenerator columnGenerator = ((CustomColumnGenerator) vColumnGenerator).getColumnGenerator();
+                if (columnGenerator instanceof Printable)
+                    return (Printable) columnGenerator;
+            }
+            return null;
         }
-        return printables.get(column.getId().toString());
     }
 
     @Override

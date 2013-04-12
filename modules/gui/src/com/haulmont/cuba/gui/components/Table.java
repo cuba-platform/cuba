@@ -139,12 +139,20 @@ public interface Table
         Component generateCell(E entity);
     }
 
+    /**
+     * Allows set Printable representation for column in Excel export. <br/>
+     * If for column specified Printable then value for Excel cell gets from Printable representation.
+     *
+     * @param <E> type of item
+     * @param <P> type of printable value, e.g. String/Date/Integer/Double/BigDecimal
+     */
     public interface Printable<E extends Entity, P> {
         P getValue(E item);
     }
 
     /**
-     * Column generator, which support print to Excel
+     * Column generator, which supports print to Excel.
+     *
      * @param <E> entity type
      * @param <P> printable value type
      */
@@ -172,12 +180,40 @@ public interface Table
 
     void removeGeneratedColumn(String columnId);
 
+    /**
+     * Adds {@link Printable} representation for column. <br/>
+     * Excplicitly added Printable will be used instead inherited from generated column.
+     *
+     * @param columnId column id
+     * @param printable printable representation
+     */
     void addPrintable(String columnId, Printable printable);
 
+    /**
+     * Removes {@link Printable} representation of column. <br/>
+     * Unable to remove Printable representation inherited from generated column.
+     *
+     * @param columnId column id
+     */
     void removePrintable(String columnId);
 
+    /**
+     * Get {@link Printable} representation for column.
+     *
+     * @param column table column
+     * @return printable
+     */
     @Nullable
     Printable getPrintable(Table.Column column);
+
+    /**
+     * Get {@link Printable} representation for column.
+     *
+     * @param columnId column id
+     * @return printable
+     */
+    @Nullable
+    Printable getPrintable(String columnId);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

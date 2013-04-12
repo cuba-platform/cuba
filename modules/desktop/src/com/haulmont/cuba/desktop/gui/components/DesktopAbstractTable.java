@@ -904,14 +904,28 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     @Nullable
     public Printable getPrintable(Column column) {
-        TableColumn tableColumn = getColumn(column);
-        TableCellEditor cellEditor = tableColumn.getCellEditor();
-        if (cellEditor instanceof DesktopTableCellEditor) {
-            ColumnGenerator columnGenerator = ((DesktopTableCellEditor) cellEditor).getColumnGenerator();
-            if (columnGenerator instanceof Printable)
-                return (Printable) columnGenerator;
+        return getPrintable(String.valueOf(column.getId()));
+    }
+
+    @Nullable
+    @Override
+    public Printable getPrintable(String columnId) {
+        Printable printable = printables.get(columnId);
+        if (printable != null) {
+            return printable;
+        } else {
+            Column column = getColumn(columnId);
+            if (column != null) {
+                TableColumn tableColumn = getColumn(column);
+                TableCellEditor cellEditor = tableColumn.getCellEditor();
+                if (cellEditor instanceof DesktopTableCellEditor) {
+                    ColumnGenerator columnGenerator = ((DesktopTableCellEditor) cellEditor).getColumnGenerator();
+                    if (columnGenerator instanceof Printable)
+                        return (Printable) columnGenerator;
+                }
+            }
+            return null;
         }
-        return printables.get(column.getId().toString());
     }
 
     /**
