@@ -182,7 +182,7 @@ public interface Table
 
     /**
      * Adds {@link Printable} representation for column. <br/>
-     * Excplicitly added Printable will be used instead inherited from generated column.
+     * Excplicitly added Printable will be used instead of inherited from generated column.
      *
      * @param columnId column id
      * @param printable printable representation
