@@ -132,7 +132,7 @@
       }
 
       .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem-selected {
-        border-left: 1px solid $theme_tabsheetSecondBorderColor;  // todo $theme color
+        border-left: 1px solid $theme_tabsheetSecondBorderColor;
         padding-left: 6px;
       }
 
@@ -179,7 +179,7 @@
     }
 
     .#{$primaryStyleName}-hidetabs .v-tabsheet-content {
-      border-top: $theme_tabsheetHideTabsColor solid 1px;        // todo $theme color
+      border-top: $theme_tabsheetHideTabsColor solid 1px;
     }
 
     .#{$primaryStyleName}-scroller {

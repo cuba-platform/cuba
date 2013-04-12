@@ -31,15 +31,10 @@ import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -75,7 +70,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     protected String caption;
     protected String description;
 
-    protected List<CloseListener> listeners = new ArrayList<CloseListener>();
+    protected List<CloseListener> listeners = new ArrayList<>();
 
     protected boolean forceClose;
     protected boolean closing = false;
@@ -253,7 +248,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
         for (ValidationErrors.Item error : errors.getAll()) {
             if (component == null)
                 component = error.component;
-            buffer.append(error.description).append("<br/>");
+            buffer.append(error.description).append("\n");
         }
 
         showNotification(AppBeans.get(Messages.class).getMessage(WebWindow.class, "validationFail.caption"),

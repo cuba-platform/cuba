@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-tooltip($primaryStyleName: v-tooltip) {
+  .#{$primaryStyleName} {
+    background-color: #fffcdd;
+    border: 1px solid #b8b295;
+    border-top-color: #d5d2c1;
+    border-left-color: #d5d2c1;
+    font-size: 11px;
+    line-height: 13px;
+    font-family: verdana, arial, helvetica, tahoma, sans-serif;
+    color: #5d5444;
+    cursor: default;
+
+    max-height: 80%;
+    max-width: 80%;
+
+    .#{$primaryStyleName}-text {
+      padding: 2px 4px;
+      border: none;
+      border-top: 1px solid #fffef5;
+      border-bottom: 1px solid #fbf8d9;
+      overflow: hidden;
+    }
+
+    .v-errormessage {
+      padding: 3px 4px 3px 4px;
+      background: #ffecc6;
+      color: #b74100;
+      border: none;
+      border-top: 1px solid #fff3dc;
+      border-bottom: 1px solid #ead7b1;
+      overflow: auto;
+    }
+
+    .v-errormessage h2 {
+      font-size: 16px;
+      font-weight: normal;
+      color: #ab3101;
+      margin: 2px 0 8px 0;
+    }
+
+    .v-errormessage h3 {
+      font-size: 13px;
+      font-weight: bold;
+      margin: 1px 0 4px 0;
+    }
+  }
+}

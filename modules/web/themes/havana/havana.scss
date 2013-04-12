@@ -17,11 +17,13 @@
 
 // Components
 @import "components/tree/tree";
+@import "components/label/label";
 @import "components/table/table";
 @import "components/panel/panel";
 @import "components/window/window";
 @import "components/button/button";
 @import "components/select/select";
+@import "components/tooltip/tooltip";
 @import "components/menubar/menubar";
 @import "components/tabsheet/tabsheet";
 @import "components/groupbox/groupbox";
@@ -34,6 +36,7 @@
 @import "components/popupbutton/popupbutton";
 @import "components/notification/notification";
 @import "components/orderedlayout/orderedlayout";
+@import "components/errorindicator/errorindicator";
 
 // Application specific
 @import "app/app-window";
@@ -48,20 +51,23 @@
   @include havana-common;
 
   @include havana-tree;
+  @include havana-label;
   @include havana-table;
   @include havana-panel;
   @include havana-window;
   @include havana-button;
   @include havana-menubar;
+  @include havana-tooltip;
   @include havana-tabsheet;
   @include havana-textfield;
   @include havana-datefield;
   @include havana-splitpanel;
-  @include havana-filterselect;
   @include havana-popupbutton;
   @include havana-contextmenu;
   @include havana-notification;
+  @include havana-filterselect;
   @include havana-orderedlayout;
+  @include havana-errorindicator;
 
   @include havana-cuba-groupbox;
   @include havana-cuba-grouptable;

@@ -94,9 +94,10 @@ public class AppUI extends UI implements ErrorHandler {
 
     @Override
     public void error(com.vaadin.server.ErrorEvent event) {
-        if (App.isBound())
+        if (App.isBound()) {
             App.getInstance().getExceptionHandlers().handle(event);
-        else
+            App.getInstance().getAppLog().log(event);
+        } else
             log.error(event.getThrowable());
     }
 }

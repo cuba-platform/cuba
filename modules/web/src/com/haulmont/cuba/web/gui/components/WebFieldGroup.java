@@ -922,11 +922,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
             } else if (cubaField instanceof WebDateField) {
                 if (getFormatter(propertyPath) != null) {
-//                    vaadin7
-//                    String format = getFormat(propertyPath);
-//                    if (format != null) {
-//                        ((WebDateField) cubaField).setDateFormat(format);
-//                    }
+                    String format = getFormat(propertyPath);
+                    if (format != null) {
+                        ((WebDateField) cubaField).setDateFormat(format);
+                    }
                 }
                 if (fieldConf != null) {
                     initDateField(field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
@@ -975,7 +974,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         @Override
-        protected void initValidators(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField, MetaPropertyPath propertyPath, boolean validationVisible) {
+        protected void initValidators(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField,
+                                      MetaPropertyPath propertyPath, boolean validationVisible) {
             //do nothing
         }
 
@@ -1086,8 +1086,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                                 public void windowClosed(String actionId) {
                                     if (com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID.equals(actionId)
                                             && window instanceof com.haulmont.cuba.gui.components.Window.Editor) {
-                                        Object item = ((com.haulmont.cuba.gui.components.Window.Editor) window).getItem();
-                                        if (item instanceof Entity) {
+                                        Entity item = ((com.haulmont.cuba.gui.components.Window.Editor) window).getItem();
+                                        if (item != null) {
                                             entity.setValueEx(fieldConf.getId(), item);
                                         }
                                     }

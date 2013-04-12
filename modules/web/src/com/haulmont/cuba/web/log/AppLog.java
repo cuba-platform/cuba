@@ -8,12 +8,9 @@ package com.haulmont.cuba.web.log;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.SilentException;
 import com.vaadin.data.Validator;
+import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
-//import com.vaadin.terminal.ParameterHandler;
-//import com.vaadin.terminal.Terminal;
-//import com.vaadin.terminal.URIHandler;
-//import com.vaadin.terminal.VariableOwner;
-//import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -78,7 +75,8 @@ public class AppLog {
 
         if (t instanceof SocketException) {
             // Most likely client browser closed socket
-            LogItem item = new LogItem(LogLevel.WARNING, "SocketException in CommunicationManager. Most likely client (browser) closed socket.", null);
+            LogItem item = new LogItem(LogLevel.WARNING,
+                    "SocketException in CommunicationManager. Most likely client (browser) closed socket.", null);
             log(item);
             return;
         }
@@ -89,22 +87,12 @@ public class AppLog {
             return;
 
         // Finds the original source of the error/exception
-        // vaadin7
-        Object owner = null;
-        /*if (event instanceof VariableOwner.ErrorEvent) {
-            owner = ((VariableOwner.ErrorEvent) event).getVariableOwner();
-        } else if (event instanceof URIHandler.ErrorEvent) {
-            owner = ((URIHandler.ErrorEvent) event).getURIHandler();
-        } else if (event instanceof ParameterHandler.ErrorEvent) {
-            owner = ((ParameterHandler.ErrorEvent) event).getParameterHandler();
-        } else if (event instanceof ChangeVariablesErrorEvent) {
-            owner = ((ChangeVariablesErrorEvent) event).getComponent();
-        }
-*/
+        AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
+
         StringBuilder msg = new StringBuilder();
         msg.append("Uncaught exception");
-        if (owner != null)
-            msg.append(" in ").append(owner.getClass().getName());
+        if (component != null)
+            msg.append(" in ").append(component.getClass().getName());
         msg.append(": ");
 
         if (loggingType == Logging.Type.BRIEF) {

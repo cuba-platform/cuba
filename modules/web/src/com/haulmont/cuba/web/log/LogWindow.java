@@ -65,6 +65,7 @@ public class LogWindow extends Window {
         label.setContentMode(ContentMode.HTML);
         label.setValue(writeLog());
         label.setSizeUndefined();
+        label.setStyleName("cuba-log-content");
 
         ((Layout)scrollablePanel.getContent()).addComponent(label);
 
@@ -110,7 +111,7 @@ public class LogWindow extends Window {
             sb.append(DateFormatUtils.format(item.getTimestamp(), DATE_FORMAT));
             sb.append(" ");
             sb.append(item.getLevel().name());
-            sb.append("</b>");
+            sb.append("</b>&nbsp;");
             sb.append(StringEscapeUtils.escapeHtml(item.getMessage()));
             if (item.getStacktrace() != null) {
                 sb.append(" ");

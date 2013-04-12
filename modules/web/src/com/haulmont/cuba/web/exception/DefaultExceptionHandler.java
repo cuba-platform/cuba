@@ -6,12 +6,11 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.web.App;
+import com.vaadin.server.AbstractErrorMessage;
+import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
-import com.vaadin.server.VariableOwner;
-//import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractComponent;
-//import com.haulmont.cuba.web.AppUI;
-import com.vaadin.ui.UI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,8 +28,9 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public boolean handle(ErrorEvent event, App app) {
-        // Copied from com.vaadin.Application.terminalError()
+        // Copied com.vaadin.server.DefaultErrorHandler.doDefault()
 
+        //noinspection ThrowableResultOfMethodCallIgnored
         Throwable t = event.getThrowable();
         if (t instanceof SocketException) {
             // Most likely client browser closed socket
@@ -38,27 +38,13 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
 
         // Finds the original source of the error/exception
-        /*Object owner = null;
-        if (event instanceof VariableOwner.ErrorEvent) {
-            owner = ((VariableOwner.ErrorEvent) event).getVariableOwner();
-        } else if (event instanceof URIHandler.ErrorEvent) {
-            owner = ((URIHandler.ErrorEvent) event).getURIHandler();
-        } else if (event instanceof ParameterHandler.ErrorEvent) {
-            owner = ((ParameterHandler.ErrorEvent) event).getParameterHandler();
-        } else if (event instanceof ChangeVariablesErrorEvent) {
-            owner = ((ChangeVariablesErrorEvent) event).getComponent();
+        AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
+        if (component != null) {
+            // Shows the error in AbstractComponent
+            ErrorMessage errorMessage = AbstractErrorMessage
+                    .getErrorMessageForException(t);
+            component.setComponentError(errorMessage);
         }
-
-        // Shows the error in AbstractComponent
-        if (owner instanceof AbstractComponent) {
-            final Throwable e = event.getThrowable();
-            if (e instanceof ErrorMessage) {
-                ((AbstractComponent) owner).setComponentError((ErrorMessage) e);
-            } else {
-                ((AbstractComponent) owner)
-                        .setComponentError(new SystemError(e));
-            }
-        }*/
 
         log.error("Unhandled error", event.getThrowable());
 

@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-errorindicator($primaryStyleName: v-errorindicator) {
+  .#{$primaryStyleName} {
+    width: 10px;
+    height: 16px;
+    float: left;
+    background: transparent;
+    background-repeat: no-repeat;
+    background-image: url(sprites/error.png); /** sprite-ref: components; */
+  }
+}
