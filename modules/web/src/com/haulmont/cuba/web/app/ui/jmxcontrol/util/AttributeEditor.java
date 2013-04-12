@@ -29,44 +29,38 @@ public class AttributeEditor {
     }
 
     public AttributeEditor(IFrame frame, String type, Object value) {
-        /*this.type = type;
+        this.type = type;
         if (AttributeHelper.isBoolean(type)) {
             checkBox = new WebCheckBox();
             checkBox.setFrame(frame);
-            if (value != null) {
+            if (value != null)
                 checkBox.setValue(value);
-            }
-        }
-        else if (AttributeHelper.isArray(type)) {
+
+        } else if (AttributeHelper.isArray(type)) {
             layout = new WebVBoxLayout();
             layout.setSpacing(true);
-        }
-        else {
+        } else {
             textField = new WebTextField();
             textField.setWidth("500px");
             textField.setFrame(frame);
-            if (value != null) {
+            if (value != null)
                 textField.setValue(value.toString());
-            }
-        }*/
+        }
     }
 
     public Component getComponent() {
-        if (checkBox != null) {
+        if (checkBox != null)
             return checkBox;
-        }
-        if (textField != null) {
+        if (textField != null)
             return textField;
-        }
         return layout;
     }
 
     public Object getAttributeValue() {
         if (checkBox != null) {
-            Boolean value = (Boolean) checkBox.getValue();
+            Boolean value = checkBox.getValue();
             return BooleanUtils.isTrue(value);
-        }
-        else if (textField != null) {
+        } else if (textField != null) {
             String strValue = textField.getValue();
             return AttributeHelper.convert(type, strValue);
         }

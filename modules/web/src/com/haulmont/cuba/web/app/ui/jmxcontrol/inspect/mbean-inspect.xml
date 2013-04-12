@@ -5,9 +5,6 @@
         datasource="mbeanDs"
         caption="msg://inspectMbean.title">
 
-    <metadataContext>
-    </metadataContext>
-
     <dsContext>
         <datasource id="mbeanDs" class="com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo" view="_local"/>
         <collectionDatasource id="attrDs"
@@ -16,15 +13,10 @@
                               datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanAttributeDatasource">
         </collectionDatasource>
     </dsContext>
-    <actions>
-        <action id="close" caption="msg://close" icon="icons/ok.png" invoke="commitAndClose"/>
-    </actions>
+
     <layout expand="scrollbox" spacing="true">
         <grid spacing="true" margin="true" stylename="edit-area">
-            <columns>
-                <column flex="1"/>
-                <column flex="1"/>
-            </columns>
+            <columns count="2"/>
             <rows>
                 <row>
                     <label value="msg://mbean.jmxConnection"/>
@@ -46,14 +38,14 @@
         </grid>
         <scrollBox id="scrollbox" spacing="true" margin="true" stylename="edit-area" scrollBars="vertical">
             <label value="msg://mbean.attributes" stylename="h2"/>
-            <table id="attributes" width="100%" height="300px">
+            <table id="attributesTable" width="100%" height="300px" columnControlVisible="false">
                 <actions>
                     <action id="refresh" caption="msg://refresh" icon="icons/refresh.png"
                             invoke="reloadAttributes"/>
                     <action id="edit" caption="msg://inspectmbean.attribute.edit" invoke="editAttribute"/>
                 </actions>
                 <buttonsPanel>
-                    <button action="attributes.refresh"/>
+                    <button action="attributesTable.refresh"/>
                 </buttonsPanel>
                 <columns>
                     <column id="name" caption="msg://mbean.attribute.name"/>
@@ -65,7 +57,6 @@
             </table>
             <label value="msg://mbean.operations" stylename="h2"/>
             <vbox id="operations" spacing="true">
-
             </vbox>
         </scrollBox>
         <button id="close" caption="msg://close" icon="icons/ok.png" invoke="close"/>

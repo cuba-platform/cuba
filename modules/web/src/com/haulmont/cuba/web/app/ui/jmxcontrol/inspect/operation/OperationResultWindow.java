@@ -6,10 +6,14 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.operation;
 
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.ScrollBoxLayout;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebLabel;
+import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
+import com.vaadin.shared.ui.label.ContentMode;
 
 import javax.inject.Inject;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -24,9 +28,12 @@ public class OperationResultWindow extends AbstractWindow {
     @Inject
     protected Label resultLabel;
 
+    @Inject
+    protected ScrollBoxLayout resultContainer;
+
     @Override
     public void init(Map<String, Object> params) {
-        /*super.init(params);
+        super.init(params);
 
         getDialogParams().setResizable(true);
         getDialogParams().setWidth(800);
@@ -35,7 +42,8 @@ public class OperationResultWindow extends AbstractWindow {
         Throwable ex = (Throwable) params.get("exception");
         Object result = params.get("result");
 
-        ScrollBoxLayout container = (ScrollBoxLayout) getComponent("container");
+        ComponentsFactory componentsFactory = AppConfig.getFactory();
+
         if (ex != null) {
             if (ex instanceof UndeclaredThrowableException)
                 ex = ex.getCause();
@@ -47,34 +55,26 @@ public class OperationResultWindow extends AbstractWindow {
                 msg = "";
             }
 
-            Label trace = new WebLabel();
+            Label trace = componentsFactory.createComponent(Label.NAME);
             trace.setValue(msg);
 
             resultLabel.setValue(getMessage("operationResult.exception"));
-            container.add(trace);
+            resultContainer.add(trace);
+
         } else if (result != null) {
-            Label valueHolder = new WebLabel();
+            Label valueHolder = componentsFactory.createComponent(Label.NAME);
             com.vaadin.ui.Label vaadinLbl = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(valueHolder);
-            vaadinLbl.setContentMode(com.vaadin.ui.Label.CONTENT_PREFORMATTED);
+            vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
             valueHolder.setValue(AttributeHelper.convertToString(result));
 
             resultLabel.setValue(getMessage("operationResult.result"));
-            container.add(valueHolder);
+            resultContainer.add(valueHolder);
         } else {
             resultLabel.setValue(getMessage("operationResult.void"));
         }
+    }
 
-        Button closeBtn = getComponent("close");
-        closeBtn.setAction(new AbstractAction("close") {
-            @Override
-            public void actionPerform(Component component) {
-                close("");
-            }
-
-            @Override
-            public String getCaption() {
-                return getMessage("close");
-            }
-        });*/
+    public void close() {
+        close(CLOSE_ACTION_ID);
     }
 }
