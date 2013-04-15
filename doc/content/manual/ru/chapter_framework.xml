@@ -6209,20 +6209,18 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry></row>
                 <row><entry>
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
-                  </entry>required<entry>
-                    <link linkend="gui_attr_basic_property">property</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_width">width</link>
-                  </entry></row>
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry>required</row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -6231,7 +6229,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6243,7 +6241,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6251,9 +6249,11 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry>
                     <link linkend="gui_attr_basic_editable">editable</link>
                   </entry>
-                  <entry>nullName</entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6316,18 +6316,20 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
-                  </entry><entry align="left">nullName</entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry></row>
                 <row><entry>
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
-                  </entry>required<entry>
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
-                  </entry></row>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>required</row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -6336,10 +6338,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_property">property</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_required">required</link>
                   </entry>
                 </row>
                 <row>
@@ -6350,7 +6349,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6362,7 +6361,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6447,15 +6446,17 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry><entry align="left">
                     <link linkend="gui_attr_searchPickerField_minSearchStringLength">minSearchStringLength</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry></row>
                 <row><entry>
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
-                  </entry>required<entry>nullName</entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
-                  </entry></row>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>required</row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -6464,10 +6465,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                    <link linkend="gui_attr_basic_property">property</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
@@ -6478,10 +6479,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_property">property</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_required">required</link>
                   </entry>
                 </row>
                 <row>
@@ -6492,7 +6490,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6553,20 +6551,20 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
                     <link linkend="gui_attr_basic_editable">editable</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry></row>
                 <row><entry>
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
-                  </entry>required<entry>
-                    <link linkend="gui_attr_basic_property">property</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
-                  </entry></row>
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>required</row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_twinColumn_columns_rows">columns</link>
@@ -6575,10 +6573,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                 </row>
                 <row>
@@ -6589,7 +6584,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_twinColumn_columns_rows">rows</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6597,9 +6592,11 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry>
                     <link linkend="gui_attr_basic_description">description</link>
                   </entry>
-                  <entry>nullName</entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  </entry>
                   <entry>
-                    <link linkend="gui_attr_twinColumn_columns_rows">rows</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                 </row>
@@ -8873,6 +8870,64 @@ protected boolean postCommit(boolean committed, boolean close) {
                 </row>
               </tbody></tgroup>
           </informaltable>
+        </section>
+        <section>
+          <title>Нотификации и диалоговые окна</title>
+          <para>В платформе существует два способа вывода сообщений пользователю: диалоговые окна и нотификации. </para>
+          <para>Диалоговые окна бывают двух видов: <code>showMessageDialog</code> и <code>showOptionDialog</code>. </para>
+          <para><code>showMessageDialog</code> отображает простое диалоговое окно без кнопок. </para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/notifications/showMessageDialog.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Окно имеет заголовок, текст, содержающий информацию для пользователя, и тип сообщения (<code>MessageType</code>).</para>
+          <para>Существует два типа сообщений:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>MessageType.WARNING</code></para>
+            </listitem>
+            <listitem>
+              <para><code>MessageType.CONFIRMATION</code></para>
+            </listitem>
+          </itemizedlist>
+          <para>Различие типов сообщений существует только в пользовательском интерфейсе десктоп-приложений.</para>
+          <para><code>showOptionDialog</code> отображает диалоговое окно с кнопками. </para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/notifications/showOptionDialog.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Окно имеет заголовок, текст, содержающий информацию для пользователя,  тип сообщения (<code>MessageType</code>) и список диалоговых действий (<code>DialogAction</code>).</para>
+          <para>Стандартные диалоговые действия:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>OK</code></para>
+            </listitem>
+            <listitem>
+              <para><code>CANCEL</code></para>
+            </listitem>
+            <listitem>
+              <para><code>YES</code></para>
+            </listitem>
+            <listitem>
+              <para><code>NO</code></para>
+            </listitem>
+            <listitem>
+              <para><code>CLOSE</code></para>
+            </listitem>
+          </itemizedlist>
+          <para>Каждому диалоговому действию соответствует кнопка с названием и  пиктограммой.  В переопределяемом методе <code>actionPerform</code> указываются действия, которые будут выполняться при нажатии на кнопку.</para>
+          <para>Кроме диалоговых действий существуют нотификации − простые сообщения, несущие полезную для пользователя информацию. Нотификации закрываются автоматически по проишествию некоторого времени или в ручную.</para>
+          <para>Нотификация имеет заголовок, описание (опционально) и тип нотификации (<code>NotificationType</code>), от которого зависит внешний вид сообщения. </para>
+          <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/notifications/showNotification.txt" encoding="UTF-8" parse="text"/></programlisting>
+          <para>Существуют следующие типы нотификаций:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>NotificationType.HUMANIZED</code></para>
+            </listitem>
+            <listitem>
+              <para><code>NotificationType.TRAY</code></para>
+            </listitem>
+            <listitem>
+              <para><code>NotificationType.WARNING</code></para>
+            </listitem>
+            <listitem>
+              <para><code>NotificationType.ERROR</code></para>
+            </listitem>
+          </itemizedlist>
         </section>
       </section>
       <section>

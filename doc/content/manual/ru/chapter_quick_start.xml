@@ -213,7 +213,7 @@ Order.amount=Сумма</programlisting></para>
         <para><filename>messages_ru.properties</filename> <programlisting>browserCaption=Покупатели</programlisting></para>
         <para>В элементе <sgmltag>dsContext</sgmltag> добавлен один  <link linkend="datasources">источник данных</link> <sgmltag>collectionDatasource</sgmltag>, который выбирает сущности <code>Покупатель</code> с помощью <glossterm linkend="jpql">JPQL</glossterm> запроса <programlisting>select c from sales$Customer c order by c.name</programlisting> с <link linkend="views">представлением</link> <code>view=&quot;_local&quot;</code>.</para>
         <para>Содержимое элемента <sgmltag>layout</sgmltag> определяет визуальную компоновку экрана. Вложенные компоненты отображаются вертикально сверху вниз.</para>
-        <para>Компонент Generic Filter (элемент <sgmltag>filter</sgmltag>) служит для отображения  фильтра данных, настраиваемого пользователем.</para>
+        <para>Компонент <link linkend="gui_Filter">Filter</link> (элемент <sgmltag>filter</sgmltag>) служит для отображения  фильтра данных, настраиваемого пользователем.</para>
         <para>Компонент Table (элемент  <sgmltag>table</sgmltag>) служит для отображения данных в виде таблицы.</para>
         <para>Элемент <sgmltag>column</sgmltag> задает параметры отображения одной колонки таблицы. Обязательно содержит атрибут <sgmltag>id</sgmltag>, который определяет, данные какого атрибута сущности выводятся в данной колонке. Заголовком колонки по умолчанию будет название атрибута сущности, заданное в пакете <link linkend="message_packs">локализованных сообщений</link>.</para>
         <para>Элемент <sgmltag>rowsCount</sgmltag> позволяет организовать постраничный вывод данных таблицы и отобразить общее количество строк.</para>
