@@ -23,9 +23,8 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
+import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CustomField;
-import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
-import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
@@ -44,7 +43,12 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements com.haulmont.cuba.gui.components.FieldGroup {
+public class WebFieldGroup
+        extends
+            WebAbstractComponent<com.haulmont.cuba.web.toolkit.ui.FieldGroup>
+        implements
+            com.haulmont.cuba.gui.components.FieldGroup,
+            com.haulmont.cuba.web.toolkit.ui.FieldGroup.ExpandCollapseListener {
 
     private static final String BORDER_STYLE_NAME = "edit-area";
 
@@ -76,7 +80,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     protected Messages messages = AppBeans.get(Messages.class);
 
     public WebFieldGroup() {
-        component = new FieldGroup(fieldFactory) {
+        component = new com.haulmont.cuba.web.toolkit.ui.FieldGroup(fieldFactory) {
             @Override
             public void addField(Object propertyId, com.vaadin.ui.Field field) {
                 Field fieldConf = WebFieldGroup.this.getField(propertyId.toString());
@@ -97,8 +101,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 super.addCustomField(propertyId, fieldGenerator, col, colFields.indexOf(fieldConf));
             }
         };
-        component.setLayout(new FieldGroupLayout());
-        component.addListener(new ExpandCollapseListener());
+        component.setLayout(new CubaFieldGroupLayout());
+        component.addExpandListener(this);
     }
 
     @Override
@@ -174,8 +178,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
-        FieldGroupLayout layout = component.getLayout();
-        layout.setCaptionAlignment(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
+//        vaadin7
+//        CubaFieldGroupLayout layout = component.getLayout();
+//        layout.setCaptionAlignment(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
     }
 
     @Override
@@ -191,9 +196,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (!field.isCustom()) {
             throw new IllegalStateException(String.format("Field '%s' must be defined as custom", field.getId()));
         }
-        component.addCustomField(field.getId(), new FieldGroup.CustomFieldGenerator() {
+        component.addCustomField(field.getId(), new com.haulmont.cuba.web.toolkit.ui.FieldGroup.CustomFieldGenerator() {
             @Override
-            public com.vaadin.ui.Field generateField(Item item, Object propertyId, FieldGroup component) {
+            public com.vaadin.ui.Field generateField(Item item, Object propertyId, com.haulmont.cuba.web.toolkit.ui.FieldGroup component) {
                 Datasource ds;
                 if (field.getDatasource() != null) {
                     ds = field.getDatasource();
@@ -761,14 +766,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
-    protected void fireExpandListeners() {
-        if (expandListeners != null) {
-            for (final ExpandListener listener : expandListeners) {
-                listener.onExpand(this);
-            }
-        }
-    }
-
     @Override
     public void addListener(CollapseListener listener) {
         if (collapseListeners == null) {
@@ -789,14 +786,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void postInit() {
-    }
-
-    protected void fireCollapseListeners() {
-        if (collapseListeners != null) {
-            for (final CollapseListener listener : collapseListeners) {
-                listener.onCollapse(this);
-            }
-        }
     }
 
     @Override
@@ -886,17 +875,21 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             return value == null;
     }
 
-    protected class ExpandCollapseListener implements FieldGroup.ExpandCollapseListener {
-        private static final long serialVersionUID = 4917475472402160597L;
-
-        @Override
-        public void onExpand(FieldGroup component) {
-            fireExpandListeners();
+    @Override
+    public void onExpand(com.haulmont.cuba.web.toolkit.ui.FieldGroup component) {
+        if (expandListeners != null) {
+            for (final ExpandListener listener : expandListeners) {
+                listener.onExpand(this);
+            }
         }
+    }
 
-        @Override
-        public void onCollapse(FieldGroup component) {
-            fireCollapseListeners();
+    @Override
+    public void onCollapse(com.haulmont.cuba.web.toolkit.ui.FieldGroup component) {
+        if (collapseListeners != null) {
+            for (final CollapseListener listener : collapseListeners) {
+                listener.onCollapse(this);
+            }
         }
     }
 

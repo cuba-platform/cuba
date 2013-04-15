@@ -5,7 +5,6 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-//import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroup;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.server.PaintException;
@@ -20,7 +19,6 @@ import java.util.*;
  * @version $Id$
  */
 @SuppressWarnings("serial")
-//@ClientWidget(VFieldGroup.class)
 public class FieldGroup extends Form {
 
     private boolean expanded = true;
@@ -38,7 +36,7 @@ public class FieldGroup extends Form {
     public FieldGroup(FormFieldFactory fieldFactory) {
         super();
         setFormFieldFactory(fieldFactory);
-        setLayout(new FieldGroupLayout());
+        setLayout(new CubaFieldGroupLayout());
     }
 
     public boolean isExpanded() {
@@ -118,8 +116,7 @@ public class FieldGroup extends Form {
         }
 
         // Adds all the properties to this form
-        for (final Iterator i = propertyIds.iterator(); i.hasNext();) {
-            final Object id = i.next();
+        for (final Object id : propertyIds) {
             final Property property = itemDatasource.getItemProperty(id);
             if (id != null && property != null) {
                 final Field f = fieldFactory.createField(itemDatasource, id,
@@ -167,7 +164,7 @@ public class FieldGroup extends Form {
             return;
         }
 
-        final FieldGroupLayout layout = getLayout();
+        final CubaFieldGroupLayout layout = getLayout();
         layout.addComponent(field, currentX, currentY);
     }
 
@@ -187,9 +184,9 @@ public class FieldGroup extends Form {
     @Override
     public void setLayout(Layout newLayout) {
         if (newLayout == null) {
-            newLayout = new FieldGroupLayout();
+            newLayout = new CubaFieldGroupLayout();
         }
-        if (newLayout instanceof FieldGroupLayout) {
+        if (newLayout instanceof CubaFieldGroupLayout) {
             super.setLayout(newLayout);
             getLayout().setWidth("100%");
             getLayout().setSpacing(true);
@@ -199,8 +196,8 @@ public class FieldGroup extends Form {
     }
 
     @Override
-    public FieldGroupLayout getLayout() {
-        return (FieldGroupLayout) super.getLayout();
+    public CubaFieldGroupLayout getLayout() {
+        return (CubaFieldGroupLayout) super.getLayout();
     }
 
     public float getColumnExpandRatio(int col) {
@@ -227,14 +224,14 @@ public class FieldGroup extends Form {
         getLayout().setRows(rows);
     }
 
-    public void addListener(ExpandCollapseListener listener) {
+    public void addExpandListener(ExpandCollapseListener listener) {
         if (listeners == null) {
-            listeners = new ArrayList<ExpandCollapseListener>();
+            listeners = new LinkedList<>();
         }
         listeners.add(listener);
     }
 
-    public void removeListener(ExpandCollapseListener listener) {
+    public void removeExpandListener(ExpandCollapseListener listener) {
         if (listeners != null) {
             listeners.remove(listener);
             if (listeners.isEmpty()) {

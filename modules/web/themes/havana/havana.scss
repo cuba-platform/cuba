@@ -24,11 +24,13 @@
 @import "components/button/button";
 @import "components/select/select";
 @import "components/tooltip/tooltip";
+@import "components/caption/caption";
 @import "components/menubar/menubar";
 @import "components/tabsheet/tabsheet";
 @import "components/groupbox/groupbox";
 @import "components/textfield/textfield";
 @import "components/datefield/datefield";
+@import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
 @import "components/multiupload/multiupload";
@@ -58,11 +60,13 @@
   @include havana-window;
   @include havana-button;
   @include havana-menubar;
+  @include havana-caption;
   @include havana-tooltip;
   @include havana-tabsheet;
   @include havana-textfield;
   @include havana-datefield;
   @include havana-splitpanel;
+  @include havana-fieldgroup;
   @include havana-popupbutton;
   @include havana-contextmenu;
   @include havana-notification;
