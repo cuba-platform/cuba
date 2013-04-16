@@ -3339,10 +3339,27 @@ query.setParameter(1, &quot;%Company%&quot;);
 List list = query.getResultList();
 for (Iterator it = list.iterator(); it.hasNext(); ) {
     Object[] row = (Object[]) it.next();
-    UUID id = UUID.fromString((String) row[0]);
+    UUID id = (UUID) row[0];
     String name = (String) row[1];
 }</programlisting></para>
-        <para>Следует иметь в виду, что значения колонок типа <code>UUID</code> возвращаются в виде <code>String</code>, а параметры этого типа также должны задаваться своим строковым представлением.</para>
+        <para>Следует иметь в виду, при использовании SQL колонки, соответствующие атрибутам сущностей типа <code>UUID</code>, возвращаются в виде <code>UUID</code> или в виде <code>String</code>, в зависимости от используемой СУБД и JDBC драйвера:<itemizedlist>
+            <listitem>
+              <para><application>HSQLDB</application> - <code>String</code></para>
+            </listitem>
+            <listitem>
+              <para><application>PostgreSQL</application>, драйвер <filename>postgresql-8.3-603.jdbc4.jar</filename> - <code>String</code></para>
+            </listitem>
+            <listitem>
+              <para><application>PostgreSQL</application>, драйвер <filename>postgresql-9.1-901.jdbc4.jar</filename> - <code>UUID</code></para>
+            </listitem>
+            <listitem>
+              <para><application>Microsoft SQL Server</application>, драйвер <filename>jtds-1.2.4.jar</filename> - <code>String</code></para>
+            </listitem>
+            <listitem>
+              <para><application>Oracle</application> - <code>String</code></para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Параметры этого типа также должны задаваться либо как UUID, либо своим строковым представлением, в зависимости от используемой СУБД и JDBC драйвера.</para>
         <para>Если вместе с текстом запроса передан класс результирующей сущности, то возвращается <code>TypedQuery</code> и после выполнения производится попытка отображения результатов запроса на атрибуты сущности. Например:<programlisting>TypedQuery&lt;Customer&gt; query = em.createNativeQuery(
     &quot;select * from SALES_CUSTOMER where NAME like ?1&quot;, 
     Customer.class);
@@ -4312,7 +4329,9 @@ protected void postInit() {
 }</programlisting></para>
             </listitem>
             <listitem>
-              <para><code>commit()</code> - валидировать экран и отправить изменения через <code>DataSupplier</code> на Middleware.</para>
+              <para><code>commit()</code> - валидировать экран и отправить изменения через <code>
+                  <link linkend="dataSupplier">DataSupplier</link>
+                </code> на Middleware.</para>
               <para>Если используется вариант метода с параметром <code>validate = false</code>, то валидация перед коммитом не производится.</para>
               <para>Данный метод не рекомендуется переопределять, лучше использовать специальные шаблонные методы <code>postValidate()</code>, <code>preCommit()</code> и <code>postCommit()</code>.</para>
             </listitem>
@@ -4421,7 +4440,9 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <para><code>WindowContext</code>. Если тип атрибута - <code>WindowContext</code>, будет инжектирован <code>WindowContext</code> текущего экрана. </para>
               </listitem>
               <listitem>
-                <para><code>DataService</code>. Если тип атрибута - <code>com.haulmont.cuba.gui.data.DataService</code>, будет инжектирован этот объект. </para>
+                <para><code>DataSupplier</code>. Если тип атрибута - <code>
+                    <link linkend="dataSupplier">DataSupplier</link>
+                  </code>, будет инжектирован соответствующий экземпляр. </para>
               </listitem>
               <listitem>
                 <para>Любой бин, определенный в контексте данного клиентского блока приложения, в том числе:<itemizedlist>
@@ -9469,6 +9490,23 @@ protected boolean postCommit(boolean committed, boolean close) {
         </itemizedlist>
         <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
       </section>
+      <section id="dataSupplier">
+        <title>DataSupplier</title>
+        <para><code>DataSupplier</code> - интерфейс, через который код  универсального пользовательского интерфейса (в том числе и источники данных) обращается к Middleware для загрузки и сохранения сущностей. Он расширяет интерфейс <code>
+            <link linkend="dataService">DataService</link>
+          </code> и добавляет следующие полезные прикладному коду методы:<itemizedlist>
+            <listitem>
+              <para><code>reload()</code> - перезагрузить экземпляр сущности с требуемым <link linkend="views">view</link> и другими параметрами</para>
+            </listitem>
+            <listitem>
+              <para><code>commit()</code> - сохранить в БД один экземпляр сущности</para>
+            </listitem>
+            <listitem>
+              <para><code>remove()</code> - удалить из БД один экземпляр сущности.</para>
+            </listitem>
+          </itemizedlist></para>
+        <para>Ссылку на <code>DataSupplier</code> можно получить либо <link linkend="screen_controller_injection">инжекцией</link> в контроллер экрана, либо через экземпляры <code>DsContext</code> или <code>Datasource</code>.</para>
+      </section>
       <section>
         <title>Создание источников данных</title>
         <section>
@@ -9725,7 +9763,9 @@ where
         <title>Режим коммита</title>
         <para>Любой источник данных имеет параметр типа <code>Datasource.CommitMode</code>, определяющий, куда будут отправляться измененные сущности при коммите:<itemizedlist>
             <listitem>
-              <para><code>CommitMode.DATASTORE</code> - на Middleware через установленный для данного источника <code>DataSupplier</code>. </para>
+              <para><code>CommitMode.DATASTORE</code> - на Middleware через установленный для данного источника <code>
+                  <link linkend="dataSupplier">DataSupplier</link>
+                </code>. </para>
             </listitem>
             <listitem>
               <para><code>CommitMode.PARENT</code> - в так называемый &quot;родительский&quot; источник данных, установленный для данного источника и доступный через метод <code>DatasourceImplementation.getParent()</code>.</para>
