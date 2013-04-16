@@ -10,6 +10,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.downloader.CubaFileDownloaderClie
 import com.vaadin.server.*;
 import com.vaadin.ui.AbstractComponent;
 
+import javax.mail.internet.MimeUtility;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -91,12 +92,18 @@ public class CubaFileDownloader extends AbstractComponent {
 
         WebBrowser browser = Page.getCurrent().getWebBrowser();
         boolean isFirefox = browser.isFirefox();
+        boolean isChrome = browser.isChrome();
 
         try {
             if (resource instanceof ConnectorResource) {
                 DownloadStream stream = ((ConnectorResource) resource).getStream();
 
-                String fileName = URLEncoder.encode(stream.getFileName(), "UTF-8").replaceAll("\\+", "%20");
+                String fileName;
+
+                if (isChrome)
+                    fileName = MimeUtility.encodeWord(stream.getFileName(), "UTF-8", "Q");
+                else
+                    fileName = URLEncoder.encode(stream.getFileName(), "UTF-8").replaceAll("\\+", "%20");
 
                 if (stream.getParameter("Content-Disposition") == null) {
                     // Content-Disposition: attachment generally forces download
