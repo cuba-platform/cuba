@@ -15,7 +15,7 @@
                 class="com.haulmont.cuba.core.entity.SendingMessage"
                 view="sendingMessage.browse" fetchMode="AUTO">
             <query>
-                <![CDATA[select sm from sys$SendingMessage sm order by sm.dateSent desc]]>
+                <![CDATA[select sm from sys$SendingMessage sm]]>
             </query>
         </collectionDatasource>
         <datasource id="selectedMessageDs" class="com.haulmont.cuba.core.entity.SendingMessage"
