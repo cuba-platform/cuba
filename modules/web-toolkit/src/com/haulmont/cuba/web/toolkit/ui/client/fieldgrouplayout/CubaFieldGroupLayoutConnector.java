@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.gridlayout;
+package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
@@ -83,15 +83,19 @@ public class CubaFieldGroupLayoutConnector extends GridLayoutConnector {
     protected void updateCaptionSizes(VGridLayout.Cell[] column) {
         int maxCaptionWidth = 0;
         for (VGridLayout.Cell cell : column) {
-            if (cell != null && cell.slot.getCaption() != null) {
+            if (cell != null && isCaptionInlineApplicable(cell)) {
                 maxCaptionWidth = Math.max(maxCaptionWidth, cell.slot.getCaption().getRenderedWidth());
             }
         }
 
         for (VGridLayout.Cell cell : column) {
-            if (cell != null && cell.slot.getCaption() != null) {
+            if (cell != null && isCaptionInlineApplicable(cell)) {
                 cell.slot.getCaption().setWidth(maxCaptionWidth + "px");
             }
         }
+    }
+
+    private boolean isCaptionInlineApplicable(VGridLayout.Cell cell) {
+        return cell.slot.getCaption() != null && !cell.slot.getCaption().shouldBePlacedAfterComponent();
     }
 }

@@ -12,14 +12,17 @@ import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.*;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
 @SuppressWarnings("serial")
-public class FieldGroup extends Form {
+public class CubaFieldGroup extends Form {
 
     private boolean expanded = true;
     private boolean collapsable;
@@ -29,11 +32,11 @@ public class FieldGroup extends Form {
 
     private List<ExpandCollapseListener> listeners = null;
 
-    public FieldGroup() {
+    public CubaFieldGroup() {
         this(DefaultFieldFactory.get());
     }
 
-    public FieldGroup(FormFieldFactory fieldFactory) {
+    public CubaFieldGroup(FormFieldFactory fieldFactory) {
         super();
         setFormFieldFactory(fieldFactory);
         setLayout(new CubaFieldGroupLayout());
@@ -257,11 +260,11 @@ public class FieldGroup extends Form {
     }
 
     public interface ExpandCollapseListener extends Serializable {
-        void onExpand(FieldGroup component);
-        void onCollapse(FieldGroup component);
+        void onExpand(CubaFieldGroup component);
+        void onCollapse(CubaFieldGroup component);
     }
 
     public interface CustomFieldGenerator extends Serializable {
-        com.vaadin.ui.Field generateField(Item item, Object propertyId, FieldGroup component);
+        com.vaadin.ui.Field generateField(Item item, Object propertyId, CubaFieldGroup component);
     }
 }

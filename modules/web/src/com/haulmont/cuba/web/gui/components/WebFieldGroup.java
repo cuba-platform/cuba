@@ -23,6 +23,7 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
+import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CustomField;
 import com.vaadin.data.Item;
@@ -45,10 +46,10 @@ import java.util.*;
  */
 public class WebFieldGroup
         extends
-            WebAbstractComponent<com.haulmont.cuba.web.toolkit.ui.FieldGroup>
+            WebAbstractComponent<CubaFieldGroup>
         implements
             com.haulmont.cuba.gui.components.FieldGroup,
-            com.haulmont.cuba.web.toolkit.ui.FieldGroup.ExpandCollapseListener {
+            CubaFieldGroup.ExpandCollapseListener {
 
     private static final String BORDER_STYLE_NAME = "edit-area";
 
@@ -80,7 +81,7 @@ public class WebFieldGroup
     protected Messages messages = AppBeans.get(Messages.class);
 
     public WebFieldGroup() {
-        component = new com.haulmont.cuba.web.toolkit.ui.FieldGroup(fieldFactory) {
+        component = new CubaFieldGroup(fieldFactory) {
             @Override
             public void addField(Object propertyId, com.vaadin.ui.Field field) {
                 Field fieldConf = WebFieldGroup.this.getField(propertyId.toString());
@@ -196,9 +197,9 @@ public class WebFieldGroup
         if (!field.isCustom()) {
             throw new IllegalStateException(String.format("Field '%s' must be defined as custom", field.getId()));
         }
-        component.addCustomField(field.getId(), new com.haulmont.cuba.web.toolkit.ui.FieldGroup.CustomFieldGenerator() {
+        component.addCustomField(field.getId(), new CubaFieldGroup.CustomFieldGenerator() {
             @Override
-            public com.vaadin.ui.Field generateField(Item item, Object propertyId, com.haulmont.cuba.web.toolkit.ui.FieldGroup component) {
+            public com.vaadin.ui.Field generateField(Item item, Object propertyId, CubaFieldGroup component) {
                 Datasource ds;
                 if (field.getDatasource() != null) {
                     ds = field.getDatasource();
@@ -876,7 +877,7 @@ public class WebFieldGroup
     }
 
     @Override
-    public void onExpand(com.haulmont.cuba.web.toolkit.ui.FieldGroup component) {
+    public void onExpand(CubaFieldGroup component) {
         if (expandListeners != null) {
             for (final ExpandListener listener : expandListeners) {
                 listener.onExpand(this);
@@ -885,7 +886,7 @@ public class WebFieldGroup
     }
 
     @Override
-    public void onCollapse(com.haulmont.cuba.web.toolkit.ui.FieldGroup component) {
+    public void onCollapse(CubaFieldGroup component) {
         if (collapseListeners != null) {
             for (final CollapseListener listener : collapseListeners) {
                 listener.onCollapse(this);

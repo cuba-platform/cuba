@@ -10,10 +10,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.Util;
-import com.vaadin.client.VCaption;
+import com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout.CubaFieldGroupLayoutComponentSlot;
+import com.vaadin.client.*;
 
 /**
  * @author artamonov
@@ -23,6 +21,8 @@ public class CubaCaptionWidget extends VCaption {
     public static final String CLASSNAME = "cuba-caption";
 
     protected Element toolTipIndicator;
+
+    protected CubaFieldGroupLayoutComponentSlot fieldGroupSlot = null;
 
     public CubaCaptionWidget(ComponentConnector component, ApplicationConnection client) {
         super(component, client);
@@ -40,6 +40,9 @@ public class CubaCaptionWidget extends VCaption {
 
         addStyleName(CLASSNAME);
 
+        if (fieldGroupSlot != null)
+            fieldGroupSlot.captionUpdated(this);
+
         return updateResult;
     }
 
@@ -54,7 +57,7 @@ public class CubaCaptionWidget extends VCaption {
             DOM.setEventListener(toolTipIndicator, new EventListener() {
                 @Override
                 public void onBrowserEvent(Event event) {
-                    client.getVTooltip().getTooltipEventHandler().showTooltipForElement(toolTipIndicator, event);
+                    // vaadin7 tooltips
                 }
             });
         }
@@ -74,15 +77,11 @@ public class CubaCaptionWidget extends VCaption {
         DOM.setEventListener(requiredFieldIndicator, new EventListener() {
             @Override
             public void onBrowserEvent(Event event) {
-                client.getVTooltip().getTooltipEventHandler().showTooltipForElement(requiredFieldIndicator, event);
+                // vaadin7 tooltips
             }
         });
     }
 
-    @Override
-    protected void disableFieldRequired() {
-        super.disableFieldRequired();
-    }
     @Override
     public int getRenderedWidth() {
         int renderedWidth = super.getRenderedWidth();
@@ -97,12 +96,12 @@ public class CubaCaptionWidget extends VCaption {
         return super.getTextElement();
     }
 
-    public Element getErrorIndicatorElement() {
-        return errorIndicatorElement;
-    }
-
     public Element getTooltipElement() {
         return toolTipIndicator;
+    }
+
+    public Element getRequiredIndicatorElement() {
+        return requiredFieldIndicator;
     }
 
     @Override
@@ -118,5 +117,13 @@ public class CubaCaptionWidget extends VCaption {
 
     protected int getDescriptionInsertPosition() {
         return super.getInsertPosition(null);
+    }
+
+    public CubaFieldGroupLayoutComponentSlot getFieldGroupSlot() {
+        return fieldGroupSlot;
+    }
+
+    public void setFieldGroupSlot(CubaFieldGroupLayoutComponentSlot fieldGroupSlot) {
+        this.fieldGroupSlot = fieldGroupSlot;
     }
 }

@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.gridlayout;
+package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ui.VGridLayout;
