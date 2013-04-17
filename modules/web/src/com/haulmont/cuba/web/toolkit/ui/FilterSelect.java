@@ -16,8 +16,10 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.ui.ComboBox;
 
+// todo artamonov remove or rename to CubaFilterSelect
 @SuppressWarnings("serial")
 public class FilterSelect extends ComboBox /*extends Select implements Action.Container*/ {
+// vaadin7
 //
 //    private boolean fixedTextBoxWidth = false;
 //

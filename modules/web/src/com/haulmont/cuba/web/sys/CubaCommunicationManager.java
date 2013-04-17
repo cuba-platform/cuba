@@ -17,7 +17,6 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.toolkit.Timer;
-import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.vaadin.server.CommunicationManager;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;

@@ -11,9 +11,12 @@ package com.haulmont.cuba.web.toolkit.ui;
 /**
  * @author gorodnov
  * @version $Id$
+ *
+ * todo artamonov remove or rename to CubaTextField
  */
 @SuppressWarnings("serial")
 public class TextField extends com.vaadin.ui.TextField /*implements Action.Container*/ {
+    // vaadin7
 //
 //    private boolean allowFocusReadonly = false;
 //

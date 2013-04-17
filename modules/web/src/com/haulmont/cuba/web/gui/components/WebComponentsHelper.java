@@ -9,7 +9,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.Action;
@@ -327,13 +326,16 @@ public class WebComponentsHelper {
     }
 
     public static int convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {
-        switch (captionAlignment) {
-            case TOP:
-                return FieldGroupLayout.CAPTION_ALIGN_TOP;
-            case LEFT:
-            default:
-                return FieldGroupLayout.CAPTION_ALIGN_LEFT;
-        }
+
+        return 0;
+        // vaadin7
+//        switch (captionAlignment) {
+//            case TOP:
+//                return FieldGroupLayout.CAPTION_ALIGN_TOP;
+//            case LEFT:
+//            default:
+//                return FieldGroupLayout.CAPTION_ALIGN_LEFT;
+//        }
     }
 
     public static Resolution convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {

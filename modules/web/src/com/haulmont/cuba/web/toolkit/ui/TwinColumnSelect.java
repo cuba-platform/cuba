@@ -26,6 +26,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 //@ClientWidget(VTwinColumnSelect.class)
 public class TwinColumnSelect extends TwinColSelect {
+    // vaadin7
 //
 //    private OptionStyleGenerator styleGenerator;
 //

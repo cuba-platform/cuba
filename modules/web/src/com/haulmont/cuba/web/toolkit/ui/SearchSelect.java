@@ -19,6 +19,7 @@ import java.util.Map;
  */
 //@ClientWidget(VSearchSelect.class)
 public class SearchSelect extends FilterSelect {
+    // vaadin7
 /*
     private FilterHandler filterHandler = null;
     private boolean repaintOptions = false;

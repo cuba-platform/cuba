@@ -21,6 +21,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 //@ClientWidget(ITogglePanel.class)
 public class TogglePanel extends Panel {
+    // vaadin7
 /*
     private boolean expanded = false;
     private boolean hideToggle = false;

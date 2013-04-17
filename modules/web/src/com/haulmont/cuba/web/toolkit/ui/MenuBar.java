@@ -9,21 +9,23 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+//import com.google.common.collect.BiMap;
+//import com.google.common.collect.HashBiMap;
+//import com.haulmont.cuba.core.global.MessageProvider;
+//import com.haulmont.cuba.gui.components.ShortcutAction;
 //import com.vaadin.server.PaintException;
 //import com.vaadin.server.PaintTarget;
 //import com.vaadin.terminal.Resource;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Stack;
+//import java.util.HashMap;
+//import java.util.Iterator;
+//import java.util.Map;
+//import java.util.Stack;
 
+// todo artamonov rename to CubaMenuBar
 @SuppressWarnings("serial")
 public class MenuBar extends com.vaadin.ui.MenuBar {
+// vaadin7
 //
 //    private Map<MenuItem, String> shortcuts;
 //    private boolean vertical;
