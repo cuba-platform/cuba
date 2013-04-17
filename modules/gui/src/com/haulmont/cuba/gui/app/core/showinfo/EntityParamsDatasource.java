@@ -27,6 +27,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
     @Override
     protected void loadData(Map<String, Object> params) {
         if ((instance != null) && (instanceMetaClass != null)) {
+            data.clear();
             compileInfo();
         }
     }
