@@ -32,6 +32,8 @@ import java.util.Locale;
  */
 public abstract class App implements Serializable {
 
+    public static final String USER_SESSION_ATTR = "userSessionId";
+
     private static Log log = LogFactory.getLog(App.class);
 
     private AppLog appLog;
