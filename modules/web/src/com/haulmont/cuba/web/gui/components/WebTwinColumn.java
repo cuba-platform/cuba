@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 05.08.2010 17:08:49
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -19,18 +14,22 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractSelect;
 
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class WebTwinColumn
-        /*extends
+        extends
             WebAbstractOptionsField<TwinColumnSelect>
         implements
-            TwinColumn, Component.Wrapper*/
-{
-/*
+            TwinColumn, Component.Wrapper {
+
     private Object nullOption;
 
     private StyleProvider styleProvider;
@@ -40,12 +39,14 @@ public class WebTwinColumn
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+                    @Override
                     public Object getValue() {
                         final Object o = itemProperty.getValue();
                         return getKeyFromValue(o);
                     }
 
-                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                    @Override
+                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
                         final Object v = getValueFromKey(newValue);
                         itemProperty.setValue(v);
                     }
@@ -93,7 +94,7 @@ public class WebTwinColumn
         }
 
         @Override
-        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
             Class propertyType = propertyPath.getMetaProperty().getJavaType();
             if (Set.class.isAssignableFrom(propertyType)) {
                 if (newValue == null) {
@@ -124,9 +125,9 @@ public class WebTwinColumn
     public <T> T getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
-            return (T) getValueFromKey(key);
+            return getValueFromKey(key);
         } else {
-            return (T) wrapAsCollection(super.getValue());
+            return wrapAsCollection(super.getValue());
         }
     }
 
@@ -136,27 +137,33 @@ public class WebTwinColumn
         super.setValue(getKeyFromValue(value));
     }
 
+    @Override
     public Object getNullOption() {
         return nullOption;
     }
 
+    @Override
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
         component.setNullSelectionItemId(nullOption);
     }
 
+    @Override
     public int getColumns() {
         return component.getColumns();
     }
 
+    @Override
     public void setColumns(int columns) {
         component.setColumns(columns);
     }
 
+    @Override
     public int getRows() {
         return component.getRows();
     }
 
+    @Override
     public void setRows(int rows) {
         component.setRows(rows);
     }
@@ -164,15 +171,17 @@ public class WebTwinColumn
     @Override
     public void setDescriptionProperty(String descriptionProperty) {
         super.setDescriptionProperty(descriptionProperty);
-        component.setShowOptionsDescriptions(descriptionProperty != null);
+        //vaadin7
+        /*component.setShowOptionsDescriptions(descriptionProperty != null);
         if (optionsDatasource != null) {
             component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
-        }
+        }*/
     }
 
     public void setStyleProvider(final StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
-        if (styleProvider != null) {
+        // vaadin7
+        /*if (styleProvider != null) {
             component.setStyleGenerator(new TwinColumnSelect.OptionStyleGenerator() {
                 public String generateStyle(AbstractSelect source, Object itemId, boolean selected) {
                     final Entity item = optionsDatasource.getItem(itemId);
@@ -181,7 +190,7 @@ public class WebTwinColumn
             });
         } else {
             component.setStyleGenerator(null);
-        }
+        }*/
     }
 
     @Override
@@ -216,7 +225,7 @@ public class WebTwinColumn
         Object v;
         if (isMultiSelect()) {
             if (value instanceof Collection) {
-                final Set<Object> set = new HashSet<Object>();
+                final Set<Object> set = new HashSet<>();
                 for (Object o : (Collection) value) {
                     Object t = getKey(o);
                     set.add(t);
@@ -242,5 +251,5 @@ public class WebTwinColumn
             t = o;
         }
         return t;
-    }*/
+    }
 }
