@@ -270,7 +270,7 @@ public class DsBuilder {
         return datasource;
     }
 
-    public CollectionDatasource buildCollectionDatasource() {
+    public <T extends CollectionDatasource> T buildCollectionDatasource() {
         init();
         CollectionDatasource datasource;
         try {
@@ -301,7 +301,7 @@ public class DsBuilder {
         if (dsContext != null && id != null) {
             ((DsContextImplementation) dsContext).register(datasource);
         }
-        return datasource;
+        return (T) datasource;
     }
 
     private CollectionDatasource.FetchMode resolvedFetchMode() {
@@ -320,7 +320,7 @@ public class DsBuilder {
         return fm;
     }
 
-    public HierarchicalDatasource buildHierarchicalDatasource() {
+    public <T extends HierarchicalDatasource> T buildHierarchicalDatasource() {
         init();
         HierarchicalDatasource datasource;
         try {
@@ -350,10 +350,10 @@ public class DsBuilder {
         if (dsContext != null && id != null) {
             ((DsContextImplementation) dsContext).register(datasource);
         }
-        return datasource;
+        return (T) datasource;
     }
 
-    public GroupDatasource buildGroupDatasource() {
+    public <T extends GroupDatasource> T buildGroupDatasource() {
         init();
         GroupDatasource datasource;
         try {
@@ -383,16 +383,16 @@ public class DsBuilder {
         if (dsContext != null && id != null) {
             ((DsContextImplementation) dsContext).register(datasource);
         }
-        return datasource;
+        return (T) datasource;
     }
 
-    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId) {
+    public <T extends RuntimePropsDatasource> T buildRuntimePropsDataSource(String mainDsId) {
         init();
         RuntimePropsDatasourceImpl datasource;
         datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId);
         if (dsContext != null && id != null) {
             ((DsContextImplementation) dsContext).register(datasource);
         }
-        return datasource;
+        return (T) datasource;
     }
 }
