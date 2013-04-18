@@ -2,30 +2,23 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 03.08.2010 17:09:11
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-//import com.haulmont.cuba.toolkit.gwt.client.ui.VWidgetsTree;
-//import com.vaadin.server.PaintException;
-//import com.vaadin.server.PaintTarget;
-//import com.vaadin.terminal.Resource;
-//import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Component;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
-//@ClientWidget(VWidgetsTree.class)
-public class WidgetsTree extends com.vaadin.ui.Tree {
-//
-//    private WidgetBuilder widgetBuilder;
-//
+public class CubaWidgetsTree extends com.vaadin.ui.Tree {
+
+    private WidgetBuilder widgetBuilder;
+
+//    vaadin7
 //    @Override
 //    protected void paintItem(
 //            PaintTarget target,
@@ -63,17 +56,16 @@ public class WidgetsTree extends com.vaadin.ui.Tree {
 //        }
 //        super.paintItem(target, itemId, selectedKeys, expandedKeys);
 //    }
-//
-//    public WidgetBuilder getWidgetBuilder() {
-//        return widgetBuilder;
-//    }
-//
-//    public void setWidgetBuilder(WidgetBuilder widgetBuilder) {
-//        this.widgetBuilder = widgetBuilder;
-//    }
-//
-//    public interface WidgetBuilder extends Serializable {
-//        Component buildWidget(WidgetsTree source, Object itemId, boolean leaf);
-//    }
 
+    public WidgetBuilder getWidgetBuilder() {
+        return widgetBuilder;
+    }
+
+    public void setWidgetBuilder(WidgetBuilder widgetBuilder) {
+        this.widgetBuilder = widgetBuilder;
+    }
+
+    public interface WidgetBuilder extends Serializable {
+        Component buildWidget(CubaWidgetsTree source, Object itemId, boolean leaf);
+    }
 }
