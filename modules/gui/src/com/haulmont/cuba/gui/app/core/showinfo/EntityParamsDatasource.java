@@ -8,7 +8,8 @@ package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.*;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 
 import java.text.SimpleDateFormat;
@@ -21,8 +22,14 @@ import java.util.UUID;
  */
 public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEntity, UUID> {
 
-    private Entity instance;
-    private MetaClass instanceMetaClass;
+    protected Entity instance;
+    protected MetaClass instanceMetaClass;
+
+    protected Messages messages;
+
+    public EntityParamsDatasource() {
+        messages = AppBeans.get(Messages.class);
+    }
 
     @Override
     protected void loadData(Map<String, Object> params) {
@@ -77,7 +84,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
     }
 
     private void includeParam(String messageKey, String value) {
-        KeyValueEntity keyValueEntity = new KeyValueEntity(MessageProvider.getMessage(getClass(), messageKey), value);
+        KeyValueEntity keyValueEntity = new KeyValueEntity(messages.getMessage(getClass(), messageKey), value);
         data.put(keyValueEntity.getId(), keyValueEntity);
     }
 

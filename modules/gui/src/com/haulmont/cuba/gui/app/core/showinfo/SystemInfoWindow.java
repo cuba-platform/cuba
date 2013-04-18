@@ -49,7 +49,7 @@ public class SystemInfoWindow extends AbstractWindow {
         companion.initInfoTable(infoTable);
 
         // remove all actions
-        List<Action> tableActions = new ArrayList<Action>(infoTable.getActions());
+        List<Action> tableActions = new ArrayList<>(infoTable.getActions());
         for (Action action : tableActions)
             infoTable.removeAction(action);
     }

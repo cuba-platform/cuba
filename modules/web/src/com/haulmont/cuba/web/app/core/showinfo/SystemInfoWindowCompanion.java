@@ -20,7 +20,5 @@ public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
 //        com.haulmont.cuba.web.toolkit.ui.Table webTable =
 //                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(infoTable);
 //        webTable.setTextSelectionEnabled(true);
-//        webTable.setColumnReorderingAllowed(false);
-//        webTable.setSortDisabled(true);
     }
 }

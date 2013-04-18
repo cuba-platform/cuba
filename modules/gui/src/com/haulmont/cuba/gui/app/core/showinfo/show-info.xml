@@ -25,7 +25,7 @@
     </dsContext>
 
     <layout expand="infoTable">
-        <table id="infoTable" width="100%">
+        <table id="infoTable" width="100%" columnControlVisible="false" sortable="false" reorderingAllowed="false">
             <columns>
                 <column id="key" caption="msg://showInfo.name"/>
                 <column id="keyValue" caption="msg://showInfo.value"/>
