@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 public class WebActionsField
-        /*extends WebAbstractField<ActionsField>
-        implements com.haulmont.cuba.gui.components.ActionsField*/ {
-    /*private WebLookupField lookupField;
+        extends WebAbstractField<ActionsField>
+        implements com.haulmont.cuba.gui.components.ActionsField {
+    private WebLookupField lookupField;
     private WebButton lookupButton;
     private WebButton openButton;
 
-    private List<Action> actionsOrder = new LinkedList<Action>();
+    private List<Action> actionsOrder = new LinkedList<>();
 
     public WebActionsField() {
         lookupField = new WebLookupField();
@@ -316,5 +316,5 @@ public class WebActionsField
 
 
     public void disablePaging() {
-    }*/
+    }
 }
