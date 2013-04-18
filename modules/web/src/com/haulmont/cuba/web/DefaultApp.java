@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Map;
 
-//import com.vaadin.service.ApplicationContext;
-
 /**
  * @author gorodnov
  * @version $Id$
@@ -62,16 +60,8 @@ public class DefaultApp extends App implements ConnectionListener {
 
             messagesClient.setRemoteSearch(true);
 
-//            String name = currentWindowName.get();
-//            if (name == null)
-//                name = createWindowName(true);
-
-//            Window window = getWindow(name);
-
             UIView appWindow = createAppWindow();
             showView(appWindow);
-
-//            currentWindowName.set(window.getName());
 
             initExceptionHandlers(true);
 
@@ -93,16 +83,8 @@ public class DefaultApp extends App implements ConnectionListener {
 
             messagesClient.setRemoteSearch(false);
 
-//            String name = currentWindowName.get();
-//            if (name == null)
-//                name = createWindowName(false);
-
             UIView window = createLoginWindow();
             showView(window);
-//            window.setName(name);
-//            setMainWindow(window);
-
-//            currentWindowName.set(window.getName());
 
             initExceptionHandlers(false);
         }
@@ -124,6 +106,7 @@ public class DefaultApp extends App implements ConnectionListener {
     protected UIView createLoginWindow() {
         LoginWindow window = new LoginWindow(this, connection);
 
+//  vaadin7
 //        Timer timer = createSessionPingTimer(false);
 //        if (timer != null)
 //            timers.add(timer, window);
@@ -134,152 +117,13 @@ public class DefaultApp extends App implements ConnectionListener {
     protected UIView createAppWindow() {
         AppWindow window = new AppWindow(connection);
 
+//  vaadin7
 //        Timer timer = createSessionPingTimer(true);
 //        if (timer != null)
 //            timers.add(timer, appWindow);
 
         return window;
     }
-
-    /*
-    private boolean principalIsWrong;
-
-    *//**
-     * Should be overridden in descendant to create an application-specific login window
-     *
-     * @return Login form
-     *//*
-    protected LoginWindow createLoginWindow() {
-        LoginWindow window = new LoginWindow(this, connection);
-
-        Timer timer = createSessionPingTimer(false);
-        if (timer != null)
-            timers.add(timer, window);
-
-        return window;
-    }
-
-    *//**
-     * Get or create new LoginWindow
-     *
-     * @return LoginWindow
-     *//*
-    private LoginWindow getLoginWindow() {
-        for (Window win : getWindows()) {
-            if (win instanceof LoginWindow)
-                return (LoginWindow) win;
-        }
-
-        return createLoginWindow();
-    }
-
-    @Override
-    public void init() {
-        log.debug("Initializing application");
-
-        //todo AppConfig.addGroovyImport(PersistenceHelper.class);
-
-        ApplicationContext appContext = getContext();
-        appContext.addTransactionListener(this);
-
-        LoginWindow window = createLoginWindow();
-        setMainWindow(window);
-
-        if (getTheme() == null) {
-            String themeName = AppContext.getProperty("cuba.web.theme");
-            if (themeName == null) themeName = THEME_NAME;
-            setTheme(themeName);
-        }
-    }
-
-    @Override
-    public Window getWindow(String name) {
-        Window window = super.getWindow(name);
-
-        // it does not exist yet, create it.
-        if (window == null) {
-            if (connection.isConnected()) {
-                final AppWindow appWindow = createAppWindow();
-                appWindow.setName(name);
-                addWindow(appWindow);
-                appWindow.focus();
-                connection.addListener(appWindow);
-
-                return appWindow;
-            } else {
-                final Window loginWindow = getLoginWindow();
-                removeWindow(loginWindow);
-
-                loginWindow.setName(name);
-
-                addWindow(loginWindow);
-
-                return loginWindow;
-            }
-        }
-
-        return window;
-    }
-
-    @Override
-    public void connectionStateChanged(Connection connection) throws LoginException {
-        MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
-
-        if (connection.isConnected()) {
-            log.debug("Creating AppWindow");
-
-            getTimers().stopAll();
-
-            for (Object win : new ArrayList<Object>(getWindows())) {
-                removeWindow((Window) win);
-            }
-
-            messagesClient.setRemoteSearch(true);
-
-            String name = currentWindowName.get();
-            if (name == null)
-                name = createWindowName(true);
-
-            Window window = getWindow(name);
-
-            setMainWindow(window);
-            currentWindowName.set(window.getName());
-
-            initExceptionHandlers(true);
-
-            if (linkHandler != null) {
-                linkHandler.handle();
-                linkHandler = null;
-            }
-
-            afterLoggedIn();
-        } else {
-            log.debug("Closing all windows");
-            getWindowManager().closeAll();
-
-            getTimers().stopAll();
-
-            for (Object win : new ArrayList<Object>(getWindows())) {
-                removeWindow((Window) win);
-            }
-
-            messagesClient.setRemoteSearch(false);
-
-            String name = currentWindowName.get();
-            if (name == null)
-                name = createWindowName(false);
-
-            Window window = createLoginWindow();
-            window.setName(name);
-            setMainWindow(window);
-
-            currentWindowName.set(window.getName());
-
-            initExceptionHandlers(false);
-        }
-    }
-
-    */
 
     /**
      * Perform actions after success login
