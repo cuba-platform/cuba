@@ -26,9 +26,7 @@ buildscript {
 
 	cubaPluginVersion = rootProject.hasProperty(CUBA_PLUGIN_VERSION) ? rootProject[CUBA_PLUGIN_VERSION] : cubaPluginVersion
 	docPluginVersion = rootProject.hasProperty(DOC_PLUGIN_VERSION) ? rootProject[DOC_PLUGIN_VERSION] : docPluginVersion 
-	
-	ext.cubaPlugin = [group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaPluginVersion]
-	
+		
     repositories {
         mavenLocal()
         maven {
@@ -40,7 +38,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath cubaPlugin
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaPluginVersion
         classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: docPluginVersion
     }
 }
@@ -140,8 +138,6 @@ configure(sharedLibModule) {
 configure(globalModule) {
     dependencies {
         provided(servletApi)
-        // This dependency is required by CubaEnhancing task
-        provided(cubaPlugin)
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
