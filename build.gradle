@@ -335,6 +335,10 @@ configure(webModule) {
 }
 
 configure(webToolkitModule) {
+    configurations {
+        widgetSetBuilding
+    }
+
     dependencies {
         compile(webModule)
 
@@ -342,13 +346,13 @@ configure(webToolkitModule) {
         compile(group: 'com.vaadin', name: 'vaadin-client', version: vaadinVersion)
 
         compile(group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion)
+
+        widgetSetBuilding(webModule)
     }
 
     def webOutDir = file("$buildDir/web")
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
         widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
-        widgetSetModules = [webToolkitModule]
-        dependencyModules = [webModule]
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
         compilerArgs = ['-style' : 'PRETTY', '-logLevel' : 'INFO', '-localWorkers' : '2']
