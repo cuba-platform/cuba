@@ -236,7 +236,6 @@ configure(guiModule) {
     }
 
     dependencies {
-        provided(cubaPlugin)
         compile(globalModule)
         compile(clientModule)
         compile(poi)
