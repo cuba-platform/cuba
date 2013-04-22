@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -51,6 +51,17 @@ public interface Query {
      * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
      */
     Object getSingleResult();
+
+    /**
+     * Execute a SELECT query.<br/>
+     * Returns null if there is no result. <br/>
+     * Returns first result if more than one result.
+     *
+     * @return the result
+     * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
+     */
+    @Nullable
+    Object getFirstResult();
 
     /**
      * Execute an update or delete statement.

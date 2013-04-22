@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -13,7 +14,6 @@ import java.util.List;
  *
  * @author Alexander Budarov
  * @version $Id$
- *
  */
 public interface TypedQuery<T> extends Query {
 
@@ -54,4 +54,14 @@ public interface TypedQuery<T> extends Query {
      * @return the same query instance
      */
     Query addViewName(String viewName);
+    /**
+     * Execute a SELECT query.<br/>
+     * Returns null if there is no result. <br/>
+     * Returns first result if more than one result.
+     *
+     * @return the result
+     * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
+     */
+    @Nullable
+    T getFirstResult();
 }

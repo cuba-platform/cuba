@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
@@ -24,6 +25,8 @@ import javax.persistence.TemporalType;
 import java.util.*;
 
 /**
+ * Implementation of {@link TypedQuery} interface based on OpenJPA.
+ *
  * @author krivopustov
  * @version $Id$
  */
@@ -137,6 +140,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
         OpenJPAQuery<T> jpaQuery = getQuery();
         addMacroParams(jpaQuery);
         return jpaQuery.getSingleResult();
+    }
+
+    @Override
+    @Nullable
+    public T getFirstResult() {
+        if (!isNative && log.isTraceEnabled())
+            log.trace("JPQL query result class: " + getQuery().getResultClass());
+        OpenJPAQuery<T> jpaQuery = getQuery();
+        addMacroParams(jpaQuery);
+        List<T> resultList = jpaQuery.getResultList();
+        return Iterables.getFirst(resultList, null);
     }
 
     @Override
