@@ -322,7 +322,7 @@ public class AbstractViewRepository implements ViewRepository {
                 } else {
                     refMetaClass = getMetaClass(propElem, range);
                     View ancestorView = getAncestorView(refMetaClass, ancestorViewName);
-                    refView = new View(ancestorView, range.asClass().getJavaClass(), refViewName, true);
+                    refView = new View(ancestorView, range.asClass().getJavaClass(), "", true);
                 }
                 loadView(rootElem, propElem, refView);
             }
