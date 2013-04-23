@@ -152,25 +152,11 @@ public class DesktopTreeTable
                 new TreeSelectionListener() {
                     @Override
                     public void valueChanged(TreeSelectionEvent e) {
-                        if (isRowsAjusting || isRowSelecting)
+                        if (isRowsAjusting)
                             return;
 
-                        isRowSelecting = true;
-                        try {
-                            selectionBackup = getSelected();
-
-                            final Set selected = getSelected();
-                            if (selected.isEmpty()) {
-                                datasource.setItem(null);
-                            } else {
-                                // reset selection and select new item
-                                if (isMultiSelect())
-                                    datasource.setItem(null);
-                                datasource.setItem((Entity) selected.iterator().next());
-                            }
-                        } finally {
-                            isRowSelecting = false;
-                        }
+                        Entity entity = getSingleSelected();
+                        datasource.setItem(entity);
                     }
                 }
         );
