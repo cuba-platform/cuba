@@ -111,7 +111,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
             cmd = parser.parse(cliOptions, args);
         } catch (ParseException exp) {
             // oops, something went wrong
-            formatter.printHelp("dbutil", cliOptions);
+            formatter.printHelp("dbupdate", cliOptions);
             return;
         }
 
