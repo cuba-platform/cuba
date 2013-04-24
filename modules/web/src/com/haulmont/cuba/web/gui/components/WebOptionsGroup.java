@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
@@ -131,7 +132,16 @@ public class WebOptionsGroup
     protected Object getKey(Object o) {
         Object t;
         if (o instanceof Entity) {
-            t = ((Entity) o).getId();
+            if (optionsDatasource != null) {
+                if (Datasource.State.INVALID == optionsDatasource.getState()) {
+                    optionsDatasource.refresh();
+                }
+                return ((Entity) o).getId();
+            } else {
+                if ((optionsList != null) || (optionsMap != null))
+                    return o;
+                return ((Entity) o).getId();
+            }
         } else if (o instanceof Enum) {
             t = o;
         } else {
