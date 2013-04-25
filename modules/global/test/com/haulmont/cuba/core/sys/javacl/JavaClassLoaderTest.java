@@ -29,7 +29,7 @@ public class JavaClassLoaderTest {
         System.out.println("SimpleClass modified");
         Class<?> class2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
         Assert.assertNotSame(class1, class2);
-        Assert.assertEquals(javaClassLoader.compiled.size(), 3);
+        Assert.assertEquals(javaClassLoader.compiled.size(), 4);
         System.out.println("Class reloaded");
 
         System.out.println("No changes");
