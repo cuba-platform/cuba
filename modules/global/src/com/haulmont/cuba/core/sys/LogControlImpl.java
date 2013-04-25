@@ -47,7 +47,13 @@ public class LogControlImpl implements LogControl {
     public List<String> getLogFileNames() {
         List<String> filenames = new ArrayList<>();
         if (logDir.isDirectory()) {
-            filenames = Arrays.asList(logDir.list());
+            File[] files = logDir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile())
+                        filenames.add(f.getName());
+                }
+            }
         }
         Collections.sort(filenames);
         return filenames;
