@@ -136,7 +136,6 @@
     }
 
     .#{$primaryStyleName}-submenu-indicator {
-
       background: transparent;
       background-repeat: no-repeat;
       background-position: right center;
@@ -146,6 +145,10 @@
       width: 16px;
       display: inline-block;
       min-width: 10px;
+    }
+
+    .#{$primaryStyleName}-submenu-indicator + .#{$primaryStyleName}-menuitem-caption {
+      padding-right: 10px;
     }
 
     .#{$primaryStyleName}-submenu-check-column {

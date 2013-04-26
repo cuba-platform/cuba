@@ -27,6 +27,7 @@
 @import "components/caption/caption";
 @import "components/menubar/menubar";
 @import "components/tabsheet/tabsheet";
+@import "components/textarea/textarea";
 @import "components/groupbox/groupbox";
 @import "components/textfield/textfield";
 @import "components/datefield/datefield";
@@ -63,6 +64,7 @@
   @include havana-caption;
   @include havana-tooltip;
   @include havana-tabsheet;
+  @include havana-textarea;
   @include havana-textfield;
   @include havana-datefield;
   @include havana-splitpanel;
