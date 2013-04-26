@@ -18,8 +18,7 @@ import com.vaadin.ui.ProgressIndicator;
  * @author Alexander Budarov
  * @version $Id$
  */
-public class WebProgressBar /*extends WebAbstractField<ProgressIndicator> implements ProgressBar*/ {
-/*
+public class WebProgressBar extends WebAbstractField<ProgressIndicator> implements ProgressBar {
     protected boolean indeterminate;
 
     public WebProgressBar() {
@@ -34,14 +33,16 @@ public class WebProgressBar /*extends WebAbstractField<ProgressIndicator> implem
 
     @Override
     public boolean isIndeterminate() {
-        return indeterminate;
+        return component.isIndeterminate();
     }
 
     @Override
     public void setIndeterminate(boolean indeterminate) {
-        this.indeterminate = indeterminate;
+        if (this.indeterminate != indeterminate)
+            component.setIndeterminate(indeterminate);
+
         if (indeterminate) {
             component.setValue(0.0f);
         }
-    }*/
+    }
 }
