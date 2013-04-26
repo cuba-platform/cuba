@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
@@ -82,7 +83,7 @@ public class CubaGroupTable extends com.vaadin.ui.Table implements GroupTableCon
             if (!columnGenerators.isEmpty()) {
                 List<Object> notGeneratedProperties = new ArrayList<>();
                 for (Object id : newGroupProperties) {
-                    if (!columnGenerators.containsKey(id))
+                    if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath))
                         notGeneratedProperties.add(id);
                 }
                 newGroupProperties = notGeneratedProperties.toArray();
@@ -241,7 +242,7 @@ public class CubaGroupTable extends com.vaadin.ui.Table implements GroupTableCon
         if (!columnGenerators.isEmpty()) {
             List<Object> notGeneratedGroupProps = new ArrayList<>();
             for (Object id : groupProperties) {
-                if (!columnGenerators.containsKey(id))
+                if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath))
                     notGeneratedGroupProps.add(id);
             }
             return notGeneratedGroupProps;
