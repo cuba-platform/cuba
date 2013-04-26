@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.data.ResizeListener;
  * @author subbotin
  * @version $Id$
  */
-public class DesktopResizableTextField extends DesktopTextField implements ResizableTextField{
+public class DesktopResizableTextField extends DesktopTextArea implements ResizableTextField {
     @Override
     public boolean isResizable() {
         return false;

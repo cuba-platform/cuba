@@ -11,24 +11,14 @@ import com.haulmont.chile.core.datatypes.Datatype;
  * @author abramov
  * @version $Id$
  */
-public interface TextField extends Field, Component.HasFormatter {
+public interface TextField
+        extends
+            TextInputField,
+            TextInputField.MaxLengthLimited,
+            TextInputField.TrimSupported,
+            Component.HasFormatter {
 
     String NAME = "textField";
-
-    int getRows();
-    void setRows(int rows);
-
-    int getColumns();
-    void setColumns(int columns);
-
-    boolean isSecret();
-    void setSecret(boolean secret);
-
-    int getMaxLength();
-    void setMaxLength(int value);
-
-    boolean isTrimming();
-    void setTrimming(boolean trimming);
 
     Datatype getDatatype();
     void setDatatype(Datatype datatype);

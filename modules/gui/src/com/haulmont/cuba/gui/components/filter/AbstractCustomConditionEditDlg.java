@@ -26,9 +26,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractCustomConditionEditDlg<T> {
 
@@ -62,13 +61,17 @@ public abstract class AbstractCustomConditionEditDlg<T> {
     protected ComponentsFactory factory = AppConfig.getFactory();
     protected AbstractCustomCondition condition;
 
+    protected Messages messages;
+
     public AbstractCustomConditionEditDlg(final AbstractCustomCondition condition) {
         this.condition = condition;
         this.messagesPack = AppConfig.getMessagesPack();
+        this.messages = AppBeans.get(Messages.class);
+
         entityAlias = condition.getEntityAlias();
 
         nameLab = factory.createComponent(Label.NAME);
-        nameLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.nameLabel"));
+        nameLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.nameLabel"));
 
         nameText = factory.createComponent(TextField.NAME);
         nameText.setWidth(FIELD_WIDTH);
@@ -76,7 +79,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         nameText.requestFocus();
 
         joinLab = factory.createComponent(Label.NAME);
-        joinLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.joinLabel"));
+        joinLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.joinLabel"));
 
         joinText = factory.createComponent(AutoCompleteTextField.NAME);
         joinText.setWidth(FIELD_WIDTH);
@@ -89,11 +92,11 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         });
 
         whereLab = factory.createComponent(Label.NAME);
-        whereLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.whereLabel"));
+        whereLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.whereLabel"));
 
         whereText = factory.createComponent(AutoCompleteTextField.NAME);
         whereText.setWidth(FIELD_WIDTH);
-        whereText.setRows(4);
+        whereText.setHeight("200px");
         String where = replaceParamWithQuestionMark(condition.getWhere());
         whereText.setValue(where);
 
@@ -106,7 +109,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         );
 
         typeLab = factory.createComponent(Label.NAME);
-        typeLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.paramTypeLabel"));
+        typeLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.paramTypeLabel"));
 
         typeSelect = factory.createComponent(LookupField.NAME);
         fillTypeSelect(condition.getParam());
@@ -133,14 +136,14 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         });
 
         typeCheckBox = factory.createComponent(CheckBox.NAME);
-        typeCheckBox.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.typeCheckBox"));
+        typeCheckBox.setCaption(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.typeCheckBox"));
         typeCheckBox.setValue(condition.isInExpr());
 
         boolean entitySelectEnabled = ParamType.ENTITY.equals(typeSelect.getValue())
                 || ParamType.ENUM.equals(typeSelect.getValue());
 
         entityLab = factory.createComponent(Label.NAME);
-        entityLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityLabel"));
+        entityLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityLabel"));
         entityLab.setEnabled(entitySelectEnabled);
 
         entitySelect = factory.createComponent(LookupField.NAME);
@@ -150,17 +153,17 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         fillEntitySelect(condition.getParam());
 
         entityParamWhereLab = factory.createComponent(Label.NAME);
-        entityParamWhereLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityParamWhereLab"));
+        entityParamWhereLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityParamWhereLab"));
         entityParamWhereLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 
         entityParamWhereText = factory.createComponent(TextField.NAME);
         entityParamWhereText.setWidth(FIELD_WIDTH);
-        entityParamWhereText.setRows(3);
+        entityParamWhereText.setHeight("200px");
         entityParamWhereText.setValue(condition.getEntityParamWhere());
         entityParamWhereText.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 
         entityParamViewLab = factory.createComponent(Label.NAME);
-        entityParamViewLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityParamViewLab"));
+        entityParamViewLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityParamViewLab"));
         entityParamViewLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 
         entityParamViewText = factory.createComponent(TextField.NAME);
@@ -170,7 +173,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
         btnOk = factory.createComponent(Button.NAME);
         btnOk.setIcon("icons/ok.png");
-        btnOk.setCaption(MessageProvider.getMessage(messagesPack, "actions.Ok"));
+        btnOk.setCaption(messages.getMessage(messagesPack, "actions.Ok"));
         btnOk.setAction(new AbstractAction("Ok") {
             @Override
             public void actionPerform(Component component) {
@@ -180,7 +183,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         });
 
         btnCancel = factory.createComponent(Button.NAME);
-        btnCancel.setCaption(MessageProvider.getMessage(messagesPack, "actions.Cancel"));
+        btnCancel.setCaption(messages.getMessage(messagesPack, "actions.Cancel"));
         btnCancel.setIcon("icons/cancel.png");
         btnCancel.setAction(new AbstractAction("Cancel") {
             @Override
@@ -191,8 +194,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
     }
 
     private List<Suggestion> requestHint(AutoCompleteTextField sender, String text, int senderCursorPosition) {
-        String joinStr = (String) joinText.getValue();
-        String whereStr = (String) whereText.getValue();
+        String joinStr = joinText.getValue();
+        String whereStr = whereText.getValue();
         CollectionDatasource ds = (CollectionDatasource) condition.getDatasource();
 
         int queryPosition = -1;
@@ -266,7 +269,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
             String entityParamView = entityParamViewText.getValue();
             condition.setEntityParamView(entityParamView);
 
-            AbstractParam param = paramFactory.createParam(paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
+            AbstractParam param = paramFactory.createParam(
+                    paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
                     condition.isInExpr(), condition.isRequired());
             condition.setParam(param);
         }
@@ -295,10 +299,10 @@ public abstract class AbstractCustomConditionEditDlg<T> {
             case UUID:
                 return UUID.class;
             case ENTITY:
-                MetaClass entity = (MetaClass) entitySelect.getValue();
+                MetaClass entity = entitySelect.getValue();
                 return entity.getJavaClass();
             case ENUM:
-                Class enumClass = (Class) entitySelect.getValue();
+                Class enumClass = entitySelect.getValue();
                 return enumClass;
             case UNARY:
                 return null;
@@ -314,7 +318,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
         MessageTools messageTools = AppBeans.get(MessageTools.class);
 
-        Map<String, Object> items = new TreeMap<String, Object>();
+        Map<String, Object> items = new TreeMap<>();
         Object selectedItem = null;
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
             for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
@@ -325,7 +329,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
             if (param != null && AbstractParam.Type.ENTITY.equals(param.getType())) {
                 Class javaClass = param.getJavaClass();
-                selectedItem = MetadataProvider.getSession().getClass(javaClass);
+                selectedItem = AppBeans.get(Metadata.class).getClass(javaClass);
             }
             entitySelect.setOptionsMap(items);
             entitySelect.setValue(selectedItem);
@@ -354,14 +358,13 @@ public abstract class AbstractCustomConditionEditDlg<T> {
     }
 
     protected String getEnumClassName(Class enumClass) {
-        return enumClass.getSimpleName() + " (" + MessageProvider.getMessage(enumClass, enumClass.getSimpleName()) + ")";
+        return enumClass.getSimpleName() + " (" + messages.getMessage(enumClass, enumClass.getSimpleName()) + ")";
     }
 
     protected void fillTypeSelect(AbstractParam param) {
-        List<ParamType> values = new LinkedList<ParamType>();
-        for (ParamType type : ParamType.values()) {
-            values.add(type);
-        }
+        List<ParamType> values = new LinkedList<>();
+        Collections.addAll(values, ParamType.values());
+
         typeSelect.setOptionsList(values);
         if (param == null) {
             typeSelect.setValue(ParamType.STRING);

@@ -11,4 +11,9 @@
     padding-top: 1px;
     padding-bottom: 1px;
   }
+  .#{$primaryStyleName}.h2 {
+    font-family: verdana, tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+  }
 }

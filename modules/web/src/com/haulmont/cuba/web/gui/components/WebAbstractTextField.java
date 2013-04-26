@@ -7,14 +7,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -22,6 +20,7 @@ import com.haulmont.cuba.web.toolkit.ui.converters.DatatypeToStringConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,21 +34,15 @@ import java.util.Locale;
  * @author abramov
  * @version $Id$
  */
-public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolkit.ui.TextField>
-    extends
-        WebAbstractField<T>
-    implements
-        TextField, Component.Wrapper {
+public abstract class WebAbstractTextField<T extends AbstractTextField>
+        extends
+            WebAbstractField<T>
+        implements
+            TextInputField, Component.Wrapper {
 
     private static Log log = LogFactory.getLog(WebAbstractTextField.class);
 
-    private Datatype datatype;
-
     private Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
-
-    protected Formatter formatter;
-
-    protected boolean trimming = true;
 
     public WebAbstractTextField() {
         this.component = createTextFieldImpl();
@@ -124,56 +117,6 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
 
     protected abstract T createTextFieldImpl();
 
-    public int getRows() {
-        return 0;
-//        vaadin7
-//        return component.getRows();
-    }
-
-    public void setRows(int rows) {
-//        component.setRows(rows);
-//        vaadin7
-    }
-
-    public int getColumns() {
-        return component.getColumns();
-    }
-
-    public void setColumns(int columns) {
-        component.setColumns(columns);
-    }
-
-    public boolean isSecret() {
-//        vaadin7
-//        return component.isSecret();
-        return false;
-    }
-
-    public void setSecret(boolean secret) {
-//        vaadin7
-//        component.setSecret(secret);
-    }
-
-    @Override
-    public int getMaxLength() {
-        return component.getMaxLength();
-    }
-
-    @Override
-    public void setMaxLength(int value) {
-        component.setMaxLength(value);
-    }
-
-    @Override
-    public Datatype getDatatype() {
-        return datatype;
-    }
-
-    @Override
-    public void setDatatype(Datatype datatype) {
-        this.datatype = datatype;
-    }
-
     @Override
     public <T> T getValue() {
         Object value = super.getValue();
@@ -205,7 +148,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         if (metaProperty != null) {
             return metaProperty.getRange().isDatatype() ? metaProperty.getRange().asDatatype() : null;
         } else {
-            return datatype;
+            return Datatypes.getNN(String.class);
         }
     }
 
@@ -217,75 +160,63 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
             component.setMaxLength(len);
         }
 
-        if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
+        if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION) {
             component.setConverter(new EntityToStringConverter());
-        else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
+        } else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
             Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
-            if (datatype != null)
+            if (datatype != null) {
                 component.setConverter(new DatatypeToStringConverter(datatype));
-            else
+            } else {
                 component.setConverter(new StringToStringConverter());
-        } else
+            }
+        } else {
             component.setConverter(new StringToStringConverter());
+        }
     }
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
-            private static final long serialVersionUID = -5672549961402055473L;
+        if (this instanceof TrimSupported) {
+            return new TextItemWrapper(datasource, propertyPaths);
+        } else {
+            return super.createDatasourceWrapper(datasource, propertyPaths);
+        }
+    }
 
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new PropertyWrapper(item, propertyPath) {
-                    private static final long serialVersionUID = -6484626348078235396L;
+    protected class TextItemWrapper extends ItemWrapper {
+        public TextItemWrapper(Object item, Collection<MetaPropertyPath> properties) {
+            super(item, properties);
+        }
 
-                    @Override
-                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                        if (newValue instanceof String && trimming)
-                            newValue = ((String) newValue).trim();
-                        super.setValue(newValue);
-                    }
+        @Override
+        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            return new TextPropertyWrapper(item, propertyPath);
+        }
+    }
 
-                    @Override
-                    public String getFormattedValue() {
-                        if (formatter != null) {
-                            Object value = getValue();
-                            if (value instanceof Instance)
-                                value = ((Instance) value).getInstanceName();
-                            return formatter.format(value);
-                        } else
-                            return super.getFormattedValue();
-                    }
-                };
+    protected class TextPropertyWrapper extends PropertyWrapper {
+        public TextPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            super(item, propertyPath);
+        }
+
+        @Override
+        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
+            WebAbstractTextField<T> impl = WebAbstractTextField.this;
+            if ((newValue instanceof String) && (impl instanceof TrimSupported)) {
+                if (((TrimSupported) impl).isTrimming()) {
+                    newValue = ((String) newValue).trim();
+                }
             }
-        };
-    }
-
-    @Override
-    public Formatter getFormatter() {
-        return formatter;
-    }
-
-    @Override
-    public void setFormatter(Formatter formatter) {
-        this.formatter = formatter;
+            super.setValue(newValue);
+        }
     }
 
     @Override
     protected boolean isEmpty(Object value) {
-        if (value instanceof String)
+        if (value instanceof String) {
             return StringUtils.isBlank((String) value);
-        else
+        } else {
             return value == null;
-    }
-
-    @Override
-    public boolean isTrimming() {
-        return trimming;
-    }
-
-    @Override
-    public void setTrimming(boolean trimming) {
-        this.trimming = trimming;
+        }
     }
 }

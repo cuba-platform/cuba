@@ -18,8 +18,7 @@ import java.util.Map;
  */
 public class LayoutLoaderConfig {
 
-    private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders =
-            new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
+    private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders = new HashMap<>();
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig();
@@ -61,9 +60,13 @@ public class LayoutLoaderConfig {
         config.register(LinkButton.NAME, ButtonLoader.class);
         config.register(CheckBox.NAME, AbstractFieldLoader.class);
         config.register(Label.NAME, LabelLoader.class);
-        config.register(TextField.NAME, ResizableTextFieldLoader.class);
+
+        config.register(TextField.NAME, TextFieldLoader.class);
+        config.register(TextArea.NAME, ResizableTextFieldLoader.class);
         config.register(AutoCompleteTextField.NAME, AutoCompleteTextFieldLoader.class);
-        config.register(TextArea.NAME, TextAreaLoader.class);
+        config.register(PasswordField.NAME, PasswordFieldLoader.class);
+        config.register(RichTextArea.NAME, RichTextAreaLoader.class);
+
         config.register(DateField.NAME, DateFieldLoader.class);
         config.register(TimeField.NAME, TimeFieldLoader.class);
         config.register(LookupField.NAME, LookupFieldLoader.class);

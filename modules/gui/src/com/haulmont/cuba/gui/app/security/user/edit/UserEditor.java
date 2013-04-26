@@ -59,8 +59,8 @@ public class UserEditor extends AbstractEditor<User> {
     @Inject
     protected FieldGroup fieldGroup;
 
-    protected TextField passwField;
-    protected TextField confirmPasswField;
+    protected PasswordField passwField;
+    protected PasswordField confirmPasswField;
     protected LookupField languageLookup;
 
     @Inject
@@ -82,9 +82,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected PasswordEncryption passwordEncryption;
 
     public interface Companion {
-        void initPasswordField(TextField passwordField);
-
-        void initLanguageLook(LookupField languageLook);
+        void initPasswordField(PasswordField passwordField);
     }
 
     @Override
@@ -155,9 +153,8 @@ public class UserEditor extends AbstractEditor<User> {
             fieldGroup.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
                 @Override
                 public Component generateField(Datasource datasource, String propertyId) {
-                    passwField = factory.createComponent(TextField.NAME);
+                    passwField = factory.createComponent(PasswordField.NAME);
                     passwField.setRequiredMessage(getMessage("passwMsg"));
-                    passwField.setSecret(true);
                     if (companion != null) {
                         companion.initPasswordField(passwField);
                     } else {
@@ -170,8 +167,7 @@ public class UserEditor extends AbstractEditor<User> {
             fieldGroup.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
                 @Override
                 public Component generateField(Datasource datasource, String propertyId) {
-                    confirmPasswField = factory.createComponent(TextField.NAME);
-                    confirmPasswField.setSecret(true);
+                    confirmPasswField = factory.createComponent(PasswordField.NAME);
                     confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
                     if (companion != null) {
                         companion.initPasswordField(confirmPasswField);
@@ -189,6 +185,7 @@ public class UserEditor extends AbstractEditor<User> {
                 languageLookup = factory.createComponent(LookupField.NAME);
 
                 languageLookup.setDatasource(datasource, propertyId);
+                languageLookup.setRequired(false);
 
                 Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
                 TreeMap<String, Object> options = new TreeMap<>();
@@ -196,8 +193,6 @@ public class UserEditor extends AbstractEditor<User> {
                     options.put(entry.getKey(), messages.getTools().localeToString(entry.getValue()));
                 }
                 languageLookup.setOptionsMap(options);
-                if (companion != null)
-                    companion.initLanguageLook(languageLookup);
                 return languageLookup;
             }
         });

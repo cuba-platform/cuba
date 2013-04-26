@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.ui.TextArea;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.Map;
  * @version $Id$
  */
 //@ClientWidget(VResizableTextField.class)
-public class ResizableTextField extends TextField {
+public class ResizableTextField extends TextArea {
 
     private boolean resizable = false;
     private List<ResizeListener> listeners = new ArrayList<>();
@@ -48,7 +49,7 @@ public class ResizableTextField extends TextField {
     public void removeResizeListener(ResizeListener resizeListener) {
         listeners.remove(resizeListener);
     }
-
+/*  vaadin7
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
@@ -64,4 +65,5 @@ public class ResizableTextField extends TextField {
             for (ResizeListener listener : listeners)
                 listener.onResize(null, null, (String) variables.get("width"), (String) variables.get("height"));
     }
+    */
 }

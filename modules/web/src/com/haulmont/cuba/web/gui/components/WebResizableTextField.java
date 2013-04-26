@@ -19,25 +19,27 @@ import java.util.List;
  */
 public class WebResizableTextField
         extends
-            WebAbstractTextField<com.haulmont.cuba.web.toolkit.ui.ResizableTextField>
+            WebTextArea
         implements
             ResizableTextField, Component.Wrapper {
 
     protected final List<ResizeListener> resizeListeners = new ArrayList<>();
+    private com.haulmont.cuba.web.toolkit.ui.ResizableTextField resizableTextField;
 
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.ResizableTextField createTextFieldImpl() {
-        return new com.haulmont.cuba.web.toolkit.ui.ResizableTextField();
+        resizableTextField = new com.haulmont.cuba.web.toolkit.ui.ResizableTextField();
+        return resizableTextField;
     }
 
     @Override
     public boolean isResizable() {
-        return component.isResizable();
+        return resizableTextField.isResizable();
     }
 
     @Override
     public void setResizable(boolean resizable) {
-        component.setResizable(resizable);
+        resizableTextField.setResizable(resizable);
     }
 
     @Override
@@ -61,5 +63,15 @@ public class WebResizableTextField
                     listener.onResize(textField, oldWidth, oldHeight, width, height);
             }
         });
+    }
+
+    @Override
+    public int getMaxLength() {
+        return component.getMaxLength(); 
+    }
+
+    @Override
+    public void setMaxLength(int value) {
+        component.setMaxLength(value);
     }
 }

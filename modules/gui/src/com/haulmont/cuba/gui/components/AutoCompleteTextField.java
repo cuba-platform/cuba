@@ -1,14 +1,19 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
 
 /**
- * Author: Alexander Chevelev
- * Date: 28.01.2011
- * Time: 1:38:55
+ * @author chevelev
+ * @version $Id$
  */
-public interface AutoCompleteTextField extends TextField {
+public interface AutoCompleteTextField extends TextArea {
 
     String NAME = "autoCompleteTextField";
 

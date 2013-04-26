@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -7,7 +7,6 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -33,21 +32,23 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class ControllerDependencyInjector {
+public class CompanionDependencyInjector {
 
-    private IFrame frame;
+    private static final Log log = LogFactory.getLog(CompanionDependencyInjector.class);
 
-    private Log log = LogFactory.getLog(getClass());
+    protected Object companion;
+    protected IFrame frame;
 
-    public ControllerDependencyInjector(IFrame frame) {
+    public CompanionDependencyInjector(IFrame frame, Object companion) {
+        this.companion = companion;
         this.frame = frame;
     }
 
     public void inject() {
         Map<AnnotatedElement, Class> toInject = new HashMap<>();
 
-        List<Class> classes = ClassUtils.getAllSuperclasses(frame.getClass());
-        classes.add(0, frame.getClass());
+        List<Class> classes = ClassUtils.getAllSuperclasses(companion.getClass());
+        classes.add(0, companion.getClass());
         Collections.reverse(classes);
 
         for (Field field : getAllFields(classes)) {
@@ -56,7 +57,7 @@ public class ControllerDependencyInjector {
                 toInject.put(field, aClass);
             }
         }
-        for (Method method : frame.getClass().getMethods()) {
+        for (Method method : companion.getClass().getMethods()) {
             Class aClass = injectionAnnotation(method);
             if (aClass != null) {
                 toInject.put(method, aClass);
@@ -180,11 +181,9 @@ public class ControllerDependencyInjector {
                 else
                     return beans.values().iterator().next();
             }
-            // There are no Spring beans of required type - the last option is Companion
-            if (frame instanceof AbstractFrame) {
-                instance = ((AbstractFrame) frame).getCompanion();
-                if (instance != null && type.isAssignableFrom(instance.getClass()))
-                    return instance;
+            // There are no Spring beans of required type - the last option is Frame
+            if (type.isAssignableFrom(IFrame.class)) {
+                return frame;
             }
             return null;
         }
@@ -194,7 +193,7 @@ public class ControllerDependencyInjector {
         if (element instanceof Field) {
             ((Field) element).setAccessible(true);
             try {
-                ((Field) element).set(frame, value);
+                ((Field) element).set(companion, value);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -203,7 +202,7 @@ public class ControllerDependencyInjector {
             params[0] = value;
             ((Method) element).setAccessible(true);
             try {
-                ((Method) element).invoke(frame, params);
+                ((Method) element).invoke(companion, params);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }

@@ -42,10 +42,9 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
         jmxFieldGroup.addCustomField("password", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                passwordField = factory.createComponent(TextField.NAME);
+                passwordField = factory.createComponent(PasswordField.NAME);
                 passwordField.setRequired(true);
                 passwordField.setRequiredMessage(getMessage("passwordRequiredMsg"));
-                passwordField.setSecret(true);
                 return passwordField;
             }
         });

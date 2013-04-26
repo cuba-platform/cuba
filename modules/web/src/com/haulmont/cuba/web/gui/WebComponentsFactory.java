@@ -32,7 +32,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(BoxLayout.VBOX, WebVBoxLayout.class);
         classes.put(GridLayout.NAME, WebGridLayout.class);
         classes.put(ScrollBoxLayout.NAME, WebScrollBoxLayout.class);
-// vaadin7
+//  vaadin7
 //        classes.put(ToggleBoxLayout.NAME, WebToggleBoxLayout.class);
 //        classes.put(HtmlBoxLayout.NAME, WebHtmlBoxLayout.class);
 //        classes.put(FlowBoxLayout.NAME, WebFlowBoxLayout.class);
@@ -42,11 +42,14 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBoxLayout.NAME, WebGroupBox.class);
-// vaadin7
+//  vaadin7
 //        classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
-        //Use resizable text area instead of text field
+        classes.put(TextField.NAME, WebTextField.class);
+        classes.put(PasswordField.NAME, WebPasswordField.class);
+        // Use resizable text area instead of text area
         classes.put(ResizableTextField.NAME, WebResizableTextField.class);
-        classes.put(TextArea.NAME, WebTextArea.class);
+        classes.put(RichTextArea.NAME, WebRichTextArea.class);
+
         classes.put(IFrame.NAME, WebFrame.class);
         classes.put(Table.NAME, WebTable.class);
         classes.put(TreeTable.NAME, WebTreeTable.class);
@@ -54,11 +57,11 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(DateField.NAME, WebDateField.class);
         classes.put(TimeField.NAME, WebTimeField.class);
         classes.put(LookupField.NAME, WebLookupField.class);
-// vaadin7
+//  vaadin7
 //        classes.put(SearchField.NAME, WebSearchField.class);
         classes.put(PickerField.NAME, WebPickerField.class);
         classes.put(LookupPickerField.NAME, WebLookupPickerField.class);
-// vaadin7
+//  vaadin7
 //        classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
         classes.put(OptionsGroup.NAME, WebOptionsGroup.class);
         classes.put(FileUploadField.NAME, WebFileUploadField.class);
@@ -66,22 +69,21 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(SplitPanel.NAME, WebSplitPanel.class);
         classes.put(Tree.NAME, WebTree.class);
         classes.put(TabSheet.NAME, WebTabSheet.class);
-// vaadin7
+//  vaadin7
 //        classes.put(Embedded.NAME, WebEmbedded.class);
         classes.put(Filter.NAME, WebFilter.class);
-// vaadin7
-//        classes.put(AccessControl.NAME, WebAccessControl.class);
+//  vaadin7
+        classes.put(AccessControl.NAME, WebAccessControl.class);
         classes.put(ButtonsPanel.NAME, WebButtonsPanel.class);
         classes.put(ActionsField.NAME, WebActionsField.class);
         classes.put(PopupButton.NAME, WebPopupButton.class);
 
         classes.put(FieldGroup.NAME, WebFieldGroup.class);
-// vaadin7
+//  vaadin7
 //        classes.put(TokenList.NAME, WebTokenList.class);
 //        classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
         classes.put(TwinColumn.NAME, WebTwinColumn.class);
-// vaadin7
-//        classes.put(ProgressBar.NAME, WebProgressBar.class);
+        classes.put(ProgressBar.NAME, WebProgressBar.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);
     }
 

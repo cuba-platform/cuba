@@ -23,6 +23,7 @@ import java.util.List;
  * @version $Id$
  */
 public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
+
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
 

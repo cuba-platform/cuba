@@ -17,7 +17,7 @@ import org.dom4j.Element;
  * @author subbotin
  * @version $Id$
  */
-public class ResizableTextFieldLoader extends TextFieldLoader {
+public class ResizableTextFieldLoader extends TextAreaLoader {
 
     public ResizableTextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
@@ -32,5 +32,4 @@ public class ResizableTextFieldLoader extends TextFieldLoader {
         } else
             return component;
     }
-
 }

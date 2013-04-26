@@ -213,7 +213,7 @@ public abstract class WindowManager {
             layoutLoader.setMessagesPack(path);
         }
 
-        final Window window = (Window) layoutLoader.loadComponent(rootElement, null);
+        final Window window = layoutLoader.loadComponent(rootElement, null);
         return window;
     }
 
@@ -610,13 +610,11 @@ public abstract class WindowManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
-        //noinspection unchecked
-        return (T) openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
+        return openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
     }
 
     public <T extends Window> T openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
-        //noinspection unchecked
-        return (T) openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
+        return openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
     }
 
     protected abstract void showWindow(Window window, String caption, OpenType openType, boolean multipleOpen);
@@ -704,14 +702,11 @@ public abstract class WindowManager {
                     throw new IllegalStateException("Class " + className + " is not found");
                 Object companion;
                 try {
-                    if (AbstractCompanion.class.isAssignableFrom(aClass)) {
-                        Constructor constructor = aClass.getConstructor(new Class[]{AbstractFrame.class});
-                        //noinspection UnusedAssignment
-                        companion = constructor.newInstance(window);
-                    } else {
-                        companion = aClass.newInstance();
-                        window.setCompanion(companion);
-                    }
+                    companion = aClass.newInstance();
+                    window.setCompanion(companion);
+
+                    CompanionDependencyInjector cdi = new CompanionDependencyInjector(window, companion);
+                    cdi.inject();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

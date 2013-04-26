@@ -11,14 +11,10 @@ import com.haulmont.cuba.gui.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.AutoCompleteTextField;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopAutoCompleteTextField
-        extends DesktopTextField
-        implements AutoCompleteTextField
-{
+public class DesktopAutoCompleteTextField extends DesktopTextArea implements AutoCompleteTextField {
     @Override
     public void setSuggester(Suggester suggester) {
     }

@@ -24,7 +24,6 @@ import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -172,15 +171,15 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             String className = element.attributeValue("class");
             if (!StringUtils.isBlank(className)) {
                 Class aClass = scripting.loadClass(className);
+                if (aClass == null)
+                    throw new IllegalStateException("Class " + className + " is not found");
                 Object companion;
                 try {
-                    if (AbstractCompanion.class.isAssignableFrom(aClass)) {
-                        Constructor constructor = aClass.getConstructor(new Class[]{AbstractFrame.class});
-                        companion = constructor.newInstance(frame);
-                    } else {
-                        companion = aClass.newInstance();
-                        frame.setCompanion(companion);
-                    }
+                    companion = aClass.newInstance();
+                    frame.setCompanion(companion);
+
+                    CompanionDependencyInjector cdi = new CompanionDependencyInjector(frame, companion);
+                    cdi.inject();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

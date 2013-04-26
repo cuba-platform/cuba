@@ -23,7 +23,7 @@ import java.util.Map;
 @ManagedBean(ComponentsFactory.NAME)
 public class DesktopComponentsFactory implements ComponentsFactory {
 
-    private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<? extends Component>>();
+    private static Map<String, Class<? extends Component>> classes = new HashMap<>();
 
     static {
         classes.put(Window.NAME, DesktopWindow.class);
@@ -41,9 +41,13 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LinkButton.NAME, DesktopLinkButton.class);
         classes.put(Label.NAME, DesktopLabel.class);
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
+
         //Use resizable text area instead of text field
-        classes.put(TextField.NAME, DesktopResizableTextField.class);
+        classes.put(ResizableTextField.NAME, DesktopResizableTextField.class);
         classes.put(AutoCompleteTextField.NAME, DesktopAutoCompleteTextField.class);
+        classes.put(PasswordField.NAME, DesktopPasswordField.class);
+        classes.put(TextField.NAME, DesktopTextField.class);
+
         classes.put(DateField.NAME, DesktopDateField.class);
         classes.put(Table.NAME, DesktopTable.class);
         classes.put(GroupTable.NAME, DesktopGroupTable.class);
@@ -88,11 +92,10 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         if (componentClass == null) {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
         }
+
         try {
             return (T) componentClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

@@ -12,9 +12,9 @@ import com.haulmont.cuba.gui.data.ResizeListener;
  * @author subbotin
  * @version $Id$
  */
-public interface ResizableTextField extends TextField {
+public interface ResizableTextField extends TextArea {
 
-    String NAME = TextField.NAME;
+    String NAME = TextArea.NAME;
 
     boolean isResizable();
     void setResizable(boolean resizable);
