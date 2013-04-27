@@ -48,7 +48,7 @@ import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.converters.DatatypeToStringConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.SimpleIntegerToStringConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.validator.IntegerRangeValidator;
@@ -330,7 +330,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                     }
                 }
         );
-        maxResultsField.setConverter(new DatatypeToStringConverter(Datatypes.get(Integer.class)));
+        maxResultsField.setConverter(new SimpleIntegerToStringConverter());
         maxResultsLayout.addComponent(maxResultsField);
 
         Label maxResultsLabel2 = new Label(messages.getMainMessage("filter.maxResults.label2"));
