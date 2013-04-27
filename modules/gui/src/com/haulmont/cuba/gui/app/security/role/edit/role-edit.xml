@@ -57,7 +57,7 @@
 
             <hbox spacing="true" id="descrBox" height="100%">
                 <label value="msg://description"/>
-                <textField id="description" datasource="roleDs" property="description" rows="4"
+                <textArea id="description" datasource="roleDs" property="description" rows="4"
                            height="100%" width="300px"/>
             </hbox>
         </hbox>

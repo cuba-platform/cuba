@@ -16,7 +16,7 @@
 
     <layout height="50%">
         <vbox expand="permissionsMessage" spacing="true">
-            <textField id="permissionsMessage" rows="10"/>
+            <textArea id="permissionsMessage" rows="10"/>
         </vbox>
     </layout>
 </window>

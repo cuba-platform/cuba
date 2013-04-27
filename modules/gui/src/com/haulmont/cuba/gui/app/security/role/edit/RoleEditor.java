@@ -9,6 +9,7 @@ package com.haulmont.cuba.gui.app.security.role.edit;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.security.entity.Role;
 
@@ -25,7 +26,7 @@ public class RoleEditor extends AbstractEditor<Role> {
     private ScreenPermissionsFrame screensTabFrame;
 
     @Named("name")
-    private TextField nameField;
+    private TextArea nameField;
 
     @Override
     protected void postInit() {

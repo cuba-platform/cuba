@@ -617,6 +617,8 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasCaption"/>
+
+        <xs:attributeGroup ref="hasVisibility"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->

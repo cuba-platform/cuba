@@ -9,7 +9,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
@@ -25,10 +25,10 @@ import java.util.Map;
  */
 public class UserChangePassw extends AbstractEditor {
     @Inject
-    protected TextField passwField;
+    protected PasswordField passwField;
 
     @Inject
-    protected TextField confirmPasswField;
+    protected PasswordField confirmPasswField;
 
     @Inject
     protected Datasource<User> userDs;

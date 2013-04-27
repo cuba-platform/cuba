@@ -85,7 +85,7 @@ public class WebOptionsGroup
             return (T) set;
         } else {
             final Object o = getValue(key);
-            return (T) wrapAsCollection(o);
+            return wrapAsCollection(o);
         }
     }
 

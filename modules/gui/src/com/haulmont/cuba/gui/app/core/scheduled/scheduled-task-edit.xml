@@ -92,7 +92,7 @@
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.description"/>
-                    <textField id="description" datasource="taskDs" property="description"
+                    <textArea id="description" datasource="taskDs" property="description"
                                width="400px" rows="3"/>
                 </row>
             </rows>

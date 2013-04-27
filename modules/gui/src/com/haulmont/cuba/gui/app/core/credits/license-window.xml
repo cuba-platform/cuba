@@ -9,11 +9,10 @@
         class="com.haulmont.cuba.gui.app.core.credits.LicenseWindow"
         messagesPack="com.haulmont.cuba.gui.app.core.credits"
         caption="msg://license"
-        focusComponent="text"
-        >
+        focusComponent="licenseTextArea">
     <dsContext/>
 
     <layout margin="true">
-        <textField id="text" rows="10" height="100%" width="100%"/>
+        <textArea id="licenseTextArea" rows="10" height="100%" width="100%"/>
     </layout>
 </window>

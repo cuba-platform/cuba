@@ -15,7 +15,7 @@
 
     <layout spacing="true">
         <optionsGroup id="whomOptionsGroup" multiselect="false"/>
-        <textField id="messageField" caption="msg://messageWindow.textField" rows="5" width="100%"/>
+        <textArea id="messageField" caption="msg://messageWindow.textField" rows="5" width="100%"/>
         <hbox spacing="true">
             <button id="sendBtn" caption="msg://messageWindow.send" invoke="send"/>
             <button id="cancelBtn" caption="msg://com.haulmont.cuba.gui/actions.Cancel" invoke="close"/>

@@ -8,29 +8,28 @@ package com.haulmont.cuba.gui.app.core.credits;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.TextField;
 
+import javax.inject.Inject;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class LicenseWindow extends AbstractWindow {
 
-    public LicenseWindow(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected TextArea licenseTextArea;
 
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams().setWidth(700).setHeight(500).setResizable(false);
         String licenseText = (String) params.get("licenseText");
         if (licenseText != null) {
-            TextField textField = getComponent("text");
-            textField.setValue(licenseText);
-            textField.setEditable(false);
+            licenseTextArea.setValue(licenseText);
+            licenseTextArea.setEditable(false);
         }
     }
 }

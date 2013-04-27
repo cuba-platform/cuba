@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.ScheduledTaskDefinedBy;
-import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -66,9 +65,6 @@ public class ScheduledTaskEditor extends AbstractEditor {
 
     @Inject
     protected SchedulingService service;
-
-    @Inject
-    protected PasswordEncryption passwordEncryption;
 
     @Inject
     protected ComponentsFactory componentsFactory;

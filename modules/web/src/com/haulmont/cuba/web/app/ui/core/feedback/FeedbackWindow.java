@@ -39,7 +39,7 @@ public class FeedbackWindow extends AbstractWindow {
     protected EmailService emailService;
 
     @Inject
-    protected TextField mainBody;
+    protected TextArea mainBody;
 
     @Named("reason")
     protected LookupField reason;
@@ -93,18 +93,18 @@ public class FeedbackWindow extends AbstractWindow {
                 infoHeader += (getMessage("timestamp") + ": " + (Datatypes.getNN(Date.class).format(timeSource.currentTimestamp())) + "\n");
                 infoHeader += (getMessage("reason") + ": "
                         + (otherReason.equals(reason.getValue())
-                                ? (String) reasonFreeText.getValue()
-                                : (String) reason.getValue()) + "\n");
+                                ? reasonFreeText.getValue()
+                                : reason.getValue()) + "\n");
                 infoHeader += (getMessage("mailBody") + ": \n");
-                infoHeader += ((String) mainBody.getValue());
+                infoHeader += mainBody.getValue();
                 EmailInfo emailInfo = new EmailInfo(
                         webConfig.getSupportEmail(),
                         "[Feedback Form][" + webConfig.getSystemID() + "]["
                                 + user.getLogin() + "]["
                                 + Datatypes.getNN(Date.class).format(timeSource.currentTimestamp()) + "] "
                                 + (otherReason.equals(reason.getValue())
-                                    ? (String) reasonFreeText.getValue()
-                                    : (String) reason.getValue()),
+                                    ? reasonFreeText.getValue()
+                                    : reason.getValue()),
                         infoHeader
                         );
                 emailService.sendEmail(emailInfo);

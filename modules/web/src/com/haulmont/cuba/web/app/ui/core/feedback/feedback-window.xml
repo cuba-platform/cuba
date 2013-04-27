@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
 <window
         xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         class="com.haulmont.cuba.web.app.ui.core.feedback.FeedbackWindow"
@@ -13,7 +19,7 @@
             <lookupField id="reason" required="true" width="200px" requiredMessage="msg://themeMsg"/>
             <textField id="reasonFreeText" required="true" width="400px" requiredMessage="msg://themeMsg"/>
             <label value="msg://body"/>
-            <textField id="mainBody" required="true" rows="15" width="600px" requiredMessage="msg://bodyMsg"/>
+            <textArea id="mainBody" required="true" rows="15" width="600px" requiredMessage="msg://bodyMsg"/>
         </groupBox>
         <vbox id="buttons" margin="true;false;false;false">
             <buttonsPanel>

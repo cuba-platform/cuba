@@ -84,7 +84,6 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    @SuppressWarnings("unused")
     public void copy() {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
@@ -116,7 +115,6 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    @SuppressWarnings("unused")
     public void copySettings() {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
@@ -128,7 +126,6 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    @SuppressWarnings("unused")
     public void changePassword() {
         if (!usersTable.getSelected().isEmpty()) {
             final Editor changePasswordDialog = openEditor(
@@ -149,7 +146,6 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    @SuppressWarnings("unused")
     public void changePasswordAtLogon() {
         if (!usersTable.getSelected().isEmpty()) {
             final ResetPasswordsDialog resetPasswordsDialog = openWindow("sec$User.resetPasswords", WindowManager.OpenType.DIALOG);
