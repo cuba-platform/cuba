@@ -185,6 +185,11 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
 
             if (cmd.hasOption(createDbOption.getOpt())) {
                 // create database from init scripts
+                StringBuilder availableScripts = new StringBuilder();
+                for (File initScript : getInitScripts()) {
+                    availableScripts.append("\t").append(getScriptName(initScript)).append("\n");
+                }
+                log.info("Available create scripts: \n" + availableScripts);
                 log.info(String.format("Do you want to create database %s ? [y/n]", connectionStringParam));
                 Scanner scanner = new Scanner(System.in);
                 if ("y".equals(scanner.next())) {
@@ -195,10 +200,11 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                 try {
                     List<String> scripts = findUpdateDatabaseScripts();
                     if (!scripts.isEmpty()) {
-                        log.info("Available updates: ");
+                        StringBuilder availableScripts = new StringBuilder();
                         for (String script : scripts) {
-                            System.out.println("\t" + script);
+                            availableScripts.append("\t").append(script).append("\n");
                         }
+                        log.info("Available updates:\n" + availableScripts);
                         updatesAvailable = true;
                     } else
                         log.info("No available updates found for database");
