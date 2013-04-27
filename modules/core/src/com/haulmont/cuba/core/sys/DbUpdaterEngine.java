@@ -178,9 +178,8 @@ public class DbUpdaterEngine implements DbUpdater {
                 }
             }
         } else {
-            for (File file : getInitScripts()) {
-                list.add(getScriptName(file));
-            }
+            throw new DBNotInitializedException(
+                    "Unable to determine required updates because SEC_USER table doesn't exist");
         }
         return list;
     }

@@ -194,8 +194,8 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                 boolean updatesAvailable = false;
                 try {
                     List<String> scripts = findUpdateDatabaseScripts();
-                    log.info("Available updates: ");
                     if (!scripts.isEmpty()) {
+                        log.info("Available updates: ");
                         for (String script : scripts) {
                             System.out.println("\t" + script);
                         }
