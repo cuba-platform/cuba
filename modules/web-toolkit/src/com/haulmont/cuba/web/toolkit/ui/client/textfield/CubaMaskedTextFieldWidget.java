@@ -21,17 +21,17 @@ public class CubaMaskedTextFieldWidget extends VTextField {
 
     public static final String CLASSNAME = "cuba-maskedfield";
 
-    private static final String MASKED_FIELD_CLASS = "cuba-masked-input";
+    protected static final String EMPTY_FIELD_CLASS = "cuba-maskedfield-empty";
 
-    private static final char PLACE_HOLDER = '_';
+    protected static final char PLACE_HOLDER = '_';
 
-    private StringBuilder valueBuilder;
+    protected StringBuilder valueBuilder;
 
-    private String nullRepresentation;
+    protected String nullRepresentation;
 
     protected String mask;
 
-    private List<Mask> maskTest;
+    protected List<Mask> maskTest;
 
     public CubaMaskedTextFieldWidget() {
         setStylePrimaryName(CLASSNAME);
@@ -44,11 +44,11 @@ public class CubaMaskedTextFieldWidget extends VTextField {
         addBlurHandler(inputHandler);
     }
 
-    private void updateCursor(int pos) {
+    protected void updateCursor(int pos) {
         setCursorPos(getNextPos(pos));
     }
 
-    private int getNextPos(int pos) {
+    protected int getNextPos(int pos) {
         while (++pos < maskTest.size() && maskTest.get(pos) == null) {
         }
         return pos;
@@ -63,12 +63,15 @@ public class CubaMaskedTextFieldWidget extends VTextField {
     }
 
     public void setText(String value) {
+        if (value == null || "".equals(value))
+            value = nullRepresentation;
+
         valueBuilder = new StringBuilder(value);
-        if (value.equals(nullRepresentation)) {
-            getElement().addClassName(MASKED_FIELD_CLASS);
-        } else {
-            getElement().removeClassName(MASKED_FIELD_CLASS);
-        }
+        if (value.equals(nullRepresentation))
+            getElement().addClassName(EMPTY_FIELD_CLASS);
+        else
+            getElement().removeClassName(EMPTY_FIELD_CLASS);
+
         super.setText(value);
     }
 
@@ -118,6 +121,11 @@ public class CubaMaskedTextFieldWidget extends VTextField {
         }
         nullRepresentation = valueBuilder.toString();
         setText(valueBuilder.toString());
+    }
+
+    protected void setRawCursorPosition(int pos) {
+        if (pos >=0 && pos <= maskTest.size())
+            setCursorPos(pos);
     }
 
     public interface Mask {
@@ -265,34 +273,37 @@ public class CubaMaskedTextFieldWidget extends VTextField {
                 return;
             if (event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) {
                 int pos = getPreviousPos(getCursorPos());
-                Mask m = maskTest.get(pos);
-                if (m != null) {
-                    valueBuilder.setCharAt(pos, PLACE_HOLDER);
-                    setValue(valueBuilder.toString());
+                if (pos < maskTest.size() && pos >= 0) {
+                    Mask m = maskTest.get(pos);
+                    if (m != null) {
+                        valueBuilder.setCharAt(pos, PLACE_HOLDER);
+                        setValue(valueBuilder.toString());
+                    }
+                    setCursorPos(pos);
                 }
-                setCursorPos(pos);
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_DELETE) {
                 int pos = getCursorPos();
-
-                Mask m = maskTest.get(pos);
-                if (m != null) {
-                    valueBuilder.setCharAt(pos, PLACE_HOLDER);
-                    setValue(valueBuilder.toString());
+                if (pos < maskTest.size() && pos >= 0) {
+                    Mask m = maskTest.get(pos);
+                    if (m != null) {
+                        valueBuilder.setCharAt(pos, PLACE_HOLDER);
+                        setValue(valueBuilder.toString());
+                    }
+                    updateCursor(pos);
                 }
-                updateCursor(pos);
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_RIGHT) {
-                setCursorPos(getNextPos(getCursorPos()));
+                setRawCursorPosition(getNextPos(getCursorPos()));
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_LEFT) {
-                setCursorPos(getPreviousPos(getCursorPos()));
+                setRawCursorPosition(getPreviousPos(getCursorPos()));
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_HOME || event.getNativeKeyCode() == KeyCodes.KEY_UP) {
-                setCursorPos(getPreviousPos(0));
+                setRawCursorPosition(getPreviousPos(0));
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_END || event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-                setCursorPos(getPreviousPos(getValue().length()) + 1);
+                setRawCursorPosition(getPreviousPos(getValue().length()) + 1);
                 event.preventDefault();
             }
         }
@@ -301,11 +312,12 @@ public class CubaMaskedTextFieldWidget extends VTextField {
         public void onFocus(FocusEvent event) {
             if (isReadOnly())
                 return;
-            if (getValue().isEmpty())
+            if (getValue().isEmpty()) {
                 setMask(mask);
-            else
-                setCursorPos(getPreviousPos(0));
-
+            } else {
+                int previousPos = getPreviousPos(0);
+                setRawCursorPosition(previousPos);
+            }
         }
 
         @Override

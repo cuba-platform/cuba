@@ -13,6 +13,8 @@ import com.vaadin.shared.ui.datefield.PopupDateFieldState;
  * @version $Id$
  */
 public class CubaDateFieldState extends PopupDateFieldState {
-
+    {
+        primaryStyleName = "cuba-datefield";
+    }
     public String dateMask = "";
 }

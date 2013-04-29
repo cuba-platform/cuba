@@ -145,7 +145,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
             try {
                 return (T) new SimpleDateFormat(timeFormat).parse((String) value);
             } catch (ParseException e) {
-                log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
             }
         } else {
@@ -247,7 +247,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                                         component.setComponentError(null);
                                     return date;
                                 } catch (Exception e) {
-                                    log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                                    log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                                     component.setComponentError(new UserError("Invalid value"));
                                     return null;
                                 }

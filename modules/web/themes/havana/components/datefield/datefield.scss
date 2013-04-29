@@ -6,13 +6,19 @@
 
 // Version: $Id$
 
-@mixin havana-datefield($primaryStyleName : v-datefield) {
+@mixin havana-datefield($primaryStyleName : cuba-datefield) {
+  @include base-datefield($primaryStyleName);
+
   .#{$primaryStyleName}  {
     white-space: nowrap;
-  }
 
-  .#{$primaryStyleName}-popupcalendar {
-    padding-right: 25px;
+    input.#{$primaryStyleName}-empty {
+      color: #ccc;
+    }
+
+    input.#{$primaryStyleName}-empty:focus {
+      color: inherit;
+    }
   }
 
   .#{$primaryStyleName}-button {

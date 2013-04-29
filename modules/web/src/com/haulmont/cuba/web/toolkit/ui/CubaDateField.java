@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.client.datefield.CubaDateFieldState;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.shared.communication.SharedState;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 

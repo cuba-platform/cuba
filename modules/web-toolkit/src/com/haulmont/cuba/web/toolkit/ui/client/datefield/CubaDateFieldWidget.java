@@ -7,7 +7,6 @@
 package com.haulmont.cuba.web.toolkit.ui.client.datefield;
 
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.ui.TextBox;
 import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedTextFieldWidget;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VPopupCalendar;
@@ -24,7 +23,7 @@ public class CubaDateFieldWidget extends VPopupCalendar
 
     private static final String CLASSNAME = "cuba-datefield";
 
-    private static final String MASKED_FIELD_CLASS = "cuba-datefield-masked-input";
+    private static final String EMPTY_FIELD_CLASS = "cuba-datefield-empty";
 
     private static final char PLACE_HOLDER = '_';
 
@@ -39,6 +38,7 @@ public class CubaDateFieldWidget extends VPopupCalendar
     private List<CubaMaskedTextFieldWidget.Mask> maskTest;
 
     public CubaDateFieldWidget() {
+        setStylePrimaryName(CLASSNAME);
         setStyleName(CLASSNAME);
 
         text.addKeyPressHandler(this);
@@ -49,10 +49,10 @@ public class CubaDateFieldWidget extends VPopupCalendar
 
     @Override
     public void setText(String value) {
-        if (value.equals(nullRepresentation) || value.equals("")) {
-            text.getElement().addClassName(MASKED_FIELD_CLASS);
+        if (value == null || value.equals(nullRepresentation) || value.equals("")) {
+            text.getElement().addClassName(EMPTY_FIELD_CLASS);
         } else {
-            text.getElement().removeClassName(MASKED_FIELD_CLASS);
+            text.getElement().removeClassName(EMPTY_FIELD_CLASS);
         }
         if ("".equals(value) && !readonly) {
             setMask(mask);
@@ -116,7 +116,7 @@ public class CubaDateFieldWidget extends VPopupCalendar
         if (isReadonly())
             return;
         if (!dateBuilder.toString().equals(nullRepresentation)) {
-            text.getElement().removeClassName(MASKED_FIELD_CLASS);
+            text.getElement().removeClassName(EMPTY_FIELD_CLASS);
         }
         for (int i = 0; i < dateBuilder.length(); i++) {
             char c = dateBuilder.charAt(i);
