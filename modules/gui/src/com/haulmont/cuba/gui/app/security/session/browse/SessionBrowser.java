@@ -42,6 +42,11 @@ public class SessionBrowser extends AbstractLookup {
 
     @Inject
     protected Label lastUpdateTsLab;
+    @Inject TextField userLogin;
+    @Inject TextField userName;
+    @Inject TextField userAddress;
+    @Inject TextField userInfo;
+    @Inject Button clearButton;
 
     @Named("sessionsTable.message")
     protected Action messageAction;
@@ -52,6 +57,16 @@ public class SessionBrowser extends AbstractLookup {
         if (!ClientType.WEB.equals(AppConfig.getClientType())) {
             messageAction.setVisible(false);
         }
+        clearButton.setAction(new AbstractAction("clearTextFields") {
+            @Override
+            public void actionPerform(Component component) {
+                userLogin.setValue("");
+                userName.setValue("");
+                userAddress.setValue("");
+                userInfo.setValue("");
+                refresh();
+            }
+        });
         sessionsDs.addListener(new CollectionDsListenerAdapter<UserSessionEntity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<UserSessionEntity> items) {
@@ -62,7 +77,20 @@ public class SessionBrowser extends AbstractLookup {
     }
 
     public void refresh() {
-        sessionsDs.refresh();
+        Map<String,Object> users = new LinkedHashMap<>();
+        String userLoginStr = userLogin.getValue();
+        if (!StringUtils.isEmpty(userLoginStr))
+            users.put("userLogin",userLoginStr.toLowerCase());
+        String userNameStr = userName.getValue();
+        if(!StringUtils.isEmpty(userNameStr))
+            users.put("userName",userNameStr.toLowerCase());
+        String userAddressStr = userAddress.getValue();
+        if (!StringUtils.isEmpty(userAddressStr))
+            users.put("userAddress",userAddressStr.toLowerCase());
+        String userInfoStr = userInfo.getValue();
+        if (!StringUtils.isEmpty(userInfoStr))
+            users.put("userInfo",userInfoStr.toLowerCase());
+        sessionsDs.refresh(users);
     }
 
     public void message() {

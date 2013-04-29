@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Date;
@@ -34,6 +35,22 @@ public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntit
         UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         Collection<UserSessionEntity> userSessionList = uss.getUserSessionInfo();
         for (UserSessionEntity entity : userSessionList) {
+            Object userLoginObj = params.get("userLogin");
+            if (userLoginObj != null)
+                if ((entity.getLogin() == null) || !entity.getLogin().toLowerCase().contains(userLoginObj.toString()))
+                    continue;
+            Object userNameObj = params.get("userName");
+            if (userNameObj != null)
+                if (entity.getUserName() == null || !entity.getUserName().toLowerCase().contains(userNameObj.toString()))
+                    continue;
+            Object userAddressObj = params.get("userAddress");
+            if (userAddressObj != null)
+                if (entity.getAddress() == null || !entity.getAddress().toLowerCase().contains(userAddressObj.toString()))
+                    continue;
+            Object userClientInfoObj = params.get("userInfo");
+            if (userClientInfoObj != null)
+                if (entity.getClientInfo() == null || !entity.getClientInfo().toLowerCase().contains(userClientInfoObj.toString()))
+                    continue;
             data.put(entity.getId(), entity);
         }
     }
