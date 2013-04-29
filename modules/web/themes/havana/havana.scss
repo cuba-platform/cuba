@@ -92,8 +92,10 @@
   @include cuba-log-control;
 }
 
-.v-webkit,
-.v-ie,
-.v-opera {
-  @include cuba-groupbox-browser-fixes;
+@mixin havana-browser-fixes {
+  .v-webkit,
+  .v-ie,
+  .v-opera {
+    @include cuba-groupbox-browser-fixes;
+  }
 }
