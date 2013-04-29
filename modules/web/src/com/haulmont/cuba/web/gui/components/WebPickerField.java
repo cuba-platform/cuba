@@ -19,10 +19,10 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaPickerField;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class WebPickerField
         extends
-            WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
+            WebAbstractField<CubaPickerField>
         implements
             PickerField, Component.Wrapper {
 
@@ -74,17 +74,6 @@ public class WebPickerField
             public Class<?> getType() {
                 return String.class;
             }
-
-            @Override
-            public String toString() {
-                if (value instanceof Instance) {
-                    if (CaptionMode.PROPERTY.equals(getCaptionMode()))
-                        return String.valueOf(((Instance) value).getValue(getCaptionProperty()));
-                    else
-                        return ((Instance) value).getInstanceName();
-                } else
-                    return super.toString();
-            }
         });
 
         attachListener(component);
@@ -92,7 +81,7 @@ public class WebPickerField
         initActionHandler();
     }
 
-    public WebPickerField(com.haulmont.cuba.web.toolkit.ui.PickerField component) {
+    public WebPickerField(CubaPickerField component) {
         this.component = component;
         attachListener(component);
         initActionHandler();
@@ -351,7 +340,7 @@ public class WebPickerField
         }
     }
 
-    public static class Picker extends com.haulmont.cuba.web.toolkit.ui.PickerField {
+    public static class Picker extends CubaPickerField {
 
         private PickerField owner;
 

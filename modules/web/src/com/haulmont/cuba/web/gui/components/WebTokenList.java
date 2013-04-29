@@ -44,7 +44,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
     private boolean simple = false;
 
     private boolean multiselect;
-    private PickerField.LookupAction lookupAction;
+    private CubaPickerField.LookupAction lookupAction;
 
     public WebTokenList() {
         addButton = new WebButton();

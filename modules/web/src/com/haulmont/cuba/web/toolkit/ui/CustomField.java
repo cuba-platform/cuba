@@ -6,10 +6,13 @@ import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.AbstractErrorMessage;
+import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.UI;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -512,7 +515,7 @@ public abstract class CustomField extends CustomComponent implements Field {
         if (dataSource != null
                 && Property.ValueChangeNotifier.class
                         .isAssignableFrom(dataSource.getClass())) {
-            ((Property.ValueChangeNotifier) dataSource).removeListener(this);
+            ((Property.ValueChangeNotifier) dataSource).removeValueChangeListener(this);
         }
 
         // Sets the new data source
@@ -533,7 +536,7 @@ public abstract class CustomField extends CustomComponent implements Field {
 
         // Listens the new data source if possible
         if (dataSource instanceof Property.ValueChangeNotifier) {
-            ((Property.ValueChangeNotifier) dataSource).addListener(this);
+            ((Property.ValueChangeNotifier) dataSource).addValueChangeListener(this);
         }
 
         // Copy the validators from the data source TODO
@@ -605,28 +608,12 @@ public abstract class CustomField extends CustomComponent implements Field {
      */
     @Override
     public boolean isValid() {
-
-        if (isEmpty()) {
-            if (isRequired()) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        if (validators == null) {
+        try {
+            validate();
             return true;
+        } catch (InvalidValueException e) {
+            return false;
         }
-
-//        vaadin7
-//        final Object value = getValue();
-//        for (final Iterator<Validator> i = validators.iterator(); i.hasNext();) {
-//            if (!(i.next()).isValid(value)) {
-//                return false;
-//            }
-//        }
-
-        return true;
     }
 
     /**
@@ -738,39 +725,36 @@ public abstract class CustomField extends CustomComponent implements Field {
      */
     @Override
     public ErrorMessage getErrorMessage() {
+        /*
+         * Check validation errors only if automatic validation is enabled.
+         * Empty, required fields will generate a validation error containing
+         * the requiredError string. For these fields the exclamation mark will
+         * be hidden but the error must still be sent to the client.
+         */
+        Validator.InvalidValueException validationError = null;
+        if (isValidationVisible()) {
+            try {
+                validate();
+            } catch (Validator.InvalidValueException e) {
+                if (!e.isInvisible()) {
+                    validationError = e;
+                }
+            }
+        }
 
-//        vaadin7
-//        /*
-//         * Check validation errors only if automatic validation is enabled.
-//         * Empty, required fields will generate a validation error containing
-//         * the requiredError string. For these fields the exclamation mark will
-//         * be hidden but the error must still be sent to the client.
-//         */
-//        ErrorMessage validationError = null;
-//        if (isValidationVisible()) {
-//            try {
-//                validate();
-//            } catch (Validator.InvalidValueException e) {
-//                if (!e.isInvisible()) {
-//                    validationError = e;
-//                }
-//            }
-//        }
-//
-//        // Check if there are any systems errors
-//        final ErrorMessage superError = super.getErrorMessage();
-//
-//        // Return if there are no errors at all
-//        if (superError == null && validationError == null
-//                && currentBufferedSourceException == null) {
-//            return null;
-//        }
-//
-//        // Throw combination of the error types
-//        return new CompositeErrorMessage(new ErrorMessage[] { superError,
-//                validationError, currentBufferedSourceException });
+        // Check if there are any systems errors
+        final ErrorMessage superError = super.getErrorMessage();
 
-        return null;
+        // Return if there are no errors at all
+        if (superError == null && validationError == null) {
+            return null;
+        }
+
+        // Throw combination of the error types
+        return new CompositeErrorMessage(
+                new ErrorMessage[] {
+                        superError,
+                        AbstractErrorMessage.getErrorMessageForException(validationError)});
     }
 
     /* Value change events */
@@ -855,14 +839,13 @@ public abstract class CustomField extends CustomComponent implements Field {
      */
     @Override
     public void focus() {
-//  vaadin7
-//        final Application app = getApplication();
-//        if (app != null) {
-//            getWindow().setFocusedComponent(this);
-//            delayedFocus = false;
-//        } else {
-//            delayedFocus = true;
-//        }
+        UI appUI = UI.getCurrent();
+        if (appUI != null) {
+            appUI.setFocusedComponent(this);
+            delayedFocus = false;
+        } else {
+            delayedFocus = true;
+        }
     }
 
 
@@ -950,7 +933,7 @@ public abstract class CustomField extends CustomComponent implements Field {
      */
     public void setRequired(boolean required) {
         this.required = required;
-        requestRepaint();
+        markAsDirty();
     }
 
     /**
@@ -964,7 +947,7 @@ public abstract class CustomField extends CustomComponent implements Field {
      */
     public void setRequiredError(String requiredMessage) {
         requiredError = requiredMessage;
-        requestRepaint();
+        markAsDirty();
     }
 
     /* (non-Javadoc)

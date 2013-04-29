@@ -63,21 +63,21 @@ public class WebSearchPickerField
     }
 
     @Override
-    public PickerField.LookupAction addLookupAction() {
+    public CubaPickerField.LookupAction addLookupAction() {
         LookupAction action = new LookupAction(this);
         addAction(action);
         return action;
     }
 
     @Override
-    public PickerField.ClearAction addClearAction() {
+    public CubaPickerField.ClearAction addClearAction() {
         ClearAction action = new ClearAction(this);
         addAction(action);
         return action;
     }
 
     @Override
-    public PickerField.OpenAction addOpenAction() {
+    public CubaPickerField.OpenAction addOpenAction() {
         OpenAction action = new OpenAction(this);
         addAction(action);
         return action;
@@ -188,7 +188,7 @@ public class WebSearchPickerField
 
     public static class Picker extends WebPickerField.Picker {
 
-        public Picker(PickerField owner, AbstractField field) {
+        public Picker(CubaPickerField owner, AbstractField field) {
             super(owner, field);
         }
 

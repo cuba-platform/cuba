@@ -23,7 +23,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class PickerField extends CustomField {
+public class CubaPickerField extends CustomField {
 
     public static final int DEFAULT_WIDTH = 250;
 
@@ -35,12 +35,12 @@ public class PickerField extends CustomField {
     protected List<Button> buttons = new ArrayList<>();
     private HorizontalLayout container;
 
-    public PickerField() {
+    public CubaPickerField() {
         initTextField();
         initLayout();
     }
 
-    public PickerField(com.vaadin.ui.AbstractField field) {
+    public CubaPickerField(com.vaadin.ui.AbstractField field) {
         this.field = field;
         initLayout();
     }
@@ -63,12 +63,12 @@ public class PickerField extends CustomField {
         field = new TextField() {
             @Override
             public boolean isRequired() {
-                return PickerField.this.required;
+                return CubaPickerField.this.required;
             }
 
             @Override
             public String getRequiredError() {
-                return PickerField.this.requiredError;
+                return CubaPickerField.this.requiredError;
             }
 
             @Override

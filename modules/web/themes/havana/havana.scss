@@ -34,6 +34,7 @@
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
+@import "components/pickerfield/pickerfield";
 @import "components/maskedfield/maskedfield";
 @import "components/multiupload/multiupload";
 @import "components/contextmenu/contextmenu";
@@ -72,6 +73,7 @@
   @include havana-fieldgroup;
   @include havana-popupbutton;
   @include havana-contextmenu;
+  @include havana-pickerfield;
   @include havana-maskedfield;
   @include havana-notification;
   @include havana-filterselect;

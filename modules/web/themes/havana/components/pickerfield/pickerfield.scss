@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-pickerfield($primaryStyleName: cuba-pickerfield) {
+  .#{$primaryStyleName} {
+    .v-textfield {
+      height: 25px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .v-textfield.v-readonly,
+    .v-filterselect {
+      background-color: #fff;
+    }
+
+    .v-button {
+      border: 1px solid $theme_fieldBorderColor;
+      background: #fff;
+      border-left: 0;
+      box-sizing: border-box;
+      -webkit-border-sizing: border-box;
+      -o-border-sizing: border-box;
+      -moz-border-sizing: border-box;
+      height: 25px;
+      line-height: 18px;
+      background: white;
+
+      .v-button-wrap {
+        margin: 0;
+
+        img {
+          margin: 0;
+        }
+      }
+    }
+
+    .v-readonly.v-textfield.v-textfield-focus,
+    .v-textfield-readonly.v-textfield-focus,
+    .v-textfield-focus {
+      border-color: $theme_fieldFocusedBorderColor;
+    }
+
+    .v-readonly.v-textfield,
+    .v-textfield-readonly {
+      border: 1px solid $theme_fieldBorderColor;
+      overflow: hidden;
+    }
+  }
+
+  .#{$primaryStyleName}.v-readonly {
+    background-color: transparent;
+
+    .v-button {
+      border: 1px solid $theme_fieldReadonlyBorderColor;
+      border-left: 0;
+    }
+  }
+}

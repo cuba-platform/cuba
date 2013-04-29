@@ -123,7 +123,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/lookup-btn.png";
+            icon = "components/pickerfield/images/lookup-btn.png";
         }
 
         public String getLookupScreen() {
@@ -204,7 +204,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/clear-btn.png";
+            icon = "components/pickerfield/images/clear-btn.png";
         }
 
         @Override
@@ -232,7 +232,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public OpenAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/open-btn.png";
+            icon = "components/pickerfield/images/open-btn.png";
         }
 
         public String getEditScreen() {

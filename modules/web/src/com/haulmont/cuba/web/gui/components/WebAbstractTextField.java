@@ -55,7 +55,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
                     try {
                         return getActualDatatype().parse(value, locale);
                     } catch (ParseException e) {
-                        log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                        log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                         return null;
                     }
                 } else {
@@ -125,7 +125,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             try {
                 return (T) datatype.parse((String) value, locale);
             } catch (ParseException e) {
-                log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
             }
         } else {
