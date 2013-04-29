@@ -6,7 +6,7 @@
 
 // Version: $Id$
 
-@mixin havana-laodingindicator($primaryStyleName: v-loading-indicator) {
+@mixin havana-loadingindicator($primaryStyleName: v-loading-indicator) {
   .#{$primaryStyleName},
   .#{$primaryStyleName}-delay,
   .#{$primaryStyleName}-wait {
