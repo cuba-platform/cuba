@@ -105,23 +105,21 @@ $groupBoxCaptionLineHeight: 18px;
     border: none;
     padding: 0;
   }
+}
 
-  .v-webkit,
-  .v-ie,
-  .v-opera {
-    .#{$primaryStyleName}.v-widget {
-      fieldset {
-        .#{$primaryStyleName}-content.first-child-expanded {
-          padding-bottom: $groupBoxCaptionLineHeight;
-        }
+@mixin cuba-groupbox-browser-fixes($primaryStyleName : cuba-groupbox) {
+  .#{$primaryStyleName}.v-widget {
+    fieldset {
+      .#{$primaryStyleName}-content.first-child-expanded {
+        padding-bottom: $groupBoxCaptionLineHeight;
       }
     }
+  }
 
-    .#{$primaryStyleName}.v-widget.first-child-expanded.#{$primaryStyleName}-nocaption {
-      fieldset {
-        .#{$primaryStyleName}-content {
-          padding-bottom: 0;
-        }
+  .#{$primaryStyleName}.v-widget.first-child-expanded.#{$primaryStyleName}-nocaption {
+    fieldset {
+      .#{$primaryStyleName}-content {
+        padding-bottom: 0;
       }
     }
   }

@@ -91,3 +91,9 @@
   @include cuba-breadcrumbs;
   @include cuba-log-control;
 }
+
+.v-webkit,
+.v-ie,
+.v-opera {
+  @include cuba-groupbox-browser-fixes;
+}
