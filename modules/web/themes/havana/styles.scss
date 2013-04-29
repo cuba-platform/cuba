@@ -13,8 +13,6 @@
   @include havana;
 }
 
-@include havana-browser-fixes;
-
 // hide Vaadin warning about theme version
 .v-theme-version {
   display: none;

@@ -107,7 +107,7 @@ $groupBoxCaptionLineHeight: 18px;
   }
 }
 
-@mixin cuba-groupbox-browser-fixes($primaryStyleName : cuba-groupbox) {
+@mixin havana-cuba-groupbox-browser-fixes($primaryStyleName : cuba-groupbox) {
   .#{$primaryStyleName}.v-widget {
     fieldset {
       .#{$primaryStyleName}-content.first-child-expanded {
@@ -123,4 +123,11 @@ $groupBoxCaptionLineHeight: 18px;
       }
     }
   }
+}
+
+// include without .themename
+.v-webkit,
+.v-ie,
+.v-opera {
+  @include havana-cuba-groupbox-browser-fixes;
 }

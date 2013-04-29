@@ -91,11 +91,3 @@
   @include cuba-breadcrumbs;
   @include cuba-log-control;
 }
-
-@mixin havana-browser-fixes {
-  .v-webkit,
-  .v-ie,
-  .v-opera {
-    @include cuba-groupbox-browser-fixes;
-  }
-}
