@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
-import com.haulmont.cuba.web.toolkit.ui.CustomField;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -439,10 +438,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
             root.addComponent(scrollContainer);
             root.setExpandRatio(scrollContainer, 1);
-
-            setCompositionRoot(root);
-
             setStyleName("cuba-token-list");
+        }
+
+        @Override
+        protected Component initContent() {
+            return root;
         }
 
         protected void initField() {
