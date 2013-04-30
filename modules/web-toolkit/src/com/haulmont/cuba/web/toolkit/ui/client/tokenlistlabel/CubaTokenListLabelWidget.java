@@ -7,9 +7,12 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tokenlistlabel;
 
 
+
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.vaadin.client.ui.VPanel;
 
 /**
@@ -18,9 +21,10 @@ import com.vaadin.client.ui.VPanel;
  */
 public class CubaTokenListLabelWidget extends VPanel {
 
-    public static final String CLASSNAME = "cuba-token-list-label";
+    public static final String CLASSNAME = "cuba-tokenlist-label";
 
     private Label label = new Label();
+    private Element closeDiv = DOM.createDiv();
 
     private boolean editable;
     private boolean canOpen;
@@ -30,10 +34,14 @@ public class CubaTokenListLabelWidget extends VPanel {
     public CubaTokenListLabelWidget() {
         super();
         setStyleName(CLASSNAME);
-        setWidget(label);
+        add(label);
         label.setStyleName("content");
+        DOM.sinkEvents(label.getElement(), Event.ONCLICK);
 
-        DOM.sinkEvents(getElement(), Event.ONCLICK);
+        closeDiv = DOM.createDiv();
+        closeDiv.setClassName(CLASSNAME + "-close");
+        contentNode.appendChild(closeDiv);
+        DOM.sinkEvents(closeDiv, Event.ONCLICK);
     }
 
     @Override
@@ -64,7 +72,7 @@ public class CubaTokenListLabelWidget extends VPanel {
     @Override
     public void onBrowserEvent(Event event) {
         if (DOM.eventGetType(event) == Event.ONCLICK && handler != null) {
-            if (DOM.eventGetTarget(event) != label.getElement() && editable) {
+            if (DOM.eventGetTarget(event) == closeDiv && editable) {
                 handler.remove();
             } else if (DOM.eventGetTarget(event) == label.getElement() && canOpen) {
                 handler.click();

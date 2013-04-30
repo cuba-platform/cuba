@@ -32,7 +32,7 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList {
+public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> implements TokenList {
 
     private CollectionDatasource datasource;
 
@@ -72,7 +72,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
         addButton.setCaption(AppBeans.get(Messages.class).getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new WebLookupPickerField();
-        component = new TokenListImpl();
+        component = new CubaTokenList();
 
         setMultiSelect(false);
     }
@@ -413,9 +413,9 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
             return instance.getInstanceName();
     }
 
-    public class TokenListImpl extends CustomField {
+    public class CubaTokenList extends CustomField {
 
-        private VerticalLayout root;
+        private VerticalLayout composition;
 
         private Panel scrollContainer;
 
@@ -426,24 +426,24 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
         private Map<Instance, CubaTokenListLabel> itemComponents = new HashMap<>();
         private Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
 
-        public TokenListImpl() {
-            root = new VerticalLayout();
-            root.setSpacing(true);
-            root.setSizeFull();
+        public CubaTokenList() {
+            composition = new VerticalLayout();
+            composition.setSpacing(true);
+            composition.setSizeFull();
 
             scrollContainer = new ScrollablePanel();
             scrollContainerlayout = new CssLayout();
             scrollContainer.setContent(scrollContainerlayout);
             scrollContainer.setSizeFull();
 
-            root.addComponent(scrollContainer);
-            root.setExpandRatio(scrollContainer, 1);
-            setStyleName("cuba-token-list");
+            composition.addComponent(scrollContainer);
+            composition.setExpandRatio(scrollContainer, 1);
+            setStyleName("cuba-tokenlist");
         }
 
         @Override
         protected Component initContent() {
-            return root;
+            return composition;
         }
 
         protected void initField() {
@@ -542,16 +542,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
             }
 
             if (editor != null) {
-                root.removeComponent(editor);
+                composition.removeComponent(editor);
             }
 
             initField();
 
             if (isEditable()) {
                 if (position == Position.TOP) {
-                    root.addComponentAsFirst(editor);
+                    composition.addComponentAsFirst(editor);
                 } else {
-                    root.addComponent(editor);
+                    composition.addComponent(editor);
                     editor.setWidth("100%");
                 }
             }

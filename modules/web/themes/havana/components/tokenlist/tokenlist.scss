@@ -6,50 +6,58 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-tokenlist($primaryStyleName: cuba-token-list){
+@mixin havana-cuba-tokenlist($primaryStyleName: cuba-tokenlist){
   .#{$primaryStylename} .v-csslayout {
     clear: both;
   }
 
-  .#{$primaryStylename} .cuba-token-list-label.v-widget {
+  .#{$primaryStylename} .cuba-tokenlist-label.v-widget {
     clear: both;
     margin: 0 0 5px 0;
-    line-height: 25px;
     height: 25px;
-    background: #fafafa url(images/token-remove.png) top right no-repeat;
+    background: #fafafa;
     cursor: pointer;
     display: block;
     padding-left: 5px;
   }
 
-  .#{$primaryStyleName} .cuba-token-list-label-content {
+  .#{$primaryStyleName} .cuba-tokenlist-label-close {
+    height: 25px;
+    width: 25px;
+    background: #fafafa url(images/token-remove.png) center no-repeat;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label-content {
     outline: none;
   }
 
-  .#{$primaryStylename} .cuba-token-list-label-content .content {
+  .#{$primaryStylename} .cuba-tokenlist-label-content .content {
     white-space: nowrap;
     cursor: default;
-    margin-right: 20px;
-    line-height: 25px;
     overflow: hidden;
+    display: inline-block;
+    line-height: 25px;
+    vertical-align: top;
   }
 
-  .#{$primaryStylename}.inline .cuba-token-list-label.v-widget {
+  .#{$primaryStylename}.inline .cuba-tokenlist-label.v-widget {
     clear: none;
     margin-right: 5px;
     float: left;
   }
 
-  .#{$primaryStylename} .cuba-token-list-label.noedit {
+  .#{$primaryStylename} .cuba-tokenlist-label.noedit {
     background-image: none;
     padding-right: 5px;
   }
 
-  .#{$primaryStylename} .cuba-token-list-label-content.noedit .content {
+  .#{$primaryStylename} .cuba-tokenlist-label-content.noedit .content {
     margin-right: 0;
   }
 
-  .#{$primaryStylename} .cuba-token-list-label.open .content {
+  .#{$primaryStylename} .cuba-tokenlist-label.open .content {
     cursor: pointer;
   }
 }
