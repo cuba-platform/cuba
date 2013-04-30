@@ -7,11 +7,11 @@
 // Version: $Id$
 
 @mixin havana-cuba-tokenlist($primaryStyleName: cuba-tokenlist){
-  .#{$primaryStylename} .v-csslayout {
+  .#{$primaryStyleName} .v-csslayout {
     clear: both;
   }
 
-  .#{$primaryStylename} .cuba-tokenlist-label.v-widget {
+  .#{$primaryStyleName} .cuba-tokenlist-label.v-widget {
     clear: both;
     margin: 0 0 5px 0;
     height: 25px;
@@ -33,7 +33,7 @@
     outline: none;
   }
 
-  .#{$primaryStylename} .cuba-tokenlist-label-content .content {
+  .#{$primaryStyleName} .cuba-tokenlist-label-content .content {
     white-space: nowrap;
     cursor: default;
     overflow: hidden;
@@ -42,22 +42,22 @@
     vertical-align: top;
   }
 
-  .#{$primaryStylename}.inline .cuba-tokenlist-label.v-widget {
+  .#{$primaryStyleName}.inline .cuba-tokenlist-label.v-widget {
     clear: none;
     margin-right: 5px;
     float: left;
   }
 
-  .#{$primaryStylename} .cuba-tokenlist-label.noedit {
+  .#{$primaryStyleName} .cuba-tokenlist-label.noedit {
     background-image: none;
     padding-right: 5px;
   }
 
-  .#{$primaryStylename} .cuba-tokenlist-label-content.noedit .content {
+  .#{$primaryStyleName} .cuba-tokenlist-label-content.noedit .content {
     margin-right: 0;
   }
 
-  .#{$primaryStylename} .cuba-tokenlist-label.open .content {
+  .#{$primaryStyleName} .cuba-tokenlist-label.open .content {
     cursor: pointer;
   }
 }

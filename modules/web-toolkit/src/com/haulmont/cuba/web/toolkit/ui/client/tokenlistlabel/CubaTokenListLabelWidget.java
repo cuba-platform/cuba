@@ -6,13 +6,10 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tokenlistlabel;
 
-
-
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.vaadin.client.ui.VPanel;
 
 /**
@@ -32,7 +29,6 @@ public class CubaTokenListLabelWidget extends VPanel {
     protected TokenListLabelHandler handler;
 
     public CubaTokenListLabelWidget() {
-        super();
         setStyleName(CLASSNAME);
         add(label);
         label.setStyleName("content");
