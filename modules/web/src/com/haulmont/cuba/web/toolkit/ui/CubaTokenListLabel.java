@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 22.07.2010 18:56:27
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
@@ -17,6 +12,10 @@ import com.vaadin.ui.Panel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class CubaTokenListLabel extends Panel {
 
     private List<RemoveTokenListener> listeners;
