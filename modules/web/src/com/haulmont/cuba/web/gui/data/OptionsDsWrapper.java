@@ -145,7 +145,11 @@ public class OptionsDsWrapper implements Container, Container.ItemSetChangeNotif
     @Override
     public boolean containsId(Object itemId) {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
-        return datasource.containsItem(itemId);
+        if (itemId == null) {
+            return false;
+        } else {
+            return datasource.containsItem(((Entity) itemId).getId());
+        }
     }
 
     @Override
