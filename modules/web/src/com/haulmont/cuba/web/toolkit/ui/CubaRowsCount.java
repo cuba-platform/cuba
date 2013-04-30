@@ -16,14 +16,14 @@ import com.vaadin.ui.themes.BaseTheme;
  * @author krivopustov
  * @version $Id$
  */
-public class RowsCount extends CustomComponent {
+public class CubaRowsCount extends CustomComponent {
 
     protected Button prevButton;
     protected Button nextButton;
     protected Label label;
     protected Button countButton;
 
-    public RowsCount() {
+    public CubaRowsCount() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSpacing(true);
         layout.setMargin(new MarginInfo(false, true, false, true));

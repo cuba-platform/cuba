@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.web.toolkit.ui.CubaRowsCount;
 import com.vaadin.ui.Button;
 
 import java.util.List;
@@ -21,9 +22,8 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class WebRowsCount
-        extends WebAbstractComponent<com.haulmont.cuba.web.toolkit.ui.RowsCount>
-        implements RowsCount {
+public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements RowsCount {
+
     protected CollectionDatasource datasource;
     protected boolean refreshing;
     protected State state;
@@ -32,7 +32,7 @@ public class WebRowsCount
     protected ListComponent owner;
 
     public WebRowsCount() {
-        component = new com.haulmont.cuba.web.toolkit.ui.RowsCount();
+        component = new CubaRowsCount();
         component.setStyleName("cuba-table-rows-count");
     }
 
@@ -53,7 +53,7 @@ public class WebRowsCount
                         }
                     }
             );
-            component.getCountButton().addListener(
+            component.getCountButton().addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
@@ -61,7 +61,7 @@ public class WebRowsCount
                         }
                     }
             );
-            component.getPrevButton().addListener(
+            component.getPrevButton().addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
@@ -69,7 +69,7 @@ public class WebRowsCount
                         }
                     }
             );
-            component.getNextButton().addListener(
+            component.getNextButton().addClickListener(
                     new Button.ClickListener() {
                         @Override
                         public void buttonClick(Button.ClickEvent event) {
