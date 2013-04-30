@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect;
@@ -28,7 +27,7 @@ import java.util.Set;
  */
 public class WebOptionsGroup
         extends
-            WebAbstractOptionsField<OptionGroup>
+            WebAbstractOptionsField<com.vaadin.ui.OptionGroup>
         implements
             OptionsGroup, Component.Wrapper {
 
@@ -37,7 +36,7 @@ public class WebOptionsGroup
     private Orientation orientation = Orientation.VERTICAL;
 
     public WebOptionsGroup() {
-        component = new OptionGroup() {
+        component = new com.vaadin.ui.OptionGroup() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
@@ -67,9 +66,9 @@ public class WebOptionsGroup
     public <T> T getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
-            return (T) getValueFromKey(key);
+            return getValueFromKey(key);
         } else {
-            return (T) wrapAsCollection(super.getValue());
+            return wrapAsCollection(super.getValue());
         }
     }
 
