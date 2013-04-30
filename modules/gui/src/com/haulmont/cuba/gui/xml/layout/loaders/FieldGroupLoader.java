@@ -32,7 +32,6 @@ import java.util.List;
  * @author gorodnov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class FieldGroupLoader extends AbstractFieldLoader {
     public FieldGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
@@ -91,8 +90,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         loadHeight(component, element);
         loadWidth(component, element);
-
-        loadCollapsible(component, element);
 
         loadBorder(component, element);
 

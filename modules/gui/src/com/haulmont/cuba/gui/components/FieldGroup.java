@@ -15,7 +15,7 @@ import java.util.Map;
  * @version $Id$
  */
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasBorder,
-        Component.Editable, Component.Collapsable, Component.HasSettings, Component.Validatable {
+        Component.Editable, Component.Validatable {
 
     String NAME = "fieldGroup";
 

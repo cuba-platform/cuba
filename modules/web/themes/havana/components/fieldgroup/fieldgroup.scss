@@ -6,10 +6,35 @@
 
 // Version: $Id$
 
-@mixin havana-fieldgroup($primaryStyleName: cuba-fieldgrouplayout) {
+@mixin havana-fieldgroup($primaryStyleName: cuba-fieldgroup) {
   .#{$primaryStyleName} {
-    .v-caption {
-      vertical-align: top;
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+      height: 100%;
     }
+  }
+
+  .#{$primaryStyleName}-nocaption > fieldset > legend {
+    display: none;
+  }
+
+  .#{$primaryStyleName}-content {
+    height: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .#{$primaryStyleName}-footer {
+    display: none;
+  }
+
+  .#{$primaryStyleName}-fieldset.border {
+    border: 1px solid $theme_fieldBorderColor;
+    background-color: $theme_fieldGroupBorderedBackgroundColor;
+    margin: 0;
+    padding:10px;
   }
 }

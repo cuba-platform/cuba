@@ -42,6 +42,7 @@
 @import "components/notification/notification";
 @import "components/orderedlayout/orderedlayout";
 @import "components/errorindicator/errorindicator";
+@import "components/fieldgrouplayout/fieldgrouplayout";
 @import "components/loadingindicator/loadingindicator";
 @import "components/tokenlist/tokenlist";
 
@@ -80,6 +81,7 @@
   @include havana-filterselect;
   @include havana-orderedlayout;
   @include havana-errorindicator;
+  @include havana-fieldgrouplayout;
   @include havana-loadingindicator;
 
   @include havana-cuba-groupbox;

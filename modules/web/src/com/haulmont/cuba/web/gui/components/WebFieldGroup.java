@@ -30,7 +30,6 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -47,10 +46,7 @@ public class WebFieldGroup
         extends
             WebAbstractComponent<CubaFieldGroup>
         implements
-            com.haulmont.cuba.gui.components.FieldGroup,
-            CubaFieldGroup.ExpandCollapseListener {
-
-    private static final String BORDER_STYLE_NAME = "edit-area";
+            com.haulmont.cuba.gui.components.FieldGroup {
 
     private Map<String, Field> fields = new LinkedHashMap<>();
     private Map<Field, Integer> fieldsColumn = new HashMap<>();
@@ -66,9 +62,6 @@ public class WebFieldGroup
     private String description;
 
     private int cols = 1;
-
-    private List<ExpandListener> expandListeners = null;
-    private List<CollapseListener> collapseListeners = null;
 
     private final FieldFactory fieldFactory = new FieldFactory();
 
@@ -102,7 +95,6 @@ public class WebFieldGroup
             }
         };
         component.setLayout(new CubaFieldGroupLayout());
-        component.addExpandListener(this);
     }
 
     @Override
@@ -495,26 +487,6 @@ public class WebFieldGroup
     }
 
     @Override
-    public boolean isExpanded() {
-        return component.isExpanded();
-    }
-
-    @Override
-    public void setExpanded(boolean expanded) {
-        component.setExpanded(expanded);
-    }
-
-    @Override
-    public boolean isCollapsable() {
-        return component.isCollapsable();
-    }
-
-    @Override
-    public void setCollapsable(boolean collapsable) {
-        component.setCollapsable(collapsable);
-    }
-
-    @Override
     public String getCaption() {
         return caption;
     }
@@ -674,26 +646,12 @@ public class WebFieldGroup
 
     @Override
     public boolean isBorderVisible() {
-        String styleName = getStyleName();
-        if (StringUtils.isNotEmpty(styleName))
-            return styleName.contains(BORDER_STYLE_NAME);
-        return false;
+        return component.isBorderVisible();
     }
 
     @Override
     public void setBorderVisible(boolean borderVisible) {
-        String styleName = getStyleName();
-        if (borderVisible) {
-            if (StringUtils.isNotEmpty(styleName)) {
-                if (!styleName.contains(BORDER_STYLE_NAME))
-                    styleName = styleName + " " + BORDER_STYLE_NAME;
-            } else
-                styleName = BORDER_STYLE_NAME;
-        } else {
-            if (StringUtils.isNotEmpty(styleName))
-                styleName = styleName.replace(BORDER_STYLE_NAME, "");
-        }
-        setStyleName(styleName);
+        component.setBorderVisible(borderVisible);
     }
 
     @Override
@@ -749,65 +707,7 @@ public class WebFieldGroup
     }
 
     @Override
-    public void addListener(ExpandListener listener) {
-        if (expandListeners == null) {
-            expandListeners = new ArrayList<>();
-        }
-        expandListeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(ExpandListener listener) {
-        if (expandListeners != null) {
-            expandListeners.remove(listener);
-            if (expandListeners.isEmpty()) {
-                expandListeners = null;
-            }
-        }
-    }
-
-    @Override
-    public void addListener(CollapseListener listener) {
-        if (collapseListeners == null) {
-            collapseListeners = new ArrayList<>();
-        }
-        collapseListeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(CollapseListener listener) {
-        if (collapseListeners != null) {
-            collapseListeners.remove(listener);
-            if (collapseListeners.isEmpty()) {
-                collapseListeners = null;
-            }
-        }
-    }
-
-    @Override
     public void postInit() {
-    }
-
-    @Override
-    public void applySettings(Element element) {
-        Element fieldGroupElement = element.element("fieldGroup");
-        if (fieldGroupElement != null) {
-            String expanded = fieldGroupElement.attributeValue("expanded");
-            if (expanded != null) {
-                setExpanded(BooleanUtils.toBoolean(expanded));
-            }
-        }
-    }
-
-    @Override
-    public boolean saveSettings(Element element) {
-        Element fieldGroupElement = element.element("fieldGroup");
-        if (fieldGroupElement != null) {
-            element.remove(fieldGroupElement);
-        }
-        fieldGroupElement = element.addElement("fieldGroup");
-        fieldGroupElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
-        return true;
     }
 
     @Override
@@ -873,24 +773,6 @@ public class WebFieldGroup
             return StringUtils.isBlank((String) value);
         else
             return value == null;
-    }
-
-    @Override
-    public void onExpand(CubaFieldGroup component) {
-        if (expandListeners != null) {
-            for (final ExpandListener listener : expandListeners) {
-                listener.onExpand(this);
-            }
-        }
-    }
-
-    @Override
-    public void onCollapse(CubaFieldGroup component) {
-        if (collapseListeners != null) {
-            for (final CollapseListener listener : collapseListeners) {
-                listener.onCollapse(this);
-            }
-        }
     }
 
     protected class FieldFactory extends AbstractFieldFactory {

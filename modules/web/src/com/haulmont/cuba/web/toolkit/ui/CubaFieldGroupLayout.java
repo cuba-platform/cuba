@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout.CubaFieldGroupLayoutState;
 import com.vaadin.ui.GridLayout;
 
 /**
@@ -13,4 +14,9 @@ import com.vaadin.ui.GridLayout;
  * @version $Id$
  */
 public class CubaFieldGroupLayout extends GridLayout {
+
+    @Override
+    protected CubaFieldGroupLayoutState getState() {
+        return (CubaFieldGroupLayoutState) super.getState();
+    }
 }

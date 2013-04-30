@@ -39,6 +39,11 @@ public class CubaFieldGroupLayoutConnector extends GridLayoutConnector {
     }
 
     @Override
+    public CubaFieldGroupLayoutState getState() {
+        return (CubaFieldGroupLayoutState) super.getState();
+    }
+
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 

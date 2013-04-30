@@ -19,7 +19,7 @@ public class CubaFieldGroupLayoutWidget extends VGridLayout {
     public static final String CLASSNAME = "cuba-fieldgrouplayout";
 
     public CubaFieldGroupLayoutWidget() {
-        addStyleName(CLASSNAME);
+        setStyleName(CLASSNAME);
     }
 
     public Cell[][] getCellMatrix() {

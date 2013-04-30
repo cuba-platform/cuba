@@ -5,32 +5,22 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.fieldgroup.CubaFieldGroupState;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.*;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class CubaFieldGroup extends Form {
 
-    private boolean expanded = true;
-    private boolean collapsable;
-
-    private int currentX = 0;
-    private int currentY = 0;
-
-    private List<ExpandCollapseListener> listeners = null;
+    protected int currentX = 0;
+    protected int currentY = 0;
 
     public CubaFieldGroup() {
         this(DefaultFieldFactory.get());
@@ -42,55 +32,20 @@ public class CubaFieldGroup extends Form {
         setLayout(new CubaFieldGroupLayout());
     }
 
-    public boolean isExpanded() {
-        return !collapsable || expanded;
+    public boolean isBorderVisible() {
+        return getState().borderVisible;
     }
 
-    public void setExpanded(boolean expanded) {
-        if (collapsable) {
-            this.expanded = expanded;
-            getLayout().setVisible(expanded);
+    public void setBorderVisible(boolean borderVisible) {
+        if (getState().borderVisible != borderVisible) {
+            getState().borderVisible = borderVisible;
             markAsDirty();
         }
     }
 
-    public boolean isCollapsable() {
-        return collapsable;
-    }
-
-    public void setCollapsable(boolean collapsable) {
-        this.collapsable = collapsable;
-        if (!expanded) {
-            setExpanded(true);
-        }
-    }
-
     @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-        target.addAttribute("collapsable", isCollapsable());
-        if (isCollapsable()) {
-            target.addAttribute("expanded", isExpanded());
-        }
-    }
-
-    @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        super.changeVariables(source, variables);
-
-        if (isCollapsable()) {
-            if (variables.containsKey("expand")) {
-                setExpanded(true);
-                getLayout().markAsDirtyRecursive();
-
-                fireExpandListeners();
-
-            } else if (variables.containsKey("collapse")) {
-                setExpanded(false);
-
-                fireCollapseListeners();
-            }
-        }
+    protected CubaFieldGroupState getState() {
+        return (CubaFieldGroupState) super.getState();
     }
 
     public void setItemDataSource(Item newDataSource, Collection propertyIds) {
@@ -225,43 +180,6 @@ public class CubaFieldGroup extends Form {
 
     public void setRows(int rows) {
         getLayout().setRows(rows);
-    }
-
-    public void addExpandListener(ExpandCollapseListener listener) {
-        if (listeners == null) {
-            listeners = new LinkedList<>();
-        }
-        listeners.add(listener);
-    }
-
-    public void removeExpandListener(ExpandCollapseListener listener) {
-        if (listeners != null) {
-            listeners.remove(listener);
-            if (listeners.isEmpty()) {
-                listeners = null;
-            }
-        }
-    }
-
-    protected void fireExpandListeners() {
-        if (listeners != null) {
-            for (final ExpandCollapseListener listener : listeners) {
-                listener.onExpand(this);
-            }
-        }
-    }
-
-    protected void fireCollapseListeners() {
-        if (listeners != null) {
-            for (final ExpandCollapseListener listener : listeners) {
-                listener.onCollapse(this);
-            }
-        }
-    }
-
-    public interface ExpandCollapseListener extends Serializable {
-        void onExpand(CubaFieldGroup component);
-        void onCollapse(CubaFieldGroup component);
     }
 
     public interface CustomFieldGenerator extends Serializable {
