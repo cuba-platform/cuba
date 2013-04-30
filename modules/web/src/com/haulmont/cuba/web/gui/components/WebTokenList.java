@@ -5,14 +5,36 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-//import com.haulmont.cuba.web.AppUI;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.WindowManager;
+
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
+import com.haulmont.cuba.web.toolkit.ui.CustomField;
+import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+
+import java.util.*;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList*/ {
-/*
+public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList {
+
     private CollectionDatasource datasource;
 
     private String captionProperty;
@@ -44,7 +66,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
     private boolean simple = false;
 
     private boolean multiselect;
-    private CubaPickerField.LookupAction lookupAction;
+    private PickerField.LookupAction lookupAction;
 
     public WebTokenList() {
         addButton = new WebButton();
@@ -365,7 +387,6 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
     @Override
     public void setSimple(boolean simple) {
         this.simple = simple;
-        this.component.editor = null;
         this.component.refreshComponent();
     }
 
@@ -399,11 +420,12 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
 
         private Panel scrollContainer;
 
+        private CssLayout scrollContainerlayout;
+
         private Component editor;
 
-        private Map<Instance, TokenListLabel> itemComponents = new HashMap<>();
-        private Map<TokenListLabel, Instance> componentItems = new HashMap<>();
-        private KeyMapper componentsMapper = new KeyMapper();
+        private Map<Instance, CubaTokenListLabel> itemComponents = new HashMap<>();
+        private Map<CubaTokenListLabel, Instance> componentItems = new HashMap<>();
 
         public TokenListImpl() {
             root = new VerticalLayout();
@@ -411,8 +433,8 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
             root.setSizeFull();
 
             scrollContainer = new ScrollablePanel();
-            CssLayout layout = new CssLayout();
-            scrollContainer.setContent(layout);
+            scrollContainerlayout = new CssLayout();
+            scrollContainer.setContent(scrollContainerlayout);
             scrollContainer.setSizeFull();
 
             root.addComponent(scrollContainer);
@@ -420,7 +442,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
 
             setCompositionRoot(root);
 
-            setStyleName("token-list");
+            setStyleName("cuba-token-list");
         }
 
         protected void initField() {
@@ -442,8 +464,13 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
             addButton.setStyleName("add-btn");
 
             Button wrappedButton = (Button) WebComponentsHelper.unwrap(addButton);
+            Collection listeners = wrappedButton.getListeners(Button.ClickEvent.class);
+            for (Object listener : listeners) {
+                wrappedButton.removeClickListener((Button.ClickListener) listener);
+            }
+
             if (!isSimple()) {
-                wrappedButton.addListener(new Button.ClickListener() {
+                wrappedButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         if (isEditable()) {
@@ -459,8 +486,9 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                         }
                     }
                 });
+
             } else {
-                wrappedButton.addListener(new Button.ClickListener() {
+                wrappedButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
 
@@ -483,7 +511,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                         if (lookupScreenParams != null)
                             params.putAll(lookupScreenParams);
 
-                        WindowManager wm = AppUI.getInstance().getWindowManager();
+                        WindowManager wm = App.getInstance().getWindowManager();
                         wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                             @Override
                             public void handleLookup(Collection items) {
@@ -516,9 +544,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                 root.removeComponent(editor);
             }
 
-            if (editor == null) {
-                initField();
-            }
+            initField();
 
             if (isEditable()) {
                 if (position == Position.TOP) {
@@ -529,7 +555,9 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                 }
             }
 
-            scrollContainer.removeAllComponents();
+            Layout layout = (Layout) scrollContainer.getContent();
+            layout.removeAllComponents();
+
 
             if (datasource != null) {
                 List<Instance> usedItems = new ArrayList<>();
@@ -537,17 +565,17 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                 // New tokens
                 for (final Object itemId : datasource.getItemIds()) {
                     final Instance item = datasource.getItem(itemId);
-                    TokenListLabel f = itemComponents.get(item);
+                    CubaTokenListLabel f = itemComponents.get(item);
                     if (f == null) {
                         f = createToken();
                         itemComponents.put(item, f);
                         componentItems.put(f, item);
                     }
                     f.setEditable(isEditable());
-                    f.setValue(instanceCaption(item));
+                    f.setText(instanceCaption(item));
                     f.setWidth("100%");
                     setTokenStyle(f, itemId);
-                    scrollContainer.addComponent(f);
+                    scrollContainerlayout.addComponent(f);
                     usedItems.add(item);
                 }
 
@@ -559,39 +587,35 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                     }
                 }
             }
-
-            root.requestRepaint();
         }
-        
+
         public void refreshClickListeners(ItemClickListener listener) {
             if (datasource != null && CollectionDatasource.State.VALID.equals(datasource.getState())) {
                 for (Object id : datasource.getItemIds()) {
                     Instance item = datasource.getItem(id);
-                    final TokenListLabel label = itemComponents.get(item);
+                    final CubaTokenListLabel label = itemComponents.get(item);
                     if (label != null) {
                         if (listener != null)
-                            label.setClickListener(new TokenListLabel.ClickListener() {
+                            label.setClickListener(new CubaTokenListLabel.ClickListener() {
                                 @Override
-                                public void onClick(TokenListLabel source) {
+                                public void onClick(CubaTokenListLabel source) {
                                     doClick(label);
                                 }
                             });
                         else
                             label.setClickListener(null);
-                        label.requestRepaint();
+
                     }
                 }
             }
         }
 
-        protected TokenListLabel createToken() {
-            final TokenListLabel label = new TokenListLabel();
-            String key = componentsMapper.key(label);
-            label.setKey(key);
+        protected CubaTokenListLabel createToken() {
+            final CubaTokenListLabel label = new CubaTokenListLabel();
             label.setWidth("100%");
-            label.addListener(new TokenListLabel.RemoveTokenListener() {
+            label.addListener(new CubaTokenListLabel.RemoveTokenListener() {
                 @Override
-                public void removeToken(final TokenListLabel source) {
+                public void removeToken(final CubaTokenListLabel source) {
                     if (isEditable()) {
                         doRemove(source);
                     }
@@ -600,7 +624,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
             return label;
         }
 
-        private void doRemove(TokenListLabel source) {
+        private void doRemove(CubaTokenListLabel source) {
             Instance item = componentItems.get(source);
             if (item != null) {
                 itemComponents.remove(item);
@@ -614,7 +638,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
             }
         }
 
-        private void doClick(TokenListLabel source) {
+        private void doClick(CubaTokenListLabel source) {
             if (itemClickListener != null) {
                 Instance item = componentItems.get(source);
                 if (item != null)
@@ -627,7 +651,7 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
             return List.class;
         }
 
-        protected void setTokenStyle(TokenListLabel label, Object itemId) {
+        protected void setTokenStyle(CubaTokenListLabel label, Object itemId) {
             if (tokenStyleGenerator != null) {
                 String styleName = tokenStyleGenerator.getStyle(itemId);
                 if (styleName != null && !styleName.equals("")) {
@@ -635,5 +659,19 @@ public class WebTokenList /*extends WebAbstractField<WebTokenList.TokenListImpl>
                 }
             }
         }
-    }*/
+
+        @Override
+        public void setBuffered(boolean buffered) {
+        }
+
+        @Override
+        public boolean isBuffered() {
+            return false;
+        }
+
+        @Override
+        public void removeAllValidators() {
+            getValidators().clear();
+        }
+    }
 }

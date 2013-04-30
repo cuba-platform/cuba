@@ -8,8 +8,10 @@ package com.haulmont.cuba.web.toolkit.ui.client;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl;
 import com.vaadin.client.RenderInformation;
+import com.vaadin.client.ui.VPanel;
 
 /**
  * @author gorodnov
@@ -144,5 +146,20 @@ public class Tools {
         DOM.setStyleAttribute(el, "overflow", "");
 
         return s;
+    }
+
+    public static void replaceClassNames(Element element, String from, String to){
+        String className = element.getClassName();
+        String newClassName = "";
+        String[] classNames = className.split(" ");
+        for (String classNamePart : classNames) {
+            if (classNamePart.startsWith(from + "-"))
+                classNamePart = classNamePart.replace(from + "-", to + "-");
+            else if (classNamePart.equals(from))
+                classNamePart = to;
+
+            newClassName = newClassName + " " + classNamePart;
+        }
+        element.setClassName(newClassName.trim());
     }
 }

@@ -8,8 +8,8 @@ package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -56,10 +56,10 @@ public class CubaGroupBoxConnector extends PanelConnector {
         super.updateFromUIDL(uidl, client);
 
         // replace VPanel classnames
-        replaceClassNames(getWidget().captionNode);
-        replaceClassNames(getWidget().contentNode);
-        replaceClassNames(getWidget().bottomDecoration);
-        replaceClassNames(getWidget().getElement());
+        Tools.replaceClassNames(getWidget().captionNode, VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
+        Tools.replaceClassNames(getWidget().contentNode, VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
+        Tools.replaceClassNames(getWidget().bottomDecoration, VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
+        Tools.replaceClassNames(getWidget().getElement(), VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
     }
 
     @Override
@@ -78,21 +78,6 @@ public class CubaGroupBoxConnector extends PanelConnector {
             getWidget().contentNode.addClassName("first-child-expanded");
         else
             getWidget().contentNode.removeClassName("first-child-expanded");
-    }
-
-    private void replaceClassNames(Element element) {
-        String className = element.getClassName();
-        String newClassName = "";
-        String[] classNames = className.split(" ");
-        for (String classNamePart : classNames) {
-            if (classNamePart.startsWith(VPanel.CLASSNAME + "-"))
-                classNamePart = classNamePart.replace(VPanel.CLASSNAME + "-", CubaGroupBoxWidget.CLASSNAME + "-");
-            else if (classNamePart.equals(VPanel.CLASSNAME))
-                classNamePart = CubaGroupBoxWidget.CLASSNAME;
-
-            newClassName = newClassName + " " + classNamePart;
-        }
-        element.setClassName(newClassName.trim());
     }
 
     @Override

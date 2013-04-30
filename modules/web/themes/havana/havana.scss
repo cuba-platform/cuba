@@ -43,6 +43,7 @@
 @import "components/orderedlayout/orderedlayout";
 @import "components/errorindicator/errorindicator";
 @import "components/loadingindicator/loadingindicator";
+@import "components/tokenlist/tokenlist";
 
 // Application specific
 @import "app/app-window";
@@ -84,6 +85,7 @@
   @include havana-cuba-groupbox;
   @include havana-cuba-grouptable;
   @include havana-cuba-multiupload;
+  @include havana-cuba-tokenlist;
 
   @include cuba-login-window;
   @include cuba-application-window;

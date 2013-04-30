@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-cuba-tokenlist($primaryStyleName: cuba-token-list){
+  .#{$primaryStylename} .v-csslayout {
+    clear: both;
+  }
+
+  .#{$primaryStylename} .cuba-token-list-label.v-widget {
+    clear: both;
+    margin: 0 0 5px 0;
+    line-height: 25px;
+    height: 25px;
+    background: #fafafa url(images/token-remove.png) top right no-repeat;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+  }
+
+  .#{$primaryStyleName} .cuba-token-list-label-content {
+    outline: none;
+  }
+
+  .#{$primaryStylename} .cuba-token-list-label-content .content {
+    white-space: nowrap;
+    cursor: default;
+    margin-right: 20px;
+    line-height: 25px;
+    overflow: hidden;
+  }
+
+  .#{$primaryStylename}.inline .cuba-token-list-label.v-widget {
+    clear: none;
+    margin-right: 5px;
+    float: left;
+  }
+
+  .#{$primaryStylename} .cuba-token-list-label.noedit {
+    background-image: none;
+    padding-right: 5px;
+  }
+
+  .#{$primaryStylename} .cuba-token-list-label-content.noedit .content {
+    margin-right: 0;
+  }
+
+  .#{$primaryStylename} .cuba-token-list-label.open .content {
+    cursor: pointer;
+  }
+}

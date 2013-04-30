@@ -80,7 +80,7 @@ public class WebComponentsFactory implements ComponentsFactory {
 
         classes.put(FieldGroup.NAME, WebFieldGroup.class);
 //  vaadin7
-//        classes.put(TokenList.NAME, WebTokenList.class);
+        classes.put(TokenList.NAME, WebTokenList.class);
 //        classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
         classes.put(TwinColumn.NAME, WebTwinColumn.class);
         classes.put(ProgressBar.NAME, WebProgressBar.class);
