@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -18,15 +19,23 @@ import java.util.Date;
  * @author devyatkin
  * @version $Id$
  */
-public class CubaDateFieldWrapper extends CustomField {
+public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
 
+    protected final Layout composition;
     private WebDateField dateField;
 
     public CubaDateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
-        composition.setWidth("100%");
+        this.composition = composition;
+
+        this.composition.setWidth("100%");
+
         setSizeUndefined();
-        setCompositionRoot(composition);
+    }
+
+    @Override
+    protected Component initContent() {
+        return composition;
     }
 
     public WebDateField getCubaField() {
@@ -96,18 +105,5 @@ public class CubaDateFieldWrapper extends CustomField {
         // support dateField in editable table
         if (newDataSource != null && !ObjectUtils.equals(newValue, oldValue))
             dateField.setValue(newValue);
-    }
-
-    @Override
-    public void setBuffered(boolean buffered) {
-    }
-
-    @Override
-    public boolean isBuffered() {
-        return false;
-    }
-
-    @Override
-    public void removeAllValidators() {
     }
 }

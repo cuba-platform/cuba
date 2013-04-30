@@ -10,27 +10,29 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.*;
 
+@Deprecated
 @SuppressWarnings("serial")
-public class ActionsField extends CustomField {
-    private GridLayout root;
+public class ActionsField extends com.vaadin.ui.CustomField {
+    private GridLayout composition;
     private AbstractSelect field;
 
     public ActionsField(AbstractSelect field) {
-        root = new GridLayout();
-        root.setWidth("100%");
-        setCompositionRoot(root);
+        composition = new GridLayout();
+        composition.setWidth("100%");
 
         this.field = field;
         field.setWidth("100%");
-        root.addComponent(field);
-        root.setColumnExpandRatio(0, 1);
+        composition.addComponent(field);
+        composition.setColumnExpandRatio(0, 1);
 
         setStyleName("actionsfield");
+    }
+
+    @Override
+    protected Component initContent() {
+        return composition;
     }
 
     public Class<?> getType() {
@@ -38,11 +40,11 @@ public class ActionsField extends CustomField {
     }
 
     public void addButton(Button button) {
-        root.setCursorX(root.getColumns());
-        root.setCursorY(0);
-        root.addComponent(button);
-        root.setColumnExpandRatio(root.getColumns() - 1, 0);
-        root.setComponentAlignment(button, Alignment.TOP_RIGHT);
+        composition.setCursorX(composition.getColumns());
+        composition.setCursorY(0);
+        composition.addComponent(button);
+        composition.setColumnExpandRatio(composition.getColumns() - 1, 0);
+        composition.setComponentAlignment(button, Alignment.TOP_RIGHT);
     }
 
     @Override
@@ -66,18 +68,5 @@ public class ActionsField extends CustomField {
     @Override
     public void focus() {
         field.focus();
-    }
-
-    @Override
-    public void setBuffered(boolean buffered) {
-    }
-
-    @Override
-    public boolean isBuffered() {
-        return false;
-    }
-
-    @Override
-    public void removeAllValidators() {
     }
 }

@@ -10,10 +10,7 @@ import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,14 +20,11 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class CubaPickerField extends CustomField {
+public class CubaPickerField extends com.vaadin.ui.CustomField {
 
     public static final int DEFAULT_WIDTH = 250;
 
     protected com.vaadin.ui.AbstractField field;
-
-    protected boolean required;
-    protected String requiredError;
 
     protected List<Button> buttons = new ArrayList<>();
     private HorizontalLayout container;
@@ -45,6 +39,11 @@ public class CubaPickerField extends CustomField {
         initLayout();
     }
 
+    @Override
+    protected Component initContent() {
+        return container;
+    }
+
     protected void initLayout() {
         container = new HorizontalLayout();
         container.setWidth("100%");
@@ -54,7 +53,6 @@ public class CubaPickerField extends CustomField {
         field.setWidth("100%");
         container.setExpandRatio(field, 1);
 
-        setCompositionRoot(container);
         setStyleName("cuba-pickerfield");
         setWidth(DEFAULT_WIDTH + "px");
     }
@@ -63,12 +61,12 @@ public class CubaPickerField extends CustomField {
         field = new TextField() {
             @Override
             public boolean isRequired() {
-                return CubaPickerField.this.required;
+                return CubaPickerField.this.isRequired();
             }
 
             @Override
             public String getRequiredError() {
-                return CubaPickerField.this.requiredError;
+                return CubaPickerField.this.getRequiredError();
             }
 
             @Override
@@ -132,16 +130,6 @@ public class CubaPickerField extends CustomField {
         field.setReadOnly(false);
         getPropertyDataSource().setValue(newValue);
         field.setReadOnly(fieldReadOnly);
-    }
-
-    @Override
-    public void addListener(ValueChangeListener listener) {
-        field.addValueChangeListener(listener);
-    }
-
-    @Override
-    public void removeListener(ValueChangeListener listener) {
-        field.removeValueChangeListener(listener);
     }
 
     @Override

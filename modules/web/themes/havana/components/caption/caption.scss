@@ -15,5 +15,9 @@
     .v-required-field-indicator:hover {
       cursor: pointer;
     }
+
+    .#{$primaryStyleName}-text {
+      padding-bottom: 2px;
+    }
   }
 }

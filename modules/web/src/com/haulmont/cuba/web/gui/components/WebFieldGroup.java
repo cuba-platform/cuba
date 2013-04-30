@@ -25,7 +25,6 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
-import com.haulmont.cuba.web.toolkit.ui.CustomField;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
@@ -1051,7 +1050,7 @@ public class WebFieldGroup
         return field;
     }
 
-    private class LinkField extends CustomField {
+    private class LinkField extends com.vaadin.ui.CustomField {
         private static final long serialVersionUID = 5555318337278242796L;
 
         private Button component;
@@ -1105,7 +1104,6 @@ public class WebFieldGroup
                 }
             });
             setStyleName("cuba-linkfield");
-            setCompositionRoot(component);
         }
 
         @Override
@@ -1121,16 +1119,8 @@ public class WebFieldGroup
         }
 
         @Override
-        public void setBuffered(boolean buffered) {
-        }
-
-        @Override
-        public boolean isBuffered() {
-            return false;
-        }
-
-        @Override
-        public void removeAllValidators() {
+        protected com.vaadin.ui.Component initContent() {
+            return component;
         }
     }
 
