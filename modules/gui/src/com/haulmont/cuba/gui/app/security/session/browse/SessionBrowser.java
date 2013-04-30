@@ -42,11 +42,18 @@ public class SessionBrowser extends AbstractLookup {
 
     @Inject
     protected Label lastUpdateTsLab;
-    @Inject TextField userLogin;
-    @Inject TextField userName;
-    @Inject TextField userAddress;
-    @Inject TextField userInfo;
-    @Inject Button clearButton;
+
+    @Inject
+    private TextField userLogin;
+
+    @Inject
+    private TextField userName;
+
+    @Inject
+    private TextField userAddress;
+
+    @Inject
+    private TextField userInfo;
 
     @Named("sessionsTable.message")
     protected Action messageAction;
@@ -57,16 +64,6 @@ public class SessionBrowser extends AbstractLookup {
         if (!ClientType.WEB.equals(AppConfig.getClientType())) {
             messageAction.setVisible(false);
         }
-        clearButton.setAction(new AbstractAction("clearTextFields") {
-            @Override
-            public void actionPerform(Component component) {
-                userLogin.setValue("");
-                userName.setValue("");
-                userAddress.setValue("");
-                userInfo.setValue("");
-                refresh();
-            }
-        });
         sessionsDs.addListener(new CollectionDsListenerAdapter<UserSessionEntity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<UserSessionEntity> items) {
@@ -77,20 +74,28 @@ public class SessionBrowser extends AbstractLookup {
     }
 
     public void refresh() {
-        Map<String,Object> users = new LinkedHashMap<>();
+        Map<String, Object> fieldValues = new HashMap<>();
         String userLoginStr = userLogin.getValue();
         if (!StringUtils.isEmpty(userLoginStr))
-            users.put("userLogin",userLoginStr.toLowerCase());
+            fieldValues.put("userLogin", userLoginStr.toLowerCase());
         String userNameStr = userName.getValue();
-        if(!StringUtils.isEmpty(userNameStr))
-            users.put("userName",userNameStr.toLowerCase());
+        if (!StringUtils.isEmpty(userNameStr))
+            fieldValues.put("userName", userNameStr.toLowerCase());
         String userAddressStr = userAddress.getValue();
         if (!StringUtils.isEmpty(userAddressStr))
-            users.put("userAddress",userAddressStr.toLowerCase());
+            fieldValues.put("userAddress", userAddressStr.toLowerCase());
         String userInfoStr = userInfo.getValue();
         if (!StringUtils.isEmpty(userInfoStr))
-            users.put("userInfo",userInfoStr.toLowerCase());
-        sessionsDs.refresh(users);
+            fieldValues.put("userInfo", userInfoStr.toLowerCase());
+        sessionsDs.refresh(fieldValues);
+    }
+
+    public void clearTextFields() {
+        userLogin.setValue("");
+        userName.setValue("");
+        userAddress.setValue("");
+        userInfo.setValue("");
+        refresh();
     }
 
     public void message() {

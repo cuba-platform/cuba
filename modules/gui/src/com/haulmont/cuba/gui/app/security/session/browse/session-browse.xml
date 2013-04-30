@@ -19,19 +19,13 @@
     </dsContext>
 
     <layout expand="sessionsTable" spacing="true">
-        <grid spacing="true">
-            <columns count="5">
-            </columns>
-            <rows>
-                <row >
-                    <textField id="userLogin" caption="Login"/>
-                    <textField id="userName" caption="User Name"/>
-                    <textField id="userAddress" caption="Address"/>
-                    <textField id="userInfo" caption="ClientInfo"/>
-                    <button  id="clearButton" align="BOTTOM_CENTER" caption="Clear"/>
-                </row>
-            </rows>
-        </grid>
+        <hbox spacing="true">
+            <textField id="userLogin" caption="Login"/>
+            <textField id="userName" caption="User Name"/>
+            <textField id="userAddress" caption="Address"/>
+            <textField id="userInfo" caption="ClientInfo"/>
+            <button  id="clearButton" align="BOTTOM_CENTER" invoke="clearTextFields" caption="Clear"/>
+        </hbox>
         <groupTable id="sessionsTable" multiselect="true" width="100%">
             <actions>
                 <action id="refresh" caption="msg://refresh" invoke="refresh"/>

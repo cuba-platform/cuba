@@ -36,21 +36,17 @@ public class UserSessionsDatasource extends GroupDatasourceImpl<UserSessionEntit
         Collection<UserSessionEntity> userSessionList = uss.getUserSessionInfo();
         for (UserSessionEntity entity : userSessionList) {
             Object userLoginObj = params.get("userLogin");
-            if (userLoginObj != null)
-                if ((entity.getLogin() == null) || !entity.getLogin().toLowerCase().contains(userLoginObj.toString()))
-                    continue;
+            if (userLoginObj != null && (entity.getLogin() == null || !entity.getLogin().toLowerCase().contains(userLoginObj.toString())))
+                continue;
             Object userNameObj = params.get("userName");
-            if (userNameObj != null)
-                if (entity.getUserName() == null || !entity.getUserName().toLowerCase().contains(userNameObj.toString()))
-                    continue;
+            if (userNameObj != null && (entity.getUserName() == null || !entity.getUserName().toLowerCase().contains(userNameObj.toString())))
+                continue;
             Object userAddressObj = params.get("userAddress");
-            if (userAddressObj != null)
-                if (entity.getAddress() == null || !entity.getAddress().toLowerCase().contains(userAddressObj.toString()))
-                    continue;
+            if (userAddressObj != null && (entity.getAddress() == null || !entity.getAddress().toLowerCase().contains(userAddressObj.toString())))
+                continue;
             Object userClientInfoObj = params.get("userInfo");
-            if (userClientInfoObj != null)
-                if (entity.getClientInfo() == null || !entity.getClientInfo().toLowerCase().contains(userClientInfoObj.toString()))
-                    continue;
+            if (userClientInfoObj != null && (entity.getClientInfo() == null || !entity.getClientInfo().toLowerCase().contains(userClientInfoObj.toString())))
+                continue;
             data.put(entity.getId(), entity);
         }
     }
