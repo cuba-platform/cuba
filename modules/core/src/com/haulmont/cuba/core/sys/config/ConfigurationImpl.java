@@ -13,8 +13,8 @@ import com.haulmont.cuba.core.sys.ConfigPersisterImpl;
 
 import javax.annotation.ManagedBean;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Server-side implementation of the {@link Configuration} interface.
@@ -26,7 +26,7 @@ import java.util.Map;
 @ManagedBean(Configuration.NAME)
 public class ConfigurationImpl implements Configuration {
 
-    protected Map<Class, ConfigHandler> cache = new HashMap<Class, ConfigHandler>();
+    protected Map<Class, ConfigHandler> cache = new ConcurrentHashMap<>();
 
     @Override
     public <T extends Config> T getConfig(Class<T> configInterface) {
