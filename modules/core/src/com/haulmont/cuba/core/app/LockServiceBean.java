@@ -37,4 +37,8 @@ public class LockServiceBean implements LockService {
     public List<LockInfo> getCurrentLocks() {
         return lockManager.getCurrentLocks();
     }
+
+    public void reloadConfiguration(){
+        lockManager.reloadConfiguration();
+    }
 }

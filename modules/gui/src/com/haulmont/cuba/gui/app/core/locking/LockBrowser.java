@@ -7,36 +7,36 @@ package com.haulmont.cuba.gui.app.core.locking;
 
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.global.LockInfo;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Map;
 
 public class LockBrowser extends AbstractWindow {
 
-    public LockBrowser(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected LockService service;
+
+    @Named("locks")
+    protected Table table;
 
     public void init(Map<String, Object> params) {
-        final Table table = getComponent("locks");
-
         table.addAction(new RefreshAction(table));
-
-        table.addAction(
-                new AbstractAction("unlock") {
-                    public void actionPerform(Component component) {
-                        LockInfo lockInfo = table.getSingleSelected();
-                        if (lockInfo != null) {
-                            LockService service = ServiceLocator.lookup(LockService.NAME);
-                            service.unlock(lockInfo.getEntityName(), lockInfo.getEntityId());
-                            table.refresh();
-                        }
-                    }
-                }
-        );
-
         table.refresh();
+    }
+
+    public void unlock(){
+        LockInfo lockInfo = table.getSingleSelected();
+        if (lockInfo != null) {
+            service.unlock(lockInfo.getEntityName(), lockInfo.getEntityId());
+            table.refresh();
+        }
+    }
+
+    public void reloadConfig(){
+        service.reloadConfiguration();
     }
 }

@@ -50,4 +50,6 @@ public interface LockService {
      * List of current locks
      */
     List<LockInfo> getCurrentLocks();
+
+    void reloadConfiguration();
 }

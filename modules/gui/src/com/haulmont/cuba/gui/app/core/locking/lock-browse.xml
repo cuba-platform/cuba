@@ -23,23 +23,54 @@
                 ]]>
             </query>
         </collectionDatasource>
+        <groupDatasource id="lockDescriptorDs" class="com.haulmont.cuba.core.entity.LockDescriptor" view="_local">
+            <query>
+                select d from sys$LockDescriptor d order by d.name
+            </query>
+        </groupDatasource>
     </dsContext>
-
-    <layout expand="locks">
-        <table id="locks" editable="false" width="100%">
-            <buttonsPanel>
-                <button action="locks.refresh"/>
-                <button action="locks.unlock"/>
-            </buttonsPanel>
-            <columns>
-                <column id="entityName" caption="msg://entityName">
-                    <formatter class="com.haulmont.cuba.gui.app.core.locking.LockNameFormatter"/>
-                </column>
-                <column id="entityId" caption="msg://entityId"/>
-                <column id="user.login" caption="msg://user"/>
-                <column id="since" caption="msg://since"/>
-            </columns>
-            <rows datasource="locksDs"/>
-        </table>
+    <layout expand="tabSheet" spacing="true">
+        <tabSheet id="tabSheet" width="100%">
+            <tab expand="locks" margin="true" id="viewTab" caption="msg://view">
+                <table id="locks" editable="false" width="100%">
+                    <buttonsPanel>
+                        <button action="locks.refresh"/>
+                        <button invoke="unlock" caption="msg://unlock"/>
+                    </buttonsPanel>
+                    <columns>
+                        <column id="entityName" caption="msg://entityName">
+                            <formatter class="com.haulmont.cuba.gui.app.core.locking.LockNameFormatter"/>
+                        </column>
+                        <column id="entityId" caption="msg://entityId"/>
+                        <column id="user.login" caption="msg://user"/>
+                        <column id="since" caption="msg://since"/>
+                    </columns>
+                    <rows datasource="locksDs"/>
+                </table>
+            </tab>
+            <tab expand="locksTable" margin="true" id="setupTab" caption="msg://setup">
+                <groupTable id="locksTable" height="100%" width="100%">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="remove"/>
+                        <action id="refresh"/>
+                        <action invoke="reloadConfig" caption="msg://reloadconfig" id="reloadConfiguration"/>
+                    </actions>
+                    <buttonsPanel >
+                        <button action="locksTable.create"/>
+                        <button action="locksTable.edit"/>
+                        <button action="locksTable.remove"/>
+                        <button action="locksTable.refresh"/>
+                        <button action="locksTable.reloadConfiguration"/>
+                    </buttonsPanel>
+                    <columns>
+                        <column id="name" caption="msg://name"/>
+                        <column id="timeoutSec" caption="msg://timeout"/>
+                    </columns>
+                    <rows datasource="lockDescriptorDs"/>
+                </groupTable>
+            </tab>
+        </tabSheet>
     </layout>
 </window>

@@ -66,6 +66,9 @@
     <screen id="sys$LockInfo.browse"
             template="/com/haulmont/cuba/gui/app/core/locking/lock-browse.xml"/>
 
+    <screen id="sys$LockDescriptor.edit"
+            template="/com/haulmont/cuba/gui/app/core/locking/lock-edit.xml"/>
+
     <screen id="sys$Server.browse"
             template="/com/haulmont/cuba/gui/app/core/server/browse/server-browse.xml"/>
 

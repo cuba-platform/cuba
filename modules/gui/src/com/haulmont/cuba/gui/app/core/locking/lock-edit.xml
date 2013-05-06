@@ -1,0 +1,38 @@
+
+<!--
+  ~ Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.locking.LockEditor"
+        caption="msg://editorCaption"
+        datasource="lockDescriptorDs"
+        messagesPack="com.haulmont.cuba.gui.app.core.locking"
+        focusComponent="lockFieldGroup">
+
+    <dsContext>
+        <datasource id="lockDescriptorDs"
+                    class="com.haulmont.cuba.core.entity.LockDescriptor"
+                    view="_local">
+        </datasource>
+    </dsContext>
+
+    <layout spacing="true" expand="windowActions">
+        <grid margin="true" spacing="true">
+            <columns count="2"/>
+            <rows>
+                <row>
+                    <label value="msg://name"/>
+                    <lookupField width="250px" datasource="lockDescriptorDs" id="nameLookupField" property="name"/>
+                </row>
+                <row>
+                    <label value="msg://timeout"/>
+                    <textField width="250px" datasource="lockDescriptorDs" property="timeoutSec"/>
+                </row>
+            </rows>
+        </grid>
+        <iframe id="windowActions" screen="editWindowActions"/>
+    </layout>
+</window>
