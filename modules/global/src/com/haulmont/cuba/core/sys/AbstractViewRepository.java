@@ -298,8 +298,7 @@ public class AbstractViewRepository implements ViewRepository {
                 refView = retrieveView(refMetaClass, refViewName);
                 if (refView == null) {
                     for (Element e : (List<Element>) rootElem.elements("view")) {
-                        if ((refMetaClass.getName().equals(e.attributeValue("entity"))
-                                || refMetaClass.getJavaClass().getName().equals(e.attributeValue("class")))
+                        if (refMetaClass.equals(getMetaClass(e.attributeValue("entity"), e.attributeValue("class")))
                                 && refViewName.equals(e.attributeValue("name"))) {
                             refView = deployView(rootElem, e);
                             break;
@@ -331,11 +330,19 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
+    private MetaClass getMetaClass(String entityName, String entityClass) {
+        if (entityName != null) {
+            return metadata.getExtendedEntities().getEffectiveMetaClass(metadata.getClassNN(entityName));
+        } else {
+            return metadata.getExtendedEntities().getEffectiveMetaClass(ReflectionHelper.getClass(entityClass));
+        }
+    }
+
     private MetaClass getMetaClass(Element propElem, Range range) {
         MetaClass refMetaClass;
         String refEntityName = propElem.attributeValue("entity"); // this attribute is deprecated
         if (refEntityName == null) {
-            refMetaClass = range.asClass();
+            refMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(range.asClass());
         } else {
             refMetaClass = metadata.getSession().getClass(refEntityName);
         }
@@ -345,7 +352,7 @@ public class AbstractViewRepository implements ViewRepository {
     public void storeView(MetaClass metaClass, View view) {
         Map<String, View> views = storage.get(metaClass);
         if (views == null) {
-            views = new ConcurrentHashMap<String, View>();
+            views = new ConcurrentHashMap<>();
         }
 
         views.put(view.getName(), view);
