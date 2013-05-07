@@ -26,7 +26,7 @@ public class RoleEditor extends AbstractEditor<Role> {
     private ScreenPermissionsFrame screensTabFrame;
 
     @Named("name")
-    private TextArea nameField;
+    private TextField nameField;
 
     @Override
     protected void postInit() {
