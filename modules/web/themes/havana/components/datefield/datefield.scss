@@ -21,6 +21,10 @@
     }
   }
 
+  .#{$primaryStyleName}-popupcalendar {
+    padding-right: 25px;
+  }
+
   .#{$primaryStyleName}-button {
     font-size: 12px;
     height: 25px;
