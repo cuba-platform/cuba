@@ -11,9 +11,12 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
+import com.haulmont.cuba.web.sys.PaintContext;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -24,6 +27,8 @@ import java.util.*;
 public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
 
     private static final long serialVersionUID = 1440434590495905389L;
+
+    private static final Log log = LogFactory.getLog(CollectionDsWrapper.class);
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
@@ -79,6 +84,11 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected void fireItemSetChanged() {
         if (ignoreListeners) return;
         ignoreListeners = true;
+
+        if (PaintContext.isPainting()) {
+            log.warn("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
+            return;
+        }
 
         if (!itemSetChangeListeners.isEmpty()) {
             StaticItemSetChangeEvent event = new StaticItemSetChangeEvent(this);

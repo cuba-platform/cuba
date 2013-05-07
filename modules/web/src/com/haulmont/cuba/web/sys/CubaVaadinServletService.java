@@ -10,10 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.web.WebConfig;
-import com.vaadin.server.DeploymentConfiguration;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.VaadinServletService;
+import com.vaadin.server.*;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -48,6 +45,23 @@ public class CubaVaadinServletService extends VaadinServletService {
                 return null;
             }
         });*/
+    }
+
+    @Override
+    protected AbstractCommunicationManager createCommunicationManager(VaadinSession session) {
+        AbstractCommunicationManager communicationManager = super.createCommunicationManager(session);
+        communicationManager.setPaintListener(new AbstractCommunicationManager.PaintListener() {
+            @Override
+            public void paintStarted(VaadinRequest request, VaadinResponse response) {
+                PaintContext.paintStarted();
+            }
+
+            @Override
+            public void paintFinished(VaadinRequest request, VaadinResponse response) {
+                PaintContext.paintFinished();
+            }
+        });
+        return communicationManager;
     }
 
     @Override
