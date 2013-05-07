@@ -25,7 +25,6 @@ public class CubaMaskedTextField extends com.vaadin.ui.TextField {
 
     public void setMask(String mask) {
         getState().mask = mask;
-        markAsDirty();
     }
 
     @Override

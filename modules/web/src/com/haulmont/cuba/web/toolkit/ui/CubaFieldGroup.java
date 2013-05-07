@@ -33,7 +33,7 @@ public class CubaFieldGroup extends Form {
     }
 
     public boolean isBorderVisible() {
-        return getState().borderVisible;
+        return getState(false).borderVisible;
     }
 
     public void setBorderVisible(boolean borderVisible) {
@@ -46,6 +46,10 @@ public class CubaFieldGroup extends Form {
     @Override
     protected CubaFieldGroupState getState() {
         return (CubaFieldGroupState) super.getState();
+    }
+
+    protected CubaFieldGroupState getState(boolean markAsDirty){
+        return (CubaFieldGroupState) super.getState(markAsDirty);
     }
 
     public void setItemDataSource(Item newDataSource, Collection propertyIds) {

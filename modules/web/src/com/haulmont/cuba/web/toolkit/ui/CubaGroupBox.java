@@ -38,12 +38,17 @@ public class CubaGroupBox extends Panel {
         return (CubaGroupBoxState) super.getState();
     }
 
+    @Override
+    protected CubaGroupBoxState getState(boolean markAsDirty) {
+        return (CubaGroupBoxState) super.getState(markAsDirty);
+    }
+
     public boolean isExpanded() {
-        return !getState().collapsable || getState().expanded;
+        return !getState(false).collapsable || getState(false).expanded;
     }
 
     public void setExpanded(boolean expanded) {
-        if (expanded != getState().expanded) {
+        if (expanded != getState(false).expanded) {
             getContent().setVisible(expanded);
             markAsDirtyRecursive();
         }
@@ -54,7 +59,7 @@ public class CubaGroupBox extends Panel {
     }
 
     public boolean isCollapsable() {
-        return getState().collapsable;
+        return getState(false).collapsable;
     }
 
     public void setCollapsable(boolean collapsable) {

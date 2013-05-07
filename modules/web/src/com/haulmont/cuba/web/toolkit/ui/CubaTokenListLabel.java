@@ -40,6 +40,11 @@ public class CubaTokenListLabel extends Panel {
         return (CubaTokenListLabelState) super.getState();
     }
 
+    @Override
+    protected CubaTokenListLabelState getState(boolean markAsDirty) {
+        return (CubaTokenListLabelState) super.getState(markAsDirty);
+    }
+
     public void addListener(RemoveTokenListener listener) {
         if (listeners == null) {
             listeners = new ArrayList<>();
@@ -88,11 +93,11 @@ public class CubaTokenListLabel extends Panel {
     }
 
     public String getText() {
-        return getState().text;
+        return getState(false).text;
     }
 
     public boolean isEditable() {
-        return getState().editable;
+        return getState(false).editable;
     }
 
     public void setEditable(boolean editable) {

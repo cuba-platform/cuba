@@ -7,9 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.datefield.CubaDateFieldState;
-import com.vaadin.data.Validator;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.shared.communication.SharedState;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -38,6 +36,11 @@ public class CubaDateField extends com.vaadin.ui.DateField {
     }
 
     @Override
+    protected CubaDateFieldState getState(boolean markAsDirty) {
+        return (CubaDateFieldState) super.getState(markAsDirty);
+    }
+
+    @Override
     protected void setValue(Date newValue, boolean repaintIsNotNeeded) throws Converter.ConversionException {
         if (newValue == MARKER_DATE)
             super.setValue(prevValue, true);
@@ -63,7 +66,7 @@ public class CubaDateField extends com.vaadin.ui.DateField {
 
     @Override
     protected Date handleUnparsableDateString(String dateString) throws Converter.ConversionException {
-        if (ObjectUtils.equals(dateString, StringUtils.replaceChars(getState().dateMask, "#U", "__"))) {
+        if (ObjectUtils.equals(dateString, StringUtils.replaceChars(getState(false).dateMask, "#U", "__"))) {
             return null;
         }
 

@@ -193,7 +193,7 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     }
 
     public int getButtonWidth() {
-        return getState().buttonWidth;
+        return getState(false).buttonWidth;
     }
 
     public void setButtonWidth(int buttonWidth) {
@@ -205,11 +205,11 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     }
 
     public int getButtonHeight() {
-        return getState().buttonHeight;
+        return getState(false).buttonHeight;
     }
 
     public String getFileTypesMask() {
-        return getState().fileTypes;
+        return getState(false).fileTypes;
     }
 
     public void setFileTypesMask(String fileTypesMask) {
@@ -217,7 +217,7 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     }
 
     public String getFileTypesDescription() {
-        return getState().fileTypesDescription;
+        return getState(false).fileTypesDescription;
     }
 
     public void setFileTypesDescription(String fileTypesDescription) {
@@ -225,7 +225,7 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     }
 
     public double getFileSizeLimitMB() {
-        return getState().fileSizeLimit;
+        return getState(false).fileSizeLimit;
     }
 
     public void setFileSizeLimitMB(double filesizeLimit) {
@@ -233,7 +233,7 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     }
 
     public double getQueueUploadLimitMB() {
-        return getState().queueUploadLimit;
+        return getState(false).queueUploadLimit;
     }
 
     public void setQueueUploadLimitMB(double queueUploadLimit) {
@@ -241,7 +241,7 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
     }
 
     public int getQueueSizeLimit() {
-        return getState().queueSizeLimit;
+        return getState(false).queueSizeLimit;
     }
 
     public void setQueueSizeLimit(int queueSizeLimit) {
@@ -255,12 +255,17 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
 
     @Override
     public String getCaption() {
-        return getState().buttonCaption;
+        return getState(false).buttonCaption;
     }
 
     @Override
     public CubaMultiUploadState getState() {
         return (CubaMultiUploadState) super.getState();
+    }
+
+    @Override
+    protected CubaMultiUploadState getState(boolean markAsDirty) {
+        return (CubaMultiUploadState) super.getState(markAsDirty);
     }
 
     public void addUploadListener(UploadListener startListener) {
