@@ -13,6 +13,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -132,7 +133,7 @@ public class WebPopupButton
     public void addAction(final Action action) {
         if (action != null && vPopupComponent instanceof com.vaadin.ui.Layout) {
             WebButton button = new WebButton();
-            button.setAction(action);
+            button.setAction(new PopupActionWrapper(action));
             button.setIcon(null); // don't show icons to look the same as Table actions
 
             com.vaadin.ui.Button vButton = (com.vaadin.ui.Button) button.getComposition();
@@ -168,5 +169,96 @@ public class WebPopupButton
     @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionOrder);
+    }
+
+    private class PopupActionWrapper implements Action {
+
+        private Action action;
+
+        private PopupActionWrapper(Action action) {
+            this.action = action;
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            WebPopupButton.this.component.setPopupVisible(false);
+
+            action.actionPerform(component);
+        }
+
+        @Override
+        public void addOwner(ActionOwner actionOwner) {
+            action.addOwner(actionOwner);
+        }
+
+        @Override
+        public void addPropertyChangeListener(PropertyChangeListener listener) {
+            action.addPropertyChangeListener(listener);
+        }
+
+        @Override
+        public String getCaption() {
+            return action.getCaption();
+        }
+
+        @Override
+        public String getIcon() {
+            return action.getIcon();
+        }
+
+        @Override
+        public String getId() {
+            return action.getId();
+        }
+
+        @Override
+        public ActionOwner getOwner() {
+            return action.getOwner();
+        }
+
+        @Override
+        public Collection<ActionOwner> getOwners() {
+            return action.getOwners();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return action.isEnabled();
+        }
+
+        @Override
+        public boolean isVisible() {
+            return action.isVisible();
+        }
+
+        @Override
+        public void removeOwner(ActionOwner actionOwner) {
+            action.removeOwner(actionOwner);
+        }
+
+        @Override
+        public void removePropertyChangeListener(PropertyChangeListener listener) {
+            action.removePropertyChangeListener(listener);
+        }
+
+        @Override
+        public void setCaption(String caption) {
+            action.setCaption(caption);
+        }
+
+        @Override
+        public void setEnabled(boolean enabled) {
+            action.setEnabled(enabled);
+        }
+
+        @Override
+        public void setIcon(String icon) {
+            action.setIcon(icon);
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+            action.setVisible(visible);
+        }
     }
 }
