@@ -31,6 +31,12 @@
     display: none;
   }
 
+  .#{$primaryStyleName}-fieldset {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+  }
+
   .#{$primaryStyleName}-fieldset.border {
     border: 1px solid $theme_fieldBorderColor;
     background-color: $theme_fieldGroupBorderedBackgroundColor;

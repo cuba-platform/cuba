@@ -115,6 +115,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                             field = dateField.getComponent();
                         }
                     } else {
+                        // vaadin7 check rows/cols property and create textArea if exists any
                         field = super.createField(item, propertyId, uiContext);
                         field.setInvalidAllowed(false);
                         field.addValidator(

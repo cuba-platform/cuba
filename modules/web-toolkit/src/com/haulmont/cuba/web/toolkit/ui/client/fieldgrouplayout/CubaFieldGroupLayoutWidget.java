@@ -34,7 +34,7 @@ public class CubaFieldGroupLayoutWidget extends VGridLayout {
 
         @Override
         protected ComponentConnectorLayoutSlot createComponentConnectorLayoutSlot(ComponentConnector component) {
-            return new CubaFieldGroupLayoutComponentSlot(VGridLayout.CLASSNAME, component, getConnector());
+            return new CubaFieldGroupLayoutComponentSlot(CubaFieldGroupLayoutWidget.CLASSNAME, component, getConnector());
         }
     }
 
