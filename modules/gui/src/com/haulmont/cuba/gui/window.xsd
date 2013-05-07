@@ -959,9 +959,9 @@
         <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attributeGroup ref="hasRequirements"/>
 
-        <xs:attribute name="nullName" type="xs:string" use="optional"/>
         <xs:attribute name="columns" type="xs:string" use="optional"/>
         <xs:attribute name="rows" type="xs:string" use="optional"/>
+        <xs:attribute name="addAllBtnEnabled" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- Layouts && Containers -->

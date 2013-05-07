@@ -45,6 +45,7 @@
 @import "components/fieldgrouplayout/fieldgrouplayout";
 @import "components/loadingindicator/loadingindicator";
 @import "components/tokenlist/tokenlist";
+@import "components/twincolumn/twincolumn";
 
 // Application specific
 @import "app/app-window";
@@ -88,6 +89,7 @@
   @include havana-cuba-grouptable;
   @include havana-cuba-multiupload;
   @include havana-cuba-tokenlist;
+  @include havana-cuba-twincolumn;
 
   @include cuba-login-window;
   @include cuba-application-window;

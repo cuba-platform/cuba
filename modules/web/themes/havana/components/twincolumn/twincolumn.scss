@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-cuba-twincolumn($primaryStyleName: v-select-twincol){
+
+  .#{$primaryStyleName} {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .#{$primaryStyleName} select {
+    border: 1px solid #a5c4e0;
+    background: #fff none;
+    float: left;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .#{$primaryStyleName} select:focus {
+    outline-style: none;
+    border-color: #4d7ab2;
+  }
+
+  .#{$primaryStyleName} select option {
+    padding: 1px 0 1px 2px;
+    border-bottom: 1px solid #fff;
+    line-height: 18px;
+    cursor: default;
+  }
+
+  .#{$primaryStyleName}-buttons {
+    float: left;
+    padding: 2px;
+    text-align: center;
+  }
+
+  .#{$primaryStyleName}-buttons .v-button {
+    margin-bottom: 5px;
+    width: 30px;
+  }
+
+}

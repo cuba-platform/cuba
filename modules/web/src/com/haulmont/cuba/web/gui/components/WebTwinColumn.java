@@ -12,7 +12,8 @@ import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect;
+import com.haulmont.cuba.web.toolkit.ui.CubaTwinColSelect;
+import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.Resource;
@@ -26,16 +27,14 @@ import java.util.*;
  */
 public class WebTwinColumn
         extends
-            WebAbstractOptionsField<TwinColumnSelect>
+        WebAbstractOptionsField<CubaTwinColSelect>
         implements
-            TwinColumn, Component.Wrapper {
-
-    private Object nullOption;
+        TwinColumn, Component.Wrapper {
 
     private StyleProvider styleProvider;
-    
+
     public WebTwinColumn() {
-        component = new TwinColumnSelect() {
+        component = new CubaTwinColSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
@@ -68,7 +67,7 @@ public class WebTwinColumn
         };
         attachListener(component);
         component.setImmediate(true);
-        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
+        component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
         component.setMultiSelect(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
@@ -77,7 +76,6 @@ public class WebTwinColumn
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
         return new ItemWrapper(datasource, propertyPaths) {
-            private static final long serialVersionUID = 5362825971897808953L;
 
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
@@ -87,7 +85,6 @@ public class WebTwinColumn
     }
 
     public class CollectionPropertyWrapper extends PropertyWrapper {
-        private static final long serialVersionUID = -7658086655306380094L;
 
         public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
             super(item, propertyPath);
@@ -133,19 +130,7 @@ public class WebTwinColumn
 
     @Override
     public void setValue(Object value) {
-        //todo gorodnov: need to be changed as in WebOptionsGroup
         super.setValue(getKeyFromValue(value));
-    }
-
-    @Override
-    public Object getNullOption() {
-        return nullOption;
-    }
-
-    @Override
-    public void setNullOption(Object nullOption) {
-        this.nullOption = nullOption;
-        component.setNullSelectionItemId(nullOption);
     }
 
     @Override
@@ -169,20 +154,15 @@ public class WebTwinColumn
     }
 
     @Override
-    public void setDescriptionProperty(String descriptionProperty) {
-        super.setDescriptionProperty(descriptionProperty);
-        //vaadin7
-        /*component.setShowOptionsDescriptions(descriptionProperty != null);
-        if (optionsDatasource != null) {
-            component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
-        }*/
+    public void setDatasource(Datasource datasource, String property) {
+        super.setDatasource(datasource, property);
+        component.setConverter(new ObjectToObjectConverter());
     }
 
     public void setStyleProvider(final StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
-        // vaadin7
-        /*if (styleProvider != null) {
-            component.setStyleGenerator(new TwinColumnSelect.OptionStyleGenerator() {
+        if (styleProvider != null) {
+            component.setStyleGenerator(new CubaTwinColSelect.OptionStyleGenerator() {
                 public String generateStyle(AbstractSelect source, Object itemId, boolean selected) {
                     final Entity item = optionsDatasource.getItem(itemId);
                     return styleProvider.getStyleName(item, itemId, component.isSelected(itemId));
@@ -190,7 +170,17 @@ public class WebTwinColumn
             });
         } else {
             component.setStyleGenerator(null);
-        }*/
+        }
+    }
+
+    @Override
+    public void setAddAllBtnEnabled(boolean enabled) {
+        component.setAddAllBtnEnabled(enabled);
+    }
+
+    @Override
+    public boolean isAddAllBtnEnabled() {
+        return component.isAddAllBtnEnabled();
     }
 
     @Override
@@ -222,23 +212,21 @@ public class WebTwinColumn
 
     @Override
     protected Object getKeyFromValue(Object value) {
-        Object v;
-        if (isMultiSelect()) {
-            if (value instanceof Collection) {
-                final Set<Object> set = new HashSet<>();
-                for (Object o : (Collection) value) {
-                    Object t = getKey(o);
-                    set.add(t);
-                }
-                v = set;
-            } else {
-                v = getKey(value);
-            }
-        } else {
-            v = getKey(value);
+        if (value == null) {
+            return null;
         }
+        final Set<Object> set = new HashSet<>();
+        if (value instanceof Collection) {
+            for (Object o : (Collection) value) {
+                Object t = getKey(o);
+                set.add(t);
+            }
 
-        return v;
+        } else {
+            getKey(value);
+            set.add(getKey(value));
+        }
+        return set;
     }
 
     protected Object getKey(Object o) {

@@ -16,9 +16,6 @@ public interface TwinColumn extends OptionsField {
 
     String NAME = "twinColumn";
 
-    Object getNullOption();
-    void setNullOption(Object nullOption);
-
     int getColumns();
     void setColumns(int columns);
 
@@ -26,6 +23,9 @@ public interface TwinColumn extends OptionsField {
     void setRows(int rows);
 
     void setStyleProvider(StyleProvider styleProvider);
+
+    void setAddAllBtnEnabled(boolean enabled);
+    boolean isAddAllBtnEnabled();
 
     interface StyleProvider {
         String getStyleName(Entity item, Object property, boolean selected);

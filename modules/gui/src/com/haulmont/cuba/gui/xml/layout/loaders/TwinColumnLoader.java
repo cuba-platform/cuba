@@ -33,12 +33,6 @@ public class TwinColumnLoader extends AbstractFieldLoader {
             component.setCaptionProperty(captionProperty);
         }
 
-        String nullName = element.attributeValue("nullName");
-        if (!StringUtils.isEmpty(captionProperty)) {
-            nullName = loadResourceString(nullName);
-            component.setNullOption(nullName);
-        }
-
         String columns = element.attributeValue("columns");
         if (!StringUtils.isEmpty(columns)) {
             component.setColumns(Integer.parseInt(columns));
@@ -47,6 +41,11 @@ public class TwinColumnLoader extends AbstractFieldLoader {
         String rows = element.attributeValue("rows");
         if (!StringUtils.isEmpty(rows)) {
             component.setRows(Integer.parseInt(rows));
+        }
+
+        String addBtnEnabled = element.attributeValue("addAllBtnEnabled");
+        if (!StringUtils.isEmpty(addBtnEnabled)) {
+            component.setAddAllBtnEnabled(Boolean.valueOf(addBtnEnabled));
         }
 
         return component;
