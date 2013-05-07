@@ -25,6 +25,14 @@
     padding-right: 25px;
   }
 
+  .#{$primaryStyleName}-popupcalendar.v-readonly {
+    padding-right: 0px;
+
+    .#{$primaryStyleName}-button {
+      display: none;
+    }
+  }
+
   .#{$primaryStyleName}-button {
     font-size: 12px;
     height: 25px;

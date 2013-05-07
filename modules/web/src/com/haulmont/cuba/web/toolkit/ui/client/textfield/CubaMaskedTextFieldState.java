@@ -13,6 +13,9 @@ import com.vaadin.shared.ui.textfield.AbstractTextFieldState;
  * @version $Id$
  */
 public class CubaMaskedTextFieldState extends AbstractTextFieldState {
+    {
+        primaryStyleName = "cuba-maskedfield";
+    }
 
     public String mask = "";
 }

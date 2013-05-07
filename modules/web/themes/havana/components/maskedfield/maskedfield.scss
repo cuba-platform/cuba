@@ -7,6 +7,8 @@
 // Version: $Id$
 
 @mixin havana-maskedfield($primaryStyleName: cuba-maskedfield) {
+  @include havana-textfield($primaryStyleName);
+
   .v-ui,
   .v-window {
     input.#{$primaryStyleName}-empty {
@@ -15,6 +17,10 @@
 
     input.#{$primaryStyleName}-empty:focus {
       color: inherit;
+    }
+
+    input.#{$primaryStyleName}-empty.#{$primaryStyleName}-readonly:focus {
+      color: #ccc;
     }
   }
 }

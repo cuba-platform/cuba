@@ -35,6 +35,7 @@ public class CubaMaskedTextFieldWidget extends VTextField {
 
     public CubaMaskedTextFieldWidget() {
         setStylePrimaryName(CLASSNAME);
+        setStyleName(CLASSNAME);
 
         MaskedTextFieldInputHandler inputHandler = new MaskedTextFieldInputHandler();
 
