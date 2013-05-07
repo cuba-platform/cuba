@@ -6,10 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 
 /**
@@ -25,28 +22,43 @@ public class CubaRowsCount extends CustomComponent {
 
     public CubaRowsCount() {
         HorizontalLayout layout = new HorizontalLayout();
-        layout.setSpacing(true);
+        layout.setSpacing(false);
         layout.setMargin(new MarginInfo(false, true, false, true));
 
         setCompositionRoot(layout);
 
+        CubaPlaceHolder expander = new CubaPlaceHolder();
+        expander.setWidth("100%");
+        layout.addComponent(expander);
+        layout.setExpandRatio(expander, 1);
+
+        HorizontalLayout contentLayout = new HorizontalLayout();
+        contentLayout.setSpacing(true);
+        contentLayout.setHeight("-1px");
+
         prevButton = new Button("<");
+        prevButton.setWidth("-1px");
         prevButton.setStyleName("cuba-paging-change-page");
-        layout.addComponent(prevButton);
+        contentLayout.addComponent(prevButton);
 
         label = new Label();
-        layout.addComponent(label);
+        label.setWidth("-1px");
+        contentLayout.addComponent(label);
 
         countButton = new Button("[?]");
+        countButton.setWidth("-1px");
         countButton.setStyleName(BaseTheme.BUTTON_LINK);
-        layout.addComponent(countButton);
+        contentLayout.addComponent(countButton);
 
         nextButton = new Button(">");
+        nextButton.setWidth("-1px");
         nextButton.setStyleName("cuba-paging-change-page");
-        layout.addComponent(nextButton);
+        contentLayout.addComponent(nextButton);
 
-        layout.setWidth("-1px");
-        setWidth("-1px");
+        layout.addComponent(contentLayout);
+
+        layout.setWidth("100%");
+        setWidth("100%");
     }
 
     public Label getLabel() {

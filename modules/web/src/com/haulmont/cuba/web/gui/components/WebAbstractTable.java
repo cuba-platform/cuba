@@ -258,7 +258,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
             }
             com.vaadin.ui.Component rc = WebComponentsHelper.unwrap(rowsCount);
             topPanel.addComponent(rc);
-            topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+            topPanel.setExpandRatio(rc, 1);
         }
     }
 
