@@ -6,26 +6,36 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.vaadin.server.VaadinSession;
+import org.apache.commons.lang.BooleanUtils;
+
 /**
  * @author artamonov
  * @version $Id$
  */
 public class PaintContext {
 
-    private static boolean painting = false;
+    private static final String PAINTING_SESSION_ATTRIBUTE = "painting";
 
     static void paintStarted() {
-        painting = true;
+        if (VaadinSession.getCurrent() == null)
+            throw new IllegalStateException("Could not modify painting status without vaadin session");
+
+        VaadinSession.getCurrent().setAttribute(PAINTING_SESSION_ATTRIBUTE, true);
     }
 
     static void paintFinished() {
-        painting = false;
+        if (VaadinSession.getCurrent() == null)
+            throw new IllegalStateException("Could not modify painting status without vaadin session");
+
+        VaadinSession.getCurrent().setAttribute(PAINTING_SESSION_ATTRIBUTE, false);
     }
 
     public static boolean isPainting() {
         if (RequestContext.get() == null)
             throw new IllegalStateException("Could not check painting status without client request");
 
-        return painting;
+        Boolean paintingValue = (Boolean) VaadinSession.getCurrent().getAttribute(PAINTING_SESSION_ATTRIBUTE);
+        return paintingValue != null && BooleanUtils.isTrue(paintingValue);
     }
 }
