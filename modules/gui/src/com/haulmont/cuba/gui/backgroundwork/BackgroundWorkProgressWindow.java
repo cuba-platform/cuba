@@ -158,7 +158,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
 
         final T total = (T) params.get("total");
 
-        taskProgress.setValue(0);
+        taskProgress.setValue(0.0f);
 
         WrapperTask<T, V> wrapperTask = new WrapperTask<>(task, total, percentProgress);
 

@@ -114,7 +114,7 @@ public class WebComponentsFactory implements ComponentsFactory {
     }
 
     @Override
-    public <T extends Timer> T createTimer() {
-        return (T) new WebTimer();
+    public Timer createTimer() {
+        return new WebTimer();
     }
 }

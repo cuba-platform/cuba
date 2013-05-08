@@ -1,0 +1,114 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.web.toolkit.ui.client.timer;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.vaadin.client.communication.RpcProxy;
+import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.shared.ui.Connect;
+
+/**
+ * @author artamonov
+ * @version $Id$
+ */
+@Connect(CubaTimer.class)
+public class CubaTimerConnector extends AbstractComponentConnector {
+
+    protected CubaTimerServerRpc rpc = RpcProxy.create(CubaTimerServerRpc.class, this);
+
+    protected boolean running = false;
+    protected boolean scheduled = false;
+
+    protected Timer jsTimer = new CubaTimerSource();
+
+    public CubaTimerConnector() {
+        registerRpc(CubaTimerClientRpc.class, new CubaTimerClientRpc() {
+            @Override
+            public void setRunning(boolean running) {
+                CubaTimerConnector.this.setRunning(running);
+            }
+
+            @Override
+            public void requestCompleted() {
+                CubaTimerConnector.this.requestCompleted();
+            }
+        });
+    }
+
+    public void setRunning(boolean running) {
+        jsTimer.cancel();
+
+        if (running && getState().listeners) {
+            jsTimer.schedule(getState().delay);
+            scheduled = true;
+        } else {
+            scheduled = false;
+        }
+
+        this.running = running;
+    }
+
+    public void onTimer() {
+        rpc.onTimer();
+    }
+
+    @Override
+    public void onUnregister() {
+        super.onUnregister();
+
+        running = false;
+        scheduled = false;
+        jsTimer.cancel();
+    }
+
+    public void requestCompleted() {
+        if (running && getState().repeating && getState().listeners) {
+            jsTimer.schedule(getState().delay);
+            scheduled = true;
+        } else {
+            scheduled = false;
+        }
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        if (running && getState().repeating) {
+            if (!scheduled && getState().listeners) {
+                jsTimer.cancel();
+                jsTimer.schedule(getState().delay);
+                this.scheduled = true;
+            } else if (scheduled && !getState().listeners) {
+                jsTimer.cancel();
+                this.scheduled = false;
+            }
+        }
+    }
+
+    @Override
+    public CubaTimerState getState() {
+        return (CubaTimerState) super.getState();
+    }
+
+    @Override
+    protected Widget createWidget() {
+        return GWT.create(Hidden.class);
+    }
+
+    protected class CubaTimerSource extends Timer {
+        @Override
+        public void run() {
+            onTimer();
+        }
+    }
+}

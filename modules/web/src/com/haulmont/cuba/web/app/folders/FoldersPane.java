@@ -14,7 +14,10 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
+import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -22,21 +25,25 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
-import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
+import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -70,7 +77,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected Object appFoldersRoot;
     protected Object searchFoldersRoot;
-    private Timer timer;
+    private FoldersPaneTimer timer;
 
     protected static final int DEFAULT_VERT_SPLIT_POS = 400;
     protected int horizontalSplitPos;
@@ -177,19 +184,20 @@ public class FoldersPane extends VerticalLayout {
                 }
 
                 int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
-                                    
-        // vaadin7
-                // find old timers
-//                AppTimers appTimers = AppUI.getInstance().getTimers();
-//                Collection<Timer> timers = appTimers.getAll(parentAppWindow);
-//                for (Timer t : timers) {
-//                    if (t instanceof FoldersPane.FoldersPaneTimer)
-//                        t.stopTimer();
-//                }
-//
-//                timer = new FoldersPaneTimer(period, true);
-//                timer.addListener(createAppFolderUpdater());
-//                appTimers.add(timer, parentAppWindow);
+
+                for (CubaTimer t : parentAppWindow.getTimers()) {
+                    if (t instanceof FoldersPane.FoldersPaneTimer) {
+                        t.stop();
+                    }
+                }
+
+                timer = new FoldersPaneTimer();
+                timer.setRepeating(true);
+                timer.setDelay(period);
+                timer.addTimerListener(createAppFolderUpdater());
+                timer.start();
+
+                parentAppWindow.addTimer(timer);
             }
 
             Component searchFoldersPane = createSearchFoldersPane();
@@ -244,7 +252,7 @@ public class FoldersPane extends VerticalLayout {
             adjustLayout();
 
             if (getParent() != null)
-                getParent().requestRepaint();
+                getParent().markAsDirty();
 
             if (appFoldersTree != null) {
                 collapseItemInTree(appFoldersTree, "appFoldersCollapse");
@@ -255,7 +263,7 @@ public class FoldersPane extends VerticalLayout {
 
         } else {
             if (timer != null)
-                timer.stopTimer();
+                timer.stop();
 
             removeAllComponents();
             setMargin(false);
@@ -284,9 +292,7 @@ public class FoldersPane extends VerticalLayout {
                 tree.collapseItem(folder);
             }
         }
-        tree.addListener(new Tree.ExpandListener() {
-            private static final long serialVersionUID = 5469841059576722790L;
-
+        tree.addExpandListener(new Tree.ExpandListener() {
             @Override
             public void nodeExpand(Tree.ExpandEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
@@ -296,9 +302,7 @@ public class FoldersPane extends VerticalLayout {
                 }
             }
         });
-        tree.addListener(new Tree.CollapseListener() {
-            private static final long serialVersionUID = 5575939977767407729L;
-
+        tree.addCollapseListener(new Tree.CollapseListener() {
             @Override
             public void nodeCollapse(Tree.CollapseEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
@@ -334,7 +338,7 @@ public class FoldersPane extends VerticalLayout {
     protected List<UUID> strToIds(String inputStr) {
         if (inputStr == null) inputStr = "";
         String[] args = StringUtils.split(inputStr, ':');
-        ArrayList<UUID> uuids = new ArrayList<UUID>();
+        ArrayList<UUID> uuids = new ArrayList<>();
         for (String str : args) {
             uuids.add(UUID.fromString(str));
         }
@@ -375,7 +379,7 @@ public class FoldersPane extends VerticalLayout {
         );
     }
 
-    protected Timer.Listener createAppFolderUpdater() {
+    protected CubaTimer.TimerListener createAppFolderUpdater() {
         return new AppFoldersUpdater();
     }
 
@@ -412,12 +416,13 @@ public class FoldersPane extends VerticalLayout {
             return null;
 
         appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
+//        vaadin7
 //        appFoldersTree.setDoubleClickMode(true);
         appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         appFoldersRoot = messages.getMainMessage("folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
-        appFoldersTree.addListener(new FolderClickListener());
+        appFoldersTree.addItemClickListener(new FolderClickListener());
         appFoldersTree.addActionHandler(new AppFolderActionsHandler());
 
         for (Object itemId : appFoldersTree.rootItemIds()) {
@@ -429,12 +434,13 @@ public class FoldersPane extends VerticalLayout {
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
+//        vaadin7
 //        searchFoldersTree.setDoubleClickMode(true);
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         List<SearchFolder> searchFolders = foldersService.loadSearchFolders();
         searchFoldersRoot = messages.getMainMessage("folders.searchFoldersRoot");
-        searchFoldersTree.addListener(new FolderClickListener());
+        searchFoldersTree.addItemClickListener(new FolderClickListener());
         searchFoldersTree.addActionHandler(new SearchFolderActionsHandler());
         if (!searchFolders.isEmpty()) {
             fillTree(searchFoldersTree, searchFolders, isNeedRootSearchFolder() ? searchFoldersRoot : null);
@@ -619,7 +625,7 @@ public class FoldersPane extends VerticalLayout {
         public String getStyle(Tree source, Object itemId) {
             Folder folder = ((Folder) itemId);
             if (folder != null) {
-                String style = "";
+                String style;
                 // clickable tree item
                 if (getItemClickable(folder))
                     style = "cuba-clickable-folder";
@@ -646,7 +652,7 @@ public class FoldersPane extends VerticalLayout {
         public void itemClick(ItemClickEvent event) {
             Folder folder = (Folder) event.getItemId();
             if (getItemClickable(folder)) {
-                if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+                if (event.getButton() == MouseEventDetails.MouseButton.RIGHT) {
                     if (appFoldersTree != null && appFoldersTree.containsId(event.getItemId()))
                         appFoldersTree.select(event.getItemId());
                     else if (searchFoldersTree != null && searchFoldersTree.containsId(event.getItemId()))
@@ -829,16 +835,7 @@ public class FoldersPane extends VerticalLayout {
                             refreshFolders();
                         }
                     });
-              // vaadin7
-//            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-//                private static final long serialVersionUID = 5604371155722856067L;
-//
-//                @Override
-//                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-//                    AppUI.getInstance().getAppWindow().removeWindow(window);
-//                }
-//            });
-//            AppUI.getInstance().getAppWindow().addWindow(window);
+            AppUI.getCurrent().addWindow(window);
         }
     }
 
@@ -889,16 +886,7 @@ public class FoldersPane extends VerticalLayout {
                 } else
                     return;
             }
-            // vaadin7
-//            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-//                private static final long serialVersionUID = 3267969862627920749L;
-//
-//                @Override
-//                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-//                    AppUI.getInstance().getAppWindow().removeWindow(window);
-//                }
-//            });
-//            AppUI.getInstance().getAppWindow().addWindow(window);
+            AppUI.getCurrent().addWindow(window);
         }
     }
 
@@ -912,22 +900,21 @@ public class FoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
-              // vaadin7
-//            AppUI.getInstance().getWindowManager().showOptionDialog(
-//                    messages.getMainMessage("dialogs.Confirmation"),
-//                    messages.getMainMessage("folders.removeFolderConfirmation"),
-//                    IFrame.MessageType.CONFIRMATION,
-//                    new com.haulmont.cuba.gui.components.Action[]{
-//                            new DialogAction(DialogAction.Type.YES) {
-//                                @Override
-//                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-//                                    removeFolder(folder);
-//                                    refreshFolders();
-//                                }
-//                            },
-//                            new DialogAction(DialogAction.Type.NO)
-//                    }
-//            );
+            App.getInstance().getWindowManager().showOptionDialog(
+                    messages.getMainMessage("dialogs.Confirmation"),
+                    messages.getMainMessage("folders.removeFolderConfirmation"),
+                    IFrame.MessageType.CONFIRMATION,
+                    new com.haulmont.cuba.gui.components.Action[]{
+                            new DialogAction(DialogAction.Type.YES) {
+                                @Override
+                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    removeFolder(folder);
+                                    refreshFolders();
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.NO)
+                    }
+            );
         }
     }
 
@@ -959,14 +946,14 @@ public class FoldersPane extends VerticalLayout {
         @Override
         public void perform(final Folder folder) {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-            // vaadin7
-            /*final FileUploadDialog dialog = App.getInstance().getWindowManager().
+
+            final FileUploadDialog dialog = App.getInstance().getWindowManager().
                     openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
 
-            dialog.addListener(new Window.CloseListener() {
+            dialog.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    if (com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID.equals(actionId)) {
                         try {
                             FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.class);
                             byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
@@ -982,19 +969,18 @@ public class FoldersPane extends VerticalLayout {
                         refreshFolders();
                     }
                 }
-            });*/
+            });
         }
     }
 
-    public class AppFoldersUpdater implements Timer.Listener {
-
+    public class AppFoldersUpdater implements CubaTimer.TimerListener {
         @Override
-        public void onTimer(Timer timer) {
+        public void onTimer(CubaTimer timer) {
             reloadAppFolders();
         }
 
         @Override
-        public void onStopTimer(Timer timer) {
+        public void onStopTimer(CubaTimer timer) {
         }
     }
 
@@ -1002,10 +988,6 @@ public class FoldersPane extends VerticalLayout {
         return menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
     }
 
-    protected static class FoldersPaneTimer extends Timer {
-
-        public FoldersPaneTimer(int delay, boolean repeating) {
-            super(delay, repeating);
-        }
+    protected static class FoldersPaneTimer extends CubaTimer {
     }
 }

@@ -52,12 +52,6 @@ public class DefaultApp extends App implements ConnectionListener {
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
 
-//            getTimers().stopAll();
-
-//            for (Object win : new ArrayList<>(getWindows())) {
-//                removeWindow((Window) win);
-//            }
-
             messagesClient.setRemoteSearch(true);
 
             UIView appWindow = createAppWindow();
@@ -74,12 +68,6 @@ public class DefaultApp extends App implements ConnectionListener {
         } else {
             log.debug("Closing all windows");
 //            getWindowManager().closeAll();
-
-//            getTimers().stopAll();
-
-//            for (Object win : new ArrayList<Object>(getWindows())) {
-//                removeWindow((Window) win);
-//            }
 
             messagesClient.setRemoteSearch(false);
 
@@ -106,7 +94,7 @@ public class DefaultApp extends App implements ConnectionListener {
     protected UIView createLoginWindow() {
         LoginWindow window = new LoginWindow(this, connection);
 
-//  vaadin7
+//  vaadin7 use heartbeat
 //        Timer timer = createSessionPingTimer(false);
 //        if (timer != null)
 //            timers.add(timer, window);
@@ -117,7 +105,7 @@ public class DefaultApp extends App implements ConnectionListener {
     protected UIView createAppWindow() {
         AppWindow window = new AppWindow(connection);
 
-//  vaadin7
+//  vaadin7 use heartbeat
 //        Timer timer = createSessionPingTimer(true);
 //        if (timer != null)
 //            timers.add(timer, appWindow);

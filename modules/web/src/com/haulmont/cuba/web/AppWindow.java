@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
@@ -65,6 +66,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     private Log log = LogFactory.getLog(getClass());
 
     private CubaFileDownloader fileDownloader;
+
+    protected CubaTimer workerTimer;
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -159,6 +162,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
     private void updateClientSystemMessages() {
         Map<String, String> localeMessages = new HashMap<>();
+//        vaadin7 need update locale messages after user logged in
 //        AppUI.CubaSystemMessages systemMessages = AppUI.compileSystemMessages(AppUI.getInstance().getLocale());
 //
 //        localeMessages.put("communicationErrorCaption", systemMessages.getCommunicationErrorCaption());
@@ -175,6 +179,13 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     private void initStaticComponents() {
         scriptHost = new JavaScriptHost();
 //        addComponent(scriptHost);
+
+        workerTimer = new CubaTimer();
+        rootLayout.addComponent(workerTimer);
+
+        workerTimer.setRepeating(true);
+        workerTimer.setDelay(webConfig.getUiCheckInterval());
+        workerTimer.start();
 
         fileDownloader = new CubaFileDownloader();
         rootLayout.addComponent(fileDownloader);
@@ -235,6 +246,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                 foldersSplit = new HorizontalSplitPanel();
 
                 if (webConfig.getUseLightHeader()) {
+//                vaadin7 SplitPanel hook button
 //                foldersSplit.setShowHookButton(true);
                     foldersSplit.setImmediate(true);
                     foldersPane.setVisible(true);
@@ -358,6 +370,30 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
     public CubaFileDownloader getFileDownloader() {
         return fileDownloader;
+    }
+
+    public CubaTimer getWorkerTimer() {
+        return workerTimer;
+    }
+
+    public List<CubaTimer> getTimers() {
+        List<CubaTimer> timers = new LinkedList<>();
+        if (rootLayout != null) {
+            for (Component component : rootLayout) {
+                if (component instanceof CubaTimer) {
+                    timers.add((CubaTimer) component);
+                }
+            }
+        }
+        return timers;
+    }
+
+    public void addTimer(CubaTimer timer) {
+        rootLayout.addComponent(timer);
+    }
+
+    public void removeTimer(CubaTimer timer) {
+        rootLayout.removeComponent(timer);
     }
 
     /**
@@ -521,6 +557,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         menuBar.getMoreMenuItem().setIcon(new VersionedThemeResource("icons/more-item.png"));
 
         if (globalConfig.getTestMode()) {
+//            vaadin7 test mode
 //            AppUI.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
 
@@ -1043,8 +1080,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             }
             final App app = App.getInstance();
             app.cleanupBackgroundTasks();
-//            vaadin7
-//            app.getTimers().stopAll();
             app.reinitializeAppearanceProperties();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
@@ -1052,8 +1087,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                         public void run() {
                             App.getInstance().getWindowManager().reset();
                             String redirectionUrl = connection.logout();
-//                            vaadin7
-//                            open(new ExternalResource(AppUI.getInstance().getURL() + redirectionUrl));
                         }
                     },
                     null

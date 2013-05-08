@@ -158,7 +158,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         context.addPostInitTask(new PostInitTask() {
             @Override
             public void execute(Context context, IFrame window) {
-                timer.setFrame((Window) window);
+                timer.setFrame(window);
             }
         });
     }

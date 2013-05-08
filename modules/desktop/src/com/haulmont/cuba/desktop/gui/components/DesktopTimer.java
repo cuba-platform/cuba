@@ -7,45 +7,37 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.global.RemoteException;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Element;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
+public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements com.haulmont.cuba.gui.components.Timer {
 
-    private String id;
-    private Element xmlDescriptor;
-    private Window frame;
     private boolean repeating;
     private int delay;
 
-    private List<TimerListener> timerListeners = new ArrayList<TimerListener>();
+    private List<TimerListener> timerListeners = new ArrayList<>();
     protected Timer timer;
 
     private Log log = LogFactory.getLog(getClass());
 
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
+    public DesktopTimer() {
+        impl = new JLabel();
+        impl.setVisible(false);
+        impl.setPreferredSize(new Dimension(0, 0));
+        impl.setSize(0, 0);
     }
 
     @Override
@@ -69,43 +61,11 @@ public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
     }
 
     @Override
-    public Window getFrame() {
-        return frame;
-    }
-
-    @Override
-    public void setFrame(Window owner) {
-        this.frame = owner;
-    }
-
     public void startTimer() {
         timer = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (TimerListener listener : timerListeners) {
-                    try {
-                        listener.onTimer(DesktopTimer.this);
-                    } catch (RuntimeException ex) {
-                        if (ExceptionUtils.indexOfType(ex, java.net.ConnectException.class) > -1) {
-                            // If a ConnectException occured, just log it and ignore
-                            log.warn("onTimer error: " + ex.getMessage());
-                        } else {
-                            // Otherwise throw the exception, but first search for NoUserSessionException in chain,
-                            // if found - stop the timer
-                            int reIdx = ExceptionUtils.indexOfType(ex, RemoteException.class);
-                            if (reIdx > -1) {
-                                RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(ex).get(reIdx);
-                                for (RemoteException.Cause cause : re.getCauses()) {
-                                    if (cause.getThrowable() instanceof NoUserSessionException) {
-                                        timer.stop();
-                                        throw ex;
-                                    }
-                                }
-                            }
-                            throw ex;
-                        }
-                    }
-                }
+                onTimerAction();
             }
         });
         timer.setRepeats(repeating);
@@ -121,6 +81,37 @@ public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
         timer = null;
         for (TimerListener listener : timerListeners) {
             listener.onStopTimer(this);
+        }
+    }
+
+    protected void onTimerAction() {
+        for (TimerListener listener : timerListeners) {
+            try {
+                listener.onTimer(this);
+            } catch (RuntimeException ex) {
+                handleTimerException(ex);
+            }
+        }
+    }
+
+    protected void handleTimerException(RuntimeException ex) {
+        if (ExceptionUtils.indexOfType(ex, java.net.ConnectException.class) > -1) {
+            // If a ConnectException occured, just log it and ignore
+            log.warn("onTimer error: " + ex.getMessage());
+        } else {
+            // Otherwise throw the exception, but first search for NoUserSessionException in chain,
+            // if found - stop the timer
+            int reIdx = ExceptionUtils.indexOfType(ex, RemoteException.class);
+            if (reIdx > -1) {
+                RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(ex).get(reIdx);
+                for (RemoteException.Cause cause : re.getCauses()) {
+                    if (cause.getThrowable() instanceof NoUserSessionException) {
+                        timer.stop();
+                        throw ex;
+                    }
+                }
+            }
+            throw ex;
         }
     }
 
@@ -147,15 +138,4 @@ public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
     public void removeTimerListener(TimerListener listener) {
         timerListeners.remove(listener);
     }
-
-    @Override
-    public Element getXmlDescriptor() {
-        return xmlDescriptor;
-    }
-
-    @Override
-    public void setXmlDescriptor(Element element) {
-        this.xmlDescriptor = element;
-    }
-
 }

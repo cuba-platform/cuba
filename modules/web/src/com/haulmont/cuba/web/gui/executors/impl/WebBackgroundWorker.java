@@ -16,9 +16,10 @@ import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
 import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
-//import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.gui.WebTimer;
+import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,19 +58,19 @@ public class WebBackgroundWorker implements BackgroundWorker {
      */
     private static class WebTimerListener {
 
-        private WebTimer timer;
+        private CubaTimer timer;
 
-        private Timer.TimerListener timerListener;
+        private CubaTimer.TimerListener timerListener;
 
-        private WebTimerListener(WebTimer timer) {
+        private WebTimerListener(CubaTimer timer) {
             this.timer = timer;
         }
 
-        public Timer.TimerListener getTimerListener() {
+        public CubaTimer.TimerListener getTimerListener() {
             return timerListener;
         }
 
-        public void setTimerListener(Timer.TimerListener timerListener) {
+        public void setTimerListener(CubaTimer.TimerListener timerListener) {
             this.timerListener = timerListener;
         }
 
@@ -85,7 +86,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     @Override
     public <T, V> BackgroundTaskHandler<V> handle(final BackgroundTask<T, V> task) {
-        /*checkNotNull(task);
+        checkNotNull(task);
 
         App appInstance;
         try {
@@ -96,7 +97,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         // UI timer
-        WebTimer pingTimer = appInstance.getWorkerTimer();
+        AppWindow appWindow = appInstance.getAppWindow();
+        CubaTimer pingTimer = appWindow.getWorkerTimer();
 
         final WebTimerListener webTimerListener = new WebTimerListener(pingTimer);
 
@@ -110,11 +112,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
         final TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
 
         // add timer to AppWindow for UI ping
-        Timer.TimerListener timerListener = new Timer.TimerListener() {
+        CubaTimer.TimerListener timerListener = new CubaTimer.TimerListener() {
             private long intentVersion = 0;
 
             @Override
-            public void onTimer(Timer timer) {
+            public void onTimer(CubaTimer timer) {
                 if (AppBeans.get(UserSessionSource.class).getUserSession() == null) {
                     log.debug("Null UserSession in background task");
                     return;
@@ -149,7 +151,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             }
 
             @Override
-            public void onStopTimer(Timer timer) {
+            public void onStopTimer(CubaTimer timer) {
                 // Do nothing
             }
         };
@@ -157,16 +159,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
         // Start listen only if task started
         webTimerListener.setTimerListener(timerListener);
 
-        return taskHandler;*/
-        return null;
+        return taskHandler;
     }
 
     /*
      * Task runner
     */
-    /*private class WebTaskExecutor<T, V> extends Thread implements TaskExecutor<T, V> {
+    private class WebTaskExecutor<T, V> extends Thread implements TaskExecutor<T, V> {
 
-        private AppUI app;
+        private App app;
 
         private BackgroundTask<T, V> runnableTask;
         private WebTimerListener webTimerListener;
@@ -205,14 +206,14 @@ public class WebBackgroundWorker implements BackgroundWorker {
             else
                 this.params = Collections.emptyMap();
 
-            securityContext = AppContext.getSecurityContext();
+            // copy security context
+            securityContext = new SecurityContext(AppContext.getSecurityContext().getSession());
             userId = userSessionSource.getUserSession().getId();
         }
 
         @Override
         public final void run() {
             // Set security permissions
-            // vaadin7 do not copy security context to another threads
             AppContext.setSecurityContext(securityContext);
 
             V result = null;
@@ -406,5 +407,5 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 }
             }
         }
-    }*/
+    }
 }

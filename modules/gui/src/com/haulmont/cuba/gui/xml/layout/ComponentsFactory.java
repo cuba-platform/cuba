@@ -21,5 +21,5 @@ public interface ComponentsFactory {
 
     <T extends Component> T createComponent(String name);
 
-    <T extends Timer> T createTimer();
+    Timer createTimer();
 }

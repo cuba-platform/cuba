@@ -101,7 +101,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
     }
 
     @Override
-    public <T extends Timer> T createTimer() {
-        return (T) new DesktopTimer();
+    public Timer createTimer() {
+        return new DesktopTimer();
     }
 }

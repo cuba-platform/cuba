@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
-import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -48,13 +47,9 @@ public abstract class App implements Serializable {
 
     protected final WebConfig webConfig;
 
-    protected WebTimer workerTimer;
-
     private AppCookies cookies;
 
     protected LinkHandler linkHandler;
-
-    protected AppTimers timers;
 
     protected final BackgroundTaskManager backgroundTaskManager;
 
@@ -87,7 +82,6 @@ public abstract class App implements Serializable {
             windowManager = createWindowManager();
             exceptionHandlers = new ExceptionHandlers(this);
             cookies = new AppCookies();
-            timers = new AppTimers(this);
             backgroundTaskManager = new BackgroundTaskManager();
 
             String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
@@ -239,10 +233,6 @@ public abstract class App implements Serializable {
         return clientAddress;
     }
 
-    public void cleanupBackgroundTasks() {
-        backgroundTaskManager.cleanupTasks();
-    }
-
     public void reinitializeAppearanceProperties() {
         themeInitialized = false;
     }
@@ -253,5 +243,21 @@ public abstract class App implements Serializable {
 
     public String getWebResourceTimestamp() {
         return webResourceTimestamp;
+    }
+
+    public BackgroundTaskManager getTaskManager() {
+        return backgroundTaskManager;
+    }
+
+    public void addBackgroundTask(Thread task) {
+        backgroundTaskManager.addTask(task);
+    }
+
+    public void removeBackgroundTask(Thread task) {
+        backgroundTaskManager.removeTask(task);
+    }
+
+    public void cleanupBackgroundTasks() {
+        backgroundTaskManager.cleanupTasks();
     }
 }
