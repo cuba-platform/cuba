@@ -25,8 +25,8 @@ public class LockEditor extends AbstractEditor {
     @Inject
     protected Metadata metadata;
 
-    @Named("nameLookupField")
-    protected LookupField lookupField;
+    @Inject
+    protected LookupField nameLookupField;
 
     public void init(Map<String, Object> params){
         Map<String, Object> options = new TreeMap<>();
@@ -37,6 +37,6 @@ public class LockEditor extends AbstractEditor {
                 options.put(metaClass.getName(), originalName);
             }
         }
-        lookupField.setOptionsMap(options);
+        nameLookupField.setOptionsMap(options);
     }
 }

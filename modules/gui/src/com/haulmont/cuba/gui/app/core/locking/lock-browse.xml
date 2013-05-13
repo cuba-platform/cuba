@@ -18,7 +18,7 @@
                               datasourceClass="com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource">
             <query>
                 <![CDATA[
-                def service = com.haulmont.cuba.gui.ServiceLocator.lookup(com.haulmont.cuba.core.app.LockService.NAME)
+                def service = com.haulmont.cuba.core.global.AppBeans.get(com.haulmont.cuba.core.app.LockService.NAME)
                 return service.getCurrentLocks()
                 ]]>
             </query>
@@ -34,7 +34,7 @@
             <tab expand="locks" margin="true" id="viewTab" caption="msg://view">
                 <table id="locks" editable="false" width="100%">
                     <buttonsPanel>
-                        <button action="locks.refresh"/>
+                        <button invoke="refresh" caption="msg://refresh"/>
                         <button invoke="unlock" caption="msg://unlock"/>
                     </buttonsPanel>
                     <columns>
@@ -48,8 +48,8 @@
                     <rows datasource="locksDs"/>
                 </table>
             </tab>
-            <tab expand="locksTable" margin="true" id="setupTab" caption="msg://setup">
-                <groupTable id="locksTable" height="100%" width="100%">
+            <tab expand="setupTable" margin="true" id="setupTab" caption="msg://setup">
+                <groupTable id="setupTable" height="100%" width="100%">
                     <actions>
                         <action id="create"/>
                         <action id="edit"/>
@@ -58,11 +58,11 @@
                         <action invoke="reloadConfig" caption="msg://reloadconfig" id="reloadConfiguration"/>
                     </actions>
                     <buttonsPanel >
-                        <button action="locksTable.create"/>
-                        <button action="locksTable.edit"/>
-                        <button action="locksTable.remove"/>
-                        <button action="locksTable.refresh"/>
-                        <button action="locksTable.reloadConfiguration"/>
+                        <button action="setupTable.create"/>
+                        <button action="setupTable.edit"/>
+                        <button action="setupTable.remove"/>
+                        <button action="setupTable.refresh"/>
+                        <button action="setupTable.reloadConfiguration"/>
                     </buttonsPanel>
                     <columns>
                         <column id="name" caption="msg://name"/>

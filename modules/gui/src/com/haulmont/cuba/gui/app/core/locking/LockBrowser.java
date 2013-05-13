@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.global.LockInfo;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.actions.RefreshAction;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,7 +23,6 @@ public class LockBrowser extends AbstractWindow {
     protected Table table;
 
     public void init(Map<String, Object> params) {
-        table.addAction(new RefreshAction(table));
         table.refresh();
     }
 
@@ -34,6 +32,9 @@ public class LockBrowser extends AbstractWindow {
             service.unlock(lockInfo.getEntityName(), lockInfo.getEntityId());
             table.refresh();
         }
+    }
+    public void refresh(){
+        table.refresh();
     }
 
     public void reloadConfig(){
