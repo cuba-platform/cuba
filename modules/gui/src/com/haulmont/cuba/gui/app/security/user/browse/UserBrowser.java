@@ -10,26 +10,23 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
-import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.app.UserManagementService;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 import java.util.*;
 
 /**
@@ -48,6 +45,12 @@ public class UserBrowser extends AbstractLookup {
     protected RemoveAction removeAction;
 
     @Inject
+    protected Button userTableCopyButton;
+
+    @Inject
+    protected Button changePasswordButton;
+
+    @Inject
     protected UserSession userSession;
 
     @Inject
@@ -64,8 +67,15 @@ public class UserBrowser extends AbstractLookup {
         usersDs.addListener(new DsListenerAdapter<User>() {
             @Override
             public void itemChanged(Datasource<User> ds, User prevItem, User item) {
+                if (usersTable.getSelected().size() > 1){
+                    userTableCopyButton.setEnabled(false);
+                    changePasswordButton.setEnabled(false);
+                } else {
+                    userTableCopyButton.setEnabled(true);
+                    changePasswordButton.setEnabled(true);
+                }
                 if (removeAction != null)
-                    removeAction.setEnabled(!(userSession.getUser().equals(item) ||
+                    removeAction.setEnabled(!(usersTable.getSelected().contains(userSession.getUser()) ||
                             userSession.getCurrentOrSubstitutedUser().equals(item)));
             }
         });

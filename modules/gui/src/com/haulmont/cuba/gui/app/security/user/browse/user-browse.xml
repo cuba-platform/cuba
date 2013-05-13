@@ -53,10 +53,10 @@
             <buttonsPanel>
                 <button action="usersTable.create"/>
                 <button action="usersTable.edit"/>
-                <button action="usersTable.copy"/>
+                <button id="userTableCopyButton" action="usersTable.copy"/>
                 <button action="usersTable.remove"/>
                 <button action="usersTable.copySettings"/>
-                <button action="usersTable.changePassw"/>
+                <button id="changePasswordButton" action="usersTable.changePassw"/>
                 <button action="usersTable.changePasswAtLogon"/>
                 <button action="usersTable.excel"/>
             </buttonsPanel>
