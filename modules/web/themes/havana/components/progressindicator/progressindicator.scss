@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-progressindicator($primaryStyleName: v-progressindicator) {
+  .#{$primaryStyleName} {
+    background: #dfe2e4 url(images/progress-bg.gif);
+    width: 150px;
+  }
+
+  .#{$primaryStyleName}-wrapper {
+    border: 1px solid #b6bbbc;
+    height: 9px;
+  }
+
+  .#{$primaryStyleName}-disabled {
+    background: #dfe2e4 url(images/progress-disabled.gif);
+    height: 9px;
+    border: 1px solid #b6bbbc;
+  }
+
+  .#{$primaryStyleName}-indicator {
+    background: #f7f9f9 url(images/progress-line.png);
+    height: 9px;
+  }
+
+  div.#{$primaryStyleName}-indeterminate,
+  div.#{$primaryStyleName}-indeterminate-disabled {
+    background: #dfe2e4 url(images/progress-bg.gif);
+    height: 9px;
+
+    .#{$primaryStyleName}-indicator {
+      background: #f7f9f9 url(images/progress-line.png);
+      height: 9px;
+    }
+  }
+}
