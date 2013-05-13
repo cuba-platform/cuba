@@ -12,6 +12,8 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
@@ -24,6 +26,8 @@ import java.util.UUID;
  */
 public abstract class ControllerUtils {
     private static final String DISPATCHER = "dispatch";
+
+    private static final Log log = LogFactory.getLog(ControllerUtils.class);
 
     public static String getLocationWithoutParams() {
         URI location = AppUI.getCurrent().getPage().getLocation();
@@ -92,6 +96,7 @@ public abstract class ControllerUtils {
                     return null;
                 }
             } catch (Exception e) {
+                log.warn(e);
                 return null;
             }
         } else {
