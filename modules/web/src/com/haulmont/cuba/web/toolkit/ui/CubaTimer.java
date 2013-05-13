@@ -83,11 +83,8 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
             for (TimerListener listener : new ArrayList<>(listeners)) {
                 listener.onTimer(this);
             }
+        } finally {
             getRpcProxy(CubaTimerClientRpc.class).requestCompleted();
-        } catch (Exception e) {
-            stop();
-
-            throw e;
         }
     }
 

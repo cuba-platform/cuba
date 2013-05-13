@@ -103,14 +103,20 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
+        logger.log("State change for " + getState().timerId);
+
         if (running && getState().repeating) {
             if (!scheduled && getState().listeners) {
                 jsTimer.cancel();
                 jsTimer.schedule(getState().delay);
                 this.scheduled = true;
+
+                logger.log("Schedule " + getState().timerId);
             } else if (scheduled && !getState().listeners) {
                 jsTimer.cancel();
                 this.scheduled = false;
+
+                logger.log("Stop " + getState().timerId);
             }
         }
     }

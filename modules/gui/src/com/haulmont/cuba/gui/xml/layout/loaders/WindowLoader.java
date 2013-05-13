@@ -122,20 +122,20 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
                 @Override
                 public void onTimer(Timer timer) {
-                    if (onTimer.startsWith("invoke:")) {
-                        Window window = timer.getFrame();
-                        try {
-                            if (timerMethod == null) {
-                                String methodName = onTimer.substring("invoke:".length()).trim();
-                                timerMethod = window.getClass().getMethod(methodName, Timer.class);
+                    Window window = timer.getFrame();
+                    try {
+                        if (timerMethod == null) {
+                            String methodName = onTimer;
+                            // legacy syntax support
+                            if (onTimer.startsWith("invoke:")) {
+                                methodName = onTimer.substring("invoke:".length()).trim();
                             }
-
-                            timerMethod.invoke(window, timer);
-                        } catch (Throwable e) {
-                            throw new RuntimeException("Unable to invoke onTimer", e);
+                            timerMethod = window.getClass().getMethod(methodName, Timer.class);
                         }
-                    } else {
-                        throw new UnsupportedOperationException("Unsupported onTimer format: " + onTimer);
+
+                        timerMethod.invoke(window, timer);
+                    } catch (Throwable e) {
+                        throw new RuntimeException("Unable to invoke onTimer", e);
                     }
                 }
 
