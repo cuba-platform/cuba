@@ -61,7 +61,7 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
     }
 
     @Override
-    public void startTimer() {
+    public void start() {
         timer = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -73,7 +73,7 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
     }
 
     @Override
-    public void stopTimer() {
+    public void stop() {
         if (timer == null)
             return;
 

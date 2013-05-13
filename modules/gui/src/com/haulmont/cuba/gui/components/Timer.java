@@ -17,8 +17,8 @@ public interface Timer extends Component.HasXmlDescriptor, Component.BelongToFra
     int getDelay();
     void setDelay(int delay);
 
-    void startTimer();
-    void stopTimer();
+    void start();
+    void stop();
 
     void addTimerListener(TimerListener listener);
     void removeTimerListener(TimerListener listener);

@@ -11,6 +11,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
@@ -23,7 +25,13 @@ import com.vaadin.shared.ui.Connect;
 @Connect(CubaTimer.class)
 public class CubaTimerConnector extends AbstractComponentConnector {
 
+    protected static int DEFFERED_DELAY_MS = 1000;
+
+    protected static boolean hasActiveRequest = false;
+
     protected CubaTimerServerRpc rpc = RpcProxy.create(CubaTimerServerRpc.class, this);
+
+    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTimer");
 
     protected boolean running = false;
     protected boolean scheduled = false;
@@ -35,11 +43,16 @@ public class CubaTimerConnector extends AbstractComponentConnector {
             @Override
             public void setRunning(boolean running) {
                 CubaTimerConnector.this.setRunning(running);
+
+                logger.log("Set running for timer " + getState().timerId + " to " + Boolean.toString(running));
             }
 
             @Override
             public void requestCompleted() {
                 CubaTimerConnector.this.requestCompleted();
+
+                hasActiveRequest = false;
+                logger.log("Request completed for timer " + getState().timerId);
             }
         });
     }
@@ -58,16 +71,23 @@ public class CubaTimerConnector extends AbstractComponentConnector {
     }
 
     public void onTimer() {
-        rpc.onTimer();
-    }
+        logger.log("Timer tick " + getState().timerId);
 
-    @Override
-    public void onUnregister() {
-        super.onUnregister();
+        if (running && getState().listeners) {
+            if (!hasActiveRequest) {
+                hasActiveRequest = true;
 
-        running = false;
-        scheduled = false;
-        jsTimer.cancel();
+                rpc.onTimer();
+
+                logger.log("Fire timer " + getState().timerId);
+            } else {
+                logger.log("Has active request on server side, schedule deffered timer " + getState().timerId);
+
+                jsTimer.schedule(DEFFERED_DELAY_MS);
+            }
+        } else {
+            scheduled = false;
+        }
     }
 
     public void requestCompleted() {

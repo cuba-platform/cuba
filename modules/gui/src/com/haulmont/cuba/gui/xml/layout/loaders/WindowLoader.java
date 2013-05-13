@@ -59,7 +59,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         return window;
     }
 
-    protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+    protected Window createComponent(ComponentsFactory factory) {
         return factory.createComponent(Window.NAME);
     }
 
@@ -69,7 +69,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
 
         @Override
-        protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+        protected Window createComponent(ComponentsFactory factory) {
             return factory.createComponent(Window.Editor.NAME);
         }
     }
@@ -80,12 +80,12 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
 
         @Override
-        protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+        protected Window createComponent(ComponentsFactory factory) {
             return factory.createComponent(Window.Lookup.NAME);
         }
     }
 
-    private void loadTimers(ComponentsFactory factory, Window component, Element element) throws InstantiationException {
+    private void loadTimers(ComponentsFactory factory, Window component, Element element) {
         Element timersElement = element.element("timers");
         if (timersElement != null) {
             final List timers = timersElement.elements("timer");
@@ -95,56 +95,58 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
     }
 
-    private void loadTimer(ComponentsFactory factory, final Window component, Element element) throws InstantiationException {
+    private void loadTimer(ComponentsFactory factory, final Window component, Element element) {
+
+        final Timer timer = factory.createTimer();
+        timer.setXmlDescriptor(element);
+        timer.setId(element.attributeValue("id"));
+
         try {
-            final Timer timer = factory.createTimer();
-            timer.setXmlDescriptor(element);
-            timer.setId(element.attributeValue("id"));
             String delay = element.attributeValue("delay");
             if (StringUtils.isEmpty(delay)) {
-                throw new InstantiationException("Timer delay cannot be empty");
+                throw new IllegalStateException("Timer delay cannot be empty");
             }
             timer.setDelay(Integer.parseInt(delay));
-            timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
-
-            addAssignTimerFrameTask(timer);
-
-            final String onTimer = element.attributeValue("onTimer");
-            if (!StringUtils.isEmpty(onTimer)) {
-                timer.addTimerListener(new Timer.TimerListener() {
-
-                    private Method timerMethod;
-
-                    @Override
-                    public void onTimer(Timer timer) {
-                        if (onTimer.startsWith("invoke:")) {
-                            Window window = timer.getFrame();
-                            try {
-                                if (timerMethod == null) {
-                                    String methodName = onTimer.substring("invoke:".length()).trim();
-                                    timerMethod = window.getClass().getMethod(methodName, Timer.class);
-                                }
-
-                                timerMethod.invoke(window, timer);
-                            } catch (Throwable e) {
-                                throw new RuntimeException("Unable to invoke onTimer", e);
-                            }
-                        } else {
-                            throw new UnsupportedOperationException("Unsupported onTimer format: " + onTimer);
-                        }
-                    }
-
-                    @Override
-                    public void onStopTimer(Timer timer) {
-                        //do nothing
-                    }
-                });
-            }
-
-            component.addTimer(timer);
         } catch (NumberFormatException e) {
-            throw new InstantiationException("Timer delay must be numeric");
+            throw new IllegalStateException("Timer delay must be numeric");
         }
+
+        timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
+
+        addAssignTimerFrameTask(timer);
+
+        final String onTimer = element.attributeValue("onTimer");
+        if (!StringUtils.isEmpty(onTimer)) {
+            timer.addTimerListener(new Timer.TimerListener() {
+                private Method timerMethod;
+
+                @Override
+                public void onTimer(Timer timer) {
+                    if (onTimer.startsWith("invoke:")) {
+                        Window window = timer.getFrame();
+                        try {
+                            if (timerMethod == null) {
+                                String methodName = onTimer.substring("invoke:".length()).trim();
+                                timerMethod = window.getClass().getMethod(methodName, Timer.class);
+                            }
+
+                            timerMethod.invoke(window, timer);
+                        } catch (Throwable e) {
+                            throw new RuntimeException("Unable to invoke onTimer", e);
+                        }
+                    } else {
+                        throw new UnsupportedOperationException("Unsupported onTimer format: " + onTimer);
+                    }
+                }
+
+                @Override
+                public void onStopTimer(Timer timer) {
+                    //do nothing
+                }
+            });
+        }
+
+        component.addTimer(timer);
     }
 
     protected void loadFocusedComponent(Window window, Element element) {

@@ -181,6 +181,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 //        addComponent(scriptHost);
 
         workerTimer = new CubaTimer();
+        workerTimer.setId("BackgroundWorkerTimer");
         rootLayout.addComponent(workerTimer);
 
         workerTimer.setRepeating(true);

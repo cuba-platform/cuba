@@ -24,12 +24,12 @@ public class WebTimer extends WebAbstractComponent<CubaTimer> implements com.hau
     }
 
     @Override
-    public void startTimer() {
+    public void start() {
         component.start();
     }
 
     @Override
-    public void stopTimer() {
+    public void stop() {
         component.stop();
     }
 
@@ -64,6 +64,13 @@ public class WebTimer extends WebAbstractComponent<CubaTimer> implements com.hau
     public void removeTimerListener(TimerListener listener) {
         CubaTimer.TimerListener componentListener = listeners.remove(listener);
         component.removeTimerListener(componentListener);
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        component.setTimerId(id);
     }
 
     protected class TimerListenerWrapper implements CubaTimer.TimerListener {

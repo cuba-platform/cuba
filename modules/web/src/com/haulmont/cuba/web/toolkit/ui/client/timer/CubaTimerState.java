@@ -19,4 +19,6 @@ public class CubaTimerState extends AbstractComponentState {
     public int delay = -1;
 
     public boolean listeners = false;
+
+    public String timerId = "";
 }

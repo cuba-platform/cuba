@@ -92,23 +92,27 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
     }
 
     @Override
-    public void detach() {
-        super.detach();
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        getState().listeners = listeners.size() > 0;
+    }
+
+    public void setTimerId(String id) {
+        getState().timerId = id;
     }
 
     public void addTimerListener(TimerListener listener) {
         if (!listeners.contains(listener)) {
-            if (listeners.size() == 0) {
-                getState().listeners = true;
-            }
             listeners.add(listener);
+            markAsDirty();
         }
     }
 
     public void removeTimerListener(TimerListener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
-            getState().listeners = listeners.size() > 0;
+            markAsDirty();
         }
     }
 

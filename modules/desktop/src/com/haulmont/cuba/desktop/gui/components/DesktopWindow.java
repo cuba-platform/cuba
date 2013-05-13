@@ -262,7 +262,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     public void addTimer(Timer timer) {
         if (timer instanceof DesktopTimer) {
             timers.add(timer);
-            timer.startTimer();
+            timer.start();
         }
     }
 
@@ -557,13 +557,17 @@ public class DesktopWindow implements Window, Component.Disposable,
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
-            return (T) allComponents.get(id);
+            T component = (T) allComponents.get(id);
+            if (component != null)
+                return component;
+            else
+                return (T) getTimer(id);
         } else {
             Component frame = allComponents.get(elements[0]);
             if (frame != null && frame instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return (T) ((Container) frame).getComponent(subPath);
+                return ((Container) frame).getComponent(subPath);
             } else
                 return null;
         }

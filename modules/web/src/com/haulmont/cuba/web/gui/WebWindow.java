@@ -24,10 +24,14 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
@@ -35,6 +39,9 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -45,7 +52,8 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow {
+public class WebWindow implements Window, Component.Wrapper,
+                                  Component.HasXmlDescriptor, WrappedWindow, Component.Disposable {
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -55,6 +63,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new HashSet<>();
     protected Map<String, Component> allComponents = new HashMap<>();
+
+    protected List<Timer> timers = new LinkedList<>();
 
     protected String messagePack;
 
@@ -85,6 +95,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     protected Configuration configuration = AppBeans.get(Configuration.class);
     protected Messages messages = AppBeans.get(Messages.class);
+
+    protected boolean disposed = false;
 
     public WebWindow() {
         component = createLayout();
@@ -425,16 +437,29 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     }
 
     @Override
-    public void addTimer(Timer timer) {    
-        // vaadin7
-//        AppUI.getInstance().addTimer((WebTimer) timer, this);
+    public void addTimer(Timer timer) {
+        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+        appWindow.addTimer((CubaTimer) WebComponentsHelper.unwrap(timer));
+
+        timers.add(timer);
     }
 
     @Override
-    public Timer getTimer(String id) {
-        return null;
-        // vaadin7
-//        return (Timer) AppUI.getInstance().getTimers().getTimer(id);
+    public Timer getTimer(final String id) {
+        return (Timer) CollectionUtils.find(timers, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return StringUtils.equals(id, ((Timer) object).getId());
+            }
+        });
+    }
+
+    public void stopTimers() {
+        AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+        for (Timer timer : timers) {
+            timer.stop();
+            appWindow.removeTimer((CubaTimer) WebComponentsHelper.unwrap(timer));
+        }
     }
 
     @Override
@@ -547,9 +572,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public int getHeightUnits() {
-        return 0;
-//        vaadin7
-//        return component.getHeightUnits();
+        return WebAbstractComponent.UNIT_SYMBOLS.indexOf(component.getHeightUnits());
     }
 
     @Override
@@ -564,9 +587,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public int getWidthUnits() {
-        return 0;
-//        vaadin7
-//        return component.getWidthUnits();
+        return WebAbstractComponent.UNIT_SYMBOLS.indexOf(component.getWidthUnits());
     }
 
     @Override
@@ -584,7 +605,11 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
-            return (T) allComponents.get(id);
+            T component = (T) allComponents.get(id);
+            if (component != null)
+                return component;
+            else
+                return (T) getTimer(id);
         } else {
             Component frame = allComponents.get(elements[0]);
             if (frame != null && frame instanceof Container) {
@@ -773,6 +798,18 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     @Override
     public Window getWrapper() {
         return delegate.getWrapper();
+    }
+
+    @Override
+    public void dispose() {
+        stopTimers();
+
+        disposed = true;
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
     }
 
     public static class Editor extends WebWindow implements Window.Editor {

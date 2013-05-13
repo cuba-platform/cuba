@@ -10,13 +10,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.WrappedWindow;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
@@ -26,7 +21,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -744,7 +738,9 @@ public class WebWindowManager extends WindowManager {
     public void closeAll() {
         List<Map.Entry<Window, WindowOpenMode>> entries = new ArrayList<>(getWindowOpenMode().entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
-            Window window = entries.get(i).getKey();
+            WebWindow window = (WebWindow) entries.get(i).getKey();
+            window.stopTimers();
+
             if (window instanceof WebWindow.Editor) {
                 ((WebWindow.Editor)window).releaseLock();
             }
@@ -768,6 +764,9 @@ public class WebWindowManager extends WindowManager {
         if (!disableSavingScreenHistory) {
             screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());
         }
+
+        WebWindow webWindow = (WebWindow) window;
+        webWindow.stopTimers();
 
         switch (openMode.openType) {
             case DIALOG: {

@@ -23,7 +23,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     implements
         Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
 
-    protected static final List<Sizeable.Unit> UNIT_SYMBOLS = Arrays.asList(
+    public static final List<Sizeable.Unit> UNIT_SYMBOLS = Arrays.asList(
             Sizeable.Unit.PIXELS, Sizeable.Unit.POINTS, Sizeable.Unit.PICAS,
             Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
             Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE);
