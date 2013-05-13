@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.vaadin.server.Page;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,7 +61,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
         @Override
         public void actionPerform(Component component) {
-            String url = Page.getCurrent().getLocation().toString() + "?restartApplication";
+            String url = ControllerUtils.getLocationWithoutParams() + "?restartApplication";
 
             Page.getCurrent().open(url, "_self");
         }

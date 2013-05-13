@@ -25,16 +25,22 @@ import java.util.UUID;
 public abstract class ControllerUtils {
     private static final String DISPATCHER = "dispatch";
 
-    public static String getWebControllerURL(String mapping) {
-        if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
-
+    public static String getLocationWithoutParams() {
         URI location = AppUI.getCurrent().getPage().getLocation();
-        String baseUrl;
         try {
-            baseUrl = location.toURL().toExternalForm();
+            StringBuilder baseUrl = new StringBuilder(location.toURL().toExternalForm());
+            if (location.getQuery() != null) {
+                baseUrl.delete(baseUrl.indexOf(location.getQuery()) - 1, baseUrl.length());
+            }
+            return baseUrl.toString();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String getWebControllerURL(String mapping) {
+        if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
+        String baseUrl = getLocationWithoutParams();
 
         StringBuilder url = new StringBuilder(baseUrl).append(getDispatcher());
         if (!mapping.startsWith("/")) {
