@@ -79,25 +79,24 @@ public abstract class ControllerUtils {
     }
 
     public static UserSession getUserSession(HttpServletRequest req) {
-        UserSession userSession = (UserSession) req.getSession().getAttribute(App.USER_SESSION_ATTR);
-        if (userSession != null) {
-            return userSession;
-        } else {
-            String s = req.getParameter("s");
-            if (s != null) {
-                try {
-                    UUID id = UUID.fromString(s);
-                    LoginService service = AppBeans.get(LoginService.class);
-                    UserSession session = service.getSession(id);
-                    if (session != null) {
-                        req.getSession().setAttribute(App.USER_SESSION_ATTR, session);
-                        return session;
-                    }
-                } catch (Exception e) {
+        String s = req.getParameter("s");
+        if (s != null) {
+            try {
+                UUID id = UUID.fromString(s);
+                LoginService service = AppBeans.get(LoginService.class);
+                UserSession session = service.getSession(id);
+                if (session != null) {
+                    req.getSession().setAttribute(App.USER_SESSION_ATTR, session);
+                    return session;
+                } else {
                     return null;
                 }
+            } catch (Exception e) {
+                return null;
             }
-            return null;
+        } else {
+            UserSession userSession = (UserSession) req.getSession().getAttribute(App.USER_SESSION_ATTR);
+            return userSession;
         }
     }
 }
