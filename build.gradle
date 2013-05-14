@@ -264,10 +264,6 @@ configure(guiModule) {
 }
 
 configure(webModule) {
-    configurations {
-        themes
-    }
-
     dependencies {
         compile(sharedLibModule)
         compile(globalModule)
@@ -287,8 +283,6 @@ configure(webModule) {
         runtime(group: 'com.haulmont.thirdparty', name: 'jcifs', version: '1.3.10')
 
         provided(servletApi)
-
-        themes(group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion)
     }
 
     def resourceBuildTimeStamp = new java.text.SimpleDateFormat('yyyy_MM_dd_HH_mm').format(new Date())
@@ -319,16 +313,16 @@ configure(webModule) {
     }
 
     task scssThemesZip(type: Zip) {
-        from file('themes')
+        from webModule.file('themes')
         exclude '**/.*'
 
-        baseName = 'cuba-themes'
         version = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
+        classifier = 'web-themes'
     }
 
     artifacts {
         archives webArchive
-        archives scssThemesZip
+        themes scssThemesZip
     }
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
