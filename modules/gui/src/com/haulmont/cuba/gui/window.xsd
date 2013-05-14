@@ -164,6 +164,8 @@
     <xs:attributeGroup name="hasSize">
         <xs:attribute name="width" type="xs:string" use="optional"/>
         <xs:attribute name="height" type="xs:string" use="optional"/>
+        <xs:attribute name="colspan" type="xs:integer" use="optional"/>
+        <xs:attribute name="rowspan" type="xs:integer" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasWidthProp">
@@ -432,6 +434,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasRequirements"/>
