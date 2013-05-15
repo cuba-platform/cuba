@@ -20,13 +20,13 @@ allprojects {
 buildscript {
 	def cubaPluginVersion = '4.1-SNAPSHOT'
 	def docPluginVersion = '1.2.0-SNAPSHOT'
-
+	
 	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
 	def DOC_PLUGIN_VERSION = 'docPluginVersion'
 
 	cubaPluginVersion = rootProject.hasProperty(CUBA_PLUGIN_VERSION) ? rootProject[CUBA_PLUGIN_VERSION] : cubaPluginVersion
-	docPluginVersion = rootProject.hasProperty(DOC_PLUGIN_VERSION) ? rootProject[DOC_PLUGIN_VERSION] : docPluginVersion
-
+	docPluginVersion = rootProject.hasProperty(DOC_PLUGIN_VERSION) ? rootProject[DOC_PLUGIN_VERSION] : docPluginVersion 
+		
     repositories {
         mavenLocal()
         maven {
@@ -69,7 +69,7 @@ def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.7.20121205
 def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
 def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
 
-configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
+configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
         webModule, desktopModule, uiTestModule, portalModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
@@ -98,8 +98,8 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'com.google.guava', name: 'guava', version: '13.0.1')
         compile(group: 'org.apache.openjpa', name: 'openjpa', version: '2.2.1')
         compile(group: 'net.sourceforge.serp', name: 'serp', version: '1.13.1')
-        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')
-        compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')
+        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')       
+        compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')       
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
         compile(group: 'org.springframework', name: 'spring-core', version: '3.1.3.RELEASE')
         compile(group: 'org.springframework', name: 'spring-beans', version: '3.1.3.RELEASE')
@@ -118,7 +118,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     artifacts {
         archives sourceJar
     }
-
+    
     String checkstyleConfigDir = '../../config/checkstyle'
     checkstyleConfigFileName = "$checkstyleConfigDir/checkstyle.xml"
     checkstyleProperties.checkstyleConfigDir = checkstyleConfigFile.parentFile // Required for suppressions.xml linking
@@ -337,17 +337,6 @@ configure(webModule) {
 }
 
 configure(webToolkitModule) {
-    apply(plugin: 'java')
-    apply(plugin: 'idea')
-    apply(plugin: 'maven')
-    apply(plugin: 'cuba')
-
-    idea {
-        project {
-            languageLevel = '1.6'
-        }
-    }
-
     configurations {
         widgetSetBuilding
     }
@@ -378,14 +367,8 @@ configure(webToolkitModule) {
         classifier = 'web'
     }
 
-    task sourceJar(type: Jar) {
-        from file('src')
-        classifier = 'sources'
-    }
-
     artifacts {
         archives webArchive
-        archives sourceJar
     }
 
     task deploy(dependsOn: buildWidgetSet) << {
@@ -663,7 +646,7 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 
 task buildDoc(type: Zip, description: 'Build documentation',
         dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml,buildSecurityPdf]) {
-    //dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
+		//dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
