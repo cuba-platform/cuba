@@ -54,6 +54,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
     protected List<Entity> lastCollectionChangeItems;
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
+    protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
     @Override
     public T getItemNN(K id) {
@@ -180,7 +181,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     protected Map<String, Object> getQueryParameters(Map<String, Object> params) {
-        final Map<String, Object> map = new HashMap<String, Object>();
+        final Map<String, Object> map = new HashMap<>();
         for (ParameterInfo info : queryParameters) {
             String name = info.getFlatName();
 
@@ -252,9 +253,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 }
                 case SESSION: {
                     Object value;
-                    UserSession us = UserSessionProvider.getUserSession();
-                    value = us.getAttribute(path);
-
+                    value = userSession.getAttribute(path);
                     if (value instanceof String && info.isCaseInsensitive()) {
                         value = makeCaseInsensitive((String) value);
                     }
@@ -336,7 +335,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     protected Map<String, Object> getTemplateParams(Map<String, Object> customParams) {
 
-        Map<String, Object> templateParams = new HashMap<String, Object>();
+        Map<String, Object> templateParams = new HashMap<>();
 
         String compPerfix = ParameterInfo.Type.COMPONENT.getPrefix() + "$";
         for (ParameterInfo info : queryParameters) {
@@ -359,7 +358,6 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             }
         }
 
-        UserSession userSession = UserSessionProvider.getUserSession();
         String sessionPrefix = ParameterInfo.Type.SESSION.getPrefix() + "$";
         templateParams.put(sessionPrefix + "userId", userSession.getCurrentOrSubstitutedUser().getId());
         templateParams.put(sessionPrefix + "userLogin", userSession.getCurrentOrSubstitutedUser().getLoginLowerCase());

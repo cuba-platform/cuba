@@ -10,7 +10,10 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -52,8 +55,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected LinkedMap data = new LinkedMap();
 
     private boolean inRefresh;
-
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -436,7 +437,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
      * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
      */
     protected void loadData(Map<String, Object> params) {
-        if (!userSessionSource.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ))
+        if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ))
             return;
 
         String tag = getLoggingTag("CDS");
@@ -543,12 +544,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void incrementQueryKey() {
-        queryKey = userSessionSource.getUserSession().getAttribute("_queryKey");
+        queryKey = userSession.getAttribute("_queryKey");
         if (queryKey == null)
             queryKey = 1;
         else
             queryKey++;
-        userSessionSource.getUserSession().setAttribute("_queryKey", queryKey);
+        userSession.setAttribute("_queryKey", queryKey);
     }
 
     @Override

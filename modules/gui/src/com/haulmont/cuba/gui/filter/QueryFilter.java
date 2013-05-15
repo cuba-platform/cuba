@@ -92,7 +92,7 @@ public class QueryFilter {
     }
 
     public String processQuery(String query, Map<String, Object> paramValues) {
-        Set<String> params = new HashSet<String>();
+        Set<String> params = new HashSet<>();
         for (Map.Entry<String, Object> entry : paramValues.entrySet()) {
             if (paramValueIsOk(entry.getValue()))
                 params.add(entry.getKey());

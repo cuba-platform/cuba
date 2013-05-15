@@ -7,12 +7,10 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TemplateHelper;
-import com.haulmont.cuba.gui.data.DataSupplier;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.log4j.Logger;
@@ -28,6 +26,8 @@ import java.util.Map;
  */
 public class CustomCollectionDatasource<T extends Entity<K>, K>
         extends CollectionDatasourceImpl<T, K> {
+
+    protected Scripting scripting = AppBeans.get(Scripting.class);
 
     @Override
     public void commit() {
@@ -45,7 +45,7 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
 
         final Map<String, Object> parameters = getQueryParameters(params);
 
-        Collection<T> entities = ScriptingProvider.evaluateGroovy(getGroovyScript(query, parameters), parameters);
+        Collection<T> entities = scripting.evaluateGroovy(getGroovyScript(query, parameters), parameters);
 
         for (T entity : entities) {
             data.put(entity.getId(), entity);
