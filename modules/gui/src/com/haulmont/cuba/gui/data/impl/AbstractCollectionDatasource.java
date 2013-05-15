@@ -354,7 +354,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (dsContext != null) {
             WindowContext windowContext = dsContext.getWindowContext();
             if (windowContext != null) {
-                templateParams.putAll(windowContext.getParams());
+                String paramPerfix = ParameterInfo.Type.PARAM.getPrefix() + "$";
+                for (Map.Entry<String, Object> entry : windowContext.getParams().entrySet()) {
+                    templateParams.put(paramPerfix + entry.getKey(), entry.getValue());
+                }
             }
         }
 
