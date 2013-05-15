@@ -10,12 +10,5 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-//import com.haulmont.cuba.toolkit.gwt.client.ui.VVerticalActionsLayout;
-//import com.vaadin.ui.ClientWidget;
-
-import com.vaadin.ui.VerticalLayout;
-
-@SuppressWarnings("serial")
-//@ClientWidget(VVerticalActionsLayout.class)
-public class VerticalActionsLayout extends VerticalLayout {
+public class CubaVerticalActionsLayout extends CubaOrderedActionsLayout {
 }

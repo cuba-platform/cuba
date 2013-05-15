@@ -15,7 +15,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.ui.VScrollTable;
 import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.HashSet;
@@ -25,7 +24,7 @@ import java.util.Set;
  * @author artamonov
  * @version $Id$
  */
-public class CubaGroupTableWidget extends VScrollTable {
+public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     public static final String CLASSNAME = "cuba-grouptable";
     public static final String GROUP_DIVIDER_COLUMN_KEY = "-1";

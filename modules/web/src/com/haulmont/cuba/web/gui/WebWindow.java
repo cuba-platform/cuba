@@ -32,7 +32,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
-import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
@@ -124,7 +124,7 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     protected com.vaadin.ui.Component createLayout() {
-        VerticalActionsLayout layout = new VerticalActionsLayout();
+        CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
         layout.setSizeFull();
         return layout;
     }
@@ -1044,7 +1044,7 @@ public class WebWindow implements Window, Component.Wrapper,
 
         @Override
         protected com.vaadin.ui.Component createLayout() {
-            final VerticalActionsLayout form = new VerticalActionsLayout();
+            final CubaVerticalActionsLayout form = new CubaVerticalActionsLayout();
 
             container = new VerticalLayout();
 

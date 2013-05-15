@@ -10,7 +10,6 @@ import com.google.gwt.core.client.GWT;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
-import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -18,7 +17,7 @@ import com.vaadin.shared.ui.Connect;
  * @version $Id$
  */
 @Connect(value = CubaGroupTable.class, loadStyle = Connect.LoadStyle.LAZY)
-public class CubaGroupTableConnector extends TableConnector {
+public class CubaGroupTableConnector extends CubaScrollTableConnector {
 
     @Override
     public CubaGroupTableWidget getWidget() {

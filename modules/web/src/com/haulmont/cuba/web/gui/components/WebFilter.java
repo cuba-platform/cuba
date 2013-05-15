@@ -46,8 +46,8 @@ import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
-import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.converters.SimpleIntegerToStringConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -74,7 +74,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
-public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> implements Filter {
+public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> implements Filter {
 
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
@@ -134,7 +134,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
-        component = new VerticalActionsLayout();
+        component = new CubaVerticalActionsLayout();
 
         messages = AppBeans.get(Messages.class);
         userSessionSource = AppBeans.get(UserSessionSource.class);

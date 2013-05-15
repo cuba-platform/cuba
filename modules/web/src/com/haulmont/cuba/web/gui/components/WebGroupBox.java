@@ -9,12 +9,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
-import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.OrderedActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
-import com.vaadin.ui.*;
+import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Layout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
@@ -44,7 +44,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
         component = new CubaGroupBox();
         component.setExpandChangeHandler(this);
 
-        VerticalActionsLayout container = new VerticalActionsLayout();
+        CubaVerticalActionsLayout container = new CubaVerticalActionsLayout();
         initContainer(container);
     }
 
@@ -71,16 +71,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
     @Override
     public void add(Component childComponent) {
         AbstractOrderedLayout newContent = null;
-        if (orientation == Orientation.VERTICAL && !(component.getContent() instanceof VerticalActionsLayout)) {
-            newContent = new VerticalActionsLayout();
-        } else if (orientation == Orientation.HORIZONTAL && !(component.getContent() instanceof HorizontalActionsLayout))
-            newContent = new HorizontalActionsLayout();
+        if (orientation == Orientation.VERTICAL && !(component.getContent() instanceof CubaVerticalActionsLayout)) {
+            newContent = new CubaVerticalActionsLayout();
+        } else if (orientation == Orientation.HORIZONTAL && !(component.getContent() instanceof CubaHorizontalActionsLayout))
+            newContent = new CubaHorizontalActionsLayout();
 
         if (newContent != null) {
             initContainer(newContent);
 
-            newContent.setMargin(((OrderedActionsLayout) component.getContent()).getMargin());
-            newContent.setSpacing(((OrderedActionsLayout) component.getContent()).isSpacing());
+            newContent.setMargin(((CubaOrderedActionsLayout) component.getContent()).getMargin());
+            newContent.setSpacing(((CubaOrderedActionsLayout) component.getContent()).isSpacing());
         }
 
         getComponentContent().addComponent(WebComponentsHelper.getComposition(childComponent));

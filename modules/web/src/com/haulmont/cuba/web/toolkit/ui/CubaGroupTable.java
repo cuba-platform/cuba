@@ -24,7 +24,7 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class CubaGroupTable extends com.vaadin.ui.Table implements GroupTableContainer {
+public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     private KeyMapper groupIdMap = new KeyMapper();
 

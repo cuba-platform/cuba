@@ -9,9 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.server.Sizeable;
 //import com.vaadin.terminal.gwt.client.ui.VVerticalLayout;
 //import com.vaadin.ui.ClientWidget;
@@ -20,7 +18,7 @@ import com.vaadin.server.Sizeable;
 //@ClientWidget(VVerticalLayout.class)
 public class WebVBoxLayout extends WebAbstractBox  /*implements BoxLayout*/ {
     public WebVBoxLayout() {
-        component = new VerticalActionsLayout();
+        component = new CubaVerticalActionsLayout();
         component.setWidth(100, Sizeable.Unit.PERCENTAGE);
     }
 }

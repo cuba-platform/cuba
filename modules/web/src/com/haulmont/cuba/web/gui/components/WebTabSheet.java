@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.vaadin.ui.VerticalLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -202,7 +202,7 @@ public class WebTabSheet
                                    ComponentLoader loader) {
 
         WebVBoxLayout tabContent = new WebVBoxLayout();
-        VerticalLayout vbox = tabContent.getComponent();
+        CubaVerticalActionsLayout vbox = tabContent.getComponent();
         vbox.setSizeFull();
         
         final Tab tab = new Tab(name, tabContent);
