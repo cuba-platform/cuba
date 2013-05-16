@@ -71,6 +71,9 @@ public class EntityRestore extends AbstractWindow {
                 return getMessage("actions.Refresh");
             }
         });
+        primaryFilter.setVisible(false);
+        tablePanel = getComponent("table-panel");
+        entities.setOptionsMap(getEntitiesLookupFieldOptions());
 
         Window layout = getComponent();
         layout.remove(primaryFilter);
@@ -146,7 +149,8 @@ public class EntityRestore extends AbstractWindow {
                 entitiesTable.setDatasource(entitiesDs);
 
                 filter = componentsFactory.createComponent(Filter.NAME);
-                filter.setId("primaryFilter");
+                String filterId = metaClass.getName().replace("$","");
+                filter.setId(filterId + "GenericFilter");
                 filter.setFrame(getFrame());
                 filter.setStyleName(primaryFilter.getStyleName());
                 filter.setXmlDescriptor(primaryFilter.getXmlDescriptor());
