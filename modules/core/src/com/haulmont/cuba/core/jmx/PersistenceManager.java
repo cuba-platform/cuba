@@ -73,6 +73,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
         return persistenceConfig.getDefaultLookupScreenThreshold();
     }
 
+    @Authenticated
     @Override
     public void setDefaultLookupScreenThreshold(int value) {
         persistenceConfig.setDefaultLookupScreenThreshold(value);
@@ -83,6 +84,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
         return persistenceConfig.getDefaultLazyCollectionThreshold();
     }
 
+    @Authenticated
     @Override
     public void setDefaultLazyCollectionThreshold(int value) {
         persistenceConfig.setDefaultLazyCollectionThreshold(value);
@@ -93,6 +95,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
         return persistenceConfig.getDefaultFetchUI();
     }
 
+    @Authenticated
     @Override
     public void setDefaultFetchUI(int value) {
         persistenceConfig.setDefaultFetchUI(value);
@@ -103,6 +106,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
         return persistenceConfig.getDefaultMaxFetchUI();
     }
 
+    @Authenticated
     @Override
     public void setDefaultMaxFetchUI(int value) {
         persistenceConfig.setDefaultMaxFetchUI(value);
