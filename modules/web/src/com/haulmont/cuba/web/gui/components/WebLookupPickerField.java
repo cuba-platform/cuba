@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
 
@@ -28,10 +30,24 @@ import java.util.Collection;
 public class WebLookupPickerField
         extends WebLookupField
         implements LookupPickerField {
+
     private WebPickerField pickerField;
 
     public WebLookupPickerField() {
         super();
+
+        // delegate error indication
+        this.componentErrorHandler = new ComponentErrorHandler() {
+            @Override
+            public boolean handleError(ErrorMessage message) {
+                if (message instanceof UserError)
+                    return false;
+
+                pickerField.component.setComponentError(message);
+                return true;
+            }
+        };
+
         final Component selectComponent = component;
         Picker picker = new Picker(this, component) {
             @Override

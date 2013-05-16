@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -28,11 +29,13 @@ public class WebLookupField
         extends WebAbstractOptionsField<FilterSelect>
         implements LookupField, Component.Wrapper {
 
-    private Object nullOption;
-    private FilterMode filterMode;
-    private NewOptionHandler newOptionHandler;
+    protected Object nullOption;
+    protected FilterMode filterMode;
+    protected NewOptionHandler newOptionHandler;
 
-    private Object missingValue = null;
+    protected Object missingValue = null;
+
+    protected ComponentErrorHandler componentErrorHandler;
 
     public WebLookupField() {
         createComponent();
@@ -67,6 +70,16 @@ public class WebLookupField
                     super.setPropertyDataSource(null);
                 else
                     super.setPropertyDataSource(new LookupPropertyAdapter(newDataSource));
+            }
+
+            @Override
+            public void setComponentError(ErrorMessage componentError) {
+                boolean handled = false;
+                if (componentErrorHandler != null)
+                    handled = componentErrorHandler.handleError(componentError);
+
+                if (!handled)
+                    super.setComponentError(componentError);
             }
         };
     }
@@ -208,7 +221,7 @@ public class WebLookupField
 //        component.disablePaging();
     }
 
-    private class LookupOptionsDsWrapper extends OptionsDsWrapper {
+    protected class LookupOptionsDsWrapper extends OptionsDsWrapper {
 
         public LookupOptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
             super(datasource, autoRefresh);
@@ -252,7 +265,7 @@ public class WebLookupField
         }
     }
 
-    private class LookupPropertyAdapter extends PropertyAdapter {
+    protected class LookupPropertyAdapter extends PropertyAdapter {
         public LookupPropertyAdapter(Property itemProperty) {
             super(itemProperty);
         }
@@ -277,5 +290,9 @@ public class WebLookupField
             }
             itemProperty.setValue(newValue);
         }
+    }
+
+    protected interface ComponentErrorHandler {
+        boolean handleError(ErrorMessage message);
     }
 }
