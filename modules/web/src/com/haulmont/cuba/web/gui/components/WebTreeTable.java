@@ -120,7 +120,7 @@ public class WebTreeTable
     public boolean isExpanded(Object itemId) {
         for (Object id : component.getItemIds()) {
             if (ObjectUtils.equals(id, itemId)) {
-                return component.isCollapsed(id);
+                return !component.isCollapsed(id);
             }
         }
         return false;
