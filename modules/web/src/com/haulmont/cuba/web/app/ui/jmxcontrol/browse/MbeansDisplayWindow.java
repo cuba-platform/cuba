@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
@@ -52,6 +53,8 @@ public class MbeansDisplayWindow extends AbstractWindow {
     @Inject
     protected JmxControlAPI jmxControlAPI;
 
+    protected JmxInstance localJmxInstance;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -88,7 +91,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
         mbeansTable.addAction(inspectAction);
         mbeansTable.setItemClickAction(inspectAction);
 
-        JmxInstance localJmxInstance = jmxControlAPI.getLocalInstance();
+        localJmxInstance = jmxControlAPI.getLocalInstance();
 
         jmxInstancesDs.refresh();
         jmxConnectionField.setValue(localJmxInstance);
@@ -96,8 +99,15 @@ public class MbeansDisplayWindow extends AbstractWindow {
         jmxConnectionField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                mbeanDs.setJmxInstance(jmxConnectionField.<JmxInstance>getValue());
-                mbeanDs.refresh();
+                JmxInstance jmxInstance = jmxConnectionField.getValue();
+                try {
+                    mbeanDs.setJmxInstance(jmxInstance);
+                    mbeanDs.refresh();
+                } catch (JmxControlException e) {
+                    showNotification(getMessage("unableToConnectToInterface"), NotificationType.WARNING);
+                    if (jmxInstance != localJmxInstance)
+                        jmxConnectionField.setValue(localJmxInstance);
+                }
             }
         });
 
