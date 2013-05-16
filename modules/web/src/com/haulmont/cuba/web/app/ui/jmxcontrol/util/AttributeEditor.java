@@ -33,6 +33,7 @@ public class AttributeEditor {
         if (AttributeHelper.isBoolean(type)) {
             checkBox = new WebCheckBox();
             checkBox.setFrame(frame);
+            checkBox.requestFocus();
             if (value != null)
                 checkBox.setValue(value);
 
@@ -43,6 +44,7 @@ public class AttributeEditor {
             textField = new WebTextField();
             textField.setWidth("500px");
             textField.setFrame(frame);
+            textField.requestFocus();
             if (value != null)
                 textField.setValue(value.toString());
         }

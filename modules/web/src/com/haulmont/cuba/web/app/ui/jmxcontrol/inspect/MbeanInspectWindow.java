@@ -83,7 +83,6 @@ public class MbeanInspectWindow extends AbstractEditor {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     Object item = w.getItem();
                     reloadAttribute((ManagedBeanAttribute) item);
-                    showNotification(getMessage("editAttribute.success"), NotificationType.HUMANIZED);
                 }
             }
         });
