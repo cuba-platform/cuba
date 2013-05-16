@@ -26,6 +26,7 @@ import com.vaadin.data.Item;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
@@ -78,24 +79,34 @@ public class WebTreeTable
 
     @Override
     public void expandAll() {
-//        component.expandAll();
+        for (Object id : component.getItemIds())
+            component.setCollapsed(id, false);
     }
 
     @Override
     public void expand(Object itemId) {
-//        component.setExpanded(itemId);
+        for (Object id : component.getItemIds()) {
+            if (ObjectUtils.equals(id, itemId)) {
+                component.setCollapsed(itemId, false);
+                break;
+            }
+        }
     }
 
     @Override
     public void collapseAll() {
-//        vaadin7
-//        component.collapseAll();
+        for (Object id : component.getItemIds())
+            component.setCollapsed(id, true);
     }
 
     @Override
     public void collapse(Object itemId) {
-//        vaadin7
-//        component.setCollapsed(itemId);
+        for (Object id : component.getItemIds()) {
+            if (ObjectUtils.equals(id, itemId)) {
+                component.setCollapsed(itemId, true);
+                break;
+            }
+        }
     }
 
     @Override
@@ -107,8 +118,11 @@ public class WebTreeTable
 
     @Override
     public boolean isExpanded(Object itemId) {
-//        vaadin7
-//        return component.isExpanded(itemId);
+        for (Object id : component.getItemIds()) {
+            if (ObjectUtils.equals(id, itemId)) {
+                return component.isCollapsed(id);
+            }
+        }
         return false;
     }
 
