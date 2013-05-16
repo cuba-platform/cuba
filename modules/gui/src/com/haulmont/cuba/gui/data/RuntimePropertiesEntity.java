@@ -171,7 +171,7 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
                     break;
                 case ENUMERATION:
                     if (value != null)
-                        attrValue.setStringValue(((SetValueEntity) value).getValue());
+                        attrValue.setStringValue(StringUtils.trimToNull(((SetValueEntity) value).getValue()));
                     else attrValue.setStringValue(null);
                     break;
                 case ENTITY:

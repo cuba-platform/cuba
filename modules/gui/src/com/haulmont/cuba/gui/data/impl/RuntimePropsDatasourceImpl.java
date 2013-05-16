@@ -107,7 +107,7 @@ public class RuntimePropsDatasourceImpl
                 attrValue.setCategoryAttribute(attribute);
                 attrValue.setEntityId(entity.getId());
                 if (PersistenceHelper.isNew(entity) || categoryChanged) {
-                    attrValue.setStringValue(attribute.getDefaultString());
+                    attrValue.setStringValue(StringUtils.trimToNull(attribute.getDefaultString()));
                     attrValue.setIntValue(attribute.getDefaultInt());
                     attrValue.setDoubleValue(attribute.getDefaultDouble());
                     attrValue.setBooleanValue(attribute.getDefaultBoolean());

@@ -456,7 +456,10 @@ public class Param extends AbstractParam<Component> {
         String enumerationString = categoryAttribute.getEnumeration();
         String[] array = StringUtils.split(enumerationString, ',');
         for (String s : array) {
-            runtimeEnum.add(s);
+            String trimmedValue = StringUtils.trimToNull(s);
+            if (trimmedValue != null) {
+                runtimeEnum.add(trimmedValue);
+            }
         }
 
         if (inExpr) {
