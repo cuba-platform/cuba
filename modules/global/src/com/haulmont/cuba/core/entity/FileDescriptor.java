@@ -93,7 +93,7 @@ public class FileDescriptor extends StandardEntity {
         return new StrBuilder()
                 .append(id).append(",")
                 .append(extension).append(",")
-                .append(new SimpleDateFormat(DATE_FMT).format(createDate))
+                .append(createDate.getTime())
                 .toString();
     }
 
@@ -104,11 +104,7 @@ public class FileDescriptor extends StandardEntity {
         FileDescriptor fd = new FileDescriptor();
         fd.setId(UUID.fromString(parts[0]));
         fd.setExtension(parts[1]);
-        try {
-            fd.setCreateDate(new SimpleDateFormat(DATE_FMT).parse(parts[2]));
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid FileDescriptor format", e);
-        }
+        fd.setCreateDate(new Date(Long.parseLong(parts[2])));
         return fd;
     }
 }
