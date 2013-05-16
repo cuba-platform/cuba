@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
@@ -9,8 +15,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * User: Nikolay Gorodnov
- * Date: 22.06.2009
+ * @author gorodnov
+ * @version $Id$
  */
 public class EmbeddedLoader extends ComponentLoader {
 
@@ -22,6 +28,7 @@ public class EmbeddedLoader extends ComponentLoader {
         super(context);
     }
 
+    @Override
     public Component loadComponent(
             ComponentsFactory factory,
             Element element,
@@ -36,14 +43,14 @@ public class EmbeddedLoader extends ComponentLoader {
                     component.setType(Embedded.Type.BROWSER);
                     component.setSource(new URL(src));
                 } catch (MalformedURLException e) {
-                    throw new InstantiationException("Unable to instantiate component");
+                    throw new IllegalStateException("Unable to instantiate component");
                 }
             } else if (srcAttr.startsWith(FILE_PREFIX + "://")) {
                 String src = srcAttr.substring(srcAttr.indexOf("//") + 2);
                 component.setType(Embedded.Type.OBJECT);
                 component.setSource(src);
             } else {
-                throw new InstantiationException("Illegal src attribute value. Expect 'url:' or 'file:' prefix");
+                throw new IllegalStateException("Illegal src attribute value. Expect 'url:' or 'file:' prefix");
             }
         }
 

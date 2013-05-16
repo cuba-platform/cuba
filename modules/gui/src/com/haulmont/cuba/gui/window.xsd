@@ -253,10 +253,6 @@
         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
     </xs:attributeGroup>
 
-    <xs:attributeGroup name="hasNullName">
-        <xs:attribute name="nullName" type="xs:string" use="optional"/>
-    </xs:attributeGroup>
-
     <xs:attributeGroup name="isTableComponent">
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
         <xs:attribute name="margin" type="xs:string" use="optional"/>
@@ -543,10 +539,10 @@
             <xs:extension base="baseFieldComponent">
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
-                <xs:attributeGroup ref="hasNullName"/>
                 <xs:attributeGroup ref="hasAlign"/>
 
                 <xs:attribute name="filterMode" type="filterMode" use="optional"/>
+                <xs:attribute name="nullName" type="xs:string" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

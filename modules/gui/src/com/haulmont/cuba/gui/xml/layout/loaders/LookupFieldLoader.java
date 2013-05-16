@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 03.02.2009 11:47:37
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -17,13 +13,19 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class LookupFieldLoader extends AbstractFieldLoader {
+
     public LookupFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws IllegalAccessException, InstantiationException {
         final LookupField component = (LookupField) super.loadComponent(factory, element, parent);
 
         String captionProperty = element.attributeValue("captionProperty");
@@ -33,7 +35,7 @@ public class LookupFieldLoader extends AbstractFieldLoader {
         }
 
         String nullName = element.attributeValue("nullName");
-        if (!StringUtils.isEmpty(captionProperty)) {
+        if (!StringUtils.isEmpty(nullName)) {
             nullName = loadResourceString(nullName);
             component.setNullOption(nullName);
         }

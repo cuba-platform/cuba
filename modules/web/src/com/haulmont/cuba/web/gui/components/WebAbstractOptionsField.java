@@ -62,15 +62,18 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         setRequired(metaProperty.isMandatory());
 
         if (metaProperty.getRange().isEnum()) {
-            final Enumeration enumeration = metaProperty.getRange().asEnumeration();
-            final Class<Enum> javaClass = enumeration.getJavaClass();
+            Enumeration enumeration = metaProperty.getRange().asEnumeration();
+            List options = Arrays.asList(enumeration.getJavaClass().getEnumConstants());
+            setComponentContainerDs(createEnumContainer(options));
 
-            optionsList = Arrays.asList(javaClass.getEnumConstants());
-            setComponentContainerDs(new EnumerationContainer(optionsList));
             setCaptionMode(CaptionMode.ITEM);
         }
         
         component.setPropertyDataSource(itemProperty);
+    }
+
+    protected EnumerationContainer createEnumContainer(List options) {
+        return new EnumerationContainer(options);
     }
 
     public void setOptionsMap(Map<String, Object> options) {
@@ -87,7 +90,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 opts.add(itemId);
             }
             this.optionsList = opts;
-            setComponentContainerDs(new EnumerationContainer(opts));
+
+            setComponentContainerDs(createEnumContainer(opts));
             setCaptionMode(CaptionMode.ITEM);
         } else {
             List opts = new ArrayList();
@@ -112,7 +116,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         if (metaProperty != null) {
             Object currentValue = component.getValue();
             if (metaProperty.getRange().isEnum()) {
-                setComponentContainerDs(new EnumerationContainer(optionsList));
+                setComponentContainerDs(createEnumContainer(optionsList));
                 setCaptionMode(CaptionMode.ITEM);
             } else {
                 setComponentContainerDs(new ObjectContainer(optionsList));
@@ -124,7 +128,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         } else if (!optionsList.isEmpty()) {
             final Object o = optionsList.iterator().next();
             if (o instanceof Enum) {
-                setComponentContainerDs(new EnumerationContainer(optionsList));
+                setComponentContainerDs(createEnumContainer(optionsList));
             } else {
                 setComponentContainerDs(new ObjectContainer(optionsList));
             }

@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 21.07.2010 12:01:49
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -22,6 +17,10 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class TokenListLoader extends AbstractFieldLoader {
     public TokenListLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -29,7 +28,9 @@ public class TokenListLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         final TokenList component = factory.createComponent("tokenList");
 
         assignXmlDescriptor(component, element);
@@ -66,7 +67,7 @@ public class TokenListLoader extends AbstractFieldLoader {
 
         Element lookupElement = element.element("lookup");
         if (lookupElement == null) {
-            throw new InstantiationException("'tokenList' must contains 'lookup' element");
+            throw new IllegalStateException("'tokenList' must contains 'lookup' element");
         }
 
         String optionsDatasource = lookupElement.attributeValue("optionsDatasource");

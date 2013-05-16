@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.sys.PaintContext;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,7 +27,7 @@ import java.util.*;
  * @author artamonov
  * @version $Id$
  */
-public class OptionsDsWrapper implements Container, Container.ItemSetChangeNotifier {
+public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetChangeNotifier {
 
     private static final long serialVersionUID = 1440434590495905389L;
 
@@ -210,6 +211,70 @@ public class OptionsDsWrapper implements Container, Container.ItemSetChangeNotif
     @Override
     public void removeListener(ItemSetChangeListener listener) {
         removeItemSetChangeListener(listener);
+    }
+
+    @Override
+    public Object nextItemId(Object itemId) {
+        if (datasource instanceof CollectionDatasource.Ordered) {
+            Object id = ((CollectionDatasource.Ordered) datasource).nextItemId(((Entity) itemId).getId());
+            return datasource.getItem(id);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object prevItemId(Object itemId) {
+        if (datasource instanceof CollectionDatasource.Ordered) {
+            Object id = ((CollectionDatasource.Ordered) datasource).prevItemId(((Entity) itemId).getId());
+            return datasource.getItem(id);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object firstItemId() {
+        if (datasource instanceof CollectionDatasource.Ordered) {
+            Object id = ((CollectionDatasource.Ordered) datasource).firstItemId();
+            return datasource.getItem(id);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object lastItemId() {
+        if (datasource instanceof CollectionDatasource.Ordered) {
+            Object id = ((CollectionDatasource.Ordered) datasource).lastItemId();
+            return datasource.getItem(id);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isFirstId(Object itemId) {
+        if (datasource instanceof CollectionDatasource.Ordered) {
+            Object id = ((CollectionDatasource.Ordered) datasource).firstItemId();
+            return ObjectUtils.equals(datasource.getItem(id), itemId);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isLastId(Object itemId) {
+        if (datasource instanceof CollectionDatasource.Ordered) {
+            Object id = ((CollectionDatasource.Ordered) datasource).lastItemId();
+            return ObjectUtils.equals(datasource.getItem(id), itemId);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
     }
 
     protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {

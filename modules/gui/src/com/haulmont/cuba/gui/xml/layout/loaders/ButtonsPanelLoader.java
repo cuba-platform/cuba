@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 15.12.2009 16:26:40
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -21,11 +16,16 @@ import org.dom4j.Element;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
-public class ButtonsPanelLoader <T extends ButtonsPanel> extends ContainerLoader {
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
+public class ButtonsPanelLoader extends ContainerLoader {
     public ButtonsPanelLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException {
         final ButtonsPanel component = factory.createComponent("buttonsPanel");
@@ -56,7 +56,7 @@ public class ButtonsPanelLoader <T extends ButtonsPanel> extends ContainerLoader
                 }
 
             } else {
-                throw new InstantiationException(
+                throw new IllegalStateException(
                         "<buttonsPanel> element must contains \"class\" attribute or at least one <button> element");
             }
         }
