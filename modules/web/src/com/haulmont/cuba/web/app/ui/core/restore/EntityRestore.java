@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.WebConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -153,7 +154,20 @@ public class EntityRestore extends AbstractWindow {
                 filter.setId(filterId + "GenericFilter");
                 filter.setFrame(getFrame());
                 filter.setStyleName(primaryFilter.getStyleName());
-                filter.setXmlDescriptor(primaryFilter.getXmlDescriptor());
+                StringBuilder sb = new StringBuilder("");
+                for (MetaProperty property : metaClass.getProperties()) {
+                    if (property.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) != null) {
+                        sb.append(property.getName() + "|");
+                    }
+                }
+                Element filterElement = primaryFilter.getXmlDescriptor();
+                String exclProperties = sb.toString();
+                if (!"".equals(exclProperties)) {
+                    Element properties = filterElement.element("properties");
+                    properties.attribute("exclude").setValue(exclProperties
+                            .substring(0, exclProperties.lastIndexOf("|")));
+                }
+                filter.setXmlDescriptor(filterElement);
                 filter.setUseMaxResults(true);
                 filter.setDatasource(entitiesDs);
 
