@@ -89,7 +89,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     private FilterEntity filterEntity;
     private ConditionsTree conditions = new ConditionsTree();
 
-    private com.vaadin.ui.Component paramsLayout;
+    private ComponentContainer paramsLayout;
     private AbstractOrderedLayout editLayout;
     private FilterSelect select;
     private WebPopupButton actionsButton;
@@ -229,6 +229,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         createParamsLayout(false);
         component.addComponent(paramsLayout);
+
         updateControls();
     }
 
@@ -1147,6 +1148,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
         actionsButton.setVisible(editable && isEditFiltersPermitted());
+
+        paramsLayout.setVisible(paramsLayout.getComponentCount() > 0);
     }
 
     private boolean checkGlobalAppFolderPermission() {
