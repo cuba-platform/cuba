@@ -31,9 +31,31 @@
     }
   }
 
-  .v-menubar-menuitem.v-menubar-menuitem-cuba-folders-pane {
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon,
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active {
+    background: transparent;
+    background-image: url(sprites/folders-pane-icon.png); /** sprite-ref: icons; */
+  }
+
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon,
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active,
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon:hover,
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active:hover {
     padding-bottom: 5px;
     padding-top: 1px;
+    width: 26px;
+    height: 21px;
+    border: 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-clip: border-box;
+    background-origin: border-box;
+  }
+
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active,
+  .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active:hover {
+    border: 2px solid $theme_fieldFocusedBorderColor;
   }
 
   .v-label.cuba-folders-pane-caption {

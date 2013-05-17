@@ -138,7 +138,7 @@ public class FoldersPane extends VerticalLayout {
                     createMenuBarCommand(),
                     firstItem);
 
-            menuItem.setStyleName("cuba-folders-pane");
+            menuItem.setStyleName(getMenuItemStyle());
         }
     }
 
@@ -152,6 +152,7 @@ public class FoldersPane extends VerticalLayout {
                 showFolders(!visible);
                 selectedItem.setText(getMenuItemCaption());
                 selectedItem.setIcon(getMenuItemIcon());
+                selectedItem.setStyleName(getMenuItemStyle());
             }
         };
     }
@@ -497,10 +498,18 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Resource getMenuItemIcon() {
+        return null;
+//        if (visible)
+//            return new VersionedThemeResource("icons/folders_pane_icon_active.png");
+//        else
+//            return new VersionedThemeResource("icons/folders_pane_icon.png");
+    }
+
+    protected String getMenuItemStyle() {
         if (visible)
-            return new VersionedThemeResource("icons/folders_pane_icon_active.png");
+            return "folders-pane-icon-active";
         else
-            return new VersionedThemeResource("icons/folders_pane_icon.png");
+            return "folders-pane-icon";
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
