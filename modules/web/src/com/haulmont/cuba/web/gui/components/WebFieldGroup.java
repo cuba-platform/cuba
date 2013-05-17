@@ -22,13 +22,13 @@ import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -380,7 +380,7 @@ public class WebFieldGroup
                     if (fieldConf.getCaption() != null) {
                         field.setCaption(fieldConf.getCaption());
                     }
-//                    vaadin7
+//                    vaadin7 descriptions support
 //                    if (fieldConf.getDescription() != null) {
 //                        field.setDescription(fieldConf.getDescription());
 //                    }
@@ -782,7 +782,8 @@ public class WebFieldGroup
         }
 
         @Override
-        protected void initCommon(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField, MetaPropertyPath propertyPath) {
+        protected void initCommon(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField,
+                                  MetaPropertyPath propertyPath) {
             final Field fieldConf = getField(propertyPath.toString());
             if ("timeField".equals(fieldType(propertyPath))||(cubaField instanceof WebTimeField)) {
                 String s = fieldConf.getXmlDescriptor().attributeValue("showSeconds");
@@ -795,6 +796,12 @@ public class WebFieldGroup
                 if (fieldConf != null) {
                     initTextField((TextField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
+            } else if (field instanceof TextArea) {
+                ((TextArea) field).setNullRepresentation("");
+                field.setInvalidCommitted(true);
+                if (fieldConf != null) {
+                    initTextArea(((TextArea) field), propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
+                }
             } else if (cubaField instanceof WebDateField) {
                 if (getFormatter(propertyPath) != null) {
                     String format = getFormat(propertyPath);
@@ -805,10 +812,10 @@ public class WebFieldGroup
                 if (fieldConf != null) {
                     initDateField(field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
-            } else if (field instanceof CheckBox) {
+            } //else if (field instanceof CheckBox) {
 //                vaadin7
 //                ((CheckBox) field).setLayoutCaption(true);
-            }
+//            }
 
             if (fieldConf != null && fieldConf.getWidth() != null) {
                 field.setWidth(fieldConf.getWidth());
@@ -901,6 +908,20 @@ public class WebFieldGroup
                 }
             }
             return null;
+        }
+
+        @Override
+        protected com.vaadin.ui.Field<?> createDefaultField(Item item, Object propertyId,
+                                                            com.vaadin.ui.Component uiContext) {
+            Field fieldConf = fields.get(propertyId.toString());
+            if (fieldConf != null) {
+                final String rows = fieldConf.getXmlDescriptor().attributeValue("rows");
+                if (!StringUtils.isEmpty(rows)) {
+                    return new TextArea();
+                }
+            }
+
+            return super.createDefaultField(item, propertyId, uiContext);
         }
 
         @Override

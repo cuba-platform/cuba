@@ -26,9 +26,7 @@ import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -88,7 +86,6 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     }
                 } else if (range.isEnum()) {
                     final WebLookupField lookupField = new WebLookupField();
-//                    if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
 
                     lookupField.setDatasource(getDatasource(item), propertyPath.toString());
                     lookupField.setOptionsList(range.asEnumeration().getValues());
@@ -115,36 +112,30 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                             field = dateField.getComponent();
                         }
                     } else {
-                        // vaadin7 check rows/cols property and create textArea if exists any
-                        field = super.createField(item, propertyId, uiContext);
+                        field = createDefaultField(item, propertyId, uiContext);
                         field.setInvalidAllowed(false);
                         field.addValidator(
                                 new com.vaadin.data.Validator() {
                                     @Override
                                     public void validate(Object value) throws InvalidValueException {
-                                        if (!isValid(value)) {
-                                            field.markAsDirty();
-                                            throw new InvalidValueException("Unable to parse value: " + value);
-                                        }
-                                    }
-
-                                    public boolean isValid(Object value) {
                                         Datatype datatype = range.asDatatype();
+
                                         if (value instanceof String && datatype != null) {
                                             try {
-                                                datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
+                                                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.class);
+                                                datatype.parse((String) value, sessionSource.getLocale());
                                             } catch (ParseException e) {
-                                                return false;
+                                                field.markAsDirty();
+                                                throw new InvalidValueException("Unable to parse value: " + value);
                                             }
                                         }
-                                        return true;
                                     }
                                 }
                         );
                     }
                 }
             } else {
-                field = super.createField(item, propertyId, uiContext);
+                field = createDefaultField(item, propertyId, uiContext);
             }
 
             initField(field, cubaField, propertyPath, true);
@@ -166,7 +157,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
      * Creates fields for the Table
      */
     @Override
-    public com.vaadin.ui.Field createField(com.vaadin.data.Container container, Object itemId, Object propertyId, com.vaadin.ui.Component uiContext) {
+    public com.vaadin.ui.Field createField(com.vaadin.data.Container container, Object itemId,
+                                           Object propertyId, com.vaadin.ui.Component uiContext) {
         final com.vaadin.ui.Field field;
         com.haulmont.cuba.gui.components.Field cubaField = null;
         MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
@@ -255,7 +247,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             field.setRequiredError(requiredMessage(propertyPath));
     }
 
-    protected void initValidators(final com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath, boolean validationVisible) {
+    protected void initValidators(final com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath,
+                                  boolean validationVisible) {
         Collection<Field.Validator> validators = getValidators(propertyPath);
         if (validators != null) {
             for (final Field.Validator validator : validators) {
@@ -272,15 +265,6 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                                 throw new InvalidValueException(e.getMessage());
                             }
                         }
-
-                        public boolean isValid(Object value) {
-                            try {
-                                validate(value);
-                                return true;
-                            } catch (InvalidValueException e) {
-                                return false;
-                            }
-                        }
                     });
                     ((com.vaadin.ui.AbstractField) field).setValidationVisible(validationVisible);
                 }
@@ -295,11 +279,28 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         if (!StringUtils.isEmpty(cols)) {
             field.setColumns(Integer.valueOf(cols));
         }
-//        vaadin7
-//        final String rows = xmlDescriptor.attributeValue("rows");
-//        if (!StringUtils.isEmpty(rows)) {
-//            field.setRows(Integer.valueOf(rows));
-//        }
+        final String maxLength = xmlDescriptor.attributeValue("maxLength");
+        if (!StringUtils.isEmpty(maxLength)) {
+            field.setMaxLength(Integer.valueOf(maxLength));
+        } else {
+            Integer len = (Integer) metaProperty.getAnnotations().get("length");
+            if (len != null) {
+                field.setMaxLength(len);
+            }
+        }
+    }
+
+    protected void initTextArea(TextArea field, MetaProperty metaProperty, Element xmlDescriptor) {
+        if (xmlDescriptor == null)
+            return;
+        final String cols = xmlDescriptor.attributeValue("cols");
+        if (!StringUtils.isEmpty(cols)) {
+            field.setColumns(Integer.valueOf(cols));
+        }
+        final String rows = xmlDescriptor.attributeValue("rows");
+        if (!StringUtils.isEmpty(rows)) {
+            field.setRows(Integer.valueOf(rows));
+        }
         final String maxLength = xmlDescriptor.attributeValue("maxLength");
         if (!StringUtils.isEmpty(maxLength)) {
             field.setMaxLength(Integer.valueOf(maxLength));
@@ -325,7 +326,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
 
         if (!StringUtils.isEmpty(resolution)) {
-            com.haulmont.cuba.gui.components.DateField.Resolution res = com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution);
+            com.haulmont.cuba.gui.components.DateField.Resolution res =
+                    com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution);
             cubaField.setResolution(res);
 
             if (dateFormat == null) {
@@ -355,6 +357,10 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
             cubaField.setDateFormat(formatStr);
         }
+    }
+
+    protected com.vaadin.ui.Field<?> createDefaultField(Item item, Object propertyId, Component uiContext) {
+        return super.createField(item, propertyId, uiContext);
     }
 
     protected abstract Datasource getDatasource();

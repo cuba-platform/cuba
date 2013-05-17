@@ -19,7 +19,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -69,8 +68,6 @@ import java.util.*;
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
         extends WebAbstractList<T> implements Table {
 
-    private static final String REQUIRED_TABLE_STYLE = "table";
-
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
@@ -105,8 +102,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
 
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
-
-    private String customStyle;
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -336,20 +331,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
         return UNIT_SYMBOLS.indexOf(componentComposition.getWidthUnits());
     }
 
-    @Override
-    public void setStyleName(String name) {
-        this.customStyle = name;
-        String style = REQUIRED_TABLE_STYLE;
-        if (StringUtils.isNotEmpty(name))
-            style += " " + name;
-        super.setStyleName(style);
-    }
-
-    @Override
-    public String getStyleName() {
-        return customStyle;
-    }
-
     @SuppressWarnings({"UnusedDeclaration"})
     protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Table.Column column) {
         if (datasource == null)
@@ -394,7 +375,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
         component.setValidationVisible(false);
 //        vaadin7
 //        component.setStoreColWidth(true);
-        component.setStyleName(REQUIRED_TABLE_STYLE); //It helps us to manage a caption style
         component.setPageLength(15);
 
         component.addActionHandler(new ActionsAdapter());
@@ -1404,10 +1384,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
                 initDateField(field, metaProperty, column.getXmlDescriptor());
             }
 
-            if (field instanceof CheckBox) {
+//            if (field instanceof CheckBox) {
 //                vaadin7
 //                ((CheckBox) field).setLayoutCaption(true);
-            }
+//            }
         }
     }
 
