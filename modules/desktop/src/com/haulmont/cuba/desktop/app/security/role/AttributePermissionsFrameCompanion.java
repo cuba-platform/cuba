@@ -56,6 +56,6 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
 
                 return label;
             }
-        });
+        }, Label.class);
     }
 }

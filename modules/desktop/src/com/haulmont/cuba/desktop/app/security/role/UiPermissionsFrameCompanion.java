@@ -48,6 +48,6 @@ public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion
 
                 return label;
             }
-        });
+        }, Label.class);
     }
 }

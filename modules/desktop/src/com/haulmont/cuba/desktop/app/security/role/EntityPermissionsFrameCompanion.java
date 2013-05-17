@@ -31,28 +31,28 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
             public Component generateCell(OperationPermissionTarget target) {
                 return generateLabelByPermissionVariant(target.getCreatePermissionVariant());
             }
-        });
+        }, Label.class);
 
         entityPermissionsTable.addGeneratedColumn("readPermissionVariant", new Table.ColumnGenerator<OperationPermissionTarget>() {
             @Override
             public Component generateCell(OperationPermissionTarget target) {
                 return generateLabelByPermissionVariant(target.getReadPermissionVariant());
             }
-        });
+        }, Label.class);
 
         entityPermissionsTable.addGeneratedColumn("updatePermissionVariant", new Table.ColumnGenerator<OperationPermissionTarget>() {
             @Override
             public Component generateCell(OperationPermissionTarget target) {
                 return generateLabelByPermissionVariant(target.getUpdatePermissionVariant());
             }
-        });
+        }, Label.class);
 
         entityPermissionsTable.addGeneratedColumn("deletePermissionVariant", new Table.ColumnGenerator<OperationPermissionTarget>() {
             @Override
             public Component generateCell(OperationPermissionTarget target) {
                 return generateLabelByPermissionVariant(target.getDeletePermissionVariant());
             }
-        });
+        }, Label.class);
     }
 
     private Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {

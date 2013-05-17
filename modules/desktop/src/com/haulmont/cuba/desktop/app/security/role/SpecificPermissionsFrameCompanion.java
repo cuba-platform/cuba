@@ -49,6 +49,6 @@ public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFra
 
                 return label;
             }
-        });
+        }, Label.class);
     }
 }

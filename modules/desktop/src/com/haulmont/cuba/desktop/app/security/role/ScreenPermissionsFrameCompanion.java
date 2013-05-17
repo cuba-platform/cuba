@@ -49,6 +49,6 @@ public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.C
 
                 return label;
             }
-        });
+        }, Label.class);
     }
 }
