@@ -52,6 +52,7 @@ import com.haulmont.cuba.web.toolkit.ui.converters.SimpleIntegerToStringConverte
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -140,26 +141,25 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         userSessionSource = AppBeans.get(UserSessionSource.class);
 
         defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
-//        vaadin7 *ActionsLayout Required
-//        component.addActionHandler(new com.vaadin.event.Action.Handler() {
-//            private com.vaadin.event.ShortcutAction shortcutAction =
-//                    new com.vaadin.event.ShortcutAction("applyFilterAction",
-//                            com.vaadin.event.ShortcutAction.KeyCode.ENTER,
-//                            new int[]{ShortcutAction.ModifierKey.SHIFT});
-//
-//            @Override
-//            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-//                return new com.vaadin.event.Action[]{shortcutAction};
-//            }
-//
-//            @Override
-//            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-//
-//                if (ObjectUtils.equals(action, shortcutAction)) {
-//                    apply(false);
-//                }
-//            }
-//        });
+        component.addActionHandler(new com.vaadin.event.Action.Handler() {
+            private com.vaadin.event.ShortcutAction shortcutAction =
+                    new com.vaadin.event.ShortcutAction("applyFilterAction",
+                            com.vaadin.event.ShortcutAction.KeyCode.ENTER,
+                            new int[]{ShortcutAction.ModifierKey.SHIFT});
+
+            @Override
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                return new com.vaadin.event.Action[]{shortcutAction};
+            }
+
+            @Override
+            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+
+                if (ObjectUtils.equals(action, shortcutAction)) {
+                    apply(false);
+                }
+            }
+        });
 
         // don't add margin because filter is usually placed inside a groupbox that adds margins to its content
         component.setMargin(false);
