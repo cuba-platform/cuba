@@ -205,7 +205,7 @@ public class EntityDiffManager {
             }
         } else {
             if ((firstValue != null) || (secondValue != null))
-                log.warn("Not null values for (null) view ignored, property: " + metaProperty.getName() +
+                log.debug("Not null values for (null) view ignored, property: " + metaProperty.getName() +
                         "in class" + metaProperty.getDeclaringClass().getCanonicalName());
         }
         return propertyDiff;
