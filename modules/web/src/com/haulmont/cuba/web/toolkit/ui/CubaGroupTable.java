@@ -26,9 +26,11 @@ import java.util.*;
  */
 public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
-    private KeyMapper groupIdMap = new KeyMapper();
+    protected KeyMapper groupIdMap = new KeyMapper();
 
-    private GroupPropertyValueFormatter groupPropertyValueFormatter;
+    protected GroupPropertyValueFormatter groupPropertyValueFormatter;
+
+    protected boolean fixedGrouping = true;
 
     @Override
     public void setContainerDataSource(Container newDataSource) {
@@ -70,23 +72,30 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         boolean needsResetPageBuffer = false;
         Object[] newGroupProperties = null;
 
-        if (variables.containsKey("columnorder") && !variables.containsKey("groupedcolumns")) {
-            newGroupProperties = new Object[0];
-        } else if (variables.containsKey("groupedcolumns")) {
-            final Object[] ids = (Object[]) variables.get("groupedcolumns");
-            final Object[] groupProperties = new Object[ids.length];
-            for (int i = 0; i < ids.length; i++) {
-                groupProperties[i] = columnIdMap.get(ids[i].toString());
-            }
-            newGroupProperties = groupProperties;
-            // Deny group by generated columns
-            if (!columnGenerators.isEmpty()) {
-                List<Object> notGeneratedProperties = new ArrayList<>();
-                for (Object id : newGroupProperties) {
-                    if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath))
-                        notGeneratedProperties.add(id);
+        if (!fixedGrouping) {
+            if (variables.containsKey("columnorder") && !variables.containsKey("groupedcolumns")) {
+                newGroupProperties = new Object[0];
+            } else if (variables.containsKey("groupedcolumns")) {
+                final Object[] ids = (Object[]) variables.get("groupedcolumns");
+                final Object[] groupProperties = new Object[ids.length];
+                for (int i = 0; i < ids.length; i++) {
+                    groupProperties[i] = columnIdMap.get(ids[i].toString());
                 }
-                newGroupProperties = notGeneratedProperties.toArray();
+                newGroupProperties = groupProperties;
+                // Deny group by generated columns
+                if (!columnGenerators.isEmpty()) {
+                    List<Object> notGeneratedProperties = new ArrayList<>();
+                    for (Object id : newGroupProperties) {
+                        if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath)) {
+                            notGeneratedProperties.add(id);
+                        }
+                    }
+                    newGroupProperties = notGeneratedProperties.toArray();
+                }
+            }
+        } else {
+            if (variables.containsKey("columnorder") || variables.containsKey("groupedcolumns")) {
+                markAsDirty();
             }
         }
 
@@ -236,6 +245,33 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     }
 
     @Override
+    protected void setColumnOrder(Object[] columnOrder) {
+        Collection<?> groupProperties = getGroupProperties();
+        if (!groupProperties.isEmpty()) {
+            // check order of grouped and not grouped columns
+            int i = 1;
+            while (i < columnOrder.length && isValidOrderPosition(groupProperties, columnOrder, i)) {
+                i++;
+            }
+            if (i < columnOrder.length) {
+                // found not grouped column on left side of grouped
+                markAsDirty();
+                return;
+            }
+        }
+
+        super.setColumnOrder(columnOrder);
+    }
+
+    protected boolean isValidOrderPosition(Collection<?> groupProperties, Object[] columnOrder, int index) {
+        if (!groupProperties.contains(columnOrder[index]))
+            return true;
+
+        return groupProperties.contains(columnOrder[index]) &&
+                groupProperties.contains(columnOrder[index - 1]);
+    }
+
+    @Override
     public Collection<?> getGroupProperties() {
         Collection<?> groupProperties = ((GroupTableContainer) items).getGroupProperties();
         // Deny group by generated columns
@@ -333,6 +369,15 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     @Override
     public boolean isExpanded(Object id) {
         return ((GroupTableContainer) items).isExpanded(id);
+    }
+
+    public boolean isFixedGrouping() {
+        return fixedGrouping;
+    }
+
+    public void setFixedGrouping(boolean fixedGrouping) {
+        this.fixedGrouping = fixedGrouping;
+        markAsDirty();
     }
 
     public GroupPropertyValueFormatter getGroupPropertyValueFormatter() {

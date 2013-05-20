@@ -68,6 +68,15 @@ public class DesktopGroupTable extends DesktopAbstractTable<JXTable> implements 
     }
 
     @Override
+    public boolean isFixedGrouping() {
+        return false;
+    }
+
+    @Override
+    public void setFixedGrouping(boolean groupingByUserEnabled) {
+    }
+
+    @Override
     public void setSortable(boolean sortable) {
         super.setSortable(sortable);
         impl.setSortable(sortable);

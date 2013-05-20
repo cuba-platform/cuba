@@ -777,6 +777,8 @@
         <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attributeGroup ref="isTableComponent"/>
+
+        <xs:attribute name="fixedGrouping" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- Filter -->

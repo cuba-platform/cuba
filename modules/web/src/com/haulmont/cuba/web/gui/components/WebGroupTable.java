@@ -186,6 +186,16 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         return component.isExpanded(groupId);
     }
 
+    @Override
+    public boolean isFixedGrouping() {
+        return component.isFixedGrouping();
+    }
+
+    @Override
+    public void setFixedGrouping(boolean fixedGrouping) {
+        component.setFixedGrouping(fixedGrouping);
+    }
+
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
             implements GroupTableContainer,
             AggregationContainer {
