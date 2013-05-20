@@ -18,7 +18,7 @@ import com.vaadin.shared.ui.Connect;
  * @version $Id$
  */
 @Connect(CubaMaskedTextField.class)
-public class CubaMaskedTextFieldConnector extends TextFieldConnector {
+public class CubaMaskedFieldConnector extends TextFieldConnector {
 
     @Override
     public CubaMaskedTextFieldState getState() {
@@ -26,13 +26,13 @@ public class CubaMaskedTextFieldConnector extends TextFieldConnector {
     }
 
     @Override
-    public CubaMaskedTextFieldWidget getWidget() {
-        return (CubaMaskedTextFieldWidget) super.getWidget();
+    public CubaMaskedFieldWidget getWidget() {
+        return (CubaMaskedFieldWidget) super.getWidget();
     }
 
     @Override
     protected Widget createWidget() {
-        return GWT.create(CubaMaskedTextFieldWidget.class);
+        return GWT.create(CubaMaskedFieldWidget.class);
     }
 
     @Override
@@ -40,5 +40,6 @@ public class CubaMaskedTextFieldConnector extends TextFieldConnector {
         super.onStateChanged(stateChangeEvent);
 
         getWidget().setMask(getState().mask);
+        getWidget().setMaskedMode(getState().maskedMode);
     }
 }

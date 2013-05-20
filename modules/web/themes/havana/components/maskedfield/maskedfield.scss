@@ -6,7 +6,7 @@
 
 // Version: $Id$
 
-@mixin havana-maskedfield($primaryStyleName: cuba-maskedfield) {
+@mixin havana-maskedfield($primaryStyleName: cuba-maskedfield){
   @include havana-textfield($primaryStyleName);
 
   .v-ui,

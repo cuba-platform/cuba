@@ -149,6 +149,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="maskedFieldValueMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="masked"/>
+            <xs:enumeration value="clear"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -472,6 +479,18 @@
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
                 <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
                 <xs:attribute name="trim" type="xs:boolean" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="maskedFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
+                </xs:sequence>
+                <xs:attribute name="mask" type="xs:string" use="required"/>
+                <xs:attribute name="valueMode" type="maskedFieldValueMode" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -859,6 +878,8 @@
         <xs:attribute name="field" type="xs:string" use="optional"/>
         <xs:attribute name="showSeconds" type="xs:string" use="optional"/>
         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+        <xs:attribute name="mask" type="xs:string" use="optional"/>
+        <xs:attribute name="valueMode" type="maskedFieldValueMode" use="optional"/>
     </xs:complexType>
 
     <!-- FieldGroup -->
@@ -1293,6 +1314,7 @@
                 <xs:element name="passwordField" type="passwordFieldComponent"/>
                 <xs:element name="richTextArea" type="richTextAreaComponent"/>
                 <xs:element name="autoCompleteTextField" type="autoCompleteTextFieldComponent"/>
+                <xs:element name="maskedField" type="maskedFieldComponent"/>
 
                 <xs:element name="dateField" type="dateFieldComponent"/>
                 <xs:element name="timeField" type="timeFieldComponent"/>

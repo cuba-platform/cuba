@@ -62,6 +62,7 @@ public class LayoutLoaderConfig {
         config.register(Label.NAME, LabelLoader.class);
 
         config.register(TextField.NAME, TextFieldLoader.class);
+        config.register(MaskedField.NAME, MaskedFieldLoader.class);
         config.register(TextArea.NAME, ResizableTextFieldLoader.class);
         config.register(AutoCompleteTextField.NAME, AutoCompleteTextFieldLoader.class);
         config.register(PasswordField.NAME, PasswordFieldLoader.class);

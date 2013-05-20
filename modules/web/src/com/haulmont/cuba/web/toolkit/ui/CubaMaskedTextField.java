@@ -14,28 +14,36 @@ import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedTextFieldStat
  */
 public class CubaMaskedTextField extends com.vaadin.ui.TextField {
 
-    private static final long serialVersionUID = -5168618178262041249L;
+    public boolean isMaskedMode() {
+       return getState(false).maskedMode;
+    }
 
-    private String prevNullRepresentation;
+    public void setMaskedMode(boolean maskedMode) {
+        getState(true).maskedMode = maskedMode;
+    }
+
 
     @Override
     protected CubaMaskedTextFieldState getState() {
         return (CubaMaskedTextFieldState) super.getState();
     }
 
-    public void setMask(String mask) {
-        getState().mask = mask;
+    @Override
+    protected CubaMaskedTextFieldState getState(boolean markAsDirty) {
+        return (CubaMaskedTextFieldState) super.getState(markAsDirty);
     }
 
-    @Override
+    public void setMask(String mask) {
+        getState(true).mask = mask;
+    }
+
+    public String getMask(){
+        return getState(false).mask;
+    }
+
     public void setReadOnly(boolean readOnly) {
         if (readOnly == isReadOnly())
             return;
-        if (readOnly) {
-            prevNullRepresentation = getNullRepresentation();
-            setNullRepresentation("");
-        } else
-            setNullRepresentation(prevNullRepresentation);
         super.setReadOnly(readOnly);
     }
 }

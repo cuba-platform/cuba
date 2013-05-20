@@ -50,6 +50,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         resolution = DateField.Resolution.MIN;
 
         component = new CubaMaskedTextField();
+        component.setMaskedMode(true);
         component.setImmediate(true);
         setShowSeconds(timeFormat.contains("ss"));
 

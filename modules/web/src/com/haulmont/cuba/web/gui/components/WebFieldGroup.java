@@ -790,6 +790,9 @@ public class WebFieldGroup
                 if (Boolean.valueOf(s)) {
                     ((TimeField) cubaField).setShowSeconds(true);
                 }
+            } else if (cubaField instanceof WebMaskedField) {
+                initMaskedField((WebMaskedField) cubaField, propertyPath.getMetaProperty(),
+                        fieldConf.getXmlDescriptor());
             } else if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
                 field.setInvalidCommitted(true);

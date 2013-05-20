@@ -18,4 +18,6 @@ public class CubaMaskedTextFieldState extends AbstractTextFieldState {
     }
 
     public String mask = "";
+
+    public boolean maskedMode = false;
 }

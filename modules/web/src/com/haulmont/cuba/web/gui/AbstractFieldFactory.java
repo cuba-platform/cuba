@@ -15,10 +15,8 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.*;
@@ -27,6 +25,9 @@ import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -34,6 +35,8 @@ import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
+
+import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 /**
  * @author gorodnov
@@ -111,6 +114,10 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                             cubaField = dateField;
                             field = dateField.getComponent();
                         }
+                    } else if (String.class.isAssignableFrom(type)
+                            && getXmlDescriptor(propertyPath).attribute("mask") != null) {
+                        cubaField = new WebMaskedField();
+                        field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(cubaField);
                     } else {
                         field = createDefaultField(item, propertyId, uiContext);
                         field.setInvalidAllowed(false);
@@ -357,6 +364,15 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
             cubaField.setDateFormat(formatStr);
         }
+    }
+
+    protected void initMaskedField(WebMaskedField field, MetaProperty metaProperty, Element xmlDescriptor) {
+        String mask = xmlDescriptor.attributeValue("mask");
+        if (!StringUtils.isEmpty(mask)) {
+            field.setMask(mask);
+        }
+        String valueModeStr = xmlDescriptor.attributeValue("valueMode", MaskedField.ValueMode.CLEAR.getId());
+        field.setValueMode(MaskedField.ValueMode.fromId(valueModeStr));
     }
 
     protected com.vaadin.ui.Field<?> createDefaultField(Item item, Object propertyId, Component uiContext) {

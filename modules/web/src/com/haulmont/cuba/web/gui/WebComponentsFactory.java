@@ -49,6 +49,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         // Use resizable text area instead of text area
         classes.put(ResizableTextField.NAME, WebResizableTextField.class);
         classes.put(RichTextArea.NAME, WebRichTextArea.class);
+        classes.put(MaskedField.NAME, WebMaskedField.class);
 
         classes.put(IFrame.NAME, WebFrame.class);
         classes.put(Table.NAME, WebTable.class);
