@@ -57,6 +57,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
 
             final Range range = propertyPath.getRange();
+            Element xmlDescriptor = getXmlDescriptor(propertyPath);
             if (range != null) {
                 if (range.isClass()) {
                     final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), propertyPath);
@@ -64,7 +65,6 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                         final WebLookupField lookupField = new WebLookupField();
                         lookupField.setOptionsDatasource(optionsDatasource);
 
-                        Element xmlDescriptor = getXmlDescriptor(propertyPath);
                         if (xmlDescriptor != null) {
                             if (!StringUtils.isEmpty(xmlDescriptor.attributeValue("captionProperty"))) {
                                 lookupField.setCaptionProperty(xmlDescriptor.attributeValue("captionProperty"));
@@ -115,7 +115,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                             field = dateField.getComponent();
                         }
                     } else if (String.class.isAssignableFrom(type)
-                            && getXmlDescriptor(propertyPath).attribute("mask") != null) {
+                            && xmlDescriptor != null
+                            && xmlDescriptor.attribute("mask") != null) {
                         cubaField = new WebMaskedField();
                         field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(cubaField);
                     } else {
