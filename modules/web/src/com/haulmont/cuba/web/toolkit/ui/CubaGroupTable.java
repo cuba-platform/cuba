@@ -30,7 +30,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected GroupPropertyValueFormatter groupPropertyValueFormatter;
 
-    protected boolean fixedGrouping = true;
+    protected boolean fixedGrouping = false;
 
     @Override
     public void setContainerDataSource(Container newDataSource) {
