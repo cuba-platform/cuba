@@ -6,12 +6,13 @@
 
 package com.haulmont.cuba.web.actions;
 
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.App;
+
 //import com.haulmont.cuba.web.AppUI;
-import com.vaadin.ui.Window;
 
 /**
  * <p>$Id$</p>
@@ -33,33 +34,35 @@ public class ChangeSubstUserAction extends AbstractAction {
     }
 
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-//        final AppUI app = AppUI.getInstance();
-//        app.getWindowManager().checkModificationsAndCloseAll(
-//                new Runnable() {
-//                    public void run() {
-//                        app.getWindowManager().closeAll();
-//                        try {
-//                            app.getConnection().substituteUser(user);
-//                            doAfterChangeUser();
-//                        } catch (javax.persistence.NoResultException e) {
-//                            AppUI.getInstance().getAppWindow().showNotification(
-//                                    MessageProvider.formatMessage(AppConfig.getMessagesPack(), "userDeleteMsg",
-//                                    user.getName()),
-//                                    Window.Notification.TYPE_WARNING_MESSAGE
-//                            );
-//                            doRevert();
-//                        }
-//                    }
-//                },
-//                new Runnable() {
-//                    public void run() {
-//                        doRevert();
-//                    }
-//                }
-//        );
+        final App app = App.getInstance();
+        App.getInstance().getWindowManager().checkModificationsAndCloseAll(
+                new Runnable() {
+                    public void run() {
+                        app.getWindowManager().closeAll();
+                        try {
+                            app.getConnection().substituteUser(user);
+                            doAfterChangeUser();
+                        } catch (javax.persistence.NoResultException e) {
+                            app.getWindowManager().showNotification(
+                                    messages.formatMessage(AppConfig.getMessagesPack(), "userDeleteMsg",
+                                            user.getName()),
+                                    IFrame.NotificationType.WARNING
+                            );
+                            doRevert();
+                        }
+                    }
+                },
+                new Runnable() {
+                    public void run() {
+                        doRevert();
+                    }
+                }
+        );
     }
 
-    public void doAfterChangeUser() {}
+    public void doAfterChangeUser() {
+    }
 
-    public void doRevert() {}
+    public void doRevert() {
+    }
 }
