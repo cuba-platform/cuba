@@ -751,10 +751,18 @@ public class WebWindowManager extends WindowManager {
         getCurrentWindowData().windows.clear();
 
         for (com.vaadin.ui.Window win : new ArrayList<>(AppUI.getCurrent().getWindows())) {
+            removeCloseListeners(win);
             AppUI.getCurrent().removeWindow(win);
             Component currentView = AppUI.getCurrent().getContent();
             if (currentView instanceof AppWindow)
                 appWindowMap.remove(currentView);
+        }
+    }
+
+    private void removeCloseListeners(com.vaadin.ui.Window win) {
+        Collection listeners = win.getListeners(com.vaadin.ui.Window.CloseEvent.class);
+        for (Object listener : listeners) {
+            win.removeCloseListener((com.vaadin.ui.Window.CloseListener) listener);
         }
     }
 
@@ -771,6 +779,7 @@ public class WebWindowManager extends WindowManager {
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
+                removeCloseListeners(win);
                 AppUI.getCurrent().removeWindow(win);
                 fireListeners(window, getTabs().size() != 0);
                 break;
