@@ -166,10 +166,6 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         taskHandler.execute();
     }
 
-    private void closeBackgroundWindow() {
-        close("", true);
-    }
-
     public void cancel() {
         if (!taskHandler.cancel())
             close(Window.CLOSE_ACTION_ID);

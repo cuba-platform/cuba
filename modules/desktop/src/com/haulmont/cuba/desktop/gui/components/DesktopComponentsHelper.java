@@ -20,9 +20,8 @@ import java.awt.event.InputEvent;
 import java.util.Collections;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopComponentsHelper {
 
@@ -212,6 +211,21 @@ public class DesktopComponentsHelper {
             }
         } while (parent != null);
 
+
+        return (TopLevelFrame) prevContainer;
+    }
+
+    public static TopLevelFrame getTopLevelFrame(java.awt.Component component) {
+        Container prevContainer;
+        Container parent = component instanceof Container ? (Container) component : component.getParent();
+        do {
+            prevContainer = parent;
+            if (parent instanceof DetachedFrame) {
+                parent = ((DetachedFrame) parent).getParentContainer();
+            } else {
+                parent = parent.getParent();
+            }
+        } while (parent != null);
 
         return (TopLevelFrame) prevContainer;
     }
