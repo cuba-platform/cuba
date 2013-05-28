@@ -450,8 +450,9 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 final WebPickerField picker = new WebPickerField();
                 picker.setWidth(COMPONENT_WIDTH);
                 picker.setMetaClass(metaClass);
-                PickerField.LookupAction action = (PickerField.LookupAction) picker.getAction(PickerField.LookupAction.NAME);
+                PickerField.LookupAction action = picker.addLookupAction();
                 action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+                picker.addClearAction();
 
                 picker.addListener(
                         new ValueListener() {

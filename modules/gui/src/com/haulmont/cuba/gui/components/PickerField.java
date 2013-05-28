@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerProvider;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.StringUtils;
@@ -120,6 +122,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
         protected Map<String, Object> lookupScreenParams;
 
+        protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+        protected WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
@@ -160,8 +165,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         throw new IllegalStateException("Please specify metaclass or property for PickerField");
                     windowAlias = metaClass.getName() + ".lookup";
                 }
-                Window lookupWindow = pickerField.getFrame().openLookup(
-                        windowAlias,
+                Window lookupWindow = wm.openLookup(
+                        windowConfig.getWindowInfo(windowAlias),
                         new Window.Lookup.Handler() {
                             @Override
                             public void handleLookup(Collection items) {
@@ -229,6 +234,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected WindowManager.OpenType editScreenOpenType = WindowManager.OpenType.THIS_TAB;
         protected Map<String, Object> editScreenParams;
 
+        protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+        protected WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+
         public OpenAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
@@ -266,7 +274,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 return;
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
-                pickerField.getFrame().showNotification(
+                wm.showNotification(
                         messages.getMessage(ActionsFieldHelper.class, "ActionsFieldHelper.openMsg"),
                         IFrame.NotificationType.HUMANIZED);
                 return;
@@ -281,8 +289,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 String windowAlias = editScreen;
                 if (windowAlias == null)
                     windowAlias = entity.getMetaClass().getName() + ".edit";
-                final Window.Editor editor = pickerField.getFrame().openEditor(
-                        windowAlias,
+                final Window.Editor editor = wm.openEditor(
+                        windowConfig.getWindowInfo(windowAlias),
                         entity,
                         editScreenOpenType,
                         editScreenParams != null ? editScreenParams : Collections.<String, Object>emptyMap()
