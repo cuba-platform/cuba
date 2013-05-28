@@ -123,21 +123,22 @@ public class AttributePermissionsFrame extends AbstractFrame {
             modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             modifyCheckBox.setFrame(AttributePermissionsFrame.this);
             modifyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
-            attachListener(modifyCheckBox, AttributePermissionVariant.MODIFY);
 
             readOnlyCheckBox = uiFactory.createComponent(CheckBox.NAME);
             readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             readOnlyCheckBox.setFrame(AttributePermissionsFrame.this);
             readOnlyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
-            attachListener(readOnlyCheckBox, AttributePermissionVariant.READ_ONLY);
 
             hideCheckBox = uiFactory.createComponent(CheckBox.NAME);
             hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             hideCheckBox.setFrame(AttributePermissionsFrame.this);
             hideCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
-            attachListener(hideCheckBox, AttributePermissionVariant.HIDE);
 
             updateCheckers(permissionVariant);
+
+            attachListener(modifyCheckBox, AttributePermissionVariant.MODIFY);
+            attachListener(readOnlyCheckBox, AttributePermissionVariant.READ_ONLY);
+            attachListener(hideCheckBox, AttributePermissionVariant.HIDE);
         }
 
         public Label getAttributeLabel() {
@@ -223,7 +224,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
     }
 
-    private final List<AttributePermissionControl> permissionControls = new LinkedList<AttributePermissionControl>();
+    private final List<AttributePermissionControl> permissionControls = new LinkedList<>();
 
     @Override
     public void init(Map<String, Object> params) {
@@ -245,7 +246,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attributeTargetsDs.addListener(new CollectionDsListenerAdapter<MultiplePermissionTarget>() {
             @Override
             public void itemChanged(Datasource<MultiplePermissionTarget> ds,
-                                    MultiplePermissionTarget prevItem, MultiplePermissionTarget item) {
+                                    MultiplePermissionTarget prevItem, final MultiplePermissionTarget item) {
                 if (!selectedEntityPanel.isVisible() && (item != null))
                     selectedEntityPanel.setVisible(true);
                 if (selectedEntityPanel.isVisible() && (item == null))
@@ -266,7 +267,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 metadata.getSession().getClass(Permission.class), EntityOp.CREATE);
     }
 
-    @SuppressWarnings("unused")
     public void applyFilter() {
         attributeTargetsDs.refresh();
         if (attributeTargetsDs.getItemIds().isEmpty()) {

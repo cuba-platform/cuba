@@ -71,4 +71,10 @@
 
     </style>
 
+    <!-- empty styles for role-edit frame -->
+
+    <style name="allowedItem">
+
+    </style>
+
 </theme>
