@@ -245,33 +245,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     }
 
     @Override
-    protected void setColumnOrder(Object[] columnOrder) {
-        Collection<?> groupProperties = getGroupProperties();
-        if (!groupProperties.isEmpty()) {
-            // check order of grouped and not grouped columns
-            int i = 1;
-            while (i < columnOrder.length && isValidOrderPosition(groupProperties, columnOrder, i)) {
-                i++;
-            }
-            if (i < columnOrder.length) {
-                // found not grouped column on left side of grouped
-                markAsDirty();
-                return;
-            }
-        }
-
-        super.setColumnOrder(columnOrder);
-    }
-
-    protected boolean isValidOrderPosition(Collection<?> groupProperties, Object[] columnOrder, int index) {
-        if (!groupProperties.contains(columnOrder[index]))
-            return true;
-
-        return groupProperties.contains(columnOrder[index]) &&
-                groupProperties.contains(columnOrder[index - 1]);
-    }
-
-    @Override
     public Collection<?> getGroupProperties() {
         Collection<?> groupProperties = ((GroupTableContainer) items).getGroupProperties();
         // Deny group by generated columns
