@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.export.LogDataProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComponentContainer;
@@ -80,6 +81,8 @@ public class ServerLogWindow extends AbstractWindow {
     @Inject
     protected CheckBox autoRefreshCheck;
 
+    protected JmxInstance localJmxInstance;
+
     protected final com.vaadin.ui.Label logTailLabel = new com.vaadin.ui.Label();
     protected final com.vaadin.ui.Panel logContainer = new com.vaadin.ui.Panel();
 
@@ -88,7 +91,7 @@ public class ServerLogWindow extends AbstractWindow {
         localJmxField.setValue(jmxControlAPI.getLocalNodeName());
         localJmxField.setEditable(false);
 
-        JmxInstance localJmxInstance = jmxControlAPI.getLocalInstance();
+        localJmxInstance = jmxControlAPI.getLocalInstance();
 
         jmxInstancesDs.refresh();
         jmxConnectionField.setValue(localJmxInstance);
@@ -96,9 +99,17 @@ public class ServerLogWindow extends AbstractWindow {
         jmxConnectionField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                refreshLoggers();
-                refreshAppenders();
-                refreshLogFileNames();
+                JmxInstance jmxInstance = jmxConnectionField.getValue();
+                try {
+                    refreshLoggers();
+                    refreshAppenders();
+                    refreshLogFileNames();
+                } catch (JmxControlException e) {
+                    showNotification(getMessage("exception.unableToConnectToInterface"), NotificationType.WARNING);
+                    if (jmxInstance != localJmxInstance) {
+                        jmxConnectionField.setValue(localJmxInstance);
+                    }
+                }
             }
         });
 
@@ -160,7 +171,7 @@ public class ServerLogWindow extends AbstractWindow {
         loggerNameField.addListener(new ValueListener<Object>() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                List<String> currentLoggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggers(jmxInstancesDs.getItem()));
+                List<String> currentLoggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggers(getSelectedConnection()));
 
                 Collections.sort(currentLoggers);
                 currentLoggers.add(0, getMessage("logger.new"));
@@ -409,11 +420,11 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected JmxInstance getSelectedConnection() {
-        return jmxInstancesDs.getItem();
+        return jmxConnectionField.getValue();
     }
 
     protected void refreshLoggers() {
-        List<String> loggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggers(jmxInstancesDs.getItem()));
+        List<String> loggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggers(getSelectedConnection()));
 
         Collections.sort(loggers);
         loggers.add(0, getMessage("logger.new"));
@@ -424,7 +435,7 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected void refreshAppenders() {
-        List<String> appenders = jmxRemoteLoggingAPI.getAppenders(jmxInstancesDs.getItem());
+        List<String> appenders = jmxRemoteLoggingAPI.getAppenders(getSelectedConnection());
 
         Collections.sort(appenders);
         appenderNameField.setOptionsList(appenders);
