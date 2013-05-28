@@ -120,6 +120,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
     private FilterEntity noFilter;
+    private FilterEntity filterEntityBeforeCopy;
 
     private AppliedFilter lastAppliedFilter;
     private LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
@@ -544,6 +545,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
         //newFilterEntity.setCode(filterEntity.getCode());
         newFilterEntity.setXml(filterEntity.getXml());
+        filterEntityBeforeCopy = filterEntity;
         filterEntity = newFilterEntity;
     }
 
@@ -909,6 +911,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     public void editorCancelled() {
+        filterEntity = filterEntityBeforeCopy;
+        filterEntityBeforeCopy = null;
         if (filterEntity.getXml() == null)
             filterEntity = null;
 
