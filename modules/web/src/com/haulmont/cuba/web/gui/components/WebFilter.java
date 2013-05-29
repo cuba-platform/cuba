@@ -913,7 +913,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public void editorCancelled() {
         filterEntity = filterEntityBeforeCopy;
         filterEntityBeforeCopy = null;
-        if (filterEntity.getXml() == null)
+        if (filterEntity != null && filterEntity.getXml() == null)
             filterEntity = null;
 
         switchToUse();
