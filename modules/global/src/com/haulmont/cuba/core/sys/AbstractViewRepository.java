@@ -305,6 +305,12 @@ public class AbstractViewRepository implements ViewRepository {
                         }
                     }
 
+                    if (refView == null) {
+                        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(refMetaClass);
+                        if (originalMetaClass != null)
+                            refView = retrieveView(originalMetaClass, refViewName);
+                    }
+
                     if (refView == null)
                         throw new IllegalStateException(
                                 String.format(
