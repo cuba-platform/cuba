@@ -42,7 +42,6 @@ public class CubaOrderedActionsLayout extends AbstractOrderedLayout implements A
     public void paintContent(PaintTarget target) throws PaintException {
         if (actionManager != null) {
             actionManager.paintActions(null, target);
-            target.addAttribute("test", "test");
         }
     }
 
