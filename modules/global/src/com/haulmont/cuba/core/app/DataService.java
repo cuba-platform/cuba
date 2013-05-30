@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 13.11.2008 11:35:32
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -25,9 +20,8 @@ import java.util.Set;
 /**
  * Middleware service interface to provide standard CRUD functionality.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface DataService {
 

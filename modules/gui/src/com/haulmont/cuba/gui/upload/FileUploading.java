@@ -160,7 +160,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     }
 
     @Override
-    public UUID getNewDescriptor() throws FileStorageException {
+    public UUID createNewFileId() throws FileStorageException {
         UUID uuid = uuidSource.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
@@ -192,15 +192,6 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         fDesc.setCreateDate(timeSource.currentTimestamp());
 
         return fDesc;
-    }
-
-    @Override
-    public InputStream loadFile(UUID fileId) throws FileNotFoundException {
-        File f = tempFiles.get(fileId);
-        if (f != null) {
-            return new FileInputStream(f);
-        } else
-            return null;
     }
 
     @Override
