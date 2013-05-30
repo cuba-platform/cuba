@@ -689,8 +689,12 @@ public class WebWindow implements Window, Component.Wrapper,
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
-                                        getDsContext().commit();
-                                        close(COMMIT_ACTION_ID, true);
+                                        if (validateAll()) {
+                                            getDsContext().commit();
+                                            close(COMMIT_ACTION_ID, true);
+                                        } else {
+                                            doAfterClose = null;
+                                        }
                                     }
                                 },
                                 new DialogAction(DialogAction.Type.NO) {
