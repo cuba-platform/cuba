@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Resource;
@@ -54,14 +55,6 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
     public void init(Map<String, Object> params) {
     }
 
-    private String getFileExt(String fileName) {
-        int i = fileName.lastIndexOf('.');
-        if (i > -1)
-            return StringUtils.substring(fileName, i + 1, i + 20);
-        else
-            return "";
-    }
-
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
@@ -98,7 +91,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         public void uploadSucceeded(Event event) {
             getItem().setName(uploadField.getFileName());
             getItem().setCreateDate(timeSource.currentTimestamp());
-            getItem().setExtension(getFileExt(uploadField.getFileName()));
+            getItem().setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
 
             FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             File file = fileUploading.getFile(uploadField.getFileId());

@@ -55,7 +55,7 @@ public class FileStorage implements FileStorageMBean {
             List<FileDescriptor> fileDescriptors = query.getResultList();
             for (FileDescriptor fileDescriptor : fileDescriptors) {
                 File dir = fileStorage.getStorageDir(roots[0], fileDescriptor.getCreateDate());
-                File file = new File(dir, fileDescriptor.getFileName());
+                File file = new File(dir, com.haulmont.cuba.core.app.FileStorage.getFileName(fileDescriptor));
                 if (!file.exists()) {
                     sb.append(fileDescriptor.getId())
                             .append(", ")
@@ -107,7 +107,7 @@ public class FileStorage implements FileStorageMBean {
 
         Set<String> descriptorsFileNames = new HashSet<>();
         for (FileDescriptor fileDescriptor : fileDescriptors) {
-            descriptorsFileNames.add(fileDescriptor.getFileName());
+            descriptorsFileNames.add(com.haulmont.cuba.core.app.FileStorage.getFileName(fileDescriptor));
         }
 
         for (File file : systemFiles) {

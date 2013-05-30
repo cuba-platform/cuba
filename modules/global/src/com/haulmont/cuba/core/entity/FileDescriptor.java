@@ -12,8 +12,6 @@ import org.apache.commons.lang.text.StrBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -29,8 +27,6 @@ public class FileDescriptor extends StandardEntity {
 
     private static final long serialVersionUID = 564683944299730504L;
 
-    public static final String DATE_FMT = "yyyy-MM-dd";
-
     @Column(name = "NAME", length = 500)
     private String name;
 
@@ -43,6 +39,9 @@ public class FileDescriptor extends StandardEntity {
     @Column(name = "CREATE_DATE")
     private Date createDate;
 
+    /**
+     * @return file uploading timestamp
+     */
     public Date getCreateDate() {
         return createDate;
     }
@@ -51,6 +50,9 @@ public class FileDescriptor extends StandardEntity {
         this.createDate = createDate;
     }
 
+    /**
+     * @return file name including extension
+     */
     public String getName() {
         return name;
     }
@@ -59,14 +61,20 @@ public class FileDescriptor extends StandardEntity {
         this.name = name;
     }
 
+    /**
+     * @return file extension, i.e. the part of name after the last dot
+     */
     public String getExtension() {
         return extension;
     }
 
     public void setExtension(String extension) {
-        this.extension = extension;
+        this.extension = StringUtils.substring(extension, 0, 20);
     }
 
+    /**
+     * @return file size in bytes
+     */
     public Integer getSize() {
         return size;
     }
@@ -75,20 +83,9 @@ public class FileDescriptor extends StandardEntity {
         this.size = size;
     }
 
-    public String getFileExt() {
-        if (name != null) {
-            int i = name.lastIndexOf('.');
-            if (i > -1) {
-                return StringUtils.substring(name, i + 1).toLowerCase();
-            }
-        }
-        return "";
-    }
-
-    public String getFileName() {
-        return id.toString() + "." + getExtension();
-    }
-
+    /**
+     * Used by the framework to transfer file between application tiers.
+     */
     public String toUrlParam() {
         return new StrBuilder()
                 .append(id).append(",")
@@ -97,6 +94,9 @@ public class FileDescriptor extends StandardEntity {
                 .toString();
     }
 
+    /**
+     * Used by the framework to transfer file between application tiers.
+     */
     public static FileDescriptor fromUrlParam(String urlParam) {
         String[] parts = urlParam.split(",");
         if (parts.length != 3)

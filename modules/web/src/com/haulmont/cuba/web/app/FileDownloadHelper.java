@@ -5,20 +5,13 @@
  */
 package com.haulmont.cuba.web.app;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.filestorage.WebExportDisplay;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.vaadin.data.Property;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import org.apache.commons.lang.StringUtils;
 
 import java.text.NumberFormat;
 
@@ -27,20 +20,6 @@ import java.text.NumberFormat;
  * @version $Id$
  */
 public class FileDownloadHelper {
-
-    /**
-     * @deprecated Use {@link org.apache.commons.io.FilenameUtils#getExtension(String)}
-     * @param fileName
-     * @return
-     */
-    @Deprecated
-    public static String getFileExt(String fileName) {
-        int i = fileName.lastIndexOf('.');
-        if (i > -1)
-            return StringUtils.substring(fileName, i + 1, i + 20);
-        else
-            return "";
-    }
 
     public static String makeLink(FileDescriptor fd, boolean newWindow, boolean attachment) {
         StringBuilder sb = new StringBuilder();

@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -186,16 +187,11 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         FileDescriptor fDesc = new FileDescriptor();
 
         fDesc.setSize(fileSize);
-        fDesc.setExtension(getFileExt(name));
+        fDesc.setExtension(FilenameUtils.getExtension(name));
         fDesc.setName(name);
         fDesc.setCreateDate(timeSource.currentTimestamp());
 
         return fDesc;
-    }
-
-    private String getFileExt(String fileName) {
-        int i = fileName.lastIndexOf('.');
-        return i > -1 ? StringUtils.substring(fileName, i + 1, i + 20) : "";
     }
 
     @Override
@@ -239,7 +235,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         try {
             uploadFileIntoStorage(fileId, fileDescr, null);
         } catch (InterruptedIOException e) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getFileName());
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getId().toString());
         }
 
         deleteFile(fileId);

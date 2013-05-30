@@ -85,11 +85,11 @@ public class FileStorage implements FileStorageAPI {
 
         if (roots.length == 0) {
             log.error("No storage directories defined");
-            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getFileName());
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
         }
         if (!roots[0].exists()) {
             log.error("Inaccessible primary storage at " + roots[0]);
-            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getFileName());
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getId().toString());
         }
 
         File dir = getStorageDir(roots[0], fileDescr.getCreateDate());
@@ -97,7 +97,7 @@ public class FileStorage implements FileStorageAPI {
         if (!dir.exists())
             throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, dir.getAbsolutePath());
 
-        final File file = new File(dir, fileDescr.getFileName());
+        final File file = new File(dir, getFileName(fileDescr));
         if (file.exists())
             throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
 
@@ -123,7 +123,7 @@ public class FileStorage implements FileStorageAPI {
             }
 
             File copyDir = getStorageDir(roots[i], fileDescr.getCreateDate());
-            final File fileCopy = new File(copyDir, fileDescr.getFileName());
+            final File fileCopy = new File(copyDir, getFileName(fileDescr));
 
             writeExecutor.submit(new Runnable() {
                 @Override
@@ -186,7 +186,7 @@ public class FileStorage implements FileStorageAPI {
 
         for (File root : roots) {
             File dir = getStorageDir(root, fileDescr.getCreateDate());
-            File file = new File(dir, fileDescr.getFileName());
+            File file = new File(dir, getFileName(fileDescr));
             if (file.exists()) {
                 if (!file.delete())
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, "Unable to delete file " + file.getAbsolutePath());
@@ -204,14 +204,14 @@ public class FileStorage implements FileStorageAPI {
         File[] roots = getStorageRoots();
         if (roots.length == 0) {
             log.error("No storage directories available");
-            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getFileName());
+            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getId().toString());
         }
 
         InputStream inputStream = null;
         for (File root : roots) {
             File dir = getStorageDir(root, fileDescr.getCreateDate());
 
-            File file = new File(dir, fileDescr.getFileName());
+            File file = new File(dir, getFileName(fileDescr));
             if (!file.exists()) {
                 log.error("File " + file + " not found");
                 continue;
@@ -227,7 +227,7 @@ public class FileStorage implements FileStorageAPI {
         if (inputStream != null)
             return inputStream;
         else
-            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getFileName());
+            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getId().toString());
     }
 
     @Override
@@ -236,7 +236,7 @@ public class FileStorage implements FileStorageAPI {
         try {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getFileName(), e);
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getId().toString(), e);
         }
     }
 
@@ -267,5 +267,9 @@ public class FileStorage implements FileStorageAPI {
         return new File(rootDir, year + "/"
                 + StringUtils.leftPad(String.valueOf(month), 2, '0') + "/"
                 + StringUtils.leftPad(String.valueOf(day), 2, '0'));
+    }
+
+    public static String getFileName(FileDescriptor fileDescriptor) {
+        return fileDescriptor.getId().toString() + "." + fileDescriptor.getExtension();
     }
 }
