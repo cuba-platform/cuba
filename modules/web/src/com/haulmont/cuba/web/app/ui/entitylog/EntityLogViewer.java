@@ -64,7 +64,7 @@ public class EntityLogViewer extends AbstractWindow {
     }
 
     protected List<LoggedEntity> loadEntities() {
-        DataSupplier supplier = getDsContext().getDataService();
+        DataSupplier supplier = getDsContext().getDataSupplier();
         LoadContext lc = new LoadContext(LoggedEntity.class);
         lc.setQuery(new LoadContext.Query("select e from sec$LoggedEntity e"));
         lc.setView(new View(LoggedEntity.class).addProperty("name"));

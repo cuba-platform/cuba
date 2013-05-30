@@ -43,7 +43,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
     protected MessageTools messageTools;
 
     public void init(Map<String, Object> params) {
-        dataSupplier = getDsContext().getDataService();
+        dataSupplier = getDsContext().getDataSupplier();
         cb = getComponent("isDefault");
 
     }

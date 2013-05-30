@@ -139,7 +139,7 @@ public class DsContextImpl implements DsContextImplementation {
         if (commitData.isEmpty())
             return false;
 
-        final DataSupplier dataservice = getDataService();
+        final DataSupplier dataservice = getDataSupplier();
         final Set<DataSupplier> suppliers = commitData.keySet();
 
         if (suppliers.size() == 1 &&
@@ -346,7 +346,7 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     @Override
-    public DataSupplier getDataService() {
+    public DataSupplier getDataSupplier() {
         return dataservice;
     }
 

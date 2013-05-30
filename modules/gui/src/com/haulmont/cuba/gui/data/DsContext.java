@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 11:15:07
- * $Id$
  */
 package com.haulmont.cuba.gui.data;
 
@@ -19,26 +15,48 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Datasources context. Provides access to datasources
- * and automatic coordination between them on load/commit time.
+ * Interface providing access to datasources defined in a screen.
+ * <p/>
+ * Implementation of this interface serves also for automatic coordination between datasources on load/commit time.
+ *
+ * @author Abramov
+ * @version $Id$
  */
 public interface DsContext {
 
+    /**
+     * @return context of a window that owns this DsContext
+     */
     WindowContext getWindowContext();
     void setWindowContext(WindowContext context);
 
-    DataSupplier getDataService();
+    /**
+     * @return a reference to DataSupplier
+     */
+    DataSupplier getDataSupplier();
 
-    /** Get datasource by name */
+    /**
+     * Get datasource by name.
+     *
+     * @param name  datasource name
+     * @return      datasource instance or null if not found
+     */
+    @Nullable
     <T extends Datasource> T get(String name);
 
-    /** Get all datasources */
+    /**
+     * @return all datasources contained in this context
+     */
     Collection<Datasource> getAll();
 
-    /** True if any of datasources is modified */
+    /**
+     * @return true if any contained datasource is modified
+     */
     boolean isModified();
 
-    /** Refresh all datasources */
+    /**
+     * Refresh all datasources.
+     */
     void refresh();
 
     /**
@@ -49,7 +67,7 @@ public interface DsContext {
 
     /**
      * Register dependency between datasources.
-     * <br>Dependent datasource refreshed if one of the events occurs on master datasource:
+     * <br>Dependent datasource is refreshed if one of the following events occurs on master datasource:
      * <ul>
      * <li>itemChanged
      * <li>collectionChanged with Operation.REFRESH
@@ -61,9 +79,15 @@ public interface DsContext {
     void addListener(CommitListener listener);
     void removeListener(CommitListener listener);
 
+    /**
+     * @return a parent DsContext if this DsContext is defined in a frame
+     */
     @Nullable
     DsContext getParent();
-    
+
+    /**
+     * @return list of DsContext's of frames included in the current screen, if any
+     */
     List<DsContext> getChildren();
 
     /**
@@ -73,13 +97,13 @@ public interface DsContext {
      */
     public interface CommitListener {
         /**
-         * Invoked before sending data to the middleware
+         * Called before sending data to the middleware.
          * @param context   commit context
          */
         void beforeCommit(CommitContext context);
 
         /**
-         * Invoked after succesfull commit to middleware
+         * Called after a succesfull commit to the middleware.
          * @param context   commit context
          * @param result    set of committed entities returning from the middleware service
          */

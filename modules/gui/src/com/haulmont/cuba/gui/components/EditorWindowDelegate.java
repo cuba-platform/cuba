@@ -211,7 +211,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         if (context == null) {
             throw new UnsupportedOperationException();
         } else {
-            return context.getDataService();
+            return context.getDataSupplier();
         }
     }
 

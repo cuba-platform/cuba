@@ -74,7 +74,7 @@ public class DsBuilder {
         this.id = "ds";
 
         if (dsContext != null)
-            this.dataSupplier = dsContext.getDataService();
+            this.dataSupplier = dsContext.getDataSupplier();
         else
             this.dataSupplier = new GenericDataSupplier();
 

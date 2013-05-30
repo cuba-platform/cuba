@@ -71,7 +71,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     public void init(Map<String, Object> params) {
         getDialogParams().setWidth(250);
 
-        dataService = getDsContext().getDataService();
+        dataService = getDsContext().getDataSupplier();
         fieldsContainer = getComponent("attributeProperties");
 
         nameField = factory.createComponent(TextField.NAME);
