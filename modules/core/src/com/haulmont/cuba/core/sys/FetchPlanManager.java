@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import org.apache.commons.lang.ClassUtils;
@@ -18,6 +19,7 @@ import org.apache.openjpa.persistence.FetchPlan;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @ManagedBean("cuba_FetchPlanManager")
 public class FetchPlanManager {
+
+    @Inject
+    private Metadata metadata;
 
     private Map<View, Set<FetchPlanField>> fetchPlans = new ConcurrentHashMap<View, Set<FetchPlanField>>();
 
@@ -132,6 +137,10 @@ public class FetchPlanManager {
     private Class getRealClass(Class<? extends Entity> entityClass, String property) {
         if (hasDeclaredField(entityClass, property))
             return entityClass;
+
+        Class extendedClass = metadata.getExtendedEntities().getExtendedClass(metadata.getClassNN(entityClass));
+        if (extendedClass != null && hasDeclaredField(extendedClass, property))
+            return extendedClass;
 
         List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
         for (int i = 0; i < superclasses.size(); i++) {
