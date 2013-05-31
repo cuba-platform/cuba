@@ -29,29 +29,34 @@ import java.util.Map;
 /**
  * PickerField component generic interface.<br/>
  *
- * @see LookupPickerField
- *
  * @author abramov
  * @version $Id$
+ * @see LookupPickerField
  */
 public interface PickerField extends Field, Component.ActionsHolder {
 
     String NAME = "pickerField";
 
     CaptionMode getCaptionMode();
+
     void setCaptionMode(CaptionMode captionMode);
 
     String getCaptionProperty();
+
     void setCaptionProperty(String captionProperty);
 
     MetaClass getMetaClass();
+
     void setMetaClass(MetaClass metaClass);
 
     LookupAction addLookupAction();
+
     ClearAction addClearAction();
+
     OpenAction addOpenAction();
 
     void addFieldListener(FieldListener listener);
+
     void setFieldEditable(boolean editable);
 
     public interface FieldListener {
@@ -97,7 +102,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public abstract Action createAction(PickerField pickerField);
     }
 
-    public static abstract class StandardAction extends AbstractAction implements ShortcutAction{
+    public static abstract class StandardAction extends AbstractAction implements ShortcutAction {
 
         protected PickerField pickerField;
 
@@ -337,11 +342,12 @@ public interface PickerField extends Field, Component.ActionsHolder {
             if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
                 optionsDatasource.updateItem(item);
             }
-
-            boolean modified = lookupPickerField.getDatasource().isModified();
-            lookupPickerField.setValue(null);
-            lookupPickerField.setValue(item);
-            ((DatasourceImplementation) lookupPickerField.getDatasource()).setModified(modified);
+            if (lookupPickerField.getDatasource() != null) {
+                boolean modified = lookupPickerField.getDatasource().isModified();
+                lookupPickerField.setValue(null);
+                lookupPickerField.setValue(item);
+                ((DatasourceImplementation) lookupPickerField.getDatasource()).setModified(modified);
+            }
         }
 
         @Override
