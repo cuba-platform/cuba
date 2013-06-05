@@ -9978,7 +9978,7 @@ taskHandler.execute();</programlisting><para>Подробная информац
       <title>REST API</title>
       <section>
         <title>Общие сведения</title>
-        <para>Универсальный REST API платформы позволяет выполнять загрузку и сохранение  любых сущностей модели данных приложения посредством отправки простых HTTP запросов. Это открывает возможность легкой интеграции со сторонними приложениями самого широкого спектра - от JavaScript кода, выполняющегося в  браузере, до произвольных систем, работающих на Java, NET, PHP или любой другой платформе. </para>
+        <para>Универсальный REST API платформы позволяет выполнять загрузку и сохранение  любых сущностей модели данных приложения посредством отправки простых HTTP запросов. Это открывает возможность легкой интеграции со сторонними приложениями самого широкого спектра − от JavaScript кода, выполняющегося в  браузере, до произвольных систем, работающих на Java, NET, PHP или любой другой платформе. </para>
         <para>Основные возможности API:<itemizedlist>
             <listitem>
               <para>загрузка экземпляров сущностей из базы данных по идентификатору или по JPQL запросу с параметрами</para>
@@ -10015,7 +10015,173 @@ taskHandler.execute();</programlisting><para>Подробная информац
       <section>
         <title>Описание функций</title>
         <para>При стандартных настройках модуля <structname>portal</structname> все запросы к REST API должны иметь URL, начинающийся с <literal>{host:port}/app-portal/api</literal>.</para>
-        <para>TODO</para>
+        <para>Все функции требуют наличия сессии аутентифицированного пользователя, то есть  необходимо выполнить логин.</para>
+        <section>
+          <title>Логин</title>
+          <para>Логин можно выполнить либо GET, либо POST запросом.</para>
+          <variablelist>
+            <varlistentry>
+              <term>GET запрос</term>
+              <listitem>
+                <para>В случае GET запроса сформируйте URL <code>{host:port}/app-portal/api/login</code> с параметрами:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para><emphasis role="bold">u</emphasis> − логин пользователя</para>
+                  </listitem>
+                  <listitem>
+                    <para><emphasis role="bold">p</emphasis> − пароль пользователя</para>
+                  </listitem>
+                  <listitem>
+                    <para><emphasis role="bold">l</emphasis> −  локаль пользователя (опционально)</para>
+                  </listitem>
+                </itemizedlist>
+                <para>Например:</para>
+                <programlisting>http://localhost:8080/app-portal/api/login?u=admin&amp;p=admin&amp;l=ru</programlisting>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>POST запрос</term>
+              <listitem>
+                <para>Для выполнения логина через POST необходимо выполнить запрос по адресу <code>{host:port}/app-portal/api/login</code>, при этом в теле запроса передается JSON (заголовок <code>Content-Type</code> имеет значение <code>application/json</code>) или форма (заголовок <code>Content-Type</code> имеет значение <code>application/x-www-form-urlencoded</code>)</para>
+                <para>Пример  формата JSON:</para>
+                <programlisting>{
+    &quot;username&quot; : &quot;admin&quot;,
+    &quot;password&quot; : &quot;admin&quot;,
+    &quot;locale&quot; : &quot;en&quot;,
+}</programlisting>
+                <para>Пример формы:</para>
+                <programlisting>username: admin
+password: admin
+locale: en</programlisting>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <para>В ответ сервис вернет <code>userSessionId</code> в теле ответа и статус 200 или статус 401, если аутентификация не удалась.</para>
+        </section>
+        <section>
+          <title>Загрузка экземпляра персистентного объекта из базы данных по идентификатору</title>
+          <para>Для получения объекта необходимо выполнить GET запрос <code>{host:port}/app-portal/api/find.&lt;format&gt;?e=&lt;entityRef&gt;&amp;s=&lt;sessionId&gt;</code> с параметрами:</para>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="bold">e</emphasis> − описание требуемого объекта в формате <code>&lt;entity-id&gt;</code> или <code>&lt;entity-id-view&gt;</code>(см. класс <code>EntityLoadInfo</code>), например, <code>sales$Order-43c61345-d23c-48fe-ab26-567504072f05-_local</code>. То есть формат позволяет указать  требуемое <link linkend="views">представление</link> загруженного объекта.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">s</emphasis> − идентификатор текущей сессии.</para>
+            </listitem>
+          </itemizedlist>
+          <para><emphasis role="bold">format</emphasis>  задает формат получения результата. Принимает два значения: <code>xml</code> или <code>json</code>.</para>
+          <para>Пример запроса, возвращающего результат в формате <code>xml</code>:</para>
+          <programlisting>http://localhost:8080/app-portal/api/find.xml?e=sales$Order-60885987-1b61-4247-94c7-dff348347f93-orderWithCustomer&amp;s=c38f6bf4-fae7-4ee6-a412-9d93ff243f23</programlisting>
+          <para>Пример запроса, возвращающего результат в формате <code>json</code></para>
+          <programlisting>http://localhost:8080/app-portal/api/find.json?e=sales$Order-60885987-1b61-4247-94c7-dff348347f93-orderWithCustomer&amp;s=c38f6bf4-fae7-4ee6-a412-9d93ff243f23</programlisting>
+        </section>
+        <section>
+          <title>Выполнение JPQL запроса для выборки данных</title>
+          <para>Для выполнения запроса необходимо выполнить GET запрос <code>{host:port}/app-portal/api/query.&lt;format&gt;?e=&lt;entity&gt;&amp;s=&lt;sessionId&gt;&amp;q=&lt;encoded query string&gt;&amp;param1=&lt;value 1&gt;$param1_type=&lt;type 1&gt;&amp;paramN=&lt;value N&gt;&amp;paramN_type=&lt;type N&gt;&amp;view=&lt;viewName&gt;&amp;firstResult=&lt;firstResult&gt;&amp;maxResults=&lt;maxResults&gt;</code> с параметрами:</para>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="bold">e</emphasis> − имя сущности</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">q</emphasis> − строка запроса к данным на <link linkend="jpql">JPQL</link>. Запрос может содержать параметры. Их значения указываются как значения одноименных параметров HTTP запроса.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">s</emphasis> − идентификатор текущей сессии</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">view</emphasis> −  <link linkend="views">опционально, представление</link>, с которым требуется загружать данные</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">max</emphasis> − опцонально, максимальное количество строк возвращаемых данных (аналогично JPA   <code>setMaxResults</code>)</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">first</emphasis> − опцонально, номер первой строки возвращаемых данных (аналогично JPA <code>setFirstResult</code>)</para>
+            </listitem>
+          </itemizedlist>
+          <para><emphasis role="bold">format</emphasis>  задает формат получения результата. Принимает два значения: <code>xml</code> или <code>json</code>.</para>
+          <para>Например:</para>
+          <programlisting>http://localhost:8080/app-portal/api/query.json?e=sales$Customer&amp;q=select%20c%20from%20sales$Customer%20c&amp;s=748e5d3f-1eaf-4b38-bf9d-8d838587367d&amp;view=_local</programlisting>
+          <programlisting>http://localhost:8080/app-portal/api/query.json?e=sales$Customer&amp;q=select%20c%20from%20sales$Customer%20c%20where%20c.name=:specName&amp;s=748e5d3f-1eaf-4b38-bf9d-8d838587367d&amp;specName=Петров</programlisting>
+          <para>Для каждого из передаваемых параметров можно явно указать его тип, добавив в запрос одноименный параметр с суффиксом <code>_type</code>. Например:</para>
+          <programlisting>http://localhost:8080/app-portal/api/query.json?e=sales$Customer&amp;q=select%20c%20from%20sales$Customer%20c%20where%20c.name=:specName&amp;s=748e5d3f-1eaf-4b38-bf9d-8d838587367d&amp;specName=Петров&amp;specName_type=string</programlisting>
+          <para>Указание типа параметра не является обязательным, но позволяет  избежать ошибок парсинга, если система не сможет определить тип.</para>
+          <para>В общем случае тип стоит указывать лишь для строковых параметров, которые по какой-либо причине имеют формат более узких типов (даты, чисел, uuid), но должны интерпретироваться именно как строки.</para>
+          <para>Список доступных типов можно увидеть в описании мета-модели (пункт меню <guimenu>Помощь</guimenu> −&gt; <guimenu>Модель данных</guimenu>) или получив <link linkend="getHTMLModel">HTML-описание модели</link>.</para>
+        </section>
+        <section>
+          <title>Коммит новых или измененных экземпляров, удаление</title>
+          <para>Функция коммита позволяет выполнять операции над переданными ей объектами и возвращает их старое и новое состояния. Формат результата определяется тем, какой формат (JSON или XML) был использован для запроса (заголовок <code>Content-Type</code>). </para>
+          <variablelist>
+            <varlistentry>
+              <term>Формат JSON</term>
+              <listitem>
+                <para>В качестве заголовка  <code>Content-Type</code> следует использовать  значение <code>application/json</code></para>
+                <para>Пример формата JSON:</para>
+                <programlisting>{
+    commitInstances: [{
+        id: sales$Customer-afa06919-4f62-491f-850c-c5c284bba13a,
+        name: Petrov       
+        }
+    ],
+    removeInstances: [{
+            id: sales$Customer-6bb6b972-72b1-41cd-ab06-0f9bcb4619c2
+        }
+    ],
+    softDeletion: true
+}</programlisting>
+                <para>Массив <code>commitInstances</code> содержит создаваемые или изменяемые сущности. Для создаваемой сущности в поле <code>id</code> используется префикс <code>NEW-</code>: <code>NEW-&lt;entityName&gt;</code> или <code>NEW-&lt;entityName&gt;-&lt;uuid&gt;</code>. Для модифицируемых сущностей здесь указывается значение <code>&lt;entityName&gt;-&lt;uuid&gt;</code>.</para>
+                <para>Массив <code>removeInstances</code> содержит удаляемые объекты. Перед удалением будет выполнен <code>merge()</code> переданных объектов, что позволяет, например, проверить, не изменилась ли версия удаляемого объекта.</para>
+                <para>Булевское поле <code>softDeletion</code> говорит о том, что экземпляры  будут лишь помечены как удаленные без их реального удаления.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Формат XML</term>
+              <listitem>
+                <para>В качестве заголовка  <code>Content-Type</code> следует использовать  значение <code>text/xml</code></para>
+                <para>Пример формата XML</para>
+                <programlisting>&lt;CommitRequest&gt;
+    &lt;commitInstances&gt;
+        &lt;instance id=&quot;sales$Order-afa06919-4f62-491f-850c-c5c284bba13b&quot;&gt;
+            &lt;basic name=&quot;amount&quot;&gt;12&lt;/basic&gt;
+            &lt;one-to-one name=&quot;customer&quot;&gt;
+                &lt;ref id=&quot;sales$Customer-6bb6b972-72b1-41cd-ab06-0f9bcb4619c2&quot;/&gt;
+            &lt;/one-to-one&gt;
+        &lt;/instance&gt;
+    &lt;/commitInstances&gt;
+    &lt;removeInstances&gt;
+        &lt;instance id=&quot;sales$Order-d67c10f0-4d28-4904-afca-4bc45654985d&quot;/&gt;
+    &lt;/removeInstances&gt;
+    &lt;softDeletion&gt;true&lt;/softDeletion&gt;
+&lt;/CommitRequest&gt;</programlisting>
+                <para>Семантика полей XML-документа совпадает с семантикой аналогичных полей для JSON. Передаваемые сущности описываются элементами  <sgmltag>instance</sgmltag>, имеющими атрибут <sgmltag>id</sgmltag>. Возможное содержание данного атрибута совпадает с содержанием поля <sgmltag>id</sgmltag> для формата JSON. Внутри элемента  <sgmltag>instance</sgmltag> возможны элементы  <sgmltag>ref</sgmltag>, <sgmltag>basic</sgmltag>, <sgmltag>one-to-one</sgmltag> или <sgmltag>embedded</sgmltag>. </para>
+                <para><sgmltag>ref</sgmltag>  означает поле <code>id</code> объекта. Важно, что в отличие от атрибута <sgmltag>id</sgmltag> в элементе <sgmltag>instance</sgmltag> текстовое значение элемента <sgmltag>ref</sgmltag> содержит &quot;чистое&quot; значение <sgmltag>id</sgmltag>, то есть без указания сущности. </para>
+                <para><sgmltag>basic</sgmltag> − простой тип атрибута. </para>
+                <para><sgmltag>one-to-one</sgmltag> или <sgmltag>embedded</sgmltag> − соответственно ссылка на единичный объект или описание вложенного объекта. Пример описания вложенного объекта:</para>
+                <programlisting>&lt;embedded name=&quot;address&quot;&gt;
+    &lt;basic name=&quot;country&quot;&gt;USA&lt;/basic&gt;
+    &lt;basic name=&quot;state&quot;&gt;TX&lt;/basic&gt;
+    &lt;basic name=&quot;city&quot;&gt;Austin&lt;/basic&gt;
+&lt;/embedded&gt;</programlisting>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+          <para>Функция вызывается посредством POST обращения к <code>{host:port}/app-portal/api/commit?s=&lt;sessionId&gt;</code>. XML или JSON передается в теле запроса. Функция возвращает массив пар объектов JSON или XML вида</para>
+          <programlisting>&lt;mapping&gt;
+    &lt;pair&gt;
+        &lt;instance ...&gt;
+        &lt;instance ...&gt;
+    &lt;/pair&gt;
+&lt;/mapping&gt;</programlisting>
+          <para>Первым внутри пары возвращается переданный объект, вторым −  модифицированный объект.</para>
+        </section>
+        <section id="getHTMLModel">
+          <title>Получение описания модели данных в формате HTML</title>
+          <para>Обращение GET по адресу <code>/printDomain?s=&lt;sessionId&gt;</code> позволяет разработчику получить описание модели данных. Сервис возвращает простой HTML, содержайщий список имен базовых типов данных, описание всех сущностей метамодели, их атрибутов и определенных для сущностей <link linkend="views">представлений</link>.</para>
+        </section>
+        <section>
+          <title>Cоздание новых представлений на сервере</title>
+          <para>Запрос POST по адресу <code>/deployViews?s=&lt;sessionId&gt;</code> позволяет загрузить на сервер нужные клиенту определения объектов-<link linkend="views">представлений</link>. Объекты-представления отсылаются в виде стандартного xml-описания представления, используемого в платформе. XML помещается в тело запроса. Подробнее о формате см. <xref linkend="views"/></para>
+        </section>
       </section>
     </section>
   </section>
