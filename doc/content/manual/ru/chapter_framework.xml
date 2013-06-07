@@ -2822,7 +2822,7 @@ public class Orders implements OrdersMBean {
           <listitem>
             <para>Регистрация JMX-бина в <filename>spring.xml</filename>:</para>
             <programlisting>&lt;bean id=&quot;sales_MBeanExporter&quot; lazy-init=&quot;false&quot; 
-      class=&quot;com.haulmont.cuba.jmxcontrol.export.MBeanExporter&quot;&gt;
+      class=&quot;com.haulmont.cuba.core.sys.jmx.MBeanExporter&quot;&gt;
     &lt;property name=&quot;beans&quot;&gt;
         &lt;map&gt;
             &lt;entry key=&quot;${cuba.webContextName}.sales:type=Orders&quot;
@@ -3665,11 +3665,15 @@ public void someServiceMethod() {
         <para>Проект CUBA-приложения всегда содержит два набора SQL скриптов:<itemizedlist>
             <listitem>
               <para>Скрипты создания БД - предназначены для создания базы данных с нуля.</para>
-              <para>Скрипты создания располагаются в каталоге <filename>/db/init</filename> модуля <structname>core</structname>. Для каждого типа СУБД, поддерживаемой приложением, создается свой набор скриптов и располагается в подкаталоге с именем, соответствующим значению перечисления <code>DbmsType</code>, например, <filename>/db/init/postgres</filename>. Имена скриптов создания должны иметь вид <filename>{optional_prefix}create-db.sql</filename>.</para>
+              <para>Скрипты создания располагаются в каталоге <filename>/db/init</filename> модуля <structname>core</structname>. Для каждого типа СУБД, поддерживаемой приложением, создается свой набор скриптов и располагается в подкаталоге с именем, соответствующим свойству приложения <property>
+                  <link linkend="cuba.dbmsType">cuba.dbmsType</link>
+                </property>, например, <filename>/db/init/postgres</filename>. Имена скриптов создания должны иметь вид <filename>{optional_prefix}create-db.sql</filename>.</para>
             </listitem>
             <listitem>
               <para>Скрипты обновления БД - предназначены для поэтапного приведения структуры БД к текущему состоянию <link linkend="data_model">модели данных</link>.</para>
-              <para>Скрипты обновления располагаются в каталоге <filename>/db/update</filename> модуля <structname>core</structname>. Для каждого типа СУБД, поддерживаемой приложением,  создается свой набор скриптов и располагается в подкаталоге с именем, соответствующим значению перечисления <code>DbmsType</code>, например, <filename>/db/update/postgres</filename>. </para>
+              <para>Скрипты обновления располагаются в каталоге <filename>/db/update</filename> модуля <structname>core</structname>. Для каждого типа СУБД, поддерживаемой приложением,  создается свой набор скриптов и располагается в подкаталоге с именем, соответствующим свойству приложения <property>
+                  <link linkend="cuba.dbmsType">cuba.dbmsType</link>
+                </property>, например, <filename>/db/update/postgres</filename>. </para>
               <para>Скрипты обновления должны иметь имена, которые при сортировке в алфавитном порядке образуют правильную последовательность их выполнения (обычно это хронологическая последовательность их создания). Поэтому рекомендуется задавать имя скрипта обновления в виде <filename>{yymmdd}-{description}.sql</filename>, где <literal>yy</literal> - год, <literal>mm</literal> - месяц, <literal>dd</literal> - день, <literal>description</literal> - краткое описание скрипта. Например, <filename>121003-addCodeToCategoryAttribute.sql</filename>.</para>
               <para>Скрипты обновления можно группировать в подкаталоги, главное чтобы путь к скрипту с учетом подкаталога не нарушал хронологической последовательности. Например, можно создавать подкаталоги по номеру года или по году и месяцу.</para>
             </listitem>

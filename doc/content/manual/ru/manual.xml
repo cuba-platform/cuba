@@ -815,7 +815,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <varlistentry id="cuba.dbmsType">
         <term>cuba.dbmsType</term>
         <listitem>
-          <para>Задает тип используемой базы данных. Возможные значения соответствуют значениям перечисления <code>DbmsType</code> без учета регистра: <literal>hsql</literal>, <literal>postgres</literal>, <literal>mssql</literal>, <literal>oracle</literal>.</para>
+          <para>Задает тип используемой базы данных. Возможные значения соответствуют строковым константам, объявленным в интерфейсе <code>DbDialect</code>: <literal>hsql</literal>, <literal>postgres</literal>, <literal>mssql</literal>, <literal>oracle</literal>.</para>
           <para>Значение по умолчанию: <literal>hsql</literal></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
