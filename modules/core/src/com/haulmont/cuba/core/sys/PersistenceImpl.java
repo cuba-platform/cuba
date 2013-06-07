@@ -8,8 +8,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
-import com.haulmont.cuba.core.sys.persistence.EntityTransactionListener;
+import com.haulmont.cuba.core.sys.persistence.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -39,6 +38,8 @@ import java.lang.reflect.Proxy;
 public class PersistenceImpl implements Persistence {
 
     private DbDialect dbDialect;
+
+    private DbTypeConverter dbTypeConverter;
 
     private volatile boolean softDeletion = true;
 
@@ -102,6 +103,29 @@ public class PersistenceImpl implements Persistence {
             }
         }
         return dbDialect;
+    }
+
+    @Override
+    public DbTypeConverter getDbTypeConverter() {
+        if (dbTypeConverter == null) {
+            switch (DbmsType.getCurrent()) {
+                case HSQL:
+                    dbTypeConverter = new HSQLTypeConverter();
+                    break;
+                case POSTGRES:
+                    dbTypeConverter = new PostgresTypeConverter();
+                    break;
+                case MSSQL:
+                    dbTypeConverter = new MssqlTypeConverter();
+                    break;
+                case ORACLE:
+                    dbTypeConverter = new OracleTypeConverter();
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unsupported DBMS type: " + DbmsType.getCurrent());
+            }
+        }
+        return dbTypeConverter;
     }
 
     @Override

@@ -10,8 +10,10 @@ package com.haulmont.cuba.core.global;
  * Interface implemented by {@link com.haulmont.cuba.core.global.DbDialect} implementation
  *  if the underlaying database supports sequences 
  */
-public interface SequenceSupport
-{
+public interface SequenceSupport {
+
+    String SQL_DELIMITER = "^";
+
     String sequenceExistsSql(String sequenceName);
 
     String createSequenceSql(String sequenceName, long startValue, long increment);
@@ -21,6 +23,4 @@ public interface SequenceSupport
     String getNextValueSql(String sequenceName);
 
     String getCurrentValueSql(String sequenceName);
-
-    String getScriptSeparator();
 }

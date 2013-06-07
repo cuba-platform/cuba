@@ -42,8 +42,8 @@ public class HsqlDbDialect extends DbDialect implements SequenceSupport {
     }
 
     @Override
-    public String getName() {
-        return "sql";
+    public String getDbmsType() {
+        return DBMS_HSQL;
     }
 
     @Override
@@ -59,10 +59,5 @@ public class HsqlDbDialect extends DbDialect implements SequenceSupport {
     @Override
     public String getUniqueConstraintViolationPattern() {
         return "Violation of unique index (.+): duplicate value\\(s\\) for column\\(s\\) (.+) in statement";
-    }
-
-    @Override
-    public String getScriptSeparator() {
-        return ";";
     }
 }

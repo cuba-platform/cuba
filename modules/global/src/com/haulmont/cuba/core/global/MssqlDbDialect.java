@@ -17,8 +17,8 @@ import java.text.SimpleDateFormat;
 public class MssqlDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
-    public String getName() {
-        return "mssql";
+    public String getDbmsType() {
+        return DBMS_MSSQL;
     }
 
     @Override
@@ -34,11 +34,6 @@ public class MssqlDbDialect extends DbDialect implements SequenceSupport {
     @Override
     public String getUniqueConstraintViolationPattern() {
         return "with unique index \'(.+)\'";
-    }
-
-    @Override
-    public String getScriptSeparator() {
-        return "^";
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.MssqlDbDialect;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
@@ -38,6 +39,8 @@ import java.util.*;
 public class DbUpdaterEngine implements DbUpdater {
 
     private static final String SQL_EXTENSION = "sql";
+
+    private static final String SQL_DELIMITER = "^";
 
     private static final Log log = LogFactory.getLog(DbUpdaterEngine.class);
 
@@ -120,7 +123,7 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "update");
-                File scriptDir = new File(initDir, getDbDialect().getName());
+                File scriptDir = new File(initDir, DbmsType.getCurrent().getId());
                 if (scriptDir.exists()) {
                     Collection list = FileUtils.listFiles(scriptDir, null, true);
                     URI scriptDirUri = scriptDir.toURI();
@@ -307,7 +310,7 @@ public class DbUpdaterEngine implements DbUpdater {
             throw new RuntimeException(e);
         }
         StrTokenizer tokenizer = new StrTokenizer(script,
-                StrMatcher.charSetMatcher(getDbDialect().getScriptSeparator()),
+                StrMatcher.charSetMatcher(SQL_DELIMITER),
                 StrMatcher.singleQuoteMatcher()
         );
         QueryRunner runner = new QueryRunner(getDataSource());
@@ -353,7 +356,7 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "init");
-                File scriptDir = new File(initDir, getDbDialect().getName());
+                File scriptDir = new File(initDir, DbmsType.getCurrent().getId());
                 if (scriptDir.exists()) {
                     File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
                         @Override

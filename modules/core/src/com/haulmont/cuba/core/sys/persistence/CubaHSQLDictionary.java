@@ -19,6 +19,6 @@ public class CubaHSQLDictionary extends HSQLDictionary
     }
 
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
-        return DBDictionaryUtils.getWhere(this, sel, forUpdate, false);
+        return DBDictionaryUtils.getWhere(this, sel, forUpdate, true);
     }
 }

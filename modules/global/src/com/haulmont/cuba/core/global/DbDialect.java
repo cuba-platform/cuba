@@ -16,13 +16,23 @@ import java.io.Serializable;
  * @see HsqlDbDialect
  * @see PostgresDbDialect
  * @see MssqlDbDialect
+ * @see OracleDbDialect
  */
 public abstract class DbDialect implements Serializable {
 
+    public static final String DBMS_HSQL = "hsql";
+    public static final String DBMS_POSTGRES = "postgres";
+    public static final String DBMS_MSSQL = "mssql";
+    public static final String DBMS_ORACLE = "oracle";
+
     /**
-     * @return  the dialect name
+     * @return  the DBMS type ID
+     * @see #DBMS_HSQL
+     * @see #DBMS_POSTGRES
+     * @see #DBMS_MSSQL
+     * @see #DBMS_ORACLE
      */
-    public abstract String getName();
+    public abstract String getDbmsType();
 
     /**
      * @return  primary key column name
@@ -38,9 +48,4 @@ public abstract class DbDialect implements Serializable {
      * @return  regexp to extract a unique constraint name from an exception message
      */
     public abstract String getUniqueConstraintViolationPattern();
-
-    /**
-     * @return  character to separate SQL statements in scripts
-     */
-    public abstract String getScriptSeparator();
 }

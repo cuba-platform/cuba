@@ -14,14 +14,17 @@ import java.util.Map;
 
 /**
  * System level enum encapsulating ORM initialization differences.
- * <p>In an application code use {@link com.haulmont.cuba.core.global.DbDialect} instead.</p>
+ * <p/>
+ * For internal use only, in application code use {@link com.haulmont.cuba.core.global.DbDialect} and
+ * {@link DbTypeConverter} obtained from {@link com.haulmont.cuba.core.Persistence} bean.
+ *
  *
  * @author krivopustov
  * @version $Id$
  */
 public enum DbmsType {
 
-    HSQL(new HSQLTypeConverter()) {
+    HSQL() {
         @Override
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<String, String>();
@@ -33,7 +36,7 @@ public enum DbmsType {
         }
     },
 
-    POSTGRES(new PostgresTypeConverter()) {
+    POSTGRES() {
         @Override
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<String, String>();
@@ -45,7 +48,7 @@ public enum DbmsType {
         }
     },
 
-    MSSQL(new MssqlTypeConverter()) {
+    MSSQL() {
         @Override
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<String, String>();
@@ -57,7 +60,7 @@ public enum DbmsType {
         }
     },
 
-    ORACLE(new OracleTypeConverter()) {
+    ORACLE() {
         @Override
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<String, String>();
@@ -72,14 +75,8 @@ public enum DbmsType {
 
     public abstract Map<String, String> getJpaParameters();
 
-    private DbTypeConverter typeConverter;
-
-    DbmsType(DbTypeConverter typeConverter) {
-        this.typeConverter = typeConverter;
-    }
-
-    public DbTypeConverter getTypeConverter() {
-        return typeConverter;
+    public String getId() {
+        return name().toLowerCase();
     }
 
     public static DbmsType getCurrent() {

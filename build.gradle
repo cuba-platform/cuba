@@ -67,7 +67,7 @@ def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.
 def asm = [group: 'asm', name: 'asm', version: '3.3.1']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.7.20121205']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
-def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
+def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
         webModule, desktopModule, uiTestModule, portalModule]) {
@@ -480,7 +480,7 @@ dependencies {
 
 def dbName = 'cubadb'
 def File dbDataDir = file('data')
-def File dbSqlDir = file('modules/core/db/init/sql')
+def File dbSqlDir = file('modules/core/db/init/hsql')
 def dbClasspath = configurations.jdbc.fileCollection { true }.asPath
 
 task startDb(description: 'Starts local HSQLDB server') << {
@@ -499,8 +499,8 @@ task startDb(description: 'Starts local HSQLDB server') << {
 
 task stopDb(description: 'Stops local HSQLDB server') << {
     try {
-        ant.sql(classpath: dbClasspath, delimiter: ";",
-                driver: 'org.hsqldb.jdbcDriver',
+        ant.sql(classpath: dbClasspath,
+                driver: 'org.hsqldb.jdbc.JDBCDriver',
                 url: "jdbc:hsqldb:hsql://localhost/$dbName",
                 userid: 'sa', password: '',
                 autocommit: true,
@@ -519,11 +519,18 @@ task removeDb(description: 'Removes local HSQL database') << {
 }
 
 task createDb(description: 'Creates local HSQL database') << {
-    ant.sql(classpath: dbClasspath, src: "$dbSqlDir/create-db.sql", delimiter: ";",
-            driver: 'org.hsqldb.jdbcDriver',
+    ant.sql(classpath: dbClasspath,
+            driver: 'org.hsqldb.jdbc.JDBCDriver',
             url: "jdbc:hsqldb:hsql://localhost/$dbName",
             userid: 'sa', password: '',
-            autocommit: true
+            autocommit: true,
+            'drop schema public cascade'
+    )
+    ant.sql(classpath: dbClasspath, src: "$dbSqlDir/create-db.sql", delimiter: '^',
+            driver: 'org.hsqldb.jdbc.JDBCDriver',
+            url: "jdbc:hsqldb:hsql://localhost/$dbName",
+            userid: 'sa', password: '',
+            autocommit: true,
     )
 }
 

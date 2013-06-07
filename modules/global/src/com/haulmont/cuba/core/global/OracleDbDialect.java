@@ -34,8 +34,8 @@ public class OracleDbDialect extends DbDialect implements SequenceSupport {
     }
 
     @Override
-    public String getName() {
-        return "oracle";
+    public String getDbmsType() {
+        return DBMS_ORACLE;
     }
 
     @Override
@@ -51,10 +51,5 @@ public class OracleDbDialect extends DbDialect implements SequenceSupport {
     @Override
     public String getUniqueConstraintViolationPattern() {
         return "ERROR: duplicate key value violates unique constraint \"(.+)\"";
-    }
-
-    @Override
-    public String getScriptSeparator() {
-        return "^";
     }
 }

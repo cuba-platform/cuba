@@ -41,7 +41,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         SequenceSupport support = getSequenceSqlProvider();
         String sqlScript = support.getNextValueSql(seqName);
 
-        return getResult(seqName, support, sqlScript);
+        return getResult(seqName, sqlScript);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         SequenceSupport support = getSequenceSqlProvider();
         String sqlScript = support.getCurrentValueSql(seqName);
 
-        return getResult(seqName, support, sqlScript);
+        return getResult(seqName, sqlScript);
     }
 
     @Override
@@ -62,19 +62,19 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         Transaction tx = persistence.getTransaction();
         try {
             checkSequenceExists(seqName);
-            executeScript(support, sqlScript);
+            executeScript(sqlScript);
             tx.commit();
         } finally {
             tx.end();
         }
     }
 
-    private long getResult(String seqName, SequenceSupport support, String sqlScript) {
+    private long getResult(String seqName, String sqlScript) {
         Transaction tx = persistence.getTransaction();
         try {
             checkSequenceExists(seqName);
 
-            Object value = executeScript(support, sqlScript);
+            Object value = executeScript(sqlScript);
             tx.commit();
             if (value instanceof Long)
                 return (Long) value;
@@ -91,9 +91,9 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         }
     }
 
-    private Object executeScript(SequenceSupport support, String sqlScript) {
+    private Object executeScript(String sqlScript) {
         EntityManager em = persistence.getEntityManager();
-        StrTokenizer tokenizer = new StrTokenizer(sqlScript, support.getScriptSeparator());
+        StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
         Object value = null;
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();

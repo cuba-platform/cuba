@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.DataServiceQueryBuilder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import org.apache.commons.lang.ObjectUtils;
@@ -143,17 +144,19 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
+            DbTypeConverter converter = persistence.getDbTypeConverter();
 
             String sql = "insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, ENTITY_ID) values ('"
                     + userSessionId + "', " + queryKey + ", ?)";
             QueryRunner runner = new QueryRunner();
             try {
+
                 int[] paramTypes = new int[] { Types.OTHER };
                 for (int i = 0; i < idList.size(); i += BATCH_SIZE) {
                     List<UUID> sublist = idList.subList(i, Math.min(i + BATCH_SIZE, idList.size()));
                     Object[][] params = new Object[sublist.size()][1];
                     for (int j = 0; j < sublist.size(); j++) {
-                        params[j][0] = sublist.get(j);
+                        params[j][0] = converter.getSqlObject(sublist.get(j));
                     }
                     runner.batch(em.getConnection(), sql, params, paramTypes);
                 }
