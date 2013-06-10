@@ -82,6 +82,16 @@ public class EditorWindowDelegate extends WindowDelegate {
                 }
         );
 
+        this.window.addAction(new AbstractShortcutAction("commitAndCloseShortcutAction",
+                new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
+
+            @Override
+            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                editor.commitAndClose();
+            }
+        });
+
+
         this.window.addAction(
                 new AbstractAction(Window.Editor.WINDOW_CLOSE) {
                     @Override

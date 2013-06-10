@@ -802,17 +802,6 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     public static class Editor extends DesktopWindow implements Window.Editor {
 
-        public Editor() {
-            super();
-            addAction(new AbstractShortcutAction("commitAndCloseAction",
-                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
-                @Override
-                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                    commitAndClose();
-                }
-            });
-        }
-
         @Override
         protected WindowDelegate createDelegate() {
             return new EditorWindowDelegate(this);

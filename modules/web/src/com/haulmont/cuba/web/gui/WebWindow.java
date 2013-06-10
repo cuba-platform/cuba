@@ -818,17 +818,6 @@ public class WebWindow implements Window, Component.Wrapper,
 
     public static class Editor extends WebWindow implements Window.Editor {
 
-        public Editor() {
-            super();
-            addAction(new AbstractShortcutAction("commitAndCloseAction",
-                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
-                @Override
-                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                    commitAndClose();
-                }
-            });
-        }
-
         @Override
         protected WindowDelegate createDelegate() {
             return new EditorWindowDelegate(this);
