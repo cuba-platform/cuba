@@ -133,14 +133,16 @@ public class AbstractViewRepository implements ViewRepository {
         return view;
     }
 
-    private View deployDefaultView(MetaClass metaClass, String name) {
+    protected View deployDefaultView(MetaClass metaClass, String name) {
         metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
 
         Class<? extends BaseEntity> javaClass = metaClass.getJavaClass();
         View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
             for (MetaProperty property : metaClass.getProperties()) {
-                if (!property.getRange().isClass() && !metadata.getTools().isSystem(property)) {
+                if (!property.getRange().isClass()
+                        && !metadata.getTools().isSystem(property)
+                        && metadata.getTools().isPersistent(property)) {
                     view.addProperty(property.getName());
                 }
             }

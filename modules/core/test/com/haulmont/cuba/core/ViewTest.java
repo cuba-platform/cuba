@@ -7,9 +7,11 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
+import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 
@@ -204,5 +206,11 @@ public class ViewTest extends CubaTestCase {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void testNoTransientPropertiesInLocalView() throws Exception {
+        View view = metadata.getViewRepository().getView(EntitySnapshot.class, View.LOCAL);
+        ViewProperty prop = view.getProperty("label");
+        assertNull(prop);
     }
 }
