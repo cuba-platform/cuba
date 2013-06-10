@@ -1426,6 +1426,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
 
     @Override
     public List<Table.Column> getNotCollapsedColumns() {
+        if (component.getVisibleColumns() == null)
+            return Collections.emptyList();
+
         final List<Table.Column> visibleColumns = new ArrayList<>(component.getVisibleColumns().length);
         Object[] keys = component.getVisibleColumns();
         for (final Object key : keys) {
