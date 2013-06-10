@@ -97,7 +97,7 @@
     </section>
     <section>
       <title>Обратная связь</title>
-      <para>Если  у Вас имеются предложения по улучшению данного руководства, пожалуйста, обратитесь в службу поддержки по электронной почте <email>cuba@haulmont.com</email>. В теме письма укажите тег <code>[Documentation]</code>.</para>
+      <para>Если  у Вас имеются предложения по улучшению данного руководства, пожалуйста, обратитесь в службу поддержки по электронной почте <email>info@cuba-platform.com</email>. В теме письма укажите тег <code>[Documentation]</code>.</para>
       <para>Если Вы обнаружили ошибку, укажите, пожалуйста, номер главы и приведите небольшой участок окружающего текста для облегчения поиска. </para>
     </section>
   </preface>
@@ -473,11 +473,11 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         </itemizedlist></para>
       <para>Пример файла <filename>screens.xml</filename>:<programlisting>&lt;screen-config xmlns=&quot;http://schemas.haulmont.com/cuba/4.0/screens.xsd&quot;&gt;
 
-    &lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-browse.xml&quot;/&gt;
-    &lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-edit.xml&quot;/&gt;
+    &lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/sample/sales/gui/customer/customer-browse.xml&quot;/&gt;
+    &lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/sample/sales/gui/customer/customer-edit.xml&quot;/&gt;
 
-    &lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/haulmont/sales/gui/order/order-browse.xml&quot;/&gt;
-    &lt;screen id=&quot;sales$Order.edit&quot; template=&quot;/com/haulmont/sales/gui/order/order-edit.xml&quot;/&gt;
+    &lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/sample/sales/gui/order/order-browse.xml&quot;/&gt;
+    &lt;screen id=&quot;sales$Order.edit&quot; template=&quot;/com/sample/sales/gui/order/order-edit.xml&quot;/&gt;
 
 &lt;/screen-config&gt;</programlisting></para>
     </section>

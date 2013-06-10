@@ -219,7 +219,7 @@ Order.amount=Сумма</programlisting></para>
         <para>Элемент <sgmltag>rowsCount</sgmltag> позволяет организовать постраничный вывод данных таблицы и отобразить общее количество строк.</para>
         <para>Элемент <sgmltag>actions</sgmltag> задает набор контекстных действий с таблицей. В нашем случае все указанные действия являются стандартными (что определяется именем действия в атрибуте <sgmltag>id</sgmltag> элемента <sgmltag>action</sgmltag>), и не требуют дополнительного кодирования. Задание некоторого действия для таблицы приводит к появлению соответствующего пункта контекстного меню таблицы.</para>
         <para>Над таблицей находится панель (элемент <sgmltag>buttonsPanel</sgmltag>), содержащая кнопки для управления данными в этой таблице. Кнопки связаны с действиями (<sgmltag>actions</sgmltag>) таблицы, и в данном случае дублируют пункты контекстного меню.</para>
-        <para><glossterm linkend="screen_xml_glossentry">XML-дескриптор</glossterm> экрана должен иметь идентификатор, по которому его можно вызвать  из меню или из программного кода. Идентификатор в нашем случае назначается в файле <filename>screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-browse.xml&quot;/&gt;</programlisting></para>
+        <para><glossterm linkend="screen_xml_glossentry">XML-дескриптор</glossterm> экрана должен иметь идентификатор, по которому его можно вызвать  из меню или из программного кода. Идентификатор в нашем случае назначается в файле <filename>screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/sample/sales/gui/customer/customer-browse.xml&quot;/&gt;</programlisting></para>
         <para>Идентификатор <literal> sales$Customer.lookup</literal> удовлетворяет соглашению, по которому экраны списков сущностей должны иметь вид <literal>{entity_name}.lookup</literal>. Данное соглашение облегчает настройку визуальных компонентов, работающих со ссылочными атрибутами сущностей.</para>
         <para>Чтобы вызывать экран из главного меню приложения, добавьте в файл <filename>web-menu.xml</filename> модуля <structname>web</structname> следующий элемент:<programlisting>&lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
     &lt;item id=&quot;sales$Customer.lookup&quot;/&gt;
@@ -263,7 +263,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           </itemizedlist></para>
         <para>Атрибуты <sgmltag>id</sgmltag> элементов <sgmltag>field</sgmltag> группы полей соответствуют именам редактируемых атрибутов сущности.</para>
         <para>Атрибут <sgmltag>expand</sgmltag> элемента <sgmltag>layout</sgmltag> нужен для того, чтобы растянуть фрейм на все свободное пространство по вертикали, тогда кнопки окажутся прижатыми вверх к группе полей.</para>
-        <para>Зададим идентификатор экрана в файле <filename>screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/haulmont/sales/gui/customer/customer-edit.xml&quot;/&gt;</programlisting></para>
+        <para>Зададим идентификатор экрана в файле <filename>screens.xml</filename> модуля <structname>gui</structname> <programlisting>&lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/sample/sales/gui/customer/customer-edit.xml&quot;/&gt;</programlisting></para>
         <para>Для правильной работы стандартных действий <literal>create</literal> и <literal>edit</literal> таблицы в экране списка необходимо, чтобы идентификатор экрана редактирования соответствовал виду <literal>{entity_name}.edit</literal></para>
         <para>Попробуем добавить и отредактировать <code>Покупателя</code>  в работающем приложении. Для этого пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>
@@ -289,7 +289,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para>Создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename>  в пакете <code>com.sample.sales.gui.order</code>, и внесите в них локализацию заголовка экрана: </para>
         <para><filename>messages.properties</filename> <programlisting>browserCaption=Orders</programlisting></para>
         <para><filename>messages_ru.properties</filename> <programlisting>browserCaption=Заказы</programlisting></para>
-        <para>Далее зарегистрируйте экран в файле <filename>screens.xml</filename> модуля <structname>gui</structname>: <programlisting>&lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/haulmont/sales/gui/order/order-browse.xml&quot;/&gt;</programlisting></para>
+        <para>Далее зарегистрируйте экран в файле <filename>screens.xml</filename> модуля <structname>gui</structname>: <programlisting>&lt;screen id=&quot;sales$Order.lookup&quot; template=&quot;/com/sample/sales/gui/order/order-browse.xml&quot;/&gt;</programlisting></para>
         <para>и добавьте соответствующий пункт меню в файл <filename>web-menu.xml</filename> модуля <structname>web</structname>: <programlisting>&lt;item id=&quot;sales$Order.lookup&quot;/&gt;</programlisting></para>
         <para>Локализованные названия нового пункта меню  добавьте в <link linkend="main_message_pack">главный пакет сообщений</link> модуля web (файлы     <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> пакета <code>com.sample.sales.web</code>):</para>
         <para>    <filename>messages.properties</filename></para>
@@ -316,7 +316,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
         <para><filename>messages.properties</filename> <programlisting>editorCaption=Order</programlisting></para>
         <para><filename>messages_ru.properties</filename> <programlisting>editorCaption=Заказ</programlisting></para>
         <para>Зарегистрируйте экран в файле <filename>screens.xml</filename> модуля <structname>gui</structname>: </para>
-        <programlisting>&lt;screen id=&quot;sales$Order.edit&quot; template=&quot;/com/haulmont/sales/gui/order/order-edit.xml&quot;/&gt;</programlisting>
+        <programlisting>&lt;screen id=&quot;sales$Order.edit&quot; template=&quot;/com/sample/sales/gui/order/order-edit.xml&quot;/&gt;</programlisting>
         <para>Пересоберите проект </para>
         <para><prompt>gradle restart</prompt></para>
         <para>и зайдите в систему, выбрав Русский язык в окне логина. Откройте пункт меню <guimenu>Продажи</guimenu> −&gt; <guimenu>Заказы</guimenu> и нажмите кнопку <guibutton>Создать</guibutton>.</para>
