@@ -1,11 +1,3 @@
-/**
- * Generic action for entities. One Action for table, datasource and entity. Selected entity and multiselect will be checked automatically.
- * <p>
- *
- * @author Zaharchenko
- * @version $Id$
- */
-
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
@@ -16,6 +8,15 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.*;
 
+/**
+ * Generic action for entities. One Action for table, datasource and entity.
+ * Selected entity and multiselect will be checked automatically.
+ * <p> Example of usage:
+ * Create one action class both for table and editor screen, entity will be reloaded automatically after action perform
+ *
+ * @author Zaharchenko
+ * @version $Id$
+ */
 public abstract class AbstractEntityAction<T extends Entity> extends AbstractAction {
 
     private static final long serialVersionUID = 4263878244286411498L;
@@ -27,9 +28,10 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Constructor for entity
-     * @param id action ID
+     *
+     * @param id     action ID
      * @param entity selected entity
-     * @param frame frame containing this action
+     * @param frame  frame containing this action
      */
     public AbstractEntityAction(String id, T entity, IFrame frame) {
         super(id);
@@ -39,7 +41,8 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Constructor for table
-     * @param id action ID
+     *
+     * @param id    action ID
      * @param table table contains action
      */
     public AbstractEntityAction(String id, Table table) {
@@ -50,9 +53,10 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Constructor for table
-     * @param id action ID
+     *
+     * @param id         action ID
      * @param datasource datasource with entity
-     * @param frame frame containing this action
+     * @param frame      frame containing this action
      */
     public AbstractEntityAction(String id, Datasource<T> datasource, IFrame frame) {
         super(id);
@@ -66,6 +70,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Whether the action is support multiselect. Override to provide specific behaviour. If multiselect is supoported use {@link com.haulmont.cuba.gui.components.AbstractEntityAction#getEntities()}
+     *
      * @return true if multiselect supported
      */
     protected Boolean isSupportMultiselect() {
@@ -76,6 +81,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
      * Whether the action asks for confirmation before action perform.
      * In message pack with action there should be 'confirmation.{@link com.haulmont.cuba.gui.components.AbstractEntityAction#getId()}' messages property.
      * Override to provide specific behaviour.
+     *
      * @return true if action asks for confirmation
      */
     protected Boolean isConfirmation() {
@@ -85,6 +91,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Update selected entities after action. Override to provide specific behaviour.
+     *
      * @return true if action will update entities after action perform
      */
     protected Boolean isUpdateSelectedEntities() {
@@ -95,6 +102,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
      * Show after action notification action.
      * In message pack with action there should be 'notification.{@link com.haulmont.cuba.gui.components.AbstractEntityAction#getId()}' messages property.
      * Override to provide specific behaviour.
+     *
      * @return true if notification will show after action perform.
      */
     protected Boolean isShowAfterActionNotification() {
@@ -103,6 +111,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Set entity to action or datasource
+     *
      * @param newEntity
      */
     protected void setEntity(T newEntity) {
@@ -112,7 +121,6 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     *
      * @return entity from datasource or single selected entity from table
      */
     protected T getEntity() {
@@ -123,7 +131,6 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     *
      * @return Return List of selected entities from table or List with one entity from datasource
      */
     protected List<T> getEntities() {
@@ -137,7 +144,6 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     *
      * @return selected entities ids
      */
     protected List<UUID> getEntitiesIds() {
@@ -211,26 +217,20 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
         if (entityIsNotSelected()) return;
         if (supportMultiselect()) return;
         if (isConfirmation()) {
-            Action cancel = new DialogAction(DialogAction.Type.CANCEL) {
-                public void actionPerform(Component component) {
-                }
-            };
-
             frame.showOptionDialog(getConfirmationCaption(), getConfirmationText(),
-                    IFrame.MessageType.CONFIRMATION, Arrays.asList(new DialogAction(DialogAction.Type.OK) {
+                    IFrame.MessageType.CONFIRMATION, Arrays.<Action>asList(new DialogAction(DialogAction.Type.OK) {
                 @Override
                 public void actionPerform(Component component) {
                     execute(buttonComponent);
                 }
-            }, cancel));
+            }, new DialogAction(DialogAction.Type.CANCEL)));
         } else {
             execute(buttonComponent);
         }
     }
 
     private void execute(Component buttonComponent) {
-        _actionPerform(buttonComponent);
-        afterAction();
+        doActionPerform(buttonComponent);
         if (isUpdateSelectedEntities()) updateSelectedEntities();
         if (isShowAfterActionNotification()) showAfterActionNotification();
     }
@@ -244,15 +244,10 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     * Action that will perform after action was executed
-     */
-    protected void afterAction() {
-    }
-
-    /**
      * Override this to perform action
+     *
      * @param component
      */
-    public abstract void _actionPerform(Component component);
+    public abstract void doActionPerform(Component component);
 
 }
