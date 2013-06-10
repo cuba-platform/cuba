@@ -1433,7 +1433,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
         Object[] keys = component.getVisibleColumns();
         for (final Object key : keys) {
             if (!component.isColumnCollapsed(key)) {
-                visibleColumns.add(columns.get(key));
+                Column column = columns.get(key);
+                if (column != null)
+                    visibleColumns.add(column);
             }
         }
         return visibleColumns;
