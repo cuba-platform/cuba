@@ -209,6 +209,31 @@ configure(coreModule) {
         appName = 'cuba-core'
         appJars('cuba-global', 'cuba-core')
     }
+
+    def hsqlDbName = 'cubadb'
+
+    task startDb(description: 'Starts local HSQLDB server', type: CubaHsqlStart) {
+        dbName = hsqlDbName
+    }
+
+    task stopDb(description: 'Stops local HSQLDB server', type: CubaHsqlStop)  {
+        dbName = hsqlDbName
+    }
+
+    task removeDb(description: 'Removes local HSQL database', type: Delete) {
+        delete new File("$rootProject.projectDir/data")
+    }
+
+    task killDb(description: 'Kill local HSQLDB server process running on port 9001', type: CubaKillProcess) {
+        port = 9001
+    }
+
+    task createDb(dependsOn: assemble, description: 'Creates local HSQL database', type: CubaDbCreation) {
+        dbms = 'hsql'
+        dbName = hsqlDbName
+        dbUser = 'sa'
+        dbPassword = ''
+    }
 }
 
 configure(clientModule) {
@@ -466,72 +491,6 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy'], descr
         }
     }
     start.execute()
-}
-
-/***************************** Database related stuff  *****************************/
-
-configurations {
-    jdbc
-}
-
-dependencies {
-    jdbc(hsqldb)
-}
-
-def dbName = 'cubadb'
-def File dbDataDir = file('data')
-def File dbSqlDir = file('modules/core/db/init/hsql')
-def dbClasspath = configurations.jdbc.fileCollection { true }.asPath
-
-task startDb(description: 'Starts local HSQLDB server') << {
-    dbDataDir.mkdirs()
-    if ('linux'.equalsIgnoreCase(System.getProperty('os.name'))) {
-        ant.exec(dir: dbDataDir.absolutePath, executable: '/bin/sh', spawn: true) {
-            arg(line: "$projectDir/modules/core/db/run-hsqldb.sh $dbClasspath $dbName")
-        }
-    } else {
-        ant.exec(dir: dbDataDir.absolutePath, executable: 'cmd.exe', spawn: true) {
-            arg(line: "/c start $projectDir/modules/core/db/run-hsqldb.bat $dbClasspath $dbName")
-        }
-    }
-    Thread.sleep(1000)
-}
-
-task stopDb(description: 'Stops local HSQLDB server') << {
-    try {
-        ant.sql(classpath: dbClasspath,
-                driver: 'org.hsqldb.jdbc.JDBCDriver',
-                url: "jdbc:hsqldb:hsql://localhost/$dbName",
-                userid: 'sa', password: '',
-                autocommit: true,
-                'shutdown'
-        )
-        Thread.sleep(1000)
-    } catch (Exception e) {
-        logger.warn(">>> error stopping local HSQLDB server: $e")
-    }
-}
-
-task removeDb(description: 'Removes local HSQL database') << {
-    delete {
-        dbDataDir
-    }
-}
-
-task createDb(description: 'Creates local HSQL database') << {
-    ant.sql(classpath: dbClasspath,
-            driver: 'org.hsqldb.jdbc.JDBCDriver',
-            url: "jdbc:hsqldb:hsql://localhost/$dbName",
-            userid: 'sa', password: '',
-            autocommit: true,
-            'drop schema public cascade'
-    )
-    ant.sql(classpath: dbClasspath, src: "$dbSqlDir/create-db.sql", delimiter: '^',
-            driver: 'org.hsqldb.jdbc.JDBCDriver',
-            url: "jdbc:hsqldb:hsql://localhost/$dbName",
-            userid: 'sa', password: '',
-            autocommit: true,
-    )
 }
 
 /***************************** Documentation  *****************************/
