@@ -17,6 +17,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
@@ -31,6 +32,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     protected GroupPropertyValueFormatter groupPropertyValueFormatter;
 
     protected boolean fixedGrouping = false;
+
+    protected boolean requestColumnReorderingAllowed = true;
 
     @Override
     public void setContainerDataSource(Container newDataSource) {
@@ -66,36 +69,33 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     }
 
     @Override
-    protected boolean changeVariables(Map<String, Object> variables) {
-        boolean clientNeedsContentRefresh = super.changeVariables(variables);
+    public boolean isColumnReorderingAllowed() {
+        return requestColumnReorderingAllowed && super.isColumnReorderingAllowed();
+    }
 
-        boolean needsResetPageBuffer = false;
+    @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
         Object[] newGroupProperties = null;
 
-        if (!fixedGrouping) {
-            if (variables.containsKey("columnorder") && !variables.containsKey("groupedcolumns")) {
-                newGroupProperties = new Object[0];
-            } else if (variables.containsKey("groupedcolumns")) {
-                final Object[] ids = (Object[]) variables.get("groupedcolumns");
-                final Object[] groupProperties = new Object[ids.length];
-                for (int i = 0; i < ids.length; i++) {
-                    groupProperties[i] = columnIdMap.get(ids[i].toString());
-                }
-                newGroupProperties = groupProperties;
-                // Deny group by generated columns
-                if (!columnGenerators.isEmpty()) {
-                    List<Object> notGeneratedProperties = new ArrayList<>();
-                    for (Object id : newGroupProperties) {
-                        if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath)) {
-                            notGeneratedProperties.add(id);
-                        }
-                    }
-                    newGroupProperties = notGeneratedProperties.toArray();
-                }
+        if (variables.containsKey("columnorder") && !variables.containsKey("groupedcolumns")) {
+            newGroupProperties = new Object[0];
+        } else if (variables.containsKey("groupedcolumns")) {
+            final Object[] ids = (Object[]) variables.get("groupedcolumns");
+            final Object[] groupProperties = new Object[ids.length];
+            for (int i = 0; i < ids.length; i++) {
+                groupProperties[i] = columnIdMap.get(ids[i].toString());
             }
-        } else {
-            if (variables.containsKey("columnorder") || variables.containsKey("groupedcolumns")) {
-                markAsDirty();
+            newGroupProperties = groupProperties;
+            // Deny group by generated columns
+            if (!columnGenerators.isEmpty()) {
+                List<Object> notGeneratedProperties = new ArrayList<>();
+                for (Object id : newGroupProperties) {
+                    // todo support grouping by generated columns with Printable
+                    if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath)) {
+                        notGeneratedProperties.add(id);
+                    }
+                }
+                newGroupProperties = notGeneratedProperties.toArray();
             }
         }
 
@@ -116,6 +116,50 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
             }
         }
 
+        if (fixedGrouping && isGroupsChanged(newGroupProperties)) {
+            requestColumnReorderingAllowed = false;
+            markAsDirty();
+        }
+
+        super.changeVariables(source, variables);
+
+        if (!fixedGrouping && newGroupProperties != null && isGroupsChanged(newGroupProperties)) {
+            groupBy(newGroupProperties, true);
+        }
+
+        requestColumnReorderingAllowed = true;
+    }
+
+    protected boolean isGroupsChanged(Object[] newGroupProperties) {
+        Collection<?> oldGroupProperties = getGroupProperties();
+        if (newGroupProperties == null && oldGroupProperties == null)
+            return false;
+
+        if (newGroupProperties == null)
+            return true;
+
+        if (oldGroupProperties == null)
+            return true;
+
+        if (oldGroupProperties.size() != newGroupProperties.length)
+            return true;
+
+        int i = 0;
+        for (Object oldGroupProperty : oldGroupProperties) {
+            if (!ObjectUtils.equals(oldGroupProperty, newGroupProperties[i]))
+                return true;
+            i++;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected boolean changeVariables(Map<String, Object> variables) {
+        boolean clientNeedsContentRefresh = super.changeVariables(variables);
+
+        boolean needsResetPageBuffer = false;
+
         if (variables.containsKey("expand")) {
             Object groupId = groupIdMap.get((String) variables.get("expand"));
             expand(groupId, false);
@@ -128,10 +172,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
             collapse(groupId, false);
             clientNeedsContentRefresh = true;
             needsResetPageBuffer = true;
-        }
-
-        if (newGroupProperties != null) {
-            groupBy(newGroupProperties, false);
         }
 
         if (needsResetPageBuffer) {
