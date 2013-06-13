@@ -706,6 +706,7 @@ create table SYS_CATEGORY_ATTR (
     DELETED_BY varchar(50),
     --
     NAME varchar(255),
+    CODE varchar(50),
     CATEGORY_ID uniqueidentifier,
     IS_ENTITY tinyint,
     DATA_TYPE varchar(200),
