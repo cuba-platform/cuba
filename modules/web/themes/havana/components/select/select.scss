@@ -150,12 +150,17 @@
   .#{$primaryStyleName}-nextpage-off span,
   .#{$primaryStyleName}-prevpage-off span,
   .#{$primaryStyleName}-prevpage span {
+    background-repeat: no-repeat;
     display: block;
     height: 12px;
     width: 100%;
     text-indent: -90000px;
     cursor: pointer;
     overflow: hidden;
+    width: 56px;
+    position: absolute;
+    left: 50%;
+    margin-left: -28px;
   }
 
   .#{$primaryStyleName}-status {
@@ -169,23 +174,19 @@
     border-top: 1px solid #b6bbbc;
   }
 
-  .#{$primaryStyleName}-nextpage {
-    background-image: url(sprites/popup-down.png);  /** sprite-ref: components; */
-    background-position: center;
+  .#{$primaryStyleName}-nextpage span {
+    background-image: url(sprites/popup-down.png);  /** sprite-ref: components-large; */
   }
 
-  .#{$primaryStyleName}-prevpage {
-    background-image: url(sprites/popup-up.png);    /** sprite-ref: components; */
-    background-position: center;
+  .#{$primaryStyleName}-prevpage span {
+    background-image: url(sprites/popup-up.png);    /** sprite-ref: components-large; */
   }
 
-  .#{$primaryStyleName}-nextpage-off {
-    background-image: url(sprites/popup-down-disabled.png); /** sprite-ref: components; */
-    background-position: center;
+  .#{$primaryStyleName}-nextpage-off span {
+    background-image: url(sprites/popup-down-disabled.png); /** sprite-ref: components-large; */
   }
 
-  .#{$primaryStyleName}-prevpage-off {
-    background-image: url(sprites/popup-up-disabled.png);  /** sprite-ref: components; */
-    background-position: center;
+  .#{$primaryStyleName}-prevpage-off span {
+    background-image: url(sprites/popup-up-disabled.png);  /** sprite-ref: components-large; */
   }
 }

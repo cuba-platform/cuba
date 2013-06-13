@@ -130,6 +130,6 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     @Override
     public boolean canHasChildren(K itemId) {
-        return true;
+        return hasChildren(itemId);
     }
 }

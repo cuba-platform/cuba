@@ -554,8 +554,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar createMenuBar() {
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
         menuBar.setWidth("100%");
-        menuBar.setMoreMenuItem(null);
-        menuBar.getMoreMenuItem().setIcon(new VersionedThemeResource("icons/more-item.png"));
+        menuBar.setMoreMenuItem(null); // force usage more item menu
 
         if (globalConfig.getTestMode()) {
 //            vaadin7 test mode

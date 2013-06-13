@@ -169,7 +169,7 @@
       background-origin: content-box;
       background-clip: content-box;
       background-repeat: no-repeat;
-      background-image: url(sprites/scroll-position-bg.png);  /** sprite-ref: components; */
+      background-image: url(sprites/scroll-position-bg.png);  /** sprite-ref: components-large; */
     }
 
     .#{$primaryStyleName}-scrollposition span {

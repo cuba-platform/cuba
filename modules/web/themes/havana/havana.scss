@@ -8,7 +8,8 @@
 // Version: $Id$
 
 /** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
-/** sprite: icons; sprite-image: url('compiled/icons.png'); sprite-layout: horizontal */
+/** sprite: components-large; sprite-image: url('compiled/components-large.png'); sprite-layout: vertical */
+/** sprite: application; sprite-image: url('compiled/application.png'); sprite-layout: vertical */
 
 // Inherit base theme
 @import "../base/base";
@@ -32,6 +33,7 @@
 @import "components/groupbox/groupbox";
 @import "components/textfield/textfield";
 @import "components/datefield/datefield";
+@import "components/treetable/treetable";
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
@@ -72,6 +74,7 @@
   @include havana-tooltip;
   @include havana-tabsheet;
   @include havana-textarea;
+  @include havana-treetable;
   @include havana-textfield;
   @include havana-datefield;
   @include havana-splitpanel;

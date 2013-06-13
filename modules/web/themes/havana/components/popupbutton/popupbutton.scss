@@ -39,4 +39,13 @@
       border: 1px solid transparent;
     }
   }
+
+  .v-button.#{$primaryStyleName} .v-popup-indicator {
+    vertical-align: middle;
+    height: 12px;
+    width: 12px;
+    background: transparent;
+    background-image: url(sprites/popup-button.png);  /** sprite-ref: components; */
+    background-repeat: no-repeat;
+  }
 }

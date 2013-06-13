@@ -82,6 +82,14 @@
       font-family: $theme_fonts;
       text-shadow: black 1px 1px;
     }
+
+    .v-menubar-menuitem-more-item {
+      text-indent: -90000px;
+      width: 12px;
+      background-image: url(images/more-item.png);
+      background-position: center;
+      background-repeat: no-repeat;
+    }
   }
 
   .cuba-app-work-area,
