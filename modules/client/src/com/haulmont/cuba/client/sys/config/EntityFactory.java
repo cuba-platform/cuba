@@ -35,6 +35,8 @@ public class EntityFactory extends TypeFactory {
         if (StringUtils.isBlank(string))
             return null;
         EntityLoadInfo info = EntityLoadInfo.parse(string);
+        if (info == null)
+            throw new IllegalArgumentException("Invalid entity info: " + string);
 
         LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
         if (info.getViewName() != null)
