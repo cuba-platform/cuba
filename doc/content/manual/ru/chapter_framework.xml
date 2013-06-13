@@ -9723,7 +9723,7 @@ ordersDs.refresh(params);</programlisting></para>
                       <para><sgmltag>and</sgmltag>, <sgmltag>or</sgmltag> - логические условия, могут содержать любое количество других условий и предложений. </para>
                     </listitem>
                     <listitem>
-                      <para>предложение на JPQL, которое добавляется в секцию <code>where</code>. Содержит только текст и опционально атрибут <sgmltag>join</sgmltag>, значение которого будет добавлено в соответствующее место запроса, если добавляется данное предложение <code>where</code>. </para>
+                      <para><sgmltag>c</sgmltag> - предложение на JPQL, которое добавляется в секцию <code>where</code>. Содержит только текст и опционально атрибут <sgmltag>join</sgmltag>, значение которого будет добавлено в соответствующее место запроса, если добавляется данное предложение <code>where</code>. </para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
