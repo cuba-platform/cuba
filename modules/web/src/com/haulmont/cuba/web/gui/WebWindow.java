@@ -271,11 +271,11 @@ public class WebWindow implements Window, Component.Wrapper,
                 com.vaadin.ui.Component c = vComponent;
                 com.vaadin.ui.Component prevC = null;
                 while (c != null) {
-                    if (c instanceof com.vaadin.ui.Component.Focusable) {
-                        ((com.vaadin.ui.Component.Focusable) c).focus();
-                    } else if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
+                    if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
                         ((TabSheet) c).setSelectedTab(prevC);
                         break;
+                    } else if (c instanceof com.vaadin.ui.Component.Focusable) {
+                        ((com.vaadin.ui.Component.Focusable) c).focus();
                     }
                     prevC = c;
                     c = c.getParent();
@@ -605,17 +605,19 @@ public class WebWindow implements Window, Component.Wrapper,
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
+            //noinspection unchecked
             T component = (T) allComponents.get(id);
             if (component != null)
                 return component;
             else
+                //noinspection unchecked
                 return (T) getTimer(id);
         } else {
             Component frame = allComponents.get(elements[0]);
             if (frame != null && frame instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return (T) ((Container) frame).getComponent(subPath);
+                return ((Container) frame).getComponent(subPath);
             } else
                 return null;
         }
