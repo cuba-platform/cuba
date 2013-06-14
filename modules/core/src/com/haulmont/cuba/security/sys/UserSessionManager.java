@@ -164,7 +164,11 @@ public class UserSessionManager {
                 if (session.getAttributeNames().contains(attribute.getName())) {
                     log.warn("Duplicate definition of '" + attribute.getName() + "' session attribute in the group hierarchy");
                 }
-                session.setAttribute(attribute.getName(), (Serializable) datatype.parse(attribute.getStringValue()));
+                Serializable value = (Serializable) datatype.parse(attribute.getStringValue());
+                if (value != null)
+                    session.setAttribute(attribute.getName(), value);
+                else
+                    session.removeAttribute(attribute.getName());
             } catch (ParseException e) {
                 throw new RuntimeException("Unable to set session attribute " + attribute.getName(), e);
             }
