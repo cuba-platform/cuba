@@ -79,7 +79,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         ignoreListeners = true;
 
         if (PaintContext.isPainting()) {
-            log.warn("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
+            log.debug("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
             return;
         }
 
