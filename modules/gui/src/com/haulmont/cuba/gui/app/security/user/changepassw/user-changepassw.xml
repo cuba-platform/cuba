@@ -29,7 +29,7 @@
                 <rows>
                     <row>
                         <label id="passwLab" value="msg://password"/>
-                        <textField id="passwField"/>
+                        <passwordField id="passwField"/>
                     </row>
                     <row>
                         <label id="confirmPasswLab" value="msg://confirmPassword"/>
