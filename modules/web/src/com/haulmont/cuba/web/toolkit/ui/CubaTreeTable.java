@@ -34,4 +34,22 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable {
 
         super.setContainerDataSource(new TreeTableContainerWrapper(newDataSource));
     }
+
+    public void expandAll() {
+        for (Object id : getItemIds())
+            setCollapsed(id, false);
+    }
+
+    public void collapseAll() {
+        for (Object id : getItemIds())
+            setCollapsed(id, true);
+    }
+
+    public void setExpanded(Object itemId) {
+        setCollapsed(itemId, false);
+    }
+
+    public boolean isExpanded(Object itemId) {
+        return !isCollapsed(itemId);
+    }
 }

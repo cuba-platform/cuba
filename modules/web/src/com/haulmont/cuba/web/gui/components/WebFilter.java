@@ -229,7 +229,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         component.addComponent(topLayout);
 
         createParamsLayout(false);
-        component.addComponent(paramsLayout);
+        if (paramsLayout.getComponentCount() > 0)
+            component.addComponent(paramsLayout);
 
         updateControls();
     }
@@ -1131,7 +1132,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         updateControls();
         component.removeComponent(editLayout);
         createParamsLayout(true);
-        component.addComponent(paramsLayout);
+        if (paramsLayout.getComponentCount() > 0)
+            component.addComponent(paramsLayout);
     }
 
     private void switchToEdit() {
@@ -1152,8 +1154,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
         actionsButton.setVisible(editable && isEditFiltersPermitted());
-
-        paramsLayout.setVisible(paramsLayout.getComponentCount() > 0);
     }
 
     private boolean checkGlobalAppFolderPermission() {
@@ -1598,7 +1598,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             updateControls();
             component.removeComponent(paramsLayout);
             createParamsLayout(true);
-            component.addComponent(paramsLayout);
+
+            if (paramsLayout.getComponentCount() > 0)
+                component.addComponent(paramsLayout);
 
             if (!applyingDefault) {
                 Window window = ComponentsHelper.getWindow(WebFilter.this);

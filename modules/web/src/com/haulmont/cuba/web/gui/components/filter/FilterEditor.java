@@ -331,8 +331,7 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setColumnWidth(ConditionsContainer.CONTROL_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.CONTROL_PROP_ID, cntrCol);
 
-//        vaadin7
-//        table.expandAll();
+        table.expandAll();
 
         final Action showNameAction = new Action(AppBeans.get(Messages.class)
                 .getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
@@ -372,8 +371,7 @@ public class FilterEditor extends AbstractFilterEditor {
             }
         }
         container.addItem(node);
-//        vaadin7
-//        table.setExpanded(node);
+        table.setExpanded(node);
 
         if (node.getData().isGroup()) {
             // Select the added node if it is a group

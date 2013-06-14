@@ -79,8 +79,7 @@ public class WebTreeTable
 
     @Override
     public void expandAll() {
-        for (Object id : component.getItemIds())
-            component.setCollapsed(id, false);
+        component.expandAll();
     }
 
     @Override
@@ -95,8 +94,7 @@ public class WebTreeTable
 
     @Override
     public void collapseAll() {
-        for (Object id : component.getItemIds())
-            component.setCollapsed(id, true);
+        component.collapseAll();
     }
 
     @Override
