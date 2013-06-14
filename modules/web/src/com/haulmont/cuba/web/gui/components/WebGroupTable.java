@@ -124,6 +124,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         return new GroupAggregationDatasourceListener();
     }
 
+    @Override
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return new GroupTableDsWrapper(datasource, columns);
     }
@@ -198,7 +199,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
 
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
             implements GroupTableContainer,
-            AggregationContainer {
+                       AggregationContainer {
 
         private boolean groupDatasource;
         private List<Object> aggregationProperties = null;
@@ -498,7 +499,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         public Object nextItemId(Object itemId) {
             if (hasGroups()) {
                 if (itemId == null) {
-                    throw new NullPointerException("Item id cannot be NULL");
+                    return null;
                 }
                 if (isLastId(itemId)) {
                     return null;
@@ -513,8 +514,9 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         public Object prevItemId(Object itemId) {
             if (hasGroups()) {
                 if (itemId == null) {
-                    throw new NullPointerException("Item id cannot be NULL");
+                    return null;
                 }
+
                 if (isFirstId(itemId)) {
                     return null;
                 }
