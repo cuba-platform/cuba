@@ -7,7 +7,10 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
+import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.HierarchicalContainer;
 
 /**
  * @author artamonov
@@ -21,5 +24,14 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable {
             return ((PropertyValueStringify) property).getFormattedValue();
 
         return super.formatPropertyValue(rowId, colId, property);
+    }
+
+    @Override
+    public void setContainerDataSource(Container newDataSource) {disableContentRefreshing();
+        if (newDataSource == null) {
+            newDataSource = new HierarchicalContainer();
+        }
+
+        super.setContainerDataSource(new TreeTableContainerWrapper(newDataSource));
     }
 }
