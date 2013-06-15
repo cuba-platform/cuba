@@ -53,6 +53,11 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
         postInit();
     }
 
+    @Override
+    public boolean isModified() {
+        return getDsContext() != null && getDsContext().isModified();
+    }
+
     /**
      * Called by the framework to validate and commit changes.
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}

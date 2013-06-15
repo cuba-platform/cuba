@@ -193,6 +193,13 @@ public class EditorWindowDelegate extends WindowDelegate {
         ((DatasourceImplementation) ds).setParent(parentDs);
     }
 
+    public boolean isModified() {
+        if (wrapper instanceof Window.Committable)
+            return ((Window.Committable) wrapper).isModified();
+        else
+            return window.getDsContext() != null && window.getDsContext().isModified();
+    }
+
     public boolean commit(boolean close) {
         if (wrapper instanceof AbstractEditor && !((AbstractEditor) wrapper).preCommit())
             return false;

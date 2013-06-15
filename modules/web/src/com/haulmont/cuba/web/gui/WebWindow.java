@@ -681,25 +681,34 @@ public class WebWindow implements Window, Component.Wrapper,
         if (closing)
             return true;
 
-        if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
-            if (configuration.getConfig(ClientConfig.class).getUseSaveConfirmation()) {
+        if (!forceClose && isModified()) {
+            final Committable committable = (getWrapper() instanceof Committable) ? (Committable) getWrapper() :
+                        (this instanceof Committable) ? (Committable) this : null;
+            if ((committable != null) && configuration.getConfig(ClientConfig.class).getUseSaveConfirmation()) {
                 windowManager.showOptionDialog(
                         messages.getMainMessage("closeUnsaved.caption"),
                         messages.getMainMessage("saveUnsaved"),
                         MessageType.WARNING,
                         new Action[]{
-                                new DialogAction(DialogAction.Type.YES) {
+                                new DialogAction(DialogAction.Type.OK) {
+                                    @Override
+                                    public String getCaption() {
+                                        return messages.getMainMessage("closeUnsaved.save");
+                                    }
                                     @Override
                                     public void actionPerform(Component component) {
-                                        if (validateAll()) {
-                                            getDsContext().commit();
-                                            close(COMMIT_ACTION_ID, true);
-                                        } else {
-                                            doAfterClose = null;
-                                        }
+                                        committable.commitAndClose();
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.NO) {
+                                new AbstractAction("discard") {
+                                    @Override
+                                    public String getCaption() {
+                                        return messages.getMainMessage("closeUnsaved.discard");
+                                    }
+                                    @Override
+                                    public String getIcon() {
+                                        return "icons/cancel.png";
+                                    }
                                     @Override
                                     public void actionPerform(Component component) {
                                         close(actionId, true);
@@ -718,7 +727,6 @@ public class WebWindow implements Window, Component.Wrapper,
                         }
                 );
             } else {
-                closing = true;
                 windowManager.showOptionDialog(
                         messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
                         messages.getMessage(WebWindow.class, "closeUnsaved"),
@@ -739,13 +747,13 @@ public class WebWindow implements Window, Component.Wrapper,
                                 }
                         }
                 );
-                closing = false;
             }
+            closing = false;
             return false;
         }
 
-        if (delegate.getWrapper() != null)
-            delegate.getWrapper().saveSettings();
+        if (getWrapper() != null)
+            getWrapper().saveSettings();
         else
             saveSettings();
 
@@ -758,6 +766,10 @@ public class WebWindow implements Window, Component.Wrapper,
         }
         closing = res;
         return res;
+    }
+
+    protected boolean isModified() {
+        return getDsContext() != null && getDsContext().isModified();
     }
 
     @Override
@@ -880,6 +892,11 @@ public class WebWindow implements Window, Component.Wrapper,
             } else {
                 return (Instance) item;
             }
+        }
+
+        @Override
+        public boolean isModified() {
+            return ((EditorWindowDelegate) delegate).isModified();
         }
 
         @Override

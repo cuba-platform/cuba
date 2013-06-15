@@ -125,10 +125,30 @@ public interface Window extends IFrame, Component.HasCaption {
     /** For internal use only. Don't call from application code. */
     void setWindowManager(WindowManager windowManager);
 
+
+    /**
+     * Represents a window that can be committed on close.
+     * <p/>
+     * Implement this interface in controller if you want to support saving uncommitted changes on window close.
+     * {@link AbstractEditor} already implements it.
+     */
+    interface Committable extends Window {
+
+        /**
+         * @return whether the window contains uncommitted changes
+         */
+        boolean isModified();
+
+        /**
+         * Commit changes and close the window.
+         */
+        void commitAndClose();
+    }
+
     /**
      * Represents an edit screen.
      */
-    interface Editor extends Window {
+    interface Editor extends Committable {
 
         /**
          * Name that is used to register a client type specific screen implementation in
