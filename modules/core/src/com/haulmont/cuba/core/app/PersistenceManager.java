@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.EntityStatistics;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.DbUpdater;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -100,17 +101,24 @@ public class PersistenceManager implements PersistenceManagerAPI {
                 conn = datasource.getConnection();
                 DatabaseMetaData metaData = conn.getMetaData();
 
-                    ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
-                    while (tables.next()) {
-                        String table = tables.getString("TABLE_NAME");
-                        if (table != null) {
-                            ResultSet columns = metaData.getColumns(
-                                    null, null, table, persistence.getDbDialect().getDeleteTsColumn());
-                            if (columns.next()) {
-                                set.add(table.toLowerCase());
-                            }
+                String schema = DbmsType.getCurrent() == DbmsType.ORACLE ? metaData.getUserName() : null;
+                log.trace("[initSoftDeleteTables] schema=" + schema);
+
+                ResultSet tables = metaData.getTables(null, schema, null, new String[]{"TABLE"});
+                while (tables.next()) {
+                    String table = tables.getString("TABLE_NAME");
+                    log.trace("[initSoftDeleteTables] found table " + table);
+
+                    if (table != null) {
+                        String deleteTsColumn = persistence.getDbDialect().getDeleteTsColumn();
+                        ResultSet columns = metaData.getColumns(null, schema, table, deleteTsColumn);
+                        if (columns.next()) {
+                            log.trace("[initSoftDeleteTables] table " + table + " has column " + deleteTsColumn);
+                            set.add(table.toLowerCase());
                         }
+                        columns.close();
                     }
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             } finally {

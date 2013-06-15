@@ -8,14 +8,26 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.Join;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Select;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
 public class CubaOracleDictionary extends OracleDictionary {
+
+    @Override
+    public SQLBuffer toTraditionalJoin(Join join) {
+        return DBDictionaryUtils.toTraditionalJoin(this, join);
+    }
+
+    @Override
+    protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
+        return DBDictionaryUtils.getWhere(this, sel, forUpdate, true);
+    }
 
     @Override
     public String getTypeName(Column col) {

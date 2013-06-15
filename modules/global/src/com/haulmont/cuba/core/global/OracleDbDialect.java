@@ -40,16 +40,16 @@ public class OracleDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String getIdColumn() {
-        return "id";
+        return "ID";
     }
 
     @Override
     public String getDeleteTsColumn() {
-        return "delete_ts";
+        return "DELETE_TS";
     }
 
     @Override
     public String getUniqueConstraintViolationPattern() {
-        return "ERROR: duplicate key value violates unique constraint \"(.+)\"";
+        return "unique constraint \\((.+)\\) violated";
     }
 }
