@@ -5,7 +5,9 @@
  */
 package com.haulmont.cuba.web.exception;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -36,12 +38,14 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
             entityClassName = matcher.group(1);
         }
 
+        Messages messages = AppBeans.get(Messages.class);
+
         String localizedEntityName = "";
         String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
         String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));
         localizedEntityName = MessageProvider.getMessage(packageName, entityName);
 
-        String msg = MessageProvider.formatMessage(getClass(), "optimisticException.message", "\"" + localizedEntityName + "\"");
+        String msg = MessageProvider.formatMessage(messages.getMainMessagePack(), "optimisticException.message", "\"" + localizedEntityName + "\"");
         app.getAppUI().showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
 }
