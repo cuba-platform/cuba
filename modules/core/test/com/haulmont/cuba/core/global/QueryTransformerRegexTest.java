@@ -162,6 +162,41 @@ public class QueryTransformerRegexTest extends TestCase
 
     }
 
+    public void testOrderByAscDesc() {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group asc",
+                "sec$GroupHierarchy");
+        transformer.replaceOrderBy("group", true);
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group desc",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group desc",
+                "sec$GroupHierarchy");
+        transformer.replaceOrderBy("group", false);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group desc",
+                "sec$GroupHierarchy");
+        transformer.replaceOrderBy("group", true);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group desc",
+                res);
+    }
+
     public void testOrderByAssociatedProperty() {
         // first level of association
         QueryTransformerRegex transformer = new QueryTransformerRegex(
