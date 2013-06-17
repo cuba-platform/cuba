@@ -177,7 +177,7 @@ public class DBDictionaryUtils {
                         }
                     }
                 }
-                if (!where.isEmpty())
+                if (!where.isEmpty() && sb.length() > 0)
                     where.append(" AND ");
                 where.append(sb.toString());
             }
