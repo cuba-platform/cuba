@@ -73,27 +73,11 @@ public class ControllerDependencyInjector {
 
         for (Class c : classes) {
             if (c != Object.class) {
-                for (Field field : c.getDeclaredFields()) {
-                    int idx = indexOfFieldWithSameName(list, field);
-                    if (idx > -1)
-                        list.set(idx, field);
-                    else
-                        list.add(field);
-                }
+                Collections.addAll(list, c.getDeclaredFields());
             }
         }
         return list;
     }
-
-    private int indexOfFieldWithSameName(List<Field> fields, Field field) {
-        for (int i = 0; i < fields.size(); i++) {
-            Field f = fields.get(i);
-            if (f.getName().equals(field.getName()))
-                return i;
-        }
-        return -1;
-    }
-
     private Class injectionAnnotation(AnnotatedElement element) {
         if (element.isAnnotationPresent(Named.class))
             return Named.class;
