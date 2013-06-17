@@ -199,7 +199,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                         String entityClassName = MetadataProvider.getSession().getClass(clazz).getName();
                         if (attribute.getDefaultEntityId() != null) {
                             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
-                            query.addParameter("e", attribute.getDefaultEntityId());
+                            query.setParameter("e", attribute.getDefaultEntityId());
                             entitiesContext.setView("_local");
                             Entity entity = dataSupplier.load(entitiesContext);
                             defaultValue = InstanceUtils.getInstanceName(entity);

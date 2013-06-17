@@ -64,7 +64,7 @@ public class RoleBrowser extends AbstractLookup {
                             User user = (User) item;
                             LoadContext ctx = new LoadContext(UserRole.class).setView("user.edit");
                             LoadContext.Query query = ctx.setQueryString("select ur from sec$UserRole ur where ur.user.id = :user");
-                            query.addParameter("user", user);
+                            query.setParameter("user", user);
                             List<UserRole> userRoles = dataService.loadList(ctx);
 
                             boolean roleExist = false;

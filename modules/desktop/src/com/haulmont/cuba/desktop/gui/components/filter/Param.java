@@ -435,7 +435,7 @@ public class Param extends AbstractParam<JComponent> {
         LoadContext context = new LoadContext(CategoryAttribute.class);
         LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
         context.setView("_local");
-        q.addParameter("id", categoryAttrId);
+        q.setParameter("id", categoryAttrId);
         CategoryAttribute categoryAttribute = dataService.load(context);
 
         runtimeEnum = new LinkedList<String>();

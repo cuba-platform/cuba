@@ -205,7 +205,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     protected void fillCategorySelect() {
         LoadContext context = new LoadContext(Category.class);
         LoadContext.Query query = context.setQueryString("select c from sys$Category c where c.entityType=:entityType");
-        query.addParameter("entityType", condition.getDatasource().getMetaClass().getName());
+        query.setParameter("entityType", condition.getDatasource().getMetaClass().getName());
         context.setView("_minimal");
         List<Category> categories = dataService.loadList(context);
         UUID catId = condition.getCategoryId();
@@ -237,7 +237,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     protected void fillAttributeSelect(Category category) {
         LoadContext context = new LoadContext(CategoryAttribute.class);
         LoadContext.Query query = context.setQueryString("select ca from sys$CategoryAttribute ca where ca.category.id = :id ");
-        query.addParameter("id", category.getId());
+        query.setParameter("id", category.getId());
         context.setView("_local");
         List<CategoryAttribute> attributes = dataService.loadList(context);
         UUID attrId = null;

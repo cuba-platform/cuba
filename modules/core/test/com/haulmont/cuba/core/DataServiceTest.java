@@ -108,7 +108,7 @@ public class DataServiceTest extends CubaTestCase {
     public void testAssociatedResult() throws Exception {
         LoadContext loadContext = new LoadContext(Group.class);
         loadContext.setQueryString("select u.group from sec$User u where u.id = :userId")
-                .addParameter("userId", UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+                .setParameter("userId", UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
         // here should be a warning or something
         List<Server> list = dataService.loadList(loadContext);

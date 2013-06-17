@@ -167,7 +167,7 @@ public class DataServiceController {
                 }
                 String paramValue = entry.getValue()[0];
                 Object parsedParam = parseQueryParameter(paramKey, paramValue, queryParams);
-                query.addParameter(paramKey, parsedParam);
+                query.setParameter(paramKey, parsedParam);
             }
 
             loadCtx.setView(view == null ? View.LOCAL : view);

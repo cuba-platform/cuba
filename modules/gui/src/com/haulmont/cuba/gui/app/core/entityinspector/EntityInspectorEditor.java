@@ -301,7 +301,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         ctx.setView(view);
         String query = String.format("select e from %s e where e.id = :id", meta.getName());
         LoadContext.Query q = ctx.setQueryString(query);
-        q.addParameter("id", id);
+        q.setParameter("id", id);
         return dataSupplier.load(ctx);
     }
 

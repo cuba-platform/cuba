@@ -754,8 +754,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                 "where us.user.id = :userId and (us.endDate is null or us.endDate >= :currentDate) " +
                 "and (us.startDate is null or us.startDate <= :currentDate) " +
                 "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
-        query.addParameter("userId", userSession.getUser().getId());
-        query.addParameter("currentDate", AppBeans.get(TimeSource.class).currentTimestamp());
+        query.setParameter("userId", userSession.getUser().getId());
+        query.setParameter("currentDate", AppBeans.get(TimeSource.class).currentTimestamp());
         ctx.setView("app");
         return AppBeans.get(DataService.class).loadList(ctx);
     }

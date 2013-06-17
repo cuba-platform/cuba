@@ -414,7 +414,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         if (attribute.getDefaultEntityId() != null) {
             LoadContext entityContext = new LoadContext(clazz);
             LoadContext.Query query2 = entityContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
-            query2.addParameter("e", attribute.getDefaultEntityId());
+            query2.setParameter("e", attribute.getDefaultEntityId());
             entityContext.setView("_minimal");
 
             BaseUuidEntity entity = dataService.load(entityContext);

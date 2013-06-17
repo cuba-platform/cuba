@@ -182,10 +182,10 @@ public class QueryResultTest extends CubaTestCase {
     public void testSecondQuery() throws SQLException {
         DataService dataService = AppBeans.get(DataService.class);
         LoadContext context = new LoadContext(User.class).setView(View.LOCAL);
-        context.setQueryString("select u from sec$User u where u.email like :email").addParameter("email", "%aaa.com");
+        context.setQueryString("select u from sec$User u where u.email like :email").setParameter("email", "%aaa.com");
 
         LoadContext.Query prevQuery = new LoadContext.Query("select u from sec$User u where u.name like :name")
-                .addParameter("name", "A-%");
+                .setParameter("name", "A-%");
         context.getPrevQueries().add(prevQuery);
         context.setQueryKey(111);
 
@@ -203,13 +203,13 @@ public class QueryResultTest extends CubaTestCase {
 
         context = new LoadContext(User.class).setView(View.LOCAL);
         LoadContext.Query query1 = context.setQueryString("select u from sec$User u where u.email like :email")
-                .addParameter("email", "%aaa.com");
+                .setParameter("email", "%aaa.com");
         entities = dataService.loadList(context);
         assertEquals(20, entities.size());
 
         context = new LoadContext(User.class).setView(View.LOCAL);
         LoadContext.Query query2 = context.setQueryString("select u from sec$User u where u.name like :name")
-                .addParameter("name", "A-%");
+                .setParameter("name", "A-%");
         context.getPrevQueries().add(query1);
         context.setQueryKey(111);
 
@@ -218,7 +218,7 @@ public class QueryResultTest extends CubaTestCase {
 
         context = new LoadContext(User.class).setView(View.LOCAL);
         context.setQueryString("select u from sec$User u where u.firstName like :firstName")
-                .addParameter("firstName", "C-%");
+                .setParameter("firstName", "C-%");
         context.getPrevQueries().add(query1);
         context.getPrevQueries().add(query2);
         context.setQueryKey(111);

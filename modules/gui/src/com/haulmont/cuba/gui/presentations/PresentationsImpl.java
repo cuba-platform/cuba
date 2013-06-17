@@ -266,8 +266,8 @@ public class PresentationsImpl implements Presentations {
 
             ctx.setQueryString("select p from sec$Presentation p " +
                     "where p.componentId = :component and (p.user is null or p.user.id = :userId)")
-                    .addParameter("component", name)
-                    .addParameter("userId", user.getId());
+                    .setParameter("component", name)
+                    .setParameter("userId", user.getId());
 
             final List<Presentation> list = ds.loadList(ctx);
 

@@ -182,7 +182,7 @@ public class DataServiceDistinctResultsTest extends CubaTestCase {
         DataService ds = Locator.lookup(DataService.NAME);
         LoadContext lc = new LoadContext(User.class);
         LoadContext.Query q = lc.setQueryString(queryString);
-        q.addParameter("groupId", groupId);
+        q.setParameter("groupId", groupId);
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
         List list = ds.loadList(lc);

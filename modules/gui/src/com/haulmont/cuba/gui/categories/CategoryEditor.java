@@ -89,8 +89,8 @@ public class CategoryEditor extends AbstractEditor<Category> {
                     LoadContext categoriesContext = new LoadContext(category.getClass());
                     LoadContext.Query query = categoriesContext.setQueryString("select c from sys$Category c where c.entityType= :entityType and not c.id=:id");
                     categoriesContext.setView("category.defaultEdit");
-                    query.addParameter("entityType", category.getEntityType());
-                    query.addParameter("id", category.getId());
+                    query.setParameter("entityType", category.getEntityType());
+                    query.setParameter("id", category.getId());
                     List<Category> categories = dataSupplier.loadList(categoriesContext);
                     for(Category cat : categories){
                         cat.setIsDefault(false);

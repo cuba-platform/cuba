@@ -942,8 +942,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         ctx.setQueryString("select f from " + effectiveMetaClass.getName() + " f " +
                 "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
-                .addParameter("component", getComponentPath())
-                .addParameter("userId", user.getId());
+                .setParameter("component", getComponentPath())
+                .setParameter("userId", user.getId());
 
         List<FilterEntity> filters = new ArrayList<>(ds.<FilterEntity>loadList(ctx));
         final Map<FilterEntity, String> captions = new HashMap<>();

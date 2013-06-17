@@ -83,15 +83,15 @@ public class RuntimePropsDatasourceImpl
         LoadContext valuesContext = new LoadContext(CategoryAttributeValue.class);
         LoadContext.Query query = valuesContext.setQueryString("select a from sys$CategoryAttributeValue a" +
                 ",sys$CategoryAttribute atr where a.entityId =:e and a.categoryAttribute=atr and atr.category.id=:cat ");
-        query.addParameter("e", entity.getUuid());
-        query.addParameter("cat", entity.getCategory());
+        query.setParameter("e", entity.getUuid());
+        query.setParameter("cat", entity.getCategory());
         valuesContext.setView("categoryAttributeValue");
         List<CategoryAttributeValue> entityValues = dataSupplier.loadList(valuesContext);
 
         LoadContext attributesContext = new LoadContext(CategoryAttribute.class);
         LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a " +
                 "where a.category.id=:cat order by a.orderNo");
-        attributeQuery.addParameter("cat", entity.getCategory());
+        attributeQuery.setParameter("cat", entity.getCategory());
         attributesContext.setView(View.LOCAL);
         List<CategoryAttribute> attributes = dataSupplier.loadList(attributesContext);
 
@@ -272,7 +272,7 @@ public class RuntimePropsDatasourceImpl
             LoadContext entitiesContext = new LoadContext(clazz);
             String entityClassName = metadata.getSession().getClassNN(clazz).getName();
             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
-            query.addParameter("e", uuid);
+            query.setParameter("e", uuid);
             entitiesContext.setView("_local");
             entity = dataSupplier.load(entitiesContext);
 
@@ -393,7 +393,7 @@ public class RuntimePropsDatasourceImpl
         LoadContext categoryContext = new LoadContext(Category.class);
         LoadContext.Query query = categoryContext.setQueryString(
                 "select c from sys$Category c where c.isDefault = true and c.entityType=:type ");
-        query.addParameter("type", metadata.getSession().getClassNN(entity.getClass()).getName());
+        query.setParameter("type", metadata.getSession().getClassNN(entity.getClass()).getName());
         categoryContext.setView("_minimal");
         List<Category> categories = dataSupplier.loadList(categoryContext);
         if (!categories.isEmpty())
