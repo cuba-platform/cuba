@@ -1186,6 +1186,14 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоках: <structname>Middleware</structname>, <structname>Web Client</structname>, <structname>Web Portal</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.useCurrentTxForConfigEntityLoad">
+        <term>cuba.useCurrentTxForConfigEntityLoad</term>
+        <listitem>
+          <para>Если значение данного свойства <code>true</code>, то при загрузке экземпляров сущностей через <link linkend="config_interfaces">конфигурационные интерфейсы</link> будет использоваться текущая транзакция (если таковая имеется в данный момент), что может положительно сказаться на производительности. В противном случае  всегда создается и завершается новая транзакция и возвращается detached экземпляр.</para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry>
         <term>cuba.user.fullNamePattern</term>
         <listitem>

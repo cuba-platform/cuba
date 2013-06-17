@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.entity.User;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -103,6 +104,11 @@ public class ConfigProviderTest extends CubaTestCase
         config.setUuidProp(uuid);
         uuidProp = config.getUuidProp();
         assertEquals(uuid, uuidProp);
+
+        // Entity property
+        User adminUser = config.getAdminUser();
+        assertNotNull(adminUser);
+        assertEquals("admin", adminUser.getLogin());
     }
 
     public void testDatabaseProperties() throws Exception {

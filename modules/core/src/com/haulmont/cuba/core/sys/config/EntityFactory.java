@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.config.type.TypeFactory;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
@@ -40,7 +41,8 @@ public class EntityFactory extends TypeFactory {
             throw new IllegalArgumentException("Invalid entity info: " + string);
 
         Entity entity;
-        Transaction tx = persistence.createTransaction();
+        String property = AppContext.getProperty("cuba.useCurrentTxForConfigEntityLoad");
+        Transaction tx = Boolean.valueOf(property) ? persistence.getTransaction() : persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             if (info.getViewName() != null)

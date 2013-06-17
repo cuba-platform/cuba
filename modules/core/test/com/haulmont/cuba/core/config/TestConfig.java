@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.UuidTypeFactory;
+import com.haulmont.cuba.security.entity.User;
 
 import java.util.UUID;
 
@@ -74,4 +75,8 @@ public interface TestConfig extends Config
     @Source(type = SourceType.DATABASE)
     String getDatabaseProp();
     void setDatabaseProp(String value);
+
+    @Property("cuba.test.adminUser")
+    @Default("sec$User-60885987-1b61-4247-94c7-dff348347f93")
+    User getAdminUser();
 }
