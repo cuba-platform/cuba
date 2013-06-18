@@ -87,7 +87,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         webConfig = configuration.getConfig(WebConfig.class);
         locales = globalConfig.getAvailableLocales();
 
-        setWindowLocale(app);
+        loc = resolveLocale(app);
 
         this.connection = connection;
 
@@ -120,17 +120,16 @@ public class LoginWindow extends UIView implements Action.Handler {
         addActionHandler(this);
     }
 
-    protected void setWindowLocale(App app) {
+    protected Locale resolveLocale(App app) {
         Locale appLocale = messages.getTools().useLocaleLanguageOnly() ?
                 Locale.forLanguageTag(app.getAppUI().getLocale().getLanguage()) : app.getAppUI().getLocale();
 
         for (Locale locale : locales.values()) {
             if (locale.equals(appLocale)) {
-                loc = locale;
-                return;
+                return locale;
             }
         }
-        loc = locales.values().iterator().next();
+        return locales.values().iterator().next();
     }
 
     protected void initStandartUI(int formWidth, int formHeight, int fieldWidth, boolean localesSelectVisible) {
