@@ -73,16 +73,14 @@ public class WebComponentsFactory implements ComponentsFactory {
 //  vaadin7
 //        classes.put(Embedded.NAME, WebEmbedded.class);
         classes.put(Filter.NAME, WebFilter.class);
-//  vaadin7
         classes.put(AccessControl.NAME, WebAccessControl.class);
         classes.put(ButtonsPanel.NAME, WebButtonsPanel.class);
         classes.put(ActionsField.NAME, WebActionsField.class);
         classes.put(PopupButton.NAME, WebPopupButton.class);
 
         classes.put(FieldGroup.NAME, WebFieldGroup.class);
-//  vaadin7
         classes.put(TokenList.NAME, WebTokenList.class);
-//        classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
+        classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
         classes.put(TwinColumn.NAME, WebTwinColumn.class);
         classes.put(ProgressBar.NAME, WebProgressBar.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);

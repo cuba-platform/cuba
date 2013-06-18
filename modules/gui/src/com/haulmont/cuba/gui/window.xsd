@@ -963,7 +963,7 @@
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasSize"/>
     </xs:complexType>
 
     <!-- TwinColumn -->

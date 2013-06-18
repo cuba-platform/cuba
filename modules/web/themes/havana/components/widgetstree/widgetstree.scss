@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-cuba-widgetstree($primaryStyleName: cuba-widgetstree){
+  .#{$primaryStyleName} {
+    .v-tree-node .v-tree-node-content {
+      margin-left:16px
+    }
+
+    .v-tree-node .v-tree-node-caption {
+      position: absolute;
+    }
+
+    .v-tree-node .v-tree-node-widget {
+      margin: 5px 0;
+      padding: 10px;
+      border: 1px solid #d3d3d3;
+      border-radius: 4px;
+    }
+  }
+}

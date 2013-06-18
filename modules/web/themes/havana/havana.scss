@@ -37,6 +37,7 @@
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
+@import "components/widgetstree/widgetstree";
 @import "components/pickerfield/pickerfield";
 @import "components/maskedfield/maskedfield";
 @import "components/multiupload/multiupload";
@@ -92,10 +93,11 @@
   @include havana-progressindicator;
 
   @include havana-cuba-groupbox;
-  @include havana-cuba-grouptable;
-  @include havana-cuba-multiupload;
   @include havana-cuba-tokenlist;
+  @include havana-cuba-grouptable;
   @include havana-cuba-twincolumn;
+  @include havana-cuba-multiupload;
+  @include havana-cuba-widgetstree;
 
   @include cuba-login-window;
   @include cuba-application-window;
