@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -131,6 +132,9 @@ public class DeletePolicyProcessor {
                         BaseEntity value = entity.getValue(property.getName());
                         if (value != null && checkIfEntityBelongsToMaster(property, value)) {
                             entityManager.remove(value);
+                            if (!(value instanceof SoftDelete)) {
+                                entity.setValue(property.getName(), null);
+                            }
                         }
                     }
                     break;
