@@ -18,7 +18,7 @@ import java.util.Map;
  * @version $Id$
  */
 //@ClientWidget(VSearchSelect.class)
-public class SearchSelect extends FilterSelect {
+public class SearchSelect extends CubaComboBox {
     // vaadin7
 /*
     private FilterHandler filterHandler = null;

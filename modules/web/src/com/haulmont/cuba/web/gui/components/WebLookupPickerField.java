@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
@@ -53,7 +53,7 @@ public class WebLookupPickerField
             @Override
             public void setRequired(boolean required) {
                 super.setRequired(required);
-                ((FilterSelect) selectComponent).setNullSelectionAllowed(!required);
+                ((CubaComboBox) selectComponent).setNullSelectionAllowed(!required);
             }
         };
         pickerField = new WebPickerField(picker);

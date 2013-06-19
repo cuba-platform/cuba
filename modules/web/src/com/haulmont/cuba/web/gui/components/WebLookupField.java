@@ -13,21 +13,24 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
-import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * @author abramov
  * @version $Id$
  */
 public class WebLookupField
-            extends WebAbstractOptionsField<FilterSelect>
+            extends WebAbstractOptionsField<CubaComboBox>
             implements LookupField, Component.Wrapper {
 
     protected Object nullOption;
@@ -66,7 +69,7 @@ public class WebLookupField
     }
 
     protected void createComponent() {
-        this.component = new FilterSelect() {
+        this.component = new CubaComboBox() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 if (newDataSource == null)
@@ -153,7 +156,7 @@ public class WebLookupField
     }
 
     @Override
-    protected void attachListener(FilterSelect component) {
+    protected void attachListener(CubaComboBox component) {
         component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {

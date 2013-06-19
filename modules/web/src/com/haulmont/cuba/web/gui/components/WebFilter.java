@@ -46,8 +46,8 @@ import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.converters.SimpleIntegerToStringConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -91,7 +91,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     private ComponentContainer paramsLayout;
     private AbstractOrderedLayout editLayout;
-    private FilterSelect select;
+    private CubaComboBox select;
     private WebPopupButton actionsButton;
 
     private Button pinAppliedFilterBtn;
@@ -179,7 +179,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         };
         noFilter.setName(messages.getMainMessage("filter.noFilter"));
 
-        select = new FilterSelect();
+        select = new CubaComboBox();
         select.setWidth(300, Sizeable.Unit.PIXELS);
         select.setStyleName("cuba-generic-filter-select");
         select.setNullSelectionAllowed(true);

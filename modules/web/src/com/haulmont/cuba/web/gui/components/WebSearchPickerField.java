@@ -6,20 +6,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.SearchPickerField;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Component;
-
-import java.util.Collection;
-
 /**
  * @author artamonov
  * @version $Id$
