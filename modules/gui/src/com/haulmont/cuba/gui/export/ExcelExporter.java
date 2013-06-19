@@ -57,6 +57,10 @@ public class ExcelExporter {
 
     private HSSFSheet sheet;
 
+    private HSSFCellStyle timeFormatCellStyle;
+
+    private HSSFCellStyle dateFormatCellStyle;
+
     private ExcelAutoColumnSizer[] sizers;
 
     private final String trueStr;
@@ -106,6 +110,7 @@ public class ExcelExporter {
 
         createWorkbookWithSheet();
         createFonts();
+        createFormats();
 
         int r = 0;
         if (filterDescription != null) {
@@ -187,6 +192,14 @@ public class ExcelExporter {
 
         String fileName = AppBeans.get(MessageTools.class).getEntityCaption(datasource.getMetaClass());
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
+    }
+
+    private void createFormats() {
+        timeFormatCellStyle = wb.createCellStyle();
+        timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+
+        dateFormatCellStyle = wb.createCellStyle();
+        dateFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
     }
 
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
@@ -320,12 +333,10 @@ public class ExcelExporter {
         } else if (cellValue instanceof Date) {
             cell.setCellValue(((Date) cellValue));
 
-            final HSSFCellStyle cellStyle = wb.createCellStyle();
             if (isFull)
-                cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+                cell.setCellStyle(timeFormatCellStyle);
             else
-                cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
-            cell.setCellStyle(cellStyle);
+                cell.setCellStyle(dateFormatCellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 String str = Datatypes.get(Date.class).format((Date) cellValue);
