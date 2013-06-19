@@ -70,6 +70,8 @@ public class App implements ConnectionListener {
 
     protected Configuration configuration;
 
+    protected boolean exiting;
+
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -131,6 +133,9 @@ public class App implements ConnectionListener {
     }
 
     public void showLoginDialog() {
+        if (exiting)
+            return;
+
         LoginDialog loginDialog = new LoginDialog(mainFrame, connection);
         loginDialog.setLocationRelativeTo(mainFrame);
         loginDialog.open();
@@ -232,6 +237,7 @@ public class App implements ConnectionListener {
                 recursiveClosingFrames(topLevelFrames.iterator(), new Runnable() {
                     @Override
                     public void run() {
+                        exiting = true;
                         connection.logout();
                         forceExit();
                     }
