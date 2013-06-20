@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
-
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -21,10 +20,9 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
-import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.*;
 
 import java.util.*;
 
@@ -431,7 +429,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             composition.setSpacing(true);
             composition.setSizeFull();
 
-            scrollContainer = new ScrollablePanel();
+            scrollContainer = new Panel();
             scrollContainerlayout = new CssLayout();
             scrollContainer.setContent(scrollContainerlayout);
             scrollContainer.setSizeFull();
@@ -581,7 +579,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 }
 
                 // Remove obsolete items
-                for (Instance componentItem : new ArrayList<Instance>(itemComponents.keySet())) {
+                for (Instance componentItem : new ArrayList<>(itemComponents.keySet())) {
                     if (!usedItems.contains(componentItem)) {
                         componentItems.remove(itemComponents.get(componentItem));
                         itemComponents.remove(componentItem);
