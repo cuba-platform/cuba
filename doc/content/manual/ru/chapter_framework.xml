@@ -6234,17 +6234,19 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_property">property</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry></row>
                 <row><entry>
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>required</row>
                 <row>
                   <entry align="left">
@@ -6254,9 +6256,8 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_required">required</link>
                   </entry>
-                  <entry/>
                 </row>
                 <row>
                   <entry align="left">
@@ -6266,21 +6267,19 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
-                  <entry/>
                 </row>
                 <row>
                   <entry>
                     <link linkend="gui_attr_basic_editable">editable</link>
                   </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  <entry>
+                    <link linkend="gui_attr_nullName">nullName</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
-                  <entry/>
                 </row>
               </tbody></tgroup>
           </informaltable>
@@ -6342,18 +6341,18 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>editable<entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                    <link linkend="gui_attr_nullName">nullName</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry></row>
                 <row><entry>
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_property">property</link>
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>required</row>
                 <row>
                   <entry align="left">
@@ -6363,7 +6362,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
@@ -6374,7 +6376,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_required">required</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6386,7 +6388,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6471,16 +6473,16 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry><entry align="left">
                     <link linkend="gui_attr_searchPickerField_minSearchStringLength">minSearchStringLength</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry></row>
                 <row><entry>
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                    <link linkend="gui_attr_nullName">nullName</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>required</row>
                 <row>
                   <entry align="left">
@@ -6490,10 +6492,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_property">property</link>
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
                 <row>
@@ -6504,7 +6506,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
@@ -6515,7 +6520,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_required">required</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6585,10 +6590,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_required">required</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>required</row>
                 <row>
                   <entry align="left">
@@ -6598,7 +6603,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
@@ -6609,7 +6617,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_twinColumn_columns_rows">rows</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6617,11 +6625,11 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry>
                     <link linkend="gui_attr_basic_description">description</link>
                   </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  <entry>
+                    <link linkend="gui_attr_nullName">nullName</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_twinColumn_columns_rows">rows</link>
                   </entry>
                   <entry/>
                 </row>
@@ -9212,6 +9220,20 @@ protected boolean postCommit(boolean committed, boolean close) {
                 </listitem>
               </itemizedlist>
               <para>По умолчанию отступы отсутствуют.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry id="gui_attr_nullName">
+            <term>nullName</term>
+            <listitem>
+              <para>Идентификатор опции, выбор которой будет равносилен установке значения в <code>null</code>.</para>
+              <para>Атрибут используется для компонентов <link linkend="gui_LookupField">LookupField</link>, <link linkend="gui_LookupPickerField">LookupPickerField</link>, <link linkend="gui_TwinColumn">TwinColumn</link>, <link linkend="gui_SearchPickerField">SearchPickerField</link>.</para>
+              <para>Пример для компонента <link linkend="gui_LookupField">LookupField</link>, установка значения атрибута в <link linkend="screen_xml_glossentry">XML-дескрипторе</link>:</para>
+              <programlisting>&lt;lookupField datasource=&quot;orderDs&quot; 
+             property=&quot;customer&quot; 
+             nullName=&quot;(none)&quot; 
+             optionsDatasource=&quot;customersDs&quot; width=&quot;200px&quot;/&gt;</programlisting>
+              <para>Пример для компонента <link linkend="gui_LookupField">LookupField</link>, установка значения атрибута в <link linkend="screen_controller_glossentry">контроллере</link>: <programlisting>&lt;lookupField id=&quot;customerLookupField&quot; optionsDatasource=&quot;customersDs&quot; 
+             width=&quot;200px&quot; datasource=&quot;orderDs&quot; property=&quot;customer&quot;/&gt;</programlisting><programlisting>customerLookupField.setNullOption(&quot;&lt;null&gt;&quot;);</programlisting></para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_optionsDatasource">
