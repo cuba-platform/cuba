@@ -105,14 +105,17 @@ public abstract class ComponentsHelper {
     /**
      * Get the topmost window for the specified component.
      * @param component component instance
-     * @return          topmost window in the hierarchy of frames for this component. Can be null only if the component
-     * was not properly initialized.
+     * @return          topmost window in the hierarchy of frames for this component.
+     * <br/>If the window has a controller class, an instance of the controller is returned.
+     * <br/>Can be null only if the component wasn't properly initialized.
      */
     public static Window getWindow(Component.BelongToFrame component) {
         IFrame frame = component.getFrame();
         while (frame != null) {
-            if (frame instanceof Window)
-                return (Window) frame;
+            if (frame instanceof Window) {
+                Window window = (Window) frame;
+                return window instanceof WrappedWindow ? ((WrappedWindow) window).getWrapper() : window;
+            }
             frame = frame.getFrame();
         }
         return null;
