@@ -42,8 +42,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBoxLayout.NAME, WebGroupBox.class);
-//  vaadin7
-//        classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
+        classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
         classes.put(TextField.NAME, WebTextField.class);
         classes.put(PasswordField.NAME, WebPasswordField.class);
         // Use resizable text area instead of text area
@@ -58,11 +57,9 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(DateField.NAME, WebDateField.class);
         classes.put(TimeField.NAME, WebTimeField.class);
         classes.put(LookupField.NAME, WebLookupField.class);
-//  vaadin7
         classes.put(SearchField.NAME, WebSearchField.class);
         classes.put(PickerField.NAME, WebPickerField.class);
         classes.put(LookupPickerField.NAME, WebLookupPickerField.class);
-//  vaadin7
         classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
         classes.put(OptionsGroup.NAME, WebOptionsGroup.class);
         classes.put(FileUploadField.NAME, WebFileUploadField.class);
