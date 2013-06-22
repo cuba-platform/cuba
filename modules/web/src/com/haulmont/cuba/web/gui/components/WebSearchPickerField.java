@@ -6,30 +6,39 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.AbstractField;
+
+import java.util.Collection;
+
 /**
  * @author artamonov
  * @version $Id$
  */
-public class WebSearchPickerField
-        /*extends WebSearchField
-        implements SearchPickerField*/ {
-    /*private WebPickerField pickerField;
+public class WebSearchPickerField extends WebSearchField implements SearchPickerField {
+
+    private WebPickerField pickerField;
 
     public WebSearchPickerField() {
-        super();
-        final Component selectComponent = component;
+        final com.vaadin.ui.Component selectComponent = component;
         Picker picker = new Picker(this, component) {
             @Override
             public void setRequired(boolean required) {
                 super.setRequired(required);
-                ((FilterSelect) selectComponent).setNullSelectionAllowed(!required);
+                ((CubaComboBox) selectComponent).setNullSelectionAllowed(!required);
             }
         };
         pickerField = new WebPickerField(picker);
     }
 
     @Override
-    public Component getComposition() {
+    public com.vaadin.ui.Component getComposition() {
         return pickerField.getComposition();
     }
 
@@ -49,21 +58,21 @@ public class WebSearchPickerField
     }
 
     @Override
-    public CubaPickerField.LookupAction addLookupAction() {
+    public LookupAction addLookupAction() {
         LookupAction action = new LookupAction(this);
         addAction(action);
         return action;
     }
 
     @Override
-    public CubaPickerField.ClearAction addClearAction() {
+    public ClearAction addClearAction() {
         ClearAction action = new ClearAction(this);
         addAction(action);
         return action;
     }
 
     @Override
-    public CubaPickerField.OpenAction addOpenAction() {
+    public OpenAction addOpenAction() {
         OpenAction action = new OpenAction(this);
         addAction(action);
         return action;
@@ -174,15 +183,15 @@ public class WebSearchPickerField
 
     public static class Picker extends WebPickerField.Picker {
 
-        public Picker(CubaPickerField owner, AbstractField field) {
+        public Picker(PickerField owner, AbstractField field) {
             super(owner, field);
         }
 
         @Override
-        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
             if (newValue instanceof Entity)
                 newValue = ((Entity) newValue).getId();
             super.setValue(newValue);
         }
-    }*/
+    }
 }

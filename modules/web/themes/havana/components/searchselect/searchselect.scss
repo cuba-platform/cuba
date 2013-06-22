@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-cuba-searchselect($primaryStyleName: cuba-searchselect) {
+
+  @include havana-filterselect($primaryStyleName);
+
+  .#{$primaryStyleName} {
+    padding-right: 0px;
+
+    .#{$primaryStyleName}-button {
+      background: none;
+      display: none;
+    }
+  }
+
+  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus,
+  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus .#{$primaryStyleName}-input:focus {
+    background-color: #ffbac2;
+  }
+}

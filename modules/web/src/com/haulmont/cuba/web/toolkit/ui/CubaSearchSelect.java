@@ -6,9 +6,8 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-//import com.vaadin.terminal.gwt.client.ui.VSearchSelect;
-//import com.vaadin.ui.ClientWidget;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.web.toolkit.ui.client.searchselect.CubaSearchSelectState;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 
 import java.util.List;
 import java.util.Map;
@@ -17,12 +16,19 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-//@ClientWidget(VSearchSelect.class)
-public class SearchSelect extends CubaComboBox {
-    // vaadin7
-/*
-    private FilterHandler filterHandler = null;
-    private boolean repaintOptions = false;
+public class CubaSearchSelect extends CubaComboBox {
+
+    protected FilterHandler filterHandler = null;
+    protected boolean repaintOptions = false;
+
+    public CubaSearchSelect() {
+        super.setFilteringMode(FilteringMode.OFF);
+    }
+
+    @Override
+    protected CubaSearchSelectState getState() {
+        return (CubaSearchSelectState) super.getState();
+    }
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
@@ -31,13 +37,16 @@ public class SearchSelect extends CubaComboBox {
     }
 
     @Override
-    protected void optionRepaint() {
-        super.optionRepaint();
+    protected void requestRepaintOptions() {
+        super.requestRepaintOptions();
         if (!repaintOptions && currentPage < 0) {
             String aPrevFilter = this.prevfilterstring;
             String aFilter = this.filterstring;
-            if (filterHandler != null && StringUtils.isNotEmpty(filterstring))
+
+            if (filterHandler != null) {
                 filterHandler.onFilterChange(filterstring);
+            }
+
             this.repaintOptions = true;
             this.currentPage = 0;
             this.prevfilterstring = aPrevFilter;
@@ -49,6 +58,16 @@ public class SearchSelect extends CubaComboBox {
     protected List<?> sanitetizeList(List<?> options, boolean needNullSelectOption) {
         // not needed to show null value in list
         return super.sanitetizeList(options, false);
+    }
+
+    @Override
+    protected boolean isNullOptionVisible(boolean needNullSelectOption, boolean nullFilteredOut) {
+        return false;
+    }
+
+    @Override
+    public void setFilteringMode(FilteringMode filteringMode) {
+        // ignore filter mode change
     }
 
     @Override
@@ -72,5 +91,5 @@ public class SearchSelect extends CubaComboBox {
 
     public void setFilterHandler(FilterHandler filterHandler) {
         this.filterHandler = filterHandler;
-    }*/
+    }
 }

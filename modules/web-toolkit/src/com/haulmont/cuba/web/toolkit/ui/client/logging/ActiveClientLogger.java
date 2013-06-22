@@ -18,6 +18,7 @@ public class ActiveClientLogger extends ClientLogger {
 
     public ActiveClientLogger(String name) {
         this.name = name;
+        this.enabled = true;
     }
 
     @Override

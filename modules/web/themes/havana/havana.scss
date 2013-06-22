@@ -43,6 +43,7 @@
 @import "components/multiupload/multiupload";
 @import "components/contextmenu/contextmenu";
 @import "components/popupbutton/popupbutton";
+@import "components/searchselect/searchselect";
 @import "components/notification/notification";
 @import "components/orderedlayout/orderedlayout";
 @import "components/errorindicator/errorindicator";
@@ -98,6 +99,7 @@
   @include havana-cuba-twincolumn;
   @include havana-cuba-multiupload;
   @include havana-cuba-widgetstree;
+  @include havana-cuba-searchselect;
 
   @include cuba-login-window;
   @include cuba-application-window;

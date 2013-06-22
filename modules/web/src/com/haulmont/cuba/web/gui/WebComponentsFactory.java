@@ -59,11 +59,11 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(TimeField.NAME, WebTimeField.class);
         classes.put(LookupField.NAME, WebLookupField.class);
 //  vaadin7
-//        classes.put(SearchField.NAME, WebSearchField.class);
+        classes.put(SearchField.NAME, WebSearchField.class);
         classes.put(PickerField.NAME, WebPickerField.class);
         classes.put(LookupPickerField.NAME, WebLookupPickerField.class);
 //  vaadin7
-//        classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
+        classes.put(SearchPickerField.NAME, WebSearchPickerField.class);
         classes.put(OptionsGroup.NAME, WebOptionsGroup.class);
         classes.put(FileUploadField.NAME, WebFileUploadField.class);
         classes.put(FileMultiUploadField.NAME, WebFileMultiUploadField.class);

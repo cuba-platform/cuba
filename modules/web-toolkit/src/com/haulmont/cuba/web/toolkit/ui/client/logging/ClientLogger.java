@@ -14,4 +14,6 @@ public class ClientLogger {
 
     public void log(String message) {
     }
+
+    public boolean enabled = false;
 }

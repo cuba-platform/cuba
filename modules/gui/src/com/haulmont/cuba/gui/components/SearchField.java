@@ -22,6 +22,9 @@ public interface SearchField extends LookupField {
     void setSearchNotifications(SearchNotifications searchNotifications);
     SearchNotifications getSearchNotifications();
 
+    IFrame.NotificationType getDefaultNotificationType();
+    void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType);
+
     public interface SearchNotifications {
 
         void notFoundSuggestions(String filterString);
