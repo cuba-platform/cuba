@@ -9,14 +9,13 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -37,30 +36,34 @@ public class FolderEditWindow extends Window {
     protected String messagesPack;
     protected TextField nameField;
     protected TextField tabNameField;
-    protected Select parentSelect;
+    protected ComboBox parentSelect;
     protected TextField sortOrderField;
-    protected Select presentation;
+    protected ComboBox presentation;
     protected CheckBox globalCb;
     protected CheckBox applyDefaultCb;
     protected Runnable commitHandler;
     protected VerticalLayout layout;
     protected Button okBtn;
     protected Messages messages;
+    protected UserSessionSource userSessionSource;
+    protected ClientConfig clientConfig;
 
     public FolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
-        super();
         this.folder = folder;
         this.commitHandler = commitHandler;
 
         messages = AppBeans.get(Messages.class);
         messagesPack = AppConfig.getMessagesPack();
+        userSessionSource = AppBeans.get(UserSessionSource.class);
+        clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+
         setCaption(adding ? getMessage("folders.folderEditWindow.adding") : getMessage("folders.folderEditWindow"));
 
         setWidth(300, Unit.PIXELS);
         setResizable(false);
 
         layout = new VerticalLayout();
-        layout.setMargin(true);
+        layout.setMargin(new MarginInfo(true, false, false, false));
         layout.setSpacing(true);
 
         setContent(layout);
@@ -79,7 +82,7 @@ public class FolderEditWindow extends Window {
         tabNameField.setValue(StringUtils.trimToEmpty(folder.getTabName()));
         layout.addComponent(tabNameField);
 
-        parentSelect = new Select();
+        parentSelect = new ComboBox();
         parentSelect.setCaption(getMessage("folders.folderEditWindow.parentSelect"));
         parentSelect.setWidth(250, Unit.PIXELS);
         parentSelect.setNullSelectionAllowed(true);
@@ -89,7 +92,7 @@ public class FolderEditWindow extends Window {
 
         if (folder instanceof SearchFolder) {
             if (presentations != null) {
-                presentation = new Select();
+                presentation = new ComboBox();
                 presentation.setCaption(getMessage("folders.folderEditWindow.presentation"));
                 presentation.setWidth("250px");
                 presentation.setNullSelectionAllowed(true);
@@ -112,7 +115,7 @@ public class FolderEditWindow extends Window {
         sortOrderField.setValue(folder.getSortOrder() == null ? "" : folder.getSortOrder().toString());
         layout.addComponent(sortOrderField);
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
+        if (userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
                 && folder instanceof SearchFolder
                 && BooleanUtils.isNotTrue(((SearchFolder) folder).getIsSet())) {
             globalCb = new CheckBox(getMessage("folders.folderEditWindow.global"));
@@ -122,7 +125,7 @@ public class FolderEditWindow extends Window {
 
         applyDefaultCb = new CheckBox(getMessage("folders.folderEditWindow.applyDefault"));
         applyDefaultCb.setValue(BooleanUtils.isTrue(((AbstractSearchFolder)folder).getApplyDefault()));
-        applyDefaultCb.setVisible(ConfigProvider.getConfig(ClientConfig.class).getGenericFilterManualApplyRequired()
+        applyDefaultCb.setVisible(clientConfig.getGenericFilterManualApplyRequired()
                 && folder instanceof SearchFolder
                 && BooleanUtils.isNotTrue(((SearchFolder) folder).getIsSet()));
         layout.addComponent(applyDefaultCb);
@@ -158,7 +161,7 @@ public class FolderEditWindow extends Window {
                 SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
                 if (StringUtils.trimToNull(nameField.getValue()) == null) {
                     String msg = messages.getMainMessage("folders.folderEditWindow.emptyName");
-                    UI.getCurrent().showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
+                    App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
                     return;
                 }
                 folder.setName(nameField.getValue());
@@ -167,18 +170,15 @@ public class FolderEditWindow extends Window {
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     folder.setSortOrder(null);
                 } else {
-                    Object value = sortOrderField.getValue();
+                    String value = sortOrderField.getValue();
                     int sortOrder;
-                    if (value instanceof Integer)
-                        sortOrder = (Integer) value;
-                    else
-                        try {
-                            sortOrder = Integer.parseInt((String) value);
-                        } catch (NumberFormatException e) {
-                            String msg = messages.getMainMessage("folders.folderEditWindow.invalidSortOrder");
-                            UI.getCurrent().showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
-                            return;
-                        }
+                    try {
+                        sortOrder = Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        String msg = messages.getMainMessage("folders.folderEditWindow.invalidSortOrder");
+                        App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.WARNING);
+                        return;
+                    }
                     folder.setSortOrder(sortOrder);
                 }
 
@@ -193,10 +193,10 @@ public class FolderEditWindow extends Window {
                     if (BooleanUtils.isTrue(globalCb.getValue())) {
                         folder.setUser(null);
                     } else {
-                        folder.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+                        folder.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                     }
                 } else {
-                    folder.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+                    folder.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                 }
 
                 if (presentation != null) {

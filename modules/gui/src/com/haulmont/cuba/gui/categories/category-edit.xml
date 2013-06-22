@@ -29,6 +29,5 @@
         <iframe id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/categories/category-attrs-frame.xml"/>
 
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-
     </layout>
 </window>

@@ -917,7 +917,7 @@ public class WebFieldGroup
         protected com.vaadin.ui.Field<?> createDefaultField(Item item, Object propertyId,
                                                             com.vaadin.ui.Component uiContext) {
             Field fieldConf = fields.get(propertyId.toString());
-            if (fieldConf != null) {
+            if (fieldConf != null && fieldConf.getXmlDescriptor() != null) {
                 final String rows = fieldConf.getXmlDescriptor().attributeValue("rows");
                 if (!StringUtils.isEmpty(rows)) {
                     return new TextArea();

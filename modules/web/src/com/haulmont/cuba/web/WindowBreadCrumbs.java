@@ -40,13 +40,11 @@ public class WindowBreadCrumbs extends HorizontalLayout {
     protected Set<Listener> listeners = new HashSet<>();
 
     public WindowBreadCrumbs() {
-        setMargin(true);
         setWidth(100, Unit.PERCENTAGE);
         setHeight(-1, Unit.PIXELS); // TODO (abramov) This is a bit tricky
         setStyleName("cuba-headline-container");
 
-//        tabbedMode = AppWindow.Mode.TABBED.equals(AppUI.getInstance().getAppWindow().getMode());
-        tabbedMode = true;
+        tabbedMode = AppWindow.Mode.TABBED.equals(App.getInstance().getAppWindow().getMode());
 
         if (tabbedMode)
             setVisible(false);
@@ -77,13 +75,11 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         enclosingLayout.setComponentAlignment(linksLayout, Alignment.MIDDLE_LEFT);
 
         addComponent(logoLayout);
-        setComponentAlignment(logoLayout, Alignment.MIDDLE_LEFT);
         addComponent(enclosingLayout);
 
         if (closeBtn != null)
             addComponent(closeBtn);
 
-        setComponentAlignment(enclosingLayout, Alignment.MIDDLE_LEFT);
         linksLayout.setSizeFull();
         setExpandRatio(enclosingLayout, 1);
     }
