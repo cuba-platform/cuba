@@ -206,6 +206,8 @@ public class DesktopComponentsHelper {
             prevContainer = parent;
             if (parent instanceof DetachedFrame) {
                 parent = ((DetachedFrame) parent).getParentContainer();
+            } if (parent instanceof JPopupMenu) {
+                parent = ((JPopupMenu) parent).getInvoker().getParent();
             } else {
                 parent = parent.getParent();
             }
@@ -222,6 +224,8 @@ public class DesktopComponentsHelper {
             prevContainer = parent;
             if (parent instanceof DetachedFrame) {
                 parent = ((DetachedFrame) parent).getParentContainer();
+            } if (parent instanceof JPopupMenu) {
+                parent = ((JPopupMenu) parent).getInvoker().getParent();
             } else {
                 parent = parent.getParent();
             }
