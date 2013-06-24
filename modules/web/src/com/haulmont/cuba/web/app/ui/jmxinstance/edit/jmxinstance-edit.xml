@@ -10,6 +10,7 @@
         datasource="jmxInstanceDs"
         focusComponent="jmxFieldGroup"
         caption="msg://editorCaption">
+
     <dsContext>
         <datasource id="jmxInstanceDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local"/>
     </dsContext>
@@ -24,9 +25,9 @@
             </column>
         </fieldGroup>
         <hbox id="windowActions" align="MIDDLE_LEFT" spacing="true"
-              margin="true;false;false;false" expandable="false" height="100%">
+              margin="true;false;false;false" height="100%">
             <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>
-            <button id="testConnection" invoke="testConnection" caption="msg://testConnection" icon="icons/wires.png"/>
+            <button id="testConnection" invoke="testConnection" caption="msg://testConnection" icon="icons/test-connection.png"/>
             <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>
         </hbox>
     </layout>
