@@ -64,7 +64,7 @@ public class UserSession implements Serializable {
         constraints = new HashMap<String, List<String[]>>();
         attributes = new ConcurrentHashMap<String, Serializable>();
     }
-    
+
     public UserSession(UserSession src, User user, Collection<Role> roles, Locale locale) {
         this(src.id, user, roles, locale, src.system);
         this.user = src.user;
@@ -172,6 +172,13 @@ public class UserSession implements Serializable {
             if (extTarget != null)
                 permissions[type.ordinal()].put(extTarget, value);
         }
+    }
+
+    /**
+     * This method is used by security subsystem
+     */
+    public void removePermission(PermissionType type, String target) {
+        permissions[type.ordinal()].remove(target);
     }
 
     /**
@@ -325,7 +332,7 @@ public class UserSession implements Serializable {
     }
 
     public String toString() {
-        return id + " [" 
+        return id + " ["
                 + user.getLogin() + (substitutedUser == null ? "" : " / " + substitutedUser.getLogin())
                 + "]";
     }
