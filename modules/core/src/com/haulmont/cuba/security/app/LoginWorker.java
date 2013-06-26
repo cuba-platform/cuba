@@ -16,6 +16,7 @@ import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,9 +32,19 @@ public interface LoginWorker {
     UserSession login(String login, String password, Locale locale) throws LoginException;
 
     /**
+     * @see LoginService#login(String, String, java.util.Locale, java.util.Map)
+     */
+    UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException;
+
+    /**
      * @see LoginService#loginTrusted(String, String, java.util.Locale)
      */
     UserSession loginTrusted(String login, String password, Locale locale) throws LoginException;
+
+    /**
+     * @see LoginService#loginTrusted(String, String, java.util.Locale, java.util.Map))
+     */
+    UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException;
 
     /**
      * @see LoginService#logout()
@@ -54,7 +65,7 @@ public interface LoginWorker {
     /**
      * Log in from a middleware component. This method should not be exposed to any client tier.
      *
-     * @param login    login of a system user
+     * @param login login of a system user
      * @return system user session that is not replicated in cluster
      * @throws LoginException in case of unsuccessful log in
      */

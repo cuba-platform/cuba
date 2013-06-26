@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -121,6 +122,11 @@ public class LoginWorkerBean implements LoginWorker {
         }
     }
 
+    @Override
+    public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
+        return login(login, password, locale);
+    }
+
     private String getInvalidCredentialsMessage(String login, Locale locale) {
         return messages.formatMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale, login);
     }
@@ -190,6 +196,11 @@ public class LoginWorkerBean implements LoginWorker {
         } finally {
             tx.end();
         }
+    }
+
+    @Override
+    public UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
+        return loginTrusted(login, password, locale);
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -44,9 +45,35 @@ public class LoginServiceBean implements LoginService {
     }
 
     @Override
+    public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
+        try {
+            return loginWorker.login(login, password, locale, params);
+        } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
+            throw e;
+        } catch (RuntimeException | Error e) {
+            log.error("Login error", e);
+            throw e;
+        }
+    }
+
+    @Override
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
         try {
             return loginWorker.loginTrusted(login, password, locale);
+        } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
+            throw e;
+        } catch (RuntimeException | Error e) {
+            log.error("Login error", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
+        try {
+            return loginWorker.loginTrusted(login, password, locale, params);
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             throw e;

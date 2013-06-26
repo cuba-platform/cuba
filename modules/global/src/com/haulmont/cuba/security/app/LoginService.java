@@ -16,6 +16,7 @@ import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,24 +32,48 @@ public interface LoginService {
     /**
      * Log in using login and user's password.
      *
-     * @param login     login
-     * @param password  user's encrypted password
-     * @param locale    client locale
+     * @param login    login
+     * @param password user's encrypted password
+     * @param locale   client locale
      * @return created user session
      * @throws LoginException in case of unsuccessful log in
      */
     UserSession login(String login, String password, Locale locale) throws LoginException;
 
     /**
+     * Login using user name and password
+     *
+     * @param login    login name
+     * @param password encrypted password
+     * @param locale   client locale
+     * @param params   login params
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException;
+
+    /**
      * Log in from a trusted client.
      *
-     * @param login     login
-     * @param password  client's encrypted trusted password
-     * @param locale    client locale
+     * @param login    login
+     * @param password client's encrypted trusted password
+     * @param locale   client locale
      * @return created user session
      * @throws LoginException in case of unsuccessful log in
      */
     UserSession loginTrusted(String login, String password, Locale locale) throws LoginException;
+
+    /**
+     * Login using user name and trusted password
+     *
+     * @param login    login name
+     * @param password client's encrypted trusted password
+     * @param locale   client locale
+     * @param params   login params
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException;
 
     /**
      * Log out and destroy an active user session.
@@ -62,11 +87,11 @@ public interface LoginService {
      *
      * @param substitutedUser a user to substitute. Must be in the current users's {@link User#substitutions} list.
      * @return new UserSession instance that contains: <ul>
-     *     <li> id - the previously active user session id </li>
-     *     <li> user - the logged in user </li>
-     *     <li> substitutedUser - the user passed to this method  </li>
-     *     <li> all security data - loaded for the substitutedUser </li>
-     * </ul>
+     *         <li> id - the previously active user session id </li>
+     *         <li> user - the logged in user </li>
+     *         <li> substitutedUser - the user passed to this method  </li>
+     *         <li> all security data - loaded for the substitutedUser </li>
+     *         </ul>
      */
     UserSession substituteUser(User substitutedUser);
 
