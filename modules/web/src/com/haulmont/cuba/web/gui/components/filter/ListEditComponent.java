@@ -39,7 +39,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class ListEditComponent extends CustomComponent implements com.vaadin.ui.Field {
+public class ListEditComponent extends CustomField {
 
     public static final int DEFAULT_WIDTH = 250;
 
@@ -47,18 +47,16 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     protected com.vaadin.ui.Button pickerButton;
     protected com.vaadin.ui.Button clearButton;
 
-    protected boolean required;
-    protected String requiredError;
+    protected Class itemClass;
+    protected MetaClass metaClass;
+    protected CollectionDatasource collectionDatasource;
+    protected List<String> runtimeEnum;
 
-    private Class itemClass;
-    private MetaClass metaClass;
-    private CollectionDatasource collectionDatasource;
-    private List<String> runtimeEnum;
+    protected List listValue;
+    protected Map<Object, String> values = new LinkedHashMap<>();
 
-    private List listValue;
-    private Map<Object, String> values = new LinkedHashMap<>();
-
-    private List<ValueChangeListener> listeners = new ArrayList<>();
+    protected List<ValueChangeListener> listeners = new LinkedList<>();
+    protected HorizontalLayout composition;
 
     public ListEditComponent(Class itemClass) {
         this.itemClass = itemClass;
@@ -66,12 +64,12 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         field = new TextField() {
             @Override
             public boolean isRequired() {
-                return ListEditComponent.this.required;
+                return ListEditComponent.this.isRequired();
             }
 
             @Override
             public String getRequiredError() {
-                return ListEditComponent.this.requiredError;
+                return ListEditComponent.this.getRequiredError();
             }
         };
         field.setReadOnly(true);
@@ -107,15 +105,14 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
         updateIcons();
 
-        final HorizontalLayout container = new HorizontalLayout();
-        container.setWidth("100%");
+        composition = new HorizontalLayout();
+        composition.setWidth("100%");
 
-        container.addComponent(field);
-        container.addComponent(pickerButton);
-        container.addComponent(clearButton);
-        container.setExpandRatio(field, 1);
+        composition.addComponent(field);
+        composition.addComponent(pickerButton);
+        composition.addComponent(clearButton);
+        composition.setExpandRatio(field, 1);
 
-        setCompositionRoot(container);
         setStyleName("cuba-pickerfield");
         setWidth(DEFAULT_WIDTH + "px");
     }
@@ -135,38 +132,18 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         this.runtimeEnum = values;
     }
 
-//    vaadin7
-//    @Override
-//    public void paintContent(PaintTarget target) throws PaintException {
-//        paintCommonContent(target);
-//        super.paintContent(target);
-//    }
-//
-//    protected void paintCommonContent(PaintTarget target) throws PaintException {
-//        // If the field is modified, but not committed, set modified attribute
-//        if (isModified()) {
-//            target.addAttribute("modified", true);
-//        }
-//
-//        // Adds the required attribute
-//        if (!isReadOnly() && isRequired()) {
-//            target.addAttribute("required", true);
-//        }
-//
-//        // Hide the error indicator if needed
-//        if (isRequired() && getValue() == null && getComponentError() == null
-//                && getErrorMessage() != null) {
-//            target.addAttribute("hideErrors", true);
-//        }
-//    }
+    @Override
+    protected Component initContent() {
+        return composition;
+    }
 
     private void updateIcons() {
         if (isReadOnly()) {
-            setPickerButtonIcon(new VersionedThemeResource("pickerfield/img/lookup-btn-readonly.png"));
-            setClearButtonIcon(new VersionedThemeResource("pickerfield/img/clear-btn-readonly.png"));
+            setPickerButtonIcon(new VersionedThemeResource("components/pickerfield/images/lookup-btn-readonly.png"));
+            setClearButtonIcon(new VersionedThemeResource("components/pickerfield/images/clear-btn-readonly.png"));
         } else {
-            setPickerButtonIcon(new VersionedThemeResource("pickerfield/img/lookup-btn.png"));
-            setClearButtonIcon(new VersionedThemeResource("pickerfield/img/clear-btn.png"));
+            setPickerButtonIcon(new VersionedThemeResource("components/pickerfield/images/lookup-btn.png"));
+            setClearButtonIcon(new VersionedThemeResource("components/pickerfield/images/clear-btn.png"));
         }
     }
 
@@ -177,7 +154,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     public void addListener(Button.ClickListener listener) {
-        pickerButton.addListener(listener);
+        pickerButton.addClickListener(listener);
     }
 
     @Override
@@ -232,10 +209,12 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
     public void setValues(Map<Object, String> values) {
         this.values = values;
-        if (values.isEmpty())
+        if (values.isEmpty()) {
             setValue(null);
-        else
+        } else {
+            //noinspection unchecked
             setValue(new ArrayList(values.keySet()));
+        }
 
         String caption = new StrBuilder().appendWithSeparators(values.values(), ",").toString();
         field.setReadOnly(false);
@@ -303,20 +282,12 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
-    }
-
-    @Override
-    public void addListener(ValueChangeListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
     }
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-    }
-
-    @Override
-    public void removeListener(ValueChangeListener listener) {
         listeners.remove(listener);
     }
 
@@ -338,28 +309,6 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     @Override
     public void setTabIndex(int tabIndex) {
         field.setTabIndex(tabIndex);
-    }
-
-    @Override
-    public boolean isRequired() {
-        return required;
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        this.required = required;
-        markAsDirty();
-    }
-
-    @Override
-    public void setRequiredError(String requiredMessage) {
-        this.requiredError = requiredMessage;
-        markAsDirty();
-    }
-
-    @Override
-    public String getRequiredError() {
-        return requiredError;
     }
 
     public void setPickerButtonIcon(Resource icon) {
@@ -602,8 +551,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
             Button delItemBtn = new Button();
             delItemBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            // vaadin7 replace icon
-            delItemBtn.setIcon(new VersionedThemeResource("icons/tab-remove.png"));
+            delItemBtn.setIcon(new VersionedThemeResource("icons/item-remove.png"));
             delItemBtn.addStyleName("filter-param-list-edit-del");
             delItemBtn.addClickListener(
                     new Button.ClickListener() {
@@ -621,7 +569,8 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private String addDate(Date date) {
-            String str = Datatypes.get(itemClass).format(date, AppBeans.get(UserSessionSource.class).getUserSession().getLocale());
+            String str = Datatypes.get(itemClass).format(date,
+                    AppBeans.get(UserSessionSource.class).getUserSession().getLocale());
 
             values.put(date, str);
             return str;

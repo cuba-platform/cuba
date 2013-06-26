@@ -57,6 +57,7 @@
 @import "app/app-window";
 @import "app/login-window";
 @import "app/breadcrumbs";
+@import "app/generic-filter";
 @import "app/folders-pane";
 @import "app/log-control";
 
@@ -103,6 +104,7 @@
 
   @include cuba-login-window;
   @include cuba-application-window;
+  @include cuba-generic-filter;
   @include cuba-folders-pane;
   @include cuba-breadcrumbs;
   @include cuba-log-control;

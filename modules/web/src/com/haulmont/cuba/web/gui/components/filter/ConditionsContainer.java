@@ -209,7 +209,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
     }
 
     private Button createDeleteConditionBtn(final AbstractCondition condition) {
-        Button delBtn = WebComponentsHelper.createButton("icons/close.png");
+        Button delBtn = WebComponentsHelper.createButton("icons/item-remove.png");
         delBtn.setStyleName(BaseTheme.BUTTON_LINK);
         delBtn.addStyleName("icon-autosize");
         delBtn.addClickListener(new Button.ClickListener() {
