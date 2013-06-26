@@ -17,7 +17,6 @@ import com.vaadin.shared.ui.Connect;
  * @author devyatkin
  * @version $Id$
  */
-
 @Connect(value = CubaTable.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaScrollTableConnector extends TableConnector {
 

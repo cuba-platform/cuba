@@ -34,8 +34,6 @@ public class WebLookupPickerField
     private WebPickerField pickerField;
 
     public WebLookupPickerField() {
-        super();
-
         // delegate error indication
         this.componentErrorHandler = new ComponentErrorHandler() {
             @Override

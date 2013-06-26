@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.table;
+package com.haulmont.cuba.web.toolkit.ui.client.grouptable;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.TableCellElement;
@@ -12,6 +12,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
+import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
@@ -227,7 +228,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     @Override
     protected VScrollTableBody createScrollBody() {
-        return new GroupTableBody();
+        return new CubaGroupTableBody();
     }
 
     @Override
@@ -275,30 +276,30 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         }
     }
 
-    protected class GroupTableBody extends VScrollTableBody {
+    protected class CubaGroupTableBody extends CubaScrollTableBody {
 
         @Override
         protected VScrollTableRow createRow(UIDL uidl, char[] aligns2) {
             if (uidl.hasAttribute("groupKey")) {
-                return new GroupTableGroupRow(uidl, aligns2); //creates a group row
+                return new CubaGroupTableGroupRow(uidl, aligns2); //creates a group row
             }
             else
-                return new GroupTableRow(uidl, aligns2);
+                return new CubaGroupTableRow(uidl, aligns2);
         }
 
         @Override
         protected void addRow(VScrollTableRow row) {
             super.addRow(row);
-            if (row instanceof GroupTableGroupRow
-                    && ((GroupTableGroupRow) row).isExpanded()) {
+            if (row instanceof CubaGroupTableGroupRow
+                    && ((CubaGroupTableGroupRow) row).isExpanded()) {
                 row.addStyleName("v-expanded");
             }
         }
 
-        protected class GroupTableRow extends VScrollTableRow {
+        protected class CubaGroupTableRow extends CubaScrollTableRow {
             private TableCellElement groupDividerCell;
 
-            public GroupTableRow(UIDL uidl, char[] aligns) {
+            public CubaGroupTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
             }
 
@@ -330,7 +331,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
         }
 
-        protected class GroupTableGroupRow extends GroupTableRow {
+        protected class CubaGroupTableGroupRow extends CubaGroupTableRow {
             private String colKey;
             private String groupKey;
             private boolean expanded;
@@ -339,7 +340,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
             private boolean hasCells = false;
 
-            public GroupTableGroupRow(UIDL uidl, char[] aligns) {
+            public CubaGroupTableGroupRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
             }
 

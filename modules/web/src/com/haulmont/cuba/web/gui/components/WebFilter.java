@@ -264,7 +264,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         Button button = new Button();
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("remove-applied-filter");
-        button.setIcon(new VersionedThemeResource("icons/close.png"));
+        button.setIcon(new VersionedThemeResource("icons/item-remove.png"));
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

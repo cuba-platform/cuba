@@ -15,17 +15,17 @@ import com.vaadin.ui.*;
 @Deprecated
 @SuppressWarnings("serial")
 public class ActionsField extends com.vaadin.ui.CustomField {
-    private GridLayout composition;
+    private HorizontalLayout composition;
     private AbstractSelect field;
 
     public ActionsField(AbstractSelect field) {
-        composition = new GridLayout();
+        composition = new HorizontalLayout();
         composition.setWidth("100%");
 
         this.field = field;
         field.setWidth("100%");
         composition.addComponent(field);
-        composition.setColumnExpandRatio(0, 1);
+        composition.setExpandRatio(field, 1);
 
         setStyleName("actionsfield");
     }
@@ -35,16 +35,13 @@ public class ActionsField extends com.vaadin.ui.CustomField {
         return composition;
     }
 
+    @Override
     public Class<?> getType() {
         return String.class;
     }
 
     public void addButton(Button button) {
-        composition.setCursorX(composition.getColumns());
-        composition.setCursorY(0);
         composition.addComponent(button);
-        composition.setColumnExpandRatio(composition.getColumns() - 1, 0);
-        composition.setComponentAlignment(button, Alignment.TOP_RIGHT);
     }
 
     @Override

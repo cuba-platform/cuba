@@ -6,8 +6,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
+import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VScrollTable;
@@ -19,6 +22,8 @@ import java.util.Iterator;
  * @version $Id$
  */
 public class CubaScrollTableWidget extends VScrollTable implements ShortcutActionHandler.ShortcutActionHandlerOwner {
+
+    protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
     protected ShortcutActionHandler shortcutHandler;
 
@@ -47,6 +52,11 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     @Override
+    protected VScrollTableBody createScrollBody() {
+        return new CubaScrollTableBody();
+    }
+
+    @Override
     public void updateActionMap(UIDL mainUidl) {
         UIDL actionsUidl = mainUidl.getChildByTagName("actions");
         if (actionsUidl == null) {
@@ -69,6 +79,43 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 }
             }
         }
+    }
 
+    protected class CubaScrollTableBody extends VScrollTableBody {
+
+        protected VScrollTableRow createRow(UIDL uidl, char[] aligns2) {
+            if (uidl.hasAttribute("gen_html")) {
+                // This is a generated row.
+                return new VScrollTableGeneratedRow(uidl, aligns2);
+            }
+            return new CubaScrollTableRow(uidl, aligns2);
+        }
+
+        protected class CubaScrollTableRow extends VScrollTableRow {
+
+            public CubaScrollTableRow(UIDL uidl, char[] aligns) {
+                super(uidl, aligns);
+            }
+
+            @Override
+            protected void initCellWithWidget(Widget w, char align,
+                                              String style, boolean sorted, TableCellElement td) {
+                super.initCellWithWidget(w, align, style, sorted, td);
+
+                td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
+            }
+
+            @Override
+            protected void updateCellStyleNames(TableCellElement td, String primaryStyleName) {
+                Element container = td.getFirstChild().cast();
+                boolean isWidget = container.getClassName() != null
+                        && container.getClassName().contains(WIDGET_CELL_CLASSNAME);
+
+                super.updateCellStyleNames(td, primaryStyleName);
+
+                if (isWidget)
+                    container.addClassName(WIDGET_CELL_CLASSNAME);
+            }
+        }
     }
 }

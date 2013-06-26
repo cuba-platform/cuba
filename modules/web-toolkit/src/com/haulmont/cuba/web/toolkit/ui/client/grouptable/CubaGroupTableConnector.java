@@ -4,10 +4,11 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.table;
+package com.haulmont.cuba.web.toolkit.ui.client.grouptable;
 
 import com.google.gwt.core.client.GWT;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
+import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableConnector;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
 import com.vaadin.shared.ui.Connect;

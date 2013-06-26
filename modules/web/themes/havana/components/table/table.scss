@@ -85,6 +85,11 @@
       border-right-color: $theme_tableCellSeparatorColor;
     }
 
+    .#{$primaryStyleName}-cell-wrapper.widget-container {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+
     .#{$primaryStyleName}-row,
     .#{$primaryStyleName}-row-odd {
       background-color: $theme_tableRowBackgroundColor;

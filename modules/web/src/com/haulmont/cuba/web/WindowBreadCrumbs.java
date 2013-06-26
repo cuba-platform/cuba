@@ -64,7 +64,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
                     window.close(Window.CLOSE_ACTION_ID);
                 }
             });
-            closeBtn.setIcon(new VersionedThemeResource("images/close.png"));
+            closeBtn.setIcon(new VersionedThemeResource("icons/close.png"));
             closeBtn.setStyleName("cuba-closetab-button");
 //            AppUI.getInstance().getWindowManager()
 //                    .setDebugId(closeBtn, "closeBtn");
