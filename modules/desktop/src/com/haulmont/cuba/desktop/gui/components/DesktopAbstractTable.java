@@ -252,6 +252,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
         if (action != null && action.isEnabled()) {
             Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
+            if (window instanceof Window.Wrapper)
+                window = ((Window.Wrapper) window).getWrappedWindow();
 
             if (!(window instanceof Window.Lookup)) {
                 action.actionPerform(DesktopAbstractTable.this);
