@@ -36,7 +36,7 @@ public class DesktopPopupButton
     private String icon;
     private String description;
 
-    public static final String DEFAULT_ICON = "/popupbutton/open-popup.png";
+    public static final String DEFAULT_ICON = "/components/popupbutton/open-popup.png";
 
     private DesktopResources resources = App.getInstance().getResources();
 

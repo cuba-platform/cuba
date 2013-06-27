@@ -7,13 +7,14 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FileUtils;
 
@@ -30,7 +31,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
-    private static final String DEFAULT_ICON = "/multiupload/button.png";
+    private static final String DEFAULT_ICON = "/components/multiupload/multiupload-button.png";
 
     protected FileUploadingAPI fileUploading;
 
@@ -47,7 +48,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         fileChooser.setMultiSelectionEnabled(true);
 
         DesktopResources resources = App.getInstance().getResources();
-        String caption = MessageProvider.getMessage(getClass(), "upload.selectFiles");
+        String caption = AppBeans.get(Messages.class).getMessage(getClass(), "upload.selectFiles");
         impl = new JButton();
         impl.setAction(new AbstractAction(caption, resources.getIcon(DEFAULT_ICON)) {
             @Override
@@ -88,7 +89,8 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     }
 
     private boolean checkFiles(File[] files) {
-        final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
         final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
 
         for (File file : files) {
@@ -121,9 +123,10 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     }
 
     private void notifyFileSizeExceedLimit(File file) {
-        String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
-//        for (UploadListener uploadListener : listeners)
-//            uploadListener.errorNotify(file.getName(), warningMsg, FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT);
+        Messages messages = AppBeans.get(Messages.class);
+        String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message", file.getName());
+        WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+        wm.showNotification(warningMsg, IFrame.NotificationType.WARNING);
     }
 
     @Override
