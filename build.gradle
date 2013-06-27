@@ -65,7 +65,7 @@ def vaadinVersion = '7.0.7.h.M7'
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
 def asm = [group: 'asm', name: 'asm', version: '3.3.1']
-def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.7.20121205']
+def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.9.20130515']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
