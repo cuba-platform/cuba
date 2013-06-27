@@ -128,7 +128,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected Map<String, Object> lookupScreenParams;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-        protected WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
 
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -170,6 +169,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         throw new IllegalStateException("Please specify metaclass or property for PickerField");
                     windowAlias = metaClass.getName() + ".lookup";
                 }
+                WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
                 Window lookupWindow = wm.openLookup(
                         windowConfig.getWindowInfo(windowAlias),
                         new Window.Lookup.Handler() {
@@ -240,7 +240,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
         protected Map<String, Object> editScreenParams;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-        protected WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
 
         public OpenAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -278,6 +277,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             if (entity == null)
                 return;
 
+            WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 wm.showNotification(
                         messages.getMessage(ActionsFieldHelper.class, "ActionsFieldHelper.openMsg"),
