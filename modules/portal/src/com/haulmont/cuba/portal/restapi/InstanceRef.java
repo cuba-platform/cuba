@@ -7,6 +7,7 @@
 package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 
@@ -27,6 +28,13 @@ public class InstanceRef {
         this.loadInfo = loadInfo;
         MetaClass childMetaClass = this.loadInfo.getMetaClass();
         instance = childMetaClass.createInstance();
+        for (MetaProperty metaProperty : childMetaClass.getProperties()) {
+            if (!metaProperty.getRange().isClass()) {
+                try {
+                    instance.setValue(metaProperty.getName(), null);
+                } catch (Exception e) {}
+            }
+        }
         instance.setId(this.loadInfo.getId());
     }
 
