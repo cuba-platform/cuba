@@ -51,7 +51,8 @@ public class ScriptingManager implements ScriptingManagerMBean {
             binding.setVariable("persistence", persistence);
             binding.setVariable("metadata", metadata);
             binding.setVariable("configuration", configuration);
-            return scripting.runGroovyScript(scriptName, binding);
+            Object result = scripting.runGroovyScript(scriptName, binding);
+            return String.valueOf(result);
         } catch (Exception e) {
             log.error("Error runGroovyScript", e);
             return ExceptionUtils.getStackTrace(e);
