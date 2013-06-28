@@ -69,7 +69,8 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
         component.setConverter(new Converter<String, Date>() {
             @Override
-            public Date convertToModel(String formattedValue, Locale locale) throws ConversionException {
+            public Date convertToModel(String formattedValue, Class<? extends Date> targetType, Locale locale)
+                    throws ConversionException {
                 if (StringUtils.isNotEmpty(formattedValue) && !formattedValue.equals(placeholder)) {
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
@@ -86,7 +87,8 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
             }
 
             @Override
-            public String convertToPresentation(Date value, Locale locale) throws ConversionException {
+            public String convertToPresentation(Date value, Class<? extends String> targetType, Locale locale)
+                    throws ConversionException {
                 if (value != null) {
                     SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
                     return sdf.format(value);

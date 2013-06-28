@@ -12,15 +12,12 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.vaadin.event.ActionManager;
-import com.vaadin.ui.*;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -31,13 +28,11 @@ import java.util.*;
  * @version $Id$
  */
 @SuppressWarnings("serial")
-//@ClientWidget(VVerticalActionsLayout.class)
 public class WebFrame extends WebVBoxLayout
         implements
             IFrame,
             WrappedFrame,
-            com.haulmont.cuba.gui.components.Component.HasXmlDescriptor,
-            Layout.AlignmentHandler
+            com.haulmont.cuba.gui.components.Component.HasXmlDescriptor
 //    vaadin7
 //            com.vaadin.event.Action.Container
 {
@@ -285,15 +280,6 @@ public class WebFrame extends WebVBoxLayout
     @Override
     public void setXmlDescriptor(Element element) {
         this.element = element;
-    }
-
-    @Override
-    public void setComponentAlignment(com.vaadin.ui.Component childComponent, com.vaadin.ui.Alignment alignment) {
-    }
-
-    @Override
-    public com.vaadin.ui.Alignment getComponentAlignment(com.vaadin.ui.Component childComponent) {
-        return null;
     }
 
 //    vaadin7 Actions support

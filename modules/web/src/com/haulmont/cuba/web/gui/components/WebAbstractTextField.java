@@ -50,7 +50,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
         component.setConverter(new Converter<String, Object>() {
             @Override
-            public Object convertToModel(String value, Locale locale) throws ConversionException {
+            public Object convertToModel(String value, Class<?> targetType, Locale locale) throws ConversionException {
                 if (getActualDatatype() != null) {
                     try {
                         return getActualDatatype().parse(value, locale);
@@ -64,7 +64,8 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             }
 
             @Override
-            public String convertToPresentation(Object value, Locale locale) throws ConversionException {
+            public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
+                    throws ConversionException {
                 if (getActualDatatype() != null && value != null) {
                     return getActualDatatype().format(value, locale);
                 } else if (value != null) {

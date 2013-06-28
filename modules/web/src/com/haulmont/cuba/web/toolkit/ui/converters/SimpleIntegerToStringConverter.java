@@ -17,12 +17,14 @@ import java.util.Locale;
 public class SimpleIntegerToStringConverter implements Converter<String, Integer> {
 
     @Override
-    public Integer convertToModel(String value, Locale locale) throws ConversionException {
+    public Integer convertToModel(String value, Class<? extends Integer> targetType, Locale locale)
+            throws ConversionException {
         return Integer.parseInt(value);
     }
 
     @Override
-    public String convertToPresentation(Integer value, Locale locale) throws ConversionException {
+    public String convertToPresentation(Integer value, Class<? extends String> targetType, Locale locale)
+            throws ConversionException {
         return String.valueOf(value);
     }
 

@@ -10,13 +10,13 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.sys.PaintContext;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -262,7 +262,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
     }
 
     private void fireItemSetChanged() {
-        if (PaintContext.isPainting()) {
+        if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
             log.debug("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
             return;
         }

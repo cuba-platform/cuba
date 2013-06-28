@@ -8,9 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.converters;
 
 import com.vaadin.data.util.converter.Converter;
 
-
 import java.util.Locale;
-
 
 /**
  * @author devyatkin
@@ -19,12 +17,12 @@ import java.util.Locale;
 public class ObjectToObjectConverter implements Converter<Object, Object> {
 
     @Override
-    public Object convertToModel(Object value, Locale locale) throws ConversionException {
+    public Object convertToModel(Object value, Class<?> targetType, Locale locale) throws ConversionException {
         return value;
     }
 
     @Override
-    public Object convertToPresentation(Object value, Locale locale) throws ConversionException {
+    public Object convertToPresentation(Object value, Class<?> targetType, Locale locale) throws ConversionException {
         return value;
     }
 

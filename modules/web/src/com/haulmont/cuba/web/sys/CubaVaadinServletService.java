@@ -23,7 +23,8 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     private final String webResourceTimestamp;
 
-    public CubaVaadinServletService(VaadinServlet servlet, DeploymentConfiguration deploymentConfiguration) {
+    public CubaVaadinServletService(VaadinServlet servlet, DeploymentConfiguration deploymentConfiguration)
+            throws ServiceException {
         super(servlet, deploymentConfiguration);
 
         webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
@@ -45,23 +46,6 @@ public class CubaVaadinServletService extends VaadinServletService {
                 return null;
             }
         });*/
-    }
-
-    @Override
-    protected AbstractCommunicationManager createCommunicationManager(VaadinSession session) {
-        AbstractCommunicationManager communicationManager = super.createCommunicationManager(session);
-        communicationManager.setPaintListener(new AbstractCommunicationManager.PaintListener() {
-            @Override
-            public void paintStarted(VaadinRequest request, VaadinResponse response) {
-                PaintContext.paintStarted();
-            }
-
-            @Override
-            public void paintFinished(VaadinRequest request, VaadinResponse response) {
-                PaintContext.paintFinished();
-            }
-        });
-        return communicationManager;
     }
 
     @Override

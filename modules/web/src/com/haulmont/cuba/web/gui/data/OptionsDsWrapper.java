@@ -11,10 +11,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.web.sys.PaintContext;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.ui.UI;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,7 +78,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
         ignoreListeners = true;
 
-        if (PaintContext.isPainting()) {
+        if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
             log.debug("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
             return;
         }

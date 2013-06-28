@@ -16,12 +16,14 @@ import java.util.Locale;
  */
 public class StringToStringConverter implements Converter<String, String> {
     @Override
-    public String convertToModel(String value, Locale locale) throws ConversionException {
+    public String convertToModel(String value, Class<? extends String> targetType, Locale locale)
+            throws ConversionException {
         return value;
     }
 
     @Override
-    public String convertToPresentation(String value, Locale locale) throws ConversionException {
+    public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
+            throws ConversionException {
         return value;
     }
 

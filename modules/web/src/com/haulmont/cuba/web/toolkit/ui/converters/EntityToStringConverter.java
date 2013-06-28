@@ -18,12 +18,14 @@ import java.util.Locale;
  */
 public class EntityToStringConverter implements Converter<String, Entity> {
     @Override
-    public Entity convertToModel(String value, Locale locale) throws ConversionException {
+    public Entity convertToModel(String value, Class<? extends Entity> targetType, Locale locale)
+            throws ConversionException {
         return null;
     }
 
     @Override
-    public String convertToPresentation(Entity value, Locale locale) throws ConversionException {
+    public String convertToPresentation(Entity value, Class<? extends String> targetType, Locale locale)
+            throws ConversionException {
         if (value != null)
             return InstanceUtils.getInstanceName(value);
         else

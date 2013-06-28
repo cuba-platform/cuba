@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 
@@ -24,8 +25,11 @@ public class CubaApplicationServlet extends VaadinServlet {
     private static final long serialVersionUID = -8701539520754293569L;
 
     @Override
-    protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration) {
-        return new CubaVaadinServletService(this, deploymentConfiguration);
+    protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration)
+            throws ServiceException {
+        CubaVaadinServletService service = new CubaVaadinServletService(this, deploymentConfiguration);
+        service.init();
+        return service;
     }
 
     @Override

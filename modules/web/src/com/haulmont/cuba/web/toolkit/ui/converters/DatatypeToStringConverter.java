@@ -24,7 +24,7 @@ public class DatatypeToStringConverter implements Converter<String, Object> {
     }
 
     @Override
-    public Object convertToModel(String value, Locale locale) throws ConversionException {
+    public Object convertToModel(String value, Class<?> targetType, Locale locale) throws ConversionException {
         try {
             if (locale != null)
                 return datatype.parse(value, locale);
@@ -36,7 +36,8 @@ public class DatatypeToStringConverter implements Converter<String, Object> {
     }
 
     @Override
-    public String convertToPresentation(Object value, Locale locale) throws ConversionException {
+    public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
+            throws ConversionException {
         if (locale != null)
             return datatype.format(value, locale);
         else
