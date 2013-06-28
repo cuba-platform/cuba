@@ -14,10 +14,7 @@ import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.export.ExportDataProvider;
-import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.gui.export.FileDataProvider;
+import com.haulmont.cuba.gui.export.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -187,6 +184,10 @@ public class DesktopExportDisplay implements ExportDisplay {
             }
         } catch (IOException e) {
             String message = messages.getMessage(DesktopExportDisplay.class, "export.saveError");
+            getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+            return false;
+        } catch (ClosedDataProviderException e) {
+            String message = messages.getMessage(DesktopExportDisplay.class, "export.dataProviderError");
             getFrame().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
             return false;
         }

@@ -9,9 +9,8 @@ package com.haulmont.cuba.gui.export;
 import java.io.InputStream;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class ProxyDataProvider implements ExportDataProvider {
 
@@ -20,15 +19,15 @@ public class ProxyDataProvider implements ExportDataProvider {
     private InputStream dataInputStream = null;
     private ExportDataProvider dataProvider = null;
 
-    public ProxyDataProvider(ExportDataProvider dataProvider) {
+    public ProxyDataProvider(ExportDataProvider dataProvider) throws ClosedDataProviderException {
         this.dataProvider = dataProvider;
         this.dataInputStream = dataProvider.provide();
     }
 
     @Override
-    public InputStream provide() throws ResourceException {
+    public InputStream provide() throws ResourceException, ClosedDataProviderException {
         if (closed)
-            throw new IllegalStateException("DataProvider is closed");
+            throw new ClosedDataProviderException();
 
         return dataInputStream;
     }

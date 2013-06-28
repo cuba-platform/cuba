@@ -16,6 +16,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
@@ -30,6 +32,8 @@ import java.io.InputStream;
 @ManagedBean(ExportDisplay.NAME)
 @Scope("prototype")
 public class WebExportDisplay implements ExportDisplay {
+
+    private static final Log log = LogFactory.getLog(WebExportDisplay.class);
 
     private boolean newWindow;
 
@@ -78,7 +82,13 @@ public class WebExportDisplay implements ExportDisplay {
         }
 
         // Try to get stream
-        final ProxyDataProvider proxyDataProvider = new ProxyDataProvider(dataProvider);
+        final ProxyDataProvider proxyDataProvider;
+        try {
+            proxyDataProvider = new ProxyDataProvider(dataProvider);
+        } catch (ClosedDataProviderException e) {
+            log.error("Unable to open data provider for resource " + resourceName, e);
+            return;
+        }
 
         if (exportFormat != null) {
             if (StringUtils.isEmpty(FilenameUtils.getExtension(resourceName)))
@@ -87,10 +97,16 @@ public class WebExportDisplay implements ExportDisplay {
 
         CubaFileDownloader fileDownloader = App.getInstance().getAppWindow().getFileDownloader();
 
+        final String streamResourceName = resourceName;
         StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
             @Override
             public InputStream getStream() {
-                return proxyDataProvider.provide();
+                try {
+                    return proxyDataProvider.provide();
+                } catch (ClosedDataProviderException e) {
+                    log.error("Unable to open data provider for resource " + streamResourceName, e);
+                    return null;
+                }
             }
         };
         StreamResource resource = new StreamResource(streamSource, resourceName);

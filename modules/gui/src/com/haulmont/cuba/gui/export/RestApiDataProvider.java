@@ -47,9 +47,9 @@ public class RestApiDataProvider implements ExportDataProvider {
     }
 
     @Override
-    public InputStream provide() throws ResourceException {
+    public InputStream provide() throws ResourceException, ClosedDataProviderException {
         if (closed)
-            throw new IllegalStateException("DataProvider is closed");
+            throw new ClosedDataProviderException();
 
         String url = restApiUrl + query;
 

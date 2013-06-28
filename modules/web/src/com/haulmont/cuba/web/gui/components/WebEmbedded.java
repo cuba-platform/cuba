@@ -24,6 +24,8 @@ import java.util.Map;
 /**
  * User: Nikolay Gorodnov
  * Date: 22.06.2009
+ *
+ * vaadin7 Implement Embedded
  */
 public class WebEmbedded
         /*extends WebAbstractComponent<com.vaadin.ui.Embedded>

@@ -25,10 +25,10 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 
 /**
- * <p>$Id$</p>
  * Data provider for File on name and path
  *
  * @author novikov
+ * @version $Id$
  */
 public class SimpleFileDataProvider implements ExportDataProvider {
 
@@ -53,9 +53,10 @@ public class SimpleFileDataProvider implements ExportDataProvider {
         fileDownloadContext = configuration.getConfig(ClientConfig.class).getFileDownloadContext();
     }
 
-    public InputStream provide() {
+    @Override
+    public InputStream provide() throws ClosedDataProviderException {
         if (closed)
-            throw new IllegalStateException("DataProvider is closed");
+            throw new ClosedDataProviderException();
 
         if (filePath == null)
             throw new IllegalArgumentException("Null file path");
@@ -110,6 +111,7 @@ public class SimpleFileDataProvider implements ExportDataProvider {
         return inputStream;
     }
 
+    @Override
     public void close() {
         if (inputStream != null) {
             closed = true;
@@ -118,7 +120,7 @@ public class SimpleFileDataProvider implements ExportDataProvider {
                 if (connectionManager != null)
                     connectionManager.shutdown();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.warn("Error while closing simple file data provider", e);
             } finally {
                 inputStream = null;
                 filePath = null;

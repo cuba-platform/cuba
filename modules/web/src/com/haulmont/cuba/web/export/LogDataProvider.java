@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ResourceException;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
@@ -59,9 +60,9 @@ public class LogDataProvider implements ExportDataProvider {
     }
 
     @Override
-    public InputStream provide() throws ResourceException {
+    public InputStream provide() throws ResourceException, ClosedDataProviderException {
         if (closed)
-            throw new IllegalStateException("DataProvider is closed");
+            throw new ClosedDataProviderException();
 
         String url;
         try {
@@ -110,7 +111,7 @@ public class LogDataProvider implements ExportDataProvider {
                 if (connectionManager != null)
                     connectionManager.shutdown();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.warn("Error while closing log data provider", e);
             } finally {
                 inputStream = null;
                 fileDescriptor = null;

@@ -26,9 +26,9 @@ import java.util.Iterator;
 
 /**
  * Data provider for FileDescriptor
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class FileDataProvider implements ExportDataProvider {
 
@@ -53,9 +53,10 @@ public class FileDataProvider implements ExportDataProvider {
         fileDownloadContext = configuration.getConfig(ClientConfig.class).getFileDownloadContext();
     }
 
-    public InputStream provide() {
+    @Override
+    public InputStream provide() throws ClosedDataProviderException {
         if (closed)
-            throw new IllegalStateException("DataProvider is closed");
+            throw new ClosedDataProviderException();
 
         if (fileDescriptor == null)
             throw new IllegalArgumentException("Null file descriptor");
@@ -113,6 +114,7 @@ public class FileDataProvider implements ExportDataProvider {
         return inputStream;
     }
 
+    @Override
     public void close() {
         if (inputStream != null) {
             closed = true;
@@ -121,7 +123,7 @@ public class FileDataProvider implements ExportDataProvider {
                 if (connectionManager != null)
                     connectionManager.shutdown();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.warn("Error while closing file data provider", e);
             } finally {
                 inputStream = null;
                 fileDescriptor = null;

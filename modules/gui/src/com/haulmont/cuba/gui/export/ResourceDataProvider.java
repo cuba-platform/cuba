@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.gui.export;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import org.apache.commons.io.IOUtils;
 
@@ -13,9 +15,9 @@ import java.io.InputStream;
 
 /**
  * DataProvider for application resources
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class ResourceDataProvider implements ExportDataProvider {
 
@@ -27,7 +29,7 @@ public class ResourceDataProvider implements ExportDataProvider {
 
     @Override
     public InputStream provide() throws ResourceException {
-        return ScriptingProvider.getResourceAsStream(resourcePath);
+        return AppBeans.get(Resources.class).getResourceAsStream(resourcePath);
     }
 
     @Override

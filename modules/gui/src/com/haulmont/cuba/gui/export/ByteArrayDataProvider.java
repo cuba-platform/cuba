@@ -2,17 +2,16 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.08.2009 14:51:37
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.export;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ByteArrayDataProvider implements ExportDataProvider {
 
     private boolean closed = false;
@@ -22,13 +21,15 @@ public class ByteArrayDataProvider implements ExportDataProvider {
         this.data = data;
     }
 
-    public InputStream provide() {
+    @Override
+    public InputStream provide() throws ClosedDataProviderException {
         if (closed)
-            throw new IllegalStateException("DataProvider is closed");
+            throw new ClosedDataProviderException();
 
         return new ByteArrayInputStream(data);
     }
 
+    @Override
     public void close() {
         if (!closed) {
             closed = true;

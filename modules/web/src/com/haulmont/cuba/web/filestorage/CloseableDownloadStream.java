@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.web.filestorage;
 
+import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.vaadin.server.DownloadStream;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 
@@ -21,7 +22,8 @@ public class CloseableDownloadStream extends DownloadStream implements Closeable
 
     private ExportDataProvider dataProvider;
 
-    public CloseableDownloadStream(ExportDataProvider dataProvider, String contentType, String fileName) {
+    public CloseableDownloadStream(ExportDataProvider dataProvider, String contentType, String fileName)
+            throws ClosedDataProviderException {
         super(dataProvider.provide(), contentType, fileName);
         this.dataProvider = dataProvider;
     }
