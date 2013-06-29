@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.*;
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
@@ -35,8 +34,6 @@ import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
-
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 /**
  * @author gorodnov
@@ -99,7 +96,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     // datatype
                     Class<?> type = item.getItemProperty(propertyId).getType();
                     if (Boolean.class.isAssignableFrom(type)) {
-                        field = new CheckBox();
+                        field = new com.vaadin.ui.CheckBox();
                     } else if (Date.class.isAssignableFrom(type)) {
                         Datatype datatype = range.asDatatype();
                         String dataTypeName = datatype.getName();
@@ -190,7 +187,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             } else {
                 Class<Object> type = range.<Object>asDatatype().getJavaClass();
                 if (Boolean.class.isAssignableFrom(type)) {
-                    field = new CheckBox();
+                    field = new com.vaadin.ui.CheckBox();
                 } else if (Date.class.isAssignableFrom(type)) {
                     cubaField = new WebDateField();
                     field = ((WebDateField) cubaField).getComponent();

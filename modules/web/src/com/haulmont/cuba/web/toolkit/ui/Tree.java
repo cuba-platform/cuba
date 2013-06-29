@@ -2,19 +2,15 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 09.06.2010 15:13:21
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-//import com.vaadin.server.PaintException;
-//import com.vaadin.server.PaintTarget;
-
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class Tree extends com.vaadin.ui.Tree {
+//    vaadin7 implement double click mode
 //    private boolean doubleClickMode = false;
 //
 //    @Override

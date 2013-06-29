@@ -31,6 +31,7 @@ public class LogWindow extends Window {
         super(AppBeans.get(Messages.class).getMessage(LogWindow.class, "logWindow.caption"));
         setHeight("80%");
         setWidth("80%");
+        center();
         initUI();
     }
 

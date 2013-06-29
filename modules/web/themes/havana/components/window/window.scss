@@ -42,21 +42,37 @@
         }
       }
 
-      .#{$primaryStyleName}-closebox {
+      .#{$primaryStyleName}-closebox,
+      .#{$primaryStyleName}-maximizebox,
+      .#{$primaryStyleName}-restorebox {
         position: absolute;
         top: 10px;
-        right: 7px;
         width: 9px;
         height: 9px;
         background: transparent;
         background-repeat: no-repeat;
-        background-image: url(sprites/close.png);  /** sprite-ref: components; */
         cursor: pointer;
         overflow: hidden;
       }
 
+      .#{$primaryStyleName}-closebox {
+        right: 7px;
+        background-image: url(sprites/close.png);  /** sprite-ref: components; */
+      }
+
       .#{$primaryStyleName}-closebox:hover {
         background-image: url(sprites/close-active.png); /** sprite-ref: components; */
+      }
+
+      .#{$primaryStyleName}-maximizebox,
+      .#{$primaryStyleName}-restorebox {
+        right: 20px;
+        background-image: url(sprites/maximize.png);  /** sprite-ref: components; */
+      }
+
+      .#{$primaryStyleName}-maximizebox:hover,
+      .#{$primaryStyleName}-restorebox:hover {
+        background-image: url(sprites/maximize-active.png); /** sprite-ref: components; */
       }
 
       .#{$primaryStyleName}-contents {

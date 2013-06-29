@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.components.WebDateField;
+import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Component;
@@ -31,6 +32,7 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
         this.composition.setWidth("100%");
 
         setSizeUndefined();
+        setConverter(new ObjectToObjectConverter());
     }
 
     @Override

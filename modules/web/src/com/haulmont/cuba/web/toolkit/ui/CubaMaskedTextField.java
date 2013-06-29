@@ -14,6 +14,11 @@ import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedTextFieldStat
  */
 public class CubaMaskedTextField extends com.vaadin.ui.TextField {
 
+    public CubaMaskedTextField() {
+        // directly init value locale to avoid unnecessary converted value setting
+        setInternalValue(null);
+    }
+
     public boolean isMaskedMode() {
        return getState(false).maskedMode;
     }
@@ -21,7 +26,6 @@ public class CubaMaskedTextField extends com.vaadin.ui.TextField {
     public void setMaskedMode(boolean maskedMode) {
         getState(true).maskedMode = maskedMode;
     }
-
 
     @Override
     protected CubaMaskedTextFieldState getState() {
@@ -41,6 +45,7 @@ public class CubaMaskedTextField extends com.vaadin.ui.TextField {
         return getState(false).mask;
     }
 
+    @Override
     public void setReadOnly(boolean readOnly) {
         if (readOnly == isReadOnly())
             return;

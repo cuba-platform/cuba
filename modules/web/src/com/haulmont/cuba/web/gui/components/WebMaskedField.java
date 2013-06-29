@@ -17,7 +17,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
  */
 public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
 
-
     @Override
     public void setMask(String mask) {
         component.setMask(mask);
@@ -38,7 +37,6 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
         return component.isMaskedMode() ? ValueMode.MASKED : ValueMode.CLEAR;
     }
 
-
     @Override
     public Datatype getDatatype() {
         return null;
@@ -48,7 +46,6 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     public void setDatatype(Datatype datatype) {
         //Do nothing
     }
-
 
     @Override
     protected CubaMaskedTextField createTextFieldImpl() {
