@@ -280,6 +280,10 @@ public abstract class AbstractScripting implements Scripting {
 
             // First workaround for invocation from GroovyScriptEngine.isSourceNewer()
             for (String path : rootPath) {
+                String substrResourceName = resourceName.substring(1);
+                path = path.replace('\\','/');
+                if (substrResourceName.startsWith(path))
+                    resourceName = substrResourceName;
                 if (resourceName.startsWith(path)) {
                     // We came here from GroovyScriptEngine.isSourceNewer() and previously we've loaded the script
                     // from conf
