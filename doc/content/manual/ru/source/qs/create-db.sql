@@ -1,6 +1,6 @@
 create table SALES_CUSTOMER (
     -- system fields
-    ID uuid not null ,             
+    ID varchar(36) not null ,
     CREATE_TS timestamp,          
     CREATED_BY varchar(50),       
     VERSION integer,              
@@ -16,7 +16,7 @@ create table SALES_CUSTOMER (
 )^
 create table SALES_ORDER (
     -- system fields
-    ID uuid not null,			  
+    ID varchar(36) not null,
     CREATE_TS timestamp,          
     CREATED_BY varchar(50),       
     VERSION integer,              
@@ -25,7 +25,7 @@ create table SALES_ORDER (
     DELETE_TS timestamp,          
     DELETED_BY varchar(50),       
     -- app fields
-    CUSTOMER_ID uuid,                
+    CUSTOMER_ID varchar(36),
     DATE timestamp,          
     AMOUNT numeric(19,2),          
     --

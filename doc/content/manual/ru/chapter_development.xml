@@ -220,7 +220,7 @@
           <para><filename>build.gradle</filename> - определяет конфигурацию сборки.</para>
         </listitem>
       </itemizedlist></para>
-    <section>
+    <section id="build.gradle">
       <title>Структура build.gradle</title>
       <para>Секция <code>allprojects</code> задает группу и версию собираемых <link linkend="artifact">артефактов</link> проекта. Имена артефактов формируются на основе имен модулей, заданных в <filename>settings.gradle</filename>. Если свойство <code>ext.isSnapshot</code> равно <code>true</code>, то в именах  артефактов будет присутствовать суффикс <code>SNAPSHOT</code>. Свойство <code>ext.tomcatDir</code> задает расположение каталога установки <application>Tomcat</application>.</para>
       <para>Основная часть секции <code>buildscript</code> - объявить зависимость от плагина <structname>cuba-plugin</structname>, в котором сосредоточена специфика сборки проектов на платформе. Плагин подключается далее в конфигурацию сборки модулей с помощью метода<programlisting>apply(plugin: &apos;cuba&apos;)</programlisting></para>

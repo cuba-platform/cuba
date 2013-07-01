@@ -3645,7 +3645,7 @@ public void someServiceMethod() {
         <warning>
           <para>Обратите внимание на применимость СУБД в зависимости от используемых <link linkend="base_projects">базовых проектов</link> платформы:<itemizedlist>
               <listitem>
-                <para><application>HSQLDB</application> - применяется только для запуска интеграционных тестов платформы, не используется в прикладных проектах</para>
+                <para><application>HSQLDB</application> - поддерживается всеми базовыми проектами платформы</para>
               </listitem>
               <listitem>
                 <para><application>PostgreSQL</application> - поддерживается всеми базовыми проектами платформы</para>
@@ -7822,7 +7822,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para id="gui_attr_filter_folderActionsEnabled"><sgmltag>folderActionsEnabled</sgmltag> − необязательный атрибут. Предоставляет возможность скрывать доступные действия в фильтре, такие как <guilabel>Сохранить как папку поиска</guilabel>, <guilabel>Сохранить как папку приложения</guilabel>, при указании значения <literal>false</literal>. По умолчанию значение атрибута равно <literal>true</literal>, действия <guilabel>Сохранить как папку поиска</guilabel>, <guilabel>Сохранить как папку приложения</guilabel> являются доступными для выбора.</para>
-          <para id="gui_attr_filter_useMaxResults"><sgmltag>useMaxResults</sgmltag> − необязательный атрибут, при указании значения <literal>false</literal> фильтр не будет отображать флажок <guilabel>Показывать N строк</guilabel>. По умолчанию флажок отображается, если есть специфическое разрешение <property>cuba.gui.filter.maxResults</property> (подробнее о специфических разрешениях смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink>)). Если атрибут <sgmltag>useMaxResults</sgmltag> не указан или значение атрибута равно <literal>true</literal>, а разрешение <property>cuba.gui.filter.maxResults</property> запрещено, фильтр будет принудительно отбирать только первые N строк без возможности пользователя отключить это. Число N определяется параметрами <literal>FetchUI</literal>, <literal>DefaultFetchUI</literal>, задаваемыми в <code>PersistenceManager</code>.</para>
+          <para id="gui_attr_filter_useMaxResults"><sgmltag>useMaxResults</sgmltag> − необязательный атрибут, при указании значения <literal>false</literal> фильтр не будет отображать флажок <guilabel>Показывать N строк</guilabel>. По умолчанию флажок отображается, если есть специфическое разрешение <property>cuba.gui.filter.maxResults</property> (подробнее о специфических разрешениях смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.cuba-platform.com/cuba/">http://docs.cuba-platform.com/cuba/</ulink>)). Если атрибут <sgmltag>useMaxResults</sgmltag> не указан или значение атрибута равно <literal>true</literal>, а разрешение <property>cuba.gui.filter.maxResults</property> запрещено, фильтр будет принудительно отбирать только первые N строк без возможности пользователя отключить это. Число N определяется параметрами <literal>FetchUI</literal>, <literal>DefaultFetchUI</literal>, задаваемыми в <code>PersistenceManager</code>.</para>
           <para>На рисунке далее показан вид фильтра со значением атрибута <code>useMaxResults=&quot;true&quot;</code>, запретом специфического разрешения <property>cuba.gui.filter.maxResults</property> и параметром <code>DefaultFetchUI=2</code></para>
           <figure>
             <title/>
@@ -7983,7 +7983,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para>Для возможности изменять значение флажка <guilabel>Show first N rows</guilabel> пользователь должен иметь разрешение <property>cuba.gui.filter.maxResults</property></para>
             </listitem>
           </itemizedlist>
-          <para>Информацию о том, как настраивать  специфические разрешения, смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink>)</para>
+          <para>Информацию о том, как настраивать  специфические разрешения, смотрите в <productname>Руководстве по безопасности платформы <trademark>CUBA</trademark></productname> (<ulink url="http://docs.cuba-platform.com/cuba/">http://docs.cuba-platform.com/cuba/</ulink>)</para>
           <para><emphasis role="bold">Общесистемные параметры</emphasis></para>
           <para>В системе предусмотрены следующие <glossterm linkend="app_properties_glossentry">параметры</glossterm>, влияющие на поведение фильтров:</para>
           <itemizedlist>

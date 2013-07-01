@@ -6,7 +6,8 @@
       <year>2013</year>
       <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Платформа <trademark>CUBA</trademark>. Руководство по разработке приложений</title>
+    <title>Платформа CUBA. Руководство по разработке приложений</title>
+    <author><othername>Версия 4.1</othername>sreV</author>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
@@ -81,7 +82,7 @@
     </section>
     <section id="additional_info">
       <title>Дополнительные материалы</title>
-      <para>Настоящее Руководство, а также другая документация по платформе <trademark>CUBA</trademark>, доступны по адресу <ulink url="http://docs.haulmont.com/cuba/">http://docs.haulmont.com/cuba/</ulink></para>
+      <para>Настоящее Руководство, а также другая документация по платформе <trademark>CUBA</trademark>, доступны по адресу <ulink url="http://docs.cuba-platform.com/cuba">http://docs.cuba-platform.com/cuba/</ulink></para>
       <para>Ниже приведен список источников дополнительной информации по <application>Spring Framework</application>, <application>OpenJPA</application>, <application>Vaadin</application>: </para>
       <para><itemizedlist>
           <listitem>

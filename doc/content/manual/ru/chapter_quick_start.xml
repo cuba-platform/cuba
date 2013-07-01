@@ -63,41 +63,45 @@
           <para>Создайте рабочую папку для проекта, например, <filename>c:/work/sales</filename>.</para>
         </listitem>
         <listitem>
-          <para>Загрузите архив с шаблоном проекта <ulink url="http://docs.haulmont.com/cuba/4.0/samples/sales.zip">http://docs.haulmont.com/cuba/4.0/samples/sales.zip</ulink> и распакуйте содержимое архива в рабочий каталог таким образом, чтобы в каталоге <filename>c:/work/sales</filename> появился подкаталог <filename>modules</filename> и файлы <filename>build.gradle</filename> и <filename>settings.gradle</filename></para>
+          <para>Загрузите архив с шаблоном проекта <ulink url="http://docs.cuba-platform.com/cuba/4.1/samples/sales.zip">http://docs.cuba-platform.com/cuba/4.1/samples/sales.zip</ulink> и распакуйте содержимое архива в рабочий каталог проекта.</para>
+        </listitem>
+        <listitem>
+          <para>В переменных окружения операционной системы <literal>HAULMONT_REPOSITORY_USER</literal> и <literal>HAULMONT_REPOSITORY_PASSWORD</literal> задайте имя пользователя и пароль для подключения к репозиторию артефактов. </para>
+          <para>Вместо задания переменных окружения имя пользователя и пароль можно передавать команде <literal>gradlew</literal> в параметрах <literal>-PrepoUser=&lt;username&gt; -PrepoPass=&lt;password&gt;</literal></para>
         </listitem>
         <listitem>
           <para>Запустите командную строку в рабочем каталоге <filename>c:/work/sales</filename>.</para>
         </listitem>
         <listitem>
-          <para>Собираем проект. В командной строке введите команду</para>
-          <prompt>gradle assemble</prompt>
+          <para>Сборка проекта. В командной строке введите команду</para>
+          <para><prompt>gradlew assemble</prompt></para>
           <para>На этом этапе будут загружены все необходимые библиотеки и в каталогах модулей в подкаталогах <filename>build</filename> будут собраны артефакты проекта. </para>
         </listitem>
         <listitem>
-          <para>Чтобы работать с проектом в <application>IntelliJ IDEA</application>, запускаем команду, с помощью которой создаются проектные файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
-          <prompt>gradle idea</prompt>
+          <para>Чтобы работать с проектом в <application>IntelliJ IDEA</application>, запустите команду, с помощью которой создаются проектные файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
+          <para><prompt>gradlew idea</prompt></para>
         </listitem>
         <listitem>
-          <para>Устанавливаем сервер приложений <application>Apache Tomcat</application>:</para>
-          <prompt>gradle setupTomcat</prompt>
-          <para>Сервер <application>Tomcat</application> будет установлен в подкаталоге <filename>build</filename> рабочего каталога. Расположение сервера определяется переменной <varname>ext.tomcatDir</varname> скрипта сборки <filename>build.gradle</filename>. </para>
+          <para>Установка сервера приложений <application>Apache Tomcat</application>:</para>
+          <para><prompt>gradlew setupTomcat</prompt></para>
+          <para>Сервер Tomcat будет установлен в подкаталоге <filename>build</filename> рабочего каталога. Расположение сервера определяется переменной <varname>ext.tomcatDir</varname> скрипта сборки <filename>build.gradle</filename>. </para>
         </listitem>
         <listitem>
-          <para>Разворачиваем собранные артефакты и библиотеки проекта в <application>Tomcat</application>:</para>
-          <prompt>gradle deploy</prompt>
+          <para>Развертывание собранных артефактов и библиотек проекта в <application>Tomcat</application>:</para>
+          <para><prompt>gradlew deploy</prompt></para>
         </listitem>
         <listitem>
-          <para>Создаем базу данных на локальном сервере PostgreSQL:</para>
-          <prompt>gradle createDb</prompt>
-          <para>Имя базы данных определяется параметром <varname>dbName</varname> задачи <varname>createDb</varname> скрипта <filename>build.gradle</filename>, в нашем случае <database>
-              <database>
-                <database>sales</database>
-              </database>
-            </database>.</para>
+          <para>Запуск сервера базы данных <application>HyperSQL</application>:</para>
+          <para><prompt>gradlew startDb</prompt></para>
         </listitem>
         <listitem>
-          <para>Запускаем сервер:</para>
-          <prompt>gradle start</prompt>
+          <para>Создание базы данных проекта в подкаталоге <filename>data</filename>:</para>
+          <para><prompt>gradlew createDb</prompt></para>
+        </listitem>
+        <listitem>
+          <para>Запуск сервера Tomcat:</para>
+          <para><prompt>gradlew start</prompt></para>
+          <para>Журналы сервера доступны в каталоге <filename>build/tomcat/logs</filename></para>
         </listitem>
         <listitem>
           <para>Для просмотра приложения в веб-браузере введите в адресную строку <ulink url="http://localhost:8080/app">http://localhost:8080/app</ulink></para>
@@ -115,19 +119,27 @@
         <listitem>
           <para>Откройте проектный файл <filename>sales.ipr</filename> в IntelliJ IDEA. Вы увидите структуру проекта, аналогичную описанной в <xref linkend="project_file_structure"/></para>
         </listitem>
+        <listitem>
+          <para>Для остановки сервера Tomcat  выполните</para>
+          <para><prompt>gradlew stop</prompt> </para>
+        </listitem>
+        <listitem>
+          <para>Для остановки сервера базы данных HyperSQL в каталоге проекта выполните </para>
+          <para><prompt>gradlew stopDb</prompt></para>
+        </listitem>
       </orderedlist>
     </section>
     <section>
       <title>Создание таблиц базы данных</title>
-      <para>Откройте файл <filename>db/init/postgres/create-db.sql</filename> модуля <structname>core</structname> и добавьте в него следующий код для создания таблиц <code>Покупатель</code> и <code>Заказ</code>:</para>
+      <para>Откройте файл <filename>db/init/hsql/10.create-db.sql</filename> модуля <structname>core</structname> и добавьте в него следующий код для создания таблиц <code>Покупатель</code> и <code>Заказ</code>:</para>
       <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/create-db.sql" parse="text" encoding="UTF-8"/></programlisting>
       <para>SQL-команды разделяются знаком «^», это дает возможность задания сложных команд, содержащих внутри себя знаки «;». Системные поля являются обязательными.</para>
       <para>Остановите сервер приложения командой</para>
-      <para> <prompt>gradle stop</prompt></para>
+      <para> <prompt>gradlew stop</prompt></para>
       <para>Затем пересоздайте локальную базу данных <database>
           <database>sales</database>
         </database> командой </para>
-      <para><prompt>gradle createDb</prompt></para>
+      <para><prompt>gradlew createDb</prompt></para>
       <para>При этом старая база данных с данным именем удаляется, создается новая, и на ней выполняется скрипт <filename>create-db.sql</filename>.</para>
     </section>
     <section>

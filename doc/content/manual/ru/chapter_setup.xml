@@ -3,270 +3,58 @@
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_setup" lang="ru">
   <title>Установка и настройка инструментария</title>
   <para>Все программное обеспечение, требуемое для разработки на платформе <trademark>CUBA</trademark>, является свободно распространяемыми и кросс-платформенным. </para>
-  <para>Данная глава дает практические инструкции по установке и настройке рекомендованного программного обеспечения:</para>
+  <para>Веб-интерфейс приложений, создаваемых на основе платформы, поддерживает все популярные современные браузеры, в том числе <application>Google Chrome</application>, <application>Mozilla Firefox</application>, <application>Safari</application>,  <application>Internet Explorer 8+</application>.</para>
+  <para>Минимально необходимым набором  программного обеспечения является:</para>
   <itemizedlist>
     <listitem>
-      <para><application>Java SE 7 SDK</application></para>
+      <para><application>Java SE 7 SDK</application>. </para>
+      <para>В переменной окружения <literal>JAVA_HOME</literal> необходимо установить путь к корневому каталогу JDK, например <filename>C:\Program Files\Java\jdk1.7.0_17</filename>  </para>
     </listitem>
     <listitem>
-      <para><application>Gradle 1.0</application> − инструмент автоматизации сборки</para>
-    </listitem>
-    <listitem>
-      <para><application>PostgreSQL 9.1</application> − реляционная система управления базами данных </para>
-    </listitem>
-    <listitem>
-      <para><application>IntelliJ IDEA 11 Community Edition</application>  − интегрированная среда разработки для Java</para>
+      <para><application>IntelliJ IDEA Community Edition</application>  − рекомендуемая среда разработки на Java</para>
     </listitem>
   </itemizedlist>
-  <para>Веб-интерфейс приложений, создаваемых на основе платформы, поддерживает все популярные современные браузеры, в том числе <application>Google Chrome</application>, <application>Mozilla Firefox</application>, <application>Safari</application>,  <application>Internet Explorer 7+</application>.</para>
-  <warning>
-    <title>Внимание</title>
-    <para>Инструкции по установке приведены для операционной системы <application>Windows 7</application>.</para>
-  </warning>
-  <section>
-    <title>Установка PostgreSQL 9.1</title>
-    <para>Сайт: <ulink url="http://www.postgresql.org/">http://www.postgresql.org/</ulink></para>
-    <para>Дистрибутив: <ulink url="http://www.enterprisedb.com/products-services-training/pgdownload#windows">http://www.enterprisedb.com/products-services-training/pgdownload #windows</ulink></para>
-    <orderedlist spacing="compact">
-      <listitem>
-        <para>Скачайте соответствующий установочный пакет.</para>
-      </listitem>
-      <listitem>
-        <para>Запустите мастер установки.</para>
-      </listitem>
-      <listitem>
-        <para>В окне <guilabel>Installation Directory</guilabel> предоставляется возможность сменить каталог установки программы.</para>
-      </listitem>
-      <listitem>
-        <para>В  окне <guilabel>Data Directory</guilabel> предоставляется возможность сменить каталог для хранения данных.</para>
-      </listitem>
-      <listitem>
-        <para>В  окне <guilabel>Password</guilabel> в поля <guilabel>Password</guilabel> и <guilabel>Retype password</guilabel> введите новый пароль для пользователя <database>postgres</database>.</para>
-      </listitem>
-      <listitem>
-        <para>В  окне <guilabel>Port</guilabel> предлагается ввести номер порта сервера. Оставьте порт по умолчанию.</para>
-      </listitem>
-      <listitem>
-        <para>В  окне <guilabel>Advanced Options</guilabel> выберите из списка локаль <code>Russian, Russia</code>.</para>
-      </listitem>
-      <listitem>
-        <para>В окне <guilabel>Ready to Install</guilabel> после нажатия на кнопку <guibutton>Next&gt;</guibutton> будет произведена установка <application>PostgreSQL</application> на Ваш компьютер.</para>
-      </listitem>
-    </orderedlist>
-    <para>После установки убедимся в работоспособности сервера базы данных. Для этого запустите программу <application>pgAdmin</application> через меню <guimenu>Пуск</guimenu> /   <guimenu>PostgreSQL 9.1</guimenu> /   <guisubmenu>pgAdmin III</guisubmenu>. На экране отобразится  окно, представленное на рисунке:</para>
-    <figure>
-      <title>Установка PostgreSQL</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/ch1_db_1.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    <para>Подключитесь к серверу, используя пароль пользователя <database>postgres</database>, заданный на этапе инсталляции.</para>
-    <para>Создадим нового пользователя. Для этого в контекстном меню элемента <guilabel>PostgreSQL Database Server 9.1 (localhost:5432)</guilabel> выберите <guimenuitem>Подключение</guimenuitem>. Далее в контекстном меню элемента  <guilabel>Роли входа</guilabel> выберите <guimenuitem>Новая роль</guimenuitem>. На экране отобразится окно, представленное на рисунке:</para>
-    <figure>
-      <title>Настройка PostgreSQL. Создание роли входа</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata contentwidth="80%" align="center" fileref="img/ch1_db_2.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    <para>В этом окне в качестве имени роли укажите <userinput role="italic">cuba</userinput>. Далее перейдите на вкладку <guilabel>Определение</guilabel>. </para>
-    <figure>
-      <title>Настройка PostgreSQL. Создание роли входа</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata contentwidth="80%" align="center" fileref="img/ch1_db_3.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    <para>В полях <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль <userinput>cuba</userinput>. Далее перейдите на вкладку <guilabel>Привилегии роли</guilabel>. </para>
-    <para>Установите флажок <guilabel>Суперпользователь</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>.</para>
-    <figure>
-      <title>Настройка PostgreSQL. Создание роли входа</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata contentwidth="80%" align="center" fileref="img/ch1_db_4.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    <para>Установка и настройка базы данных завершена.</para>
-    <para>Следует отметить, что имя и пароль пользователя БД выбраны исключительно для целей настоящего руководства, и при реальной эксплуатации приложений могут быть любыми другими. Права суперпользователя требуются только на момент первичного создания базы данных и в дальнейшем могут быть отозваны.</para>
-  </section>
-  <section>
-    <title>Установка Java SE 7</title>
-    <para>Сайт: <ulink url="http://oracle.com/technetwork/java/">http://oracle.com/technetwork/java</ulink></para>
-    <para>Дистрибутив: <ulink url="http://www.oracle.com/technetwork/java/javase/downloads">http://www.oracle.com/technetwork/java/javase/downloads</ulink></para>
-    <orderedlist>
-      <listitem>
-        <para>Скачайте последнюю версию <application>JDK 7</application>, например, <filename>jdk-7u5-windows-x64.exe.</filename></para>
-      </listitem>
-      <listitem>
-        <para>Запустите файл <filename>jdk-7u5-windows-x64.exe</filename> и установите все компоненты следуя инструкциям программы-установщика.</para>
-      </listitem>
-      <listitem id="path_setting">
-        <para>Создайте переменную среды <envar>JAVA_HOME</envar>. В качестве значения переменной окружения <envar>JAVA_HOME</envar> установите путь к  каталогу установки  <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.7.0_05</filename>.</para>
-        <caution>
-          <title>Подсказка</title>
-          <para>Как установить или изменить переменную среды?</para>
-          <para>В пункте меню <guimenu>Пуск</guimenu> выберите <guimenuitem>Панель управления</guimenuitem>, далее в элементах панели управления выберите элемент <guisubmenu>Система</guisubmenu>. На панели слева выберите ссылку на <guisubmenu>Дополнительные параметры системы</guisubmenu>. В отобразившемся окне <guilabel>Свойства системы</guilabel> перейдите на вкладку <guilabel>Дополнительно</guilabel> и нажмите на кнопку <guibutton>Переменные среды</guibutton>.</para>
-          <para>Чтобы создать новую переменную среды, нажмите на кнопку <guibutton>Создать</guibutton> в панели <guilabel>Системные переменные</guilabel>.</para>
-          <figure>
-            <title>Окно управления переменными среды</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata contentwidth="80%" align="center" fileref="img/ch1_path_2.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <para>В поле <guilabel>Имя переменной</guilabel> введите <userinput>JAVA_HOME</userinput>, а в поле <guilabel>Значение переменной</guilabel> <userinput>C:\Program Files\Java\jdk1.7.0_05.</userinput></para>
-          <figure>
-            <title>Окно создания переменной среды JAVA_HOME</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata contentwidth="80%" align="center" fileref="img/ch_path_3.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-          <para>Чтобы изменить значение существующей переменной среды, например, <envar>Path</envar>, найдите ее в списке на панели <guilabel>Системные переменные</guilabel> и нажмите на кнопку <guibutton>Изменить</guibutton>. В поле <guilabel>Значение переменной</guilabel> введите значение <userinput>%JAVA_HOME%\bin.</userinput></para>
-          <figure>
-            <title>Окно изменения переменной среды Path</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata contentwidth="80%" align="center" fileref="img/ch1_path_4.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-        </caution>
-      </listitem>
-      <listitem>
-        <para>К значению переменной среды <envar>Path</envar> добавьте значение <userinput>%JAVA_HOME%\bin.</userinput> Значение переменной <envar>Path</envar> необходимо обновить для того, чтобы исполняемые файлы <application>JDK</application>  стали доступны в командной строке.</para>
-      </listitem>
-    </orderedlist>
-    <para>После установки убедимся в работоспособности java-машины. Для этого запустите командную строку и введите в ней команду </para>
-    <para><prompt>java -version</prompt>.</para>
-    <para>В результате выполнения команды Вы увидите окно командной строки, вид которого представлен на следующем рисунке:</para>
-    <figure>
-      <title>Окно командной строки. Результат выполнения команды java -version</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/ch1_java_check_version.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    <para>В случае неудачного запуска команды вернитесь к <link linkend="path_setting">пункту 7</link> и проверьте правильность установки переменных среды <envar>JAVA_HOME</envar> и <envar>Path</envar>.</para>
-    <para>Установка и настройка  <application>Java</application> завершена.</para>
-  </section>
-  <section id="gradle_install">
-    <title>Установка Gradle 1.0</title>
-    <para>Сайт: <ulink url="http://www.gradle.org/">http://www.gradle.org</ulink></para>
-    <para>Дистрибутив: <ulink url="http://services.gradle.org/distributions/gradle-1.0-all.zip">http://services.gradle.org/distributions/gradle-1.0-all.zip</ulink></para>
-    <orderedlist>
-      <listitem>
-        <para>Скачайте архив <filename>gradle-1.0-all.zip</filename> и распакуйте его, например,  в <filename>C:\Program Files (x86)\gradle</filename>.</para>
-      </listitem>
-      <listitem>
-        <para>К значению переменной среды <envar>Path</envar> добавьте значение </para>
-        <para><userinput>C:\Program Files (x86)\gradle\gradle-1.0\bin.</userinput></para>
-      </listitem>
-    </orderedlist>
-    <para>Убедимся в работоспособности <application>gradle</application>. Для этого в командной строке введите команду</para>
-    <para> <prompt>gradle -version</prompt></para>
-    <para>В результате выполнения команды Вы увидите окно командной строки, вид которого представлен на следующем рисунке:</para>
-    <figure>
-      <title>Окно командной строки. Результат выполнения команды gradle -version</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/ch1_gradle.png" format="PNG"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </section>
-  <section>
-    <title>Установка IntelliJ IDEA 11 Community Edition</title>
-    <para>Сайт: <ulink url="http://www.jetbrains.com/">http://www.jetbrains.com</ulink></para>
-    <para>Дистрибутив: <ulink url="http://www.jetbrains.com/idea/download">http://www.jetbrains.com/idea/download</ulink></para>
-    <orderedlist>
-      <listitem>
-        <para>Скачайте последнюю версию <application>IntelliJ IDEA Community Edition</application>. На момент написания данного руководства это <application>IntelliJ IDEA 11</application>.</para>
-      </listitem>
-      <listitem>
-        <para>Запустите файл <filename>ideaIC-11.exe</filename>.</para>
-      </listitem>
-      <listitem>
-        <para>В первом окне нажмите на кнопку <guibutton>Next</guibutton>.</para>
-      </listitem>
-      <listitem>
-        <para>В следующем окне <guilabel>Choose Install Location</guilabel> предоставляется возможность сменить каталог установки программы.</para>
-      </listitem>
-      <listitem>
-        <para>В следующем окне предоставляется возможность установления ярлыка на рабочем столе и ярлыка быстрого запуска приложения.</para>
-      </listitem>
-      <listitem>
-        <para>Далее можно задать имя папки, которое будет отображаться в меню <guimenu>Пуск</guimenu>.</para>
-      </listitem>
-      <listitem>
-        <para>В следующем окне установите галочку <guilabel>Run IntelliJ IDEA Community Edition</guilabel>.</para>
-      </listitem>
-      <listitem>
-        <para>Произведем настройку среды разработки. В отобразившемся окне предлагается  импортировать настройки, если другая версия <application>IDEA</application> уже была установлена на данном локальном компьютере. Если вы устанавливаете <application>IDEA</application> в первый раз, установите переключатель в положение <guilabel>I do not have a previous version of IntelliJ IDEA or I do not want to import my settings</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
-        <figure>
-          <title>Установка IntelliJ IDEA</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_idea_6.png" format="PNG"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </listitem>
-      <listitem>
-        <para>Теперь установим <application>SDK</application>, которое будет использоваться по умолчанию. Для этого в меню <guimenu>File</guimenu> выберите пункт  меню <guimenuitem>Project Structure</guimenuitem>. Далее слева в группе <guisubmenu>Project Settings</guisubmenu> выберите строку <guisubmenu>Project</guisubmenu>. На отобразившейся панели настроек нажмите  на кнопку <guibutton>New</guibutton> и выберите в контекстном меню пункт <guimenuitem>JSDK</guimenuitem>.</para>
-        <figure>
-          <title>Установка IntelliJ IDEA</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_idea_7.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>В отобразившемся окне укажите путь к папке с <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.7.0_05</filename>. Для сохранения настроек нажмите на кнопку <guibutton>Apply</guibutton>.</para>
-      </listitem>
-    </orderedlist>
-    <para>Установка и настройка среды разработки  <application>IntelliJ IDEA</application> завершена.</para>
-  </section>
+  <para>В простейшем случае в качестве сервера баз данных приложений используется <application>HyperSQL</application> (<ulink url="http://hsqldb.org">http://hsqldb.org</ulink>), что вполне подходит для исследования возможностей платформы и прототипирования приложений. Для создания реальных приложений рекомендуется установить и использовать в проекте какую-либо из полноценных СУБД, <link linkend="dbms_types">поддерживаемых платформой</link>, например <application>PostgreSQL</application>.</para>
   <section id="cubaStudio_install">
     <title>Установка CUBA Studio</title>
-    <para>Данный этап необходим, если Вы предполагаете вести разработку приложения на платформе <trademark>CUBA</trademark> при помощи Студии.</para>
+    <para><application>CUBA Studio</application> - инструмент быстрой разработки на платформе. Studio  включает в себя средства создания нового проекта, описания модели данных, визуальный редактор
+экранов и
+пр. Использование Studio не исключает возможности программирования в классической Java IDE, тем самым достигается максимальная эффективность при работе над проектом с помощью обоих инструментов:<itemizedlist>
+        <listitem>
+          <para>Studio используется для быстрого старта проекта, визуального создания модели данных и компоновки экранов UI</para>
+        </listitem>
+        <listitem>
+          <para>Java IDE используется для программирования бизнес-логики и обработки событий UI</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>CUBA Studio содержит средства для взаимодействия с <application>IntelliJ IDEA</application>, позволяющие быстро переходить из Studio в IDE и обратно. </para>
+    <para>Для установки Studio выполните следующий шаги:</para>
     <orderedlist>
       <listitem>
-        <para>Установите инструменты сборки и настройте окружение согласно предыдущим разделам данной главы.</para>
+        <para>Загрузите архив <filename>studio-0.6.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.6/studio-0.6.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.6/studio-0.6.zip</ulink>.</para>
       </listitem>
       <listitem>
-        <para>Загрузите архив <filename>studio-0.5.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.5/studio-0.5.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.5/studio-0.5.zip</ulink>.</para>
+        <para>Распакуйте архив в локальный каталог, например, <filename>c:/work/studio</filename></para>
       </listitem>
       <listitem>
-        <para>Распакуйте архив в локальный путь, не содержащий пробелов, например, <filename>c:/work/studio</filename></para>
+        <para>Запустите командную строку, перейдите в подкаталог <filename>bin</filename> и запустите</para>
+        <para><prompt>studio</prompt></para>
       </listitem>
       <listitem>
-        <para>Запустите командную строку, перейдите в подкаталог <filename>bin</filename> и запустите <application>studio</application></para>
-      </listitem>
-      <listitem>
-        <para>В окне <guilabel>Studio Server</guilabel> введите следующие параметры:</para>
+        <para>В окне <guilabel>CUBA Studio Server</guilabel> введите следующие параметры:</para>
         <itemizedlist>
           <listitem>
             <para><guilabel>Workspace</guilabel> − каталог, в котором будут создаваться проекты, например, <filename>c:/work</filename></para>
           </listitem>
           <listitem>
-            <para><guilabel>Gradle home</guilabel> − путь к установленному <application>
-                <link linkend="gradle_install">Gradle</link>
-              </application></para>
+            <para><guilabel>Gradle home</guilabel> − оставьте поле пустым, в этом случае при первом запуске будет автоматически загружен нужный дистрибутив <application>Gradle</application>. </para>
+            <para>Если по какой-либо причине Вы хотите использовать уже установленный на компьютере Gradle, введите в поле путь к соответствующему каталогу. Для работы системы сборки проектов требуется Gradle версии не ниже 1.0.</para>
           </listitem>
           <listitem>
-            <para><guilabel>Server port</guilabel> − порт, на котором будет запущен сервер <application>CUBA Studio</application></para>
+            <para><guilabel>Server port</guilabel> −  порт, на котором будет запущен сервер CUBA Studio (по умолчанию 8111)</para>
           </listitem>
           <listitem>
-            <para><guilabel>IDE port</guilabel> − порт, на котором будет принимать подключения плагин к IDE</para>
+            <para><guilabel>IDE port</guilabel> −  порт, на котором  принимает подключения плагин  IDE (по умолчанию 48561)</para>
           </listitem>
           <listitem>
             <para><guilabel>Repository</guilabel> − URL <link linkend="artifact_repository">репозитория</link> бинарных артефактов. Нажмите кнопку <guibutton>Auth</guibutton> и укажите имя  и пароль доступа к репозиторию.</para>
@@ -274,31 +62,29 @@
         </itemizedlist>
       </listitem>
       <listitem>
-        <para>Запустите сервер <application>CUBA Studio</application>, нажав кнопку <guibutton>Start</guibutton>. В поле <guilabel>URL</guilabel> отобразится адрес, по которому доступен интерфейс <application>CUBA Studio</application>. Нажав <guibutton>-&gt;</guibutton>, можно открыть веб-браузер, нажав <guibutton>Copy</guibutton>, − скопировать адрес в буфер обмена.</para>
+        <para>Запустите сервер Studio, нажав кнопку <guibutton>Start</guibutton>. </para>
+        <para>Сначала сервер выполнит загрузку, запуск  и подключение к демону Gradle. Затем запустится веб-сервер, и в поле <guilabel>URL</guilabel> отобразится адрес, по которому доступен интерфейс Studio. Нажав <guibutton>-&gt;</guibutton>, можно открыть веб-браузер, нажав <guibutton>Copy</guibutton>, − скопировать адрес в буфер обмена.</para>
       </listitem>
       <listitem>
         <para>Запустите веб-браузер  и перейдите по указанному адресу.</para>
       </listitem>
     </orderedlist>
-    <para>Для интеграции с IDE выполните следующие шаги:</para>
+    <para>Для интеграции с <application>IntelliJ IDEA 12</application> выполните следующие шаги:</para>
     <orderedlist>
       <listitem>
-        <para>В главном меню студии выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create IDEA project files</guimenu>. В каталоге проекта будут созданы файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
+        <para>В главном меню Studio выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create IDEA project files</guimenu>. В каталоге проекта будут созданы файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
       </listitem>
       <listitem>
-        <para>Распакуйте содержимое архива <filename>c:/work/studio/ideplugins/cuba-idea-plugin-XYZ.zip</filename> в подкаталог <filename>plugins</filename> установленной <application>IntelliJ IDEA</application>.</para>
+        <para>Запустите IntelliJ IDEA 12 и установите плагин <application>CUBA Framework Integration</application>, доступный в репозитории плагинов: <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Browse Repositories</guimenuitem>.</para>
       </listitem>
       <listitem>
-        <para>Запустите <application>IntelliJ IDEA</application> и откройте проект c:/work/sales/sales.ipr</para>
+        <para>В IntelliJ IDEA в меню <guimenu>Settings</guimenu> в группе <guilabel>Project Settings</guilabel> найдите пункт <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите флажок <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
       </listitem>
       <listitem>
-        <para>В <application>IntelliJ IDEA</application> в меню <guimenu>File</guimenu> выберите пункт меню <guimenu>Settings</guimenu>. Далее слева в группе <guilabel>Project Settings</guilabel> найдите строку <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите флажок <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
+        <para>Обратите внимание, что в  панели статуса Studio загорелась надпись <guilabel>IDE: on port 48561</guilabel></para>
       </listitem>
       <listitem>
-        <para>Обратите внимание, что в  панели статуса Студии загорелась надпись <guilabel>IDE: on</guilabel></para>
-      </listitem>
-      <listitem>
-        <para>При нажатии кнопок <guilabel>IDE</guilabel> в студии соответствующие файлы исходных кодов будут открываться редактором <application>IDEA</application>.</para>
+        <para>Теперь при нажатии кнопок <guilabel>IDE</guilabel> в Studio соответствующие файлы исходных кодов будут открываться редактором IntelliJ IDEA.</para>
       </listitem>
     </orderedlist>
   </section>
