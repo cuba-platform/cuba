@@ -135,7 +135,7 @@ public interface WebConfig extends Config {
      * @return Maximum number of open tabs. 0 for unlimited.
      */
     @Property("cuba.web.maxTabCount")
-    @DefaultInt(0)
+    @DefaultInt(7)
     int getMaxTabCount();
 
     /**

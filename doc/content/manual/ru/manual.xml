@@ -1301,16 +1301,6 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
-      <varlistentry id="cuba.web.linkHandlerActions">
-        <term>cuba.web.linkHandlerActions</term>
-        <listitem>
-          <para>Определяет список команд, передаваемых в URL, для которых вызывается обработка бином <code>LinkHandler</code>. См. <xref linkend="link_to_screen"/></para>
-          <para>Элементы списка отделяются символом <code>|</code>.</para>
-          <para>Значение по умолчанию: <literal>open|o</literal></para>
-          <para>Интерфейс: <code>WebConfig</code></para>
-          <para>Используется в блоке   <structname>Web Client</structname>.</para>
-        </listitem>
-      </varlistentry>
       <varlistentry id="cuba.web.foldersPaneVisibleByDefault">
         <term>cuba.web.foldersPaneVisibleByDefault</term>
         <listitem>
@@ -1320,11 +1310,12 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
-      <varlistentry id="cuba.web.foldersPaneVisibleByDefault_1">
-        <term>cuba.web.foldersPaneVisibleByDefault</term>
+      <varlistentry id="cuba.web.linkHandlerActions">
+        <term>cuba.web.linkHandlerActions</term>
         <listitem>
-          <para>Если <code>true</code>, то при первом входе пользователя в систему <link linkend="folders_pane">панель папок</link> будет отображаться в развернутом состоянии, если <code>false</code> - то в свернутом.</para>
-          <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Определяет список команд, передаваемых в URL, для которых вызывается обработка бином <code>LinkHandler</code>. См. <xref linkend="link_to_screen"/></para>
+          <para>Элементы списка отделяются символом <code>|</code>.</para>
+          <para>Значение по умолчанию: <literal>open|o</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
@@ -1343,6 +1334,15 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         <listitem>
           <para>Задает пароль пользователя по умолчанию. Он будет автоматически подставляться в экране входа в систему, что удобно в процессе разработки приложения. В режиме эксплуатации приложения в данном свойстве необходимо задать  значение <literal> &lt;disabled&gt;</literal>.</para>
           <para>Значение по умолчанию: <literal>admin</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.maxTabCount">
+        <term>cuba.web.maxTabCount</term>
+        <listitem>
+          <para>Задает максимальное количество вкладок с экранами, которые пользователь может открыть в главном окне приложения. Значение <literal>0</literal> снимает ограничение.</para>
+          <para>Значение по умолчанию: <literal>7</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
