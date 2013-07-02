@@ -123,11 +123,11 @@ public class AbstractViewRepository implements ViewRepository {
         // Replace with extended entity if such one exists
         metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
 
-        View view = retrieveView(metaClass, name);
+        View view = retrieveView(metaClass, name, false);
         if (view == null) {
             MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
             if (originalMetaClass != null) {
-                view = retrieveView(originalMetaClass, name);
+                view = retrieveView(originalMetaClass, name, false);
             }
         }
         return view;
@@ -200,7 +200,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected View retrieveView(MetaClass metaClass, String name) {
+    protected View retrieveView(MetaClass metaClass, String name, boolean deploying) {
         Map<String, View> views = storage.get(metaClass);
         View view = (views == null ? null : views.get(name));
         if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL))) {
@@ -227,7 +227,7 @@ public class AbstractViewRepository implements ViewRepository {
             metaClass = metadata.getSession().getClassNN(entity);
         }
 
-        View v = retrieveView(metaClass, viewName);
+        View v = retrieveView(metaClass, viewName, true);
         boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
         if (v != null && !overwrite)
             return v;
@@ -252,11 +252,11 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     private View getAncestorView(MetaClass metaClass, String ancestor) {
-        View ancestorView = retrieveView(metaClass, ancestor);
+        View ancestorView = retrieveView(metaClass, ancestor, false);
         if (ancestorView == null) {
             MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
             if (originalMetaClass != null)
-                ancestorView = retrieveView(originalMetaClass, ancestor);
+                ancestorView = retrieveView(originalMetaClass, ancestor, false);
             if (ancestorView == null)
                 throw new IllegalStateException("No ancestor view found: " + ancestor);
         }
@@ -297,7 +297,7 @@ public class AbstractViewRepository implements ViewRepository {
 
                 refMetaClass = getMetaClass(propElem, range);
 
-                refView = retrieveView(refMetaClass, refViewName);
+                refView = retrieveView(refMetaClass, refViewName, false);
                 if (refView == null) {
                     for (Element e : (List<Element>) rootElem.elements("view")) {
                         if (refMetaClass.equals(getMetaClass(e.attributeValue("entity"), e.attributeValue("class")))
@@ -310,7 +310,7 @@ public class AbstractViewRepository implements ViewRepository {
                     if (refView == null) {
                         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(refMetaClass);
                         if (originalMetaClass != null)
-                            refView = retrieveView(originalMetaClass, refViewName);
+                            refView = retrieveView(originalMetaClass, refViewName, false);
                     }
 
                     if (refView == null)

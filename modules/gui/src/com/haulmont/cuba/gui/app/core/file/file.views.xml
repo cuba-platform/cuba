@@ -1,4 +1,4 @@
-<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/4.1/view.xsd">
 
     <view class="com.haulmont.cuba.core.entity.FileDescriptor" name="browse">
         <property name="name"/>

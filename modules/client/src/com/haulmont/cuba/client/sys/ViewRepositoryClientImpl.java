@@ -49,9 +49,9 @@ public class ViewRepositoryClientImpl extends AbstractViewRepository implements 
     }
 
     @Override
-    protected View retrieveView(MetaClass metaClass, String name) {
-        View view = super.retrieveView(metaClass, name);
-        if (view == null && lazyLoadServerViews) {
+    protected View retrieveView(MetaClass metaClass, String name, boolean deploying) {
+        View view = super.retrieveView(metaClass, name, deploying);
+        if (!deploying && view == null && lazyLoadServerViews) {
             log.trace("Search for view " + metaClass + "/" + name + " on server");
             view = serverInfoService.getView(metaClass.getJavaClass(), name);
             if (view != null)
