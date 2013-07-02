@@ -88,7 +88,7 @@ public class CubaFieldGroup extends Form {
                 final Field f = fieldFactory.createField(itemDatasource, id, this);
                 if (f != null) {
                     f.setPropertyDataSource(property);
-                    if (f instanceof AbstractField) {
+                    if (f instanceof AbstractTextField) {
                         Datatype datatype = Datatypes.get(property.getType());
                         ((AbstractField) f).setConverter(new StringToDatatypeConverter(datatype));
                     }
