@@ -8,10 +8,11 @@ package com.haulmont.cuba.web.toolkit.ui.client.caption;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout.CubaFieldGroupLayoutComponentSlot;
-import com.vaadin.client.*;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.Util;
+import com.vaadin.client.VCaption;
 
 /**
  * @author artamonov
@@ -53,13 +54,7 @@ public class CubaCaptionWidget extends VCaption {
             toolTipIndicator.setClassName("cuba-tooltip-button");
 
             DOM.insertChild(getElement(), toolTipIndicator, getDescriptionInsertPosition());
-            DOM.sinkEvents(toolTipIndicator, Event.ONCLICK);
-            DOM.setEventListener(toolTipIndicator, new EventListener() {
-                @Override
-                public void onBrowserEvent(Event event) {
-                    // vaadin7 tooltips
-                }
-            });
+            // vaadin7 tooltips
         }
     }
 
@@ -73,13 +68,7 @@ public class CubaCaptionWidget extends VCaption {
 
     @Override
     protected void enableFieldRequired() {
-        DOM.sinkEvents(requiredFieldIndicator, Event.ONCLICK);
-        DOM.setEventListener(requiredFieldIndicator, new EventListener() {
-            @Override
-            public void onBrowserEvent(Event event) {
-                // vaadin7 tooltips
-            }
-        });
+        // vaadin7 tooltips
     }
 
     @Override
