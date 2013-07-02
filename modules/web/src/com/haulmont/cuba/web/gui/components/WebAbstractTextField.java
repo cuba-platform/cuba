@@ -16,8 +16,8 @@ import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.converters.DatatypeToStringConverter;
-import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractTextField;
@@ -162,11 +162,11 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         }
 
         if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION) {
-            component.setConverter(new EntityToStringConverter());
+            component.setConverter(new StringToEntityConverter());
         } else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
             Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
             if (datatype != null) {
-                component.setConverter(new DatatypeToStringConverter(datatype));
+                component.setConverter(new StringToDatatypeConverter(datatype));
             } else {
                 component.setConverter(new StringToStringConverter());
             }
