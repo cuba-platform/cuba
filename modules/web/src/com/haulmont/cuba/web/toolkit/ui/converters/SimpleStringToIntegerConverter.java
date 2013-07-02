@@ -14,7 +14,7 @@ import java.util.Locale;
  * @author artamonov
  * @version $Id$
  */
-public class SimpleIntegerToStringConverter implements Converter<String, Integer> {
+public class SimpleStringToIntegerConverter implements Converter<String, Integer> {
 
     @Override
     public Integer convertToModel(String value, Class<? extends Integer> targetType, Locale locale)

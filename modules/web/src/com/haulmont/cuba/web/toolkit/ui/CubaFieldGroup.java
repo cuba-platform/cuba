@@ -5,7 +5,10 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgroup.CubaFieldGroupState;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
@@ -27,7 +30,6 @@ public class CubaFieldGroup extends Form {
     }
 
     public CubaFieldGroup(FormFieldFactory fieldFactory) {
-        super();
         setFormFieldFactory(fieldFactory);
         setLayout(new CubaFieldGroupLayout());
     }
@@ -48,10 +50,12 @@ public class CubaFieldGroup extends Form {
         return (CubaFieldGroupState) super.getState();
     }
 
+    @Override
     protected CubaFieldGroupState getState(boolean markAsDirty){
         return (CubaFieldGroupState) super.getState(markAsDirty);
     }
 
+    @Override
     public void setItemDataSource(Item newDataSource, Collection propertyIds) {
         if (super.getLayout() instanceof GridLayout) {
             GridLayout gl = (GridLayout) super.getLayout();
@@ -81,10 +85,13 @@ public class CubaFieldGroup extends Form {
         for (final Object id : propertyIds) {
             final Property property = itemDatasource.getItemProperty(id);
             if (id != null && property != null) {
-                final Field f = fieldFactory.createField(itemDatasource, id,
-                        this);
+                final Field f = fieldFactory.createField(itemDatasource, id, this);
                 if (f != null) {
                     f.setPropertyDataSource(property);
+                    if (f instanceof AbstractField) {
+                        Datatype datatype = Datatypes.get(property.getType());
+                        ((AbstractField) f).setConverter(new StringToDatatypeConverter(datatype));
+                    }
                     addField(id, f);
                 }
             }

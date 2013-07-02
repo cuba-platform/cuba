@@ -16,10 +16,10 @@ import java.util.Locale;
  * @author artamonov
  * @version $Id$
  */
-public class DatatypeToStringConverter implements Converter<String, Object> {
-    private Datatype datatype;
+public class StringToDatatypeConverter implements Converter<String, Object> {
+    protected Datatype datatype;
 
-    public DatatypeToStringConverter(Datatype datatype) {
+    public StringToDatatypeConverter(Datatype datatype) {
         this.datatype = datatype;
     }
 

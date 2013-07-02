@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.toolkit.ui.converters.EntityToStringConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.FieldEvents;
@@ -73,12 +73,12 @@ public class CubaPickerField extends com.vaadin.ui.CustomField {
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(newDataSource);
 //                vaadin7 converters
-                setConverter(new EntityToStringConverter());
+                setConverter(new StringToEntityConverter());
             }
         };
         field.setImmediate(true);
         field.setReadOnly(true);
-        field.setConverter(new EntityToStringConverter());
+        field.setConverter(new StringToEntityConverter());
         ((TextField) field).setNullRepresentation("");
 //        vaadin7
 //        ((TextField) field).setAllowFocusReadonly(true);

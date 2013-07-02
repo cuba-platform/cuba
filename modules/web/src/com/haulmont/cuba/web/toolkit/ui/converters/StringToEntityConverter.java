@@ -16,7 +16,7 @@ import java.util.Locale;
  * @author artamonov
  * @version $Id$
  */
-public class EntityToStringConverter implements Converter<String, Entity> {
+public class StringToEntityConverter implements Converter<String, Entity> {
     @Override
     public Entity convertToModel(String value, Class<? extends Entity> targetType, Locale locale)
             throws ConversionException {
