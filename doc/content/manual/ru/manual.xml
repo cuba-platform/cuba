@@ -663,7 +663,15 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
         &lt;/init-param&gt;
         &lt;init-param&gt;
             &lt;param-name&gt;widgetset&lt;/param-name&gt;
-            &lt;param-value&gt;com.haulmont.cuba.toolkit.gwt.WidgetSet&lt;/param-value&gt;
+            &lt;param-value&gt;com.haulmont.cuba.web.toolkit.ui.WidgetSet&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;UI&lt;/param-name&gt;
+            &lt;param-value&gt;com.haulmont.cuba.web.AppUI&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;UIProvider&lt;/param-name&gt;
+            &lt;param-value&gt;com.haulmont.cuba.web.sys.CubaUIProvider&lt;/param-value&gt;
         &lt;/init-param&gt;
     &lt;/servlet&gt;
 
@@ -685,7 +693,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
 &lt;/web-app&gt;</programlisting></para>
       <para>В данном файле определены два параметра: <literal>appPropertiesConfig</literal>, значением которого является список <link linkend="app_properties_files">файлов свойств приложения</link>, и <literal>productionMode</literal>, отключающий режим отладки фреймворка <application>Vaadin</application>.</para>
       <para>В качестве <code>ServletContextListener</code> в блоке <structname>Web Client</structname> используется класс <code>WebAppContextLoader</code>.</para>
-      <para>Далее определяется сервлет <code>CubaApplicationServlet</code>, входящий в состав основанной на фреймворке <application>Vaadin</application> реализации <link linkend="gui_framework">универсального пользовательского интерфейса</link>. Сервлет имеет два параметра:<itemizedlist>
+      <para>Далее определяется сервлет <code>CubaApplicationServlet</code>, входящий в состав основанной на фреймворке <application>Vaadin</application> реализации <link linkend="gui_framework">универсального пользовательского интерфейса</link>. Сервлет имеет несколько параметров, в том числе:<itemizedlist>
           <listitem>
             <para><literal>application</literal> - задает специфический для проекта класс клиентского приложения, который должен быть наследником <code>com.haulmont.cuba.web.App</code></para>
           </listitem>

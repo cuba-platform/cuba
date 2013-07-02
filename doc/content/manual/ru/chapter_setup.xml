@@ -48,7 +48,7 @@
           </listitem>
           <listitem>
             <para><guilabel>Gradle home</guilabel> − оставьте поле пустым, в этом случае при первом запуске будет автоматически загружен нужный дистрибутив <application>Gradle</application>. </para>
-            <para>Если по какой-либо причине Вы хотите использовать уже установленный на компьютере Gradle, введите в поле путь к соответствующему каталогу. Для работы системы сборки проектов требуется Gradle версии не ниже 1.0.</para>
+            <para>Если по какой-либо причине Вы хотите использовать уже установленный на компьютере Gradle, введите в поле путь к соответствующему каталогу. Для работы системы сборки проектов требуется Gradle версии <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="var/gradleVersion.txt" encoding="UTF-8" parse="text"/>.</para>
           </listitem>
           <listitem>
             <para><guilabel>Server port</guilabel> −  порт, на котором будет запущен сервер CUBA Studio (по умолчанию 8111)</para>

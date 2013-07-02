@@ -434,7 +434,7 @@ menu-config.sales$Customer.lookup=Покупатели</programlisting>
           <para>Сборка  проекта. В главном меню студии перейдите в пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Assemble project</guimenu>. На этом этапе будут загружены все необходимые библиотеки и в подкаталогах <filename>bin</filename> модулей будут собраны <link linkend="artifact">артефакты</link> проекта.</para>
         </listitem>
         <listitem>
-          <para>Создание базы данных на локальном сервере <application>PostgreSQL</application>. Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Create database</guimenu>. Имя БД по умолчанию совпадает с именем проекта.</para>
+          <para>Создание базы данных на локальном сервере <application>HyperSQL</application>. Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Create database</guimenu>.  Имя БД по умолчанию совпадает с именем проекта.</para>
         </listitem>
         <listitem>
           <para>Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Deploy</guimenu>. В подкаталоге <filename>build</filename> проекта будет установлен сервер <application>Tomcat</application> с собранным приложением.</para>

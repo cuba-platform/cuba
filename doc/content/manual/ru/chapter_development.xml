@@ -208,7 +208,7 @@
         </listitem>
       </itemizedlist></para>
   </section>
-  <section>
+  <section id="build_scripts">
     <title>Описание скриптов сборки</title>
     <para>Для  сборки проектов на основе платформы используется <application>
         <ulink url="http://www.gradle.org">Gradle</ulink>
@@ -222,28 +222,51 @@
       </itemizedlist></para>
     <section id="build.gradle">
       <title>Структура build.gradle</title>
-      <para>Секция <code>allprojects</code> задает группу и версию собираемых <link linkend="artifact">артефактов</link> проекта. Имена артефактов формируются на основе имен модулей, заданных в <filename>settings.gradle</filename>. Если свойство <code>ext.isSnapshot</code> равно <code>true</code>, то в именах  артефактов будет присутствовать суффикс <code>SNAPSHOT</code>. Свойство <code>ext.tomcatDir</code> задает расположение каталога установки <application>Tomcat</application>.</para>
-      <para>Основная часть секции <code>buildscript</code> - объявить зависимость от плагина <structname>cuba-plugin</structname>, в котором сосредоточена специфика сборки проектов на платформе. Плагин подключается далее в конфигурацию сборки модулей с помощью метода<programlisting>apply(plugin: &apos;cuba&apos;)</programlisting></para>
-      <para>Кроме того, секция <code>buildscript</code> задает параметры подключения к репозиторию артефактов, из которого будут загружены зависимости. Имя и пароль для подключения могут быть как заданы явно, так и получены из переменных окружения - как правило, это переменные <code>HAULMONT_REPOSITORY_USER</code> и <code>HAULMONT_REPOSITORY_PASSWORD</code>. </para>
-      <para>В этой секции также могут быть объявлены свойства <code>ext.cubaVersion</code> и <code>ext.cubaPluginVersion</code>, задающие версию базовых проектов и плагина сборки. Если эти переменные отсутствуют, то версии задаются непосредственно при объявлении зависимостей.</para>
-      <para>Далее в секциях <code>configure</code> определяются параметры сборки модулей приложения.</para>
-      <para>Исполняемыми единицами в Gradle являются <firstterm>задачи</firstterm> (tasks). Они задаются как внутри плагинов, так и в самом скрипте сборки. Рассмотрим задачи, параметры которых могут быть сконфигурированы в <filename>build.gradle</filename>.<itemizedlist>
+      <para>Секция <code>allprojects</code> задает группу и версию собираемых <link linkend="artifact">артефактов</link> проекта. Имена артефактов формируются на основе имен модулей, заданных в <filename>settings.gradle</filename>. Если свойство <code>ext.isSnapshot</code> равно <code>true</code>, то в именах  артефактов будет присутствовать суффикс <code>SNAPSHOT</code>. Свойство <code>ext.tomcatDir</code> задает расположение каталога установки <application>Tomcat</application>. Кроме того, в секции <code>allprojects</code> могут быть заданы следующие опциональные свойства:<itemizedlist>
           <listitem>
-            <para><code>enhance</code> - задача типа <code>CubaEnhancing</code>, выполняющая bytecode enhancement классов сущностей. Объявляется в <link linkend="app_modules">модуле</link> <structname>global</structname>. Параметры:<itemizedlist>
-                <listitem>
-                  <para><code>persistenceXml</code> - путь к файлу <link linkend="persistence.xml">
-                      <filename>persistence.xml</filename>
-                    </link> проекта.</para>
-                </listitem>
-                <listitem>
-                  <para><code>metadataXml</code> - путь к файлу <filename>
-                      <link linkend="metadata.xml">metadata.xml</link>
-                    </filename> проекта.</para>
-                </listitem>
-              </itemizedlist></para>
+            <para><code>ext.copyright</code> - текст Copyright Notice,  вставляемый <application>IntelliJ IDEA</application> в файлы исходных тесктов.</para>
+          </listitem>
+          <listitem>
+            <para><code>ext.vcs</code> - тип используемой в проекте VCS. Если данное свойство указано, то в сгенерированных проектных файлах IntelliJ IDEA будет установлен параметр интеграции с данной VCS. Возможные значения: <literal>svn</literal>, <literal>Git</literal>. </para>
+          </listitem>
+          <listitem>
+            <para><code>ext.uploadUrl</code> - URL <link linkend="artifact_repository">репозитория</link>, в который будут выгружатся собранные артефакты проекта при выполнении задачи <code>uploadArchives</code>. По умолчанию используется репозиторий <orgname>Haulmont</orgname>.</para>
+          </listitem>
+          <listitem>
+            <para><code>ext.uploadUser</code> - имя пользователя репозитория для выгрузки собранных артефактов проекта. По умолчанию используется значение переменной окружения <literal>HAULMONT_REPOSITORY_USER</literal>.</para>
+          </listitem>
+          <listitem>
+            <para><code>ext.uploadPassword</code> - пароль пользователя репозитория для выгрузки собранных артефактов проекта. По умолчанию используется значение переменной окружения <literal>HAULMONT_REPOSITORY_PASSWORD</literal>. </para>
+          </listitem>
+        </itemizedlist><tip>
+          <para>Любое из свойств проекта можно задать не в самом <filename>build.gradle</filename>, а путем передачи в командной строке аргумента с префиксом <literal>-P</literal>, например:</para>
+          <para><prompt>gradlew uploadArchives -PuploadUser=myuser -PuploadPassword=mypassword</prompt></para>
+        </tip></para>
+      <para>В секции  <code>buildscript</code> выполняется следующее:<itemizedlist>
+          <listitem>
+            <para>Задается версия базовых проектов платформы, на которой основан данный проект.</para>
+          </listitem>
+          <listitem>
+            <para>Задается набор репозиториев, из которых будут загружаться зависимости проекта. В качестве имени и пароля для доступа к репозиторию зависимостей используются либо значения свойств проекта <code>repoUser</code> и <code>repoPass</code>, либо значения переменных окружения <literal>HAULMONT_REPOSITORY_USER</literal> и <literal>HAULMONT_REPOSITORY_PASSWORD</literal>. Как и другие свойства проекта, <code>repoUser</code> и <code>repoPass</code> можно передать в командной строке в аргументах <literal>-P</literal>.</para>
+          </listitem>
+          <listitem>
+            <para>Объявляется зависимость от плагина <structname>cuba-plugin</structname>, в котором сосредоточена специфика сборки проектов на платформе. Плагин подключается далее в конфигурацию сборки модулей с помощью метода<programlisting>apply(plugin: &apos;cuba&apos;)</programlisting></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Далее в секциях <code>configure</code> определяются параметры сборки модулей приложения.</para>
+      <para>Исполняемыми единицами в Gradle являются <firstterm>задачи</firstterm> (tasks). Они задаются как внутри плагинов, так и в самом скрипте сборки. Рассмотрим специфические для CUBA задачи, параметры которых могут быть сконфигурированы в <filename>build.gradle</filename>.<itemizedlist>
+          <listitem>
+            <para><code>enhance</code> - задача типа <code>CubaEnhancing</code>, выполняющая bytecode enhancement классов персистентных сущностей. Объявляется в <link linkend="app_modules">модуле</link> <structname>global</structname>. В параметре задачи <code>persistenceXml</code> указывается путь к файлу <link linkend="persistence.xml">
+                <filename>persistence.xml</filename>
+              </link> проекта.</para>
             <para>Например:<programlisting>task enhance(type: CubaEnhancing) {
     persistenceXml = &quot;${globalModule.projectDir}/src/persistence.xml&quot;
-    metadataXml = &quot;${globalModule.projectDir}/src/metadata.xml&quot;
+}</programlisting></para>
+          </listitem>
+          <listitem>
+            <para><code>enhanceTransient</code> - задача типа <code>CubaEnhanceTransient</code>, выполняющая bytecode enhancement классов неперсистентных сущностей. В параметре задачи <code>classes</code> задается список имен классов, требующих модификации.</para>
+            <para>Например: <programlisting>task enhanceTransient(type: CubaEnhanceTransient) {
+    classes = [&apos;com.sample.sales.gui.entity.SomeTransientEntity&apos;]
 }</programlisting></para>
           </listitem>
           <listitem>
@@ -270,7 +293,7 @@
           <listitem>
             <para><code>createDb</code> - задача типа <code>CubaDbCreation</code>, выполняющая создание базы данных приложения и выполнение соответствующих <link linkend="db_scripts">скриптов</link>. Объявляется в модуле <structname>core</structname>. Параметры:<itemizedlist>
                 <listitem>
-                  <para><code>dbms</code> - тип СУБД, задается строкой <code>postgres</code>, <code>mssql</code> или <code>oracle</code>.</para>
+                  <para><code>dbms</code> - тип СУБД, задается строкой <code>hsql</code>, <code>postgres</code>, <code>mssql</code> или <code>oracle</code>.</para>
                 </listitem>
                 <listitem>
                   <para><code>dbName</code> - имя базы данных. </para>
@@ -325,13 +348,24 @@
         </itemizedlist></para>
     </section>
     <section>
-      <title>Типичные задачи сборки</title>
-      <para>Задачи (tasks) Gradle запускаются из командной строки и выполняют различные действия по сборке проекта. Например, чтобы выполнить компиляцию Java файлов и сборку JAR файлов артефактов проекта, необходимо запустить следующую команду:</para>
-      <para><prompt>gradle assemble</prompt></para>
-      <para>Для ускорения повторной сборки желательно вызывать <application>Gradle</application> в режиме демона (его процесс будет оставаться в памяти):</para>
-      <para><prompt>gradle --daemon assemble</prompt></para>
-      <para>Для удаления демона из памяти используется следующая команда:</para>
-      <para><prompt>gradle --stop</prompt></para>
+      <title>Запуск задач сборки</title>
+      <para>Задачи (tasks) Gradle, описанные в скриптах сборки, запускаются на исполнение следующими способами:<itemizedlist>
+          <listitem>
+            <para>Если работа с проектом ведется с помощью <application> CUBA Studio</application>, то при выполнении пунктов меню <guimenu>Build</guimenu> и <guimenu>Run</guimenu> производится подключение к демону Gradle (запущенному на старте сервера Studio), который и выполняет соответствующие задачи.</para>
+          </listitem>
+          <listitem>
+            <para>С помощью исполняемого скрипта <filename>gradlew</filename> (Gradle wrapper), включенного в проект. Этот скрипт должен находится в корневом каталоге проекта, и может быть создан в Studio с помощью команды <guimenu>Build</guimenu> -&gt; <guimenu>Create Gradle wrapper</guimenu>.</para>
+          </listitem>
+          <listitem>
+            <para>С помощью установленного вручную Gradle версии <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="var/gradleVersion.txt" encoding="UTF-8" parse="text"/>. В этом случае используется исполняемый скрипт <filename>gradle</filename>, находящийся в подкаталоге <filename>bin</filename> установленного Gradle.</para>
+          </listitem>
+        </itemizedlist></para>
+      <tip>
+        <para>Рекомендуется запускать команды <literal>gradlew</literal> или <literal>gradle</literal> с ключом <literal>--daemon</literal>, в этом случае демон Gradle остается в памяти и существенно ускоряет последующее выполнение.</para>
+        <para>Для удаления демона из памяти используется ключ <literal>--stop</literal></para>
+      </tip>
+      <para>Например, чтобы выполнить компиляцию Java файлов и сборку JAR файлов артефактов проекта, необходимо запустить следующую команду:</para>
+      <para><prompt>gradlew --daemon assemble</prompt></para>
       <para>Рассмотрим типичные задачи сборки в обычном порядке их использования.</para>
       <itemizedlist>
         <listitem>
@@ -453,7 +487,7 @@
         </listitem>
       </itemizedlist></para>
     <para>После выполнения вышеописанных действий можно собрать новый проект:</para>
-    <para><prompt>gradle idea assemble setupTomcat deploy</prompt></para>
+    <para><prompt>gradlew idea assemble setupTomcat deploy</prompt></para>
   </section>
   <section>
     <title>Отладка и тестирование</title>
