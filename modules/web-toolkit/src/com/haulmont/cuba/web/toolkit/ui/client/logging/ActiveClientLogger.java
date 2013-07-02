@@ -6,7 +6,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.logging;
 
-import com.vaadin.client.VConsole;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * @author artamonov
@@ -23,6 +25,6 @@ public class ActiveClientLogger extends ClientLogger {
 
     @Override
     public void log(String message) {
-        VConsole.log("[" + name + "] " + message);
+        Logger.getLogger(name).log(new LogRecord(Level.INFO, message));
     }
 }
