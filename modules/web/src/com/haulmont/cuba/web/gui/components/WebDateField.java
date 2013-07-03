@@ -219,8 +219,12 @@ public class WebDateField
         if (!editable)
             setEditable(true);
         updatingInstance = true;
-        setValue(value);
-        updatingInstance = false;
+        try {
+            dateField.setValue((Date) value);
+            timeField.setValue(value);
+        } finally {
+            updatingInstance = false;
+        }
         setEditable(isEditable);
     }
 
