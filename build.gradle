@@ -57,7 +57,6 @@ def guiModule = project(':cuba-gui')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
 def desktopModule = project(':cuba-desktop')
-def uiTestModule = project(':cuba-test-ui')
 def portalModule = project(':cuba-portal')
 
 def vaadinVersion = '7.1.0.h.M1'
@@ -70,7 +69,7 @@ def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
-        webModule, desktopModule, uiTestModule, portalModule]) {
+        webModule, desktopModule, portalModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -439,11 +438,6 @@ configure(desktopModule) {
 
     task desktopStart(dependsOn: desktopInstall) << {
         run.execute()
-    }
-}
-
-configure(uiTestModule) {
-    dependencies {
     }
 }
 
