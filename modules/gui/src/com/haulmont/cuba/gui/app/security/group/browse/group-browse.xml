@@ -51,7 +51,7 @@
                 <buttonsPanel>
                     <popupButton id="groupCreateButton" caption="msg://create.caption" icon="icons/create.png"/>
                     <button action="groupsTree.edit"/>
-                    <button action="groupsTree.remove"/>
+                    <button id="removeButton" action="groupsTree.remove"/>
                     <button action="groupsTree.refresh"/>
                 </buttonsPanel>
                 <tree id="groupsTree" width="100%">

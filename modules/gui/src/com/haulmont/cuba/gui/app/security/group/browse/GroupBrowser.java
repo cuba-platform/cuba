@@ -10,9 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -45,6 +43,9 @@ public class GroupBrowser extends AbstractWindow {
 
     @Named("groupsTree.edit")
     protected EditAction groupEditAction;
+
+    @Inject
+    protected Button removeButton;
 
     @Inject
     protected PopupButton groupCreateButton;
@@ -91,6 +92,27 @@ public class GroupBrowser extends AbstractWindow {
                 usersTable.getDatasource().refresh();
             }
         };
+        groupsTree.addAction(new RemoveAction(groupsTree) {
+
+            protected boolean enabledFlag = false;
+
+            @Override
+            public void setEnabled(boolean enabled) {
+                this.enabledFlag = enabled;
+                super.setEnabled(enabled);
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return this.enabledFlag && super.isEnabled();
+            }
+
+            @Override
+            public void actionPerform(Component component) {
+                setEnabled(true);
+                super.actionPerform(component);
+            }
+        });
         usersTable.addAction(userCreateAction);
         usersTable.addAction(new ItemTrackingAction("moveToGroup") {
 
@@ -153,6 +175,8 @@ public class GroupBrowser extends AbstractWindow {
                 if (constraintCreateAction != null)
                     constraintCreateAction.setEnabled(item != null);
                 groupCopyAction.setEnabled(item != null);
+                boolean isGroupCanBeRemoved = (item != null && groupsDs.getChildren(item.getId()).size() == 0);
+                removeButton.setEnabled(isGroupCanBeRemoved);
             }
         });
 
