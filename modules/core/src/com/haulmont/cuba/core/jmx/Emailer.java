@@ -71,6 +71,7 @@ public class Emailer implements EmailerMBean {
         return config.getSmtpStarttlsEnable();
     }
 
+    @Authenticated
     @Override
     public String sendTestEmail(String addresses) {
         try {
