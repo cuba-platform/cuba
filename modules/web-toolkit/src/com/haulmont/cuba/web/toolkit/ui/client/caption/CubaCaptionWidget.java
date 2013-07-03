@@ -93,6 +93,10 @@ public class CubaCaptionWidget extends VCaption {
         return requiredFieldIndicator;
     }
 
+    public Element getErrorIndicatorElement() {
+        return errorIndicatorElement;
+    }
+
     @Override
     protected int getInsertPosition(InsertPosition element) {
         int pos = super.getInsertPosition(element);

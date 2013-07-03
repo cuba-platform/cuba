@@ -32,6 +32,7 @@ public class CubaFieldGroupLayoutComponentSlot extends ComponentConnectorLayoutS
 
     protected Element requiredElement = null;
     protected Element tooltipElement = null;
+
     protected Element rightCaption = null;
 
     public CubaFieldGroupLayoutComponentSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
@@ -226,7 +227,7 @@ public class CubaFieldGroupLayoutComponentSlot extends ComponentConnectorLayoutS
     }
 
     protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
-        com.google.gwt.dom.client.Element contentElement = getWidget().getElement().getParentElement();
+        // todo move error indicator right
 
         int fakeCaptionWidth = 0;
         boolean widthChanged = false;
@@ -258,7 +259,7 @@ public class CubaFieldGroupLayoutComponentSlot extends ComponentConnectorLayoutS
         if (captionWidget.getTooltipElement() != null && tooltipElement == null) {
             if (rightCaption == null) {
                 rightCaption = createRightCaption();
-                getWrapperElement().insertBefore(rightCaption, contentElement);
+                getWrapperElement().insertAfter(rightCaption, getWidget().getElement());
             }
             if (!captionWidget.getTooltipElement().getParentElement().equals(rightCaption)) {
                 captionWidget.getElement().removeChild(captionWidget.getTooltipElement());
