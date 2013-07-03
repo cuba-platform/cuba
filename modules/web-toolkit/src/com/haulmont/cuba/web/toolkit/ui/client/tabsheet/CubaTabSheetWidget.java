@@ -15,13 +15,7 @@ import com.vaadin.client.ui.VTabsheet;
  */
 public class CubaTabSheetWidget extends VTabsheet {
 
-    public static final String CLASSNAME = "v-actions-tabsheet";
-
     protected TabContextMenuHandler tabContextMenuHandler;
-
-    public CubaTabSheetWidget() {
-        setStyleName(CLASSNAME);
-    }
 
     @Override
     protected void onTabContextMenu(final int tabIndex, ContextMenuEvent event) {
