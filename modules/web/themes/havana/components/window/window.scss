@@ -82,18 +82,22 @@
         font-size: 12px;
         font-family: $theme_fonts;
         border: 1px solid $theme_windowBorderColor;
+
+        .v-scrollable {
+          margin-top: 5px;
+        }
       }
 
       .#{$primaryStyleName}-footer {
-        height: 8px;
+        height: 10px;
         background: transparent;
 
         .#{$primaryStyleName}-resizebox {
           position: absolute; /* Needed to position the element over ScrollPanel, which is also relatively positioned */
           right: 1px;
           bottom: 1px;
-          width: 8px;
-          height: 8px;
+          width: 10px;
+          height: 10px;
           cursor: se-resize;
           background: transparent;
           background-image: url(sprites/resize.png); /** sprite-ref: components; */
