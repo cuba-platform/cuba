@@ -11,19 +11,18 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
-import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
+import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.Property;
 import com.vaadin.ui.HorizontalLayout;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
@@ -79,16 +78,6 @@ public class WebDateField
 
         dateField.setImmediate(true);
         dateField.setInvalidAllowed(true);
-//        dateField.addValidator(new com.vaadin.data.Validator() {
-//            @Override
-//            public void validate(Object value) throws InvalidValueException {
-//                if (value instanceof Date)
-//                    return;
-//
-//                dateField.markAsDirty();
-//                throw new InvalidValueException("Unable to parse value: " + value);
-//            }
-//        });
 
         timeField = new WebTimeField();
 
@@ -213,8 +202,16 @@ public class WebDateField
         prevValue = getValue();
         if (!editable)
             return;
-        dateField.setValue((Date) value);
-        timeField.setValue(value);
+
+        updatingInstance = true;
+        try {
+            dateField.setValue((Date) value);
+            timeField.setValue(value);
+        } finally {
+            updatingInstance = false;
+        }
+
+        updateInstance();
     }
 
     private void setValueFromDs(Object value) {
@@ -347,8 +344,10 @@ public class WebDateField
     }
 
     protected void fireValueChanged(Object value) {
-        for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
+        if (!ObjectUtils.equals(prevValue, value)) {
+            for (ValueListener listener : listeners) {
+                listener.valueChanged(this, "value", prevValue, value);
+            }
         }
     }
 
