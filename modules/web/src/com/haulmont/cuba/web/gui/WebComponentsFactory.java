@@ -67,8 +67,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(SplitPanel.NAME, WebSplitPanel.class);
         classes.put(Tree.NAME, WebTree.class);
         classes.put(TabSheet.NAME, WebTabSheet.class);
-//  vaadin7
-//        classes.put(Embedded.NAME, WebEmbedded.class);
+        classes.put(Embedded.NAME, WebEmbedded.class);
         classes.put(Filter.NAME, WebFilter.class);
         classes.put(AccessControl.NAME, WebAccessControl.class);
         classes.put(ButtonsPanel.NAME, WebButtonsPanel.class);

@@ -1,39 +1,44 @@
+/*
+ * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-//import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
+import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
-//import com.vaadin.terminal.ExternalResource;
-//import com.vaadin.terminal.FileResource;
-//import com.vaadin.terminal.StreamResource;
-//import com.vaadin.terminal.ApplicationResource;
+import com.haulmont.cuba.web.WebConfig;
+import com.vaadin.server.ConnectorResource;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.StreamResource;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * User: Nikolay Gorodnov
- * Date: 22.06.2009
- *
- * vaadin7 Implement Embedded
+ * @author gorodnov
+ * @version $Id$
  */
 public class WebEmbedded
-        /*extends WebAbstractComponent<com.vaadin.ui.Embedded>
-        implements Embedded, Component.Disposable*/
+        extends WebAbstractComponent<com.vaadin.ui.Embedded>
+        implements Embedded, Component.Disposable
 {
-    /*private Map<String, String> parameters = null;
+    private Map<String, String> parameters = null;
     private Type type = Type.OBJECT;
-    private ApplicationResource resource;
+    private ConnectorResource resource;
     private boolean disposed;
 
     public WebEmbedded() {
@@ -41,11 +46,13 @@ public class WebEmbedded
         provideType();
     }
 
+    @Override
     public void setSource(URL src) {
         component.setSource(new ExternalResource(src));
         setType(Type.BROWSER);
     }
 
+    @Override
     public void setSource(String src) {
         if (src.startsWith("http") || src.startsWith("https")) {
             try {
@@ -56,7 +63,7 @@ public class WebEmbedded
         } else {
             File file = new File(src);
             if (!file.isAbsolute()) {
-                String root = ConfigProvider.getConfig(WebConfig.class).getResourcesRoot();
+                String root = AppBeans.get(Configuration.class).getConfig(WebConfig.class).getResourcesRoot();
                 if (root != null) {
                     if (!root.endsWith(File.separator)) {
                         root += File.separator;
@@ -65,14 +72,16 @@ public class WebEmbedded
                 }
             }
 
-            resource = new FileResource(file, AppUI.getInstance());
+            resource = new FileResource(file);
             component.setSource(resource);
         }
     }
 
+    @Override
     public void setSource(String fileName, final InputStream src) {
 
         final StreamResource.StreamSource source = new StreamResource.StreamSource() {
+            @Override
             public InputStream getStream() {
                 return src;
             }
@@ -81,38 +90,50 @@ public class WebEmbedded
         try {
             resource = new StreamResource(
                     source,
-                    URLEncoder.encode(fileName, "UTF-8"),
-                    AppUI.getInstance());
+                    URLEncoder.encode(fileName, "UTF-8"));
             component.setSource(resource);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void setSource(String fileName, ExportDataProvider dataProvider) {
+    @Override
+    public void setSource(String fileName, final ExportDataProvider dataProvider) {
+        StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+            @Override
+            public InputStream getStream() {
+                try {
+                    return dataProvider.provide();
+                } catch (ClosedDataProviderException e) {
+                    // todo log
+                    return null;
+                }
+            }
+        };
+
         try {
-            resource = new WebEmbeddedApplicationResource(
-                    dataProvider,
-                    URLEncoder.encode(fileName, "UTF-8"),
-                    AppUI.getInstance());
+            resource = new StreamResource(streamSource, URLEncoder.encode(fileName, "UTF-8"));
             component.setSource(resource);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public void setMIMEType(String mt) {
         component.setMimeType(mt);
     }
 
+    @Override
     public void addParameter(String name, String value) {
         if (parameters == null) {
-            parameters = new HashMap<String, String>();
+            parameters = new HashMap<>();
         }
         component.setParameter(name, value);
         parameters.put(name, value);
     }
 
+    @Override
     public void removeParameter(String name) {
         component.removeParameter(name);
         if (parameters != null) {
@@ -120,15 +141,18 @@ public class WebEmbedded
         }
     }
 
+    @Override
     public Map<String, String> getParameters() {
         return Collections.unmodifiableMap(parameters);
     }
 
+    @Override
     public void setType(Type t) {
         type = t;
         provideType();
     }
 
+    @Override
     public Type getType() {
         return type;
     }
@@ -147,14 +171,13 @@ public class WebEmbedded
         }
     }
 
+    @Override
     public void dispose() {
-        if (resource != null) {
-            AppUI.getInstance().removeResource(resource);
-        }
         disposed = true;
     }
 
+    @Override
     public boolean isDisposed() {
         return disposed;
-    }*/
+    }
 }
