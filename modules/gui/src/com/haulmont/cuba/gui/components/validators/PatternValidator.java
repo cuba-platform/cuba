@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 24.04.2009 9:46:10
- * $Id$
  */
 package com.haulmont.cuba.gui.components.validators;
 
@@ -17,6 +13,10 @@ import org.dom4j.Element;
 
 import java.util.regex.Pattern;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class PatternValidator implements Field.Validator {
 
     protected Pattern pattern;
@@ -34,6 +34,7 @@ public class PatternValidator implements Field.Validator {
         this.pattern = Pattern.compile(pattern);
     }
 
+    @Override
     public void validate(Object value) throws ValidationException {
         if (!(value != null && pattern.matcher(((String) value)).matches())) {
             String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";

@@ -17,6 +17,7 @@ public class ClassNameFormatter implements Formatter{
 
     protected Messages messages = AppBeans.get(Messages.class);
 
+    @Override
     public String format(Object value) {
         if (value == null) {
             return null;

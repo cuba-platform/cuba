@@ -9,9 +9,8 @@ package com.haulmont.cuba.gui.components;
 /**
  * LookupPickerField adds to PickerField the ability to select an entity from drop-down list.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface LookupPickerField extends LookupField, PickerField {
 

@@ -6,9 +6,8 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * <p>$Id$</p>
- *
- * @author Nikolay Gorodnov
+ * @author gorodnov
+ * @version $Id$
  */
 public abstract class AbstractShortcutAction extends AbstractAction implements ShortcutAction {
 
@@ -19,6 +18,7 @@ public abstract class AbstractShortcutAction extends AbstractAction implements S
         combination = keyCombination;
     }
 
+    @Override
     public KeyCombination getKeyCombination() {
         return combination;
     }

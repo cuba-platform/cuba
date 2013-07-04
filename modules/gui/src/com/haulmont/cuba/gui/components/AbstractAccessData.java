@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 07.12.2009 9:52:38
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -14,6 +9,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class AbstractAccessData {
 
     protected Map<String, Object> params;
@@ -26,6 +25,7 @@ public abstract class AbstractAccessData {
 
     /**
      * Invoked for each component under AccessControl
+     *
      * @param component visited component
      * @param components all components under this AccessControl
      */

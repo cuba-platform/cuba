@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.export.ExportDataProvider;
@@ -8,8 +14,8 @@ import java.io.File;
 import java.net.URL;
 
 /**
- * User: Nikolay Gorodnov
- * Date: 22.06.2009
+ * @author gorodnov
+ * @version $Id$
  */
 public interface Embedded
         extends Component, Component.BelongToFrame

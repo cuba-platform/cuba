@@ -17,9 +17,8 @@ import com.haulmont.cuba.gui.components.Table;
 /**
  * Enumerates standard list action types. Can create a corresponding action instance with default parameters.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public enum ListActionType {
 

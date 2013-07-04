@@ -27,9 +27,10 @@ import java.util.List;
  */
 public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         extends
-        WebAbstractComponent<T>
+            WebAbstractComponent<T>
         implements
-        Component.HasValue, Component.Validatable {
+            Component.HasValue, Component.Validatable {
+
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;

@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 /**
@@ -43,10 +42,8 @@ public interface MaskedField extends TextField {
     String NAME = "maskedField";
 
     void setMask(String mask);
-
     String getMask();
 
     void setValueMode(ValueMode mode);
-
     ValueMode getValueMode();
 }

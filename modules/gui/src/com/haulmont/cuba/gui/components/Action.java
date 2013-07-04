@@ -14,6 +14,9 @@ import java.util.Collection;
 
 /**
  * A named listener to UI events
+ *
+ * @author abramov
+ * @version $Id$
  */
 public interface Action {
 

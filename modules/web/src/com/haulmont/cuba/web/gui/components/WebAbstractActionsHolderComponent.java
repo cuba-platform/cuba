@@ -13,6 +13,11 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component>
         extends WebAbstractComponent<T>
 {

@@ -2,14 +2,15 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 16.10.2009 10:23:53
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * @param <P>
+ *
+ * @author gorodnov
+ * @version $Id$
+ */
 public class AggregationInfo<P> {
 
     public enum Type {

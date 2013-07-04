@@ -2,13 +2,13 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 20.01.2009 17:22:42
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public interface SplitPanel extends Component.Container, Component.BelongToFrame {
 
     String NAME = "split";

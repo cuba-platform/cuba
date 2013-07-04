@@ -27,9 +27,9 @@ import java.util.*;
  */
 public class WebTwinColumn
         extends
-        WebAbstractOptionsField<CubaTwinColSelect>
+            WebAbstractOptionsField<CubaTwinColSelect>
         implements
-        TwinColumn, Component.Wrapper {
+            TwinColumn, Component.Wrapper {
 
     private StyleProvider styleProvider;
 

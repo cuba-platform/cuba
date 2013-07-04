@@ -9,6 +9,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public interface Button
     extends
         Component, Component.HasCaption, Component.BelongToFrame,

@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.01.2009 11:31:13
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -16,20 +12,23 @@ import java.util.ArrayList;
 
 /**
  * Utility class to format and parse component paths
+ *
+ * @author abramov
+ * @version $Id$
  */
 public class ValuePathHelper {
 
     public static String format(String[] elements) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
 
         int i = 1;
         for (String element : elements) {
-            buffer.append(element.contains(".") ? "[" + element + "]" : element);
-            if (i != elements.length) buffer.append(".");
+            builder.append(element.contains(".") ? "[" + element + "]" : element);
+            if (i != elements.length) builder.append(".");
             i++;
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
 
     public static String[] parse(String path) {

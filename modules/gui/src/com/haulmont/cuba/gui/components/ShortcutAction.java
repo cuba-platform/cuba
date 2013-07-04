@@ -8,9 +8,8 @@ package com.haulmont.cuba.gui.components;
 /**
  * Keyboard shortcut action.
  *
- * <p>$Id$</p>
- *
- * @author Nikolay Gorodnov
+ * @author gorodnov
+ * @version $Id$
  */
 public interface ShortcutAction extends Action {
 
@@ -189,5 +188,4 @@ public interface ShortcutAction extends Action {
             return codes;
         }
     }
-
 }

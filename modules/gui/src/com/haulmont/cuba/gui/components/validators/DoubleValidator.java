@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 06.05.2009 15:00:15
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components.validators;
 
@@ -16,6 +11,7 @@ import com.haulmont.chile.core.datatypes.impl.DoubleDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.apache.commons.lang.ObjectUtils;
@@ -24,6 +20,10 @@ import org.dom4j.Element;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class DoubleValidator implements Field.Validator {
 
     protected String message;
@@ -53,12 +53,13 @@ public class DoubleValidator implements Field.Validator {
         return !ObjectUtils.equals("true", onlyPositive) || value.compareTo(BigDecimal.ZERO) >= 0;
     }
 
+    @Override
     public void validate(Object value) throws ValidationException {
         boolean result;
         if (value instanceof String) {
             try {
                 Datatype<Double> datatype = Datatypes.get(DoubleDatatype.NAME);
-                Double num = datatype.parse((String) value, UserSessionProvider.getLocale());
+                Double num = datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
                 result = checkDoubleOnPositive(num);
             } catch (ParseException e) {
                 result = false;

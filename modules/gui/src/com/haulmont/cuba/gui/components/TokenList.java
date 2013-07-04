@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 19.07.2010 18:57:44
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
@@ -15,6 +10,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public interface TokenList extends Field, Component.BelongToFrame,
         Component.HasCaption, Component.Editable {
 

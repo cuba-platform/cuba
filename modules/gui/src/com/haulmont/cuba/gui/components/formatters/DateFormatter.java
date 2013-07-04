@@ -40,6 +40,7 @@ public class DateFormatter implements Formatter<Date> {
         this.element = element;
     }
 
+    @Override
     public String format(Date value) {
         if (value == null) {
             return null;

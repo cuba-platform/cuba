@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 29.04.2009 13:01:39
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components.validators;
 
@@ -15,7 +10,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.apache.commons.lang.ObjectUtils;
@@ -23,6 +18,10 @@ import org.dom4j.Element;
 
 import java.text.ParseException;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class IntegerValidator implements Field.Validator {
 
     protected String message;
@@ -48,12 +47,13 @@ public class IntegerValidator implements Field.Validator {
         return !ObjectUtils.equals("true", onlyPositive) || value >= 0;
     }
 
+    @Override
     public void validate(Object value) throws ValidationException {
         boolean result;
         if (value instanceof String) {
             try {
                 Datatype<Integer> datatype = Datatypes.get(IntegerDatatype.NAME);
-                Integer num = datatype.parse((String) value, UserSessionProvider.getLocale());
+                Integer num = datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
                 result = checkIntegerOnPositive(num);
             } catch (ParseException e) {
                 result = false;

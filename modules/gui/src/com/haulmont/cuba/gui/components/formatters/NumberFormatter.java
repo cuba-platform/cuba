@@ -38,6 +38,7 @@ public class NumberFormatter implements Formatter<Number> {
         this.element = element;
     }
 
+    @Override
     public String format(Number value) {
         if (value == null) {
             return null;

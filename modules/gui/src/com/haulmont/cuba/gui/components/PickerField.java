@@ -27,11 +27,11 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * PickerField component generic interface.<br/>
+ * PickerField component generic interface.
+ * @see LookupPickerField
  *
  * @author abramov
  * @version $Id$
- * @see LookupPickerField
  */
 public interface PickerField extends Field, Component.ActionsHolder {
 

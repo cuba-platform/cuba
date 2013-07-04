@@ -12,7 +12,6 @@ package com.haulmont.cuba.gui.components;
  * @author devyatkin
  * @version $Id$
  */
-
 public interface DetachableFrame extends IFrame {
 
     /**

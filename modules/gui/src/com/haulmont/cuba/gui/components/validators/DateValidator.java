@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.10.2009 11:50:39
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components.validators;
 
@@ -15,7 +10,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
@@ -23,6 +18,10 @@ import org.dom4j.Element;
 import java.text.ParseException;
 import java.util.Date;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DateValidator implements Field.Validator {
 
     protected String message;
@@ -42,6 +41,7 @@ public class DateValidator implements Field.Validator {
         this.message = messages.getMainMessage("validation.invalidDate");
     }
 
+    @Override
     public void validate(Object value) throws ValidationException {
         if (value == null)
             return;
@@ -50,7 +50,7 @@ public class DateValidator implements Field.Validator {
         if (value instanceof String) {
             try {
                 Datatype datatype = Datatypes.get(DateDatatype.NAME);
-                datatype.parse((String) value, UserSessionProvider.getLocale());
+                datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
                 result = true;
             } catch (ParseException e) {
                 result = false;
