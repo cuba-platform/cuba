@@ -82,10 +82,10 @@
         font-size: 12px;
         font-family: $theme_fonts;
         border: 1px solid $theme_windowBorderColor;
+      }
 
-        .v-scrollable {
-          margin-top: 5px;
-        }
+      .#{$primaryStyleName}-contents > .v-scrollable {
+        margin-top: 5px;
       }
 
       .#{$primaryStyleName}-footer {
