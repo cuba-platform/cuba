@@ -5,14 +5,16 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
@@ -50,7 +52,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
                     closeDlg();
             }
         });
-//        WebComponentsHelper.setActions(impl, actions);
+        WebComponentsHelper.setActions(impl, actions);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-//        AppUI.getInstance().getWindowManager().showNotification(msg,type);
+        App.getInstance().getWindowManager().showNotification(msg,type);
     }
 
     @Override
@@ -90,8 +92,8 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
             setContent(layout);
 
             entityAlias = condition.getEntityAlias();
-            Label eaLab = new Label(MessageProvider.formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias));
-            eaLab.setContentMode(Label.CONTENT_XHTML);
+            Label eaLab = new Label(messages.formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias));
+            eaLab.setContentMode(ContentMode.HTML);
             layout.addComponent(eaLab);
 
             GridLayout grid = new GridLayout();
@@ -129,7 +131,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
             HorizontalLayout typeLayout = new HorizontalLayout();
 
-            Select types = (Select) WebComponentsHelper.unwrap(typeSelect);
+            ComboBox types = (ComboBox) WebComponentsHelper.unwrap(typeSelect);
             types.setImmediate(true);
             types.setNullSelectionAllowed(false);
             typeLayout.addComponent(types);
@@ -140,9 +142,9 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
             grid.addComponent(WebComponentsHelper.unwrap(entityLab), 0, i);
             grid.setComponentAlignment(WebComponentsHelper.unwrap(entityLab), Alignment.MIDDLE_RIGHT);
 
-            Select entities = (Select) WebComponentsHelper.unwrap(entitySelect);
+            ComboBox entities = (ComboBox) WebComponentsHelper.unwrap(entitySelect);
             entities.setImmediate(true);
-            entities.setFilteringMode(Select.FILTERINGMODE_CONTAINS);
+            entities.setFilteringMode(FilteringMode.CONTAINS);
             grid.addComponent(entities, 1, i++);
             grid.setComponentAlignment(entities, Alignment.MIDDLE_RIGHT);
 
@@ -158,7 +160,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
             TextField paramViewText = (TextField) WebComponentsHelper.unwrap(entityParamViewText);
             paramViewText.setNullRepresentation("");
-            grid.addComponent(paramViewText, 1, i++);
+            grid.addComponent(paramViewText, 1, i);
 
             layout.addComponent(grid);
 
