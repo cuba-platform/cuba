@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -93,12 +94,14 @@ public interface Component {
          * Get component directly owned by this container.
          * @return component or null if not found
          */
+        @Nullable
         <T extends Component> T getOwnComponent(String id);
 
         /**
          * Get component belonging to the whole components tree below this container.
          * @return component or null if not found
          */
+        @Nullable
         <T extends Component> T getComponent(String id);
 
         /** Get all components directly owned by this container */
