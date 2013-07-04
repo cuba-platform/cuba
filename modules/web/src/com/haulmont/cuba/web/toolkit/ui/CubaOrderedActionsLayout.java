@@ -14,16 +14,21 @@ import com.vaadin.ui.LegacyComponent;
 
 import java.util.Map;
 
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class CubaOrderedActionsLayout extends AbstractOrderedLayout implements Action.Container, LegacyComponent {
 
     private ActionManager actionManager;
 
+    @Override
     public void addActionHandler(Action.Handler actionHandler) {
         getActionManager().addActionHandler(actionHandler);
         markAsDirty();
     }
 
+    @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         if (actionManager != null) {
             actionManager.removeActionHandler(actionHandler);
@@ -31,6 +36,7 @@ public class CubaOrderedActionsLayout extends AbstractOrderedLayout implements A
         }
     }
 
+    @Override
     protected ActionManager getActionManager() {
         if (actionManager == null) {
             actionManager = new ActionManager(this);

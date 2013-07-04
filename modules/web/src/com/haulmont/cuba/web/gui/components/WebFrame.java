@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
-import com.vaadin.event.ActionManager;
+import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -27,14 +27,11 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class WebFrame extends WebVBoxLayout
         implements
             IFrame,
             WrappedFrame,
             com.haulmont.cuba.gui.components.Component.HasXmlDescriptor
-//    vaadin7
-//            com.vaadin.event.Action.Container
 {
     private String messagePack;
     private WindowContext context;
@@ -43,31 +40,27 @@ public class WebFrame extends WebVBoxLayout
 
     private IFrame wrapper;
 
-    protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<String, Component>();
-
-    private ActionManager actionManager;
+    protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<>();
 
     private WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
     public WebFrame() {
-//        vaadin7
-//        super();
-//        addActionHandler(new com.vaadin.event.Action.Handler() {
-//            @Override
-//            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-//                return actionsHolder.getActionImplementations();
-//            }
-//
-//            @Override
-//            public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
-//                Action action = actionsHolder.getAction(actionImpl);
-//                if (action != null && action.isEnabled() && action.isVisible()) {
-//                    action.actionPerform(WebFrame.this);
-//                }
-//            }
-//        });
+        ((CubaOrderedActionsLayout)component).addActionHandler(new com.vaadin.event.Action.Handler() {
+            @Override
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                return actionsHolder.getActionImplementations();
+            }
+
+            @Override
+            public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+                Action action = actionsHolder.getAction(actionImpl);
+                if (action != null && action.isEnabled() && action.isVisible()) {
+                    action.actionPerform(WebFrame.this);
+                }
+            }
+        });
     }
 
     @Override
@@ -110,15 +103,15 @@ public class WebFrame extends WebVBoxLayout
         if (elements.length == 1) {
             T result = (T) allComponents.get(id);
             if (result == null && getFrame() != null) {
-                result = getFrame().<T>getComponent(id);
+                result = getFrame().getComponent(id);
             }
             return result;
         } else {
             com.haulmont.cuba.gui.components.Component frame = allComponents.get(elements[0]);
             if (frame != null && frame instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[]{}));
-                return (T) ((Container) frame).getComponent(subPath);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+                return ((Container) frame).getComponent(subPath);
             } else
                 return null;
         }
@@ -281,43 +274,6 @@ public class WebFrame extends WebVBoxLayout
     public void setXmlDescriptor(Element element) {
         this.element = element;
     }
-
-//    vaadin7 Actions support
-    /*
-    @Override
-    public void addActionHandler(com.vaadin.event.Action.Handler actionHandler) {
-        getActionManager().addActionHandler(actionHandler);
-    }
-
-    @Override
-    public void removeActionHandler(com.vaadin.event.Action.Handler actionHandler) {
-        if (actionManager != null) {
-            actionManager.removeActionHandler(actionHandler);
-        }
-    }
-
-    protected ActionManager getActionManager() {
-        if (actionManager == null) {
-            actionManager = new ActionManager(this);
-        }
-        return actionManager;
-    }
-
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-        if (actionManager != null) {
-            actionManager.paintActions(null, target);
-        }
-    }
-
-    @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        super.changeVariables(source, variables);
-        if (actionManager != null) {
-            actionManager.handleActions(variables, this);
-        }
-    }            */
 
     @Override
     public void addAction(Action action) {
