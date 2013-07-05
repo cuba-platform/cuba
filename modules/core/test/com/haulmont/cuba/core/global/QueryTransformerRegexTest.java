@@ -275,4 +275,37 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from ref$ExtCar c where c.deleteTs is null",
                 res);
     }
+
+    public void testSubQueriesAddWhere() {
+        QueryTransformerRegex transformer;
+        String res;
+
+        transformer = new QueryTransformerRegex(
+                "select h from sec$GroupHierarchy h where h.group = :par",
+                "sec$GroupHierarchy");
+
+        transformer.addWhere("group.createdBy = :par1 and group.updatedBy = (select u.login from sec$User u where u.login = :par2) and group.createTs = :par3");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h where h.group = :par and h.createdBy = :par1" +
+                        " and h.updatedBy = (select u.login from sec$User u where u.login = :par2) and h.createTs = :par3",
+                res);
+    }
+
+    public void testSubQueriesAddJoinAndWhere() {
+        QueryTransformerRegex transformer;
+        String res;
+
+        transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h where h.group = :par",
+                "sec$GroupHierarchy");
+
+        transformer.addJoinAndWhere("join group.parent.constraints c", "group.createdBy = :par1 and group.updatedBy = " +
+                "(select u.login from sec$User u where u.login = group.param) and c.createTs = :par3");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
+                        " and h.updatedBy = (select u.login from sec$User u where u.login = h.param) and c.createTs = :par3",
+                res);
+    }
 }
