@@ -7,18 +7,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
 
 import java.util.Collection;
@@ -27,11 +23,9 @@ import java.util.Collection;
  * @author krivopustov
  * @version $Id$
  */
-public class WebLookupPickerField
-        extends WebLookupField
-        implements LookupPickerField {
+public class WebLookupPickerField extends WebLookupField implements LookupPickerField {
 
-    private WebPickerField pickerField;
+    protected WebPickerField pickerField;
 
     public WebLookupPickerField() {
         // delegate error indication
@@ -47,7 +41,7 @@ public class WebLookupPickerField
         };
 
         final Component selectComponent = component;
-        Picker picker = new Picker(this, component) {
+        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
             @Override
             public void setRequired(boolean required) {
                 super.setRequired(required);
@@ -199,19 +193,5 @@ public class WebLookupPickerField
     @Override
     public float getWidth() {
         return pickerField.getWidth();
-    }
-
-    public static class Picker extends WebPickerField.Picker {
-
-        public Picker(PickerField owner, AbstractField field) {
-            super(owner, field);
-        }
-
-        @Override
-        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-            if (newValue instanceof Entity)
-                newValue = ((Entity) newValue).getId();
-            super.setValue(newValue);
-        }
     }
 }

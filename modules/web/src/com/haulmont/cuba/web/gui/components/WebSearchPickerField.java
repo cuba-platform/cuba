@@ -7,13 +7,13 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.ui.AbstractField;
 
 import java.util.Collection;
 
@@ -23,11 +23,11 @@ import java.util.Collection;
  */
 public class WebSearchPickerField extends WebSearchField implements SearchPickerField {
 
-    private WebPickerField pickerField;
+    protected WebPickerField pickerField;
 
     public WebSearchPickerField() {
         final com.vaadin.ui.Component selectComponent = component;
-        Picker picker = new Picker(this, component) {
+        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
             @Override
             public void setRequired(boolean required) {
                 super.setRequired(required);
@@ -179,19 +179,5 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     @Override
     public float getWidth() {
         return pickerField.getWidth();
-    }
-
-    public static class Picker extends WebPickerField.Picker {
-
-        public Picker(PickerField owner, AbstractField field) {
-            super(owner, field);
-        }
-
-        @Override
-        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-            if (newValue instanceof Entity)
-                newValue = ((Entity) newValue).getId();
-            super.setValue(newValue);
-        }
     }
 }
