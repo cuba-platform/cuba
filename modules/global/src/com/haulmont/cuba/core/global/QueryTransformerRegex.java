@@ -46,6 +46,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         else
             sb.append(" where ");
 
+        sb.append("(");
+
         if (where.contains(ALIAS_PLACEHOLDER)) {
             // replace ALIAS_PLACEHOLDER
             sb.append(where);
@@ -61,6 +63,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             }
             sb.append(replaceEntityAliases(where, alias, subqueryEntityAliases));
         }
+
+        sb.append(")");
 
         buffer.insert(insertPos, sb);
 
@@ -169,6 +173,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             else
                 sb.append(" where ");
 
+            sb.append("(");
+
             if (where.contains(ALIAS_PLACEHOLDER)) {
                 // replace ALIAS_PLACEHOLDER
                 sb.append(where);
@@ -184,6 +190,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
                 excludedAliases.addAll(joinEntityAliases);
                 sb.append(replaceEntityAliases(where, alias, excludedAliases));
             }
+
+            sb.append(")");
 
             insertPos = buffer.length();
             Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);

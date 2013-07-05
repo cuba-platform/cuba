@@ -24,7 +24,7 @@ public class QueryTransformerRegexTest extends TestCase
         transformer.addWhere("a.createdBy = :par1");
         String res = transformer.getResult();
         assertEquals(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1",
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1)",
                 res);
 
         transformer = new QueryTransformerRegex(
@@ -36,7 +36,7 @@ public class QueryTransformerRegexTest extends TestCase
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                    "and h.createdBy = :par1 group by c.level having c.level > 0 order by c.level",
+                    "and (h.createdBy = :par1) group by c.level having c.level > 0 order by c.level",
                 res);
         Set<String> set = transformer.getAddedParams();
         assertEquals(1, set.size());
@@ -46,7 +46,7 @@ public class QueryTransformerRegexTest extends TestCase
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                    "and h.createdBy = :par1 and (h.updatedBy = :par2 and h.groupId = :par3) group by c.level having c.level > 0 order by c.level",
+                    "and (h.createdBy = :par1) and ((h.updatedBy = :par2 and h.groupId = :par3)) group by c.level having c.level > 0 order by c.level",
                 res);
         set = transformer.getAddedParams();
         assertEquals(3, set.size());
@@ -57,7 +57,7 @@ public class QueryTransformerRegexTest extends TestCase
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
-                    "and h.version between 1 and 2 group by c.level having c.level > 0 order by c.level",
+                    "and (h.version between 1 and 2) group by c.level having c.level > 0 order by c.level",
                 res);
 
     }
@@ -70,8 +70,8 @@ public class QueryTransformerRegexTest extends TestCase
         transformer.addWhere("{E}.createdBy = :par1 and {E}.updatedBy = :par2");
         String res = transformer.getResult();
         assertEquals(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
-                    " and h.updatedBy = :par2",
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1" +
+                    " and h.updatedBy = :par2)",
                 res);
 
         ////////////////////////////////////
@@ -83,8 +83,8 @@ public class QueryTransformerRegexTest extends TestCase
         transformer.addJoinAndWhere("join h.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = :par2 and c.createTs = :par3");
         res = transformer.getResult();
         assertEquals(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
-                    " and h.updatedBy = :par2 and c.createTs = :par3",
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1" +
+                    " and h.updatedBy = :par2 and c.createTs = :par3)",
                 res);
 
         ////////////////////////////////////
@@ -96,8 +96,8 @@ public class QueryTransformerRegexTest extends TestCase
         transformer.addJoinAndWhere("join {E}.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = :par2 and c.createTs = :par3");
         res = transformer.getResult();
         assertEquals(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
-                    " and h.updatedBy = :par2 and c.createTs = :par3",
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1" +
+                    " and h.updatedBy = :par2 and c.createTs = :par3)",
                 res);
     }
 
@@ -124,7 +124,7 @@ public class QueryTransformerRegexTest extends TestCase
         transformer.addJoinAndWhere("join h.parent.constraints c", "c.createdBy = :par2");
         String res = transformer.getResult();
         assertEquals(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and c.createdBy = :par2",
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (c.createdBy = :par2)",
                 res);
     }
 
@@ -287,8 +287,8 @@ public class QueryTransformerRegexTest extends TestCase
         transformer.addWhere("group.createdBy = :par1 and group.updatedBy = (select u.login from sec$User u where u.login = :par2) and group.createTs = :par3");
         res = transformer.getResult();
         assertEquals(
-                "select h from sec$GroupHierarchy h where h.group = :par and h.createdBy = :par1" +
-                        " and h.updatedBy = (select u.login from sec$User u where u.login = :par2) and h.createTs = :par3",
+                "select h from sec$GroupHierarchy h where h.group = :par and (h.createdBy = :par1" +
+                        " and h.updatedBy = (select u.login from sec$User u where u.login = :par2) and h.createTs = :par3)",
                 res);
     }
 
@@ -304,8 +304,8 @@ public class QueryTransformerRegexTest extends TestCase
                 "(select u.login from sec$User u where u.login = group.param) and c.createTs = :par3");
         res = transformer.getResult();
         assertEquals(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
-                        " and h.updatedBy = (select u.login from sec$User u where u.login = h.param) and c.createTs = :par3",
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1" +
+                        " and h.updatedBy = (select u.login from sec$User u where u.login = h.param) and c.createTs = :par3)",
                 res);
     }
 }
