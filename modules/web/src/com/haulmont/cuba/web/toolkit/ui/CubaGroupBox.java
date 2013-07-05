@@ -8,13 +8,17 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxState;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Panel;
+
+import java.util.Iterator;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaGroupBox extends Panel {
+public class CubaGroupBox extends Panel implements ComponentContainer {
     private ExpandChangeHandler expandChangeHandler = null;
 
     public CubaGroupBox() {
@@ -74,6 +78,66 @@ public class CubaGroupBox extends Panel {
 
     public void setExpandChangeHandler(ExpandChangeHandler expandChangeHandler) {
         this.expandChangeHandler = expandChangeHandler;
+    }
+
+    @Override
+    public ComponentContainer getContent() {
+        return (ComponentContainer) super.getContent();
+    }
+
+    @Override
+    public void addComponent(Component c) {
+        getContent().addComponent(c);
+    }
+
+    @Override
+    public void addComponents(Component... components) {
+        getContent().addComponents(components);
+    }
+
+    @Override
+    public void removeComponent(Component c) {
+        getContent().addComponent(c);
+    }
+
+    @Override
+    public void removeAllComponents() {
+        getContent().removeAllComponents();
+    }
+
+    @Override
+    public void replaceComponent(Component oldComponent, Component newComponent) {
+        getContent().replaceComponent(oldComponent, newComponent);
+    }
+
+    @Override
+    public Iterator<Component> getComponentIterator() {
+        return getContent().iterator();
+    }
+
+    @Override
+    public void moveComponentsFrom(ComponentContainer source) {
+        getContent().moveComponentsFrom(source);
+    }
+
+    @Override
+    public void addListener(ComponentAttachListener listener) {
+        getContent().addListener(listener);
+    }
+
+    @Override
+    public void removeListener(ComponentAttachListener listener) {
+        getContent().removeListener(listener);
+    }
+
+    @Override
+    public void addListener(ComponentDetachListener listener) {
+        getContent().addListener(listener);
+    }
+
+    @Override
+    public void removeListener(ComponentDetachListener listener) {
+        getContent().removeListener(listener);
     }
 
     public interface ExpandChangeHandler {
