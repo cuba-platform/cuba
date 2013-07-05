@@ -92,7 +92,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
             setContent(layout);
 
             entityAlias = condition.getEntityAlias();
-            Label eaLab = new Label(messages.formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias));
+            Label eaLab = new Label(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel"));
             eaLab.setContentMode(ContentMode.HTML);
             layout.addComponent(eaLab);
 

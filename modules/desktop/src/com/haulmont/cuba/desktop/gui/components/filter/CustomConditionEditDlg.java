@@ -99,7 +99,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
             setLayout(layout);
             entityAlias = condition.getEntityAlias();
             JLabel eaLab = new JLabel("<html>" +
-                    messages.formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias) + "</html>");
+                    messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel") + "</html>");
             add(eaLab, "wrap");
             MigLayout mainLayout = new MigLayout("wrap 2");
             JPanel mainPanel = new JPanel(mainLayout);

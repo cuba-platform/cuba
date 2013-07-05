@@ -109,9 +109,10 @@ public class QueryFilter {
                 Set<String> joins = refined.getJoins();
                 if (!joins.isEmpty()) {
                     String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
-                    transformer.addJoinAsIs(joinsStr);
+                    transformer.addJoinAndWhere(joinsStr, where);
+                } else {
+                    transformer.addWhere(where);
                 }
-                transformer.addWhereAsIs(where);
             }
         }
         return transformer.getResult();
