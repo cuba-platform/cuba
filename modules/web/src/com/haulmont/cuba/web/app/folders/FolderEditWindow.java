@@ -63,7 +63,6 @@ public class FolderEditWindow extends Window {
         setResizable(false);
 
         layout = new VerticalLayout();
-        layout.setMargin(new MarginInfo(true, false, false, false));
         layout.setSpacing(true);
 
         setContent(layout);

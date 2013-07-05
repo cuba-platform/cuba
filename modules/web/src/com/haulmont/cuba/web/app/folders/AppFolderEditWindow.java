@@ -9,31 +9,33 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.TextArea;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
 
 /**
- * @author Devyatkin
+ * @author devyatkin
  * @version $Id$
  */
 public class AppFolderEditWindow extends FolderEditWindow {
-    protected TextField visibilityScriptField = null;
-    protected TextField quantityScriptField = null;
 
-    public static FolderEditWindow create(boolean isAppFolder, boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
+    protected TextArea visibilityScriptField = null;
+    protected TextArea quantityScriptField = null;
+
+    public static FolderEditWindow create(boolean isAppFolder, boolean adding,
+                                          Folder folder, Presentations presentations, Runnable commitHandler) {
         if (isAppFolder) {
-            String className = ConfigProvider.getConfig(GlobalConfig.class).getAppFolderEditWindowClassName();
+            GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+            String className = globalConfig.getAppFolderEditWindowClassName();
             if (className != null) {
                 Class<FolderEditWindow> aClass = ReflectionHelper.getClass(className);
                 try {
@@ -52,74 +54,70 @@ public class AppFolderEditWindow extends FolderEditWindow {
             return new FolderEditWindow(adding, folder, presentations, commitHandler);
     }
 
-
     public AppFolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         super(adding, folder, presentations, commitHandler);
         if (!adding) {
             setWidth(500, Unit.PIXELS);
-            visibilityScriptField = new TextField();
-//            visibilityScriptField.setRows(10);
+            visibilityScriptField = new TextArea();
+            visibilityScriptField.setRows(10);
             visibilityScriptField.setColumns(40);
             visibilityScriptField.setCaption(getMessage("folders.visibilityScript"));
             String vScript = StringUtils.trimToEmpty(((AppFolder) folder).getVisibilityScript());
             visibilityScriptField.setValue(vScript);
             layout.addComponent(visibilityScriptField, 3);
 
-            quantityScriptField = new TextField();
+            quantityScriptField = new TextArea();
             String qScript = StringUtils.trimToEmpty(((AppFolder) folder).getQuantityScript());
             quantityScriptField.setValue(qScript);
-//            quantityScriptField.setRows(10);
+            quantityScriptField.setRows(10);
             quantityScriptField.setColumns(40);
             quantityScriptField.setCaption(getMessage("folders.quantityScript"));
             layout.addComponent(quantityScriptField, 4);
-
-
         }
     }
 
+    @Override
     protected void initButtonOkListener() {
-        okBtn.addListener(new Button.ClickListener() {
+        okBtn.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 AppFolder folder = (AppFolder) AppFolderEditWindow.this.folder;
-                if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
-                    String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
-                    UI.getCurrent().showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
+                if (StringUtils.trimToNull(nameField.getValue()) == null) {
+                    String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
+                    App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
                     return;
                 }
-                folder.setName((String) nameField.getValue());
-                folder.setTabName((String) tabNameField.getValue());
+                folder.setName(nameField.getValue());
+                folder.setTabName(tabNameField.getValue());
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     folder.setSortOrder(null);
                 } else {
                     Object value = sortOrderField.getValue();
                     int sortOrder;
-                    if (value instanceof Integer)
-                        sortOrder = (Integer) value;
-                    else
-                        try {
-                            sortOrder = Integer.parseInt((String) value);
-                        } catch (NumberFormatException e) {
-                            String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
-                            UI.getCurrent().showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
-                            return;
-                        }
+                    try {
+                        sortOrder = Integer.parseInt((String) value);
+                    } catch (NumberFormatException e) {
+                        String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
+                        App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+                        return;
+                    }
                     folder.setSortOrder(sortOrder);
                 }
 
                 Object parent = parentSelect.getValue();
-                if (parent instanceof Folder)
+                if (parent instanceof Folder) {
                     folder.setParent((Folder) parent);
-                else
+                } else {
                     folder.setParent(null);
-
+                }
 
                 if (visibilityScriptField != null) {
-                    String scriptText = (String) visibilityScriptField.getValue();
+                    String scriptText = visibilityScriptField.getValue();
                     folder.setVisibilityScript(scriptText);
                 }
                 if (quantityScriptField != null) {
-                    String scriptText = (String) quantityScriptField.getValue();
+                    String scriptText = quantityScriptField.getValue();
                     folder.setQuantityScript(scriptText);
                 }
                 folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
@@ -131,6 +129,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
         });
     }
 
+    @Override
     protected void fillParentSelect() {
         parentSelect.removeAllItems();
 
@@ -138,7 +137,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
         parentSelect.addItem(root);
         parentSelect.setNullSelectionItemId(root);
 
-        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
+        FoldersService service = AppBeans.get(FoldersService.NAME);
         List<AppFolder> list = service.loadAppFolders();
         for (AppFolder folder : list) {
             if (!folder.equals(this.folder)) {
@@ -147,6 +146,4 @@ public class AppFolderEditWindow extends FolderEditWindow {
             }
         }
     }
-
-
 }
