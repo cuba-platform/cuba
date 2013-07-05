@@ -187,6 +187,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         select.setImmediate(true);
         select.setPageLength(20);
         select.addValueChangeListener(new SelectListener());
+        select.setTextInputAllowed(false);
+
         App.getInstance().getWindowManager().setDebugId(select, "genericFilterSelect");
         topLayout.addComponent(select);
 
