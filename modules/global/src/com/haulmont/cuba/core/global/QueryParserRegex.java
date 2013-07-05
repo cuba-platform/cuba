@@ -47,7 +47,7 @@ public class QueryParserRegex implements QueryParser {
     public static final String ALIAS_PATTERN_REGEX = "(^|\\s|\\()(\\w+)\\.";
     public static final Pattern ALIAS_PATTERN = Pattern.compile(ALIAS_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
-    public static final String JOIN_ALIAS_PATTERN_REGEX = "(\\bjoin\\b)\\s+([\\w\\.]+)\\s+(\\b\\w+\\b)";
+    public static final String JOIN_ALIAS_PATTERN_REGEX = "(\\bjoin\\b)\\s+([\\w\\.\\{\\}]+)\\s+(\\b\\w+\\b)";
     public static final Pattern JOIN_ALIAS_PATTERN = Pattern.compile(JOIN_ALIAS_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
     public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9$\\.]+)";
