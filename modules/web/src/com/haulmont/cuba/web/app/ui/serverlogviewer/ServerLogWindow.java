@@ -146,7 +146,6 @@ public class ServerLogWindow extends AbstractWindow {
         });
 
         logContainer.setSizeFull();
-//        logContainer.setScrollable(true);
 
         Panel groupBox = (Panel) WebComponentsHelper.unwrap(logFieldBox);
         VerticalLayout logContent = new VerticalLayout();

@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 13.10.2009 12:19:59
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.data;
 
@@ -15,6 +10,10 @@ import com.vaadin.data.Container;
 import java.util.Map;
 import java.util.Collection;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public interface AggregationContainer extends Container {
 
     enum Type {

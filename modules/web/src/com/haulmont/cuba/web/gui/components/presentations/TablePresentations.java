@@ -2,21 +2,17 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 22.09.2010 18:39:00
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.vaadin.ui.CustomComponent;
 
-//import com.haulmont.cuba.toolkit.gwt.client.presentations.TablePresentationsPopup;
-//import com.haulmont.cuba.web.AppUI;
-
-//@ClientWidget(TablePresentationsPopup.class)
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class TablePresentations extends CustomComponent {
+    // vaadin7 Presebtations
     /*private MenuBar menuBar;
     private WebPopupButton button;
 

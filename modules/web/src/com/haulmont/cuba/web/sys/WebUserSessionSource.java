@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 //import com.haulmont.cuba.web.AppUI;
 
 import javax.annotation.ManagedBean;
@@ -30,9 +32,9 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
 
     @Override
     public boolean checkCurrentUserSession() {
-        /*if (AppUI.isBound())
-            return AppUI.getInstance().getConnection().isConnected() && AppUI.getInstance().getConnection().getSession() != null;
-        else {*/
+        if (App.isBound())
+            return App.getInstance().getConnection().isConnected() && App.getInstance().getConnection().getSession() != null;
+        else {
             SecurityContext securityContext = AppContext.getSecurityContext();
             if (securityContext == null)
                 return false;
@@ -47,14 +49,14 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
                     return false;
                 }
             }
-//        }
+        }
     }
 
     @Override
     public UserSession getUserSession() {
-        /*if (AppUI.isBound())
-            return AppUI.getInstance().getConnection().getSession();
-        else {*/
+        if (App.isBound())
+            return App.getInstance().getConnection().getSession();
+        else {
             SecurityContext securityContext = AppContext.getSecurityContext();
             if (securityContext == null)
                 throw new IllegalStateException("No security context bound to the current thread");
@@ -64,6 +66,6 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
             else {
                 return userSessionService.getUserSession(securityContext.getSessionId());
             }
-//        }
+        }
     }
 }

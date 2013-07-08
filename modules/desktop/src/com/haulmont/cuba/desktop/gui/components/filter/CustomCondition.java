@@ -13,9 +13,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class CustomCondition extends AbstractCustomCondition<Param>{
         public CustomCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
@@ -27,7 +26,6 @@ public class CustomCondition extends AbstractCustomCondition<Param>{
     public CustomCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias) {
         super(descriptor, where, join, entityAlias);
     }
-
 
     @Override
     public OperationEditor createOperationEditor() {

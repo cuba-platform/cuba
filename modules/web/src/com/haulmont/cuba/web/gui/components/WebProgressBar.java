@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.components.ProgressBar;
 import com.vaadin.ui.ProgressIndicator;
 
 /**
- * Web realization of progress bar depending on vaadin {@link ProgressIndicator} component.
+ * Web realization of progress bar depending on vaadin {@link ProgressBar} component.
  * <p/>
  * Note that indeterminate bar implemented here just like as determinate, but with fixed 0.0 value
  * <p/>
@@ -18,17 +18,15 @@ import com.vaadin.ui.ProgressIndicator;
  * @author Alexander Budarov
  * @version $Id$
  */
-public class WebProgressBar extends WebAbstractField<ProgressIndicator> implements ProgressBar {
+public class WebProgressBar extends WebAbstractField<com.vaadin.ui.ProgressBar> implements ProgressBar {
     protected boolean indeterminate;
 
     public WebProgressBar() {
-        component = new ProgressIndicator();
+        component = new com.vaadin.ui.ProgressBar();
         attachListener(component);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
         component.setIndeterminate(false);
-        // disable polling on client
-        component.setPollingInterval(Integer.MAX_VALUE);
     }
 
     @Override

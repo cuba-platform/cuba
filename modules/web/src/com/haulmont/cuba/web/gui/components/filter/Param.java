@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
@@ -290,40 +289,34 @@ public class Param extends AbstractParam<Component> {
         field.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-
-                Object value = field.getValue();
-                if (value == null || value instanceof UUID)
+                String value = field.getValue();
+                if (value == null)
                     setValue(value);
-                else if ((value instanceof String  && !StringUtils.isBlank((String) value)) || value instanceof List) {
+                else if ((!StringUtils.isBlank(value))) {
                     Messages messages = AppBeans.get(Messages.class);
 
                     if (inExpr) {
                         List list = new ArrayList();
-                        if (value instanceof List) {
-                            list = (List) value;
-                            setValue(list);
-                        } else {
-                            String[] parts = ((String) value).split(",");
-                            try {
-                                for (String part : parts) {
-                                    list.add(UUID.fromString(part.trim()));
-                                }
-                                setValue(list);
-                            } catch (IllegalArgumentException ie) {
-                                App.getInstance().getWindowManager().showNotification(messages.getMessage(AbstractParam.class,
-                                        "Param.uuid.Err"), IFrame.NotificationType.TRAY);
-                                setValue(null);
+                        String[] parts = value.split(",");
+                        try {
+                            for (String part : parts) {
+                                list.add(UUID.fromString(part.trim()));
                             }
+                            setValue(list);
+                        } catch (IllegalArgumentException ie) {
+                            App.getInstance().getWindowManager().showNotification(messages.getMessage(AbstractParam.class,
+                                    "Param.uuid.Err"), IFrame.NotificationType.TRAY);
+                            setValue(null);
                         }
                     } else {
                         try {
-                            setValue(UUID.fromString((String) value));
+                            setValue(UUID.fromString(value));
                         } catch (IllegalArgumentException ie) {
                             App.getInstance().getWindowManager().showNotification(messages.getMessage(AbstractParam.class,
                                     "Param.uuid.Err"), IFrame.NotificationType.TRAY);
                         }
                     }
-                } else if (value instanceof String && StringUtils.isBlank((String) value))
+                } else if (StringUtils.isBlank(value))
                     setValue(null);
                 else
                     throw new IllegalStateException("Invalid value: " + value);
@@ -427,7 +420,7 @@ public class Param extends AbstractParam<Component> {
 
     private void initListEdit(final ListEditComponent component) {
         component.setWidth(TEXT_COMPONENT_WIDTH);
-        component.addListener(
+        component.addValueChangeListener(
                 new Property.ValueChangeListener() {
                     @Override
                     public void valueChange(Property.ValueChangeEvent event) {
@@ -436,7 +429,7 @@ public class Param extends AbstractParam<Component> {
                 }
         );
         if (value != null) {
-            Map<Object, String> values = new HashMap<Object, String>();
+            Map<Object, String> values = new HashMap<>();
             for (Object v : (List) value) {
                 values.put(v, getValueCaption(v));
             }
@@ -445,14 +438,14 @@ public class Param extends AbstractParam<Component> {
     }
 
     private Component createRuntimeEnumLookup() {
-        DataService dataService = ServiceLocator.lookup(DataService.NAME);
+        DataService dataService = AppBeans.get(DataService.NAME);
         LoadContext context = new LoadContext(CategoryAttribute.class);
         LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
         context.setView("_local");
         q.setParameter("id", categoryAttrId);
-        CategoryAttribute categoryAttribute = (CategoryAttribute) dataService.load(context);
+        CategoryAttribute categoryAttribute = dataService.load(context);
 
-        runtimeEnum = new LinkedList<String>();
+        runtimeEnum = new LinkedList<>();
         String enumerationString = categoryAttribute.getEnumeration();
         String[] array = StringUtils.split(enumerationString, ',');
         for (String s : array) {

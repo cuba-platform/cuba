@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 10.11.2009 18:08:47
- *
- * $Id$
  */
 package com.haulmont.cuba.web.toolkit.data.util;
 
@@ -18,7 +13,10 @@ import com.vaadin.data.util.ContainerOrderedWrapper;
 import java.util.Collection;
 import java.util.Map;
 
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         implements GroupTableContainer, AggregationContainer {
     private boolean isGroupTableContainer;

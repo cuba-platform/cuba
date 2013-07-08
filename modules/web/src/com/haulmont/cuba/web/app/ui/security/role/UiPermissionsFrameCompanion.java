@@ -15,11 +15,11 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.security.entity.UiPermissionTarget;
 import com.haulmont.cuba.gui.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.shared.ui.label.ContentMode;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion {
     @Override
@@ -28,8 +28,8 @@ public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion
             @Override
             public Component generateCell(UiPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
-//                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
-//                vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
+                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
+                vLabel.setContentMode(ContentMode.HTML);
 
                 StringBuilder builder = new StringBuilder();
 
@@ -40,7 +40,7 @@ public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion
                             .append(MessageProvider.getMessage(permissionVariant)).append("</span>");
                 }
 
-//                vLabel.setValue(builder.toString());
+                vLabel.setValue(builder.toString());
 
                 return label;
             }

@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.10.2009 12:17:07
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
@@ -15,6 +10,10 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class NameEditor extends CustomComponent implements AbstractCondition.Listener {
 
     protected AbstractCondition condition;

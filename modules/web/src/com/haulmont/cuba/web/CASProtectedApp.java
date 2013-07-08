@@ -12,6 +12,7 @@ package com.haulmont.cuba.web;
 
 //import com.vaadin.service.ApplicationContext;
 
+// vaadin7 Outdated
 public class CASProtectedApp /*extends AppUI implements ConnectionListener*/ {
 /*
 

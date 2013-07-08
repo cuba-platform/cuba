@@ -6,13 +6,11 @@
 
 package com.haulmont.cuba.web.exception;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityAccessException;
-import com.haulmont.cuba.core.global.MessageProvider;
-//import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 
 import javax.annotation.Nullable;
 
@@ -30,8 +28,8 @@ public class EntityAccessExceptionHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        String msg = MessageProvider.formatMessage(getClass(), "entityAccessException.message");
-        app.getAppUI().showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
+        String msg = AppBeans.get(Messages.class).formatMessage(getClass(), "entityAccessException.message");
+        app.getWindowManager().showNotification(msg, IFrame.NotificationType.WARNING);
     }
 
     public void handle(EntityAccessException e, App app) {

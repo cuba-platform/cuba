@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @author Timofeev
+ * @author timofeev
  * @version $Id$
  */
 public class FeedbackWindow extends AbstractWindow {
@@ -46,6 +46,12 @@ public class FeedbackWindow extends AbstractWindow {
 
     @Inject
     protected TextField reasonFreeText;
+
+    @Inject
+    protected Button okBtn;
+
+    @Inject
+    protected Button cancelBtn;
 
     protected String otherReason;
 
@@ -131,9 +137,9 @@ public class FeedbackWindow extends AbstractWindow {
             }
         });
 
-        Button okBtn = getComponent("ok");
         okBtn.setAction(
                 new AbstractAction("ok") {
+                    @Override
                     public void actionPerform(Component component) {
                         if (validateAndSend()) {
                             close("ok");
@@ -142,9 +148,9 @@ public class FeedbackWindow extends AbstractWindow {
                 }
         );
 
-        Button cancelBtn = getComponent("cancel");
         cancelBtn.setAction(
                 new AbstractAction("cancel") {
+                    @Override
                     public void actionPerform(Component component) {
                         close("cancel");
                     }

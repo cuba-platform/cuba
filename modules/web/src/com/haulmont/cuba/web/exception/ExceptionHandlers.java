@@ -12,11 +12,8 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.AppBeans;
-//import com.haulmont.cuba.web.AppUI;
-//import com.vaadin.terminal.Terminal;
 import com.haulmont.cuba.web.App;
 import com.vaadin.server.ErrorEvent;
-import com.vaadin.ui.UI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,7 +37,7 @@ public class ExceptionHandlers {
 
     protected App app;
 
-    protected LinkedList<ExceptionHandler> handlers = new LinkedList<ExceptionHandler>();
+    protected LinkedList<ExceptionHandler> handlers = new LinkedList<>();
 
     protected ExceptionHandler defaultHandler;
 

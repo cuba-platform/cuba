@@ -499,10 +499,6 @@ public class FoldersPane extends VerticalLayout {
 
     protected Resource getMenuItemIcon() {
         return null;
-//        if (visible)
-//            return new VersionedThemeResource("icons/folders_pane_icon_active.png");
-//        else
-//            return new VersionedThemeResource("icons/folders_pane_icon.png");
     }
 
     protected String getMenuItemStyle() {

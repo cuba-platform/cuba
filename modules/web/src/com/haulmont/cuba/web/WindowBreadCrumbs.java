@@ -20,7 +20,6 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class WindowBreadCrumbs extends HorizontalLayout {
 
     public interface Listener {
@@ -66,6 +65,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             });
             closeBtn.setIcon(new VersionedThemeResource("icons/close.png"));
             closeBtn.setStyleName("cuba-closetab-button");
+//            vaadin7 Test ids
 //            AppUI.getInstance().getWindowManager()
 //                    .setDebugId(closeBtn, "closeBtn");
         }

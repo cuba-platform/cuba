@@ -6,7 +6,8 @@
 
 package com.haulmont.cuba.web.app.ui.security.role;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.SpecificPermissionsFrame;
 import com.haulmont.cuba.gui.components.Component;
@@ -16,11 +17,11 @@ import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.shared.ui.label.ContentMode;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFrame.Companion{
     @Override
@@ -29,8 +30,8 @@ public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFra
             @Override
             public Component generateCell(BasicPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
-//                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
-//                vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
+                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
+                vLabel.setContentMode(ContentMode.HTML);
 
                 StringBuilder builder = new StringBuilder();
 
@@ -38,10 +39,10 @@ public class SpecificPermissionsFrameCompanion implements SpecificPermissionsFra
 
                 if (permissionVariant != PermissionVariant.NOTSET) {
                     builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")
-                            .append(MessageProvider.getMessage(permissionVariant)).append("</span>");
+                            .append(AppBeans.get(Messages.class).getMessage(permissionVariant)).append("</span>");
                 }
 
-//                vLabel.setValue(builder.toString());
+                vLabel.setValue(builder.toString());
 
                 return label;
             }

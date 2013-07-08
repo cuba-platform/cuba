@@ -19,7 +19,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expandLayout="true" spacing="true">
+    <layout spacing="true">
         <lookupField id="folderSelect" optionsDatasource="setFoldersDs" width="250px"
                      caption="msg://saveSetWindow.set"/>
         <hbox spacing="true" id="add">

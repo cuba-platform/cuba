@@ -1,17 +1,21 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-//import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.App;
 
 /**
- * <p>$Id$</p>
- *
  * @author novikov
+ * @version $Id$
  */
 public class ShowLinkAction extends AbstractAction {
 
@@ -27,6 +31,7 @@ public class ShowLinkAction extends AbstractAction {
 
     public ShowLinkAction(CollectionDatasource ds, Handler handler) {
         super(ACTION_ID);
+
         mp = AppConfig.getMessagesPack();
         this.ds = ds;
         this.handler = handler;
@@ -34,24 +39,24 @@ public class ShowLinkAction extends AbstractAction {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(mp, "table.showLinkAction");
+        return messages.getMessage(mp, "table.showLinkAction");
     }
 
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
         if (ds == null)
             return;
 
-//        AppUI.getInstance().getWindowManager().showMessageDialog(
-//                MessageProvider.getMessage(mp, "table.showLinkAction"),
-//                compileLink(ds),
-//                IFrame.MessageType.CONFIRMATION
-//        );
+        App.getInstance().getWindowManager().showMessageDialog(
+                messages.getMessage(mp, "table.showLinkAction"),
+                compileLink(ds),
+                IFrame.MessageType.CONFIRMATION
+        );
     }
 
     private String compileLink(CollectionDatasource ds) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(MessageProvider.getMessage(mp, "table.showLinkAction.link")).append("<br/>");
+        sb.append(messages.getMessage(mp, "table.showLinkAction.link")).append("<br/>");
         sb.append("<textarea cols=\"55\" rows=\"5\" autofocus=\"true\" readonly=\"true\">").
                 append(handler.makeLink(ds.getItem()).replace("&", "&amp")).append(" </textarea>");
 

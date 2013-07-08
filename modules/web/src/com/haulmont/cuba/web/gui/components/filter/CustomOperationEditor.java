@@ -44,7 +44,6 @@ public class CustomOperationEditor extends OperationEditor implements HasAction<
         layout.addComponent(btn);
     }
 
-
     @Override
     public void doAction(Component component) {
         final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);

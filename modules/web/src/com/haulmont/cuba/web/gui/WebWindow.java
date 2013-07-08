@@ -863,9 +863,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
 
         protected Collection<com.vaadin.ui.Field> getFields() {
-            return Collections.emptyList();
-//            vaadin7 i don't know what is this
-//            return WebComponentsHelper.getComponents(getContainer(), com.vaadin.ui.Field.class);
+            return WebComponentsHelper.getComponents(getContainer(), com.vaadin.ui.Field.class);
         }
 
         protected MetaClass getMetaClass() {
@@ -979,6 +977,7 @@ public class WebWindow implements Window, Component.Wrapper,
                 final Tree tree = (Tree) lookupComponent;
                 com.haulmont.cuba.web.toolkit.ui.Tree treeComponent =
                         (com.haulmont.cuba.web.toolkit.ui.Tree) WebComponentsHelper.unwrap(tree);
+                // vaadin7
 //                treeComponent.setDoubleClickMode(true);
                 treeComponent.addItemClickListener(new ItemClickEvent.ItemClickListener() {
                     @Override

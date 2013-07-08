@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.*;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +39,16 @@ public class CubaVaadinServletService extends VaadinServletService {
                 this.webResourceTimestamp = "DEBUG";
         } else
             this.webResourceTimestamp = "DEBUG";
+
+        addSessionDestroyListener(new SessionDestroyListener() {
+            @Override
+            public void sessionDestroy(SessionDestroyEvent event) {
+                App app = event.getSession().getAttribute(App.class);
+                if (app != null) {
+                    app.cleanupBackgroundTasks();
+                }
+            }
+        });
 
         // vaadin7 supply localized system messages
 /*        setSystemMessagesProvider(new SystemMessagesProvider() {

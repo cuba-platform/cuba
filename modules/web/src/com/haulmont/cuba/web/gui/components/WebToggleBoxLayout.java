@@ -20,6 +20,7 @@ import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
 
+// vaadin7 Under construction
 public class WebToggleBoxLayout
         /*extends WebAbstractComponent<TogglePanel>
         implements ToggleBoxLayout*/

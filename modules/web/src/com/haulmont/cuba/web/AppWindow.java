@@ -31,7 +31,6 @@ import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
-import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.BrowserWindowOpener;
@@ -132,8 +131,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
     private AbstractSelect substUserSelect;
 
-    private JavaScriptHost scriptHost;
-
     public AppWindow(Connection connection) {
         Configuration configuration = AppBeans.get(Configuration.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
@@ -177,7 +174,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     private void initStaticComponents() {
-        scriptHost = new JavaScriptHost();
 //        addComponent(scriptHost);
 
         workerTimer = new CubaTimer();
@@ -361,14 +357,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return foldersPane;
     }
 
-    /**
-     * Native client script invoker
-     * @return JavaScriptHost - specific client side bridge
-     */
-    public JavaScriptHost getScriptHost() {
-        return scriptHost;
-    }
-
     public CubaFileDownloader getFileDownloader() {
         return fileDownloader;
     }
@@ -441,6 +429,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
      */
     protected void postInitLayout() {
         String themeName = AppContext.getProperty("cuba.web.theme");
+//        vaadin7 Theme switch
 //        if (themeName == null) themeName = AppUI.THEME_NAME;
 //        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
 //        if (!StringUtils.equals(themeName, getTheme())) {
@@ -497,7 +486,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
             Button searchBtn = new Button();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            searchBtn.setIcon(new VersionedThemeResource("select/img/fts-btn.png"));
+            searchBtn.setIcon(new VersionedThemeResource("icons/search.png"));
             searchBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override

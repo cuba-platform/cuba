@@ -5,13 +5,21 @@
  */
 package com.haulmont.cuba.web.app;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 
 import java.text.NumberFormat;
 
@@ -47,13 +55,13 @@ public class FileDownloadHelper {
     public static void initGeneratedColumn(final Table table) {
         final CollectionDatasource ds = table.getDatasource();
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath("name");
-        /*final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             private static final long serialVersionUID = -8909453319289476141L;
 
             @Override
-            public Component generateCell(com.vaadin.ui.Table source, final Object itemId, Object columnId) {
+            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, final Object itemId, Object columnId) {
 
                 Property prop = source.getItem(itemId).getItemProperty(columnId);
                 if (prop.getType().equals(String.class)) {
@@ -62,7 +70,7 @@ public class FileDownloadHelper {
                     if (fd == null) {
                         return new Label();
                     }
-                    Component component;
+                    com.vaadin.ui.Component component;
                     if (PersistenceHelper.isNew(fd)) {
                         component = new Label(fd.getName());
                     } else {
@@ -81,22 +89,22 @@ public class FileDownloadHelper {
                 return null;
 
             }
-        });*/
+        });
     }
 
     public static void initGeneratedColumn(Table table, final String fileProperty) {
         final CollectionDatasource ds = table.getDatasource();
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath(fileProperty + ".name");
-        /*final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             @Override
-            public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+            public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                 Instance enclosingEntity = ds.getItem(itemId);
                 if (enclosingEntity != null) {
                     final FileDescriptor fd = enclosingEntity.getValue(fileProperty);
                     if (fd != null) {
-                        Component component;
+                        com.vaadin.ui.Component component;
                         if (PersistenceHelper.isNew(fd)) {
                             component = new Label(fd.getName());
                         } else {
@@ -114,7 +122,7 @@ public class FileDownloadHelper {
                 }
                 return new Label();
             }
-        });*/
+        });
     }
 
     public static String formatFileSize(long longSize, int decimalPos) {

@@ -2,17 +2,11 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 20.05.2009 18:22:40
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.web.App;
 import com.vaadin.server.ErrorEvent;
-import com.vaadin.ui.UI;
 
 /**
  * Interface to be implemented by exception handlers in Web-client.
@@ -20,8 +14,7 @@ import com.vaadin.ui.UI;
  * @author krivopustov
  * @version $Id$
  */
-public interface ExceptionHandler
-{
+public interface ExceptionHandler {
     /**
      * Handle an exception. Implementation class should either handle the exception and return true, or return false
      * to delegate execution to the next handler in the chain of responsibility.

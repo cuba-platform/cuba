@@ -6,10 +6,11 @@
 
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.Notification;
 
 import javax.annotation.Nullable;
 
@@ -25,10 +26,11 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        app.getAppUI().showNotification(
-                MessageProvider.getMessage(getClass(), "validationFail.caption"),
-                MessageProvider.getMessage(getClass(), "validationFail"),
-                Notification.TYPE_TRAY_NOTIFICATION
+        Messages messages = AppBeans.get(Messages.class);
+        app.getWindowManager().showNotification(
+                messages.getMessage(getClass(), "validationFail.caption"),
+                messages.getMessage(getClass(), "validationFail"),
+                IFrame.NotificationType.TRAY
         );
     }
 }

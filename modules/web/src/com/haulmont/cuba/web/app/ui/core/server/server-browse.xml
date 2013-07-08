@@ -23,8 +23,8 @@
             <hbox align="MIDDLE_RIGHT">
                 <button action="servers.refresh"/>
             </hbox>
-            <vbox id="servers_panel" expand="servers">
-                <table id="servers" editable="false">
+            <vbox id="servers_panel" expand="serversTable">
+                <table id="serversTable" editable="false">
                     <columns>
                         <column id="name" caption="msg://name"/>
                         <column id="address" caption="msg://address"/>

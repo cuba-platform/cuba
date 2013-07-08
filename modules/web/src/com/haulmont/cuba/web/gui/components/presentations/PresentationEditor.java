@@ -2,17 +2,17 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 17.09.2010 17:23:56
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.vaadin.ui.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class PresentationEditor extends Window {
+    // vaadin7 Presentations
 /*
     private Presentation presentation;
     private Component.HasPresentations component;

@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.security.entity.AttributePermissionVariant;
 import com.haulmont.cuba.gui.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.shared.ui.label.ContentMode;
 
 import java.util.Iterator;
 
@@ -30,8 +31,8 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
             @Override
             public Component generateCell(MultiplePermissionTarget target) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
-//                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
-//                vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
+                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
+                vLabel.setContentMode(ContentMode.HTML);
 
                 int i = 0;
                 StringBuilder builder = new StringBuilder();
@@ -52,7 +53,7 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
                         i++;
                     }
                 }
-//                vLabel.setValue(builder.toString());
+                vLabel.setValue(builder.toString());
 
                 return label;
             }

@@ -12,14 +12,10 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 
-//import com.haulmont.cuba.web.AppUI;
-
 /**
- * <p>$Id$</p>
- *
  * @author shishov
+ * @version $Id$
  */
-
 public class ChangeSubstUserAction extends AbstractAction {
     private User user;
 
@@ -33,10 +29,12 @@ public class ChangeSubstUserAction extends AbstractAction {
         return "icons/ok.png";
     }
 
+    @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
         final App app = App.getInstance();
         App.getInstance().getWindowManager().checkModificationsAndCloseAll(
                 new Runnable() {
+                    @Override
                     public void run() {
                         app.getWindowManager().closeAll();
                         try {
@@ -53,6 +51,7 @@ public class ChangeSubstUserAction extends AbstractAction {
                     }
                 },
                 new Runnable() {
+                    @Override
                     public void run() {
                         doRevert();
                     }

@@ -20,6 +20,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class AggregationContainerOrderedWrapper /*extends ContainerOrderedWrapper
         implements AggregationContainer*/
+    // vaadin7 Aggregation
 {
 //    public AggregationContainerOrderedWrapper(Container toBeWrapped) {
 //        super(toBeWrapped);

@@ -15,7 +15,8 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -35,10 +36,11 @@ public class LinkColumnHelper {
 
     public static void initColumn(Table table, final String propertyName, final Handler handler) {
         final CollectionDatasource ds = table.getDatasource();
-        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx(propertyName);
-       /* final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath(propertyName);
+        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+            @Override
             public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                 final Instance enclosingEntity = ds.getItem(itemId);
                 if (enclosingEntity != null) {
@@ -47,20 +49,23 @@ public class LinkColumnHelper {
                     Instance nestedEntity = enclosingEntity;
                     for (int i = 0; i < props.length - 1; i++) {
                         nestedEntity = (Instance) nestedEntity.getValue(props[i]);
-                        if (nestedEntity == null) break;
+                        if (nestedEntity == null) {
+                            break;
+                        }
                     }
                     final Object value = (nestedEntity == null) ? null : nestedEntity.getValue(props[props.length - 1]);
                     if (value != null) {
                         String str;
                         Datatype datatype = Datatypes.get(value.getClass());
                         if (datatype != null) {
-                            str = datatype.format(value, UserSessionProvider.getLocale());
+                            str = datatype.format(value, AppBeans.get(UserSessionSource.class).getLocale());
                         } else {
                             str = value.toString();
                         }
 
                         Button button = new Button(str,
                                 new Button.ClickListener() {
+                                    @Override
                                     public void buttonClick(Button.ClickEvent event) {
                                         handler.onClick((Entity) enclosingEntity);
                                     }
@@ -71,13 +76,13 @@ public class LinkColumnHelper {
                 }
                 return new Label();
             }
-        });*/
+        });
     }
 
     public static void removeColumn(Table table, final String propertyName) {
         final CollectionDatasource ds = table.getDatasource();
-        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx(propertyName);
-//        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
-//        vTable.removeGeneratedColumn(nameProperty);
+        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath(propertyName);
+        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        vTable.removeGeneratedColumn(nameProperty);
     }
 }

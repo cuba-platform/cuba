@@ -16,6 +16,10 @@ import com.vaadin.ui.Button;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * @author
+ * @version $Id$
+ */
 class SelectAction implements Button.ClickListener {
     private Window.Lookup window;
 

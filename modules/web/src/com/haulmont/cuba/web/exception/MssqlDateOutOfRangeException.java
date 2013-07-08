@@ -6,14 +6,12 @@
 
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
 import com.vaadin.server.ErrorEvent;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
@@ -62,7 +60,7 @@ public class MssqlDateOutOfRangeException implements ExceptionHandler {
     }
 
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        String msg = MessageProvider.formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
-        app.getAppUI().showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
+        String msg = AppBeans.get(Messages.class).formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
+        app.getWindowManager().showNotification(msg, IFrame.NotificationType.WARNING);
     }
 }

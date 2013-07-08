@@ -50,6 +50,8 @@ import javax.annotation.ManagedBean;
 @Scope("prototype")
 public class LinkHandler {
 
+//    vaadin7 LinkHandler
+
     public static final String NAME = "cuba_LinkHandler";
     /*
     protected Log log = LogFactory.getLog(getClass());

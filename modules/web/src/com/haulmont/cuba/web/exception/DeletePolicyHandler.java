@@ -6,13 +6,13 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DeletePolicyException;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
 import com.vaadin.server.ErrorEvent;
-//import com.vaadin.terminal.Terminal;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,19 +48,22 @@ public class DeletePolicyHandler implements ExceptionHandler {
     }
 
     protected void doHandle(String message, App app) {
+        Messages messages = AppBeans.get(Messages.class);
+
         String localizedEntityName;
         MetaClass metaClass = recognizeMetaClass(message);
         if (metaClass != null) {
             String entityName = metaClass.getName();
-            localizedEntityName = MessageProvider.getMessage(metaClass.getJavaClass(),
+            localizedEntityName = messages.getMessage(metaClass.getJavaClass(),
                     entityName.substring(entityName.lastIndexOf("$") + 1));
         } else {
             localizedEntityName = "";
         }
-        String msg = MessageProvider.getMessage(getClass(), "deletePolicy.message");
-        String references = MessageProvider.getMessage(getClass(), "deletePolicy.references.message");
-        app.getAppUI().showNotification(msg + "<br>" + references + " \"" + localizedEntityName + "\"",
-                Notification.TYPE_ERROR_MESSAGE);
+        String msg = messages.getMessage(getClass(), "deletePolicy.message");
+        String references = messages.getMessage(getClass(), "deletePolicy.references.message");
+
+        msg += "<br>" + references + " \"" + localizedEntityName + "\"";
+        app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 
     protected MetaClass recognizeMetaClass(String message) {
@@ -68,7 +71,7 @@ public class DeletePolicyHandler implements ExceptionHandler {
                 .matcher(message);
         if (matcher.find()) {
             String entityName = matcher.group(1);
-            return MetadataProvider.getSession().getClass(entityName);
+            return AppBeans.get(Metadata.class).getClass(entityName);
         } else {
             return null;
         }

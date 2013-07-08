@@ -53,6 +53,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
             initExceptionHandlers(true);
 
+//            vaadin7 LinkHandler
 //            if (linkHandler != null) {
 //                linkHandler.handle();
 //                linkHandler = null;

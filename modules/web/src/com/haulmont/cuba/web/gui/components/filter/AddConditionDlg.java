@@ -103,8 +103,6 @@ public class AddConditionDlg extends Window {
         tree.setItemCaptionPropertyId(MODEL_PROPERTY_IDS.get(0));
         tree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
 
-//        Tree fakeTree = getFakeTree();
-
         treePanel.setContent(tree);
         treePanel.setSizeFull();
 
@@ -142,83 +140,6 @@ public class AddConditionDlg extends Window {
         tree.setValue(model.rootItemIds().iterator().next());
         tree.focus();
     }
-
-//    private Tree getFakeTree() {
-//        final Object[][] planets = new Object[][]{
-//            new Object[]{"Mercury"},
-//            new Object[]{"Venus"},
-//            new Object[]{"Earth", "The Moon"},
-//            new Object[]{"Mars", "Phobos", "Deimos"},
-//            new Object[]{"Jupiter", "Io", "Europa", "Ganymedes",
-//                    "Callisto"},
-//            new Object[]{"Saturn",  "Titan", "Tethys", "Dione",
-//                    "Rhea", "Iapetus"},
-//            new Object[]{"Uranus",  "Miranda", "Ariel", "Umbriel",
-//                    "Titania", "Oberon"},
-//            new Object[]{"Neptune", "Triton", "Proteus", "Nereid",
-//                    "Larissa"}};
-//        Tree fakeTree = new Tree();
-//
-//        fakeTree.setImmediate(true);
-//
-//        fakeTree.setPropertyDataSource(new Property<String>() {
-//            String value;
-//
-//            @Override
-//            public String getValue() {
-//                return value;
-//            }
-//
-//            @Override
-//            public void setValue(String newValue) throws ReadOnlyException {
-//                value = newValue;
-//            }
-//
-//            @Override
-//            public Class<String> getType() {
-//                return String.class;
-//            }
-//
-//            @Override
-//            public boolean isReadOnly() {
-//                return false;
-//            }
-//
-//            @Override
-//            public void setReadOnly(boolean newStatus) {
-//            }
-//        });
-//
-//        for (Object[] planet1 : planets) {
-//            String planet = (String) (planet1[0]);
-//            fakeTree.addItem(planet);
-//
-//            if (planet1.length == 1) {
-//                // The planet has no moons so make it a leaf.
-//                fakeTree.setChildrenAllowed(planet, false);
-//            } else {
-//                // Add children (moons) under the planets.
-//                for (int j = 1; j < planet1.length; j++) {
-//                    String moon = (String) planet1[j];
-//
-//                    // Add the item as a regular item.
-//                    fakeTree.addItem(moon);
-//
-//                    // Set it to be a child.
-//                    fakeTree.setParent(moon, planet);
-//
-//                    // Make the moons look like leaves.
-//                    fakeTree.setChildrenAllowed(moon, false);
-//                }
-//
-//                // Expand the subtree.
-//                fakeTree.expandItemsRecursively(planet);
-//            }
-//        }
-//
-//        fakeTree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-//        return fakeTree;
-//    }
 
     private void initButtonsLayout(HorizontalLayout buttonsLayout) {
         buttonsLayout.setWidth("100%");

@@ -11,7 +11,7 @@ import com.haulmont.cuba.gui.app.core.credits.CreditsItem;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LinkButton;
-import com.vaadin.server.ExternalResource;
+import com.haulmont.cuba.web.AppUI;
 
 /**
  * @author krivopustov
@@ -24,7 +24,7 @@ public class CreditsFrameCompanion implements CreditsFrame.Companion {
         button.setAction(new AbstractAction("webpage") {
             @Override
             public void actionPerform(Component component) {
-//                AppUI.getInstance().getAppWindow().open(new ExternalResource(item.getWebPage()), "_blank");
+                AppUI.getCurrent().getPage().open(item.getWebPage(), "_blank");
             }
         });
     }

@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.components.FlowBoxLayout;
 //@ClientWidget(VFlowLayout.class)
 public class WebFlowBoxLayout /*extends WebVBoxLayout implements FlowBoxLayout*/ {
 
+    // vaadin7 Under construction
    /* public WebFlowBoxLayout() {
         setHeight("100%");
     }*/

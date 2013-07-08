@@ -6,11 +6,10 @@
 package com.haulmont.cuba.web.app.ui.core.server;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
+import javax.inject.Inject;
 import java.util.Map;
 
 /**
@@ -19,13 +18,12 @@ import java.util.Map;
  */
 public class ServerBrowser extends AbstractWindow {
 
+    @Inject
+    protected Table serversTable;
+
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        Table table = getComponent("servers");
-        table.addAction(new RefreshAction(table));
-
-//        com.vaadin.ui.Table impl = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
-//        impl.setPageLength(10);
+        serversTable.addAction(new RefreshAction(serversTable));
     }
 }
