@@ -7,12 +7,14 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
+import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableState;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.shared.AbstractFieldState;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +26,26 @@ import java.util.Set;
 public class CubaTable extends com.vaadin.ui.Table {
 
     protected ActionManager shortcutsManager = new ActionManager();
+
+    @Override
+    protected CubaTableState getState() {
+        return (CubaTableState) super.getState();
+    }
+
+    @Override
+    protected CubaTableState getState(boolean markAsDirty) {
+        return (CubaTableState) super.getState(markAsDirty);
+    }
+
+    public boolean isTextSelectionEnabled() {
+        return getState(false).textSelectionEnabled;
+    }
+
+    public void setTextSelectionEnabled(boolean textSelectionEnabled) {
+        if (isTextSelectionEnabled() != textSelectionEnabled) {
+            getState(true).textSelectionEnabled = textSelectionEnabled;
+        }
+    }
 
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {

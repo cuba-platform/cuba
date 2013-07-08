@@ -13,8 +13,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.entity.*;
+import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,9 +52,8 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-//        vaadin7
-//        CubaTable vaadinAttrTable = (CubaTable) WebComponentsHelper.unwrap(attributesTable);
-//        vaadinAttrTable.setTextSelectionEnabled(true);
+        CubaTable vaadinAttrTable = (CubaTable) WebComponentsHelper.unwrap(attributesTable);
+        vaadinAttrTable.setTextSelectionEnabled(true);
 
         attributesTable.setItemClickAction(editAttributeAction);
         attrDs.addListener(new CollectionDsListenerAdapter<ManagedBeanAttribute>() {

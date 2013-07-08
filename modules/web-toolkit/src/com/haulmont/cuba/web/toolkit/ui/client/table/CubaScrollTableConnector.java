@@ -9,9 +9,11 @@ package com.haulmont.cuba.web.toolkit.ui.client.table;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.table.TableState;
 
 /**
  * @author devyatkin
@@ -21,8 +23,22 @@ import com.vaadin.shared.ui.Connect;
 public class CubaScrollTableConnector extends TableConnector {
 
     @Override
+    public CubaTableState getState() {
+        return (CubaTableState) super.getState();
+    }
+
+    @Override
     public CubaScrollTableWidget getWidget() {
         return (CubaScrollTableWidget) super.getWidget();
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("textSelectionEnabled")) {
+            getWidget().textSelectionEnabled = getState().textSelectionEnabled;
+        }
     }
 
     @Override

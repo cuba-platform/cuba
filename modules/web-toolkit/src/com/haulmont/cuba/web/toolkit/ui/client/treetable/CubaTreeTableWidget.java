@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VTreeTable;
 
@@ -19,6 +20,8 @@ import com.vaadin.client.ui.VTreeTable;
 public class CubaTreeTableWidget extends VTreeTable {
 
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
+
+    protected boolean textSelectionEnabled = false;
 
     @Override
     protected VScrollTableBody createScrollBody() {
@@ -48,6 +51,15 @@ public class CubaTreeTableWidget extends VTreeTable {
                 super.initCellWithWidget(w, align, style, sorted, td);
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
+            }
+
+            @Override
+            protected void initCellWithText(String text, char align, String style, boolean textIsHTML,
+                                            boolean sorted, String description, TableCellElement td) {
+                super.initCellWithText(text, align, style, textIsHTML, sorted, description, td);
+
+                Element tdElement = td.cast();
+                Tools.textSelectionEnable(tdElement, textSelectionEnabled);
             }
 
             @Override

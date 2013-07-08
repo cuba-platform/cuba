@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
+import com.haulmont.cuba.web.toolkit.ui.client.treetable.CubaTreeTableState;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -17,6 +18,26 @@ import com.vaadin.data.util.HierarchicalContainer;
  * @version $Id$
  */
 public class CubaTreeTable extends com.vaadin.ui.TreeTable {
+
+    @Override
+    protected CubaTreeTableState getState() {
+        return (CubaTreeTableState) super.getState();
+    }
+
+    @Override
+    protected CubaTreeTableState getState(boolean markAsDirty) {
+        return (CubaTreeTableState) super.getState(markAsDirty);
+    }
+
+    public boolean isTextSelectionEnabled() {
+        return getState(false).textSelectionEnabled;
+    }
+
+    public void setTextSelectionEnabled(boolean textSelectionEnabled) {
+        if (isTextSelectionEnabled() != textSelectionEnabled) {
+            getState(true).textSelectionEnabled = textSelectionEnabled;
+        }
+    }
 
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {

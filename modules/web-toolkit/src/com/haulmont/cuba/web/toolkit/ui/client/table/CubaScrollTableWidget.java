@@ -11,6 +11,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VScrollTable;
@@ -26,6 +27,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
     protected ShortcutActionHandler shortcutHandler;
+
+    protected boolean textSelectionEnabled = false;
 
     protected CubaScrollTableWidget() {
         // handle shortcuts
@@ -103,6 +106,15 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 super.initCellWithWidget(w, align, style, sorted, td);
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
+            }
+
+            @Override
+            protected void initCellWithText(String text, char align, String style, boolean textIsHTML,
+                                            boolean sorted, String description, TableCellElement td) {
+                super.initCellWithText(text, align, style, textIsHTML, sorted, description, td);
+
+                Element tdElement = td.cast();
+                Tools.textSelectionEnable(tdElement, textSelectionEnabled);
             }
 
             @Override

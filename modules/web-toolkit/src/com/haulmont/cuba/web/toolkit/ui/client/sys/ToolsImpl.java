@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.sys;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
 /**
@@ -13,6 +14,13 @@ import com.google.gwt.dom.client.Element;
  * @version $Id$
  */
 public class ToolsImpl {
+
+    protected JavaScriptObject falseFunction;
+
+    public ToolsImpl() {
+        this.falseFunction = initFalseFunction();
+    }
+
     public native int parseSize(String s) /*-{
         try {
             var result = /^(\d+)(%|px|em|ex|in|cm|mm|pt|pc)$/.exec(s);
@@ -62,17 +70,26 @@ public class ToolsImpl {
         return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "checkbox");
     }-*/;
 
-    public native void textSelectionEnable(Element el, boolean b) /*-{
+    protected native JavaScriptObject initFalseFunction() /*-{
+        return function () {
+            return false;
+        };
+    }-*/;
+
+    protected native void setTextSelectionEnable(Element el) /*-{
+        el.addEventListener("selectstart", this.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::falseFunction, true);
+    }-*/;
+
+    protected native void setTextSelectionDisable(Element el) /*-{
+        el.removeEventListener("selectstart", this.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::falseFunction, true);
+    }-*/;
+
+    public native void textSelectionEnable(Element el, boolean enable) /*-{
+        var ToolsImpl = this;
 
         // CAUTION Do not use jQuery disable text selection pack, it caches html nodes and we have memory leaks
 
-        if (typeof document.falseFunction != "function") {
-            document.falseFunction = function() {
-                return false;
-            };
-        }
-
-        var walkEach = function(element, action) {
+        var walkEach = function (element, action) {
             if (typeof element != "undefined") {
                 action(element);
                 var children = element.childNodes;
@@ -84,52 +101,14 @@ public class ToolsImpl {
             }
         };
 
-        if (!b) {
-            // disable
-            if ($wnd.jQuery.browser.mozilla) {
-                walkEach(el, function(x) {
-                    if (typeof x.style == "undefined")
-                        x.style = {};
-                    x.style.MozUserSelect = "none";
-                });
-            } else if ($wnd.jQuery.browser.msie) {
-                walkEach(el, function(x) {
-                    x.onselectstart = document.falseFunction;
-                });
-            } else if ($wnd.jQuery.browser.webkit) {
-                walkEach(el, function(x) {
-                    if (typeof x.style == "undefined")
-                        x.style = {};
-                    x.style.webkitUserSelect = "none";
-                });
-            } else {
-                walkEach(el, function(x) {
-                    x.addEventListener("selectstart", document.falseFunction, true);
-                });
-            }
+        if (!enable) {
+            walkEach(el, function (x) {
+                ToolsImpl.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::setTextSelectionDisable(Lcom/google/gwt/dom/client/Element;)(x);
+            });
         } else {
-            // enable
-            if ($wnd.jQuery.browser.mozilla) {
-                walkEach(el, function(x) {
-                    if (typeof x.style == "undefined")
-                        x.style = {};
-                    x.style.MozUserSelect = "";
-                });
-            } else if ($wnd.jQuery.browser.msie) {
-                walkEach(el, function(x) {
-                    x.onselectstart = null;
-                });
-            } else if ($wnd.jQuery.browser.webkit) {
-                walkEach(el, function(x) {
-                    if (typeof x.style == "undefined")
-                        x.style = {};
-                    x.style.webkitUserSelect = "";
-                });
-            } else {
-                walkEach(el, function(x) {
-                    x.removeEventListener("selectstart", document.falseFunction, true);
-                });
-            }
+            walkEach(el, function (x) {
+                ToolsImpl.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::setTextSelectionEnable(Lcom/google/gwt/dom/client/Element;)(x);
+            });
         }
 
         walkEach = null;

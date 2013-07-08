@@ -24,10 +24,6 @@
         <listener-class>com.haulmont.cuba.web.sys.WebAppContextLoader</listener-class>
     </listener>
 
-    <listener>
-        <listener-class>com.haulmont.cuba.web.gui.executors.impl.BackgroundWorkerListener</listener-class>
-    </listener>
-
     <servlet>
         <servlet-name>cuba_servlet</servlet-name>
         <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet</servlet-class>

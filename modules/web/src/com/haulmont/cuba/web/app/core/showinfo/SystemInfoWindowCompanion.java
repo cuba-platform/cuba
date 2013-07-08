@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.app.core.showinfo;
 import com.haulmont.cuba.gui.app.core.showinfo.SystemInfoWindow;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 
 /**
  * @author artamonov
@@ -17,9 +18,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
     @Override
     public void initInfoTable(Table infoTable) {
-//        vaadin7
-//        com.haulmont.cuba.web.toolkit.ui.Table webTable =
-//                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(infoTable);
-//        webTable.setTextSelectionEnabled(true);
+        CubaTable webTable = (CubaTable) WebComponentsHelper.unwrap(infoTable);
+        webTable.setTextSelectionEnabled(true);
     }
 }

@@ -7,6 +7,33 @@
     <inherits name="com.vaadin.DefaultWidgetSet"/>
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset"/>
 
+    <!-- Text selection enable functions deffered binding -->
+
+    <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImplIE">
+        <when-type-is class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl"/>
+        <any>
+            <when-property-is name="user.agent" value="ie7"/>
+            <when-property-is name="user.agent" value="ie8"/>
+            <when-property-is name="user.agent" value="ie9"/>
+            <when-property-is name="user.agent" value="ie10"/>
+        </any>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImplMozilla">
+        <when-type-is class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl"/>
+        <any>
+            <when-property-is name="user.agent" value="gecko"/>
+            <when-property-is name="user.agent" value="gecko1_8"/>
+        </any>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImplWebkit">
+        <when-type-is class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl"/>
+        <any>
+            <when-property-is name="user.agent" value="safari"/>
+        </any>
+    </replace-with>
+
     <!--
      Uncomment the following to compile the widgetset for one browser only.
      This can reduce the GWT compilation time significantly when debugging.

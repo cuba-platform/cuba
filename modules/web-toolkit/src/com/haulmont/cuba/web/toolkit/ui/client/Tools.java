@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxWidget;
@@ -21,7 +22,7 @@ public class Tools {
     private static ToolsImpl impl;
 
     static {
-        impl = new ToolsImpl();
+        impl = GWT.create(ToolsImpl.class);
     }
 
     public static int parseSize(String s) {
