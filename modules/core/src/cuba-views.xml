@@ -172,4 +172,10 @@
         <property name="lastUsedTs"/>
       </view>
 
+    <view class="com.haulmont.cuba.security.entity.LoggedEntity"
+          name="loggedAttrs">
+        <property name="attributes" view="_local"/>
+        <property name="auto"/>
+        <property name="manual"/>
+    </view>
 </views>

@@ -17,6 +17,7 @@
         <item id="sys$LockInfo.browse"/>
         <item id="entityInspector.browse"/>
         <item id="sys$ScheduledTask.browse"/>
+        <item id="entityLog"/>
     </menu>
 
 </menu-config>

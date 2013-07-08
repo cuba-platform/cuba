@@ -120,4 +120,7 @@
 
     <screen id="license"
             template="/com/haulmont/cuba/gui/app/core/credits/license-window.xml"/>
+
+    <screen id="entityLog"
+            template="/com/haulmont/cuba/gui/app/core/entitylog/entity-log-browse.xml"/>
 </screen-config>

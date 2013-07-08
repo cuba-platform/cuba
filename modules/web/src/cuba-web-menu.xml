@@ -17,6 +17,7 @@
         <item id="-"/>
         <item id="jmxcontrol$DisplayMbeans"/>
         <item id="logcontrol$ServerLog"/>
+        <item id="entityLog"/>
     </menu>
 
     <menu id="help">
