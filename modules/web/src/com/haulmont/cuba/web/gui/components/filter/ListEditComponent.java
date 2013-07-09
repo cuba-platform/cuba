@@ -385,11 +385,11 @@ public class ListEditComponent extends CustomField {
                 lookup.addListener(new ValueListener() {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null) {
+                        if (value != null && !containsName(value)) {
                             String str = addEntityInstance((Instance) value);
                             addItemLayout(value, str);
-                            lookup.setValue(null);
                         }
+                        lookup.setValue(null);
                     }
                 });
 
@@ -407,11 +407,11 @@ public class ListEditComponent extends CustomField {
                         new ValueListener() {
                             @Override
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                if (value != null) {
+                                if (value != null && !containsName(value)) {
                                     String str = addEntityInstance((Instance) value);
                                     addItemLayout(value, str);
-                                    picker.setValue(null);
                                 }
+                                picker.setValue(null);
                             }
                         }
                 );
@@ -426,11 +426,11 @@ public class ListEditComponent extends CustomField {
                 lookup.addListener(new ValueListener() {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null) {
+                        if (value != null && !containsName(value)) {
                             String str = addRuntimeEnumValue((String) value);
                             addItemLayout(value, str);
-                            lookup.setValue(null);
                         }
+                        lookup.setValue(null);
                     }
                 });
 
@@ -448,11 +448,11 @@ public class ListEditComponent extends CustomField {
                 lookup.addListener(new ValueListener() {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null) {
+                        if (value != null && !containsName(value)) {
                             String str = addEnumValue((Enum) value);
                             addItemLayout(value, str);
-                            lookup.setValue(null);
                         }
+                        lookup.setValue(null);
                     }
                 });
 
@@ -522,6 +522,12 @@ public class ListEditComponent extends CustomField {
             contentLayout.addComponent(bottomLayout);
 
             setContent(contentLayout);
+        }
+
+        private boolean containsName(Object value) {
+            String name = ((Instance) value).getInstanceName();
+            Map<Object, String> values = ListEditWindow.this.values;
+            return values.containsValue(name);
         }
 
         private String addRuntimeEnumValue(String value) {
