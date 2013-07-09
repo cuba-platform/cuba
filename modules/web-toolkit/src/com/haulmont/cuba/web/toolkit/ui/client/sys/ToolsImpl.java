@@ -102,13 +102,9 @@ public class ToolsImpl {
         };
 
         if (!enable) {
-            walkEach(el, function (x) {
-                ToolsImpl.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::setTextSelectionDisable(Lcom/google/gwt/dom/client/Element;)(x);
-            });
+            walkEach(el, ToolsImpl.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::setTextSelectionDisable(Lcom/google/gwt/dom/client/Element;));
         } else {
-            walkEach(el, function (x) {
-                ToolsImpl.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::setTextSelectionEnable(Lcom/google/gwt/dom/client/Element;)(x);
-            });
+            walkEach(el, ToolsImpl.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::setTextSelectionEnable(Lcom/google/gwt/dom/client/Element;));
         }
 
         walkEach = null;
