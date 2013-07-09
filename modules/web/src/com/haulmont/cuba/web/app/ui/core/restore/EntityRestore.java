@@ -73,7 +73,6 @@ public class EntityRestore extends AbstractWindow {
             }
         });
         primaryFilter.setVisible(false);
-        tablePanel = getComponent("table-panel");
         entities.setOptionsMap(getEntitiesLookupFieldOptions());
 
         Window layout = getComponent();
