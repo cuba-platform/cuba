@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.app.ui.sendingmessage.browse;
+package com.haulmont.cuba.gui.app.core.sendingmessage.browse;
 
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.gui.components.AbstractWindow;

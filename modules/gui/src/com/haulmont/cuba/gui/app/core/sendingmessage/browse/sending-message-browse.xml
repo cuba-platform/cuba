@@ -5,8 +5,8 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
-        class="com.haulmont.cuba.web.app.ui.sendingmessage.browse.SendingMessageBrowser"
-        messagesPack="com.haulmont.cuba.web.app.ui.sendingmessage"
+        class="com.haulmont.cuba.gui.app.core.sendingmessage.browse.SendingMessageBrowser"
+        messagesPack="com.haulmont.cuba.gui.app.core.sendingmessage"
         lookupComponent="table"
         caption="msg://sendingMessage.browser.caption">
     <dsContext>

@@ -123,4 +123,6 @@
 
     <screen id="entityLog"
             template="/com/haulmont/cuba/gui/app/core/entitylog/entity-log-browse.xml"/>
+    <screen id="sys$SendingMessage.browse"
+            template="/com/haulmont/cuba/gui/app/core/sendingmessage/browse/sending-message-browse.xml"/>
 </screen-config>

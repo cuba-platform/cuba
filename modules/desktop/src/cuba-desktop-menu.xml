@@ -14,6 +14,7 @@
         <item id="-"/>
         <item id="sec$UserSessionEntity.browse"/>
         <item id="sys$FileDescriptor.browse"/>
+        <item id="sys$SendingMessage.browse"/>
         <item id="sys$LockInfo.browse"/>
         <item id="entityInspector.browse"/>
         <item id="sys$ScheduledTask.browse"/>

@@ -49,9 +49,6 @@
     <screen id="sec$ScreenHistory.browse"
             template="/com/haulmont/cuba/web/app/ui/security/history/screen-history-browse.xml"/>
 
-    <screen id="sys$SendingMessage.browse"
-            template="/com/haulmont/cuba/web/app/ui/sendingmessage/browse/sending-message-browse.xml"/>
-
     <screen id="sys$Categories.browse"
             template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
 
