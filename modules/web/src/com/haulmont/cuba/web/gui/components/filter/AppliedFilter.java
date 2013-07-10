@@ -17,6 +17,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.ComponentContainer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -71,6 +72,15 @@ public class AppliedFilter {
 
         if (value instanceof Enum)
             return messages.getMessage((Enum) value);
+
+        if (value instanceof ArrayList){
+            ArrayList<String> names = new ArrayList<>();
+            ArrayList list= ((ArrayList) value);
+            for (Object obj : list){
+                names.add(((Instance) obj).getInstanceName());
+            }
+            return names.toString();
+        }
 
         Datatype datatype = Datatypes.get(value.getClass());
         if (datatype != null)
