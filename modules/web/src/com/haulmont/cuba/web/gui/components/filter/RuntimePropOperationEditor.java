@@ -39,7 +39,7 @@ public class RuntimePropOperationEditor extends OperationEditor implements HasAc
             }
         });
 
-        layout.addComponent(btn);
+        impl.addComponent(btn);
     }
 
     private void setCaption(Button btn) {

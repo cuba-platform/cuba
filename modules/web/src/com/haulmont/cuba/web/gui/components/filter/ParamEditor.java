@@ -12,30 +12,30 @@ import com.vaadin.ui.*;
  * @author krivopustov
  * @version $Id$
  */
-public class ParamEditor extends CustomComponent implements AbstractCondition.Listener {
+public class ParamEditor extends HorizontalLayout implements AbstractCondition.Listener {
 
     private AbstractCondition<Param> condition;
-    private HorizontalLayout layout;
     private Component field;
 
     public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation) {
         this.condition = condition;
 
-        layout = new HorizontalLayout();
-        layout.setSpacing(true);
-        layout.setSizeFull();
-        setCompositionRoot(layout);
+        setSpacing(true);
+        setWidth("100%");
+        setHeight("-1px");
 
         if (condition.getParam() != null) {
             if (showOperation) {
                 Label opLab = new Label(condition.getOperationCaption());
-                layout.addComponent(opLab);
+                addComponent(opLab);
             }
             field = condition.getParam().createEditComponent();
             if (field instanceof Field) {
                 ((Field) field).setRequired(condition.isRequired());
             }
-            layout.addComponent(field);
+            field.setWidth("100%");
+            addComponent(field);
+            setExpandRatio(field, 1);
         }
 
         condition.addListener(this);
@@ -44,10 +44,12 @@ public class ParamEditor extends CustomComponent implements AbstractCondition.Li
     @Override
     public void paramChanged() {
         if (field != null) {
-            layout.removeComponent(field);
+            removeComponent(field);
         }
         field = condition.getParam().createEditComponent();
-        layout.addComponent(field);
+        field.setWidth("100%");
+        addComponent(field);
+        setExpandRatio(field, 1);
     }
 
     @Override

@@ -27,11 +27,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTable
-    extends
-        WebAbstractTable<CubaTable>
-    implements
-        Component.Wrapper {
+public class WebTable extends WebAbstractTable<CubaTable> implements Component.Wrapper {
 
     public WebTable() {
         component = new CubaTable() {
@@ -48,14 +44,6 @@ public class WebTable
                 }
             }
 
-//            vaadin7
-//            @Override
-//            protected boolean changeVariables(Map<String, Object> variables) {
-//                boolean b = super.changeVariables(variables);
-//                b = handleSpecificVariables(variables) || b;
-//                return b;
-//            }
-
             @Override
             public void paintContent(PaintTarget target) throws PaintException {
                 super.paintContent(target);
@@ -69,6 +57,11 @@ public class WebTable
     protected void initComponent(CubaTable component) {
         super.initComponent(component);
         setSortable(true);
+    }
+
+    @Override
+    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+        component.setEditableColumns(editableColumns.toArray());
     }
 
     @Override

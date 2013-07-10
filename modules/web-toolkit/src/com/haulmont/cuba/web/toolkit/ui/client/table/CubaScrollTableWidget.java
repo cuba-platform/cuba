@@ -7,12 +7,19 @@
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
 import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
+import com.vaadin.client.Focusable;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.Util;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VScrollTable;
 
@@ -29,6 +36,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean textSelectionEnabled = false;
+
+    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaScrollTableWidget");
 
     protected CubaScrollTableWidget() {
         // handle shortcuts
@@ -86,6 +95,9 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     protected class CubaScrollTableBody extends VScrollTableBody {
 
+        protected Widget lastFocusedWidget = null;
+
+        @Override
         protected VScrollTableRow createRow(UIDL uidl, char[] aligns2) {
             if (uidl.hasAttribute("gen_html")) {
                 // This is a generated row.
@@ -101,11 +113,86 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
 
             @Override
-            protected void initCellWithWidget(Widget w, char align,
+            protected void initCellWithWidget(final Widget w, char align,
                                               String style, boolean sorted, TableCellElement td) {
                 super.initCellWithWidget(w, align, style, sorted, td);
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
+                if (w instanceof HasFocusHandlers) {
+                    ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
+                        @Override
+                        public void onFocus(FocusEvent event) {
+                            lastFocusedWidget = w;
+
+                            if (logger.enabled) {
+                                logger.log("onFocus: Focus widget in column: " + childWidgets.indexOf(w));
+                            }
+
+                            if (!isSelected()) {
+                                deselectAll();
+
+                                toggleSelection();
+                                setRowFocus(CubaScrollTableRow.this);
+                            }
+                        }
+                    });
+                }
+            }
+
+            protected void handleFocusForWidget() {
+                if (lastFocusedWidget == null)
+                    return;
+
+                logger.log("Handle focus");
+
+                if (isSelected()) {
+                    if (lastFocusedWidget instanceof Focusable) {
+                        ((Focusable) lastFocusedWidget).focus();
+
+                        if (logger.enabled) {
+                            logger.log("onSelect: Focus widget");
+                        }
+                    } else if (lastFocusedWidget instanceof com.google.gwt.user.client.ui.Focusable) {
+                        ((com.google.gwt.user.client.ui.Focusable) lastFocusedWidget).setFocus(true);
+
+                        if (logger.enabled) {
+                            logger.log("onSelect: Focus GWT widget");
+                        }
+                    }
+                }
+
+                lastFocusedWidget = null;
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
+                super.onBrowserEvent(event);
+
+                if (event.getTypeInt() == Event.ONMOUSEUP)
+                    handleFocusForWidget();
+            }
+
+            @Override
+            protected Element getEventTargetTdOrTr(Event event) {
+                final Element eventTarget = event.getEventTarget().cast();
+                final Element eventTargetParent = DOM.getParent(eventTarget);
+                Widget widget = Util.findWidget(eventTarget, null);
+                final Element thisTrElement = getElement();
+
+                if (widget != this) {
+                    if (event.getTypeInt() == Event.ONMOUSEUP) {
+                        if (widget instanceof Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
+                            lastFocusedWidget = widget;
+                        }
+                    }
+                    // find cell
+                    Element tdElement = eventTargetParent;
+                    while (DOM.getParent(tdElement) != thisTrElement) {
+                        tdElement = DOM.getParent(tdElement);
+                    }
+                    return tdElement;
+                }
+                return getTdOrTr(eventTarget);
             }
 
             @Override

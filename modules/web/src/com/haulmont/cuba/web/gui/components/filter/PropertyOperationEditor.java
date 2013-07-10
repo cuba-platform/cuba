@@ -40,7 +40,7 @@ public class PropertyOperationEditor extends OperationEditor {
             }
         });
 
-        select.setSizeFull();
-        layout.addComponent(select);
+        select.setWidth("100%");
+        impl.addComponent(select);
     }
 }

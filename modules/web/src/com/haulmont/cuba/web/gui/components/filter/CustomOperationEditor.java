@@ -41,7 +41,7 @@ public class CustomOperationEditor extends OperationEditor implements HasAction<
             }
         });
 
-        layout.addComponent(btn);
+        impl.addComponent(btn);
     }
 
     @Override

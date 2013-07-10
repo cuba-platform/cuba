@@ -7,17 +7,13 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractOperationEditor;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class OperationEditor extends AbstractOperationEditor<CustomComponent> {
-
-    protected Layout layout;
+public class OperationEditor extends AbstractOperationEditor<VerticalLayout> {
 
     public OperationEditor(AbstractCondition condition) {
         super(condition);
@@ -25,14 +21,12 @@ public class OperationEditor extends AbstractOperationEditor<CustomComponent> {
 
     @Override
     protected void createEditor() {
-      impl =  new Editor();
+        impl = new Editor();
     }
 
-    protected class Editor extends CustomComponent {
+    protected class Editor extends VerticalLayout {
         public Editor() {
-            layout = new VerticalLayout();
-            layout.setSizeFull();
-            setCompositionRoot(layout);
+            setSizeFull();
         }
     }
 }

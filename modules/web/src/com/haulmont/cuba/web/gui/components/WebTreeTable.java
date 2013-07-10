@@ -34,11 +34,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTreeTable
-    extends
-        WebAbstractTable<CubaTreeTable>
-    implements
-        TreeTable, Component.Wrapper {
+public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements TreeTable, Component.Wrapper {
 
     protected String hierarchyProperty;
     
@@ -59,6 +55,11 @@ public class WebTreeTable
         // if showProperty is null, the Tree will use itemId.toString
         MetaProperty metaProperty = hierarchyProperty == null ? null : datasource.getMetaClass().getProperty(hierarchyProperty);
         component.setItemCaptionPropertyId(metaProperty);
+    }
+
+    @Override
+    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+        component.setEditableColumns(editableColumns.toArray());
     }
 
     @Override
@@ -109,9 +110,7 @@ public class WebTreeTable
 
     @Override
     public int getLevel(Object itemId) {
-//        vaadin7
-//        return component.getLevel(itemId);
-        return 0;
+        return component.getLevel(itemId);
     }
 
     @Override

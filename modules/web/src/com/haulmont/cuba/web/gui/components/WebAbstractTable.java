@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -47,6 +48,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -191,8 +193,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
-//        vaadin7
-//        component.setEditableColumns(editableColumns.toArray());
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -1386,10 +1387,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
                 initDateField(field, metaProperty, column.getXmlDescriptor());
             }
 
-//            if (field instanceof CheckBox) {
-//                vaadin7
-//                ((CheckBox) field).setLayoutCaption(true);
-//            }
+            if (field instanceof com.vaadin.ui.CheckBox) {
+                field.setCaption("");
+                field.setWidth(Sizeable.SIZE_UNDEFINED, Sizeable.Unit.PIXELS);
+            }
         }
     }
 

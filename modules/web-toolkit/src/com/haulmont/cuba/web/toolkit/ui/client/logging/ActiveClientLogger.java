@@ -25,6 +25,6 @@ public class ActiveClientLogger extends ClientLogger {
 
     @Override
     public void log(String message) {
-        Logger.getLogger(name).log(new LogRecord(Level.INFO, message));
+        Logger.getLogger(name).log(new LogRecord(Level.INFO, "[" + name + "] " + message));
     }
 }

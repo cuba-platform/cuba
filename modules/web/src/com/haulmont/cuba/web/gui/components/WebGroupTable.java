@@ -44,9 +44,9 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
     public WebGroupTable() {
         component = new CubaGroupTable() {
             @Override
+            @SuppressWarnings({"unchecked"})
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {
-                    @SuppressWarnings({"unchecked"})
                     final Entity item = datasource.getItem(itemId);
                     final String resURL = styleProvider.getItemIcon(item);
 
@@ -56,21 +56,6 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
                 }
             }
 
-//            vaadin7
-//            @Override
-//            protected boolean changeVariables(Map<String, Object> variables) {
-//                boolean b = super.changeVariables(variables);
-//                b = handleSpecificVariables(variables) || b;
-//                return b;
-//            }
-
-//            vaadin7
-//            @Override
-//            public void paintContent(PaintTarget target) throws PaintException {
-//                super.paintContent(target);
-//                paintSpecificContent(target);
-//            }
-
             @Override
             public void groupBy(Object[] properties) {
                 groupBy(properties, rerender);
@@ -78,8 +63,12 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
         };
         initComponent(component);
 
-//        vaadin7
         component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
+    }
+
+    @Override
+    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+        component.setEditableColumns(editableColumns.toArray());
     }
 
     @Override
