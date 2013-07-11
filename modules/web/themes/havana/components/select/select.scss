@@ -83,6 +83,7 @@
   }
 
   .#{$primaryStyleName}.v-readonly {
+    padding-right: 0;
     border-left: $comboBoxBorderReadonly;
 
     .#{$primaryStyleName}-button {

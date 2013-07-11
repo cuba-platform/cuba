@@ -12,7 +12,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.*;
@@ -29,9 +28,11 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author devyatkin
@@ -59,7 +60,7 @@ public class ListEditComponent extends Picker {
         contentPanel.setOpaque(false);
         actionsPanel.setOpaque(false);
 
-        pickerButton = new JButton(App.getInstance().getResources().getIcon("pickerfield/img/lookup-btn.png"));
+        pickerButton = new JButton(App.getInstance().getResources().getIcon("/components/pickerfield/images/lookup-btn.png"));
         addButton(pickerButton);
         this.itemClass = itemClass;
 
@@ -71,7 +72,7 @@ public class ListEditComponent extends Picker {
                 window.setVisible(true);
             }
         });
-        clearButton = new JButton(App.getInstance().getResources().getIcon("pickerfield/img/clear-btn.png"));
+        clearButton = new JButton(App.getInstance().getResources().getIcon("/components/pickerfield/images/clear-btn.png"));
         clearButton.addActionListener(
                 new ActionListener() {
                     @Override

@@ -473,7 +473,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                     return "";
                 }
             });
-            openButton.setIcon("pickerfield/img/open-btn.png");
+            openButton.setIcon("/components/pickerfield/images/open-btn.png");
             composition.add(openButton);
             openButton.setVisible(false);
 
