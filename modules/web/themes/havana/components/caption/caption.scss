@@ -20,4 +20,8 @@
       padding-bottom: 2px;
     }
   }
+
+  .v-slot > .#{$primaryStyleName} {
+    line-height: 25px;
+  }
 }

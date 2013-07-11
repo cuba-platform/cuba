@@ -9,15 +9,13 @@
 @mixin havana-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
   @include base-gridlayout($primaryStyleName);
 
-  .#{$primaryStyleName} {
-    .v-caption {
-      margin-right: 5px;
+  .#{$primaryStyleName}-layoutslot > .v-caption {
       line-height: 25px;
+      margin-right: 5px;
       vertical-align: top;
-    }
+  }
 
-    .v-caption.caption-indicators {
-      margin-right: 0;
-    }
+  .#{$primaryStyleName}-layoutslot > .v-caption.caption-indicators {
+    margin-right: 0;
   }
 }

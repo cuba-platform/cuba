@@ -8,8 +8,7 @@
 
 @mixin havana-label($primaryStyleName: v-label) {
   .#{$primaryStyleName} {
-    padding-top: 1px;
-    padding-bottom: 1px;
+    line-height: 25px;
   }
   .#{$primaryStyleName}.h2 {
     font-family: verdana, tahoma, sans-serif;

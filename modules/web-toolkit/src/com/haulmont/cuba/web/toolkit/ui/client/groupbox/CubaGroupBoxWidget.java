@@ -54,6 +54,7 @@ public class CubaGroupBoxWidget extends VPanel {
 
         legend.appendChild(captionNode);
 
+        fieldset.setClassName(CLASSNAME + "-fieldset");
         fieldset.appendChild(legend);
         fieldset.appendChild(descriptionNode);
         fieldset.appendChild(contentNode);
