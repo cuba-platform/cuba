@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.01.2009 14:58:19
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -18,8 +13,11 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-public class TreeLoader extends ComponentLoader
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class TreeLoader extends ComponentLoader {
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
 
@@ -29,6 +27,7 @@ public class TreeLoader extends ComponentLoader
         this.factory = factory;
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException
     {

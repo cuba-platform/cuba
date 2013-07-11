@@ -2,11 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 03.08.2010 17:55:07
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -18,6 +13,10 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class WidgetsTreeLoader extends TreeLoader {
 
     public WidgetsTreeLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -25,7 +24,8 @@ public class WidgetsTreeLoader extends TreeLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
         WidgetsTree component = factory.createComponent("widgetsTree");
 
         assignXmlDescriptor(component, element);
@@ -33,6 +33,7 @@ public class WidgetsTreeLoader extends TreeLoader {
         loadVisible(component, element);
 
         loadWidth(component, element);
+        loadHeight(component, element);
 
         loadStyleName(component, element);
 
