@@ -59,6 +59,11 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     }
 
     @Override
+    protected boolean isEmpty() {
+        return getValue() == null;
+    }
+
+    @Override
     public void focus() {
         dateField.getDateField().focus();
     }
