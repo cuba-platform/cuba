@@ -486,6 +486,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
             Button searchBtn = new Button();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
+            searchBtn.addStyleName("cuba-fts-button");
             searchBtn.setIcon(new VersionedThemeResource("app/images/fts-button.png"));
             searchBtn.addClickListener(
                     new Button.ClickListener() {
