@@ -62,7 +62,7 @@ public class DefaultApp extends App implements ConnectionListener {
             afterLoggedIn();
         } else {
             log.debug("Closing all windows");
-//            getWindowManager().closeAll();
+            getWindowManager().closeAll();
 
             UIView window = createLoginWindow();
             showView(window);
