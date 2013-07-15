@@ -5,6 +5,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -53,6 +55,24 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
                     return resURL == null ? null : WebComponentsHelper.getResource(resURL);
                 } else {
                     return null;
+                }
+            }
+
+            @Override
+            protected String formatGroupPropertyValue(Object groupId, Object groupValue) {
+                if (groupPropertyValueFormatter == null) {
+                    String caption = null;
+                    if (groupId != null) {
+                        Datatype<Object> datatype = (Datatype<Object>) Datatypes.get(groupValue.getClass());
+                        if (datatype != null)
+                            caption = datatype.format(groupValue);
+                    }
+                    if (caption == null)
+                        caption = groupValue == null ? "" : groupValue.toString();
+
+                    return caption;
+                } else {
+                    return groupPropertyValueFormatter.format(groupId, groupValue);
                 }
             }
 
