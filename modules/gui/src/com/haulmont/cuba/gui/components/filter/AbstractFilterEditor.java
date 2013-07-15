@@ -143,6 +143,9 @@ public abstract class AbstractFilterEditor {
         Pattern inclPattern = Pattern.compile(inclRe);
 
         for (MetaProperty property : metaClass.getProperties()) {
+            Map<String,Object> propertyAnnotation = property.getAnnotations();
+            if (propertyAnnotation.size() == 0 || propertyAnnotation.get("persistent") == null)
+                continue;
             if (property.getRange().getCardinality().isMany())
                 continue;
             if (defaultExcludedProps.contains(property.getName()))
