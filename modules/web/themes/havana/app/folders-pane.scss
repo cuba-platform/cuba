@@ -14,19 +14,17 @@
       border: 0;
       overflow: auto;
 
-      .v-tree-node {
-        .cuba-clickable-folder span {
-          cursor: pointer;
-        }
+      .v-tree-node-cuba-clickable-folder .v-tree-node-caption span {
+        cursor: pointer;
+      }
 
-        .cuba-clickable-folder span:hover {
-          text-decoration: underline;
-          background: transparent none;
-        }
+      .v-tree-node-cuba-clickable-folder .v-tree-node-caption span:hover {
+        text-decoration: underline;
+        background: transparent none;
+      }
 
-        .cuba-nonclickable-folder span:hover {
-          background: transparent none;
-        }
+      .v-tree-node-cuba-nonclickable-folder .v-tree-node-caption span:hover {
+        background: transparent none;
       }
     }
   }
