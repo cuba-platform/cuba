@@ -6,13 +6,14 @@
 
 package com.haulmont.cuba.gui.data;
 
+import javax.annotation.Nullable;
+
 /**
  * Listener to filter value in change events
  *
  * @param <T> type of event source
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public interface ValueChangingListener<T> {
 
@@ -25,5 +26,6 @@ public interface ValueChangingListener<T> {
      * @param value     New value
      * @return Filtered value
      */
-    Object valueChanging(T source, String property, Object prevValue, Object value);
+    @Nullable
+    Object valueChanging(T source, String property, @Nullable Object prevValue, @Nullable Object value);
 }
