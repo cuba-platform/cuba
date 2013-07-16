@@ -512,6 +512,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     protected String getLoggingTag(String prefix) {
+        // if not binded to context
+        if (dsContext == null)
+            return id;
+
         String windowId = "";
         WindowContext windowContext = dsContext.getWindowContext();
         if (windowContext != null) {
