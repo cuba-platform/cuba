@@ -9,6 +9,8 @@ import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nullable;
+
 /**
  * @param <T>
  * @author tulupov
@@ -17,7 +19,7 @@ import com.haulmont.cuba.core.entity.Entity;
 public class DsListenerAdapter<T extends Entity> implements DatasourceListener<T> {
 
     @Override
-    public void itemChanged(Datasource<T> ds, T prevItem, T item) {
+    public void itemChanged(Datasource<T> ds, @Nullable T prevItem, @Nullable T item) {
     }
 
     @Override
@@ -25,6 +27,6 @@ public class DsListenerAdapter<T extends Entity> implements DatasourceListener<T
     }
 
     @Override
-    public void valueChanged(T source, String property, Object prevValue, Object value) {
+    public void valueChanged(T source, String property, @Nullable Object prevValue, @Nullable Object value) {
     }
 }
