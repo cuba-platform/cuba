@@ -512,16 +512,15 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     protected String getLoggingTag(String prefix) {
-        // if not binded to context
-        if (dsContext == null)
-            return id;
-
         String windowId = "";
-        WindowContext windowContext = dsContext.getWindowContext();
-        if (windowContext != null) {
-            IFrame frame = windowContext.getFrame();
-            if (frame != null)
-                windowId = ComponentsHelper.getFullFrameId(windowContext.getFrame());
+        if (dsContext != null) {
+            WindowContext windowContext = dsContext.getWindowContext();
+            if (windowContext != null) {
+                IFrame frame = windowContext.getFrame();
+                if (frame != null) {
+                    windowId = ComponentsHelper.getFullFrameId(windowContext.getFrame());
+                }
+            }
         }
         String tag = prefix + " " + id;
         if (StringUtils.isNotBlank(windowId))
