@@ -458,7 +458,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         }
 
         if (webConfig.getUseLightHeader()) {
-            Image appIcon = getLogoImage();
+            Component appIcon = getLogoImage();
             if (appIcon != null) {
                 appIcon.setStyleName("cuba-app-icon");
                 layout.addComponent(appIcon);
@@ -615,7 +615,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         titleLayout.setMargin(new MarginInfo(false, true, false, true));
         titleLayout.setSpacing(true);
 
-        Image logoImage = getLogoImage();
+        Component logoImage = getLogoImage();
         if (logoImage != null) {
             titleLayout.addComponent(logoImage);
             titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
@@ -663,7 +663,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     @Nullable
-    protected Image getLogoImage() {
+    protected Component getLogoImage() {
         String logoImagePath = messages.getMainMessage("application.logoImage");
         if ("application.logoImage".equals(logoImagePath))
             return null;
