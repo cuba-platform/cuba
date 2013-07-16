@@ -5,14 +5,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
@@ -36,8 +36,7 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
-        implements GroupTable, Component.Wrapper {
+public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements GroupTable, Component.Wrapper {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
@@ -55,24 +54,6 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
                     return resURL == null ? null : WebComponentsHelper.getResource(resURL);
                 } else {
                     return null;
-                }
-            }
-
-            @Override
-            protected String formatGroupPropertyValue(Object groupId, Object groupValue) {
-                if (groupPropertyValueFormatter == null) {
-                    String caption = null;
-                    if (groupId != null) {
-                        Datatype<Object> datatype = (Datatype<Object>) Datatypes.get(groupValue.getClass());
-                        if (datatype != null)
-                            caption = datatype.format(groupValue);
-                    }
-                    if (caption == null)
-                        caption = groupValue == null ? "" : groupValue.toString();
-
-                    return caption;
-                } else {
-                    return groupPropertyValueFormatter.format(groupId, groupValue);
                 }
             }
 
@@ -656,6 +637,8 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
 
     protected class DefaultGroupPropertyValueFormatter implements CubaGroupTable.GroupPropertyValueFormatter {
 
+        protected Messages messages = AppBeans.get(Messages.class);
+
         @Override
         public String format(Object groupId, Object value) {
             if (value == null) {
@@ -668,17 +651,20 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable>
                 if (column.getFormatter() != null) {
                     return column.getFormatter().format(value);
                 } else if (!StringUtils.isEmpty(captionProperty)) {
-                    return propertyPath.getRange().isDatatype() ?
-                            propertyPath.getRange().asDatatype().format(value) :
-                            String.valueOf(((Instance) value).getValue(captionProperty));
+                    if (propertyPath.getRange().isDatatype()) {
+                        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+                        return propertyPath.getRange().asDatatype().format(value, uss.getLocale());
+                    } else {
+                        return String.valueOf(((Instance) value).getValue(captionProperty));
+                    }
                 }
             }
             final Range range = propertyPath.getRange();
             if (range.isDatatype()) {
-                return range.asDatatype().format(value);
+                return range.asDatatype().format(value, AppBeans.get(UserSessionSource.class).getLocale());
             } else if (range.isEnum()) {
                 String nameKey = value.getClass().getSimpleName() + "." + value.toString();
-                return MessageProvider.getMessage(value.getClass(), nameKey);
+                return messages.getMessage(value.getClass(), nameKey);
             } else {
                 if (value instanceof Instance) {
                     return ((Instance) value).getInstanceName();

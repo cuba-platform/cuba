@@ -19,7 +19,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -67,8 +66,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
-        extends WebAbstractList<T> implements Table {
+public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends WebAbstractList<T> implements Table {
 
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
@@ -1102,11 +1100,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table>
                     String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
                     if (!StringUtils.isEmpty(captionProperty)) {
                         final Object value = getValue();
-                        return this.propertyPath.getRange().isDatatype() ?
-                                this.propertyPath.getRange().asDatatype().format(value) :
-                                value != null
-                                        ? String.valueOf(((Instance) value).getValue(captionProperty))
-                                        : null;
+                        if (this.propertyPath.getRange().isDatatype()) {
+                            UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+                            return this.propertyPath.getRange().asDatatype().format(value, uss.getLocale());
+                        } else {
+                            return value != null ? String.valueOf(((Instance) value).getValue(captionProperty)) : null;
+                        }
                     }
                 }
             }
