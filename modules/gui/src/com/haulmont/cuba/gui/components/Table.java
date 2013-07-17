@@ -72,6 +72,9 @@ public interface Table
     boolean isAllowMultiStringCells();
     void setAllowMultiStringCells(boolean value);
 
+    boolean isAllowPopupMenu();
+    void setAllowPopupMenu(boolean value);
+
     /**
      * Repaint UI representation of the table (columns, generated columns) without refreshing the table data
      */

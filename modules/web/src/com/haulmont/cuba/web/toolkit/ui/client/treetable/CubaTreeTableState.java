@@ -15,4 +15,5 @@ import com.vaadin.shared.ui.treetable.TreeTableState;
 public class CubaTreeTableState extends TreeTableState {
 
     public boolean textSelectionEnabled = false;
+    public boolean allowPopupMenu = true;
 }

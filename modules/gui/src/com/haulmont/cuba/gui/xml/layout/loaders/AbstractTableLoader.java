@@ -69,6 +69,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadPresentations(component, element);
 
         loadActions(component, element);
+        loadAllowPopupMenu(component,element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
@@ -116,6 +117,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         return component;
     }
+    protected void loadAllowPopupMenu(T table,Element element){
+        final String allowPopupMenu = element.attributeValue("allowPopupMenu");
+        if (!StringUtils.isBlank(allowPopupMenu))
+            table.setAllowPopupMenu(BooleanUtils.toBoolean(allowPopupMenu));
+    }
+
 
     protected void loadRowsCount(T table, Element element) {
         Element rowsCountEl = element.element("rowsCount");

@@ -47,6 +47,15 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         }
     }
 
+    public boolean isAllowPopupMenu(){
+        return getState(false).allowPopupMenu;
+    }
+
+    public void setAllowPopupMenu(boolean allowPopupMenu){
+        if (isAllowPopupMenu() != allowPopupMenu)
+            getState(true).allowPopupMenu = allowPopupMenu;
+    }
+
     @Override
     public boolean isCaption(Object itemId) {
         return items instanceof TreeTableContainer

@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
@@ -30,6 +31,13 @@ public class CubaTreeTableWidget extends VTreeTable {
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
     protected boolean textSelectionEnabled = false;
+    protected boolean allowPopupMenu = true;
+
+    @Override
+    protected void handleBodyContextMenu(ContextMenuEvent event) {
+        if (allowPopupMenu)
+            super.handleBodyContextMenu(event);
+    }
 
     @Override
     protected VScrollTableBody createScrollBody() {
@@ -99,6 +107,12 @@ public class CubaTreeTableWidget extends VTreeTable {
                     }
                 }
                 return getTdOrTr(eventTarget);
+            }
+
+            @Override
+            public void showContextMenu(int left, int top) {
+                if (allowPopupMenu)
+                    super.showContextMenu(left,top);
             }
 
             @Override

@@ -71,6 +71,16 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
             new TableDsWrapper(datasource, columns);
     }
 
+    @Override
+    public boolean isAllowPopupMenu() {
+        return component.isAllowPopupMenu();
+    }
+
+    @Override
+    public void setAllowPopupMenu(boolean value) {
+        component.setAllowPopupMenu(value);
+    }
+
     protected class TableDsWrapper extends CollectionDsWrapper
             implements AggregationContainer {
 

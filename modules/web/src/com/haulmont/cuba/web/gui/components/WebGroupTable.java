@@ -9,10 +9,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
@@ -675,6 +672,16 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         }
 
         return columns;
+    }
+
+    @Override
+    public boolean isAllowPopupMenu() {
+        return component.isAllowPopupMenu();
+    }
+
+    @Override
+    public void setAllowPopupMenu(boolean value) {
+        component.setAllowPopupMenu(value);
     }
 
     private class GroupAggregationCells {

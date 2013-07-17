@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
 import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasFocusHandlers;
@@ -36,6 +37,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean textSelectionEnabled = false;
+    protected boolean isAllowPopupMenu = true;
 
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaScrollTableWidget");
 
@@ -91,6 +93,12 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 }
             }
         }
+    }
+
+    @Override
+    public void handleBodyContextMenu(ContextMenuEvent event){
+        if (isAllowPopupMenu)
+            super.handleBodyContextMenu(event);
     }
 
     protected class CubaScrollTableBody extends VScrollTableBody {
@@ -214,6 +222,12 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                 if (isWidget)
                     container.addClassName(WIDGET_CELL_CLASSNAME);
+            }
+
+            @Override
+            public void showContextMenu(int left, int top) {
+                if (isAllowPopupMenu)
+                    super.showContextMenu(left, top);
             }
         }
     }

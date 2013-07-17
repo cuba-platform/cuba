@@ -58,6 +58,16 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
     }
 
     @Override
+    public boolean isAllowPopupMenu() {
+        return component.isAllowPopupMenu();
+    }
+
+    @Override
+    public void setAllowPopupMenu(boolean value) {
+        component.setAllowPopupMenu(value);
+    }
+
+    @Override
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
         component.setEditableColumns(editableColumns.toArray());
     }

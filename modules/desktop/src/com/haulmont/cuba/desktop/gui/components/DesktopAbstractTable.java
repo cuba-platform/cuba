@@ -67,6 +67,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected static final int DEFAULT_ROW_MARGIN = 4;
 
+
+    protected boolean allowPopupMenu = true;
     protected MigLayout layout;
     protected JPanel panel;
     protected JPanel topPanel;
@@ -140,7 +142,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             ListSelectionModel model = impl.getSelectionModel();
                             model.setSelectionInterval(rowNumber, rowNumber);
                             // show popup menu
-                            createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+                            if (allowPopupMenu)
+                                createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
                         }
                     }
                 }
@@ -675,6 +678,15 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 impl.removeColumn(tableColumn);
         }
     }
+
+    public boolean isAllowPopupMenu() {
+        return allowPopupMenu;
+    }
+
+    public void setAllowPopupMenu(boolean allowPopupMenu) {
+        this.allowPopupMenu = allowPopupMenu;
+    }
+
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
     }
@@ -1247,7 +1259,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
         return null;
     }
-    
+
     @Override
     public void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener) {
     }

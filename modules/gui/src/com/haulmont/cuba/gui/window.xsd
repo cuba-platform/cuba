@@ -662,6 +662,7 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
+        <xs:attribute name="allowPopupMenu" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- Button -->
@@ -774,6 +775,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attributeGroup ref="isTableComponent"/>
+        <xs:attribute name="allowPopupMenu" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- GroupTable -->

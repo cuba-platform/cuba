@@ -52,6 +52,15 @@ public class CubaTable extends com.vaadin.ui.Table {
         }
     }
 
+    public boolean isAllowPopupMenu(){
+        return getState(false).allowPopupMenu;
+    }
+
+    public void setAllowPopupMenu(boolean allowPopupMenu){
+        if (isAllowPopupMenu() != allowPopupMenu)
+            getState(true).allowPopupMenu = allowPopupMenu;
+    }
+
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
         if (property instanceof PropertyValueStringify)

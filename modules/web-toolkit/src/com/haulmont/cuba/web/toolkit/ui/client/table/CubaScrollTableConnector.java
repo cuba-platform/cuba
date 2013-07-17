@@ -13,7 +13,6 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.shared.ui.Connect;
-import com.vaadin.shared.ui.table.TableState;
 
 /**
  * @author devyatkin
@@ -38,6 +37,9 @@ public class CubaScrollTableConnector extends TableConnector {
 
         if (stateChangeEvent.hasPropertyChanged("textSelectionEnabled")) {
             getWidget().textSelectionEnabled = getState().textSelectionEnabled;
+        }
+        if (stateChangeEvent.hasPropertyChanged("allowPopupMenu")){
+            getWidget().isAllowPopupMenu = getState().allowPopupMenu;
         }
     }
 
