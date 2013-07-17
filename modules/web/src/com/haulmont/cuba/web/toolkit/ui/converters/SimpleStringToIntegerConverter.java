@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui.converters;
 
 import com.vaadin.data.util.converter.Converter;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Locale;
 
@@ -19,12 +20,20 @@ public class SimpleStringToIntegerConverter implements Converter<String, Integer
     @Override
     public Integer convertToModel(String value, Class<? extends Integer> targetType, Locale locale)
             throws ConversionException {
+        if (StringUtils.isEmpty(value)) {
+            return null;
+        }
+
         return Integer.parseInt(value);
     }
 
     @Override
     public String convertToPresentation(Integer value, Class<? extends String> targetType, Locale locale)
             throws ConversionException {
+        if (value == null) {
+            return "";
+        }
+
         return String.valueOf(value);
     }
 
