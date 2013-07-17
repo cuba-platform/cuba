@@ -1098,14 +1098,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                     return column.getFormatter().format(getValue());
                 } else if (column.getXmlDescriptor() != null) {
                     String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
-                    if (!StringUtils.isEmpty(captionProperty)) {
+                    if (!StringUtils.isEmpty(captionProperty) && propertyPath.getRange().isClass()) {
                         final Object value = getValue();
-                        if (this.propertyPath.getRange().isDatatype()) {
-                            UserSessionSource uss = AppBeans.get(UserSessionSource.class);
-                            return this.propertyPath.getRange().asDatatype().format(value, uss.getLocale());
-                        } else {
-                            return value != null ? String.valueOf(((Instance) value).getValue(captionProperty)) : null;
-                        }
+                        return value != null ? String.valueOf(((Instance) value).getValue(captionProperty)) : null;
                     }
                 }
             }

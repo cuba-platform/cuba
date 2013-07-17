@@ -8,11 +8,10 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
@@ -30,6 +29,7 @@ import com.vaadin.server.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -628,7 +628,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 
     protected class AggregatableGroupPropertyValueFormatter extends DefaultGroupPropertyValueFormatter {
         @Override
-        public String format(Object groupId, Object value) {
+        public String format(Object groupId, @Nullable Object value) {
             String formattedValue = super.format(groupId, value);
             int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
             return String.format("%s (%d)", formattedValue == null ? "" : formattedValue, count);
@@ -640,7 +640,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         protected Messages messages = AppBeans.get(Messages.class);
 
         @Override
-        public String format(Object groupId, Object value) {
+        public String format(Object groupId, @Nullable Object value) {
             if (value == null) {
                 return "";
             }
@@ -650,28 +650,13 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
                 String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
                 if (column.getFormatter() != null) {
                     return column.getFormatter().format(value);
-                } else if (!StringUtils.isEmpty(captionProperty)) {
-                    if (propertyPath.getRange().isDatatype()) {
-                        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
-                        return propertyPath.getRange().asDatatype().format(value, uss.getLocale());
-                    } else {
-                        return String.valueOf(((Instance) value).getValue(captionProperty));
-                    }
+                } else if (!StringUtils.isEmpty(captionProperty) && propertyPath.getRange().isClass()) {
+                    return String.valueOf(((Instance) value).getValue(captionProperty));
                 }
             }
-            final Range range = propertyPath.getRange();
-            if (range.isDatatype()) {
-                return range.asDatatype().format(value, AppBeans.get(UserSessionSource.class).getLocale());
-            } else if (range.isEnum()) {
-                String nameKey = value.getClass().getSimpleName() + "." + value.toString();
-                return messages.getMessage(value.getClass(), nameKey);
-            } else {
-                if (value instanceof Instance) {
-                    return ((Instance) value).getInstanceName();
-                } else {
-                    return value.toString();
-                }
-            }
+
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+            return metadataTools.format(value, propertyPath.getMetaProperty());
         }
     }
 

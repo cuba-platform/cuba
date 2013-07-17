@@ -19,6 +19,7 @@ import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -402,6 +403,6 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     }
 
     public interface GroupPropertyValueFormatter {
-        String format(Object groupId, Object value);
+        String format(Object groupId, @Nullable Object value);
     }
 }
