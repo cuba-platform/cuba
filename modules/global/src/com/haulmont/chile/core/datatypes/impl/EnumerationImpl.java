@@ -16,8 +16,14 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
-public class EnumerationImpl<T extends Enum> implements Enumeration<T>
-{
+/**
+ *
+ * @param <T>
+ * @author krivopustov
+ * @version $Id$
+ */
+public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
+
     private Class<T> javaClass;
     protected Map<Object, Object> enumValues;
 
@@ -25,14 +31,17 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T>
         this.javaClass = javaClass;
     }
 
+    @Override
     public String getName() {
         return null;
     }
 
+    @Override
     public Class<T> getJavaClass() {
         return javaClass;
     }
 
+    @Override
     public String format(T value) {
         if (value == null) return null;
 
@@ -40,10 +49,12 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T>
         return String.valueOf(v);
     }
 
+    @Override
     public String format(T value, Locale locale) {
         return format(value);
     }
 
+    @Override
     public T parse(String value) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
@@ -52,6 +63,7 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T>
         return getByIntValue(v);
     }
 
+    @Override
     public T parse(String value, Locale locale) throws ParseException {
         return parse(value);
     }
@@ -59,7 +71,7 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T>
     protected T getByIntValue(Integer v) {
         if (enumValues == null) {
             final Enum[] enums = javaClass.getEnumConstants();
-            enumValues = new HashMap<Object, Object>();
+            enumValues = new HashMap<>();
             for (Enum enumValue : enums) {
                 final Object i = ((EnumClass) enumValue).getId();
                 enumValues.put(i, enumValue);
@@ -69,6 +81,7 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T>
         return (T) enumValues.get(v);
     }
 
+    @Override
     public T read(ResultSet resultSet, int index) throws SQLException {
         final int v = resultSet.getInt(index);
         if (resultSet.wasNull()) return null;
@@ -76,14 +89,17 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T>
         return getByIntValue(v);
     }
 
+    @Override
     public void write(PreparedStatement statement, int index, T value) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int getSqlType() {
         return Types.INTEGER;
     }
 
+    @Override
     public List<Enum> getValues() {
         final Enum[] enums = javaClass.getEnumConstants();
         return Arrays.asList(enums);

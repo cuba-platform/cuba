@@ -6,12 +6,12 @@
 
 package com.haulmont.chile.core.model.impl;
 
+import com.haulmont.chile.core.model.Range;
+
 /**
  * @author abramov
  * @version $Id$
  */
-import com.haulmont.chile.core.model.Range;
-
 public abstract class AbstractRange implements Range {
 
 	private Cardinality cardinality = Cardinality.NONE;
@@ -21,10 +21,12 @@ public abstract class AbstractRange implements Range {
 		super();
 	}
 
+    @Override
 	public Cardinality getCardinality() {
 		return cardinality;
 	}
 
+    @Override
 	public boolean isOrdered() {
 		return ordered;
 	}
@@ -36,5 +38,4 @@ public abstract class AbstractRange implements Range {
 	public void setOrdered(boolean ordered) {
 		this.ordered = ordered;
 	}
-
 }
