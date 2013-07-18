@@ -35,11 +35,6 @@ public class AppUI extends UI implements ErrorHandler {
         }
     }
 
-    @Override
-    public void doInit(VaadinRequest request, int uiId) {
-        super.doInit(request, uiId);
-    }
-
     protected App createApplication() {
         String applicationClass = getApplicationClass();
         App application;

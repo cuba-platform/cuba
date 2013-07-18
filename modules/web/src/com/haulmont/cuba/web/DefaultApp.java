@@ -8,11 +8,14 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -85,25 +88,47 @@ public class DefaultApp extends App implements ConnectionListener {
      * @return Login form
      */
     protected UIView createLoginWindow() {
-        LoginWindow window = new LoginWindow(this, connection);
-
-//  vaadin7 use heartbeat
-//        Timer timer = createSessionPingTimer(false);
-//        if (timer != null)
-//            timers.add(timer, window);
-
-        return window;
+        return new LoginWindow(this, connection);
     }
 
     protected UIView createAppWindow() {
         AppWindow window = new AppWindow(connection);
 
-//  vaadin7 use heartbeat
-//        Timer timer = createSessionPingTimer(true);
-//        if (timer != null)
-//            timers.add(timer, appWindow);
+        CubaTimer timer = createSessionPingTimer();
+        if (timer != null) {
+            window.addTimer(timer);
+
+            timer.start();
+        }
 
         return window;
+    }
+
+    protected CubaTimer createSessionPingTimer() {
+        int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
+        int sessionPingPeriod = sessionExpirationTimeout / 3;
+        if (sessionPingPeriod > 0) {
+            CubaTimer timer = new CubaTimer();
+            timer.setRepeating(true);
+            timer.setDelay(sessionPingPeriod * 1000);
+            timer.addTimerListener(new CubaTimer.TimerListener() {
+                @Override
+                public void onTimer(CubaTimer timer) {
+                    log.debug("Ping session");
+                    UserSessionService service = AppBeans.get(UserSessionService.NAME);
+                    String message = service.getMessages();
+                    if (message != null) {
+                        App.getInstance().getWindowManager().showNotification(message, IFrame.NotificationType.ERROR);
+                    }
+                }
+
+                @Override
+                public void onStopTimer(CubaTimer timer) {
+                }
+            });
+            return timer;
+        }
+        return null;
     }
 
     /**
