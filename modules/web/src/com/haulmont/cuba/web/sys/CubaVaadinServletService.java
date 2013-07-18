@@ -74,8 +74,8 @@ public class CubaVaadinServletService extends VaadinServletService {
                     msgs.setCommunicationErrorCaption(messages.getMainMessage("communicationErrorCaption", locale));
                     msgs.setCommunicationErrorMessage(messages.getMainMessage("communicationErrorMessage", locale));
 
-                    msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredCaption", locale));
-                    msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredMessage", locale));
+                    msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredErrorCaption", locale));
+                    msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredErrorMessage", locale));
                 }
                 msgs.setOutOfSyncNotificationEnabled(false);
                 // todo replace with normal address from request
