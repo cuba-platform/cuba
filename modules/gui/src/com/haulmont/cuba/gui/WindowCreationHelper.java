@@ -47,7 +47,7 @@ public class WindowCreationHelper {
      * @param container frame
      */
     public static void applyUiPermissions(IFrame container) {
-        Window window = ComponentsHelper.getWindow(container);
+        Window window = container instanceof Window ? (Window) container : ComponentsHelper.getWindow(container);
         UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
         String screenId = window.getId();
