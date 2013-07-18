@@ -6,27 +6,31 @@
 
 package com.haulmont.cuba.gui.app.security.user.browse;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.app.UserManagementService;
-import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.swing.*;
-import javax.swing.text.DefaultEditorKit;
 import java.util.*;
 
 /**
@@ -64,34 +68,39 @@ public class UserBrowser extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
+        final boolean hasPermissionsToCreateUsers =
+                userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
+                        EntityOp.CREATE);
+
         usersDs.addListener(new DsListenerAdapter<User>() {
             @Override
             public void itemChanged(Datasource<User> ds, User prevItem, User item) {
-                if (usersTable.getSelected().size() > 1){
+                if (usersTable.getSelected().size() > 1) {
                     userTableCopyButton.setEnabled(false);
                     changePasswordButton.setEnabled(false);
                 } else {
-                    userTableCopyButton.setEnabled(true);
-                    changePasswordButton.setEnabled(true);
+                    userTableCopyButton.setEnabled(hasPermissionsToCreateUsers && item != null);
+                    changePasswordButton.setEnabled(item != null);
                 }
-                if (removeAction != null)
-                    removeAction.setEnabled(!(usersTable.getSelected().contains(userSession.getUser()) ||
-                            userSession.getCurrentOrSubstitutedUser().equals(item)));
+            }
+        });
+
+        usersTable.addAction(new RemoveAction(usersTable) {
+            @Override
+            public boolean isApplicableTo(Datasource.State state, Entity item) {
+                return super.isApplicableTo(state, item) && isNotCurrentUserSelected((User) item);
             }
         });
 
         Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiselect"));
-        if (multiSelect != null)
+        if (multiSelect != null) {
             usersTable.setMultiSelect(multiSelect);
-
-        boolean hasPermissionsToCreateUsers =
-                userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
-                        EntityOp.CREATE);
-
-        Action copy = usersTable.getAction("copy");
-        if (copy != null) {
-            copy.setEnabled(hasPermissionsToCreateUsers);
         }
+    }
+
+    protected boolean isNotCurrentUserSelected(User item) {
+        return !(usersTable.getSelected().contains(userSession.getUser()) ||
+                userSession.getCurrentOrSubstitutedUser().equals(item));
     }
 
     public void copy() {

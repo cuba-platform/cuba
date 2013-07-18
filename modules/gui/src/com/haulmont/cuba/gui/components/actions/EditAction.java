@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.03.11 17:20
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components.actions;
 
@@ -90,6 +85,7 @@ public class EditAction extends ItemTrackingAction {
     @Override
     public boolean isEnabled() {
         return super.isEnabled() &&
+                owner.getSelected().size() == 1 &&
                 userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
     }
 

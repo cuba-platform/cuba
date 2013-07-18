@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -1931,7 +1932,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class AddToSetAction extends AbstractAction {
+    private class AddToSetAction extends ItemTrackingAction {
         private Table table;
 
         private AddToSetAction(Table table) {
@@ -1965,7 +1966,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class RemoveFromSetAction extends AbstractAction {
+    private class RemoveFromSetAction extends ItemTrackingAction {
         private Table table;
 
         protected RemoveFromSetAction(Table table) {

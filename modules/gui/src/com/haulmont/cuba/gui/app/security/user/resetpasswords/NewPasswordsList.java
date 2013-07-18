@@ -26,12 +26,14 @@ public class NewPasswordsList extends AbstractWindow {
     @Inject
     protected CollectionDatasource<User, UUID> usersDs;
 
-    @Inject
     protected Map<User, String> passwords;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        getDialogParams().setResizable(true);
+        getDialogParams().setHeight(350);
 
         passwords = (Map<User, String>) params.get("passwords");
         for (User user : passwords.keySet()) {
@@ -54,7 +56,6 @@ public class NewPasswordsList extends AbstractWindow {
         });
     }
 
-    @SuppressWarnings("unused")
     public void close() {
         close(Window.CLOSE_ACTION_ID);
     }
