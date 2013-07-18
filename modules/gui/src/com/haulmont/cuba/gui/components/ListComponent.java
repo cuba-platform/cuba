@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.Collection;
 
@@ -19,10 +20,11 @@ public interface ListComponent extends Component, Component.BelongToFrame, Compo
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
 
+    @Nullable
     <T extends Entity> T getSingleSelected();
     <T extends Entity> Set<T> getSelected();
 
-    void setSelected(Entity item);
+    void setSelected(@Nullable Entity item);
     void setSelected(Collection<Entity> items);
 
     <T extends CollectionDatasource> T getDatasource();
