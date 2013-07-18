@@ -364,19 +364,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         public final void handleIntents() {
-            try {
-                synchronized (intents) {
-                    if (intents.size() > 0) {
-                        runnableTask.progress(intents);
-                        // notify listeners
-                        for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                            listener.onProgress(intents);
-                        }
-                        intents.clear();
+            synchronized (intents) {
+                if (intents.size() > 0) {
+                    runnableTask.progress(intents);
+                    // notify listeners
+                    for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                        listener.onProgress(intents);
                     }
+                    intents.clear();
                 }
-            } catch (Exception ex) {
-                runnableTask.handleException(taskException);
             }
         }
 
@@ -389,17 +385,14 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             try {
                 if (taskException == null) {
-                    try {
-                        runnableTask.done(result);
-                        // notify listeners
-                        for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                            listener.onDone(result);
-                        }
-                    } catch (Exception ex) {
-                        runnableTask.handleException(ex);
+                    runnableTask.done(result);
+                    // notify listeners
+                    for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                        listener.onDone(result);
                     }
-                } else
+                } else {
                     runnableTask.handleException(taskException);
+                }
             } finally {
                 if (finalizer != null) {
                     finalizer.run();

@@ -117,14 +117,10 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected final void process(List<T> chunks) {
-            try {
-                runnableTask.progress(chunks);
-                // Notify listeners
-                for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                    listener.onProgress(chunks);
-                }
-            } catch (Exception ex) {
-                runnableTask.handleException(ex);
+            runnableTask.progress(chunks);
+            // Notify listeners
+            for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                listener.onProgress(chunks);
             }
         }
 
@@ -136,14 +132,10 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             if (!isInterrupted) {
                 try {
                     if (this.taskException == null) {
-                        try {
-                            runnableTask.done(result);
-                            // Notify listeners
-                            for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                                listener.onDone(result);
-                            }
-                        } catch (Exception ex) {
-                            runnableTask.handleException(ex);
+                        runnableTask.done(result);
+                        // Notify listeners
+                        for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                            listener.onDone(result);
                         }
                     } else {
                         runnableTask.handleException(taskException);
