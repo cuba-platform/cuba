@@ -6,7 +6,7 @@
 
 // Version: $Id$
 
-@mixin havana-progressindicator($primaryStyleName: v-progressindicator) {
+@mixin havana-progressindicator($primaryStyleName: v-progressbar) {
   .#{$primaryStyleName} {
     background: #dfe2e4 url(images/progress-bg.gif);
     width: 150px;
