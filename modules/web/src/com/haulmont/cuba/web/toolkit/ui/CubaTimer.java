@@ -27,6 +27,9 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
 
     public CubaTimer() {
         registerRpc(this);
+        // hide on client
+        setWidth("0px");
+        setHeight("0px");
     }
 
     @Override

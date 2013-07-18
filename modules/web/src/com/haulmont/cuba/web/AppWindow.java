@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaClientManager;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
@@ -57,14 +58,15 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@SuppressWarnings("unused")
 public class AppWindow extends UIView implements UserSubstitutionListener {
 
     private static final long serialVersionUID = 7269808125566032433L;
 
     private Log log = LogFactory.getLog(getClass());
 
-    private CubaFileDownloader fileDownloader;
+    protected CubaClientManager clientManager;
+
+    protected CubaFileDownloader fileDownloader;
 
     protected CubaTimer workerTimer;
 
@@ -158,23 +160,24 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     private void updateClientSystemMessages() {
-        Map<String, String> localeMessages = new HashMap<>();
-//        vaadin7 need update locale messages after user logged in
-//        AppUI.CubaSystemMessages systemMessages = AppUI.compileSystemMessages(AppUI.getInstance().getLocale());
-//
-//        localeMessages.put("communicationErrorCaption", systemMessages.getCommunicationErrorCaption());
-//        localeMessages.put("communicationErrorMessage", systemMessages.getCommunicationErrorMessage());
-//
-//        localeMessages.put("authorizationErrorCaption", systemMessages.getAuthenticationErrorCaption());
-//        localeMessages.put("authorizationErrorMessage", systemMessages.getCommunicationErrorMessage());
-//
-//        localeMessages.put("blockUiMessage",systemMessages.getUiBlockingMessage());
-//
-//        getScriptHost().updateLocale(localeMessages);
+        CubaClientManager.SystemMessages msgs = new CubaClientManager.SystemMessages();
+        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+
+        msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", locale);
+        msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", locale);
+
+        msgs.sessionExpiredErrorCaption = messages.getMainMessage("sessionExpiredErrorCaption", locale);
+        msgs.sessionExpiredErrorMessage = messages.getMainMessage("sessionExpiredErrorMessage", locale);
+
+        msgs.authorizationErrorCaption = messages.getMainMessage("authorizationErrorCaption", locale);
+        msgs.authorizationErrorMessage = messages.getMainMessage("authorizationErrorMessage", locale);
+
+        clientManager.updateSystemMessagesLocale(msgs);
     }
 
     private void initStaticComponents() {
-//        addComponent(scriptHost);
+        clientManager = new CubaClientManager();
+        clientManager.extend(rootLayout);
 
         workerTimer = new CubaTimer();
         workerTimer.setId("BackgroundWorkerTimer");
@@ -185,7 +188,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         workerTimer.start();
 
         fileDownloader = new CubaFileDownloader();
-        rootLayout.addComponent(fileDownloader);
+        fileDownloader.extend(rootLayout);
     }
 
     /**

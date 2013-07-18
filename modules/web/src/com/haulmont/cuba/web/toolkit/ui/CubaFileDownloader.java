@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.downloader.CubaFileDownloaderClientRPC;
 import com.vaadin.server.*;
-import com.vaadin.ui.AbstractComponent;
 
 import javax.mail.internet.MimeUtility;
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
-public class CubaFileDownloader extends AbstractComponent {
+public class CubaFileDownloader extends AbstractExtension {
 
     public static final String DOWNLOAD_RESOURCE_PREFIX = "download-";
     public static final String VIEW_RESOURCE_PREFIX = "view-";
@@ -68,6 +67,11 @@ public class CubaFileDownloader extends AbstractComponent {
      */
     public boolean isOverrideContentType() {
         return overrideContentType;
+    }
+
+    @Override
+    public void extend(AbstractClientConnector target) {
+        super.extend(target);
     }
 
     @Override

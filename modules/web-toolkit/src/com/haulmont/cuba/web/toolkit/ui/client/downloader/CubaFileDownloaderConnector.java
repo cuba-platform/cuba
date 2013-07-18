@@ -6,17 +6,15 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.downloader;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
-import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.client.ServerConnector;
+import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -24,7 +22,7 @@ import com.vaadin.shared.ui.Connect;
  * @version $Id$
  */
 @Connect(CubaFileDownloader.class)
-public class CubaFileDownloaderConnector extends AbstractComponentConnector {
+public class CubaFileDownloaderConnector extends AbstractExtensionConnector {
 
     public CubaFileDownloaderConnector() {
         registerRpc(CubaFileDownloaderClientRPC.class, new CubaFileDownloaderClientRPC() {
@@ -41,8 +39,7 @@ public class CubaFileDownloaderConnector extends AbstractComponentConnector {
     }
 
     @Override
-    protected Widget createWidget() {
-        return GWT.create(Hidden.class);
+    protected void extend(ServerConnector target) {
     }
 
     public void downloadFileById(String resourceId) {
