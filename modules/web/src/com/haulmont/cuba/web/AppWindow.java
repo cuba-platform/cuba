@@ -148,9 +148,13 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         setSizeFull();
         setBaseStyle("cuba-app-window");
 
-        rootLayout = createLayout();
+        rootLayout = new VerticalLayout();
+
+        createLayout(rootLayout);
         initLayout();
+
         setContent(rootLayout);
+
         postInitLayout();
         initStartupLayout();
 
@@ -201,12 +205,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     /**
      * Creates root and enclosed layouts.
      * <br>Can be overridden in descendant to create an app-specific root layout
-     *
-     * @return AppUI layout
      */
-    protected VerticalLayout createLayout() {
-        final VerticalLayout layout = new VerticalLayout();
-
+    protected void createLayout(VerticalLayout layout) {
         layout.setMargin(false);
         layout.setSpacing(false);
         layout.setSizeFull();
@@ -269,8 +269,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         layout.addComponent(middleLayout);
         layout.setExpandRatio(middleLayout, 1);
-
-        return layout;
     }
 
     /**

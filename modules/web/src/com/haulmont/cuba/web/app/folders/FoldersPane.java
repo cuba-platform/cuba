@@ -175,8 +175,8 @@ public class FoldersPane extends VerticalLayout {
 
             Component appFoldersPane = createAppFoldersPane();
             if (appFoldersPane != null) {
-                appFoldersPane.setHeight("97%");
-                appFoldersPane.setWidth("96%");
+                appFoldersPane.setHeight("100%");
+                appFoldersPane.setWidth("100%");
                 if (isNeedFoldersTitle()) {
                     appFoldersLabel = new Label(messages.getMainMessage("folders.appFoldersRoot"));
                     appFoldersLabel.setStyleName("cuba-folders-pane-caption");
