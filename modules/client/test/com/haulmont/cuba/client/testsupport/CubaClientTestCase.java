@@ -46,6 +46,8 @@ public class CubaClientTestCase {
 
     protected TestUserSessionSource userSessionSource;
 
+    protected TestUuidSource uuidSource;
+
     /**
      * Add entities package to build metadata from. Should be invoked by concrete test classes in their @Before method.
      * @param pack  package FQN, e.g. <code>com.haulmont.cuba.core.entity</code>
@@ -76,6 +78,7 @@ public class CubaClientTestCase {
         viewRepository = new TestViewRepositoryClient(viewConfig);
         metadata = new TestMetadataClient(entityPackages, viewRepository);
         userSessionSource = new TestUserSessionSource();
+        uuidSource = new TestUuidSource();
 
         new NonStrictExpectations() {
             {
@@ -102,8 +105,11 @@ public class CubaClientTestCase {
                 AppBeans.get(UserSessionSource.NAME); result = userSessionSource;
                 AppBeans.get(UserSessionSource.class); result = userSessionSource;
                 AppBeans.get(UserSessionSource.NAME, UserSessionSource.class); result = userSessionSource;
+
+                AppBeans.get(UuidSource.NAME); result = uuidSource;
+                AppBeans.get(UuidSource.class); result = uuidSource;
+                AppBeans.get(UuidSource.NAME, UuidSource.class); result = uuidSource;
             }
         };
-
     }
 }
