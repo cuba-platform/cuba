@@ -58,6 +58,7 @@
 @import "app/login-window";
 @import "app/breadcrumbs";
 @import "app/generic-filter";
+@import "app/table-paging";
 @import "app/folders-pane";
 @import "app/log-control";
 
@@ -105,6 +106,7 @@
   @include cuba-login-window;
   @include cuba-application-window;
   @include cuba-generic-filter;
+  @include cuba-table-paging;
   @include cuba-folders-pane;
   @include cuba-breadcrumbs;
   @include cuba-log-control;

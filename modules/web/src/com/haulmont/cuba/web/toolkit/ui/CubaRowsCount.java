@@ -22,8 +22,9 @@ public class CubaRowsCount extends CustomComponent {
 
     public CubaRowsCount() {
         HorizontalLayout layout = new HorizontalLayout();
+        layout.setStyleName("cuba-paging");
         layout.setSpacing(false);
-        layout.setMargin(new MarginInfo(false, true, false, true));
+        layout.setMargin(new MarginInfo(false, false, false, true));
 
         setCompositionRoot(layout);
 
@@ -48,6 +49,8 @@ public class CubaRowsCount extends CustomComponent {
         countButton = new Button("[?]");
         countButton.setWidth("-1px");
         countButton.setStyleName(BaseTheme.BUTTON_LINK);
+        countButton.addStyleName("cuba-paging-count");
+        countButton.setTabIndex(-1);
         contentLayout.addComponent(countButton);
 
         nextButton = new Button(">");
