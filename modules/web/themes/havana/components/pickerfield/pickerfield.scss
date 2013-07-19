@@ -60,5 +60,13 @@
       border: 1px solid $theme_fieldReadonlyBorderColor;
       border-left: 0;
     }
+
+    .v-textfield,
+    .v-readonly.v-textfield.v-textfield-focus,
+    .v-textfield-readonly.v-textfield-focus,
+    .v-textfield-focus {
+      border: 1px solid $theme_fieldReadonlyBorderColor;
+      overflow: hidden;
+    }
   }
 }
