@@ -16,6 +16,17 @@
 
     <xsl:variable name="headercode">
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+        <style type="text/css">
+            .title-anchor {
+                text-decoration: inherit;
+            }
+            .title:hover .title-anchor {
+                visibility: visible;
+            }
+            .title .title-anchor {
+                visibility: hidden;
+            }
+        </style>
         <script type="text/javascript">
 
             var allLinksInToc;
@@ -201,6 +212,20 @@
 
                 var searchBox = $('#toc-search-box')[0];
                 var searchQuery = '';
+
+                // init dynamic anchors
+                var titles = [];
+
+                $('.title').each(function () {
+                    var innerLinks = $(this).children('a');
+                    if (innerLinks.size() == 1) {
+                        titles.push({tag: this, anchor: innerLinks[0].name});
+                    }
+                });
+
+                $.each(titles, function(index, item) {
+                    $(item.tag).append('<a class="title-anchor" href="#' + item.anchor + '">[#]</a>');
+                });
             });
     </script>
     </xsl:variable>
