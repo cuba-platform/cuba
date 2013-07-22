@@ -668,7 +668,7 @@ public abstract class WindowManager {
                     Logger.getLogger(UIPerformanceLogger.class));
             injectStopWatch.start();
 
-            ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow);
+            ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow,params);
             dependencyInjector.inject();
 
             injectStopWatch.stop();

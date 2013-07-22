@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashMap;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -50,7 +51,7 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
     @Test
     public void testInjectMessagesIntoAbstractFrame() throws Exception {
         TestController controller = new TestController();
-        ControllerDependencyInjector injector = new ControllerDependencyInjector(controller);
+        ControllerDependencyInjector injector = new ControllerDependencyInjector(controller, null);
         injector.inject();
         assertTrue(controller.messages == messages);
 
@@ -59,9 +60,26 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
         assertTrue(field.get(controller) == messages);
     }
 
+    @Test
+    public void testInjectWindowParamsIntoAbstactFrame() throws Exception {
+        HashMap<String,Object> testMap = new HashMap<>();
+        testMap.put("someObj",new Object());
+        WindowParamTestController controller = new WindowParamTestController();
+        ControllerDependencyInjector injector = new ControllerDependencyInjector(controller,testMap);
+        injector.inject();
+
+        assertTrue(controller.someObj.equals(testMap.get("someObj")));
+    }
+
     private class TestController extends AbstractWindow {
 
         @Inject
         protected Messages messages;
+    }
+
+    private class WindowParamTestController extends AbstractWindow {
+
+        @WindowParam(name = "someObj",required = true)
+        public Object someObj;
     }
 }

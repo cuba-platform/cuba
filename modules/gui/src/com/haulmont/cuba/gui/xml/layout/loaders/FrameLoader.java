@@ -150,7 +150,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                         Logger.getLogger(UIPerformanceLogger.class));
                 injectStopWatch.start();
 
-                ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame);
+                ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame, params);
                 dependencyInjector.inject();
 
                 injectStopWatch.stop();

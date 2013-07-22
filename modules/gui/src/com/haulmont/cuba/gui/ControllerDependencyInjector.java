@@ -36,11 +36,13 @@ import java.util.*;
 public class ControllerDependencyInjector {
 
     private IFrame frame;
+    private Map<String,Object> params;
 
     private Log log = LogFactory.getLog(getClass());
 
-    public ControllerDependencyInjector(IFrame frame) {
+    public ControllerDependencyInjector(IFrame frame, Map<String,Object> params) {
         this.frame = frame;
+        this.params = params;
     }
 
     public void inject() {
@@ -85,6 +87,8 @@ public class ControllerDependencyInjector {
             return Resource.class;
         else if (element.isAnnotationPresent(Inject.class))
             return Inject.class;
+        else if (element.isAnnotationPresent(WindowParam.class))
+            return WindowParam.class;
         else
             return null;
     }
@@ -96,6 +100,12 @@ public class ControllerDependencyInjector {
             name = element.getAnnotation(Named.class).value();
         else if (annotationClass == Resource.class)
             name = element.getAnnotation(Resource.class).name();
+        else if (annotationClass == WindowParam.class)
+            name = element.getAnnotation(WindowParam.class).name();
+
+        boolean required = true;
+        if (element.isAnnotationPresent(WindowParam.class))
+            required = element.getAnnotation(WindowParam.class).required();
 
         if (element instanceof Field) {
             type = ((Field) element).getType();
@@ -115,16 +125,19 @@ public class ControllerDependencyInjector {
         } else
             throw new IllegalStateException("Can inject to fields and setter methods only");
 
-        Object instance = getInjectedInstance(type, name);
-        if (instance == null) {
+        Object instance = getInjectedInstance(type, name, annotationClass);
+        if (required && instance == null)
             log.warn("Unable to find an instance of type " + type + " named " + name);
-        } else {
+        else
             assignValue(element, instance);
-        }
     }
 
-    private Object getInjectedInstance(Class<?> type, String name) {
-        if (Component.class.isAssignableFrom(type)) {
+    private Object getInjectedInstance(Class<?> type, String name, Class annotatedClass) {
+        if (annotatedClass == WindowParam.class) {
+            //Injecting a parameter
+            return params.get(name);
+
+        } else if (Component.class.isAssignableFrom(type)) {
             // Injecting a UI component
             return frame.getComponent(name);
 
@@ -170,8 +183,8 @@ public class ControllerDependencyInjector {
                 if (instance != null && type.isAssignableFrom(instance.getClass()))
                     return instance;
             }
-            return null;
         }
+        return  null;
     }
 
     private void assignValue(AnnotatedElement element, Object value) {
