@@ -40,6 +40,11 @@ public class CubaPickerField extends com.vaadin.ui.CustomField {
     }
 
     @Override
+    protected boolean isEmpty() {
+        return getValue() == null;
+    }
+
+    @Override
     protected Component initContent() {
         return container;
     }
