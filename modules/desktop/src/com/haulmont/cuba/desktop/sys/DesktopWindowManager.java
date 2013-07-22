@@ -381,6 +381,7 @@ public class DesktopWindowManager extends WindowManager {
             component.revalidate();
             component.repaint();
         }
+        window.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
 
         return layout;
     }
@@ -662,6 +663,8 @@ public class DesktopWindowManager extends WindowManager {
                     component.revalidate();
                     component.repaint();
                 }
+                currentWindow.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
+
                 fireListeners(window, tabs.size() != 0);
                 break;
             }
@@ -826,6 +829,8 @@ public class DesktopWindowManager extends WindowManager {
             openMode = windowOpenMode.get(window);
 
         OpenType openType = openMode.getOpenType();
+        String formattedCaption = formatTabDescription(caption, description);
+
         if (openType != OpenType.DIALOG) {
             if (tabsPane == null)
                 return;
@@ -835,9 +840,12 @@ public class DesktopWindowManager extends WindowManager {
             }
         } else {
             JDialog jDialog = (JDialog) windowOpenMode.get(window).getData();
-            if (jDialog != null)
-                jDialog.setTitle(formatTabDescription(caption, description));
+            if (jDialog != null) {
+                jDialog.setTitle(formattedCaption);
+            }
         }
+
+        window.setCaption(formattedCaption);
     }
 
     protected JComponent findTab(Integer hashCode) {

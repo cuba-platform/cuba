@@ -512,7 +512,9 @@ public class WebWindowManager extends WindowManager {
         if (tab == null)
             return;
 
-        tab.setCaption(formatTabCaption(caption, description));
+        String formattedCaption = formatTabCaption(caption, description);
+        tab.setCaption(formattedCaption);
+        window.setCaption(formattedCaption);
     }
 
     protected String formatTabCaption(final String caption, final String description) {
