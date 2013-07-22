@@ -31,6 +31,7 @@
 
             var allLinksInToc;
             var textNodes;
+            var tocLinksLowered = {};
 
             function searchButtonClick(){
                 var searchQuery = $('#toc-search-box')[0].value;
@@ -50,22 +51,25 @@
                 });
             }
 
-            function findTextInNode(textNode, searchQuery){
+            function findTextInNode(textNode, searchQuery) {
                 var innerText = $(textNode).text();
                 innerText = innerText.replace(/\s+/g,' ');
                 if (innerText.toLowerCase().indexOf(searchQuery) >= 0) {
                     var currentEl = textNode;
                     var isNearTitlepageClassFinded = false;
-                    while ((isNearTitlepageClassFinded != true) &amp;&amp; (currentEl != null)){ //find near element with className = 'titlepage'
+                    while ((isNearTitlepageClassFinded != true) &amp;&amp; (currentEl != null)) {
+                        // find near element with className = 'titlepage'
                         var list = $(currentEl).siblings(); // get near elements
-                        list.push(currentEl);
                         list = list.toArray();
-                        for(var el in list){
-                            if (list[el].className == 'titlepage'){
-                                var linkText = $(list[el]).find('.title').text().substring(1).toLowerCase();
-                                allLinksInToc.each(function(){ // search in toc and mark
-                                    var innerCurrentText= $(this).text().toLowerCase();
-                                    if(innerCurrentText.indexOf(linkText) >= 0 ){
+                        list.push(currentEl);
+                        for (var el in list) {
+                            if (list[el].className == 'titlepage') {
+                                // remove link anchors from text
+                                var linkText = $(list[el]).find('.title').text().replace('[#]', '').substring(1).toLowerCase();
+                                allLinksInToc.each(function() {
+                                    // search in toc and mark
+                                    var innerCurrentText = $(this).text().toLowerCase();
+                                    if (innerCurrentText.indexOf(linkText) >= 0) {
                                         isNearTitlepageClassFinded = true;
                                         $(this).addClass('toc-search-result');
                                         $(this).removeClass('toc-search-hidden');
@@ -80,7 +84,7 @@
                 }
             }
 
-            function beginSearch(searchQuery){
+            function beginSearch(searchQuery) {
                 searchQuery = searchQuery.toLowerCase();
                 clearLinksInToc();
                 $(textNodes).each(function() {
@@ -89,14 +93,15 @@
                 tracePathFromRoot();
             }
 
-            function selectChildrenOnFirtsLevel(link){ // mark childrens of current link on 1st level
-                if ($(link.parentNode.parentNode).next('dd').length != 0){
+            function selectChildrenOnFirtsLevel(link) {
+                // mark childrens of current link on 1st level
+                if ($(link.parentNode.parentNode).next('dd').length != 0) {
                     var nextElement = $(link.parentNode.parentNode).next('dd');
                     var tempArr = $(nextElement.children().children());
-                    for (var i = 0; i &lt; tempArr.length; i++){
-                        if (tempArr[i].tagName.toLowerCase() == 'dt'){
+                    for (var i = 0; i &lt; tempArr.length; i++) {
+                        if (tempArr[i].tagName.toLowerCase() == 'dt') {
                             var currentLink = $(tempArr[i]).find('a');
-                            if (!currentLink.hasClass('toc-search-result')){
+                            if (!currentLink.hasClass('toc-search-result')) {
                                 currentLink.removeClass('toc-search-hidden');
                             }
                         }
@@ -104,14 +109,14 @@
                 }
             }
 
-            function clearLinksInToc(){
+            function clearLinksInToc() {
                 allLinksInToc.each(function(){
                     $(this).addClass('toc-search-hidden');
                     $(this).removeClass('toc-search-result');
                 });
             }
 
-            function tracePathFromRoot(){
+            function tracePathFromRoot() {
                 allLinksInToc.each(function() {
                     if ($(this).hasClass('toc-search-result')) {
                         var parent = this.parentNode;
@@ -123,7 +128,8 @@
                     }
                 });
             }
-            function keyDownTextField(event){
+
+            function keyDownTextField(event) {
                 var searchQuery = $('#toc-search-box')[0].value;
                 if ( searchBoxCheck(searchQuery) == true){
                     var keyCode = event.keyCode;
@@ -134,10 +140,10 @@
                 }
             }
 
-            function searchBoxCheck(searchQuery){
+            function searchBoxCheck(searchQuery) {
                 if (searchQuery.length &lt; 3){
-                    allLinksInToc.each(function(){
-                        deactivate($(this))
+                    allLinksInToc.each(function() {
+                        deactivate($(this));
                     });
                     return false;
                 }
@@ -156,6 +162,20 @@
             }
 
             $(document).ready(function() {
+                // init dynamic anchors
+                var titles = [];
+
+                $('.title').each(function () {
+                    var innerLinks = $(this).children('a');
+                    if (innerLinks.size() == 1) {
+                        titles.push({tag: this, anchor: innerLinks[0].name});
+                    }
+                });
+
+                $.each(titles, function(index, item) {
+                    $(item.tag).append('<a class="title-anchor" href="#' + item.anchor + '">[#]</a>');
+                });
+
                 // use template from document for panel
                 var tocPanel = $('div#toc-panel-template').clone()[0];
                 tocPanel.id = 'toc-panel';
@@ -212,20 +232,6 @@
 
                 var searchBox = $('#toc-search-box')[0];
                 var searchQuery = '';
-
-                // init dynamic anchors
-                var titles = [];
-
-                $('.title').each(function () {
-                    var innerLinks = $(this).children('a');
-                    if (innerLinks.size() == 1) {
-                        titles.push({tag: this, anchor: innerLinks[0].name});
-                    }
-                });
-
-                $.each(titles, function(index, item) {
-                    $(item.tag).append('<a class="title-anchor" href="#' + item.anchor + '">[#]</a>');
-                });
             });
     </script>
     </xsl:variable>
