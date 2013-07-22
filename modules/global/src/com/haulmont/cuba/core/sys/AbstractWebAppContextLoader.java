@@ -21,9 +21,7 @@ import org.springframework.util.ResourceUtils;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -106,7 +104,8 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
                 if (stream != null) {
                     log.trace("Loading app properties from " + str);
-                    properties.load(stream);
+                    Reader reader = new InputStreamReader(stream, "UTF-8");
+                    properties.load(reader);
                 } else
                     log.trace("Resource " + str + " not found, ignore it");
 
