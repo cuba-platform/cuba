@@ -35,7 +35,7 @@ public class MessagesClientImpl extends AbstractMessages {
     @Inject
     protected UserSessionSource userSessionSource;
 
-    protected volatile boolean remoteSearch;
+    protected volatile boolean remoteSearch = true;
 
     protected ClientConfig clientConfig;
 
