@@ -51,7 +51,7 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
     @Test
     public void testInjectMessagesIntoAbstractFrame() throws Exception {
         TestController controller = new TestController();
-        ControllerDependencyInjector injector = new ControllerDependencyInjector(controller, null);
+        ControllerDependencyInjector injector = new ControllerDependencyInjector(controller, new HashMap<String,Object>());
         injector.inject();
         assertTrue(controller.messages == messages);
 
@@ -68,7 +68,7 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
         ControllerDependencyInjector injector = new ControllerDependencyInjector(controller,testMap);
         injector.inject();
 
-        assertTrue(controller.someObj.equals(testMap.get("someObj")));
+        assertTrue(controller.someObj == testMap.get("someObj"));
     }
 
     private class TestController extends AbstractWindow {

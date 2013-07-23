@@ -132,12 +132,9 @@ public class ControllerDependencyInjector {
             assignValue(element, instance);
     }
 
-    private Object getInjectedInstance(Class<?> type, String name, Class annotatedClass) {
-        if (annotatedClass == WindowParam.class) {
-            //Injecting a parameter
-            return params.get(name);
+    private Object getInjectedInstance(Class<?> type, String name, Class annotationClass) {
 
-        } else if (Component.class.isAssignableFrom(type)) {
+        if (Component.class.isAssignableFrom(type)) {
             // Injecting a UI component
             return frame.getComponent(name);
 
@@ -164,6 +161,10 @@ public class ControllerDependencyInjector {
         } else if (ExportDisplay.class.isAssignableFrom(type)) {
             // Injecting an ExportDisplay
             return AppConfig.createExportDisplay(frame);
+
+        } else if (annotationClass == WindowParam.class) {
+            //Injecting a parameter
+            return params.get(name);
 
         } else {
             Object instance;
