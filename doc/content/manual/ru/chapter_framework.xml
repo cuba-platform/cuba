@@ -203,7 +203,7 @@
             <para>сущность</para>
           </listitem>
         </itemizedlist></para>
-      <section>
+      <section id="base_entity_classes">
         <title>Базовые классы сущностей</title>
         <para>Рассмотрим базовые классы и интерфейсы сущностей более подробно.</para>
         <figure id="entity_base_classes">
@@ -9647,7 +9647,7 @@ public void init(Map&lt;String, Object&gt; params) {
         <para>Здесь <code>data</code> - поле базового класса, хранящее коллекцию загруженных экземпляров. Методы базового класса <code>detachListener()</code> и <code>attachListener()</code> управляют назначением на загруженные сущности слушателя, который оповещает источник данных об изменениях в полях экземпляров.</para>
         <para>Для создания нестандартного источника данных декларативным способом необходимо указать класс в атрибуте <sgmltag>datasourceClass</sgmltag> элемента XML. При программном создании через <code>DsBuilder</code> класс источника указывается вызовом <code>setDsClass()</code>.</para>
       </section>
-      <section>
+      <section id="datasource_query">
         <title>Запросы в CollectionDatasourceImpl</title>
         <para>Класс <code> CollectionDatasourceImpl</code> и его наследники <code>GroupDatasourceImpl</code>, <code>HierarchicalDatasourceImpl</code> являются стандартной реализацией источников данных, работающих с коллекциями независимых экземпляров сущностей. Эти источники загружают данные через <code>DataService</code>, отправляя на Middleware запрос на языке JPQL. Далее рассматриваются особенности формирования таких запросов.</para>
         <section>
