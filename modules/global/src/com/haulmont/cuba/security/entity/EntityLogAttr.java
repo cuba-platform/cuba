@@ -33,8 +33,6 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
     public static final String VALUE_ID_SUFFIX = "-id";
     public static final String MP_SUFFIX = "-mp";
 
-    public static final int VALUE_LEN = 1500;
-
     @MetaProperty
     private EntityLogItem logItem;
 

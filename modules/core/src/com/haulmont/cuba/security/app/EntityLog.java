@@ -345,7 +345,7 @@ public class EntityLog implements EntityLogAPI {
             sb.append("]");
             return sb.toString();
         } else {
-            return StringUtils.abbreviate(value.toString(), EntityLogAttr.VALUE_LEN - 3);
+            return String.valueOf(value);
         }
     }
 }
