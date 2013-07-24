@@ -183,13 +183,19 @@ public abstract class CubaTestCase extends TestCase
         return "test-log4j.xml";
     }
 
-    protected void deleteRecord(String table, UUID id) {
-        String sql = "delete from " + table + " where ID = '" + id.toString() + "'";
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
-        try {
-            runner.update(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    protected void deleteRecord(String table, UUID... ids) {
+        deleteRecord(table, "ID", ids);
+    }
+
+    protected void deleteRecord(String table, String primaryKeyCol, UUID... ids) {
+        for (UUID id : ids) {
+            String sql = "delete from " + table + " where " + primaryKeyCol + " = '" + id.toString() + "'";
+            QueryRunner runner = new QueryRunner(persistence.getDataSource());
+            try {
+                runner.update(sql);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
