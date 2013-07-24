@@ -34,6 +34,7 @@
 @import "components/textfield/textfield";
 @import "components/datefield/datefield";
 @import "components/treetable/treetable";
+@import "components/popupview/popupview";
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
@@ -81,6 +82,7 @@
   @include havana-treetable;
   @include havana-textfield;
   @include havana-datefield;
+  @include havana-popupview;
   @include havana-splitpanel;
   @include havana-fieldgroup;
   @include havana-popupbutton;
