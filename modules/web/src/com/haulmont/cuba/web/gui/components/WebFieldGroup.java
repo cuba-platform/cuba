@@ -758,7 +758,7 @@ public class WebFieldGroup
                 Exception ex = problemFields.get(field);
                 msgBuilder.append(ex.getMessage());
                 if (iterator.hasNext())
-                    msgBuilder.append("<br>");
+                    msgBuilder.append("\n");
             }
 
             FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());
