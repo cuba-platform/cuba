@@ -11,7 +11,7 @@ import com.vaadin.data.Container;
  * @author gorodnov
  * @version $Id$
  */
-public interface TreeTableContainer extends Container.Hierarchical {
+public interface TreeTableContainer extends TableContainer, Container.Hierarchical {
     boolean isCaption(Object itemId);
 
     String getCaption(Object itemId);

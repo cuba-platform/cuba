@@ -16,6 +16,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
@@ -157,7 +158,7 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
     }
 
     protected class SortableTableDsWrapper extends SortableCollectionDsWrapper
-            implements AggregationContainer {
+            implements AggregationContainer, TableContainer {
 
         private List<Object> aggregationProperties = null;
 
@@ -208,7 +209,7 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
         @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
-                aggregationProperties = new LinkedList<Object>();
+                aggregationProperties = new LinkedList<>();
             } else if (aggregationProperties.contains(propertyId)) {
                 throw new IllegalStateException("Such aggregation property is already exists");
             }
@@ -229,6 +230,13 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
         @Override
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
+        }
+
+        @Override
+        public void resetSortOrder() {
+            if (datasource instanceof CollectionDatasource.Sortable) {
+                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
+            }
         }
     }
 }

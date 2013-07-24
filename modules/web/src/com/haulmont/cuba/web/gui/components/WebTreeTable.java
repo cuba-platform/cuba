@@ -298,6 +298,13 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }
+
+        @Override
+        public void resetSortOrder() {
+            if (datasource instanceof CollectionDatasource.Sortable) {
+                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
+            }
+        }
     }
 
     protected class CubaTreeTableExt extends CubaTreeTable {

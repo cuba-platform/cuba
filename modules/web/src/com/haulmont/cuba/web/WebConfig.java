@@ -263,14 +263,6 @@ public interface WebConfig extends Config {
     boolean getAllowIdSuffix();
 
     /**
-     * @return Whether to enable cancel sorting of table columns. If true, each third click on the column will cancel
-     * sorting instead of reversing it.
-     */
-    @Property("cuba.web.enableCancelTableSorting")
-    @DefaultBoolean(true)
-    boolean getEnableCancelTableSorting();
-
-    /**
      * Supports automatic testing.
      * @return a name of request parameter that marks a request from an automatic testing tool, for example jMeter.
      */

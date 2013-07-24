@@ -241,15 +241,15 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         return new GroupTableFooter();
     }
 
-    protected class GroupTableHead extends TableHead {
+    protected class GroupTableHead extends CubaScrollTableHead {
         public GroupTableHead() {
-            super();
             availableCells.put(GROUP_DIVIDER_COLUMN_KEY, new GroupDividerHeaderCell());
         }
 
         @Override
         public void clear() {
             super.clear();
+
             availableCells.put(GROUP_DIVIDER_COLUMN_KEY, new GroupDividerHeaderCell());
         }
 
@@ -282,8 +282,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         protected VScrollTableRow createRow(UIDL uidl, char[] aligns2) {
             if (uidl.hasAttribute("groupKey")) {
                 return new CubaGroupTableGroupRow(uidl, aligns2); //creates a group row
-            }
-            else
+            } else
                 return new CubaGroupTableRow(uidl, aligns2);
         }
 
@@ -495,7 +494,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         }
     }
 
-    protected class GroupDividerHeaderCell extends HeaderCell {
+    protected class GroupDividerHeaderCell extends CubaScrollTableHeaderCell {
         public GroupDividerHeaderCell() {
             super(GROUP_DIVIDER_COLUMN_KEY, null);
             addStyleName(CLASSNAME + "-group-divider-header");

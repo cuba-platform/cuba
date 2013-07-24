@@ -18,7 +18,6 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class TreeTableContainerWrapper
         extends ContainerHierarchicalWrapper
         implements TreeTableContainer, AggregationContainer, Container.Ordered, Container.Sortable {
@@ -469,5 +468,12 @@ public class TreeTableContainerWrapper
         }
         throw new IllegalStateException("Wrapped container is not AggregationContainer: "
                 + container.getClass());
+    }
+
+    @Override
+    public void resetSortOrder() {
+        if (treeTableContainer) {
+            ((TreeTableContainer)container).resetSortOrder();
+        }
     }
 }

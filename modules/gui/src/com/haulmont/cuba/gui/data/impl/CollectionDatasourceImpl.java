@@ -214,6 +214,11 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
+    public void resetSortOrder() {
+        this.sortInfos = null;
+    }
+
     protected boolean containsAllDataFromDb() {
         return firstResult == 0 && data.size() < maxResults;
     }

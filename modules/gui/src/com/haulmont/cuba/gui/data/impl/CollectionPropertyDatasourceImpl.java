@@ -89,7 +89,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
             @Override
             public void stateChanged(Datasource<Entity> ds, State prevState, State state) {
-                for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+                for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
                     dsListener.stateChanged(CollectionPropertyDatasourceImpl.this, prevState, state);
                 }
                 fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
@@ -211,7 +211,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         if (!userSession.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)
                 || !userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.VIEW))
-            return new ArrayList<T>(); // Don't use Collections.emptyList() to avoid confusing UnsupportedOperationExceptions
+            return new ArrayList<>(); // Don't use Collections.emptyList() to avoid confusing UnsupportedOperationExceptions
         else {
             final Instance master = masterDs.getItem();
             return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
@@ -596,6 +596,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
+    public void resetSortOrder() {
+        this.sortInfos = null;
+    }
+
     protected void doSort() {
         Collection<T> collection = __getCollection();
         if (collection == null)
@@ -605,7 +610,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
         @SuppressWarnings({"unchecked"})
-        List<T> list = new LinkedList<T>(collection);
+        List<T> list = new LinkedList<>(collection);
         Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
         collection.clear();
         collection.addAll(list);
@@ -646,7 +651,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (itemId == null) return null;
         Collection<T> collection = __getCollection();
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(firstItemId())) {
-            List<T> list = new ArrayList<T>(collection);
+            List<T> list = new ArrayList<>(collection);
             T currentItem = getItem(itemId);
             return list.get(list.indexOf(currentItem) - 1).getId();
         }

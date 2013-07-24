@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableState;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
@@ -26,7 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-public class CubaTable extends com.vaadin.ui.Table {
+public class CubaTable extends com.vaadin.ui.Table implements TableContainer {
 
     protected LinkedList<Object> editableColumns = null;
 
@@ -52,19 +53,21 @@ public class CubaTable extends com.vaadin.ui.Table {
         }
     }
 
-    public boolean isAllowPopupMenu(){
+    public boolean isAllowPopupMenu() {
         return getState(false).allowPopupMenu;
     }
 
-    public void setAllowPopupMenu(boolean allowPopupMenu){
-        if (isAllowPopupMenu() != allowPopupMenu)
+    public void setAllowPopupMenu(boolean allowPopupMenu) {
+        if (isAllowPopupMenu() != allowPopupMenu) {
             getState(true).allowPopupMenu = allowPopupMenu;
+        }
     }
 
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-        if (property instanceof PropertyValueStringify)
+        if (property instanceof PropertyValueStringify) {
             return ((PropertyValueStringify) property).getFormattedValue();
+        }
 
         return super.formatPropertyValue(rowId, colId, property);
     }
@@ -150,6 +153,19 @@ public class CubaTable extends com.vaadin.ui.Table {
     }
 
     @Override
+    protected boolean changeVariables(Map<String, Object> variables) {
+        boolean clientNeedsContentRefresh = super.changeVariables(variables);
+
+        if (variables.containsKey("resetsortorder")) {
+            resetSortOrder();
+
+            markAsDirty();
+        }
+
+        return clientNeedsContentRefresh;
+    }
+
+    @Override
     public void addShortcutListener(ShortcutListener listener) {
         /*if (listener.getKeyCode() != 13 || !(listener.getModifiers() == null || listener.getModifiers().length > 0)) {*/
             shortcutsManager.addAction(listener);
@@ -158,8 +174,18 @@ public class CubaTable extends com.vaadin.ui.Table {
     }
 
     @Override
-    public void removeShortcutListener(ShortcutListener listener){
+    public void removeShortcutListener(ShortcutListener listener) {
         /*shortcutListeners.remove(listener);*/
         shortcutsManager.removeAction(listener);
+    }
+
+    @Override
+    public void resetSortOrder() {
+        sortContainerPropertyId = null;
+        sortAscending = true;
+
+        if (items instanceof TableContainer) {
+            ((TableContainer) items).resetSortOrder();
+        }
     }
 }

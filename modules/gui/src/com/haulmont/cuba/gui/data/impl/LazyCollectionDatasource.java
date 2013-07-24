@@ -431,6 +431,11 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
+    public void resetSortOrder() {
+        this.sortInfos = null;
+    }
+
     private void doSort() {
         if (isCompletelyLoaded()) {
             sortInMemory();

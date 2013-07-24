@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
 import com.haulmont.cuba.web.toolkit.ui.client.treetable.CubaTreeTableState;
@@ -16,6 +17,7 @@ import com.vaadin.data.util.HierarchicalContainer;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -143,6 +145,19 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
+    protected boolean changeVariables(Map<String, Object> variables) {
+        boolean clientNeedsContentRefresh = super.changeVariables(variables);
+
+        if (variables.containsKey("resetsortorder")) {
+            resetSortOrder();
+
+            markAsDirty();
+        }
+
+        return clientNeedsContentRefresh;
+    }
+
+    @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
         if (property instanceof PropertyValueStringify)
             return ((PropertyValueStringify) property).getFormattedValue();
@@ -175,5 +190,15 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
     public boolean isExpanded(Object itemId) {
         return !isCollapsed(itemId);
+    }
+
+    @Override
+    public void resetSortOrder() {
+        sortContainerPropertyId = null;
+        sortAscending = true;
+
+        if (items instanceof TableContainer) {
+            ((TableContainer) items).resetSortOrder();
+        }
     }
 }

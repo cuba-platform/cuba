@@ -13,7 +13,7 @@ import java.util.Collection;
  * @author gorodnov
  * @version $Id$
  */
-public interface GroupTableContainer extends Container.Sortable {
+public interface GroupTableContainer extends TableContainer {
     void groupBy(Object[] properties);
 
     boolean isGroup(Object id);

@@ -233,4 +233,9 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         throw new IllegalStateException("Wrapped container is not Sortable: "
                 + container.getClass());
     }
+
+    @Override
+    public void resetSortOrder() {
+        groupTableContainer.resetSortOrder();
+    }
 }

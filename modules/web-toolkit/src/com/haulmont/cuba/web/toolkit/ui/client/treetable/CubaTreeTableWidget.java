@@ -15,12 +15,10 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.VEmbedded;
 import com.vaadin.client.ui.VLabel;
 import com.vaadin.client.ui.VTextField;
 import com.vaadin.client.ui.VTreeTable;
-import com.vaadin.client.ui.layout.VLayoutSlot;
 
 /**
  * @author artamonov
@@ -33,6 +31,8 @@ public class CubaTreeTableWidget extends VTreeTable {
     protected boolean textSelectionEnabled = false;
     protected boolean allowPopupMenu = true;
 
+    protected int sortClickCounter = 0;
+
     @Override
     protected void handleBodyContextMenu(ContextMenuEvent event) {
         if (allowPopupMenu)
@@ -42,6 +42,96 @@ public class CubaTreeTableWidget extends VTreeTable {
     @Override
     protected VScrollTableBody createScrollBody() {
         return new CubaTreeTableBody();
+    }
+
+    @Override
+    protected TableHead createTableHead() {
+        return new CubaTreeTableTableHead();
+    }
+
+    protected class CubaTreeTableTableHead extends TableHead {
+
+        @Override
+        protected HeaderCell createHeaderCell(String cid, String caption) {
+            return new CubaTreeTableHeaderCell(cid, caption);
+        }
+    }
+
+    protected class CubaTreeTableHeaderCell extends HeaderCell {
+
+        public CubaTreeTableHeaderCell(String colId, String headerText) {
+            super(colId, headerText);
+        }
+
+        @Override
+        protected void sortColumn() {
+            // CAUTION copied from superclass
+            // Added ability to reset sort order
+            boolean reloadDataFromServer = true;
+
+            if (cid.equals(sortColumn)) {
+                if (sortColumn == null) {
+                    // anyway sort ascending
+                    client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                } else if (sortAscending) {
+                    if (sortClickCounter < 2) {
+                        // special case for initial revert sorting instead of reset sort order
+                        if (sortClickCounter == 0) {
+                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                        } else {
+                            reloadDataFromServer = false;
+                            sortClickCounter = 0;
+                            sortColumn = null;
+                            sortAscending = true;
+
+                            client.updateVariable(paintableId, "resetsortorder", "", true);
+                        }
+                    } else {
+                        client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                    }
+                } else {
+                    if (sortClickCounter < 2) {
+                        // special case for initial revert sorting instead of reset sort order
+                        if (sortClickCounter == 0) {
+                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                        } else {
+                            reloadDataFromServer = false;
+                            sortClickCounter = 0;
+                            sortColumn = null;
+                            sortAscending = true;
+
+                            client.updateVariable(paintableId, "resetsortorder", "", true);
+                        }
+                    } else {
+                        reloadDataFromServer = false;
+                        sortClickCounter = 0;
+                        sortColumn = null;
+                        sortAscending = true;
+
+                        client.updateVariable(paintableId, "resetsortorder", "", true);
+                    }
+                }
+                sortClickCounter++;
+            } else {
+                sortClickCounter = 0;
+
+                // set table sorted by this column
+                client.updateVariable(paintableId, "sortcolumn", cid, false);
+            }
+
+            if (reloadDataFromServer) {
+                // get also cache columns at the same request
+                scrollBodyPanel.setScrollPosition(0);
+                firstvisible = 0;
+                rowRequestHandler.setReqFirstRow(0);
+                rowRequestHandler.setReqRows((int) (2 * pageLength
+                        * cache_rate + pageLength));
+                rowRequestHandler.deferRowFetch(); // some validation +
+                // defer 250ms
+                rowRequestHandler.cancel(); // instead of waiting
+                rowRequestHandler.run(); // run immediately
+            }
+        }
     }
 
     protected class CubaTreeTableBody extends VTreeTableScrollBody {

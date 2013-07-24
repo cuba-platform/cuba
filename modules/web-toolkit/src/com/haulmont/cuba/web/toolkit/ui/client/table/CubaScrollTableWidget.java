@@ -39,6 +39,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected boolean textSelectionEnabled = false;
     protected boolean isAllowPopupMenu = true;
 
+    protected int sortClickCounter = 0;
+
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaScrollTableWidget");
 
     protected CubaScrollTableWidget() {
@@ -99,6 +101,96 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     public void handleBodyContextMenu(ContextMenuEvent event){
         if (isAllowPopupMenu)
             super.handleBodyContextMenu(event);
+    }
+
+    @Override
+    protected TableHead createTableHead() {
+        return new CubaScrollTableHead();
+    }
+
+    protected class CubaScrollTableHead extends TableHead {
+
+        @Override
+        protected HeaderCell createHeaderCell(String cid, String caption) {
+            return new CubaScrollTableHeaderCell(cid, caption);
+        }
+    }
+
+    protected class CubaScrollTableHeaderCell extends HeaderCell {
+
+        public CubaScrollTableHeaderCell(String colId, String headerText) {
+            super(colId, headerText);
+        }
+
+        @Override
+        protected void sortColumn() {
+            // CAUTION copied from superclass
+            // Added ability to reset sort order
+            boolean reloadDataFromServer = true;
+
+            if (cid.equals(sortColumn)) {
+                if (sortColumn == null) {
+                    // anyway sort ascending
+                    client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                } else if (sortAscending) {
+                    if (sortClickCounter < 2) {
+                        // special case for initial revert sorting instead of reset sort order
+                        if (sortClickCounter == 0) {
+                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                        } else {
+                            reloadDataFromServer = false;
+                            sortClickCounter = 0;
+                            sortColumn = null;
+                            sortAscending = true;
+
+                            client.updateVariable(paintableId, "resetsortorder", "", true);
+                        }
+                    } else {
+                        client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                    }
+                } else {
+                    if (sortClickCounter < 2) {
+                        // special case for initial revert sorting instead of reset sort order
+                        if (sortClickCounter == 0) {
+                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                        } else {
+                            reloadDataFromServer = false;
+                            sortClickCounter = 0;
+                            sortColumn = null;
+                            sortAscending = true;
+
+                            client.updateVariable(paintableId, "resetsortorder", "", true);
+                        }
+                    } else {
+                        reloadDataFromServer = false;
+                        sortClickCounter = 0;
+                        sortColumn = null;
+                        sortAscending = true;
+
+                        client.updateVariable(paintableId, "resetsortorder", "", true);
+                    }
+                }
+                sortClickCounter++;
+            } else {
+                sortClickCounter = 0;
+
+                // set table sorted by this column
+                client.updateVariable(paintableId, "sortcolumn", cid, false);
+            }
+
+            if (reloadDataFromServer) {
+                // get also cache columns at the same request
+                scrollBodyPanel.setScrollPosition(0);
+                firstvisible = 0;
+                rowRequestHandler.setReqFirstRow(0);
+                rowRequestHandler.setReqRows((int) (2 * pageLength
+                        * cache_rate + pageLength));
+                rowRequestHandler.deferRowFetch(); // some validation +
+                // defer 250ms
+                rowRequestHandler.cancel(); // instead of waiting
+                rowRequestHandler.run(); // run immediately
+            }
+        }
     }
 
     protected class CubaScrollTableBody extends VScrollTableBody {

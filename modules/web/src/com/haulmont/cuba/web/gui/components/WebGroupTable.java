@@ -603,6 +603,13 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             return new GroupDataSourceRefreshListener();
         }
 
+        @Override
+        public void resetSortOrder() {
+            if (datasource instanceof CollectionDatasource.Sortable) {
+                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
+            }
+        }
+
         protected class GroupDataSourceRefreshListener extends DataSourceRefreshListener {
             @Override
             public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {

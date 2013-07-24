@@ -276,6 +276,11 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
          * Perform sorting
          */
         void sort(SortInfo[] sortInfos);
+
+        /**
+         * Remove sort infos
+         */
+        void resetSortOrder();
     }
 
     /**

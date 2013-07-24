@@ -441,9 +441,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
 
-//        vaadin7
-//        component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
-
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
 
         addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
