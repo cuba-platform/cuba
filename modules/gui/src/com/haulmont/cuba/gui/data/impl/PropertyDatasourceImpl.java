@@ -182,7 +182,8 @@ public class PropertyDatasourceImpl<T extends Entity>
         T newItem = null;
         for (Entity entity : entities) {
             if (entity.equals(prevItem)) {
-                newItem = prevItem;
+                //noinspection unchecked
+                newItem = (T) entity;
                 break;
             }
         }

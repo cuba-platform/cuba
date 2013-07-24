@@ -129,38 +129,44 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public boolean commit() {
+        Map<DataSupplier, Collection<Datasource<Entity>>> commitData = collectCommitData();
+
+        boolean committed = false;
+
+        if (!commitData.isEmpty()) {
+            DataSupplier dataservice = getDataSupplier();
+            Set<DataSupplier> suppliers = commitData.keySet();
+
+            if (suppliers.size() == 1 &&
+                    ObjectUtils.equals(suppliers.iterator().next(), dataservice))
+            {
+                CommitContext context = createCommitContext(dataservice, commitData);
+
+                fireBeforeCommit(context);
+
+                Set<Entity> committedEntities = dataservice.commit(context);
+
+                fireAfterCommit(context, committedEntities);
+
+                notifyAllDsCommited(dataservice, committedEntities);
+
+                committed = true;
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+
         for (DsContext childDsContext : children) {
-            commitToParent(childDsContext.getAll());
+            boolean c = commitToParent(childDsContext.getAll());
+            committed = committed || c;
         }
-        commitToParent(datasourceMap.values());
+        boolean c = commitToParent(datasourceMap.values());
+        committed = committed || c;
 
-        final Map<DataSupplier, Collection<Datasource<Entity>>> commitData = collectCommitData();
-
-        if (commitData.isEmpty())
-            return false;
-
-        final DataSupplier dataservice = getDataSupplier();
-        final Set<DataSupplier> suppliers = commitData.keySet();
-
-        if (suppliers.size() == 1 &&
-                ObjectUtils.equals(suppliers.iterator().next(), dataservice))
-        {
-            final CommitContext context = createCommitContext(dataservice, commitData);
-
-            fireBeforeCommit(context);
-
-            final Set<Entity> committedEntities = dataservice.commit(context);
-
-            fireAfterCommit(context, committedEntities);
-
-            notifyAllDsCommited(dataservice, committedEntities);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-        return true;
+        return committed;
     }
 
-    private void commitToParent(Collection<Datasource> datasources) {
+    private boolean commitToParent(Collection<Datasource> datasources) {
         List<Datasource> list = new ArrayList<>();
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
@@ -180,6 +186,7 @@ public class DsContextImpl implements DsContextImplementation {
         for (Datasource datasource : list) {
             datasource.commit();
         }
+        return !list.isEmpty();
     }
 
     private void notifyAllDsCommited(DataSupplier dataservice, Set<Entity> committedEntities) {
@@ -187,12 +194,14 @@ public class DsContextImpl implements DsContextImplementation {
         Collection<Datasource> datasources = new LinkedList<>();
         for (DsContext childDsContext : children) {
             for (Datasource ds : childDsContext.getAll()) {
-                if (ObjectUtils.equals(ds.getDataSupplier(), dataservice))
+                if (ObjectUtils.equals(ds.getDataSupplier(), dataservice)
+                        && ds.getCommitMode() == Datasource.CommitMode.DATASTORE)
                     datasources.add(ds);
             }
         }
         for (Datasource ds : datasourceMap.values())
-            if (ObjectUtils.equals(ds.getDataSupplier(), dataservice))
+            if (ObjectUtils.equals(ds.getDataSupplier(), dataservice)
+                    && ds.getCommitMode() == Datasource.CommitMode.DATASTORE)
                 datasources.add(ds);
 
         for (Datasource datasource : datasources) {
