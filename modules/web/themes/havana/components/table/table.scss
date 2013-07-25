@@ -186,6 +186,31 @@
     }
   }
 
+  .#{$primaryStyleName}-column-selector-popup.v-contextmenu {
+    .gwt-MenuItem {
+      font-family: $theme_fonts;
+
+      div {
+        padding: 2px 8px 2px 18px;
+      }
+
+      .v-on div {
+        background: transparent url(images/check.png) no-repeat 5px 50%
+      }
+    }
+
+    .gwt-MenuItem-selected {
+      div {
+        background: $theme_fieldSelectionColor;
+      }
+
+      .v-on div {
+        background: $theme_fieldSelectionColor url(images/check-hover.png) no-repeat 5px 50%;
+        color: #fff;
+      }
+    }
+  }
+
   .#{$primaryStyleName}-header-drag {
     position: absolute;
     background: #e7edf3;
