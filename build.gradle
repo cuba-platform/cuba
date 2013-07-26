@@ -59,7 +59,7 @@ def webModule = project(':cuba-web')
 def desktopModule = project(':cuba-desktop')
 def portalModule = project(':cuba-portal')
 
-def vaadinVersion = '7.1.1.h.M3'
+def vaadinVersion = '7.1.1.h.M4'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']

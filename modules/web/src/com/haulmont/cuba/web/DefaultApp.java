@@ -56,11 +56,10 @@ public class DefaultApp extends App implements ConnectionListener {
 
             initExceptionHandlers(true);
 
-//            vaadin7 LinkHandler
-//            if (linkHandler != null) {
-//                linkHandler.handle();
-//                linkHandler = null;
-//            }
+            if (linkHandler != null) {
+                linkHandler.handle();
+                linkHandler = null;
+            }
 
             afterLoggedIn();
         } else {
@@ -164,18 +163,16 @@ public class DefaultApp extends App implements ConnectionListener {
     protected boolean loginOnStart(HttpServletRequest request) {
         if (tryLoginOnStart &&
                 request.getUserPrincipal() != null
-//                && !principalIsWrong
                 && ActiveDirectoryHelper.useActiveDirectory()) {
 
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
             try {
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(userName, request.getLocale());
-//                principalIsWrong = false;
 
                 return true;
             } catch (LoginException e) {
-//                principalIsWrong = true;
+                // todo log
             } finally {
                 // Close attempt login on start
                 tryLoginOnStart = false;

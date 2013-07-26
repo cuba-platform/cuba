@@ -5,38 +5,39 @@
  */
 package com.haulmont.cuba.web.sys;
 
-//import com.haulmont.cuba.core.app.DataService;
-//import com.haulmont.cuba.core.entity.Entity;
-//import com.haulmont.cuba.core.global.*;
-//import com.haulmont.cuba.gui.NoSuchScreenException;
-//import com.haulmont.cuba.gui.WindowManager;
-//import com.haulmont.cuba.gui.components.Action;
-//import com.haulmont.cuba.gui.components.Component;
-//import com.haulmont.cuba.gui.components.DialogAction;
-//import com.haulmont.cuba.gui.components.IFrame;
-//import com.haulmont.cuba.gui.config.WindowConfig;
-//import com.haulmont.cuba.gui.config.WindowInfo;
-//import com.haulmont.cuba.security.entity.User;
-//import com.haulmont.cuba.security.entity.UserSubstitution;
-//import com.haulmont.cuba.security.global.UserSession;
-//import com.haulmont.cuba.web.App;
-//import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
-//import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
-//import com.haulmont.cuba.web.exception.AccessDeniedHandler;
-//import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
-//import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
-//import org.apache.commons.lang.BooleanUtils;
-//import org.apache.commons.lang.StringUtils;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserSubstitution;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
+import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
+import com.haulmont.cuba.web.exception.AccessDeniedHandler;
+import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
+import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
+import com.vaadin.server.Page;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
-//import javax.inject.Inject;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.UUID;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Handles links from outside of the application.
@@ -50,10 +51,8 @@ import javax.annotation.ManagedBean;
 @Scope("prototype")
 public class LinkHandler {
 
-//    vaadin7 LinkHandler
-
     public static final String NAME = "cuba_LinkHandler";
-    /*
+
     protected Log log = LogFactory.getLog(getClass());
 
     @Inject
@@ -75,9 +74,9 @@ public class LinkHandler {
         this.requestParams = requestParams;
     }
 
-    *//**
+    /**
      * Called to handle the link.
-     *//*
+     */
     public void handle() {
         try {
             String screenName = requestParams.get("screen");
@@ -131,7 +130,7 @@ public class LinkHandler {
                                 @Override
                                 public void doRevert() {
                                     super.doRevert();
-                                    app.getAppWindow().executeJavaScript("window.close();");
+                                    Page.getCurrent().getJavaScript().execute("window.close();");
                                 }
 
                                 @Override
@@ -143,7 +142,8 @@ public class LinkHandler {
                                 @Override
                                 public void actionPerform(Component component) {
                                     super.actionPerform(component);
-                                    app.getAppWindow().executeJavaScript("window.close();");
+
+                                    Page.getCurrent().getJavaScript().execute("window.close();");
                                 }
 
                                 @Override
@@ -162,7 +162,7 @@ public class LinkHandler {
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    app.getAppWindow().executeJavaScript("window.close();");
+                                    Page.getCurrent().getJavaScript().execute("window.close();");
                                 }
                             }
                     });
@@ -199,9 +199,9 @@ public class LinkHandler {
         LoadContext.Query query = new LoadContext.Query("select su from sec$UserSubstitution us join us.user u " +
                 "join us.substitutedUser su where u.id = :id and su.id = :userId and " +
                 "(us.endDate is null or us.endDate >= :currentDate) and (us.startDate is null or us.startDate <= :currentDate)");
-        query.addParameter("id", user);
-        query.addParameter("userId", userId);
-        query.addParameter("currentDate", timeSource.currentTimestamp());
+        query.setParameter("id", user);
+        query.setParameter("userId", userId);
+        query.setParameter("currentDate", timeSource.currentTimestamp());
         loadContext.setQuery(query);
         List<User> users = dataService.loadList(loadContext);
         return users.isEmpty() ? null : users.get(0);
@@ -210,7 +210,7 @@ public class LinkHandler {
     protected User loadUser(UUID userId) {
         LoadContext loadContext = new LoadContext(User.class);
         LoadContext.Query query = new LoadContext.Query("select u from sec$User u where u.id = :userId");
-        query.addParameter("userId", userId);
+        query.setParameter("userId", userId);
         loadContext.setQuery(query);
         List<User> users = dataService.loadList(loadContext);
         return users.isEmpty() ? null : users.get(0);
@@ -294,5 +294,5 @@ public class LinkHandler {
             return null;
         }
         return entity;
-    }*/
+    }
 }

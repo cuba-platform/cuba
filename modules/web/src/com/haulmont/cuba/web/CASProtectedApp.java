@@ -2,22 +2,20 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 22.10.2010 18:06:35
- *
- * $Id: CASProtectedApp.java 3149 2010-11-16 12:13:28Z krokhin $
  */
 package com.haulmont.cuba.web;
 
-//import com.vaadin.service.ApplicationContext;
+import com.haulmont.cuba.security.global.LoginException;
 
-// vaadin7 Outdated
-public class CASProtectedApp /*extends AppUI implements ConnectionListener*/ {
-/*
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
-    private static Log log = LogFactory.getLog(CASProtectedApp.class);
-    
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
+public class CASProtectedApp extends DefaultApp implements ConnectionListener {
+
     private static final long serialVersionUID = -6926944868742949956L;
 
     @Override
@@ -25,13 +23,6 @@ public class CASProtectedApp /*extends AppUI implements ConnectionListener*/ {
         Connection connection = new CASProtectedConnection();
         connection.addListener(this);
         return connection;
-    }
-
-    @Override
-    public void init() {
-        log.debug("Initializing application");
-        ApplicationContext appContext = getContext();
-        appContext.addTransactionListener(this);
     }
 
     @Override
@@ -48,58 +39,4 @@ public class CASProtectedApp /*extends AppUI implements ConnectionListener*/ {
         }
         return false;
     }
-
-    public void connectionStateChanged(Connection connection) throws LoginException {
-        if (connection.isConnected()) {
-            log.debug("Creating AppWindow");
-
-            getTimers().stopAll();
-
-            for (Object win : new ArrayList(getWindows())) {
-                removeWindow((Window) win);
-            }
-
-            String name = currentWindowName.get();
-            if (name == null)
-                name = createWindowName(true);
-
-            Window window = getWindow(name);
-
-            setMainWindow(window);
-            currentWindowName.set(window.getName());
-
-            initExceptionHandlers(true);
-
-            if (linkHandler != null) {
-                linkHandler.handle();
-                linkHandler = null;
-            }
-        } else {
-            //todo think what I should to do in this case?
-        }
-    }
-
-    @Override
-    public Window getWindow(String name) {
-        Window window = super.getWindow(name);
-
-        // it does not exist yet, create it.
-        if (window == null) {
-            if (connection.isConnected()) {
-                final AppWindow appWindow = createAppWindow();
-                appWindow.setName(name);
-                addWindow(appWindow);
-
-                connection.addListener(appWindow);
-
-                return appWindow;
-            } else {
-                //todo think what I should to do in this case?
-            }
-        }
-
-        return window;
-    }
-*/
-
 }
