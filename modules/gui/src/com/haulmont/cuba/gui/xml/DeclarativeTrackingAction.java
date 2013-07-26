@@ -29,6 +29,8 @@ public class DeclarativeTrackingAction extends DeclarativeAction implements Coll
 
     @Override
     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+        super.setEnabled(enabledFlag
+                && ds.getState() == Datasource.State.VALID && ds.getItem() != null);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class DeclarativeTrackingAction extends DeclarativeAction implements Coll
 
     @Override
     public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        super.setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
+        super.setEnabled(state == Datasource.State.VALID && ds.getItem() != null);
     }
 
     @Override

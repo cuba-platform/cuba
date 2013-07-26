@@ -33,6 +33,8 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
 
     @Override
     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+        super.setEnabled(enabledFlag
+                && isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
     }
 
     @Override
@@ -57,10 +59,12 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
 
     @Override
     public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        super.setEnabled(isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
+        super.setEnabled(this.enabledFlag
+                && isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
     }
 
     @Override
     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+        super.setEnabled(enabledFlag && isApplicableTo(Datasource.State.VALID, source));
     }
 }
