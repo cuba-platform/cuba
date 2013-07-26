@@ -6,7 +6,7 @@
 
 // Version: $Id$
 
-@mixin havana-button($primaryStyleName : v-button) {
+@mixin havana-button($primaryStyleName: v-button) {
   .#{$primaryStyleName} {
     display: inline-block;
     zoom: 1;
@@ -62,17 +62,19 @@
     background: transparent;
     padding: 0;
 
-    .#{$primaryStyleName}-caption {
-      text-decoration: underline;
-      color: $theme_linkColor;
-      text-align: left;
-    }
-
     .#{$primaryStyleName}-wrap {
-      background: transparent;
-      height: inherit;
-      padding: 0;
-      margin-top: 0;
+      .#{$primaryStyleName}-caption {
+        text-decoration: underline;
+        color: $theme_linkColor;
+        text-align: left;
+      }
+
+      .#{$primaryStyleName}-wrap {
+        background: transparent;
+        height: inherit;
+        padding: 0;
+        margin-top: 0;
+      }
     }
   }
 
