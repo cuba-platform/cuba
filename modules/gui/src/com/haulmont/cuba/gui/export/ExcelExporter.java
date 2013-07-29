@@ -105,7 +105,12 @@ public class ExcelExporter {
 
     public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded,
                             ExportDisplay display, List<String> filterDescription) {
-         if (display == null)
+        exportTable(table, columns, exportExpanded, display, filterDescription, null);
+    }
+
+    public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded,
+                            ExportDisplay display, List<String> filterDescription, String fileName) {
+        if (display == null)
             throw new IllegalArgumentException("ExportDisplay is null");
 
         createWorkbookWithSheet();
@@ -189,8 +194,7 @@ public class ExcelExporter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        String fileName = AppBeans.get(MessageTools.class).getEntityCaption(datasource.getMetaClass());
+        fileName = fileName == null ? AppBeans.get(MessageTools.class).getEntityCaption(datasource.getMetaClass()) : fileName;
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
     }
 
