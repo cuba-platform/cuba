@@ -175,8 +175,7 @@ public class GroupBrowser extends AbstractWindow {
                 if (constraintCreateAction != null)
                     constraintCreateAction.setEnabled(item != null);
                 groupCopyAction.setEnabled(item != null);
-                boolean isGroupCanBeRemoved = (item != null && groupsDs.getChildren(item.getId()).size() == 0);
-                removeButton.setEnabled(isGroupCanBeRemoved);
+                removeButton.setEnabled(item != null && groupsDs.getChildren(item.getId()).isEmpty());
             }
         });
 
