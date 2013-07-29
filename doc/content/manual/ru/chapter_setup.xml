@@ -74,6 +74,9 @@
       <para>Для интеграции с <application>IntelliJ IDEA 12</application> выполните следующие шаги:</para>
       <orderedlist>
         <listitem>
+          <para>Откройте или <link linkend="qs_studio_setup">создайте новый</link> проект в Studio</para>
+        </listitem>
+        <listitem>
           <para>В главном меню Studio выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create IDEA project files</guimenu>. В каталоге проекта будут созданы файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
         </listitem>
         <listitem>
