@@ -90,7 +90,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public boolean isVisible() {
-        return getComposition().isVisible();
+        return WebComponentsHelper.isComponentVisibleToClient(getComposition());
     }
 
     @Override

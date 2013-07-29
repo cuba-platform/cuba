@@ -325,6 +325,38 @@ public class WebComponentsHelper {
         });
     }
 
+    /**
+     * Checks if the component should be visible to the client. Returns false if
+     * the child should not be sent to the client, true otherwise.
+     *
+     * @param child The child to check
+     * @return true if the child is visible to the client, false otherwise
+     */
+    public static boolean isComponentVisibleToClient(Component child) {
+        if (!child.isVisible()) {
+            return false;
+        }
+        HasComponents parent = child.getParent();
+
+        if (parent instanceof SelectiveRenderer) {
+            if (!((SelectiveRenderer) parent).isRendered(child)) {
+                return false;
+            }
+        }
+
+        if (parent != null) {
+            return isComponentVisibleToClient(parent);
+        } else {
+            if (child instanceof UI) {
+                // UI has no parent and visibility was checked above
+                return true;
+            } else {
+                // Component which is not attached to any UI
+                return false;
+            }
+        }
+    }
+
     public static int convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {
 
         return 0;
