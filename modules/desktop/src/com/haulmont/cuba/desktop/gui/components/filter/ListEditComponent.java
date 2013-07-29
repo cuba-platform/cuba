@@ -28,11 +28,13 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author devyatkin
@@ -135,8 +137,11 @@ public class ListEditComponent extends Picker {
 
         private static final String COMPONENT_WIDTH = "180";
         private Map<Object, String> values;
-        private JPanel mainPanel = new JPanel(new MigLayout("alignx center"));
+        private JPanel mainPanel = new JPanel(new MigLayout("fill"));
         private JPanel listPanel;
+        private JPanel dateFieldPanel;
+        private Object date = null;
+        private JScrollPane pane;
 
         private ListEditWindow(Map<Object, String> values) {
             super(App.getInstance().getMainFrame(), MessageProvider.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
@@ -144,12 +149,15 @@ public class ListEditComponent extends Picker {
             add(mainPanel);
             this.values = new HashMap<Object, String>(values);
             listPanel = new JPanel(new MigLayout());
+            pane = new JScrollPane(listPanel);
+            pane.setAutoscrolls(true);
             for (Map.Entry<Object, String> entry : values.entrySet()) {
                 addItemLayout(entry.getKey(), entry.getValue());
             }
-            mainPanel.add(listPanel, "wrap, alignx center");
-
+            mainPanel.add(pane, "wrap, dock north, grow");
+            mainPanel.setPreferredSize(new Dimension(250,250));
             final DesktopAbstractComponent field;
+            JButton addButton = null;
 
             if (collectionDatasource != null) {
                 final DesktopLookupField lookup = new DesktopLookupField();
@@ -239,7 +247,19 @@ public class ListEditComponent extends Picker {
 
             } else if (Date.class.isAssignableFrom(itemClass)) {
                 field = new DesktopDateField();
-
+                dateFieldPanel = new JPanel(new MigLayout());
+                addButton = new JButton("Add");
+                addButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (date != null){
+                            String str = addDate((Date)date);
+                            addItemLayout(date, str);
+                            ((DesktopDateField)field).setValue(null);
+                            date = null;
+                        }
+                    }
+                } );
                 if (itemClass.equals(java.sql.Date.class))
                     ((DesktopDateField) field).setResolution(DateField.Resolution.DAY);
                 else
@@ -248,9 +268,7 @@ public class ListEditComponent extends Picker {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
                         if (value != null) {
-                            String str = addDate((Date) value);
-                            addItemLayout(value, str);
-                            ((DesktopDateField) field).setValue(null);
+                            date = value;
                         }
                     }
                 });
@@ -258,9 +276,8 @@ public class ListEditComponent extends Picker {
             } else
                 throw new UnsupportedOperationException();
 
-            listPanel.add(field.getComposition(), "wrap, dock north, gapy 10px 10px");
-            JPanel bottomPanel = new JPanel(new MigLayout());
 
+            JPanel bottomPanel = new JPanel(new MigLayout());
             JButton okBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
             okBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
             DesktopComponentsHelper.adjustSize(okBtn);
@@ -288,7 +305,15 @@ public class ListEditComponent extends Picker {
             );
             bottomPanel.add(cancelBtn);
 
-            mainPanel.add(bottomPanel, "alignx center, dock south");
+            mainPanel.add(bottomPanel, "dock south");
+            if (dateFieldPanel == null){
+                mainPanel.add(field.getComposition(), "wrap, dock north, gapy 10px 10px");
+            }
+            else {
+                dateFieldPanel.add(field.getComposition());
+                dateFieldPanel.add(addButton);
+                mainPanel.add(dateFieldPanel,"dock south");
+            }
             pack();
 
             setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -323,7 +348,7 @@ public class ListEditComponent extends Picker {
             listPanel.add(itemPanel, "wrap");
             listPanel.revalidate();
             listPanel.repaint();
-            pack();
+            mainPanel.revalidate();
         }
 
         private String addRuntimeEnumValue(String value) {

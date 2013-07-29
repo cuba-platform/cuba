@@ -18,10 +18,7 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebDateField;
-import com.haulmont.cuba.web.gui.components.WebLookupField;
-import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -346,10 +343,12 @@ public class ListEditComponent extends CustomField {
         private VerticalLayout listLayout;
         private Map<Object, String> values;
         private Messages messages;
+        private Object date = null;
 
         private ListEditWindow(Map<Object, String> values) {
             super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
             setWidth(200, Unit.PIXELS);
+            setHeight(200,Unit.PIXELS);
             setModal(true);
 
             this.messages = AppBeans.get(Messages.class);
@@ -361,12 +360,21 @@ public class ListEditComponent extends CustomField {
             listLayout = new VerticalLayout();
             listLayout.setMargin(new MarginInfo(false, false, true, false));
             listLayout.setSpacing(true);
+            listLayout.setHeight(-1, Unit.PIXELS);
             for (Map.Entry<Object, String> entry : values.entrySet()) {
                 addItemLayout(entry.getKey(), entry.getValue());
             }
-            contentLayout.addComponent(listLayout);
+
+            Panel editAreaPanel = new Panel();
+            editAreaPanel.setSizeFull();
+            editAreaPanel.setContent(listLayout);
+            contentLayout.addComponent(editAreaPanel);
+            contentLayout.setExpandRatio(editAreaPanel,1.0f);
+            contentLayout.setHeight(100,Unit.PERCENTAGE);
 
             final Field field;
+            Button addButton = null;
+            HorizontalLayout dateFieldLayout = null;
 
             if (collectionDatasource != null) {
                 final WebLookupField lookup = new WebLookupField();
@@ -462,6 +470,21 @@ public class ListEditComponent extends CustomField {
                 final WebDateField dateField = new WebDateField();
 
                 field = dateField.getComponent();
+                dateFieldLayout = new HorizontalLayout();
+                dateFieldLayout.setHeight(-1,Unit.PIXELS);
+                this.setWidth(350, Unit.PIXELS);
+                addButton = new Button("Add");
+                addButton.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        if (date != null){
+                            String str = addDate((Date)date);
+                            addItemLayout(date, str);
+                            field.setValue(null);
+                            date = null;
+                        }
+                    }
+                });
                 com.haulmont.cuba.gui.components.DateField.Resolution resolution;
                 String dateFormat;
                 if (itemClass.equals(java.sql.Date.class)) {
@@ -478,18 +501,25 @@ public class ListEditComponent extends CustomField {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
                         if (value != null) {
-                            String str = addDate((Date) value);
-                            addItemLayout(value, str);
-                            field.setValue(null);
+                            date = value;
                         }
                     }
                 });
             } else
                 throw new UnsupportedOperationException();
 
-            contentLayout.addComponent(field);
+            if (dateFieldLayout == null)
+                contentLayout.addComponent(field);
+            else {
+                dateFieldLayout.setMargin(new MarginInfo(true, false, true, false));
+                dateFieldLayout.setSpacing(true);
+                dateFieldLayout.addComponent(field);
+                dateFieldLayout.addComponent(addButton);
+                contentLayout.addComponent(dateFieldLayout);
+            }
 
             HorizontalLayout bottomLayout = new HorizontalLayout();
+            bottomLayout.setHeight(-1,Unit.PIXELS);
             bottomLayout.setMargin(new MarginInfo(true, false, true, false));
             bottomLayout.setSpacing(true);
 
