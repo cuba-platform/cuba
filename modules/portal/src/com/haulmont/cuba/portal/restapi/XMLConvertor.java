@@ -454,7 +454,7 @@ public class XMLConvertor implements Convertor {
         List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
         for (MetaProperty property : properties) {
             Element child;
-            if (metadataTools.isTransient(entity, property.getName()))
+            if (metadataTools.isTransient(property))
                 continue;
 
             if (!attrViewPermitted(metaClass, property.getName()))
