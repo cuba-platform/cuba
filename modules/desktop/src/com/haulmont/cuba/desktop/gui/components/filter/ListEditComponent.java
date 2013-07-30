@@ -12,6 +12,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.*;
@@ -46,6 +47,7 @@ public class ListEditComponent extends Picker {
 
     private Class itemClass;
     private MetaClass metaClass;
+    private Messages messages;
 
     private CollectionDatasource collectionDatasource;
     private List<String> runtimeEnum;
@@ -58,6 +60,7 @@ public class ListEditComponent extends Picker {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     public ListEditComponent(Class itemClass) {
+        messages = AppBeans.get(Messages.class);
         setOpaque(false);
         contentPanel.setOpaque(false);
         actionsPanel.setOpaque(false);
@@ -108,7 +111,7 @@ public class ListEditComponent extends Picker {
             listeners.add(listener);
     }
 
-    public void setText(String text){
+    public void setText(String text) {
         super.setValue(text);
     }
 
@@ -140,7 +143,6 @@ public class ListEditComponent extends Picker {
         private JPanel mainPanel = new JPanel(new MigLayout("fill"));
         private JPanel listPanel;
         private JPanel dateFieldPanel;
-        private Object date = null;
         private JScrollPane pane;
 
         private ListEditWindow(Map<Object, String> values) {
@@ -155,7 +157,7 @@ public class ListEditComponent extends Picker {
                 addItemLayout(entry.getKey(), entry.getValue());
             }
             mainPanel.add(pane, "wrap, dock north, grow");
-            mainPanel.setPreferredSize(new Dimension(250,250));
+            mainPanel.setPreferredSize(new Dimension(250, 250));
             final DesktopAbstractComponent field;
             JButton addButton = null;
 
@@ -248,30 +250,22 @@ public class ListEditComponent extends Picker {
             } else if (Date.class.isAssignableFrom(itemClass)) {
                 field = new DesktopDateField();
                 dateFieldPanel = new JPanel(new MigLayout());
-                addButton = new JButton("Add");
+                addButton = new JButton(messages.getMessage(getClass(), "addButton"));
                 addButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (date != null){
-                            String str = addDate((Date)date);
+                        Date date = ((DesktopDateField) field).getValue();
+                        if (date != null) {
+                            String str = addDate(date);
                             addItemLayout(date, str);
-                            ((DesktopDateField)field).setValue(null);
-                            date = null;
+                            ((DesktopDateField) field).setValue(null);
                         }
                     }
-                } );
+                });
                 if (itemClass.equals(java.sql.Date.class))
                     ((DesktopDateField) field).setResolution(DateField.Resolution.DAY);
                 else
                     ((DesktopDateField) field).setResolution(DateField.Resolution.MIN);
-                ((DesktopDateField) field).addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null) {
-                            date = value;
-                        }
-                    }
-                });
 
             } else
                 throw new UnsupportedOperationException();
@@ -306,13 +300,12 @@ public class ListEditComponent extends Picker {
             bottomPanel.add(cancelBtn);
 
             mainPanel.add(bottomPanel, "dock south");
-            if (dateFieldPanel == null){
+            if (dateFieldPanel == null) {
                 mainPanel.add(field.getComposition(), "wrap, dock north, gapy 10px 10px");
-            }
-            else {
+            } else {
                 dateFieldPanel.add(field.getComposition());
                 dateFieldPanel.add(addButton);
-                mainPanel.add(dateFieldPanel,"dock south");
+                mainPanel.add(dateFieldPanel, "dock south");
             }
             pack();
 
@@ -321,7 +314,7 @@ public class ListEditComponent extends Picker {
 
                 @Override
                 public void windowClosed(WindowEvent e) {
-                   DesktopComponentsHelper.getTopLevelFrame(ListEditComponent.this).activate();
+                    DesktopComponentsHelper.getTopLevelFrame(ListEditComponent.this).activate();
                 }
             });
         }

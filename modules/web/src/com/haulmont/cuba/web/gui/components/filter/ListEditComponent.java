@@ -343,12 +343,11 @@ public class ListEditComponent extends CustomField {
         private VerticalLayout listLayout;
         private Map<Object, String> values;
         private Messages messages;
-        private Object date = null;
 
         private ListEditWindow(Map<Object, String> values) {
             super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
             setWidth(200, Unit.PIXELS);
-            setHeight(200,Unit.PIXELS);
+            setHeight(200, Unit.PIXELS);
             setModal(true);
 
             this.messages = AppBeans.get(Messages.class);
@@ -369,8 +368,8 @@ public class ListEditComponent extends CustomField {
             editAreaPanel.setSizeFull();
             editAreaPanel.setContent(listLayout);
             contentLayout.addComponent(editAreaPanel);
-            contentLayout.setExpandRatio(editAreaPanel,1.0f);
-            contentLayout.setHeight(100,Unit.PERCENTAGE);
+            contentLayout.setExpandRatio(editAreaPanel, 1.0f);
+            contentLayout.setHeight(100, Unit.PERCENTAGE);
 
             final Field field;
             Button addButton = null;
@@ -468,20 +467,18 @@ public class ListEditComponent extends CustomField {
 
             } else if (Date.class.isAssignableFrom(itemClass)) {
                 final WebDateField dateField = new WebDateField();
-
                 field = dateField.getComponent();
                 dateFieldLayout = new HorizontalLayout();
-                dateFieldLayout.setHeight(-1,Unit.PIXELS);
                 this.setWidth(350, Unit.PIXELS);
-                addButton = new Button("Add");
+                addButton = new Button(messages.getMessage(getClass(), "addButton"));
                 addButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        if (date != null){
-                            String str = addDate((Date)date);
+                        Date date = dateField.getValue();
+                        if (date != null) {
+                            String str = addDate(date);
                             addItemLayout(date, str);
                             field.setValue(null);
-                            date = null;
                         }
                     }
                 });
@@ -496,15 +493,6 @@ public class ListEditComponent extends CustomField {
                 }
                 dateField.setResolution(resolution);
                 dateField.setDateFormat(dateFormat);
-
-                dateField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null) {
-                            date = value;
-                        }
-                    }
-                });
             } else
                 throw new UnsupportedOperationException();
 
@@ -519,7 +507,6 @@ public class ListEditComponent extends CustomField {
             }
 
             HorizontalLayout bottomLayout = new HorizontalLayout();
-            bottomLayout.setHeight(-1,Unit.PIXELS);
             bottomLayout.setMargin(new MarginInfo(true, false, true, false));
             bottomLayout.setSpacing(true);
 
