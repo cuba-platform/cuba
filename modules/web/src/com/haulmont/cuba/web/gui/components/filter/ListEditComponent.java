@@ -470,7 +470,7 @@ public class ListEditComponent extends CustomField {
                 field = dateField.getComponent();
                 dateFieldLayout = new HorizontalLayout();
                 this.setWidth(350, Unit.PIXELS);
-                addButton = new Button(messages.getMessage(getClass(), "addButton"));
+                addButton = new Button(messages.getMessage(getClass(), "actions.Add"));
                 addButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {

@@ -250,7 +250,7 @@ public class ListEditComponent extends Picker {
             } else if (Date.class.isAssignableFrom(itemClass)) {
                 field = new DesktopDateField();
                 dateFieldPanel = new JPanel(new MigLayout());
-                addButton = new JButton(messages.getMessage(getClass(), "addButton"));
+                addButton = new JButton(messages.getMessage(getClass(), "actions.Add"));
                 addButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
