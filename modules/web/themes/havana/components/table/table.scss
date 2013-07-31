@@ -83,6 +83,12 @@
 
     .#{$primaryStyleName}-cell-content {
       border-right-color: $theme_tableCellSeparatorColor;
+
+      .v-button-caption,
+      .v-button-link .v-button-caption {
+        font-size: 11px;
+        color: $theme_buttonCaptionColor;
+      }
     }
 
     .#{$primaryStyleName}-cell-wrapper.widget-container {

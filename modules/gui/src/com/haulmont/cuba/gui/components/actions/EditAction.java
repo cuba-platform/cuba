@@ -111,19 +111,19 @@ public class EditAction extends ItemTrackingAction {
 
             Map<String, Object> params = getWindowParams();
             if (params == null)
-                params = new HashMap<String, Object>();
+                params = new HashMap<>();
 
             final Window window = owner.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                        Object item = ((Window.Editor) window).getItem();
-                        if (item instanceof Entity) {
+                        Entity item = ((Window.Editor) window).getItem();
+                        if (item != null) {
                             if (pDs == null) {
-                                datasource.updateItem((Entity) item);
+                                datasource.updateItem(item);
                             }
-                            afterCommit((Entity) item);
+                            afterCommit(item);
                         }
                     }
                     afterWindowClosed(window);

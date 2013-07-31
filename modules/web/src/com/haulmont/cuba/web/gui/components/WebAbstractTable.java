@@ -49,6 +49,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -511,7 +512,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                                 null : column.getXmlDescriptor().attributeValue("clickAction");
 
                 if (propertyPath.getRange().isClass()) {
-                    if (!isLookup && !StringUtils.isEmpty(clickAction)) {
+                    if (!isLookup && StringUtils.isNotEmpty(clickAction)) {
                         addGeneratedColumn(propertyPath, new ReadOnlyAssociationGenerator(column));
                     }
                 } else if (propertyPath.getRange().isDatatype()) {
@@ -525,9 +526,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
                         }
                     }
-                } else if (propertyPath.getRange().isEnum()) {
+                } /*else if (propertyPath.getRange().isEnum()) {
                     // TODO (abramov)
-                } else {
+                }*/ else {
                     throw new UnsupportedOperationException();
                 }
             }
@@ -1134,7 +1135,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
             final com.vaadin.ui.Button component = new com.vaadin.ui.Button();
             component.setData(value);
             component.setCaption(value == null ? "" : property.toString());
-            component.setStyleName("link");
+            component.setStyleName(BaseTheme.BUTTON_LINK);
 
             component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
                 @Override
@@ -1150,7 +1151,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                             String screenName = clickAction.substring("open:".length()).trim();
                             final Window window = frame.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
 
-                            // todo use EditAction instead of this
                             window.addListener(new Window.CloseListener() {
                                 @Override
                                 public void windowClosed(String actionId) {
