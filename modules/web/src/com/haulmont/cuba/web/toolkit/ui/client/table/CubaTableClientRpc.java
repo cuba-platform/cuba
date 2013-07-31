@@ -6,17 +6,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
-import com.vaadin.shared.Connector;
-import com.vaadin.shared.ui.table.TableState;
+import com.vaadin.shared.communication.ClientRpc;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaTableState extends TableState {
+public interface CubaTableClientRpc extends ClientRpc {
 
-    public boolean textSelectionEnabled = false;
-    public boolean allowPopupMenu = true;
-
-    public Connector presentations;
+    void hidePresentationsPopup();
 }

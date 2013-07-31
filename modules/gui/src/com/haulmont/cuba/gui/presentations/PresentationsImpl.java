@@ -2,26 +2,18 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 17.09.2010 13:10:10
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.presentations;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -30,6 +22,10 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class PresentationsImpl implements Presentations {
 
     private String name;
@@ -37,8 +33,8 @@ public class PresentationsImpl implements Presentations {
     private Presentation current;
     private Presentation def;
 
-    private Set<Presentation> needToUpdate = new HashSet<Presentation>();
-    private Set<Presentation> needToRemove = new HashSet<Presentation>();
+    private Set<Presentation> needToUpdate = new HashSet<>();
+    private Set<Presentation> needToRemove = new HashSet<>();
 
     private List<PresentationsChangeListener> listeners;
 
@@ -46,6 +42,7 @@ public class PresentationsImpl implements Presentations {
         name = ComponentsHelper.getComponentPath(c);
     }
 
+    @Override
     public void add(Presentation p) {
         checkLoad();
         presentations.put(p.getId(), p);
@@ -59,11 +56,13 @@ public class PresentationsImpl implements Presentations {
         firePresentationsSetChanged();
     }
 
+    @Override
     public Presentation getCurrent() {
         checkLoad();
         return current;
     }
 
+    @Override
     public void setCurrent(Presentation p) {
         checkLoad();
         if (presentations.containsKey(p.getId())) {
@@ -75,6 +74,7 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public Element getSettings(Presentation p) {
         p = getPresentation(p.getId());
         if (p != null) {
@@ -91,6 +91,7 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public void setSettings(Presentation p, Element e) {
         p = getPresentation(p.getId());
         if (p != null) {
@@ -99,11 +100,13 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public Presentation getPresentation(Object id) {
         checkLoad();
         return presentations.get(id);
     }
 
+    @Override
     public String getCaption(Object id) {
         Presentation p = getPresentation(id);
         if (p != null) {
@@ -112,11 +115,13 @@ public class PresentationsImpl implements Presentations {
         return null;
     }
 
+    @Override
     public Collection<Object> getPresentationIds() {
         checkLoad();
         return Collections.unmodifiableCollection(presentations.keySet());
     }
 
+    @Override
     public void setDefault(Presentation p) {
         checkLoad();
         if (p == null) {
@@ -132,10 +137,12 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public Presentation getDefault() {
         return def;
     }
 
+    @Override
     public void remove(Presentation p) {
         checkLoad();
         if (presentations.remove(p.getId()) != null) {
@@ -158,6 +165,7 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public void modify(Presentation p) {
         checkLoad();
         if (presentations.containsKey(p.getId())) {
@@ -172,19 +180,22 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public boolean isAutoSave(Presentation p) {
         p = getPresentation(p.getId());
         return p != null && BooleanUtils.isTrue(p.getAutoSave());
     }
 
+    @Override
     public boolean isGlobal(Presentation p) {
         p = getPresentation(p.getId());
         return p != null && !PersistenceHelper.isNew(p) && p.getUser() == null;
     }
 
+    @Override
     public void commit() {
         if (!needToUpdate.isEmpty() || !needToRemove.isEmpty()) {
-            DataService ds = ServiceLocator.getDataService();
+            DataService ds = AppBeans.get(DataService.class);
 
             CommitContext ctx = new CommitContext(
                     Collections.unmodifiableSet(needToUpdate),
@@ -212,13 +223,15 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public void addListener(PresentationsChangeListener listener) {
         if (listeners == null) {
-            listeners = new ArrayList<PresentationsChangeListener>();
+            listeners = new LinkedList<>();
         }
         listeners.add(listener);
     }
 
+    @Override
     public void removeListener(PresentationsChangeListener listener) {
         if (listeners != null) {
             listeners.remove(listener);
@@ -228,6 +241,7 @@ public class PresentationsImpl implements Presentations {
         }
     }
 
+    @Override
     public Presentation getPresentationByName(String name) {
         for (Presentation p : presentations.values()) {
             if (name.equalsIgnoreCase(p.getName())) {
@@ -255,14 +269,12 @@ public class PresentationsImpl implements Presentations {
 
     private void checkLoad() {
         if (presentations == null) {
-            DataService ds = ServiceLocator.getDataService();
+            DataService ds = AppBeans.get(DataService.class);
             LoadContext ctx = new LoadContext(Presentation.class);
             ctx.setView("app");
 
-            User user = UserSessionClient.getUserSession().getSubstitutedUser();
-            if (user == null) {
-                user = UserSessionClient.getUserSession().getUser();
-            }
+            UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
+            User user = session.getCurrentOrSubstitutedUser();
 
             ctx.setQueryString("select p from sec$Presentation p " +
                     "where p.componentId = :component and (p.user is null or p.user.id = :userId)")
@@ -271,7 +283,7 @@ public class PresentationsImpl implements Presentations {
 
             final List<Presentation> list = ds.loadList(ctx);
 
-            presentations = new LinkedHashMap<Object, Presentation>(list.size());
+            presentations = new LinkedHashMap<>(list.size());
             for (final Presentation p : list) {
                 presentations.put(p.getId(), p);
             }

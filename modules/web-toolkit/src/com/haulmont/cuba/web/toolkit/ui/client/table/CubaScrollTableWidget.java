@@ -6,14 +6,20 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.HasFocusHandlers;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
@@ -22,6 +28,7 @@ import com.vaadin.client.Focusable;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.ShortcutActionHandler;
+import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VScrollTable;
 
 import java.util.Iterator;
@@ -43,6 +50,10 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaScrollTableWidget");
 
+    protected VOverlay presentationsEditorPopup;
+
+    private Widget presentationsMenu;
+
     protected CubaScrollTableWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
@@ -58,13 +69,29 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         }
     }
 
-    public void setShortcutActionHandler(ShortcutActionHandler handler){
+    public void setShortcutActionHandler(ShortcutActionHandler handler) {
         this.shortcutHandler = handler;
     }
 
     @Override
     public ShortcutActionHandler getShortcutActionHandler() {
         return shortcutHandler;
+    }
+
+    public Widget getPresentationsMenu() {
+        return presentationsMenu;
+    }
+
+    public void setPresentationsMenu(Widget presentationsMenu) {
+        if (this.presentationsMenu != presentationsMenu) {
+            Style presentationsIconStyle = ((CubaScrollTableHead) tHead).presentationsEditIcon.getElement().getStyle();
+            if (presentationsMenu == null) {
+                presentationsIconStyle.setDisplay(Style.Display.NONE);
+            } else {
+                presentationsIconStyle.setDisplay(Style.Display.BLOCK);
+            }
+        }
+        this.presentationsMenu = presentationsMenu;
     }
 
     @Override
@@ -98,9 +125,10 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     @Override
-    public void handleBodyContextMenu(ContextMenuEvent event){
-        if (isAllowPopupMenu)
+    public void handleBodyContextMenu(ContextMenuEvent event) {
+        if (isAllowPopupMenu) {
             super.handleBodyContextMenu(event);
+        }
     }
 
     @Override
@@ -109,6 +137,41 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     protected class CubaScrollTableHead extends TableHead {
+
+        protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
+
+        public CubaScrollTableHead() {
+            presentationsEditIcon.getElement().setClassName("cuba-table-presentations-icon");
+
+            DOM.setStyleAttribute(presentationsEditIcon.getElement(), "display", "none");
+
+            Element columnSelector = (Element) getElement().getLastChild();
+            DOM.insertChild(getElement(), presentationsEditIcon.getElement(), DOM.getChildIndex(getElement(), columnSelector));
+
+            DOM.sinkEvents(presentationsEditIcon.getElement(), Event.ONCLICK);
+        }
+
+        @Override
+        public void onBrowserEvent(Event event) {
+            super.onBrowserEvent(event);
+
+            if (event.getEventTarget().cast() == presentationsEditIcon.getElement()) {
+                presentationsEditorPopup = new VOverlay();
+                presentationsEditorPopup.setStyleName("cuba-table-presentations-editor");
+                presentationsEditorPopup.setOwner(CubaScrollTableWidget.this);
+                presentationsEditorPopup.setWidget(presentationsMenu);
+
+                presentationsEditorPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
+                    @Override
+                    public void onClose(CloseEvent<PopupPanel> event) {
+                        presentationsEditorPopup = null;
+                    }
+                });
+
+                presentationsEditorPopup.setAutoHideEnabled(true);
+                presentationsEditorPopup.showRelativeTo(presentationsEditIcon);
+            }
+        }
 
         @Override
         protected HeaderCell createHeaderCell(String cid, String caption) {
@@ -240,8 +303,9 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
 
             protected void handleFocusForWidget() {
-                if (lastFocusedWidget == null)
+                if (lastFocusedWidget == null) {
                     return;
+                }
 
                 logger.log("Handle focus");
 
@@ -268,8 +332,9 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             public void onBrowserEvent(Event event) {
                 super.onBrowserEvent(event);
 
-                if (event.getTypeInt() == Event.ONMOUSEUP)
+                if (event.getTypeInt() == Event.ONMOUSEUP) {
                     handleFocusForWidget();
+                }
             }
 
             @Override
@@ -312,14 +377,16 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                 super.updateCellStyleNames(td, primaryStyleName);
 
-                if (isWidget)
+                if (isWidget) {
                     container.addClassName(WIDGET_CELL_CLASSNAME);
+                }
             }
 
             @Override
             public void showContextMenu(int left, int top) {
-                if (isAllowPopupMenu)
+                if (isAllowPopupMenu) {
                     super.showContextMenu(left, top);
+                }
             }
         }
     }

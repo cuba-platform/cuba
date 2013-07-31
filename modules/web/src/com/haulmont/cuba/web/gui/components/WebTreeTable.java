@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
+import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -23,8 +24,6 @@ import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.vaadin.data.Item;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -70,6 +69,11 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
     @Override
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
         component.setEditableColumns(editableColumns.toArray());
+    }
+
+    @Override
+    protected void setTablePresentations(TablePresentations tablePresentations) {
+        component.setPresentations(tablePresentations);
     }
 
     @Override
@@ -321,18 +325,11 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
             }
         }
 
-//        vaadin7
-//        @Override
-//        protected boolean changeVariables(Map<String, Object> variables) {
-//            boolean b = super.changeVariables(variables);
-//            b = handleSpecificVariables(variables) || b;
-//            return b;
-//        }
-
         @Override
-        public void paintContent(PaintTarget target) throws PaintException {
-            super.paintContent(target);
-            paintSpecificContent(target);
+        protected boolean changeVariables(Map<String, Object> variables) {
+            boolean b = super.changeVariables(variables);
+            b = handleSpecificVariables(variables) || b;
+            return b;
         }
     }
 }

@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -55,6 +56,13 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             }
 
             @Override
+            protected boolean changeVariables(Map<String, Object> variables) {
+                boolean b = super.changeVariables(variables);
+                b = handleSpecificVariables(variables) || b;
+                return b;
+            }
+
+            @Override
             public void groupBy(Object[] properties) {
                 groupBy(properties, rerender);
             }
@@ -67,6 +75,11 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     @Override
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
         component.setEditableColumns(editableColumns.toArray());
+    }
+
+    @Override
+    protected void setTablePresentations(TablePresentations tablePresentations) {
+        component.setPresentations(tablePresentations);
     }
 
     @Override

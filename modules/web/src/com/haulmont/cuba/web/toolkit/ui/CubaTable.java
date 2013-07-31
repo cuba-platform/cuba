@@ -6,8 +6,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.collect.Iterables;
+import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.data.TableContainer;
+import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableState;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
@@ -15,11 +18,9 @@ import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
+import com.vaadin.ui.Component;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-public class CubaTable extends com.vaadin.ui.Table implements TableContainer {
+public class CubaTable extends com.vaadin.ui.Table implements TableContainer, CubaEnhancedTable {
 
     protected LinkedList<Object> editableColumns = null;
 
@@ -41,6 +42,19 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer {
     @Override
     protected CubaTableState getState(boolean markAsDirty) {
         return (CubaTableState) super.getState(markAsDirty);
+    }
+
+    public TablePresentations getPresentations() {
+        return (TablePresentations) getState(false).presentations;
+    }
+
+    public void setPresentations(TablePresentations presentations) {
+        getState(true).presentations = presentations;
+    }
+
+    @Override
+    public void hidePresentationsPopup() {
+        getRpcProxy(CubaTableClientRpc.class).hidePresentationsPopup();
     }
 
     public boolean isTextSelectionEnabled() {
@@ -168,7 +182,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer {
     @Override
     public void addShortcutListener(ShortcutListener listener) {
         /*if (listener.getKeyCode() != 13 || !(listener.getModifiers() == null || listener.getModifiers().length > 0)) {*/
-            shortcutsManager.addAction(listener);
+        shortcutsManager.addAction(listener);
         /*} else
             shortcutListeners.add(listener);*/
     }
@@ -186,6 +200,20 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer {
 
         if (items instanceof TableContainer) {
             ((TableContainer) items).resetSortOrder();
+        }
+    }
+
+    @Override
+    public Iterator<Component> iterator() {
+        if (getState().presentations != null) {
+            if (visibleComponents != null) {
+                // add presentations to rendered components for client reference
+                return Iterables.concat(visibleComponents, Collections.singleton((Component) getState().presentations)).iterator();
+            } else {
+                return Collections.singleton((Component) getState().presentations).iterator();
+            }
+        } else {
+            return super.iterator();
         }
     }
 }

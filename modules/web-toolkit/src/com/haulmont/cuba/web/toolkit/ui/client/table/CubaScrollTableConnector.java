@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.table;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
 import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
@@ -20,6 +21,17 @@ import com.vaadin.shared.ui.Connect;
  */
 @Connect(value = CubaTable.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaScrollTableConnector extends TableConnector {
+
+    public CubaScrollTableConnector() {
+        registerRpc(CubaTableClientRpc.class, new CubaTableClientRpc() {
+            @Override
+            public void hidePresentationsPopup() {
+                if (getWidget().presentationsEditorPopup != null) {
+                    getWidget().presentationsEditorPopup.hide();
+                }
+            }
+        });
+    }
 
     @Override
     public CubaTableState getState() {
@@ -38,8 +50,16 @@ public class CubaScrollTableConnector extends TableConnector {
         if (stateChangeEvent.hasPropertyChanged("textSelectionEnabled")) {
             getWidget().textSelectionEnabled = getState().textSelectionEnabled;
         }
-        if (stateChangeEvent.hasPropertyChanged("allowPopupMenu")){
+        if (stateChangeEvent.hasPropertyChanged("allowPopupMenu")) {
             getWidget().isAllowPopupMenu = getState().allowPopupMenu;
+        }
+        if (stateChangeEvent.hasPropertyChanged("presentations")) {
+            if (getState().presentations != null) {
+                ComponentConnector presentations = (ComponentConnector) getState().presentations;
+                getWidget().setPresentationsMenu(presentations.getWidget());
+            } else {
+                getWidget().setPresentationsMenu(null);
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -18,8 +19,6 @@ import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
 
 import java.util.*;
@@ -35,7 +34,6 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
             @Override
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {
-                    @SuppressWarnings({"unchecked"})
                     final Entity item = datasource.getItem(itemId);
                     final String resURL = styleProvider.getItemIcon(item);
 
@@ -46,9 +44,10 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
             }
 
             @Override
-            public void paintContent(PaintTarget target) throws PaintException {
-                super.paintContent(target);
-                paintSpecificContent(target);
+            protected boolean changeVariables(Map<String, Object> variables) {
+                boolean b = super.changeVariables(variables);
+                b = handleSpecificVariables(variables) || b;
+                return b;
             }
         };
         initComponent(component);
@@ -63,6 +62,11 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
     @Override
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
         component.setEditableColumns(editableColumns.toArray());
+    }
+
+    @Override
+    protected void setTablePresentations(TablePresentations presentations) {
+        component.setPresentations(presentations);
     }
 
     @Override

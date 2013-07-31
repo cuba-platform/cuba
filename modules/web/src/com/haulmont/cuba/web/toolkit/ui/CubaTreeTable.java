@@ -6,18 +6,20 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.collect.Iterables;
+import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
+import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.treetable.CubaTreeTableState;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.ui.Component;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -25,7 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  * @version $Id$
  */
-public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableContainer {
+public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableContainer, CubaEnhancedTable {
 
     protected LinkedList<Object> editableColumns = null;
 
@@ -37,6 +39,19 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     @Override
     protected CubaTreeTableState getState(boolean markAsDirty) {
         return (CubaTreeTableState) super.getState(markAsDirty);
+    }
+
+    public TablePresentations getPresentations() {
+        return (TablePresentations) getState(false).presentations;
+    }
+
+    public void setPresentations(TablePresentations presentations) {
+        getState().presentations = presentations;
+    }
+
+    @Override
+    public void hidePresentationsPopup() {
+        getRpcProxy(CubaTableClientRpc.class).hidePresentationsPopup();
     }
 
     public boolean isTextSelectionEnabled() {
@@ -199,6 +214,20 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
         if (items instanceof TableContainer) {
             ((TableContainer) items).resetSortOrder();
+        }
+    }
+
+    @Override
+    public Iterator<Component> iterator() {
+        if (getState().presentations != null) {
+            if (visibleComponents != null) {
+                // add presentations to rendered components for client reference
+                return Iterables.concat(visibleComponents, Collections.singleton((Component) getState().presentations)).iterator();
+            } else {
+                return Collections.singleton((Component) getState().presentations).iterator();
+            }
+        } else {
+            return super.iterator();
         }
     }
 }

@@ -1,0 +1,71 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin cuba-table-presentations {
+
+  .cuba-table-presentations-icon {
+    float: right;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    position: relative;
+    margin-top: -20px;
+    margin-right: 22px;
+    background: transparent;
+    background-repeat: no-repeat;
+    background-image: url(sprites/table-presentations-icon.png); /** sprite-ref: application; */
+  }
+
+  .cuba-table-presentations-editor {
+    z-index: 19000 !important;  // do not hide parts of popup menu
+    background-color: #fff;
+    border: 1px solid $theme_fieldSelectionColor;
+    padding: 5px 3px 5px 3px;
+    font-family: $theme_fonts;
+
+    .cuba-table-presentations-title {
+      color: gray;
+      margin-left: 5px;
+      margin-right: 5px;
+      border-bottom: 1px dotted lightgray;
+      padding-bottom: 4px;
+      cursor: default;
+      font-size: 12px;
+      line-height: 14px;
+    }
+
+    .cuba-table-presentations-list.v-menubar {
+      height: auto;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    .cuba-table-presentations-list.v-menubar .v-menubar-menuitem {
+      padding: 0 2px;
+      display: block;
+
+      .v-menubar-menuitem-caption {
+        text-shadow: none;
+        color: $theme_fieldSelectionColor;
+      }
+    }
+
+    .cuba-table-presentations-list.v-menubar .v-menubar-menuitem:hover {
+      background-color: $theme_fieldSelectionColor;
+
+      .v-menubar-menuitem-caption {
+        text-shadow: none;
+        color: #fff;
+      }
+    }
+
+    .cuba-table-presentations-list.v-menubar .v-menubar-menuitem-current {
+      font-weight: bold;
+    }
+  }
+}

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.treetable.TreeTableState;
 
 /**
@@ -16,4 +17,6 @@ public class CubaTreeTableState extends TreeTableState {
 
     public boolean textSelectionEnabled = false;
     public boolean allowPopupMenu = true;
+
+    public Connector presentations;
 }

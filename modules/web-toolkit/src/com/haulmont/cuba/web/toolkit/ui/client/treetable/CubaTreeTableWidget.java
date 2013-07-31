@@ -6,19 +6,25 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.ui.VEmbedded;
-import com.vaadin.client.ui.VLabel;
-import com.vaadin.client.ui.VTextField;
-import com.vaadin.client.ui.VTreeTable;
+import com.vaadin.client.VConsole;
+import com.vaadin.client.ui.*;
 
 /**
  * @author artamonov
@@ -33,10 +39,15 @@ public class CubaTreeTableWidget extends VTreeTable {
 
     protected int sortClickCounter = 0;
 
+    protected VOverlay presentationsEditorPopup;
+
+    private Widget presentationsMenu;
+
     @Override
     protected void handleBodyContextMenu(ContextMenuEvent event) {
-        if (allowPopupMenu)
+        if (allowPopupMenu) {
             super.handleBodyContextMenu(event);
+        }
     }
 
     @Override
@@ -49,12 +60,69 @@ public class CubaTreeTableWidget extends VTreeTable {
         return new CubaTreeTableTableHead();
     }
 
+    public Widget getPresentationsMenu() {
+        return presentationsMenu;
+    }
+
+    public void setPresentationsMenu(Widget presentationsMenu) {
+        if (this.presentationsMenu != presentationsMenu) {
+            Style presentationsIconStyle = ((CubaTreeTableTableHead) tHead).presentationsEditIcon.getElement().getStyle();
+            if (presentationsMenu == null) {
+                presentationsIconStyle.setDisplay(Style.Display.NONE);
+            } else {
+                presentationsIconStyle.setDisplay(Style.Display.BLOCK);
+            }
+        }
+        this.presentationsMenu = presentationsMenu;
+    }
+
     protected class CubaTreeTableTableHead extends TableHead {
+
+        protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
+
+        public CubaTreeTableTableHead() {
+            presentationsEditIcon.getElement().setClassName("cuba-table-presentations-icon");
+
+            DOM.setStyleAttribute(presentationsEditIcon.getElement(), "display", "none");
+
+            Element columnSelector = (Element) getElement().getLastChild();
+            DOM.insertChild(getElement(), presentationsEditIcon.getElement(), DOM.getChildIndex(getElement(), columnSelector));
+
+            DOM.sinkEvents(presentationsEditIcon.getElement(), Event.ONCLICK);
+        }
+
+        @Override
+        public void onBrowserEvent(Event event) {
+            super.onBrowserEvent(event);
+
+            if (event.getEventTarget().cast() == presentationsEditIcon.getElement()) {
+                presentationsEditorPopup = new VOverlay();
+                presentationsEditorPopup.setStyleName("cuba-table-presentations-editor");
+                presentationsEditorPopup.setOwner(CubaTreeTableWidget.this);
+
+                presentationsEditorPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
+                    @Override
+                    public void onClose(CloseEvent<PopupPanel> event) {
+                        presentationsEditorPopup = null;
+                    }
+                });
+
+                presentationsEditorPopup.setWidget(presentationsMenu);
+                presentationsEditorPopup.setAutoHideEnabled(true);
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        presentationsEditorPopup.showRelativeTo(presentationsEditIcon);
+                    }
+                });
+            }
+        }
 
         @Override
         protected HeaderCell createHeaderCell(String cid, String caption) {
             return new CubaTreeTableHeaderCell(cid, caption);
         }
+
     }
 
     protected class CubaTreeTableHeaderCell extends HeaderCell {
@@ -201,8 +269,9 @@ public class CubaTreeTableWidget extends VTreeTable {
 
             @Override
             public void showContextMenu(int left, int top) {
-                if (allowPopupMenu)
-                    super.showContextMenu(left,top);
+                if (allowPopupMenu) {
+                    super.showContextMenu(left, top);
+                }
             }
 
             @Override
@@ -213,8 +282,9 @@ public class CubaTreeTableWidget extends VTreeTable {
 
                 super.updateCellStyleNames(td, primaryStyleName);
 
-                if (isWidget)
+                if (isWidget) {
                     container.addClassName(WIDGET_CELL_CLASSNAME);
+                }
             }
         }
     }

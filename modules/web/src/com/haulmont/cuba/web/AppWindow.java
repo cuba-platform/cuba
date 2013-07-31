@@ -28,10 +28,7 @@ import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.haulmont.cuba.web.toolkit.ui.CubaClientManager;
-import com.haulmont.cuba.web.toolkit.ui.CubaFileDownloader;
-import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
-import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.BrowserWindowOpener;
@@ -39,6 +36,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -92,7 +90,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     protected GlobalConfig globalConfig;
     protected WebConfig webConfig;
 
-    protected com.haulmont.cuba.web.toolkit.ui.MenuBar menuBar;
+    protected CubaMenuBar menuBar;
     protected TabSheet tabSheet;
     protected HorizontalSplitPanel foldersSplit;
 
@@ -542,8 +540,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
      *
      * @return MenuBar
      */
-    protected com.haulmont.cuba.web.toolkit.ui.MenuBar createMenuBar() {
-        menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
+    protected CubaMenuBar createMenuBar() {
+        menuBar = new CubaMenuBar();
         menuBar.setWidth("100%");
         menuBar.setMoreMenuItem(null); // force usage more item menu
 

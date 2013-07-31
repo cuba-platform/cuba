@@ -5,30 +5,56 @@
  */
 package com.haulmont.cuba.web.gui.components.presentations;
 
-import com.vaadin.ui.CustomComponent;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
+import com.haulmont.cuba.security.entity.Presentation;
+import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebPopupButton;
+import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
+import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
+import com.vaadin.ui.*;
+import org.dom4j.Element;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-public class TablePresentations extends CustomComponent {
-    // vaadin7 Presebtations
-    /*private MenuBar menuBar;
-    private WebPopupButton button;
+public class TablePresentations extends VerticalLayout {
 
-    private Table table;
+    protected CubaMenuBar menuBar;
+    protected WebPopupButton button;
 
-    private static final long serialVersionUID = -8633565024508836913L;
+    protected Table table;
+    protected CubaEnhancedTable tableImpl;
 
-    private Map<Object, com.vaadin.ui.MenuBar.MenuItem> presentationsMenuMap;
+    protected Map<Object, com.vaadin.ui.MenuBar.MenuItem> presentationsMenuMap;
+
+    protected Messages messages;
 
     public TablePresentations(Table component) {
         this.table = component;
-        initLayout();
-        setWidth("100%");
-        setStyleName("table-presentations");
+        this.messages = AppBeans.get(Messages.class);
 
-        setParent(WebComponentsHelper.unwrap(component));
+        this.tableImpl = (CubaEnhancedTable) WebComponentsHelper.unwrap(table);
+
+        setSizeUndefined();
+        setStyleName("cuba-table-presentations");
+        setParent((HasComponents) WebComponentsHelper.unwrap(component));
+
+        initLayout();
 
         table.getPresentations().addListener(new PresentationsChangeListener() {
             @Override
@@ -65,44 +91,35 @@ public class TablePresentations extends CustomComponent {
         build();
     }
 
-    private void removeCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
+    protected void removeCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
         item.setStyleName("");
     }
 
-    private void setCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
+    protected void setCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
         item.setStyleName("current");
     }
 
-    @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        super.changeVariables(source, variables);
-        if (variables.containsKey("repaint")) {
-            requestRepaint();
-        }
-    }
-
-    private void initLayout() {
-        VerticalLayout root = new VerticalLayout();
-        setCompositionRoot(root);
-        root.setSpacing(true);
+    protected void initLayout() {
+        setSpacing(true);
 
         Label label = new Label(getMessage("PresentationsPopup.title"));
-        label.setStyleName("title");
+        label.setStyleName("cuba-table-presentations-title");
         label.setWidth("-1px");
-        root.addComponent(label);
+        addComponent(label);
 
-        menuBar = new MenuBar();
-        menuBar.setStyleName("list");
+        menuBar = new CubaMenuBar();
+        menuBar.setStyleName("cuba-table-presentations-list");
         menuBar.setWidth("100%");
+        menuBar.setHeight("-1px");
         menuBar.setVertical(true);
-        root.addComponent(menuBar);
+        addComponent(menuBar);
 
         button = new WebPopupButton();
         button.setCaption(getMessage("PresentationsPopup.actions"));
-        root.addComponent(button.<Component>getComponent());
-        root.setComponentAlignment(button.<Component>getComponent(), Alignment.MIDDLE_CENTER);
+        addComponent(button.<Component>getComponent());
+        setComponentAlignment(button.<Component>getComponent(), Alignment.MIDDLE_CENTER);
 
-        root.setExpandRatio(menuBar, 1);
+        setExpandRatio(menuBar, 1);
     }
 
     public void build() {
@@ -111,9 +128,9 @@ public class TablePresentations extends CustomComponent {
         buildActions();
     }
 
-    private void buildPresentationsList() {
+    protected void buildPresentationsList() {
         menuBar.removeItems();
-        presentationsMenuMap = new HashMap<Object, com.vaadin.ui.MenuBar.MenuItem>();
+        presentationsMenuMap = new HashMap<>();
 
         final Presentations p = table.getPresentations();
 
@@ -135,8 +152,8 @@ public class TablePresentations extends CustomComponent {
         }
     }
 
-    private void buildActions() {
-        final Collection<Action> actions = new ArrayList(button.getActions());
+    protected void buildActions() {
+        final Collection<Action> actions = new ArrayList<>(button.getActions());
         for (final Action action : actions) {
             button.removeAction(action);
         }
@@ -147,18 +164,22 @@ public class TablePresentations extends CustomComponent {
         button.addAction(new AbstractAction(getMessage("PresentationsPopup.saveAs")) {
             @Override
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                tableImpl.hidePresentationsPopup();
+
                 Presentation presentation = new Presentation();
                 presentation.setComponentId(ComponentsHelper.getComponentPath(table));
 
                 openEditor(presentation);
             }
         });
-        final boolean allowGlobalPresentations = UserSessionProvider.getUserSession()
+        final boolean allowGlobalPresentations = AppBeans.get(UserSessionSource.class).getUserSession()
                 .isSpecificPermitted("cuba.gui.presentations.global");
         if (current != null && (!p.isGlobal(current) || allowGlobalPresentations)) {
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.save")) {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                    tableImpl.hidePresentationsPopup();
+
                     Element e = p.getSettings(current);
                     table.saveSettings(e);
                     p.setSettings(current, e);
@@ -168,12 +189,16 @@ public class TablePresentations extends CustomComponent {
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.edit")) {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                    tableImpl.hidePresentationsPopup();
+
                     openEditor(current);
                 }
             });
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.delete")) {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                    tableImpl.hidePresentationsPopup();
+
                     p.remove(current);
                     p.commit();
                 }
@@ -181,18 +206,18 @@ public class TablePresentations extends CustomComponent {
         }
     }
 
-    private void openEditor(Presentation presentation) {
+    protected void openEditor(Presentation presentation) {
         PresentationEditor window = new PresentationEditor(presentation, table);
-        AppUI.getInstance().getAppWindow().addWindow(window);
+        AppUI.getCurrent().addWindow(window);
         window.center();
     }
 
-    private static String buildItemCaption(String caption) {
+    protected static String buildItemCaption(String caption) {
         if (caption == null) return "";
         return caption;
     }
 
-    private String getMessage(String key) {
-        return MessageProvider.getMessage(getClass(), key);
-    }*/
+    protected String getMessage(String key) {
+        return messages.getMessage(getClass(), key);
+    }
 }

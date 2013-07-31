@@ -45,8 +45,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -96,7 +94,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     protected boolean usePresentations;
 
     protected Presentations presentations;
-    protected TablePresentations tablePresentations;
 
     protected List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
 
@@ -330,7 +327,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         return UNIT_SYMBOLS.indexOf(componentComposition.getWidthUnits());
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
+    protected abstract void setTablePresentations(TablePresentations tablePresentations);
+
     protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Table.Column column) {
         if (datasource == null)
             throw new IllegalStateException("Table datasource is null");
@@ -1143,6 +1141,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                 public void buttonClick(Button.ClickEvent event) {
                     final Element element = column.getXmlDescriptor();
 
+                    // todo move it to TableLoader
                     final String clickAction = element.attributeValue("clickAction");
                     if (!StringUtils.isEmpty(clickAction)) {
 
@@ -1151,13 +1150,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                             String screenName = clickAction.substring("open:".length()).trim();
                             final Window window = frame.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
 
+                            // todo use EditAction instead of this
                             window.addListener(new Window.CloseListener() {
                                 @Override
                                 public void windowClosed(String actionId) {
                                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                                        Object item = ((Window.Editor) window).getItem();
-                                        if (item instanceof Entity) {
-                                            datasource.updateItem((Entity) item);
+                                        Entity item = ((Window.Editor) window).getItem();
+                                        if (item != null) {
+                                            datasource.updateItem(item);
                                         }
                                     }
                                 }
@@ -1408,16 +1408,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                 || variables.containsKey("collapsedcolumns") || variables.containsKey("groupedcolumns");
     }
 
-    protected void paintSpecificContent(PaintTarget target) throws PaintException {
-//        vaadin7
-//        target.addVariable(component, "presentations", isUsePresentations());
-//        if (isUsePresentations()) {
-//            target.startTag("presentations");
-//            tablePresentations.paint(target);
-//            target.endTag("presentations");
-//        }
-    }
-
     @Override
     public List<Table.Column> getNotCollapsedColumns() {
         if (component.getVisibleColumns() == null)
@@ -1450,8 +1440,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         if (isUsePresentations()) {
             presentations = new PresentationsImpl(this);
 
-//        vaadin7
-//            tablePresentations = new TablePresentations(this);
+            setTablePresentations(new TablePresentations(this));
         } else {
             throw new UnsupportedOperationException("Component doesn't use presentations");
         }
@@ -1498,9 +1487,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
 
     @Override
     public Object getDefaultPresentationId() {
-//        vaadin7
-//        Presentation def = presentations.getDefault();
-        return null; // def == null ? null : def.getId();
+        Presentation def = presentations.getDefault();
+        return def == null ? null : def.getId();
     }
 
     @Override
