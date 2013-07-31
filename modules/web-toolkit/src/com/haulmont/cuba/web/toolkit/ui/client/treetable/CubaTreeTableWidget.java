@@ -7,7 +7,6 @@
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
@@ -23,7 +22,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.*;
 
 /**
@@ -99,6 +97,7 @@ public class CubaTreeTableWidget extends VTreeTable {
                 presentationsEditorPopup = new VOverlay();
                 presentationsEditorPopup.setStyleName("cuba-table-presentations-editor");
                 presentationsEditorPopup.setOwner(CubaTreeTableWidget.this);
+                presentationsEditorPopup.setWidget(presentationsMenu);
 
                 presentationsEditorPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
                     @Override
@@ -107,14 +106,8 @@ public class CubaTreeTableWidget extends VTreeTable {
                     }
                 });
 
-                presentationsEditorPopup.setWidget(presentationsMenu);
                 presentationsEditorPopup.setAutoHideEnabled(true);
-                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        presentationsEditorPopup.showRelativeTo(presentationsEditIcon);
-                    }
-                });
+                presentationsEditorPopup.showRelativeTo(presentationsEditIcon);
             }
         }
 
