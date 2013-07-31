@@ -526,9 +526,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
                         }
                     }
-                } /*else if (propertyPath.getRange().isEnum()) {
+                } else if (propertyPath.getRange().isEnum()) {
                     // TODO (abramov)
-                }*/ else {
+                } else {
                     throw new UnsupportedOperationException();
                 }
             }
