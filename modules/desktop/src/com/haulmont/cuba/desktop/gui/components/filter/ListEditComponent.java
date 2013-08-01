@@ -293,7 +293,7 @@ public class ListEditComponent extends Picker {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             dispose();
-                            DesktopComponentsHelper.getTopLevelFrame(ListEditComponent.this).activate();
+                            DesktopComponentsHelper.getTopLevelFrame(ListEditWindow.this).activate();
                         }
                     }
             );
@@ -314,7 +314,7 @@ public class ListEditComponent extends Picker {
 
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    DesktopComponentsHelper.getTopLevelFrame(ListEditComponent.this).activate();
+                    DesktopComponentsHelper.getTopLevelFrame(ListEditWindow.this).activate();
                 }
             });
         }
