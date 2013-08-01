@@ -44,6 +44,7 @@
           white-space: nowrap;
           padding-top: 3px;
           margin-left: 5px;
+          font-size: 11px;
         }
 
         .#{$primaryStyleName}-header-cell:hover,
@@ -83,11 +84,16 @@
 
     .#{$primaryStyleName}-cell-content {
       border-right-color: $theme_tableCellSeparatorColor;
+      font-size: 11px;
 
       .v-button-caption,
       .v-button-link .v-button-caption {
         font-size: 11px;
         color: $theme_buttonCaptionColor;
+      }
+
+      .#{$primaryStyleName}-cell-wrapper {
+        font-size: 11px;
       }
     }
 

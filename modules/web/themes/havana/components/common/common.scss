@@ -11,7 +11,6 @@
     background: #f6f6f6;
     font-family: $theme_fonts;
     color: #000;
-    font-size: 12px;
     line-height: 18px;
     height: 100%;
     width: 100%;
@@ -20,7 +19,6 @@
   .v-ui,
   .v-window {
     // Global font styles
-    div,
     input,
     table,
     select,
@@ -30,7 +28,24 @@
     .v-widget {
       font-family: $theme_fonts;
       color: #464f52;
+    }
+
+    input,
+    select,
+    button,
+    label,
+    textarea,
+    .v-widget {
       font-size: 12px;
+    }
+
+    .v-panel,
+    .v-scrollable,
+    .v-gridlayout,
+    .v-verticallayout,
+    .v-horizontallayout,
+    .cuba-fieldgrouplayout {
+      font-size: 0px;
     }
   }
 }

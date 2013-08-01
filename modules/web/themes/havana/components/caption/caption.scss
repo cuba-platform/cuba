@@ -8,6 +8,8 @@
 
 @mixin havana-caption($primaryStyleName: v-caption) {
   .#{$primaryStyleName} {
+    font-size: 12px;
+
     .v-required-field-indicator {
       color: #f00;
     }
