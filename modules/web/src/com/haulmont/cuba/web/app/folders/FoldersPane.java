@@ -203,8 +203,8 @@ public class FoldersPane extends VerticalLayout {
 
             Component searchFoldersPane = createSearchFoldersPane();
             if (searchFoldersPane != null) {
-                searchFoldersPane.setHeight("97%");
-                searchFoldersPane.setWidth("96%");
+                searchFoldersPane.setHeight("100%");
+                searchFoldersPane.setWidth("100%");
                 if (isNeedFoldersTitle()) {
                     searchFoldersLabel = new Label(messages.getMainMessage("folders.searchFoldersRoot"));
                     searchFoldersLabel.setStyleName("cuba-folders-pane-caption");
@@ -362,6 +362,7 @@ public class FoldersPane extends VerticalLayout {
         HorizontalLayout l = new HorizontalLayout();
         l.setMargin(new MarginInfo(false, true, false, true));
         l.addComponent(label);
+        l.setWidth("100%");
         layout.addComponent(l);
         return l;
     }

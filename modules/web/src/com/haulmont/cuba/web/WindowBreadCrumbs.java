@@ -54,6 +54,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
         linksLayout = new HorizontalLayout();
         linksLayout.setStyleName("cuba-breadcrumbs");
+        linksLayout.setSizeUndefined();
 
         if (!tabbedMode) {
             closeBtn = new Button("", new Button.ClickListener() {
@@ -135,6 +136,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
             Button button = new Button(window.getCaption().trim(), new BtnClickListener());
+            button.setSizeUndefined();
             button.setStyleName(BaseTheme.BUTTON_LINK);
             button.setTabIndex(-1);
 
@@ -143,10 +145,13 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             if (it.hasNext()) {
                 linksLayout.addComponent(button);
                 Label separatorLab = new Label("&nbsp;&gt;&nbsp;");
+                separatorLab.setSizeUndefined();
                 separatorLab.setContentMode(ContentMode.HTML);
                 linksLayout.addComponent(separatorLab);
             } else {
-                linksLayout.addComponent(new Label(window.getCaption()));
+                Label captionLabel = new Label(window.getCaption());
+                captionLabel.setSizeUndefined();
+                linksLayout.addComponent(captionLabel);
             }
         }
     }

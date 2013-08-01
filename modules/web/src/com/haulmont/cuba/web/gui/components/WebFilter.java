@@ -340,6 +340,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         maxResultsLayout.addComponent(maxResultsField);
 
         Label maxResultsLabel2 = new Label(messages.getMainMessage("filter.maxResults.label2"));
+        maxResultsLabel2.setSizeUndefined();
         maxResultsLayout.addComponent(maxResultsLabel2);
         maxResultsLayout.setComponentAlignment(maxResultsLabel2, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
@@ -466,7 +467,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         if (pinAppliedFilterBtn != null) {
             pinAppliedFilterBtn.setEnabled(filterEntity != null && filterEntity.getXml() != null);
         }
-        lastAppliedFilter = new AppliedFilter(filterEntity, (ComponentContainer) paramsLayout);
+        lastAppliedFilter = new AppliedFilter(filterEntity, paramsLayout);
 
         return true;
     }

@@ -6,7 +6,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
@@ -220,12 +221,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             default:
                 throw new UnsupportedOperationException();
         }
+        Messages messages = AppBeans.get(Messages.class);
 
         String messagesPack = AppConfig.getMessagesPack();
-        component.getLabel().setValue(MessageProvider.formatMessage(messagesPack, msgKey, countValue));
+        component.getLabel().setValue(messages.formatMessage(messagesPack, msgKey, countValue));
 
         if (component.getCountButton().isVisible() && !refreshing) {
-            component.getCountButton().setCaption(MessageProvider.getMessage(messagesPack, "table.rowsCount.msg3"));
+            component.getCountButton().setCaption(messages.getMessage(messagesPack, "table.rowsCount.msg3"));
         }
     }
 }
