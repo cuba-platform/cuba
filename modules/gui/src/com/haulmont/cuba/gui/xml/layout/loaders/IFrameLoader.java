@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -73,7 +74,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
             if (stream == null) {
-                throw new RuntimeException("Bad template path: " + src);
+                throw new DevelopmentException(src); //bad template path
             }
         }
 
