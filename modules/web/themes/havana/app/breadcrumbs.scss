@@ -29,10 +29,14 @@
       height: 20px;
       border: none;
 
-      .v-button-caption {
-        color: $theme_breadcrumbsColor;
-        font-size: 10px;
-        display: block;
+      .v-button-wrap {
+        margin-top: 0;
+
+        .v-button-caption {
+          color: $theme_breadcrumbsColor;
+          font-size: 10px;
+          display: block;
+        }
       }
     }
 
