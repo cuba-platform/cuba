@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.menubar;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
@@ -27,6 +29,16 @@ public class CubaMenuBarConnector extends MenuBarConnector {
     @Override
     public CubaMenuBarState getState() {
         return (CubaMenuBarState) super.getState();
+    }
+
+    @Override
+    public CubaMenuBarWidget getWidget() {
+        return (CubaMenuBarWidget) super.getWidget();
+    }
+
+    @Override
+    protected Widget createWidget() {
+        return GWT.create(CubaMenuBarWidget.class);
     }
 
     @Override

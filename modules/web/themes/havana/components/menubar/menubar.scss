@@ -31,6 +31,8 @@
       text-shadow: black 1px 1px;
 
       .#{$primaryStyleName}-menuitem-caption {
+        display: table-cell;
+
         .v-icon {
           margin-right: 3px;
         }
@@ -85,6 +87,7 @@
   }
 
   .#{$primaryStyleName}-submenu {
+    display: table;
     overflow: hidden;
     white-space: nowrap;
     border: 0;
@@ -97,7 +100,7 @@
     .#{$primaryStyleName}-menuitem {
       line-height: 16px;
       padding: 1px 26px 1px 10px;
-      display: block;
+      display: table-row;
       padding-right: 1.5em;
       position: relative;
       cursor: pointer;
@@ -108,8 +111,9 @@
 
       .#{$primaryStyleName}-menuitem-caption {
         color: #fff;
-        display: inline-block;
+        display: table-cell;
         padding-right: 4px;
+        border-left: 3px solid transparent;
 
         .v-icon {
           vertical-align: middle;
@@ -117,18 +121,32 @@
           margin-right: 3px;
         }
       }
+
+      .#{$primaryStyleName}-menuitem-shortcut {
+        display: table-cell;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+        padding: 0;
+        color: #c0c0c0;
+      }
     }
 
-    .#{$primaryStyleName}-menuitem-selected,
-    .#{$primaryStyleName}-menuitem-shortcut-selected {
+    $menuSeparatorMargin: 3px;
+
+    .#{$primaryStyleName}-separator {
+      display: table-row;
+      height: 7px;
+
+      span {
+        display: table-cell;
+        background: white;
+        border-top: $menuSeparatorMargin solid $theme_appSubmenuBackgroundColor;
+        border-bottom: $menuSeparatorMargin solid $theme_appSubmenuBackgroundColor;
+      }
+    }
+
+    .#{$primaryStyleName}-menuitem-selected {
       background-color: $theme_appMenuHighlightColor;
-    }
-
-    .#{$primaryStyleName}-menuitem-shortcut,
-    .#{$primaryStyleName}-menuitem-shortcut-selected {
-      padding: 0;
-      color: #c0c0c0;
-      display: inline-block;
     }
 
     .#{$primaryStyleName}-menuitem-selected div {
@@ -143,8 +161,9 @@
       height: 16px;
       text-indent: -9999px;
       width: 16px;
-      display: inline-block;
+      display: table-cell;
       min-width: 10px;
+      position: relative;
     }
 
     .#{$primaryStyleName}-submenu-indicator + .#{$primaryStyleName}-menuitem-caption {

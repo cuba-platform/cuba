@@ -674,7 +674,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         if (item.getShortcut() != null) {
             MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
             this.addAction(shortcut);
-//            menuBar.setShortcut(menuItem, item.getShortcut());
+            menuBar.setShortcut(menuItem, item.getShortcut());
         }
     }
 
