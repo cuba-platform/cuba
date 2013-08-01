@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 06.02.2009 13:22:23
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -18,7 +14,12 @@ import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Arrays;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
+
     protected Component.ActionOwner component;
     protected String actionName;
     private IFrame frame;
@@ -29,6 +30,7 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
         this.frame = frame;
     }
 
+    @Override
     public void execute(ComponentLoader.Context context, IFrame window) {
         final String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {

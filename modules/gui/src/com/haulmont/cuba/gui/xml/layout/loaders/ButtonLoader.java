@@ -2,26 +2,29 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 15:55:55
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoader {
     public ButtonLoader(Context context) {
         super(context);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
         final Button component = factory.createComponent(element.getName());
 
         assignXmlDescriptor(component, element);
@@ -46,21 +49,27 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         return component;
     }
 
-    private void loadInvoke(Button component, Element element) {
-        if (!StringUtils.isBlank(element.attributeValue("action")))
+    protected void loadInvoke(final Button component, Element element) {
+        if (!StringUtils.isBlank(element.attributeValue("action"))) {
             return;
+        }
 
-        String methodName = element.attributeValue("invoke");
-        if (StringUtils.isBlank(methodName))
+        final String methodName = element.attributeValue("invoke");
+        if (StringUtils.isBlank(methodName)) {
             return;
+        }
 
-        DeclarativeAction action = new DeclarativeAction(component.getId() + "_action",
-                component.getCaption(), component.getIcon(),
-                Boolean.toString(component.isEnabled()),
-                Boolean.toString(component.isVisible()),
-                methodName,
-                component.getFrame()
-        );
-        component.setAction(action);
+        context.addPostInitTask(new PostInitTask() {
+            @Override
+            public void execute(Context context, IFrame window) {
+                DeclarativeAction action = new DeclarativeAction(component.getId() + "_action",
+                        component.getCaption(), component.getIcon(),
+                        component.isEnabled(), component.isVisible(),
+                        methodName,
+                        component.getFrame()
+                );
+                component.setAction(action);
+            }
+        });
     }
 }
