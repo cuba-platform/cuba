@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +48,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         return component;
     }
 
-    protected void loadInvoke(final Button component, Element element) {
+    protected void loadInvoke(Button component, Element element) {
         if (!StringUtils.isBlank(element.attributeValue("action"))) {
             return;
         }
@@ -59,17 +58,12 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
             return;
         }
 
-        context.addPostInitTask(new PostInitTask() {
-            @Override
-            public void execute(Context context, IFrame window) {
-                DeclarativeAction action = new DeclarativeAction(component.getId() + "_action",
-                        component.getCaption(), component.getIcon(),
-                        component.isEnabled(), component.isVisible(),
-                        methodName,
-                        component.getFrame()
-                );
-                component.setAction(action);
-            }
-        });
+        DeclarativeAction action = new DeclarativeAction(component.getId() + "_action",
+                component.getCaption(), component.getIcon(),
+                component.isEnabled(), component.isVisible(),
+                methodName,
+                component.getFrame()
+        );
+        component.setAction(action);
     }
 }

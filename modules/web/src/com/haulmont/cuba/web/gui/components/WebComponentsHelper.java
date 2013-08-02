@@ -357,6 +357,10 @@ public class WebComponentsHelper {
         }
     }
 
+    public static boolean isComponentVisible(Component child) {
+        return child.isVisible() && (child.getParent() == null || isComponentVisible(child.getParent()));
+    }
+
     public static int convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {
 
         return 0;

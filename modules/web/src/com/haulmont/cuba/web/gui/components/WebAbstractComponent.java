@@ -28,14 +28,14 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
             Sizeable.Unit.EM, Sizeable.Unit.EX, Sizeable.Unit.MM,
             Sizeable.Unit.CM, Sizeable.Unit.INCH, Sizeable.Unit.PERCENTAGE);
 
-    private String id;
+    protected String id;
     protected T component;
 
-    private Element element;
-    private com.haulmont.cuba.gui.components.IFrame frame;
-    private Alignment alignment = Alignment.TOP_LEFT;
+    protected Element element;
+    protected com.haulmont.cuba.gui.components.IFrame frame;
+    protected Alignment alignment = Alignment.TOP_LEFT;
 
-    private boolean expandable = true;
+    protected boolean expandable = true;
 
     @Override
     public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {
@@ -90,7 +90,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public boolean isVisible() {
-        return WebComponentsHelper.isComponentVisibleToClient(getComposition());
+        return WebComponentsHelper.isComponentVisible(getComposition());
     }
 
     @Override
