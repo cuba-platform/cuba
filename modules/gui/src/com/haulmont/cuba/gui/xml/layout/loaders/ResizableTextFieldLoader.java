@@ -7,7 +7,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ResizableTextField;
+import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
@@ -23,13 +23,16 @@ public class ResizableTextFieldLoader extends TextAreaLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
         Component component = super.loadComponent(factory, element, parent);
-        if (component instanceof ResizableTextField) {
-            ResizableTextField textField = (ResizableTextField) super.loadComponent(factory, element, parent);
+        if (component instanceof ResizableTextArea) {
+            ResizableTextArea textField = (ResizableTextArea) super.loadComponent(factory, element, parent);
             textField.setResizable(BooleanUtils.toBoolean(element.attributeValue("resizable")));
             return textField;
-        } else
+        } else {
             return component;
+        }
     }
 }

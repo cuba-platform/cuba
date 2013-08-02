@@ -43,7 +43,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
 
         //Use resizable text area instead of text field
-        classes.put(ResizableTextField.NAME, DesktopResizableTextField.class);
+        classes.put(ResizableTextArea.NAME, DesktopResizableTextArea.class);
         classes.put(AutoCompleteTextField.NAME, DesktopAutoCompleteTextField.class);
         classes.put(PasswordField.NAME, DesktopPasswordField.class);
         classes.put(TextField.NAME, DesktopTextField.class);

@@ -52,6 +52,7 @@
 @import "components/fieldgrouplayout/fieldgrouplayout";
 @import "components/loadingindicator/loadingindicator";
 @import "components/progressindicator/progressindicator";
+@import "components/resizabletextarea/resizabletextarea";
 @import "components/tokenlist/tokenlist";
 @import "components/twincolumn/twincolumn";
 
@@ -107,6 +108,7 @@
   @include havana-cuba-multiupload;
   @include havana-cuba-widgetstree;
   @include havana-cuba-searchselect;
+  @include havana-cuba-resizabletextarea;
 
   @include cuba-login-window;
   @include cuba-application-window;

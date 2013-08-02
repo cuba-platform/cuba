@@ -6,13 +6,11 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.ResizeListener;
-
 /**
  * @author subbotin
  * @version $Id$
  */
-public interface ResizableTextField extends TextArea {
+public interface ResizableTextArea extends TextArea {
 
     String NAME = TextArea.NAME;
 

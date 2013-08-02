@@ -6,14 +6,14 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.gui.components.ResizableTextField;
-import com.haulmont.cuba.gui.data.ResizeListener;
+import com.haulmont.cuba.gui.components.ResizableTextArea;
+import com.haulmont.cuba.gui.components.ResizeListener;
 
 /**
  * @author subbotin
  * @version $Id$
  */
-public class DesktopResizableTextField extends DesktopTextArea implements ResizableTextField {
+public class DesktopResizableTextArea extends DesktopTextArea implements ResizableTextArea {
     @Override
     public boolean isResizable() {
         return false;

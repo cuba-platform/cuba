@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.gui.data;
+package com.haulmont.cuba.gui.components;
 
 /**
  * @author subbotin
