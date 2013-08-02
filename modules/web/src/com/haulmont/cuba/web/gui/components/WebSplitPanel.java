@@ -7,8 +7,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.AbstractSplitPanel;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Layout;
@@ -22,7 +22,6 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel>
         implements SplitPanel, Component.HasSettings, Component.Wrapper {
 
@@ -31,15 +30,14 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel>
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new HashSet<>();
 
-    private Alignment alignment = Alignment.TOP_LEFT;
+    protected Alignment alignment = Alignment.TOP_LEFT;
 
-    private boolean showHookButton = false;
-    private String defaultPosition = null;
+    protected boolean showHookButton = false;
+    protected String defaultPosition = null;
 
-    private SplitPanel.PositionUpdateListener positionListener;
+    protected SplitPanel.PositionUpdateListener positionListener;
 
-    private IFrame frame;
-    private int orientation;
+    protected int orientation;
 
     public WebSplitPanel() {
     }
@@ -150,9 +148,9 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel>
         if (e != null) {
             String value = e.attributeValue("value");
             String unit = e.attributeValue("unit");
-            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit))  {}
-//                vaadin7 convert units
-//                component.setSplitPosition(Integer.valueOf(value), Sizeable.Unit.PIXELS);
+            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit))  {
+                component.setSplitPosition(Float.valueOf(value), Sizeable.Unit.getUnitFromSymbol(unit));
+            }
         }
     }
 
@@ -164,17 +162,6 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel>
         e.addAttribute("value", String.valueOf(component.getSplitPosition()));
         e.addAttribute("unit", String.valueOf(component.getSplitPositionUnit()));
         return true;
-    }
-
-    @Override
-    public <A extends IFrame> A getFrame() {
-        return (A) frame;
-    }
-
-    @Override
-    public void setFrame(IFrame frame) {
-        this.frame = frame;
-        frame.registerComponent(this);
     }
 
     public boolean isShowHookButton() {

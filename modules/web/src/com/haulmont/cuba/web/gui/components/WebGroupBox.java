@@ -28,14 +28,12 @@ import java.util.*;
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
         implements GroupBoxLayout, Component.Wrapper, CubaGroupBox.ExpandChangeHandler {
 
-    private String id;
-    private IFrame frame;
     protected List<Component> components = new ArrayList<>();
-    private Alignment alignment = Alignment.TOP_LEFT;
-    private Orientation orientation = Orientation.VERTICAL;
+    protected Alignment alignment = Alignment.TOP_LEFT;
+    protected Orientation orientation = Orientation.VERTICAL;
 
-    private List<ExpandListener> expandListeners = null;
-    private List<CollapseListener> collapseListeners = null;
+    protected List<ExpandListener> expandListeners = null;
+    protected List<CollapseListener> collapseListeners = null;
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
@@ -174,7 +172,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
         }
     }
 
-    private void fireExpandListeners() {
+    protected void fireExpandListeners() {
         if (expandListeners != null) {
             for (final ExpandListener expandListener : expandListeners) {
                 expandListener.onExpand(this);
@@ -267,17 +265,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
     @Override
     public void setBorderVisible(boolean borderVisible) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <A extends IFrame> A getFrame() {
-        return (A) frame;
-    }
-
-    @Override
-    public void setFrame(IFrame frame) {
-        this.frame = frame;
-        frame.registerComponent(this);
     }
 
     @Override

@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Layout;
 
@@ -26,11 +25,9 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new HashSet<>();
 
-    private Alignment alignment = Alignment.TOP_LEFT;
+    protected Alignment alignment = Alignment.TOP_LEFT;
 
-    private boolean expandable = true;
-
-    private IFrame frame;
+    protected boolean expandable = true;
 
     public WebGridLayout() {
         component = new com.vaadin.ui.GridLayout();
@@ -169,17 +166,6 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
             ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component,
                     WebComponentsHelper.convertAlignment(alignment));
         }
-    }
-
-    @Override
-    public <A extends IFrame> A getFrame() {
-        return (A) frame;
-    }
-
-    @Override
-    public void setFrame(IFrame frame) {
-        this.frame = frame;
-        frame.registerComponent(this);
     }
 
     @Override

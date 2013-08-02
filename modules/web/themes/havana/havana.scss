@@ -36,6 +36,7 @@
 @import "components/treetable/treetable";
 @import "components/popupview/popupview";
 @import "components/fieldgroup/fieldgroup";
+@import "components/flowlayout/flowlayout";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
 @import "components/widgetstree/widgetstree";
@@ -99,6 +100,7 @@
   @include havana-progressindicator;
 
   @include havana-cuba-groupbox;
+  @include havana-cuba-flowlayout;
   @include havana-cuba-tokenlist;
   @include havana-cuba-grouptable;
   @include havana-cuba-twincolumn;

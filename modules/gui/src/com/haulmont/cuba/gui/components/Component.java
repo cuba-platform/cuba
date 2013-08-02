@@ -87,8 +87,8 @@ public interface Component {
      * Component which can contain other components
      */
     interface Container extends Component {
-        void add(Component component);
-        void remove(Component component);
+        void add(Component childComponent);
+        void remove(Component childComponent);
 
         /**
          * Get component directly owned by this container.

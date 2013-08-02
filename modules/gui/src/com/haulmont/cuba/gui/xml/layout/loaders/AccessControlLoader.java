@@ -2,20 +2,13 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 03.12.2009 17:45:39
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -26,9 +19,13 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class AccessControlLoader extends ContainerLoader {
 
-    private static final Set<String> enabledActions = new HashSet<String>() {{
+    protected static final Set<String> enabledActions = new HashSet<String>() {{
         add("excel");
         add("windowclose");
         add("cancel");
@@ -39,7 +36,7 @@ public class AccessControlLoader extends ContainerLoader {
      * key - string, containing in action Id
      * value - message name.
      */
-    private static  final HashMap<String, String> renamingActions = new HashMap<String, String>(){{
+    protected static final HashMap<String, String> renamingActions = new HashMap<String, String>(){{
        put("edit","actions.View");
     }};
 
@@ -47,7 +44,10 @@ public class AccessControlLoader extends ContainerLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         AccessControl accessControl = factory.createComponent(element.getName());
 
         final AbstractAccessData data;
@@ -58,7 +58,7 @@ public class AccessControlLoader extends ContainerLoader {
                 String dataClassName = element.attributeValue("data");
                 if (dataClassName == null)
                     throw new IllegalStateException("Can not instantiate AccessData: no 'data' attribute");
-                Class dataClass = ScriptingProvider.loadClass(dataClassName);
+                Class dataClass = scripting.loadClass(dataClassName);
                 if (dataClass == null)
                     throw new IllegalStateException("Class not found: " + dataClassName);
                 try {
@@ -79,7 +79,7 @@ public class AccessControlLoader extends ContainerLoader {
 
         Collection<Component> components;
         if (visible) {
-            components = loadSubComponents(parent, element, "editable", "visible");
+            components = loadSubComponents((Component.Container)parent, element, "editable", "visible");
             for (Component component : components) {
                 applyToComponent(component, editable, data, components);
 
@@ -91,7 +91,7 @@ public class AccessControlLoader extends ContainerLoader {
                 }
             }
         } else {
-            components = Collections.EMPTY_LIST;
+            components = Collections.emptyList();
         }
         accessControl.setRealComponents(components);
 
@@ -123,7 +123,7 @@ public class AccessControlLoader extends ContainerLoader {
         }
     }
 
-    private boolean loadConditions(Element element, Object accessData, String access) {
+    protected boolean loadConditions(Element element, Object accessData, String access) {
         Element accessElement = element.element(access);
 
         if (accessElement == null)
@@ -149,7 +149,7 @@ public class AccessControlLoader extends ContainerLoader {
         String script = accessElement.getText();
         if (!StringUtils.isBlank(script)) {
             return BooleanUtils.isTrue(
-                    ScriptingProvider.<Boolean>evaluateGroovy(script, context.getBinding()));
+                    scripting.<Boolean>evaluateGroovy(script, context.getBinding()));
         } else {
             String scriptName = accessElement.attributeValue("script");
             if (!StringUtils.isBlank(scriptName)) {
@@ -164,13 +164,13 @@ public class AccessControlLoader extends ContainerLoader {
                     binding.setVariable(paramName, paramValue);
                 }
                 return BooleanUtils.isTrue(
-                        ScriptingProvider.<Boolean>runGroovyScript(scriptName, binding));
+                        scripting.<Boolean>runGroovyScript(scriptName, binding));
             }
         }
         return true;
     }
 
-    private static class AccessControlLoaderPostInitTask implements PostInitTask {
+    protected static class AccessControlLoaderPostInitTask implements PostInitTask {
 
         private final Component component;
 
@@ -178,23 +178,23 @@ public class AccessControlLoader extends ContainerLoader {
             this.component = component;
         }
 
+        @Override
         public void execute(Context context, IFrame window) {
 
-            final String messagesPackage = AppConfig.getMessagesPack();
             component.setEnabled(false);
             if (component instanceof Component.ActionOwner) {
                 Action action = ((Component.ActionOwner) component).getAction();
                 if (action != null) {
                     if (renamingActions.containsKey(action.getId().toLowerCase())) {
                         action.setEnabled(true);
-                        ((Button) component).setCaption(MessageProvider.getMessage(messagesPackage, renamingActions.get(action.getId().toLowerCase())));
+                        Messages messages = AppBeans.get(Messages.class);
+                        ((Button) component).setCaption(messages.getMainMessage(renamingActions.get(action.getId().toLowerCase())));
                     } else if (enabledActions.contains(action.getId().toLowerCase())) {
                         action.setEnabled(true);
                     } else {
                         action.setEnabled(false);
                     }
                 }
-
             }
         }
     }

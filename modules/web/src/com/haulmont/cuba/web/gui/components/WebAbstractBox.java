@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Layout;
@@ -26,9 +25,7 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
     protected Collection<Component> ownComponents = new HashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
-    private Alignment alignment = Alignment.TOP_LEFT;
-
-    private IFrame frame;
+    protected Alignment alignment = Alignment.TOP_LEFT;
 
     @Override
     public void add(Component childComponent) {
@@ -83,6 +80,7 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
     @Override
     public void setId(String id) {
         this.id = id;
+//        vaadin7 Test ids
 //        setDebugId(id);
     }
 
@@ -102,17 +100,6 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
         if (parentComponent instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component, WebComponentsHelper.convertAlignment(alignment));
         }
-    }
-
-    @Override
-    public <A extends IFrame> A getFrame() {
-        return (A) frame;
-    }
-
-    @Override
-    public void setFrame(IFrame frame) {
-        this.frame = frame;
-        frame.registerComponent(this);
     }
 
     @Override

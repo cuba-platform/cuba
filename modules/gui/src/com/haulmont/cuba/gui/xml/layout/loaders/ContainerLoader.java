@@ -34,7 +34,7 @@ public abstract class ContainerLoader extends ComponentLoader {
         this.factory = factory;
     }
 
-    protected Collection<Component> loadSubComponents(Component component, Element element, String ...exceptTags) {
+    protected Collection<Component> loadSubComponents(Component.Container component, Element element, String ...exceptTags) {
         final List<Component> res = new ArrayList<>();
 
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
@@ -47,11 +47,11 @@ public abstract class ContainerLoader extends ComponentLoader {
                 final Component subComponent = loader.loadComponent(subElement, component);
                 if (subComponent instanceof QuasiComponent) {
                     for (Component realSubComponent : ((QuasiComponent) subComponent).getRealComponents()) {
-                        ((Component.Container) component).add(realSubComponent);
+                        component.add(realSubComponent);
                         res.add(realSubComponent);
                     }
                 } else {
-                    ((Component.Container) component).add(subComponent);
+                    component.add(subComponent);
                     res.add(subComponent);
                 }
             }

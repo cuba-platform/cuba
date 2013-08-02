@@ -9,7 +9,7 @@ package com.haulmont.cuba.gui.components;
  * @author gorodnov
  * @version $Id$
  */
-public interface HtmlBoxLayout extends ExpandingLayout, Component.BelongToFrame {
+public interface HtmlBoxLayout extends Component.Container, Component.BelongToFrame {
 
     String NAME = "htmlBox";
 

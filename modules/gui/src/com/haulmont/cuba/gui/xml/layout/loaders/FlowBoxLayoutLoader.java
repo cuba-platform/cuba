@@ -5,7 +5,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FlowBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -22,8 +21,10 @@ public class FlowBoxLayoutLoader extends ContainerLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final BoxLayout component = factory.createComponent(FlowBoxLayout.NAME);
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+        final FlowBoxLayout component = factory.createComponent(FlowBoxLayout.NAME);
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -34,7 +35,7 @@ public class FlowBoxLayoutLoader extends ContainerLoader {
         loadSpacing(component, element);
         loadMargin(component, element);
 
-        loadSubComponentsAndExpand(component, element, "visible");
+        loadSubComponents(component, element, "visible");
 
         loadHeight(component, element);
         loadWidth(component, element);

@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
@@ -22,13 +21,10 @@ import java.util.*;
  */
 public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout, Component.Wrapper {
 
-    private String id;
     protected List<Component> components = new ArrayList<>();
-    private Alignment alignment = Alignment.TOP_LEFT;
-    private Orientation orientation = Orientation.VERTICAL;
-    private ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
-
-    private IFrame frame;
+    protected Alignment alignment = Alignment.TOP_LEFT;
+    protected Orientation orientation = Orientation.VERTICAL;
+    protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 
     public WebScrollBoxLayout() {
         component = new Panel();
@@ -128,17 +124,6 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         if (parentComponent instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component, WebComponentsHelper.convertAlignment(alignment));
         }
-    }
-
-    @Override
-    public <A extends IFrame> A getFrame() {
-        return (A) frame;
-    }
-
-    @Override
-    public void setFrame(IFrame frame) {
-        this.frame = frame;
-        frame.registerComponent(this);
     }
 
     @Override
