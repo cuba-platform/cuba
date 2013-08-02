@@ -22,7 +22,7 @@ public class DesktopTextArea extends DesktopAbstractTextInput<JTextArea> impleme
 
     @Override
     protected JTextArea createTextComponentImpl() {
-        JTextArea field = new JTextArea();
+        JTextArea impl = new JTextArea();
 
         impl.setLineWrap(true);
         impl.setWrapStyleWord(true);
@@ -36,7 +36,7 @@ public class DesktopTextArea extends DesktopAbstractTextInput<JTextArea> impleme
 
         doc.putProperty("filterNewlines", false);
 
-        return field;
+        return impl;
     }
 
     @Override
