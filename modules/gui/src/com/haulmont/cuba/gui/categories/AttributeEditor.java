@@ -147,6 +147,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     attribute.setDataType(value.toString());
                     generateDefaultEnumValueField(!dataTypeFieldInited);
                 } else {
+                    if (RuntimePropsDatasource.PropertyType.BOOLEAN.equals(value)) {
+                        requiredField.setVisible(false);
+                    }
                     attribute.setDataType(value.toString());
                     attribute.setIsEntity(false);
                     generateDefaultValueField((Enum<RuntimePropsDatasource.PropertyType>) value, !dataTypeFieldInited);
@@ -466,6 +469,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         if (screenField != null) {
             screenField.setEnabled(!attribute.getLookup());
+        }
+
+        if (dataTypeField.getValue() != null && dataTypeField.getValue().equals(RuntimePropsDatasource.PropertyType.BOOLEAN)) {
+            requiredField.setVisible(false);
         }
     }
 
