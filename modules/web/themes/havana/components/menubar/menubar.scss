@@ -155,15 +155,23 @@
 
     .#{$primaryStyleName}-submenu-indicator {
       background: transparent;
-      background-repeat: no-repeat;
-      background-position: right center;
-      background-image: url(sprites/submenu-icon.png);  /** sprite-ref: components; */
-      height: 16px;
-      text-indent: -9999px;
-      width: 16px;
       display: table-cell;
       min-width: 10px;
       position: relative;
+    }
+
+    .#{$primaryStyleName}-submenu-indicator-icon {
+      position: absolute;
+      right: 0;
+      display: block;
+      width: 16px;
+      height: 16px;
+      min-width: 10px;
+      text-indent: -9999px;
+      background: transparent;
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-image: url(sprites/submenu-icon.png);  /** sprite-ref: components; */
     }
 
     .#{$primaryStyleName}-submenu-indicator + .#{$primaryStyleName}-menuitem-caption {

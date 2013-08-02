@@ -38,6 +38,7 @@
         height: 23px;
 
         .#{$primaryStyleName}-caption-container {
+          color: $theme_tableTextColor;
           height: 23px;
           float: left;
           overflow: hidden;
@@ -85,6 +86,8 @@
     .#{$primaryStyleName}-cell-content {
       border-right-color: $theme_tableCellSeparatorColor;
       font-size: 11px;
+      line-height: 15px;
+      color: $theme_tableTextColor;
 
       .v-button-caption,
       .v-button-link .v-button-caption {
@@ -129,14 +132,14 @@
       line-height: 15px;
     }
 
-    .#{$primaryStyleName}-cell-content {
-      line-height: 15px;
-    }
-
     .#{$primaryStyleName}-row.v-selected,
     .#{$primaryStyleName}-row-odd.v-selected,
     .#{$primaryStyleName}-caption-row.v-selected {
       background-color: $theme_tableRowSelectionBackgroundColor;
+
+      .#{$primaryStyleName}-cell-content {
+        color: $theme_tableTextColor;
+      }
     }
 
     .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-content {
