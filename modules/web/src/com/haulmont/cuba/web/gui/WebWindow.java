@@ -19,7 +19,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -975,22 +974,14 @@ public class WebWindow implements Window, Component.Wrapper,
                 });
             } else if (lookupComponent instanceof Tree) {
                 final Tree tree = (Tree) lookupComponent;
-                com.haulmont.cuba.web.toolkit.ui.Tree treeComponent =
-                        (com.haulmont.cuba.web.toolkit.ui.Tree) WebComponentsHelper.unwrap(tree);
-                // vaadin7
-//                treeComponent.setDoubleClickMode(true);
+                final com.vaadin.ui.Tree treeComponent = (com.vaadin.ui.Tree) WebComponentsHelper.unwrap(tree);
                 treeComponent.addItemClickListener(new ItemClickEvent.ItemClickListener() {
                     @Override
                     public void itemClick(ItemClickEvent event) {
-                        // vaadin7
                         if (event.isDoubleClick()) {
-                            CollectionDatasource treeCds = tree.getDatasource();
-                            if (treeCds != null) {
-                                Entity item = treeCds.getItem(event.getItemId());
-                                if (item != null) {
-                                    treeCds.setItem(item);
-                                    fireSelectAction();
-                                }
+                            if (event.getItem() != null) {
+                                treeComponent.setValue(event.getItemId());
+                                fireSelectAction();
                             }
                         }
                     }

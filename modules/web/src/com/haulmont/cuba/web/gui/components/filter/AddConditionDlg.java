@@ -65,7 +65,7 @@ public class AddConditionDlg extends Window {
 
         Panel treePanel = new Panel();
 
-        tree = new com.haulmont.cuba.web.toolkit.ui.Tree();
+        tree = new Tree();
         tree.setWidth("100%");
         tree.setHeight("100%");
         tree.setImmediate(true);

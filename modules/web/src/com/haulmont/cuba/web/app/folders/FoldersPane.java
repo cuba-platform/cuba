@@ -66,8 +66,8 @@ public class FoldersPane extends VerticalLayout {
 
     protected boolean visible;
 
-    protected com.haulmont.cuba.web.toolkit.ui.Tree appFoldersTree;
-    protected com.haulmont.cuba.web.toolkit.ui.Tree searchFoldersTree;
+    protected Tree appFoldersTree;
+    protected Tree searchFoldersTree;
 
     protected MenuBar menuBar;
     protected MenuBar.MenuItem menuItem;
@@ -417,9 +417,7 @@ public class FoldersPane extends VerticalLayout {
         if (appFolders.isEmpty())
             return null;
 
-        appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
-//        vaadin7
-//        appFoldersTree.setDoubleClickMode(true);
+        appFoldersTree = new Tree();
         appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         appFoldersRoot = messages.getMainMessage("folders.appFoldersRoot");
@@ -435,9 +433,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Component createSearchFoldersPane() {
-        searchFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
-//        vaadin7
-//        searchFoldersTree.setDoubleClickMode(true);
+        searchFoldersTree = new Tree();
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         List<SearchFolder> searchFolders = foldersService.loadSearchFolders();
@@ -601,11 +597,11 @@ public class FoldersPane extends VerticalLayout {
         dataService.commit(commitContext);
     }
 
-    public com.haulmont.cuba.web.toolkit.ui.Tree getSearchFoldersTree() {
+    public Tree getSearchFoldersTree() {
         return searchFoldersTree;
     }
 
-    public com.haulmont.cuba.web.toolkit.ui.Tree getAppFoldersTree() {
+    public Tree getAppFoldersTree() {
         return appFoldersTree;
     }
 
@@ -659,10 +655,11 @@ public class FoldersPane extends VerticalLayout {
             Folder folder = (Folder) event.getItemId();
             if (getItemClickable(folder)) {
                 if (event.getButton() == MouseEventDetails.MouseButton.RIGHT) {
-                    if (appFoldersTree != null && appFoldersTree.containsId(event.getItemId()))
+                    if (appFoldersTree != null && appFoldersTree.containsId(event.getItemId())) {
                         appFoldersTree.select(event.getItemId());
-                    else if (searchFoldersTree != null && searchFoldersTree.containsId(event.getItemId()))
+                    } else if (searchFoldersTree != null && searchFoldersTree.containsId(event.getItemId())) {
                         searchFoldersTree.select(event.getItemId());
+                    }
                 } else {
                     openFolder((AbstractSearchFolder) event.getItemId());
                 }
