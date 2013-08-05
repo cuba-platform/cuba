@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -28,6 +29,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +40,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
+
+import com.haulmont.cuba.gui.components.FieldGroup.Field;
 
 /**
  * @author gorodnov
@@ -241,8 +246,8 @@ public class WebFieldGroup
                 if (!f.isRequired()) {
                     f.setRequired(field.isRequired());
                 }
-                
-                if ((f.getRequiredError() == null || f.getRequiredError().isEmpty()) 
+
+                if ((f.getRequiredError() == null || f.getRequiredError().isEmpty())
                         && field.getRequiredError() != null)
                     f.setRequiredError(field.getRequiredError());
 
@@ -795,13 +800,11 @@ public class WebFieldGroup
                         fieldConf.getXmlDescriptor());
             } else if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
-                field.setInvalidCommitted(true);
                 if (fieldConf != null) {
                     initTextField((TextField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
             } else if (field instanceof TextArea) {
                 ((TextArea) field).setNullRepresentation("");
-                field.setInvalidCommitted(true);
                 if (fieldConf != null) {
                     initTextArea(((TextArea) field), propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
@@ -815,10 +818,16 @@ public class WebFieldGroup
                 if (fieldConf != null) {
                     initDateField(field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
-            } //else if (field instanceof CheckBox) {
+            } else if (field instanceof RichTextArea) {
+                ((RichTextArea) field).setNullRepresentation("");
+            } else if (field instanceof PasswordField) {
+                ((PasswordField) field).setNullRepresentation("");
+            }  //else if (field instanceof CheckBox) {
 //                vaadin7
 //                ((CheckBox) field).setLayoutCaption(true);
 //            }
+
+            field.setInvalidCommitted(true);
 
             if (fieldConf != null && fieldConf.getWidth() != null) {
                 field.setWidth(fieldConf.getWidth());
