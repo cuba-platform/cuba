@@ -44,10 +44,12 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         return (CubaTableState) super.getState(markAsDirty);
     }
 
+    @Override
     public TablePresentations getPresentations() {
         return (TablePresentations) getState(false).presentations;
     }
 
+    @Override
     public void setPresentations(TablePresentations presentations) {
         getState(true).presentations = presentations;
     }
@@ -208,7 +210,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         if (getState().presentations != null) {
             if (visibleComponents != null) {
                 // add presentations to rendered components for client reference
-                return Iterables.concat(visibleComponents, Collections.singleton((Component) getState().presentations)).iterator();
+                return Iterables.concat(visibleComponents,
+                        Collections.singleton((Component) getState().presentations)).iterator();
             } else {
                 return Collections.singleton((Component) getState().presentations).iterator();
             }

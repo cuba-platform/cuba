@@ -42,31 +42,47 @@
     }
   }
 
-  /* IE specific styles */
+  // Dock Mode
 
-  * html .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-hsplitter div {
-    height: 99%;
+  .cuba-splitpanel-dock-button {
+    cursor: pointer;
+    width: 11px;
+    height: 40px;
+    background: transparent;
   }
 
-  * html .#{$primaryStyleName}-vertical .#{$primaryStyleName}-vsplitter {
-    height: 10px;
+  .cuba-splitpanel-dock-button-left {
+    background-image: url(sprites/dock-button-left.png); /** sprite-ref: components; */
   }
 
-  * html .#{$primaryStyleName}-vertical .#{$primaryStyleName}-vsplitter div {
-    margin: 0;
+  .cuba-splitpanel-dock-button-right {
+    background-image: url(sprites/dock-button-right.png); /** sprite-ref: components; */
   }
 
-  /* Webkit fix */
-
-  .v-webkit .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-first-container,
-  .v-webkit .#{$primaryStyleName}-horizontal .#{$primaryStyleName}-second-container {
-    overflow-x: auto;
-    overflow-y: hidden;
+  .cuba-splitpanel-dockable-right > div > .#{$primaryStyleName}-hsplitter > div,
+  .cuba-splitpanel-dockable-left > div > .#{$primaryStyleName}-hsplitter > div {
+    background: transparent none;
   }
 
-  .v-webkit .#{$primaryStyleName}-vertical .#{$primaryStyleName}-first-container,
-  .v-webkit .#{$primaryStyleName}-vertical .#{$primaryStyleName}-second-container {
-    overflow-x: hidden;
-    overflow-y: auto;
+  .cuba-splitpanel-dockable-left > div > .#{$primaryStyleName}-hsplitter {
+    width: 5px;
+    background: url(images/dockable-split-left.png) center repeat-y;
+  }
+
+  .cuba-splitpanel-dockable-right > div > .#{$primaryStyleName}-hsplitter {
+    width: 5px;
+    background: url(images/dockable-split-right.png) center repeat-y;
+  }
+
+  // Padding for main tabsheet content
+
+  .cuba-splitpanel-dockable-right > div > div.#{$primaryStyleName}-second-container > div.v-verticallayout
+  > div > div > div.v-tabsheet > div.v-tabsheet-content > .v-tabsheet-tabsheetpanel > div {
+    padding-left: 4px;
+  }
+
+  .cuba-splitpanel-dockable-left > div > div.#{$primaryStyleName}-second-container > div.v-verticallayout
+  > div > div > div.v-tabsheet > div.v-tabsheet-content > .v-tabsheet-tabsheetpanel > div {
+    padding-left: 4px;
   }
 }

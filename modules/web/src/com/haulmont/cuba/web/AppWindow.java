@@ -92,7 +92,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
     protected CubaMenuBar menuBar;
     protected TabSheet tabSheet;
-    protected HorizontalSplitPanel foldersSplit;
+    protected CubaHorizontalSplitPanel foldersSplit;
 
     protected Mode mode;
 
@@ -232,8 +232,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         if (Mode.TABBED.equals(getMode())) {
             middleLayout.addStyleName("cuba-app-work-area");
-        } else
+        } else {
             middleLayout.addStyleName("cuba-app-work-area-single");
+        }
 
         middleLayout.setSizeFull();
 
@@ -241,20 +242,21 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             foldersPane = createFoldersPane();
 
             if (foldersPane != null) {
-                foldersSplit = new HorizontalSplitPanel();
+                foldersSplit = new CubaHorizontalSplitPanel();
 
                 if (webConfig.getUseLightHeader()) {
-//                vaadin7 SplitPanel hook button
-//                foldersSplit.setShowHookButton(true);
+                    foldersSplit.setDockable(true);
                     foldersSplit.setImmediate(true);
                     foldersPane.setVisible(true);
-                    foldersSplit.setSplitPosition(webConfig.getFoldersPaneDefaultWidth(), Unit.PIXELS);
+                    foldersSplit.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
                 }
 
                 foldersSplit.setSplitPosition(0, Unit.PIXELS);
+                foldersSplit.setMaxSplitPosition(50, Unit.PERCENTAGE);
 
-                if (!webConfig.getUseLightHeader())
+                if (!webConfig.getUseLightHeader()) {
                     foldersSplit.setLocked(true);
+                }
 
                 foldersSplit.addComponent(foldersPane);
 

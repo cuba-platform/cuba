@@ -28,6 +28,6 @@ public interface SplitPanel extends Component.Container, Component.BelongToFrame
     PositionUpdateListener getPositionUpdateListener();
 
     interface PositionUpdateListener {
-        void updatePosition(int previousPosition, int newPosition);
+        void updatePosition(float previousPosition, float newPosition);
     }
 }
