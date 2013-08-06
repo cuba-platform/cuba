@@ -66,17 +66,15 @@
     padding: 0;
 
     .#{$primaryStyleName}-wrap {
+      background: transparent;
+      height: inherit;
+      padding: 0;
+      margin-top: 0;
+
       .#{$primaryStyleName}-caption {
         text-decoration: underline;
         color: $theme_linkColor;
         text-align: left;
-      }
-
-      .#{$primaryStyleName}-wrap {
-        background: transparent;
-        height: inherit;
-        padding: 0;
-        margin-top: 0;
       }
     }
   }
