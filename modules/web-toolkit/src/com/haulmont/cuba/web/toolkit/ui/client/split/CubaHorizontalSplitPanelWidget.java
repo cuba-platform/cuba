@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.split;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.haulmont.cuba.web.toolkit.ui.client.placeholder.CubaPlaceHolderWidget;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VSplitPanelHorizontal;
@@ -54,6 +55,8 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
             }, ClickEvent.getType());
 
             dockButtonContainer = new VOverlay();
+            DOM.setStyleAttribute(dockButtonContainer.getElement(), "zIndex", "" + 9999);
+
             if (dockMode == SplitPanelDockMode.LEFT) {
                 dockButtonContainer.setStyleName("cuba-splitpanel-dock-left");
             } else {
