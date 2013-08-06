@@ -33,8 +33,7 @@
     font-size: 12px;
 
     .#{$primaryStyleName}-wrap {
-      margin-top: 3px;
-      display: block;
+      vertical-align: middle;
 
       .#{$primaryStyleName}-caption {
         font: inherit;
@@ -44,6 +43,10 @@
         white-space: nowrap;
         color: $theme_buttonCaptionColor;
         line-height: normal;
+      }
+
+      .v-icon {
+        border-top: 2px transparent solid;
       }
     }
   }
