@@ -5,7 +5,7 @@
   ~ Use is subject to license terms.
   -->
 
-<menu-config xmlns="http://schemas.haulmont.com/cuba/4.0/menu.xsd">
+<menu-config xmlns="http://schemas.haulmont.com/cuba/4.1/menu.xsd">
 
     <menu id="administration">
         <item id="sec$User.browse"/>
@@ -19,6 +19,10 @@
         <item id="entityInspector.browse"/>
         <item id="sys$ScheduledTask.browse"/>
         <item id="entityLog"/>
+    </menu>
+
+    <menu id="help">
+        <item id="aboutWindow" openType="DIALOG"/>
     </menu>
 
 </menu-config>

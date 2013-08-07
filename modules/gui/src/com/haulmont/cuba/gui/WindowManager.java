@@ -33,6 +33,7 @@ import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -723,4 +724,8 @@ public abstract class WindowManager {
     public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
 
     public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public abstract void showWebPage(String url, @Nullable Map<String, Object> params);
 }

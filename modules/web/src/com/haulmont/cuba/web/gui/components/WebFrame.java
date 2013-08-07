@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -258,6 +259,11 @@ public class WebFrame extends WebVBoxLayout
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
         App.getInstance().getWindowManager().showNotification(caption, description, type);
+    }
+
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        App.getInstance().getWindowManager().showWebPage(url, params);
     }
 
     @Override

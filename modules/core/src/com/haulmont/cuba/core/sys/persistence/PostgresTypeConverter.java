@@ -50,8 +50,15 @@ public class PostgresTypeConverter implements DbTypeConverter {
     public Object getSqlObject(Object value) throws SQLException {
         if (value instanceof Date)
             return new Timestamp(((Date) value).getTime());
-        else if (value instanceof UUID)
+        if (value instanceof UUID)
             return new PostgresUUID((UUID) value);
         return value;
+    }
+
+    @Override
+    public int getSqlType(Class<?> javaClass) {
+        if (javaClass == Date.class)
+            return Types.TIMESTAMP;
+        return Types.OTHER;
     }
 }

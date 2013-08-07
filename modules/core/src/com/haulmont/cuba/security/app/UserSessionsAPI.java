@@ -5,11 +5,12 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.security.global.UserSession;
 
-import java.util.UUID;
 import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * User sessions distributed cache API.
@@ -40,13 +41,32 @@ public interface UserSessionsAPI {
      */
     void propagate(UUID id);
 
+    /**
+     * @return collection of all active sessions
+     */
     Collection<UserSessionEntity> getUserSessionInfo();
 
+    Map<String, Object> getLicenseInfo();
+
+    /**
+     * Immediately remove a sessions from cache.
+     * @param id    session id
+     */
     void killSession(UUID id);
 
+    /**
+     * @return session expiration timeout in the cache
+     */
     int getExpirationTimeoutSec();
 
+    /**
+     * Set session expiration timeout for the cache.
+     * @param value timeout in seconds
+     */
     void setExpirationTimeoutSec(int value);
 
+    /**
+     * Evict timed out sessions from the cache.
+     */
     void processEviction();
 }

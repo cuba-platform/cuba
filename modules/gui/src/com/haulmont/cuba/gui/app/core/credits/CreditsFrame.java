@@ -11,34 +11,22 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class CreditsFrame extends AbstractFrame {
 
-    public interface Companion {
-        void initWebPageButton(LinkButton button, CreditsItem item);
-    }
-
-    protected Companion companion;
-
+    @Named("scroll")
     protected ScrollBoxLayout scrollBox;
-
-    public CreditsFrame(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(final Map<String, Object> params) {
-        scrollBox = getComponent("scroll");
-        companion = getCompanion();
-
         ComponentsFactory factory = AppConfig.getFactory();
         GridLayout grid = factory.createComponent(GridLayout.NAME);
         grid.setSpacing(true);
@@ -60,9 +48,12 @@ public class CreditsFrame extends AbstractFrame {
 
                 LinkButton webpage = factory.createComponent(LinkButton.NAME);
                 webpage.setCaption(getMessage("webpage"));
-                if (companion != null) {
-                    companion.initWebPageButton(webpage, item);
-                }
+                webpage.setAction(new AbstractAction("webpage") {
+                    @Override
+                    public void actionPerform(Component component) {
+                        showWebPage(item.getWebPage(), null);
+                    }
+                });
                 grid.add(webpage, 2, i);
 
                 dash = factory.createComponent(Label.NAME);
@@ -74,7 +65,7 @@ public class CreditsFrame extends AbstractFrame {
                 license.setAction(new AbstractAction("license") {
                     @Override
                     public void actionPerform(Component component) {
-                        openWindow("license", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("licenseText", item.getLicense()));
+                        openWindow("thirdpartyLicenseWindow", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("licenseText", item.getLicense()));
                     }
                 });
                 grid.add(license, 4, i);

@@ -284,16 +284,14 @@ create table SYS_SERVER (
     ID varchar2(32) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar2(50),
-    VERSION integer,
     UPDATE_TS timestamp,
     UPDATED_BY varchar2(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar2(50),
     NAME varchar2(255),
-    ADDRESS varchar2(255),
     IS_RUNNING char(1),
+    DATA clob,
     primary key(ID)
 )^
+create unique index IDX_SYS_SERVER_UNIQ_NAME on SYS_SERVER(NAME)^
 
 create table SEC_CONSTRAINT (
     ID varchar2(32) not null,

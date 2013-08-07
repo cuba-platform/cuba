@@ -30,6 +30,8 @@ public class EntityListenerTest extends CubaTestCase
             AfterUpdateEntityListener<Server>,
             AfterDeleteEntityListener<Server>
     {
+        protected Persistence persistence = AppBeans.get(Persistence.class);
+
         public void onAfterInsert(Server entity) {
             System.out.println("onAfterInsert " + entity);
         }
@@ -37,12 +39,11 @@ public class EntityListenerTest extends CubaTestCase
         public void onAfterUpdate(Server entity) {
             System.out.println("onAfterUpdate " + entity);
 
-            Set<String> dirtyFields = PersistenceProvider.getDirtyFields(entity);
+            Set<String> dirtyFields = persistence.getTools().getDirtyFields(entity);
             System.out.println(dirtyFields);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select max(s.createTs) from sys$Server s where s.address = :address");
-            q.setParameter("address", entity.getAddress());
+            EntityManager em = persistence.getEntityManager();
+            Query q = em.createQuery("select max(s.createTs) from sys$Server s");
             Date maxDate = (Date) q.getSingleResult();
             System.out.println(maxDate);
 
@@ -53,7 +54,7 @@ public class EntityListenerTest extends CubaTestCase
 //            q.setParameter(2, entity.getId());
 //            q.executeUpdate();
 
-            QueryRunner runner = new QueryRunner(Locator.getDataSource());
+            QueryRunner runner = new QueryRunner(persistence.getDataSource());
             try {
                 runner.update("update SYS_SERVER set NAME = ? where ID = ?", new Object[] {"some other", entity.getId()});
             } catch (SQLException e) {
@@ -70,33 +71,31 @@ public class EntityListenerTest extends CubaTestCase
         AppBeans.get(EntityListenerManager.class).addListener(Server.class, TestListener.class);
 
         UUID id, id1;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
             server.setName("localhost");
-            server.setAddress("127.0.0.1");
             server.setRunning(true);
             em.persist(server);
 
             Server server1 = new Server();
             id1 = server1.getId();
             server1.setName("localhost");
-            server1.setAddress("127.0.0.1");
             server1.setRunning(true);
             em.persist(server1);
 
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             server = em.find(Server.class, id);
-            server.setAddress("192.168.1.1");
+            server.setName(server.getName() + " - " + new Date());
 
             tx.commitRetaining();
 
-            em = PersistenceProvider.getEntityManager();
+            em = persistence.getEntityManager();
             server = em.find(Server.class, id1);
             em.remove(server);
 

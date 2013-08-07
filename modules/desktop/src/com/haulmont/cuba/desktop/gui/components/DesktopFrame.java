@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
+import javax.annotation.Nullable;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
@@ -282,6 +283,11 @@ public class DesktopFrame
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
         getWindowManager().showNotification(caption, description, type);
+    }
+
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        getWindowManager().showWebPage(url, params);
     }
 
     @Override

@@ -82,8 +82,12 @@ public class UserSessionServiceBean implements UserSessionService
 
     @Override
     public Collection<UserSessionEntity> getUserSessionInfo() {
-        Collection<UserSessionEntity> userSessionList = userSessions.getUserSessionInfo();
-        return userSessionList;
+        return userSessions.getUserSessionInfo();
+    }
+
+    @Override
+    public final Map<String, Object> getLicenseInfo() {
+        return userSessions.getLicenseInfo();
     }
 
     @Override

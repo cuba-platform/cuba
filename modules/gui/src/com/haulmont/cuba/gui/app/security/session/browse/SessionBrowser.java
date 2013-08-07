@@ -44,6 +44,9 @@ public class SessionBrowser extends AbstractLookup {
     protected Label lastUpdateTsLab;
 
     @Inject
+    private Label sessionsInfo;
+
+    @Inject
     private TextField userLogin;
 
     @Inject
@@ -69,6 +72,19 @@ public class SessionBrowser extends AbstractLookup {
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<UserSessionEntity> items) {
                 String time = Datatypes.getNN(Date.class).format(sessionsDs.getUpdateTs(), userSessionSource.getLocale());
                 lastUpdateTsLab.setValue(time);
+
+                Map<String, Object> info = uss.getLicenseInfo();
+                Integer licensed = (Integer) info.get("licensedSessions");
+                Integer active = (Integer) info.get("activeSessions");
+                if (licensed == 0) {
+                    sessionsInfo.setVisible(false);
+                } else {
+                    sessionsInfo.setValue(messages.formatMessage(getMessagesPack(), "sessionsInfo",
+                            info.get("activeSessions"), info.get("licensedSessions")));
+                    if (active > licensed) {
+                        sessionsInfo.setStyleName("h2-red");
+                    }
+                }
             }
         });
     }

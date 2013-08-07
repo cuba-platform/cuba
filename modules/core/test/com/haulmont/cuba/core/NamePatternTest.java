@@ -19,7 +19,6 @@ public class NamePatternTest extends CubaTestCase {
     public void test() {
         Server server = new Server();
         server.setName("orion");
-        server.setAddress("192.168.1.100");
         server.setRunning(false);
 
         String instanceName = ((Instance) server).getInstanceName();

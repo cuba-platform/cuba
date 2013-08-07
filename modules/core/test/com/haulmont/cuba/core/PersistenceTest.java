@@ -55,7 +55,6 @@ public class PersistenceTest extends CubaTestCase {
             Server server = new Server();
             id = server.getId();
             server.setName("localhost");
-            server.setAddress("127.0.0.1");
             server.setRunning(true);
             em.persist(server);
 
@@ -70,7 +69,7 @@ public class PersistenceTest extends CubaTestCase {
             Server server = em.find(Server.class, id);
             assertEquals(id, server.getId());
 
-            server.setAddress("222");
+            server.setRunning(false);
 
             tx.commit();
         } finally {

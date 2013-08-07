@@ -7,9 +7,7 @@
 package com.haulmont.cuba.gui.app.core.credits;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.TextArea;
-import com.haulmont.cuba.gui.components.TextField;
 
 import javax.inject.Inject;
 import java.util.Map;

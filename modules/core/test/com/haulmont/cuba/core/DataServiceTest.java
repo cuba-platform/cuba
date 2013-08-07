@@ -36,7 +36,6 @@ public class DataServiceTest extends CubaTestCase {
         Server server = new Server();
         UUID id = server.getId();
         server.setName("localhost");
-        server.setAddress("127.0.0.1");
         server.setRunning(true);
 
         dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
@@ -57,7 +56,6 @@ public class DataServiceTest extends CubaTestCase {
         Server server = new Server();
         UUID id = server.getId();
         server.setName("localhost");
-        server.setAddress("127.0.0.1");
         server.setRunning(true);
 
         dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
@@ -74,7 +72,6 @@ public class DataServiceTest extends CubaTestCase {
 
         Server server = new Server();
         server.setName("localhost");
-        server.setAddress("127.0.0.1");
         server.setRunning(true);
 
         dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
@@ -93,7 +90,6 @@ public class DataServiceTest extends CubaTestCase {
         Server server = new Server();
         UUID id = server.getId();
         server.setName("localhost");
-        server.setAddress("127.0.0.1");
         server.setRunning(true);
 
         dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));

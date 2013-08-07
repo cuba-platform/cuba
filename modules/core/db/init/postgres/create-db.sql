@@ -3,18 +3,17 @@ create table SYS_SERVER (
     ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
-    VERSION integer,
     UPDATE_TS timestamp,
     UPDATED_BY varchar(50),
-    DELETE_TS timestamp,
-    DELETED_BY varchar(50),
     --
     NAME varchar(255),
-    ADDRESS varchar(255),
     IS_RUNNING boolean,
+    DATA text,
     --
     primary key (ID)
 )^
+
+create unique index IDX_SYS_SERVER_UNIQ_NAME on SYS_SERVER (NAME)^
 
 ------------------------------------------------------------------------------------------------------------
 

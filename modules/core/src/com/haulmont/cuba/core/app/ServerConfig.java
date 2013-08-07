@@ -125,4 +125,11 @@ public interface ServerConfig extends Config {
     @Property("cuba.defaultQueryTimeoutSec")
     int getDefaultQueryTimeoutSec();
     void setDefaultQueryTimeoutSec(int timeout);
+
+    /**
+     * @return Path to the license file
+     */
+    @Property("cuba.licensePath")
+    @Default("/cuba.license")
+    String getLicensePath();
 }

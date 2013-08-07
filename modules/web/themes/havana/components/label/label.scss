@@ -15,4 +15,10 @@
     font-size: 14px;
     font-weight: bold;
   }
+  .#{$primaryStyleName}.h2-red {
+    font-family: verdana, tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: red;
+  }
 }

@@ -33,6 +33,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
@@ -819,6 +822,15 @@ public class DesktopWindowManager extends WindowManager {
         dialog.setLocationRelativeTo(frame);
         frame.deactivate(null);
         dialog.setVisible(true);
+    }
+
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException("Unable to show web page " + url, e);
+        }
     }
 
     public void setCurrentWindowCaption(Window window, String caption, String description) {

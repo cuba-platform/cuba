@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -66,6 +67,11 @@ public interface UserSessionService {
      * @return the list of active user sessions
      */
     Collection<UserSessionEntity> getUserSessionInfo();
+
+    /**
+     * @return license information
+     */
+    Map<String, Object> getLicenseInfo();
 
     /**
      * Disconnect a session. Returns silently if there is no active session with the specified ID.

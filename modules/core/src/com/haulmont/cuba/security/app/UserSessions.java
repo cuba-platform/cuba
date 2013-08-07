@@ -5,23 +5,46 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.bali.db.ResultSetHandler;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.app.ServerInfoAPI;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.inject.Inject;
 import java.io.*;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,7 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id$
  */
 @ManagedBean(UserSessionsAPI.NAME)
-public class UserSessions implements UserSessionsAPI {
+public final class UserSessions implements UserSessionsAPI {
 
     private static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
@@ -62,11 +85,31 @@ public class UserSessions implements UserSessionsAPI {
 
     private UserSession NO_USER_SESSION;
 
-    @Inject
-    protected TimeSource timeSource;
+    private GlobalConfig globalConfig;
+
+    private ServerConfig serverConfig;
+
+    private byte[] bytes;
+
+    private int count;
 
     @Inject
-    protected Metadata metadata;
+    private TimeSource timeSource;
+
+    @Inject
+    private UuidSource uuidSource;
+
+    @Inject
+    private Metadata metadata;
+
+    @Inject
+    private ServerInfoAPI serverInfo;
+
+    @Inject
+    private Persistence persistence;
+
+    @Inject
+    private Resources resources;
 
     public UserSessions() {
         User noUser = new User();
@@ -82,9 +125,10 @@ public class UserSessions implements UserSessionsAPI {
     }
 
     @Inject
-    public void setConfigProvider(Configuration configuration) {
-        ServerConfig config = configuration.getConfig(ServerConfig.class);
-        setExpirationTimeoutSec(config.getUserSessionExpirationTimeoutSec());
+    public void setConfiguration(Configuration configuration) {
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+        serverConfig = configuration.getConfig(ServerConfig.class);
+        setExpirationTimeoutSec(serverConfig.getUserSessionExpirationTimeoutSec());
     }
 
     @Inject
@@ -146,12 +190,116 @@ public class UserSessions implements UserSessionsAPI {
         );
     }
 
+    @PostConstruct
+    public void start() {
+        String encodedStr = resources.getResourceAsString(serverConfig.getLicensePath());
+        if (encodedStr == null) {
+            log.error("\n======================================================"
+                    + "\nInvalid license path: " + serverConfig.getLicensePath()
+                    + "\n======================================================");
+            return;
+        }
+
+        Object[] objects = null;
+        try {
+            bytes = Base64.decodeBase64(encodedStr);
+        } catch (Exception e) {
+            //
+        }
+        objects = decode();
+        if (objects == null) {
+            log.error("\n======================================================"
+                    + "\nInvalid license data at " + serverConfig.getLicensePath()
+                    + "\n======================================================");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n======================================================")
+                .append("\nCUBA platform license type: ").append(objects[0])
+                .append("\nLicensed To: ").append(objects[1])
+                .append("\nNumber of licensed sessions: ").append(objects[2] == 0 ? "unlimited" : objects[2])
+                .append("\n======================================================");
+        log.warn(sb.toString());
+
+        if (!globalConfig.getTestMode()) {
+            Timer timer = new Timer(true);
+            timer.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            count = updateCurrentSessions(cache.values());
+                        }
+                    },
+                    20000,
+                    10000
+            );
+        }
+    }
+
+    @PreDestroy
+    public void stop() {
+        try {
+            String serverId = serverInfo.getServerId();
+            long now = timeSource.currentTimeMillis();
+
+            DbTypeConverter types = persistence.getDbTypeConverter();
+            Object tsObj = types.getSqlObject(new Date(now));
+            int tsType = types.getSqlType(Date.class);
+            Object falseObj = types.getSqlObject(Boolean.FALSE);
+            int boolType = types.getSqlType(Boolean.class);
+
+            QueryRunner runner = new QueryRunner(persistence.getDataSource());
+            runner.update(
+                    "update SYS_SERVER set UPDATE_TS = ?, IS_RUNNING = ?, DATA = null where NAME = ?",
+                    new Object[]{tsObj, falseObj, serverId},
+                    new int[]{tsType, boolType, Types.VARCHAR}
+            );
+        } catch (Exception e) {
+            log.error("Unable to update SYS_SERVER: " + e);
+        }
+    }
+
+    private Object[] decode() {
+        try {
+            BigInteger modulus = new BigInteger("18067575663987735326841242779464849963427753383058608867564135320738629147323691302736061591062052549416513716629888492493056820982621037983191693191253192501503395852012311582921940563059939819291206980413052487032632214809671460979641654935753772670912438930755064425437054092209398837918235045229999194411886527048670166121407791756890867519091491607028477744091266213650133388651959054937201410008848221420087836750419721605315470836864588770539438076268570475092652895671550938980095793057202388488186533973398706509535952619833352266143112184736108225487400680111445272274042274164391489296561006468854335469461");
+            BigInteger exponent = new BigInteger("65537");
+            RSAPublicKeySpec keySpec = new RSAPublicKeySpec(modulus, exponent);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = keyFactory.generatePublic(keySpec);
+
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, publicKey);
+            byte[] decoded = cipher.doFinal(bytes);
+            String str = new String(decoded, Charset.forName("UTF-8"));
+            String[] split = str.split("\\^");
+
+            Object[] arr = new Object[3];
+            arr[0] = split[0].trim();
+            arr[1] = split[1].trim();
+            arr[2] = Integer.valueOf(split[2].trim());
+            return arr;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public void add(UserSession session) {
         UserSessionInfo usi = new UserSessionInfo(session, timeSource.currentTimeMillis());
         cache.put(session.getId(), usi);
         if (!session.isSystem())
             clusterManager.send(usi);
+        Object[] objects = decode();
+        if (objects != null) {
+            int licensed = (int) objects[2];
+            if (licensed != 0 && count > licensed) {
+                LogFactory.getLog("com.haulmont.cuba.security.app.LoginWorkerBean").warn(
+                        String.format("Sessions active: %d, licensed: %d", count, licensed));
+            }
+        } else {
+            LogFactory.getLog("com.haulmont.cuba.security.app.LoginWorkerBean").error("Invalid license data");
+        }
     }
 
     @Override
@@ -209,7 +357,24 @@ public class UserSessions implements UserSessionsAPI {
         return sessionInfoList;
     }
 
-    protected UserSessionEntity createUserSessionEntity(UserSession session, long since, long lastUsedTs) {
+    @Override
+    public Map<String, Object> getLicenseInfo() {
+        Object[] objects = decode();
+        Map<String, Object> info = new HashMap<>();
+        if (objects != null) {
+            info.put("licenseType", objects[0]);
+            info.put("licensedTo", objects[1]);
+            info.put("licensedSessions", objects[2]);
+        } else {
+            info.put("licenseType", "invalid data");
+            info.put("licensedTo", "invalid data");
+            info.put("licensedSessions", -1);
+        }
+        info.put("activeSessions", count);
+        return info;
+    }
+
+    private UserSessionEntity createUserSessionEntity(UserSession session, long since, long lastUsedTs) {
         UserSessionEntity use = metadata.create(UserSessionEntity.class);
         use.setId(session.getId());
         use.setLogin(session.getUser().getLogin());
@@ -222,7 +387,6 @@ public class UserSessions implements UserSessionsAPI {
         Date last = timeSource.currentTimestamp();
         last.setTime(lastUsedTs);
         use.setLastUsedTs(last);
-        use.setSystem(session.isSystem());
         return use;
     }
 
@@ -251,6 +415,68 @@ public class UserSessions implements UserSessionsAPI {
                 usi.lastUsedTs = 0;
                 clusterManager.send(usi);
             }
+        }
+    }
+
+    int updateCurrentSessions(Collection<UserSessionInfo> userSessionInfo) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            for (UserSessionInfo info : userSessionInfo) {
+                sb.append(info.session.getId()).append("\n");
+            }
+
+            String serverId = serverInfo.getServerId();
+            long now = timeSource.currentTimeMillis();
+
+            DbTypeConverter types = persistence.getDbTypeConverter();
+            Object tsObj = types.getSqlObject(new Date(now));
+            int tsType = types.getSqlType(Date.class);
+            Object trueObj = types.getSqlObject(Boolean.TRUE);
+            int boolType = types.getSqlType(Boolean.class);
+
+            QueryRunner runner = new QueryRunner(persistence.getDataSource());
+
+            int updated = runner.update(
+                    "update SYS_SERVER set UPDATE_TS = ?, IS_RUNNING = ?, DATA = ? where NAME = ?",
+                    new Object[]{tsObj, trueObj, sb.toString(), serverId},
+                    new int[]{tsType, boolType, Types.VARCHAR, Types.VARCHAR}
+            );
+            if (updated == 0) {
+                Object id = types.getSqlObject(uuidSource.createUuid());
+                int idType = types.getSqlType(UUID.class);
+                runner.update(
+                        "insert into SYS_SERVER (ID, CREATE_TS, UPDATE_TS, NAME, IS_RUNNING, DATA) " +
+                        "values (?, ?, ?, ?, ?, ?)",
+                        new Object[]{id, tsObj, tsObj, serverId, trueObj, sb.toString()},
+                        new int[]{idType, tsType, tsType, Types.VARCHAR, boolType, Types.VARCHAR}
+                );
+            }
+            return runner.query(
+                    "select DATA from SYS_SERVER where IS_RUNNING = ? and UPDATE_TS > ?",
+                    new Object[]{trueObj, types.getSqlObject(new Date(now - 30000))},
+                    new int[] {boolType, tsType},
+                    new ResultSetHandler<Integer>() {
+                        @Override
+                        public Integer handle(ResultSet rs) throws SQLException {
+                            Set<UUID> set = new HashSet<>();
+                            while (rs.next()) {
+                                String data = rs.getString(1);
+                                if (data != null) {
+                                    String[] strings = data.split("\\s");
+                                    for (String string : strings) {
+                                        if (!StringUtils.isEmpty(string)) {
+                                            set.add(UUID.fromString(string));
+                                        }
+                                    }
+                                }
+                            }
+                            return set.size();
+                        }
+                    }
+            );
+        } catch (Exception e) {
+            log.error("Unable to update SYS_SERVER: " + e);
+            return -1;
         }
     }
 }

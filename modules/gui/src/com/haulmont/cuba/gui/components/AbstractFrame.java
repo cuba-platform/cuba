@@ -380,6 +380,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        frame.showWebPage(url, params);
+    }
+
+    @Override
     public <A extends IFrame> A getFrame() {
         //noinspection unchecked
         return (A) this.frame.getFrame();

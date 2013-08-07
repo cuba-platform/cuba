@@ -5,15 +5,10 @@
   -->
 
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.core.credits.CreditsFrame"
         messagesPack="com.haulmont.cuba.gui.app.core.credits"
         >
-    <companions>
-        <web class="com.haulmont.cuba.web.app.ui.core.credits.CreditsFrameCompanion"/>
-        <desktop class="com.haulmont.cuba.desktop.app.core.credits.CreditsFrameCompanion"/>
-    </companions>
-
     <dsContext/>
 
     <layout>

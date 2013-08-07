@@ -1,4 +1,4 @@
-<screen-config xmlns="http://schemas.haulmont.com/cuba/4.0/screens.xsd">
+<screen-config xmlns="http://schemas.haulmont.com/cuba/4.1/screens.xsd">
 
     <screen id="editWindowActions" template="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
 
@@ -69,12 +69,6 @@
     <screen id="sys$LockDescriptor.edit"
             template="/com/haulmont/cuba/gui/app/core/locking/lock-edit.xml"/>
 
-    <screen id="sys$Server.browse"
-            template="/com/haulmont/cuba/gui/app/core/server/browse/server-browse.xml"/>
-
-    <screen id="sys$Server.edit"
-            template="/com/haulmont/cuba/gui/app/core/server/edit/server-edit.xml"/>
-
     <screen id="multiuploadDialog" template="/com/haulmont/cuba/gui/app/core/file/multiupload.xml"/>
 
     <screen id="fileUploadDialog"
@@ -118,7 +112,16 @@
     <screen id="entityInspector.edit"
             template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-edit.xml"/>
 
-    <screen id="license"
+    <screen id="aboutWindow"
+            template="/com/haulmont/cuba/gui/app/core/about/about-window.xml"/>
+
+    <screen id="licenseFrame"
+            template="/com/haulmont/cuba/gui/app/core/license/license-frame.xml"/>
+
+    <screen id="creditsFrame"
+            template="/com/haulmont/cuba/gui/app/core/credits/credits-frame.xml"/>
+
+    <screen id="thirdpartyLicenseWindow"
             template="/com/haulmont/cuba/gui/app/core/credits/license-window.xml"/>
 
     <screen id="entityLog"

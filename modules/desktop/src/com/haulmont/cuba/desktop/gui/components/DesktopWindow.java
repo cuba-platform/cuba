@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -469,6 +470,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
         getWindowManager().showNotification(caption, description, type);
+    }
+
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        getWindowManager().showWebPage(url, params);
     }
 
     @Override

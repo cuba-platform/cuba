@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -1059,6 +1060,31 @@ public class WebWindowManager extends WindowManager {
 
         AppUI.getCurrent().addWindow(window);
         window.center();
+    }
+
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        String target = null;
+        Integer width = null;
+        Integer height = null;
+        String border = "DEFAULT";
+        Boolean tryToOpenAsPopup = null;
+        if (params != null) {
+            target = (String) params.get("target");
+            width = (Integer) params.get("width");
+            height = (Integer) params.get("height");
+            border = (String) params.get("border");
+            tryToOpenAsPopup = (Boolean) params.get("tryToOpenAsPopup");
+        }
+        if (target == null)
+            target = "_blank";
+        if (width != null && height != null && border != null) {
+            AppUI.getCurrent().getPage().open(url, target, width, height, BorderStyle.valueOf(border));
+        } else if (tryToOpenAsPopup != null) {
+            AppUI.getCurrent().getPage().open(url, target, tryToOpenAsPopup);
+        } else {
+            AppUI.getCurrent().getPage().open(url, target, false);
+        }
     }
 
     private void removeWindowsWithName(String name) {

@@ -45,6 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -379,6 +380,11 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
         App.getInstance().getWindowManager().showNotification(caption, description, type);
+    }
+
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        App.getInstance().getWindowManager().showWebPage(url, params);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

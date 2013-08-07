@@ -6,10 +6,7 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -34,11 +31,23 @@ public class OracleTypeConverter implements DbTypeConverter {
 
     @Override
     public Object getSqlObject(Object value) {
-        if (value instanceof Boolean) {
+        if (value instanceof Date)
+            return new Timestamp(((Date) value).getTime());
+        if (value instanceof Boolean)
             return ((Boolean) value) ? "1" : "0";
-        }
         if (value instanceof UUID)
-            return value.toString();
+            return value.toString().replace("-", "");
         return value;
+    }
+
+    @Override
+    public int getSqlType(Class<?> javaClass) {
+        if (javaClass == Date.class)
+            return Types.TIMESTAMP;
+        else if (javaClass == UUID.class)
+            return Types.VARCHAR;
+        else if (javaClass == Boolean.class)
+            return Types.CHAR;
+        return Types.OTHER;
     }
 }

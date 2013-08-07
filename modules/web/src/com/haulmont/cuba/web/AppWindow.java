@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
@@ -159,6 +160,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         initStaticComponents();
 
         updateClientSystemMessages();
+
+        checkSessions();
     }
 
     private void updateClientSystemMessages() {
@@ -191,6 +194,20 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(rootLayout);
+    }
+
+    private void checkSessions() {
+        Map<String, Object> info = AppBeans.get(UserSessionService.class).getLicenseInfo();
+        Integer licensed = (Integer) info.get("licensedSessions");
+        if (licensed < 0) {
+            Notification.show("Invalid CUBA platform license", Notification.Type.WARNING_MESSAGE);
+        } else {
+            Integer active = (Integer) info.get("activeSessions");
+            if (licensed != 0 && active > licensed) {
+                Notification.show("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
+                        Notification.Type.WARNING_MESSAGE);
+            }
+        }
     }
 
     /**

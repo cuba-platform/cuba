@@ -50,8 +50,17 @@ public class MssqlTypeConverter implements DbTypeConverter {
     public Object getSqlObject(Object value) {
         if (value instanceof Date)
             return new Timestamp(((Date) value).getTime());
-        else if (value instanceof UUID)
+        if (value instanceof UUID)
             return value.toString();
         return value;
+    }
+
+    @Override
+    public int getSqlType(Class<?> javaClass) {
+        if (javaClass == Date.class)
+            return Types.TIMESTAMP;
+        else if (javaClass == UUID.class)
+            return Types.VARCHAR;
+        return Types.OTHER;
     }
 }
