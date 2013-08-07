@@ -129,6 +129,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
 
     task sourceJar(type: Jar) {
         from file('src')
+        exclude "com/haulmont/cuba/security/app/UserSessions.java"
         classifier = 'sources'
     }
 

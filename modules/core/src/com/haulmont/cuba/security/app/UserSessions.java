@@ -387,6 +387,7 @@ public final class UserSessions implements UserSessionsAPI {
         Date last = timeSource.currentTimestamp();
         last.setTime(lastUsedTs);
         use.setLastUsedTs(last);
+        use.setSystem(session.isSystem());
         return use;
     }
 
