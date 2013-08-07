@@ -109,6 +109,24 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         testCompile(group: 'junit', name: 'junit', version: '4.5')
     }
 
+    task recompileNoDebug(type: JavaCompile) {
+        source = sourceSets.main.java
+        classpath = sourceSets.main.compileClasspath
+        destinationDir = new File(buildDir, 'nodebug-classes')
+        options.debug = false
+    }
+
+    jar {
+        exclude { details ->
+            return details.file == new File("${sourceSets.main.output.classesDir}/com/haulmont/cuba/security/app/UserSessions.class")
+        }
+        from ("$buildDir/nodebug-classes") {
+            include "com/haulmont/cuba/security/app/UserSessions.class"
+        }
+    }
+
+    jar.dependsOn(recompileNoDebug)
+
     task sourceJar(type: Jar) {
         from file('src')
         classifier = 'sources'

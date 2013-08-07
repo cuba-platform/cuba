@@ -986,6 +986,17 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоках клиентского уровня: <structname>Web Client</structname>, <structname>Web Portal</structname>, <structname>Desktop Client</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.licensePath">
+        <term>cuba.licensePath</term>
+        <listitem>
+          <para>Путь  к файлу лицензии на использование платформы CUBA. Файл загружается по правилам интерфейса <code>
+              <link linkend="resources">Resources</link>
+            </code>. </para>
+          <para>Значение по умолчанию: <literal>/cuba.license</literal></para>
+          <para>Интерфейс: <code>ServerConfig</code></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.localeSelectVisible">
         <term>cuba.localeSelectVisible</term>
         <listitem>
