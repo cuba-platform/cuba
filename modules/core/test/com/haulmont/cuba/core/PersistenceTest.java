@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
@@ -23,6 +24,9 @@ public class PersistenceTest extends CubaTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        runner.update("delete from SYS_SERVER");
 
         Transaction tx = persistence.createTransaction();
         try {

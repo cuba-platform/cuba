@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
@@ -30,6 +31,9 @@ public class DataServiceTest extends CubaTestCase {
     public void setUp() throws Exception {
         super.setUp();
         dataService = AppBeans.get(DataService.class);
+
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        runner.update("delete from SYS_SERVER");
     }
 
     public void test() {

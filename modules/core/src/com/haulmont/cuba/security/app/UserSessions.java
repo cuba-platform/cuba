@@ -57,14 +57,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @ManagedBean(UserSessionsAPI.NAME)
 public final class UserSessions implements UserSessionsAPI {
 
-    private static class UserSessionInfo implements Serializable {
+    static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
 
-        private final UserSession session;
-        private final long since;
-        private volatile long lastUsedTs; // set to 0 when propagating removal to cluster
+        final UserSession session;
+        final long since;
+        volatile long lastUsedTs; // set to 0 when propagating removal to cluster
 
-        private UserSessionInfo(UserSession session, long now) {
+        UserSessionInfo(UserSession session, long now) {
             this.session = session;
             this.since = now;
             this.lastUsedTs = now;

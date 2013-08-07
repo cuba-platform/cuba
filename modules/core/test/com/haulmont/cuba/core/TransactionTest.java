@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
 
 import java.util.List;
@@ -17,6 +18,13 @@ import java.util.UUID;
 public class TransactionTest extends CubaTestCase {
 
     private static final String TEST_EXCEPTION_MSG = "test exception";
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        runner.update("delete from SYS_SERVER");
+    }
 
     public void testNoTransaction() {
         try {
