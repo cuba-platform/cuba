@@ -31,7 +31,7 @@
     <para>Для установки Studio выполните следующий шаги:</para>
     <orderedlist>
       <listitem>
-        <para>Загрузите архив <filename>studio-0.6.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.6/studio-0.6.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.6/studio-0.6.zip</ulink>.</para>
+        <para>Загрузите архив <filename>studio-0.8.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.8/studio-0.8.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.8/studio-0.8.zip</ulink>.</para>
       </listitem>
       <listitem>
         <para>Распакуйте архив в локальный каталог, например, <filename>c:/work/studio</filename></para>
