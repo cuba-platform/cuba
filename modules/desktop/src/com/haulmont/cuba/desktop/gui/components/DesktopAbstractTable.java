@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.bali.datastruct.Pair;
+import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -90,13 +90,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected boolean columnsInitialized = false;
     protected int generatedColumnsCount = 0;
 
-    protected boolean isRowsAjusting = false;
-    protected boolean isRowSelecting = false;
+    protected boolean isAdjusting = false;
 
     protected boolean fontInitialized = false;
     protected int defaultRowHeight = 24;
 
-    protected Set selectionBackup;
+    protected Set<Entity> selectedItems = Collections.emptySet();
 
     protected Map<String, Printable> printables = new HashMap<>();
 
@@ -546,45 +545,36 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         tableModel.addChangeListener(new AnyTableModelAdapter.DataChangeListener() {
 
             private boolean focused = false;
-            private volatile boolean triggered = false;
+            private ThreadLocal<Set<Entity>> selectionBackup = new ThreadLocal<>();
 
             @Override
             public void beforeChange() {
-                if (!triggered) {
-                    // ignore selection change while data changing
-                    isRowsAjusting = true;
-                    focused = impl.isFocusOwner();
-                }
+                isAdjusting = true;
+                focused = impl.isFocusOwner();
+                selectionBackup.set(selectedItems);
             }
 
             @Override
             public void afterChange() {
-                if (!triggered) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            applyNewSelection();
-                            triggered = false;
-                        }
-                    });
-                    triggered = true;
-                }
+                isAdjusting = false;
+                applySelection(filterSelection(selectionBackup.get()));
+                selectionBackup.remove();
             }
 
-            private void applyNewSelection() {
-                Set<Entity> newSelection = null;
-                if (selectionBackup != null) {
-                    newSelection = new HashSet<>();
-                    // filter selection
-                    for (Object item : selectionBackup) {
-                        Entity entity = (Entity) item;
-                        if (datasource.containsItem(entity.getId()))
-                            newSelection.add(datasource.getItem(entity.getId()));
+            @SuppressWarnings("unchecked")
+            private Set<Entity> filterSelection(Set<Entity> selection) {
+                Set<Entity> newSelection = new HashSet<>(2 * selection.size());
+                for (Entity item : selection) {
+                    if (datasource.containsItem(item.getId())) {
+                        newSelection.add(datasource.getItem(item.getId()));
                     }
                 }
-                // enable selection change listener
-                isRowsAjusting = false;
-                if (focused && newSelection != null && !newSelection.isEmpty()) {
+                return newSelection;
+            }
+
+            @SuppressWarnings("unchecked")
+            private void applySelection(Set<Entity> selection) {
+                if (focused && !selection.isEmpty()) {
                     int minimalSelectionRowIndex = Integer.MAX_VALUE;
 
                     if (datasource instanceof CollectionDatasource.Ordered) {
@@ -593,13 +583,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
                         int entityIndex = 0;
                         while (itemId != null && minimalSelectionRowIndex == Integer.MAX_VALUE) {
-                            if (newSelection.contains(datasource.getItem(itemId)))
+                            if (selection.contains(datasource.getItem(itemId)))
                                 minimalSelectionRowIndex = entityIndex;
                             itemId = orderedDs.nextItemId(itemId);
                             entityIndex++;
                         }
                     } else {
-                        for (Entity entity : newSelection) {
+                        for (Entity entity : selection) {
                             int rowIndex = tableModel.getRowIndex(entity);
                             if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0)
                                 minimalSelectionRowIndex = rowIndex;
@@ -615,7 +605,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         impl.getCellEditor().cancelCellEditing();
                 }
 
-                setSelected(newSelection);
+                setSelected(selection);
             }
 
             @Override
@@ -644,25 +634,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     @Override
                     @SuppressWarnings("unchecked")
                     public void valueChanged(ListSelectionEvent e) {
-                        // ignore selection change while data changing
-                        if (e.getValueIsAdjusting() || isRowsAjusting || isRowSelecting)
+                        if (e.getValueIsAdjusting())
                             return;
 
-                        isRowSelecting = true;
-                        try {
-                            selectionBackup = getSelected();
-
-                            final Set selected = getSelected();
-                            if (selected.isEmpty()) {
-                                datasource.setItem(null);
-                            } else {
-                                // reset selection and select new item
-                                if (isMultiSelect())
-                                    datasource.setItem(null);
-                                datasource.setItem((Entity) selected.iterator().next());
-                            }
-                        } finally {
-                            isRowSelecting = false;
+                        selectedItems = getSelected();
+                        if (!selectedItems.isEmpty()) {
+                            datasource.setItem(selectedItems.iterator().next());
+                        } else {
+                            datasource.setItem(null);
                         }
                     }
                 }
@@ -1072,14 +1051,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public void setSelected(Entity item) {
         if (item != null) {
-            int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
-            impl.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+            setSelected(Collections.singleton(item));
         } else {
-            int[] rows = impl.getSelectedRows();
-            for (int row : rows) {
-                int rowIndex = impl.convertRowIndexToView(row);
-                impl.getSelectionModel().removeSelectionInterval(rowIndex, rowIndex);
-            }
+            setSelected(Collections.<Entity>emptySet());
         }
     }
 
@@ -1087,19 +1061,43 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     public void setSelected(Collection<Entity> items) {
         if (items == null)
             items = Collections.emptyList();
+        for (Entity item : items) {
+            // noinspection unchecked
+            if (!datasource.containsItem(item.getId())) {
+                throw new IllegalStateException("Datasource does not contain specified item: " + item.getId());
+            }
+        }
         impl.clearSelection();
         if (!items.isEmpty()) {
-            Pair<Integer, Integer> selectionBounds = getSelectionBounds(items);
-            if (selectionBounds.getFirst() != null && selectionBounds.getSecond() != null) {
-                impl.getSelectionModel().addSelectionInterval(selectionBounds.getFirst(), selectionBounds.getSecond());
+            List<Integer> indexes = getSelectionIndexes(items);
+            if (!indexes.isEmpty()) {
+                applySelectionIndexes(indexes);
             }
         }
     }
 
-    private Pair<Integer, Integer> getSelectionBounds(Collection<Entity> items) {
-        Integer minIndex = null;
-        Integer maxIndex = null;
+    private void applySelectionIndexes(List<Integer> indexes) {
+        Collections.sort(indexes);
+        ListSelectionModel model = impl.getSelectionModel();
+        model.setValueIsAdjusting(true);
+        int lastOpened = indexes.get(0);
+        int current = indexes.get(0);
+        for (Integer index : indexes) {
+            if (index > current + 1) {
+                model.addSelectionInterval(lastOpened, current);
+                lastOpened = index;
+            }
+            current = index;
+        }
+        model.addSelectionInterval(lastOpened, current);
+        model.setValueIsAdjusting(false);
+    }
 
+    private List<Integer> getSelectionIndexes(Collection<Entity> items) {
+        if (items.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Integer> indexes = Lists.newArrayList();
         if (datasource instanceof CollectionDatasource.Ordered) {
             HashSet<Entity> itemSet = new HashSet<>(items);
             int itemIndex = 0;
@@ -1107,32 +1105,25 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             Object id = orderedDs.firstItemId();
             while (id != null && !itemSet.isEmpty()) {
                 int rowIndex = impl.convertRowIndexToView(itemIndex);
+                // noinspection unchecked
                 Entity itemById = datasource.getItem(id);
                 if (itemSet.contains(itemById)) {
-                    if (minIndex == null)
-                        minIndex = rowIndex;
-                    maxIndex = rowIndex;
+                    indexes.add(rowIndex);
                     itemSet.remove(itemById);
                 }
+                // noinspection unchecked
                 id = orderedDs.nextItemId(id);
                 itemIndex++;
             }
         } else {
             for (Entity item : items) {
-                int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
-                if (minIndex == null || maxIndex == null) {
-                    minIndex = rowIndex;
-                    maxIndex = rowIndex;
-                } else {
-                    if (maxIndex < rowIndex)
-                        maxIndex = rowIndex;
-                    else if (minIndex > rowIndex)
-                        minIndex = rowIndex;
+                int idx = tableModel.getRowIndex(item);
+                if (idx != -1) {
+                    indexes.add(impl.convertColumnIndexToView(idx));
                 }
             }
         }
-
-        return new Pair<>(minIndex, maxIndex);
+        return indexes;
     }
 
     @Override

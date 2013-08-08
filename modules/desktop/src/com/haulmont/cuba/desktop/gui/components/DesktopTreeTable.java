@@ -151,12 +151,18 @@ public class DesktopTreeTable
         impl.getTreeSelectionModel().addTreeSelectionListener(
                 new TreeSelectionListener() {
                     @Override
+                    @SuppressWarnings("unchecked")
                     public void valueChanged(TreeSelectionEvent e) {
-                        if (isRowsAjusting)
+                        if (isAdjusting) {
                             return;
-
-                        Entity entity = getSingleSelected();
-                        datasource.setItem(entity);
+                        }
+                        selectedItems = getSelected();
+                        // noinspection unchecked
+                        if (selectedItems.isEmpty()) {
+                            datasource.setItem(null);
+                        } else {
+                            datasource.setItem(selectedItems.iterator().next());
+                        }
                     }
                 }
         );
@@ -261,32 +267,31 @@ public class DesktopTreeTable
 
     @Override
     public void setSelected(final Entity item) {
-        // JXTreeTable deferres some work after tree structural changes, so it won't work if we select immediately
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
-                impl.getTreeSelectionModel().setSelectionPath(treePath);
-            }
-        });
+        if (item != null) {
+            setSelected(Collections.singleton(item));
+        } else {
+            setSelected(Collections.<Entity>emptySet());
+        }
     }
 
     @Override
-    public void setSelected(final Collection<Entity> items) {
-        // JXTreeTable deferres some work after tree structural changes, so it won't work if we select immediately
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                if ((items != null) && (items.size() > 0)) {
-                    for (Entity item : items) {
-                        TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
-                        impl.getTreeSelectionModel().addSelectionPath(treePath);
-                    }
-                } else {
-                    impl.getTreeSelectionModel().setSelectionPath(null);
-                }
+    public void setSelected(Collection<Entity> items) {
+        if (items == null) {
+            items = Collections.emptySet();
+        }
+        for (Entity item : items) {
+            // noinspection unchecked
+            if (!datasource.containsItem(item.getId())) {
+                throw new IllegalStateException("Datasource does not contain specified item: " + item.getId());
             }
-        });
+        }
+        impl.clearSelection();
+        if (!items.isEmpty()) {
+            for (Entity item : items) {
+                TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
+                impl.getTreeSelectionModel().addSelectionPath(treePath);
+            }
+        }
     }
 
     @Override
