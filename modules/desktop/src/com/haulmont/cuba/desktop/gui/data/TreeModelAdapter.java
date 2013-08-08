@@ -166,10 +166,14 @@ public class TreeModelAdapter implements TreeModel {
                 Entity entity = (Entity) object;
                 while (entity.getValue(datasource.getHierarchyPropertyName()) != null) {
                     entity = entity.getValue(datasource.getHierarchyPropertyName());
-                    TreeModelAdapter.Node parentNode = createNode(entity);
-                    list.add(0, parentNode);
-                    node.setParent(parentNode);
-                    node = parentNode;
+                    // noinspection ConstantConditions
+                    if (datasource.containsItem(entity.getId())) {
+                        // Path should contain only entities existing in ds.
+                        TreeModelAdapter.Node parentNode = createNode(entity);
+                        list.add(0, parentNode);
+                        node.setParent(parentNode);
+                        node = parentNode;
+                    }
                 }
             }
             list.add(0, rootNode);
