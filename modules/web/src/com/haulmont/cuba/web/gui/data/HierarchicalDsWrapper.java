@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.vaadin.data.Container;
 
 import java.util.Collection;
@@ -21,12 +22,12 @@ public class HierarchicalDsWrapper extends CollectionDsWrapper implements Contai
     private String parentPropertyName;
 
     public HierarchicalDsWrapper(HierarchicalDatasource datasource) {
-        super(datasource);
+        super(datasource, true);
         this.parentPropertyName = datasource.getHierarchyPropertyName();
     }
 
     public HierarchicalDsWrapper(HierarchicalDatasource datasource, Collection<MetaPropertyPath> properties) {
-        super(datasource, properties);
+        super(datasource, properties, true);
         this.parentPropertyName = datasource.getHierarchyPropertyName();
     }
 
@@ -42,6 +43,7 @@ public class HierarchicalDsWrapper extends CollectionDsWrapper implements Contai
 
     @Override
     public Collection rootItemIds() {
+        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).getRootItemIds();
     }
 
