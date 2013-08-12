@@ -26,13 +26,6 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="columnFormatterType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="DATE"/>
-            <xs:enumeration value="DATETIME"/>
-        </xs:restriction>
-    </xs:simpleType>
-
     <xs:simpleType name="datatypeEnum">
         <xs:restriction base="xs:string">
             <xs:enumeration value="decimal"/>
@@ -303,7 +296,7 @@
     <xs:complexType name="formatterType">
         <xs:attribute name="class" type="xs:string" use="optional"/>
         <xs:attribute name="format" type="xs:string" use="optional"/>
-        <xs:attribute name="type" type="columnFormatterType" use="optional"/>
+        <xs:attribute name="type" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="validatorType">
@@ -397,13 +390,7 @@
     <!-- Label -->
     <xs:complexType name="labelComponent">
         <xs:sequence>
-            <xs:element name="formatter" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attribute name="class" type="xs:string" use="required"/>
-                    <xs:attribute name="message" type="xs:string" use="optional"/>
-                    <xs:attribute name="messagepack" type="xs:string" use="optional"/>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
         </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>

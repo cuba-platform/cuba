@@ -53,6 +53,8 @@ public class NumberFormatter implements Formatter<Number> {
                 pattern = messages.getMainMessage(pattern.substring(6, pattern.length()));
             }
             FormatStrings formatStrings = Datatypes.getFormatStrings(userSessionSource.getLocale());
+            if (formatStrings == null)
+                throw new IllegalStateException("FormatStrings are not defined for " + userSessionSource.getLocale());
             DecimalFormat format = new DecimalFormat(pattern, formatStrings.getFormatSymbols());
             return format.format(value);
         }

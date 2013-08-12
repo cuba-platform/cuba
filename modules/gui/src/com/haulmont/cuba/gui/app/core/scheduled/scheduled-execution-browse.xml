@@ -5,7 +5,7 @@
   -->
 
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledExecutionBrowser"
         messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
         caption="msg://executionBrowseCaption"
@@ -48,10 +48,10 @@
             <rowsCount/>
             <columns>
                 <column id="startTime">
-                    <formatter type="DATETIME" format="yyyy-MM-dd HH:mm:ss"/>
+                    <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="yyyy-MM-dd HH:mm:ss"/>
                 </column>
                 <column id="finishTime">
-                    <formatter type="DATETIME" format="yyyy-MM-dd HH:mm:ss"/>
+                    <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="yyyy-MM-dd HH:mm:ss"/>
                 </column>
                 <column id="server"/>
                 <column id="result"/>

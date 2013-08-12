@@ -294,16 +294,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     protected Formatter loadFormatter(Element element) {
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
-            final String formatterType = formatterElement.attributeValue("type");
-            final String className;
-            if (formatterType != null) {
-                Table.Column.FormatterType ftype = Table.Column.FormatterType.valueOf(formatterType);
-                className = ftype.getFormatterClass().getName();
-            }
-            else {
-                className = formatterElement.attributeValue("class");
-            }
-
+            final String className = formatterElement.attributeValue("class");
             Class<Formatter> aClass = scripting.loadClass(className);
             if (aClass == null)
                 throw new IllegalStateException("Class " + className + " is not found");

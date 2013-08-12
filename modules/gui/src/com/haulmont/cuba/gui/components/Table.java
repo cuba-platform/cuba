@@ -354,20 +354,5 @@ public interface Table
         public String toString() {
             return id == null ? super.toString() : id.toString();
         }
-
-        public enum FormatterType {
-            DATE(DateFormatter.class),
-            DATETIME(DateFormatter.class);
-
-            private Class formatterClass;
-
-            private FormatterType(Class formatterClass) {
-                this.formatterClass = formatterClass;
-            }
-
-            public Class getFormatterClass() {
-                return formatterClass;
-            }
-        }
     }
 }
