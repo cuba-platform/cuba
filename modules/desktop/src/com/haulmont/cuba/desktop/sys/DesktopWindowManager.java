@@ -803,15 +803,18 @@ public class DesktopWindowManager extends WindowManager {
         actionMap.put("okAction", new javax.swing.AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (Action action : actions) {
-                    if (action instanceof DialogAction) {
-                        switch (((DialogAction) action).getType()) {
-                            case OK:
-                            case YES:
-                                action.actionPerform(null);
-                                dialog.setVisible(false);
-                                cleanupAfterModalDialogClosed(null);
-                                return;
+                // Unfortunately, JComponent.processKeyBinding method allows KEY_RELEASE to pass to this point.
+                if (e.getID() == KeyEvent.KEY_PRESSED) {
+                    for (Action action : actions) {
+                        if (action instanceof DialogAction) {
+                            switch (((DialogAction) action).getType()) {
+                                case OK:
+                                case YES:
+                                    action.actionPerform(null);
+                                    dialog.setVisible(false);
+                                    cleanupAfterModalDialogClosed(null);
+                                    return;
+                            }
                         }
                     }
                 }
