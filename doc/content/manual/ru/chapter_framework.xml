@@ -7014,7 +7014,7 @@ protected boolean postCommit(boolean committed, boolean close) {
               </tbody>
             </tgroup>
           </informaltable>
-          <para>Атрибуты элемента columns <link linkend="gui_element_table_columns_column">column</link>:</para>
+          <para>Атрибуты  <link linkend="gui_element_table_columns_column">column</link>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
@@ -7066,6 +7066,14 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                   <entry/>
                 </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Элементы  <link linkend="gui_element_table_columns_column">column</link>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry align="left">
+                    <link linkend="gui_element_basic_formatter">formatter</link>
+                  </entry>editable</row>
               </tbody></tgroup>
           </informaltable>
           <para>Атрибуты <link linkend="gui_element_table_rows">rows</link>:</para>
@@ -8976,6 +8984,14 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <para><sgmltag>class</sgmltag> − имя класса, реализующего интерфейс <code>com.haulmont.cuba.gui.components.Formatter</code></para>
                 </listitem>
               </itemizedlist>
+              <para>Если конструктор класса formatter принимает параметр типа <code>org.dom4j.Element</code>, то ему будет передан элемент XML, описывающий данный <code>formatter</code>. Это можно использовать для параметризации экземпляра formatter&apos;а, например, строкой форматирования. В частности, имеющиеся в платформе классы <code>DateFormatter</code> и <code>NumberFormatter</code> могут брать строку форматирования из атрибута <sgmltag>format</sgmltag>. Пример использования:<programlisting>&lt;column id=&quot;date&quot;&gt;
+    &lt;formatter class=&quot;com.haulmont.cuba.gui.components.formatters.DateFormatter&quot; format=&quot;yyyy-MM-dd HH:mm:ss&quot;/&gt;
+&lt;/column&gt;</programlisting></para>
+              <para>Кроме того, класс <code>DateFormatter</code> распознает также атрибут <sgmltag>type</sgmltag>, который может принимать значения <literal>DATE</literal> или <literal>DATETIME</literal>. В этом случае форматирование производится с помощью механизма <code>
+                  <link linkend="datatype">Datatype</link>
+                </code> по строке формата <code>dateFormat</code> или <code>dateTimeFormat</code> соответственно. Например:<programlisting>&lt;column id=&quot;endDate&quot;&gt;
+    &lt;formatter class=&quot;com.haulmont.cuba.gui.components.formatters.DateFormatter&quot; type=&quot;DATE&quot;/&gt;
+&lt;/column&gt;</programlisting></para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_element_basic_validator">
