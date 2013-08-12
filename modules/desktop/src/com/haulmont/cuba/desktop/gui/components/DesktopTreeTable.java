@@ -157,12 +157,14 @@ public class DesktopTreeTable
                             return;
                         }
                         selectedItems = getSelected();
+                        disableItemListener = true;
                         // noinspection unchecked
                         if (selectedItems.isEmpty()) {
                             datasource.setItem(null);
                         } else {
                             datasource.setItem(selectedItems.iterator().next());
                         }
+                        disableItemListener = false;
                     }
                 }
         );

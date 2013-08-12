@@ -101,6 +101,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
+    // Disable listener that points component value to follow the ds item.
+    protected boolean disableItemListener = false;
+
     @Override
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -161,7 +164,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     @Override
     public Printable getPrintable(String columnId) {
         Printable printable = printables.get(columnId);
-        if (printable != null)  {
+        if (printable != null) {
             return printable;
         } else {
             com.vaadin.ui.Table.ColumnGenerator vColumnGenerator = component.getColumnGenerator(columnId);
@@ -384,6 +387,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                 if (datasource == null) return;
 
                 final Set<Entity> selected = getSelected();
+                disableItemListener = true;
                 if (selected.isEmpty()) {
                     datasource.setItem(null);
                 } else {
@@ -392,6 +396,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                         datasource.setItem(null);
                     datasource.setItem(selected.iterator().next());
                 }
+                disableItemListener = false;
             }
         });
 
@@ -448,9 +453,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
 
     /**
      * Connect shortcut action to default list action
+     *
      * @param shortcutActionId Shortcut action id
-     * @param keyCombination Keys
-     * @param defaultAction List action
+     * @param keyCombination   Keys
+     * @param defaultAction    List action
      */
     protected void addShortcutActionBridge(String shortcutActionId, String keyCombination,
                                            final ListActionType defaultAction) {
@@ -644,8 +650,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
 
         for (Table.Column column : this.columnsOrder) {
             if (editable && column.getAggregation() != null
-                    && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable())))
-            {
+                    && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable()))) {
                 addAggregationCell(column);
             }
         }
@@ -669,7 +674,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         if (rowsCount != null)
             rowsCount.setDatasource(datasource);
 
-        datasource.addListener(new CollectionDsActionsNotifier(this));
+        // noinspection unchecked
+        datasource.addListener(new CollectionDsActionsNotifier(this) {
+            @Override
+            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                if (!disableItemListener && !getSelected().contains(item)) {
+                    setSelected(item);
+                }
+            }
+        });
     }
 
     private String getColumnCaption(Object columnId) {
@@ -689,7 +702,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                 if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
                         && userSession.isEntityAttrPermitted(
                         colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
-                    result.add((MetaPropertyPath)column.getId());
+                    result.add((MetaPropertyPath) column.getId());
                 }
             }
         }
@@ -868,7 +881,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     }
 
     @Override
-    public Action getEnterPressAction(){
+    public Action getEnterPressAction() {
         return enterPressAction;
     }
 
@@ -950,7 +963,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                             com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
                             // wrap field for show required asterisk
                             if ((vComponent instanceof com.vaadin.ui.Field)
-                                && (((com.vaadin.ui.Field) vComponent).isRequired())) {
+                                    && (((com.vaadin.ui.Field) vComponent).isRequired())) {
                                 VerticalLayout layout = new VerticalLayout();
                                 layout.addComponent(vComponent);
                                 vComponent = layout;
@@ -1480,7 +1493,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
 
     protected void applyPresentation(Presentation p) {
         presentations.setCurrent(p);
-        Element settingsElement  = presentations.getSettings(p);
+        Element settingsElement = presentations.getSettings(p);
         applySettings(settingsElement);
         component.markAsDirty();
     }

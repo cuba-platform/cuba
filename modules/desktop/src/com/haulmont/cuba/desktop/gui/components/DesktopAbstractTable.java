@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -90,7 +91,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected boolean columnsInitialized = false;
     protected int generatedColumnsCount = 0;
 
+    // Indicates that model is being changed.
     protected boolean isAdjusting = false;
+
+    // Disable listener that points selection model to folow ds item.
+    protected boolean disableItemListener = false;
 
     protected boolean fontInitialized = false;
     protected int defaultRowHeight = 24;
@@ -503,6 +508,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             onDataChange();
                         packRows();
                     }
+
+                    @Override
+                    public void itemChanged(Datasource<Entity> ds, @Nullable Entity prevItem, @Nullable Entity item) {
+                        if (!disableItemListener && !selectedItems.contains(item)) {
+                            setSelected(item);
+                        }
+                    }
                 }
         );
 
@@ -634,15 +646,17 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     @Override
                     @SuppressWarnings("unchecked")
                     public void valueChanged(ListSelectionEvent e) {
-                        if (e.getValueIsAdjusting())
+                        if (e.getValueIsAdjusting() || datasource == null)
                             return;
 
                         selectedItems = getSelected();
+                        disableItemListener = true;
                         if (!selectedItems.isEmpty()) {
                             datasource.setItem(selectedItems.iterator().next());
                         } else {
                             datasource.setItem(null);
                         }
+                        disableItemListener = false;
                     }
                 }
         );
