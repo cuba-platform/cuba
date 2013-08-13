@@ -39,7 +39,7 @@ import java.util.*;
 public class DbUpdaterEngine implements DbUpdater {
 
     private static final String SQL_EXTENSION = "sql";
-
+    private static final String SQL_COMMENT_PREFIX = "--";
     private static final String SQL_DELIMITER = "^";
 
     private static final Log log = LogFactory.getLog(DbUpdaterEngine.class);
@@ -317,7 +317,7 @@ public class DbUpdaterEngine implements DbUpdater {
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
             try {
-                if (sql.trim().toLowerCase().startsWith("select")) {
+                if (isLikelySelect(sql)) {
                     runner.query(sql, new ResultSetHandler<Object>() {
                         @Override
                         public Object handle(ResultSet rs) throws SQLException {
@@ -331,6 +331,18 @@ public class DbUpdaterEngine implements DbUpdater {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    // If first keyword is not SELECT then its probably not a select query.
+    protected boolean isLikelySelect(String sql) {
+        String[] lines = sql.split("\\r?\\n");
+        for (String line : lines) {
+            line = line.trim();
+            if (!line.startsWith(SQL_COMMENT_PREFIX)) {
+                return line.toLowerCase().startsWith("select");
+            }
+        }
+        return false;
     }
 
     protected void executeScript(File file) {
