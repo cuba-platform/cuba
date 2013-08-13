@@ -5,6 +5,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -26,10 +28,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author abramov
@@ -37,9 +36,9 @@ import java.util.List;
  */
 public class WebDateField
         extends
-            WebAbstractComponent<CubaDateFieldWrapper>
+        WebAbstractComponent<CubaDateFieldWrapper>
         implements
-            DateField, Component.Wrapper {
+        DateField, Component.Wrapper {
 
     private Resolution resolution;
 
@@ -73,6 +72,13 @@ public class WebDateField
 
         composition.setSpacing(true);
         dateField = new CubaDateField();
+
+        Locale userLocale = AppBeans.get(UserSessionSource.class).getLocale();
+        FormatStrings formats = Datatypes.getFormatStrings(userLocale);
+        if (formats != null) {
+            dateField.setDateFormat(formats.getDateFormat());
+        }
+
         dateField.setResolution(com.vaadin.shared.ui.datefield.Resolution.DAY);
         dateField.setWidth("100%");
 
