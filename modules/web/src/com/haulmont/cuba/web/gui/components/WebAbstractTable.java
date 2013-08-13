@@ -678,6 +678,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         datasource.addListener(new CollectionDsActionsNotifier(this) {
             @Override
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                super.itemChanged(ds, prevItem, item);
                 if (!disableItemListener && !getSelected().contains(item)) {
                     setSelected(item);
                 }
