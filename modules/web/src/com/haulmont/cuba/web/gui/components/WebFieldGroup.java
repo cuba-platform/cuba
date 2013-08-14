@@ -448,7 +448,7 @@ public class WebFieldGroup
             MetaPropertyPath propertyPath = null;
 
             if (field.getDatasource() != null) {
-                propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
+                propertyPath = field.getDatasource().getMetaClass().getPropertyPath(field.getId());
             } else if (datasource != null) {
                 propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
             }
