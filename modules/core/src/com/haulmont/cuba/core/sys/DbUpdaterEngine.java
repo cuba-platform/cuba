@@ -338,7 +338,7 @@ public class DbUpdaterEngine implements DbUpdater {
         String[] lines = sql.split("\\r?\\n");
         for (String line : lines) {
             line = line.trim();
-            if (!line.startsWith(SQL_COMMENT_PREFIX)) {
+            if (!line.startsWith(SQL_COMMENT_PREFIX) && !StringUtils.isBlank(line)) {
                 return line.toLowerCase().startsWith("select");
             }
         }
