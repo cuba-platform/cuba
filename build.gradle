@@ -18,15 +18,15 @@ allprojects {
 }
 
 buildscript {
-	def cubaPluginVersion = '4.1-SNAPSHOT'
-	def docPluginVersion = '1.2.0-SNAPSHOT'
-	
-	def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
-	def DOC_PLUGIN_VERSION = 'docPluginVersion'
+    def cubaPluginVersion = '4.1-SNAPSHOT'
+    def docPluginVersion = '1.2.0-SNAPSHOT'
 
-	cubaPluginVersion = rootProject.hasProperty(CUBA_PLUGIN_VERSION) ? rootProject[CUBA_PLUGIN_VERSION] : cubaPluginVersion
-	docPluginVersion = rootProject.hasProperty(DOC_PLUGIN_VERSION) ? rootProject[DOC_PLUGIN_VERSION] : docPluginVersion 
-		
+    def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
+    def DOC_PLUGIN_VERSION = 'docPluginVersion'
+
+    cubaPluginVersion = rootProject.hasProperty(CUBA_PLUGIN_VERSION) ? rootProject[CUBA_PLUGIN_VERSION] : cubaPluginVersion
+    docPluginVersion = rootProject.hasProperty(DOC_PLUGIN_VERSION) ? rootProject[DOC_PLUGIN_VERSION] : docPluginVersion
+
     repositories {
         mavenLocal()
         maven {
@@ -91,14 +91,14 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.16')
         compile(group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.1')
         compile(group: 'com.haulmont.thirdparty', name: 'javaee-api', version: '6.0.20091228')
-        compile(group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10')
+        compile(group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6')
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
         compile(asm)
         compile(group: 'com.google.guava', name: 'guava', version: '13.0.1')
         compile(group: 'org.apache.openjpa', name: 'openjpa', version: '2.2.2')
         compile(group: 'net.sourceforge.serp', name: 'serp', version: '1.13.1')
-        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')       
-        compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')       
+        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')
+        compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
         compile(group: 'org.springframework', name: 'spring-core', version: '3.1.3.RELEASE')
         compile(group: 'org.springframework', name: 'spring-beans', version: '3.1.3.RELEASE')
@@ -120,7 +120,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         exclude { details ->
             return details.file == new File("${sourceSets.main.output.classesDir}/com/haulmont/cuba/security/app/UserSessions.class")
         }
-        from ("$buildDir/nodebug-classes") {
+        from("$buildDir/nodebug-classes") {
             include "com/haulmont/cuba/security/app/UserSessions.class"
         }
     }
@@ -136,7 +136,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
     artifacts {
         archives sourceJar
     }
-    
+
     String checkstyleConfigDir = '../../config/checkstyle'
     checkstyleConfigFileName = "$checkstyleConfigDir/checkstyle.xml"
     checkstyleProperties.checkstyleConfigDir = checkstyleConfigFile.parentFile // Required for suppressions.xml linking
@@ -174,7 +174,7 @@ configure(coreModule) {
         compile(sharedLibModule)
         compile(group: 'com.haulmont.thirdparty', name: 'xstream', version: '1.4.2.20120702')
         runtime(group: 'xpp3', name: 'xpp3_min', version: '1.1.4c')
-        runtime(group: 'xmlpull', name:'xmlpull', version: '1.1.3.1')
+        runtime(group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1')
         compile(group: 'org.jgroups', name: 'jgroups', version: '2.12.1.Final')
         compile(group: 'org.aspectj', name: 'aspectjrt', version: '1.6.12')
         compile(group: 'org.aspectj', name: 'aspectjweaver', version: '1.6.12')
@@ -399,7 +399,7 @@ configure(webToolkitModule) {
         widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-        compilerArgs = ['-style' : 'PRETTY', '-logLevel' : 'INFO', '-localWorkers' : '2']
+        compilerArgs = ['-style': 'PRETTY', '-logLevel': 'INFO', '-localWorkers': '2']
     }
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
@@ -623,8 +623,8 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 }
 
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml,buildSecurityPdf]) {
-		//dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
+        dependsOn: [buildManualSingleHtml, buildSecuritySingleHtml, buildSecurityPdf]) {
+    //dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
