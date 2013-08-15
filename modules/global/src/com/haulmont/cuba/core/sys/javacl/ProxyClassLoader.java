@@ -14,7 +14,7 @@ package com.haulmont.cuba.core.sys.javacl;
 import java.util.HashMap;
 import java.util.Map;
 
-class ProxyClassLoader extends ClassLoader {
+public class ProxyClassLoader extends ClassLoader {
     Map<String, TimestampClass> compiled;
     ThreadLocal<Map<String, TimestampClass>> removedFromCompilation = new ThreadLocal<Map<String, TimestampClass>>();
 
@@ -60,5 +60,9 @@ class ProxyClassLoader extends ClassLoader {
 
     public void cleanupRemoved() {
         removedFromCompilation.remove();
+    }
+
+    public boolean contains(String className) {
+        return compiled.containsKey(className);
     }
 }

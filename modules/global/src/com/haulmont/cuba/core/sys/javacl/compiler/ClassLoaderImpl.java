@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.sys.javacl.compiler;
 
+import com.haulmont.cuba.core.sys.javacl.ProxyClassLoader;
+import org.apache.commons.lang.StringUtils;
+
 import javax.tools.JavaFileObject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -23,9 +26,11 @@ import java.util.Map;
  */
 final class ClassLoaderImpl extends ClassLoader {
     private final Map<String, JavaFileObject> classes = new HashMap<String, JavaFileObject>();
+    private final ProxyClassLoader proxyClassLoader;
 
-    ClassLoaderImpl(final ClassLoader parentClassLoader) {
-        super(parentClassLoader);
+    ClassLoaderImpl(final ProxyClassLoader proxyClassLoader) {
+        super(proxyClassLoader);
+        this.proxyClassLoader = proxyClassLoader;
     }
 
     /**
@@ -34,6 +39,10 @@ final class ClassLoaderImpl extends ClassLoader {
      */
     Collection<JavaFileObject> files() {
         return Collections.unmodifiableCollection(classes.values());
+    }
+
+    Collection<String> classNames() {
+        return Collections.unmodifiableCollection(classes.keySet());
     }
 
     @Override
@@ -74,13 +83,23 @@ final class ClassLoaderImpl extends ClassLoader {
     }
 
     @Override
-    protected synchronized Class<?> loadClass(final String name, final boolean resolve)
+    protected synchronized Class<?> loadClass(final String qualifiedClassName, final boolean resolve)
             throws ClassNotFoundException {
-        Class clazz = findClass(name);
-        if (clazz != null)
-            return clazz;
-        else
-            return super.loadClass(name, resolve);
+        if (!cacheContainsFirstLevelClass(qualifiedClassName)) {
+            Class clazz = findClass(qualifiedClassName);
+            if (clazz != null) {
+                return clazz;
+            } else {
+                return super.loadClass(qualifiedClassName, resolve);
+            }
+        } else {
+            return super.loadClass(qualifiedClassName, resolve);
+        }
+    }
+
+    private boolean cacheContainsFirstLevelClass(String qualifiedClassName) {
+        String outerClassName = StringUtils.substringBefore(qualifiedClassName, "$");
+        return proxyClassLoader.contains(outerClassName);
     }
 
     @Override

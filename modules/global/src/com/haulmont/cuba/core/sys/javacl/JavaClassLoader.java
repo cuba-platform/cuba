@@ -197,7 +197,7 @@ public class JavaClassLoader extends URLClassLoader {
      * Find all classes dependent from those we are going to compile and add them to compilation as well
      */
     private Map<String, CharSequence> collectSourcesForCompilation(String rootClassName, Map<String, CharSequence> sourcesToCompilation) throws ClassNotFoundException, IOException {
-        Map<String, CharSequence> dependentSources = new HashMap<>();
+        Map<String, CharSequence> dependentSources = new HashMap<String, CharSequence>();
 
         proxyClassLoader.removeFromCache(rootClassName);
         collectDependent(rootClassName, dependentSources);
@@ -216,7 +216,6 @@ public class JavaClassLoader extends URLClassLoader {
         if (removedClass != null) {
             for (String dependentName : removedClass.dependent) {
                 dependentSources.put(dependentName, sourceProvider.getSourceString(dependentName));
-//                proxyClassLoader.removeFromCache(dependentName);
                 collectDependent(dependentName, dependentSources);
             }
         }
