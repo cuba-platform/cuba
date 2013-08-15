@@ -62,7 +62,7 @@ def portalModule = project(':cuba-portal')
 def vaadinVersion = '7.1.1.h.M7'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
-def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
+def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6']
 def asm = [group: 'asm', name: 'asm', version: '3.3.1']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.9.20130515']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
