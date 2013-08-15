@@ -279,7 +279,7 @@ public class MetadataImpl implements Metadata {
 
     @Override
     public MetaClass getClassNN(String name) {
-        return getSession().getClass(name);
+        return getSession().getClassNN(name);
     }
 
     @Nullable
