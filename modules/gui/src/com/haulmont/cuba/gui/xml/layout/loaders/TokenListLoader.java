@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
@@ -16,6 +17,10 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author gorodnov
@@ -30,7 +35,6 @@ public class TokenListLoader extends AbstractFieldLoader {
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException {
-
         final TokenList component = factory.createComponent("tokenList");
 
         assignXmlDescriptor(component, element);
@@ -67,7 +71,8 @@ public class TokenListLoader extends AbstractFieldLoader {
 
         Element lookupElement = element.element("lookup");
         if (lookupElement == null) {
-            throw new IllegalStateException("'tokenList' must contains 'lookup' element");
+            throw new DevelopmentException("'tokenList' must contains 'lookup' element",context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("TokenList Id",element.attributeValue("id")));
         }
 
         String optionsDatasource = lookupElement.attributeValue("optionsDatasource");
@@ -136,8 +141,7 @@ public class TokenListLoader extends AbstractFieldLoader {
         if (!StringUtils.isEmpty(datasource)) {
             final CollectionDatasource ds = context.getDsContext().get(datasource);
             if (ds == null)
-                throw new IllegalStateException(String.format("Datasource '%s' not defined", datasource));
-
+                throw new DevelopmentException(String.format("Datasource '%s' not defined", datasource),context.getFullFrameId());
             component.setDatasource(ds);
         }
     }

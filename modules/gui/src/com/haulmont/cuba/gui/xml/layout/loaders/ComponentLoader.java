@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -223,11 +224,17 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
+
         final String width = element.attributeValue("width");
-        if (!StringUtils.isBlank(width)) {
-            component.setWidth(width);
-        } else if (!StringUtils.isBlank(defaultValue)) {
-            component.setWidth(defaultValue);
+        try{
+            if (!StringUtils.isBlank(width)) {
+                component.setWidth(width);
+            } else if (!StringUtils.isBlank(defaultValue)) {
+                component.setWidth(defaultValue);
+            }
+        }
+        catch (IllegalArgumentException ex){
+            throw  new DevelopmentException(ex.getMessage(),getContext().getFullFrameId(),Collections.<String,Object>singletonMap("Width",width));
         }
     }
 
@@ -259,7 +266,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (context.getFrame() != null) {
             component.setFrame(context.getFrame());
         } else
-            throw new IllegalStateException("ComponentLoaderContext.frame is null");
+            throw new DevelopmentException("ComponentLoaderContext.frame is null",context.getFullFrameId());
     }
 
     /**
@@ -316,7 +323,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         } else {
             final Class<Field.Validator> aClass = scripting.loadClass(className);
             if (aClass == null)
-                throw new IllegalStateException("Class " + className + " is not found");
+                throw new DevelopmentException("Class " + className + " is not found",context.getFullFrameId());
             if (!StringUtils.isBlank(getMessagesPack()))
                 try {
                     validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
@@ -324,6 +331,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                     //
                 }
             if (validator == null) {
+                log.warn("Validator class " + aClass + " has no supported constructors");
                 try {
                     validator = ReflectionHelper.newInstance(aClass, validatorElement);
                 } catch (NoSuchMethodException e) {
@@ -333,9 +341,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                         //
                     }
                 }
-            }
-            if (validator == null) {
-                log.warn("Validator class " + aClass + " has no supported constructors");
             }
         }
         return validator;
@@ -370,8 +375,12 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
-        if (id == null)
-            throw new IllegalStateException("No action id provided");
+        if (id == null){
+            String componentId = element.getParent().getParent().attributeValue("id");
+            throw new DevelopmentException("No action id provided",context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("Component Id",componentId));
+        }
+
 
         String trackSelection = element.attributeValue("trackSelection");
         if (isBoolean(trackSelection) && Boolean.parseBoolean(trackSelection)) {

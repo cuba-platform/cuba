@@ -8,9 +8,11 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -21,9 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * @param <T>
@@ -73,8 +73,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
-        if (rowsElement == null)
-            throw new IllegalStateException("Table doesn't have 'rows' element");
+
+        if (rowsElement == null){
+            throw new DevelopmentException("Table doesn't have 'rows' element",context.getCurrentIFrameId(),
+                    Collections.<String,Object>singletonMap("Table Id",element.attributeValue("id")));
+        }
 
         final String rowHeaderMode = rowsElement.attributeValue("headerMode");
         if (!StringUtils.isEmpty(rowHeaderMode)) {
@@ -86,14 +89,19 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadRowsCount(component, element); // must be before datasource setting
 
         final String datasource = rowsElement.attributeValue("datasource");
-        if (StringUtils.isBlank(datasource))
-            throw new IllegalStateException("Table.rows element doesn't have 'datasource' attribute");
+        if (StringUtils.isBlank(datasource)){
+            throw new DevelopmentException("Table.rows element doesn't have 'datasource' attribute",
+                    context.getCurrentIFrameId(),
+                    Collections.<String,Object>singletonMap("Table Id",element.attributeValue("id")));
+        }
+        context.getFullFrameId();
 
         Datasource ds = context.getDsContext().get(datasource);
         if (ds == null)
-            throw new IllegalStateException("Cannot find data source by name: " + datasource);
+            throw new DevelopmentException("Cannot find data source by name: " + datasource,context.getCurrentIFrameId());
+
         if (!(ds instanceof CollectionDatasource))
-            throw new IllegalStateException("Not a CollectionDatasource: " + datasource);
+            throw new DevelopmentException("Not a CollectionDatasource: " + datasource,context.getCurrentIFrameId());
 
         CollectionDatasource cds = (CollectionDatasource) ds;
         List<Table.Column> availableColumns;
@@ -257,10 +265,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         String width = element.attributeValue("width");
         if (!StringUtils.isBlank(width)) {
+            if (StringUtils.endsWith(width,"px"))
+                width = StringUtils.substring(width,0,width.length()-2);
+            else {
+                throw new DevelopmentException("property 'width' must ends with 'px' ",context.getFullFrameId(),
+                        Collections.<String,Object>singletonMap("Width",width));
+            }
             try {
                 column.setWidth(Integer.parseInt(width));
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Property 'width' must contain only numeric value");
+                throw new DevelopmentException("Property 'width' must contain only numeric value",context.getCurrentIFrameId(),
+                        Collections.<String,Object>singletonMap("Width",width));
             }
         }
 
@@ -297,7 +312,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             final String className = formatterElement.attributeValue("class");
             Class<Formatter> aClass = scripting.loadClass(className);
             if (aClass == null)
-                throw new IllegalStateException("Class " + className + " is not found");
+                throw new DevelopmentException("Class " + className + " is not found",context.getFullFrameId());
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {
@@ -353,7 +368,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             throws IllegalAccessException, InstantiationException {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
-            throw new IllegalStateException(String.format("Unknown component '%s'", name));
+            throw new DevelopmentException(String.format("Unknown component '%s'", name),context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("Component Name",name));
         }
 
         com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
@@ -377,8 +393,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null)
-            throw new IllegalStateException("No action id provided");
-
+            throw new DevelopmentException("No action id provided",context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("Actions Holder Id",actionsHolder.getId()));
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard list action
             for (ListActionType type : ListActionType.values()) {

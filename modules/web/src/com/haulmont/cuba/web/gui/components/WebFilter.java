@@ -779,7 +779,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         loadFilterEntities();
 
         Window window = ComponentsHelper.getWindow(this);
-
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         FilterEntity defaultFilter = getDefaultFilter(filters, window);
         if (defaultFilter != null) {
@@ -975,6 +974,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     private FilterEntity getDefaultFilter(Collection<FilterEntity> filters, Window window) {
         // First check if there is parameter with name equal to this filter component id, containing a filter code to apply
+        if (window == null)
+            throw new DevelopmentException("Class attribute not defined in xml descriptor", getFrame().getId());
         Map<String, Object> params = window.getContext().getParams();
         String code = (String) params.get(getId());
         if (!StringUtils.isBlank(code)) {

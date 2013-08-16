@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -42,15 +43,13 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
         String src = element.attributeValue("src");
         final String screenId = element.attributeValue("screen");
-        if (src == null && screenId == null) {
-            throw new RuntimeException("Either src or screen must be specified for <iframe>");
-        }
+        if (src == null && screenId == null)
+            throw new DevelopmentException("Either src or screen must be specified for <iframe>",context.getFullFrameId());
         if (src == null) {
             WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
             src = windowInfo.getTemplate();
-            if (src == null) {
-                throw new RuntimeException("Screen " + screenId + " doesn't have template path configured");
-            }
+            if (src == null)
+                throw new DevelopmentException("Screen " + screenId + " doesn't have template path configured",context.getFullFrameId());
         }
 
         String screenPath = StringUtils.isEmpty(screenId) ? src : screenId;
@@ -73,9 +72,9 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         InputStream stream = resources.getResourceAsStream(src);
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
-            if (stream == null) {
-                throw new DevelopmentException(src); //bad template path
-            }
+            if (stream == null)
+                throw new DevelopmentException(AppBeans.get(Messages.class).formatMessage(getClass(), "developmentExcepton.message"),
+                        context.getFullFrameId()); //bad template path
         }
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(screenPath + "#" +

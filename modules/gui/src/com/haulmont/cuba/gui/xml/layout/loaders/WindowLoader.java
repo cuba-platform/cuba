@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Timer;
@@ -17,7 +18,10 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author abramov
@@ -43,7 +47,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         final Element layoutElement = element.element("layout");
         if (layoutElement == null)
-            throw new IllegalStateException("Required element not found: layout");
+            throw new DevelopmentException("Required element not found: layout", context.getFullFrameId());
 
         loadSubComponentsAndExpand(window, layoutElement);
         loadSpacing(window, layoutElement);
@@ -103,12 +107,19 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         try {
             String delay = element.attributeValue("delay");
-            if (StringUtils.isEmpty(delay)) {
-                throw new IllegalStateException("Timer delay cannot be empty");
-            }
-            timer.setDelay(Integer.parseInt(delay));
+            if (StringUtils.isEmpty(delay))
+                throw new DevelopmentException("Timer delay cannot be empty", context.getCurrentIFrameId(),
+                        Collections.<String,Object>singletonMap("Timer Id",timer.getId()));
+            int value = Integer.parseInt(delay);
+            if (value <= 0)
+                throw new DevelopmentException("Timer delay must be greater than 0",context.getFullFrameId(),
+                        Collections.<String,Object>singletonMap("Timer Id",timer.getId()));
+            timer.setDelay(value);
         } catch (NumberFormatException e) {
-            throw new IllegalStateException("Timer delay must be numeric");
+            Map<String, Object> info = new HashMap<>(4);
+            info.put("Timer Delay", timer.getDelay());
+            info.put("Timer Id", timer.getId());
+            throw new DevelopmentException("Timer delay must be numeric", context.getFullFrameId(), info);
         }
 
         timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
@@ -132,7 +143,6 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
                             }
                             timerMethod = window.getClass().getMethod(methodName, Timer.class);
                         }
-
                         timerMethod.invoke(window, timer);
                     } catch (Throwable e) {
                         throw new RuntimeException("Unable to invoke onTimer", e);

@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.core.global.MetadataProvider;
@@ -87,7 +88,7 @@ public class PickerFieldLoader extends AbstractFieldLoader{
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null)
-            throw new IllegalStateException("No action id provided");
+            throw new DevelopmentException("No action id provided",context.getFullFrameId());
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard picker action

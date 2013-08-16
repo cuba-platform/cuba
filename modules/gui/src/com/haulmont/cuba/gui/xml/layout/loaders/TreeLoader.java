@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -66,7 +67,7 @@ public class TreeLoader extends ComponentLoader {
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null)
-            throw new IllegalStateException("No action id provided");
+            throw new DevelopmentException("No action id provided",context.getFullFrameId());
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard list action

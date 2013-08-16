@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.core.global;
 
+import java.util.Map;
+
 /**
  * @author hasanov
  * @version $Id$
@@ -13,8 +15,26 @@ package com.haulmont.cuba.core.global;
 @SupportedByClient
 public class DevelopmentException extends RuntimeException {
 
-    public DevelopmentException(String message){
+    public Map<String,Object> info;
+    public String frameId;
+
+    public DevelopmentException(String message) {
         super(message);
     }
 
+    public DevelopmentException(String message, String frameId){
+        super(message);
+        this.frameId = frameId;
+    }
+
+    public DevelopmentException(String message, Map<String, Object> info){
+        super(message);
+        this.info = info;
+    }
+
+    public DevelopmentException(String message, String frameId, Map<String, Object> info){
+        super(message);
+        this.frameId = frameId;
+        this.info = info;
+    }
 }

@@ -645,8 +645,11 @@ public abstract class WindowManager {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             Class<Window> aClass = scripting.loadClass(screenClass);
-            if (aClass == null)
-                aClass = ReflectionHelper.getClass(screenClass);
+            if (aClass == null){
+                Map<String,Object> windowParams = new HashMap<>(4);
+                windowParams.put("screenClass", screenClass);
+                throw new DevelopmentException("Wrong path",windowParams);
+            }
 
             Window wrappingWindow = ((WrappedWindow) window).wrapBy(aClass);
 

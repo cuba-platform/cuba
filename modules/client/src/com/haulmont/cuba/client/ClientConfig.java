@@ -145,4 +145,9 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.useSaveConfirmation")
     @DefaultBoolean(true)
     boolean getUseSaveConfirmation();
+
+    @Property("cuba.gui.getDevelopmentException")
+    @DefaultBoolean(true)
+    boolean getDevelopmentExceptionEnabled();
+
 }
