@@ -265,17 +265,14 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         String width = element.attributeValue("width");
         if (!StringUtils.isBlank(width)) {
-            if (StringUtils.endsWith(width,"px"))
-                width = StringUtils.substring(width,0,width.length()-2);
-            else {
-                throw new DevelopmentException("property 'width' must ends with 'px' ",context.getFullFrameId(),
-                        Collections.<String,Object>singletonMap("Width",width));
+            if (StringUtils.endsWith(width, "px")) {
+                width = StringUtils.substring(width, 0, width.length() - 2);
             }
             try {
                 column.setWidth(Integer.parseInt(width));
             } catch (NumberFormatException e) {
-                throw new DevelopmentException("Property 'width' must contain only numeric value",context.getCurrentIFrameId(),
-                        Collections.<String,Object>singletonMap("Width",width));
+                throw new DevelopmentException("Property 'width' must contain only numeric value", context.getCurrentIFrameId(),
+                        Collections.<String, Object>singletonMap("width", width));
             }
         }
 
