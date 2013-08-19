@@ -436,8 +436,9 @@
     <xs:complexType name="baseTextComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
-                <xs:attribute name="cols" type="xs:int" use="optional"/>
-                <xs:attribute name="rows" type="xs:int" use="optional"/>
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
+                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -445,24 +446,26 @@
     <!-- TextField -->
     <xs:complexType name="textFieldComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="baseTextComponent">
                 <xs:sequence>
                     <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
-                    <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasDatatype"/>
 
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
-                <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
                 <xs:attribute name="trim" type="xs:boolean" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- TextArea -->
     <xs:complexType name="textAreaComponent">
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
+                <xs:attribute name="cols" type="xs:int" use="optional"/>
+                <xs:attribute name="rows" type="xs:int" use="optional"/>
+
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
                 <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
                 <xs:attribute name="trim" type="xs:boolean" use="optional"/>
@@ -470,12 +473,10 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- MaskedField -->
     <xs:complexType name="maskedFieldComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
-                <xs:sequence>
-                    <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
-                </xs:sequence>
+            <xs:extension base="baseTextComponent">
                 <xs:attribute name="mask" type="xs:string" use="required"/>
                 <xs:attribute name="valueMode" type="maskedFieldValueMode" use="optional"/>
             </xs:extension>
@@ -484,7 +485,7 @@
 
     <xs:complexType name="passwordFieldComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="baseTextComponent">
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
             </xs:extension>
         </xs:complexContent>
@@ -493,18 +494,14 @@
     <!-- AutoCompleteTextField -->
     <xs:complexType name="autoCompleteTextFieldComponent">
         <xs:complexContent>
-            <xs:extension base="textAreaComponent">
-                <xs:sequence>
-                    <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
-                </xs:sequence>
-            </xs:extension>
+            <xs:extension base="textAreaComponent"/>
         </xs:complexContent>
     </xs:complexType>
 
-    <!-- TextArea -->
+    <!-- RichTextArea -->
     <xs:complexType name="richTextAreaComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent"/>
+            <xs:extension base="baseTextComponent"/>
         </xs:complexContent>
     </xs:complexType>
 

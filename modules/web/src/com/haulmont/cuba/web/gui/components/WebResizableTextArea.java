@@ -6,11 +6,9 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.ResizeListener;
 import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextArea;
-import com.vaadin.ui.TextArea;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,27 +19,25 @@ import java.util.List;
  */
 public class WebResizableTextArea
         extends
-            WebTextArea
+            WebAbstractTextArea<CubaResizableTextArea>
         implements
-            ResizableTextArea, Component.Wrapper {
+            ResizableTextArea {
 
     protected final List<ResizeListener> resizeListeners = new ArrayList<>();
-    private CubaResizableTextArea resizableTextField;
 
     @Override
     protected CubaResizableTextArea createTextFieldImpl() {
-        resizableTextField = new CubaResizableTextArea();
-        return resizableTextField;
+        return new CubaResizableTextArea();
     }
 
     @Override
     public boolean isResizable() {
-        return resizableTextField.isResizable();
+        return component.isResizable();
     }
 
     @Override
     public void setResizable(boolean resizable) {
-        resizableTextField.setResizable(resizable);
+        component.setResizable(resizable);
     }
 
     @Override
@@ -57,10 +53,10 @@ public class WebResizableTextArea
     }
 
     @Override
-    protected void attachListener(TextArea component) {
+    protected void attachListener(CubaResizableTextArea component) {
         super.attachListener(component);
         final ResizableTextArea textArea = this;
-        ((CubaResizableTextArea) component).addResizeListener(new CubaResizableTextArea.ResizeListener() {
+        component.addResizeListener(new CubaResizableTextArea.ResizeListener() {
             @Override
             public void onResize(String oldWidth, String oldHeight, String width, String height) {
                 for (ResizeListener listener : resizeListeners) {

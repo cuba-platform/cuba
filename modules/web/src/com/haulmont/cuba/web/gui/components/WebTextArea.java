@@ -15,54 +15,12 @@ import com.vaadin.ui.TextArea;
  */
 public class WebTextArea
         extends
-            WebAbstractTextField<TextArea>
+            WebAbstractTextArea<TextArea>
         implements
             com.haulmont.cuba.gui.components.TextArea, Component.Wrapper {
-
-    protected boolean trimming = true;
 
     @Override
     protected TextArea createTextFieldImpl() {
         return new TextArea();
-    }
-
-    @Override
-    public int getMaxLength() {
-        return component.getMaxLength();
-    }
-
-    @Override
-    public void setMaxLength(int value) {
-        component.setMaxLength(value);
-    }
-
-    @Override
-    public int getRows() {
-        return component.getRows();
-    }
-
-    @Override
-    public void setRows(int rows) {
-        component.setRows(rows);
-    }
-
-    @Override
-    public int getColumns() {
-        return component.getColumns();
-    }
-
-    @Override
-    public void setColumns(int columns) {
-        component.setColumns(columns);
-    }
-
-    @Override
-    public boolean isTrimming() {
-        return trimming;
-    }
-
-    @Override
-    public void setTrimming(boolean trimming) {
-        this.trimming = trimming;
     }
 }

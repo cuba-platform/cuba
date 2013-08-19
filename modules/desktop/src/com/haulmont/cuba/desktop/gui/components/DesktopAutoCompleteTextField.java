@@ -14,7 +14,8 @@ import com.haulmont.cuba.gui.components.AutoCompleteTextField;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopAutoCompleteTextField extends DesktopTextArea implements AutoCompleteTextField {
+public class DesktopAutoCompleteTextField extends DesktopResizableTextArea implements AutoCompleteTextField {
+
     @Override
     public void setSuggester(Suggester suggester) {
     }

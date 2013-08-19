@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.ResizeListener;
  * @version $Id$
  */
 public class DesktopResizableTextArea extends DesktopTextArea implements ResizableTextArea {
+
     @Override
     public boolean isResizable() {
         return false;

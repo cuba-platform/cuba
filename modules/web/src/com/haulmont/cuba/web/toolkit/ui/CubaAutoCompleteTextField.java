@@ -10,7 +10,6 @@ import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
 import com.haulmont.cuba.gui.autocomplete.Suggestion;
 import com.vaadin.event.ShortcutAction.ModifierKey;
-import com.vaadin.ui.TextArea;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ import java.util.List;
  * @author chevelev
  * @version $Id$
  */
-public class AutoCompleteTextField extends TextArea implements AutoCompleteSupport {
+public class CubaAutoCompleteTextField extends CubaResizableTextArea implements AutoCompleteSupport {
 
     private static final long serialVersionUID = -6051244662590740225L;
 
@@ -31,10 +30,10 @@ public class AutoCompleteTextField extends TextArea implements AutoCompleteSuppo
     private String text;
     private int textLength;
 
-    public AutoCompleteTextField() {
+    public CubaAutoCompleteTextField() {
     }
 
-    public AutoCompleteTextField(String caption, int rows, int cols) {
+    public CubaAutoCompleteTextField(String caption, int rows, int cols) {
         setColumns(cols);
         setRows(rows);
         setCaption(caption);
@@ -117,10 +116,7 @@ public class AutoCompleteTextField extends TextArea implements AutoCompleteSuppo
         return modifier;
     }
 
-    public String getText() {
-        return (String) getValue();
-    }
-
+    @Override
     public int getCursorPosition() {
         return cursorPosition;
     }
