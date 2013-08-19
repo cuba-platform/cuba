@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.autocomplete.Suggester;
  * @author chevelev
  * @version $Id$
  */
-public interface AutoCompleteTextField extends TextArea {
+public interface AutoCompleteTextField extends ResizableTextArea {
 
     String NAME = "autoCompleteTextField";
 
