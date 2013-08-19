@@ -57,7 +57,7 @@
             <para><guilabel>IDE port</guilabel> −  порт, на котором  принимает подключения плагин  IDE (по умолчанию 48561)</para>
           </listitem>
           <listitem>
-            <para><guilabel>Repository</guilabel> − URL <link linkend="artifact_repository">репозитория</link> бинарных артефактов. Нажмите кнопку <guibutton>Auth</guibutton> и укажите имя  и пароль доступа к репозиторию.</para>
+            <para><guilabel>Repository</guilabel> − URL и параметры аутентификации <link linkend="artifact_repository">репозитория</link> бинарных артефактов. </para>
           </listitem>
         </itemizedlist>
       </listitem>

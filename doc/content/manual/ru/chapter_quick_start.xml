@@ -238,10 +238,6 @@
           <para>Загрузите архив с шаблоном проекта <ulink url="http://docs.cuba-platform.com/cuba/4.1/samples/sales.zip">http://docs.cuba-platform.com/cuba/4.1/samples/sales.zip</ulink> и распакуйте содержимое архива в рабочий каталог проекта.</para>
         </listitem>
         <listitem>
-          <para>В переменных окружения операционной системы <literal>HAULMONT_REPOSITORY_USER</literal> и <literal>HAULMONT_REPOSITORY_PASSWORD</literal> задайте имя пользователя и пароль для подключения к репозиторию артефактов. </para>
-          <para>Вместо задания переменных окружения имя пользователя и пароль можно передавать команде <literal>gradlew</literal> в параметрах <literal>-PrepoUser=&lt;username&gt; -PrepoPass=&lt;password&gt;</literal></para>
-        </listitem>
-        <listitem>
           <para>Запустите командную строку в рабочем каталоге <filename>c:/work/sales</filename>.</para>
         </listitem>
         <listitem>
