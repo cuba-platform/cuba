@@ -66,13 +66,14 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         }
     }
 
-    public boolean isAllowPopupMenu(){
+    public boolean isAllowPopupMenu() {
         return getState(false).allowPopupMenu;
     }
 
-    public void setAllowPopupMenu(boolean allowPopupMenu){
-        if (isAllowPopupMenu() != allowPopupMenu)
+    public void setAllowPopupMenu(boolean allowPopupMenu) {
+        if (isAllowPopupMenu() != allowPopupMenu) {
             getState(true).allowPopupMenu = allowPopupMenu;
+        }
     }
 
     @Override
@@ -176,14 +177,16 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-        if (property instanceof PropertyValueStringify)
+        if (property instanceof PropertyValueStringify) {
             return ((PropertyValueStringify) property).getFormattedValue();
+        }
 
         return super.formatPropertyValue(rowId, colId, property);
     }
 
     @Override
-    public void setContainerDataSource(Container newDataSource) {disableContentRefreshing();
+    public void setContainerDataSource(Container newDataSource) {
+        disableContentRefreshing();
         if (newDataSource == null) {
             newDataSource = new HierarchicalContainer();
         }
@@ -192,13 +195,24 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     public void expandAll() {
-        for (Object id : getItemIds())
-            setCollapsed(id, false);
+        for (Object id : getItemIds()) {
+            expandItemRecursively(id);
+        }
+    }
+
+    public void expandItemRecursively(Object id) {
+        setCollapsed(id, false);
+        if (hasChildren(id)) {
+            for (Object childId: getChildren(id)) {
+                expandItemRecursively(childId);
+            }
+        }
     }
 
     public void collapseAll() {
-        for (Object id : getItemIds())
+        for (Object id : getItemIds()) {
             setCollapsed(id, true);
+        }
     }
 
     public void setExpanded(Object itemId) {

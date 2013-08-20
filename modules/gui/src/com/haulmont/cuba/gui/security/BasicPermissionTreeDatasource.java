@@ -27,8 +27,8 @@ import java.util.UUID;
  */
 public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasource<BasicPermissionTarget, String> {
 
-    private Tree<BasicPermissionTarget> permissionsTree;
-    private CollectionDatasource<Permission, UUID> permissionDs;
+    protected Tree<BasicPermissionTarget> permissionsTree;
+    protected CollectionDatasource<Permission, UUID> permissionDs;
 
     @Override
     public boolean isModified() {
@@ -40,18 +40,18 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
     @Override
     protected Tree<BasicPermissionTarget> loadTree(Map params) {
         if (permissionDs == null)
-            return new Tree<BasicPermissionTarget>();
+            return new Tree<>();
 
         if (permissionsTree == null) {
             Tree<BasicPermissionTarget> permissions = getPermissions();
 
             List<Node<BasicPermissionTarget>> nodes = permissions.getRootNodes();
 
-            List<Node<BasicPermissionTarget>> clonedNodes = new ArrayList<Node<BasicPermissionTarget>>();
+            List<Node<BasicPermissionTarget>> clonedNodes = new ArrayList<>();
             for (Node<BasicPermissionTarget> node : nodes)
                 clonedNodes.add(cloneNode(node));
 
-            permissionsTree = new Tree<BasicPermissionTarget>(clonedNodes);
+            permissionsTree = new Tree<>(clonedNodes);
         }
         if (permissionDs != null)
             for (Node<BasicPermissionTarget> node : permissionsTree.getRootNodes())

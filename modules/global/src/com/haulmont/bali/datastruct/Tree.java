@@ -11,43 +11,57 @@
 package com.haulmont.bali.datastruct;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-public class Tree<T> implements Serializable
-{
+/**
+ * @param <T>
+ * @author krivopustov
+ * @version $Id$
+ */
+public class Tree<T> implements Serializable {
     private static final long serialVersionUID = 701368293843044209L;
-    
+
     private List<Node<T>> rootNodes;
 
     public Tree() {
-        super();
     }
 
     public Tree(final Node<T> root) {
-        this.rootNodes = new ArrayList<Node<T>>(Arrays.asList(root));
+        this.rootNodes = new ArrayList<>(Arrays.asList(root));
     }
 
     public Tree(List<Node<T>> rootNodes) {
-        this.rootNodes = new ArrayList<Node<T>>(rootNodes);
+        this.rootNodes = new ArrayList<>(rootNodes);
     }
 
+    /**
+     * Return the first root Node of the tree.
+     *
+     * @return the root element.
+     */
     public Node<T> getRootNode() {
         return rootNodes.isEmpty() ? null : rootNodes.get(0);
     }
 
     /**
-     * Return the root Node of the tree.
-     * @return the root element.
+     * Return the root nodes of the tree.
+     *
+     * @return the root elements.
      */
     public List<Node<T>> getRootNodes() {
-        return this.rootNodes;
+        if (rootNodes == null) {
+            return Collections.emptyList();
+        }
+
+        return Collections.unmodifiableList(this.rootNodes);
     }
 
     /**
      * Set the root Element for the tree.
+     *
      * @param rootNodes the root element to set.
      */
     public void setRootNodes(List<Node<T>> rootNodes) {
@@ -57,12 +71,15 @@ public class Tree<T> implements Serializable
     /**
      * Returns the Tree<T> as a List of Node<T> objects. The elements of the
      * List are generated from a pre-order traversal of the tree.
+     *
      * @return a List<Node<T>>.
      */
     public List<Node<T>> toList() {
-        List<Node<T>> list = new ArrayList<Node<T>>();
-        for (Node<T> rootNode : rootNodes) {
-            walk(rootNode, list);
+        List<Node<T>> list = new ArrayList<>();
+        if (rootNodes != null) {
+            for (Node<T> rootNode : rootNodes) {
+                walk(rootNode, list);
+            }
         }
         return list;
     }
@@ -70,6 +87,7 @@ public class Tree<T> implements Serializable
     /**
      * Returns a String representation of the Tree. The elements are generated
      * from a pre-order traversal of the Tree.
+     *
      * @return the String representation of the Tree.
      */
     public String toString() {
@@ -80,8 +98,9 @@ public class Tree<T> implements Serializable
      * Walks the Tree in pre-order style. This is a recursive method, and is
      * called from the toList() method with the root element as the first
      * argument. It appends to the second argument, which is passed by reference     * as it recurses down the tree.
+     *
      * @param element the starting element.
-     * @param list the output of the walk.
+     * @param list    the output of the walk.
      */
     private void walk(Node<T> element, List<Node<T>> list) {
         list.add(element);
