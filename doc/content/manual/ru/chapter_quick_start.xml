@@ -291,10 +291,6 @@
           <para>Для остановки сервера Tomcat  выполните</para>
           <para><prompt>gradlew stop</prompt> </para>
         </listitem>
-        <listitem>
-          <para>Для остановки сервера базы данных HyperSQL в каталоге проекта выполните </para>
-          <para><prompt>gradlew stopDb</prompt></para>
-        </listitem>
       </orderedlist>
     </section>
     <section>
