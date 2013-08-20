@@ -19,13 +19,13 @@ import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 public class CubaOrderedActionsLayoutWidget extends VAbstractOrderedLayout {
     protected ShortcutActionHandler shortcutHandler;
 
-    public CubaOrderedActionsLayoutWidget(){
+    public CubaOrderedActionsLayoutWidget() {
         super(false);
     }
 
     public CubaOrderedActionsLayoutWidget(String className, boolean vertical) {
         super(vertical);
-        getElement().setTabIndex(0);
+        getElement().setTabIndex(-1);
         setStyleName(className);
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
     }

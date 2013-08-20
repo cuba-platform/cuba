@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -53,10 +54,16 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             public Object convertToModel(String value, Class<?> targetType, Locale locale) throws ConversionException {
                 if (getActualDatatype() != null) {
                     try {
-                        return getActualDatatype().parse(value, locale);
+                        if (locale == null)
+                            locale = VaadinSession.getCurrent().getLocale();
+
+                        if (locale != null)
+                            return getActualDatatype().parse(value, locale);
+
+                        return getActualDatatype().parse(value);
                     } catch (ParseException e) {
                         log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
-                        return null;
+                        throw new ConversionException(e);
                     }
                 } else {
                     return value;
@@ -67,7 +74,13 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
                     throws ConversionException {
                 if (getActualDatatype() != null && value != null) {
-                    return getActualDatatype().format(value, locale);
+                    if (locale == null)
+                        locale = VaadinSession.getCurrent().getLocale();
+
+                    if (locale != null)
+                        return getActualDatatype().format(value, locale);
+
+                    return getActualDatatype().format(value);
                 } else if (value != null) {
                     return value.toString();
                 } else {

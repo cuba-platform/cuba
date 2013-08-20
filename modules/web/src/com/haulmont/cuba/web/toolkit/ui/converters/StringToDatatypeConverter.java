@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.converters;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.server.VaadinSession;
 
 import java.text.ParseException;
 import java.util.Locale;
@@ -26,10 +27,13 @@ public class StringToDatatypeConverter implements Converter<String, Object> {
     @Override
     public Object convertToModel(String value, Class<?> targetType, Locale locale) throws ConversionException {
         try {
+            if (locale == null)
+                locale = VaadinSession.getCurrent().getLocale();
+
             if (locale != null)
                 return datatype.parse(value, locale);
-            else
-                return datatype.parse(value);
+
+            return datatype.parse(value);
         } catch (ParseException e) {
             throw new ConversionException(e);
         }
@@ -38,10 +42,13 @@ public class StringToDatatypeConverter implements Converter<String, Object> {
     @Override
     public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
             throws ConversionException {
+        if (locale == null)
+            locale = VaadinSession.getCurrent().getLocale();
+
         if (locale != null)
             return datatype.format(value, locale);
-        else
-            return datatype.format(value);
+
+        return datatype.format(value);
     }
 
     @Override
