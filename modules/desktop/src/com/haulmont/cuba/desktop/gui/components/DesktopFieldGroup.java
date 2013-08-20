@@ -77,7 +77,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public List<Field> getFields() {
-        return new ArrayList<Field>(fields.values());
+        return new ArrayList<>(fields.values());
     }
 
     @Override
@@ -93,7 +93,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private void fillColumnFields(int col, Field field) {
         List<Field> fields = columnFields.get(col);
         if (fields == null) {
-            fields = new ArrayList<Field>();
+            fields = new ArrayList<>();
 
             columnFields.put(col, fields);
         }

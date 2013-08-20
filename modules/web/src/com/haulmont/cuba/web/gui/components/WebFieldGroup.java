@@ -29,6 +29,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
@@ -183,8 +184,9 @@ public class WebFieldGroup
     @Override
     public void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         addCustomField(field, fieldGenerator);
     }
 
@@ -248,8 +250,9 @@ public class WebFieldGroup
                 }
 
                 if ((f.getRequiredError() == null || f.getRequiredError().isEmpty())
-                        && field.getRequiredError() != null)
+                        && field.getRequiredError() != null) {
                     f.setRequiredError(field.getRequiredError());
+                }
 
                 applyPermissions(c);
 
@@ -258,17 +261,23 @@ public class WebFieldGroup
         });
     }
 
-    private com.vaadin.ui.Field getFieldComponent(Component c) {
+    protected com.vaadin.ui.Field getFieldComponent(Component c) {
         com.vaadin.ui.Field f;
         com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(c);
-        if (composition instanceof com.vaadin.ui.Field)
+        if (composition instanceof com.vaadin.ui.Field) {
             f = (com.vaadin.ui.Field) composition;
-        else
-            f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
+        } else {
+            com.vaadin.ui.Component innerComponent = WebComponentsHelper.unwrap(c);
+            if (innerComponent instanceof Field) {
+                f = (com.vaadin.ui.Field) innerComponent;
+            } else {
+                f = new SimpleComponentField(composition);
+            }
+        }
         return f;
     }
 
-    private void assignTypicalAttributes(Component c) {
+    protected void assignTypicalAttributes(Component c) {
         if (c instanceof BelongToFrame) {
             BelongToFrame belongToFrame = (BelongToFrame) c;
             if (belongToFrame.getFrame() == null) {
@@ -311,7 +320,7 @@ public class WebFieldGroup
                     final Field field = getField(id);
                     final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
                     final Element descriptor = field.getXmlDescriptor();
-                    final String clickAction = (descriptor==null)?(null):(descriptor.attributeValue("clickAction"));
+                    final String clickAction = (descriptor == null) ? (null) : (descriptor.attributeValue("clickAction"));
                     if (field.getDatasource() == null && propertyPath != null
                             && StringUtils.isEmpty(clickAction)) {
                         //fieldsMetaProps with attribute "clickAction" will be created manually
@@ -350,7 +359,7 @@ public class WebFieldGroup
             if (!fieldConf.isCustom()) {
                 com.vaadin.ui.Field field;
                 Element descriptor = fieldConf.getXmlDescriptor();
-                final String clickAction = (descriptor==null)?(null):(descriptor.attributeValue("clickAction"));
+                final String clickAction = (descriptor == null) ? (null) : (descriptor.attributeValue("clickAction"));
                 Datasource fieldDs;
                 if (datasource != null && fieldConf.getDatasource() == null) {
                     if (!StringUtils.isEmpty(clickAction)) {
@@ -454,8 +463,9 @@ public class WebFieldGroup
             }
 
             if (propertyPath != null) {
-                if (propertyPath.getMetaProperty().getRange().isDatatype())
+                if (propertyPath.getMetaProperty().getRange().isDatatype()) {
                     datatype = propertyPath.getRange().asDatatype();
+                }
             }
 
             if (datatype != null) {
@@ -479,15 +489,17 @@ public class WebFieldGroup
             validators = new ArrayList<>();
             fieldValidators.put(field, validators);
         }
-        if (!validators.contains(validator))
+        if (!validators.contains(validator)) {
             validators.add(validator);
+        }
     }
 
     @Override
     public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         addValidator(field, validator);
     }
 
@@ -523,7 +535,7 @@ public class WebFieldGroup
         component.setReadOnly(!editable);
         // if we have editable field group with some read-only fields then we keep them read-only
         if (editable) {
-            for (Field field: readOnlyFields) {
+            for (Field field : readOnlyFields) {
                 com.vaadin.ui.Field f = component.getField(field.getId());
                 f.setReadOnly(true);
             }
@@ -548,16 +560,18 @@ public class WebFieldGroup
     @Override
     public boolean isRequired(String fieldId) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         return isRequired(field);
     }
 
     @Override
     public void setRequired(String fieldId, boolean required, String message) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         setRequired(field, required, message);
     }
 
@@ -580,16 +594,18 @@ public class WebFieldGroup
     @Override
     public void setEditable(String fieldId, boolean editable) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         setEditable(field, editable);
     }
 
     @Override
     public boolean isEditable(String fieldId) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         return isEditable(field);
     }
 
@@ -608,16 +624,18 @@ public class WebFieldGroup
     @Override
     public boolean isEnabled(String fieldId) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         return isEnabled(field);
     }
 
     @Override
     public void setEnabled(String fieldId, boolean enabled) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         setEnabled(field, enabled);
     }
 
@@ -636,16 +654,18 @@ public class WebFieldGroup
     @Override
     public boolean isVisible(String fieldId) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         return isVisible(field);
     }
 
     @Override
     public void setVisible(String fieldId, boolean visible) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         setVisible(field, visible);
     }
 
@@ -674,34 +694,39 @@ public class WebFieldGroup
     @Override
     public Object getFieldValue(String fieldId) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         return getFieldValue(field);
     }
 
     @Override
     public void setFieldValue(String fieldId, Object value) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         setFieldValue(field, value);
     }
 
     @Override
     public void requestFocus(String fieldId) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         com.vaadin.ui.Field componentField = component.getField(field.getId());
-        if (componentField != null)
+        if (componentField != null) {
             componentField.focus();
+        }
     }
 
     @Override
     public void setFieldCaption(String fieldId, String caption) {
         Field field = getField(fieldId);
-        if (field == null)
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
 
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setCaption(caption);
@@ -734,8 +759,9 @@ public class WebFieldGroup
             if (f != null && f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
                 Object value = convertRawValue(field, getFieldValue(field));
                 if (isEmpty(value)) {
-                    if (isRequired(field))
+                    if (isRequired(field)) {
                         problems.put(field.getId(), new RequiredValueMissingException(f.getRequiredError(), this));
+                    }
                 } else {
                     List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
                     if (validators != null) {
@@ -762,8 +788,9 @@ public class WebFieldGroup
                 Field field = iterator.next();
                 Exception ex = problemFields.get(field);
                 msgBuilder.append(ex.getMessage());
-                if (iterator.hasNext())
+                if (iterator.hasNext()) {
                     msgBuilder.append("\n");
+                }
             }
 
             FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());
@@ -774,10 +801,31 @@ public class WebFieldGroup
     }
 
     private boolean isEmpty(Object value) {
-        if (value instanceof String)
+        if (value instanceof String) {
             return StringUtils.isBlank((String) value);
-        else
+        } else {
             return value == null;
+        }
+    }
+
+    protected static class SimpleComponentField extends CustomField {
+
+        protected com.vaadin.ui.Component composition;
+
+        public SimpleComponentField(com.vaadin.ui.Component composition) {
+            this.composition = composition;
+            this.setCaption(" "); // use space in caption for proper layout
+        }
+
+        @Override
+        protected com.vaadin.ui.Component initContent() {
+            return composition;
+        }
+
+        @Override
+        public Class getType() {
+            return Object.class;
+        }
     }
 
     protected class FieldFactory extends AbstractFieldFactory {
@@ -790,7 +838,7 @@ public class WebFieldGroup
         protected void initCommon(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField,
                                   MetaPropertyPath propertyPath) {
             final Field fieldConf = getField(propertyPath.toString());
-            if ("timeField".equals(fieldType(propertyPath))||(cubaField instanceof WebTimeField)) {
+            if ("timeField".equals(fieldType(propertyPath)) || (cubaField instanceof WebTimeField)) {
                 String s = fieldConf.getXmlDescriptor().attributeValue("showSeconds");
                 if (Boolean.valueOf(s)) {
                     ((TimeField) cubaField).setShowSeconds(true);
@@ -833,8 +881,9 @@ public class WebFieldGroup
                 field.setWidth(fieldConf.getWidth());
             }
 
-            if (cubaField != null)
+            if (cubaField != null) {
                 cubaField.setFrame(getFrame());
+            }
         }
 
         @Override
@@ -946,8 +995,9 @@ public class WebFieldGroup
         protected void setCaption(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
             // if caption not already loaded from attributes then load default caption
             Field fieldConf = WebFieldGroup.this.fields.get(propertyPath.toString());
-            if ((fieldConf == null) || (StringUtils.isEmpty(fieldConf.getCaption())))
+            if ((fieldConf == null) || (StringUtils.isEmpty(fieldConf.getCaption()))) {
                 super.setCaption(field, propertyPath);
+            }
         }
     }
 
@@ -1062,15 +1112,18 @@ public class WebFieldGroup
 
                 @Override
                 public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                    if (newValue instanceof String)
+                    if (newValue instanceof String) {
                         newValue = ((String) newValue).trim();
+                    }
                     super.setValue(newValue);
                 }
 
                 @Override
                 public String getFormattedValue() {
                     Object value = getValue();
-                    if (value == null) return null;
+                    if (value == null) {
+                        return null;
+                    }
                     Field field = fields.get(propertyPath.toString());
                     if (field.getFormatter() != null) {
                         if (value instanceof Instance) {
