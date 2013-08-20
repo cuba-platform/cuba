@@ -895,7 +895,6 @@
         <xs:attribute name="captionAlignment" type="fieldGroupCaptionAlignment"/>
 
         <xs:attribute name="datasource" type="xs:string" use="optional"/>
-        <xs:attribute name="collapsable" type="xs:string" use="optional"/>
         <xs:attribute name="border" type="borderMode" use="optional" default="hidden"/>
     </xs:complexType>
 
