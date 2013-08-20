@@ -23,6 +23,8 @@
     <screen id="sys$Entity.restore"
             template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>
 
+    <screen id="sec$SaveSetWindow" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
+
     <!-- JMX control -->
     <screen id="jmxcontrol$DisplayMbeans"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml" multipleOpen="true"/>

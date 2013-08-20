@@ -58,8 +58,6 @@
     <screen id="sec$SessionAttribute.edit"
             template="/com/haulmont/cuba/gui/app/security/sessionattr/edit/session-attr-edit.xml"/>
 
-    <screen id="sec$SaveSetWindow" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
-
     <screen id="sys$SimpleLookup"
             template="/com/haulmont/cuba/gui/app/core/lookup/simple-lookup.xml"/>
 
