@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.io.IOUtils;
@@ -59,7 +60,8 @@ public class XmlInheritanceProcessor {
             if (ancestorStream == null) {
                 ancestorStream = getClass().getResourceAsStream(ancestorTemplate);
                 if (ancestorStream == null) {
-                    throw new RuntimeException("Bad template path: " + ancestorTemplate);
+                    throw new DevelopmentException("Bad template path",
+                            Collections.<String,Object>singletonMap("Ancestor Template Path", ancestorTemplate));
                 }
             }
             Document ancestorDocument;
