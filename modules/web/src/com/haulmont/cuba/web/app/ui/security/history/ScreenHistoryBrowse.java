@@ -70,13 +70,11 @@ public class ScreenHistoryBrowse extends AbstractWindow {
             paramsScreen.put(name, value);
         }
 
-//        vaadin7
-        /*
         List<String> actions = configuration.getConfig(WebConfig.class).getLinkHandlerActions();
         LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME,
                 App.getInstance(),
                 actions.isEmpty() ? "open" : actions.get(0),
                 paramsScreen);
-        linkHandler.handle();*/ 
+        linkHandler.handle();
     }
 }
