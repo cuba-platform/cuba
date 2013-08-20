@@ -5,11 +5,14 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ToggleBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
+
+import java.util.Collections;
 
 /**
  * @author gorodnov
@@ -38,14 +41,15 @@ public class ToggleBoxLayoutLoader extends ContainerLoader
         loadAlign(component, element);
 
         Element onElement = element.element("on");
-        if (onElement == null) {
-            throw new IllegalStateException("Cannot find 'on' element");
-        }
+
+        if (onElement == null)
+            throw new DevelopmentException("Cannot find 'on' element", context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("Toggle Box Id",element.attributeValue("id")));
 
         Element offElement = element.element("off");
-        if (offElement == null) {
-            throw new IllegalStateException("Cannot find 'off' element");
-        }
+        if (offElement == null)
+            throw new DevelopmentException("Cannot find 'off' element", context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("Toggle Box Id",element.attributeValue("id")));
 
         loadSubComponents(component.getOnLayout(), onElement, "visible");
         loadSubComponents(component.getOffLayout(), offElement, "visible");

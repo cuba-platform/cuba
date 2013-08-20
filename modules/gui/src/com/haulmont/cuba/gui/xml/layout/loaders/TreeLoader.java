@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.util.Collections;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -30,8 +32,7 @@ public class TreeLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException
-    {
+            throws InstantiationException, IllegalAccessException {
         Tree component = factory.createComponent("tree");
 
         assignXmlDescriptor(component, element);
@@ -66,8 +67,17 @@ public class TreeLoader extends ComponentLoader {
     @Override
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
-        if (id == null)
-            throw new DevelopmentException("No action id provided",context.getFullFrameId());
+        if (id == null) {
+            Element component = element;
+            for (int i = 0; i < 2; i++) {
+                if (component.getParent() != null)
+                    component = component.getParent();
+                else
+                    throw new DevelopmentException("No action id provided", context.getFullFrameId());
+            }
+            throw new DevelopmentException("No action id provided", context.getFullFrameId(),
+                    Collections.<String, Object>singletonMap("Tree Id", component.attributeValue("id")));
+        }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard list action

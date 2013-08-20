@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -55,6 +56,6 @@ public class HtmlBoxLayoutLoader extends ContainerLoader implements ComponentLoa
             htmlBox.setTemplateName(template);
             return;
         }
-        throw new IllegalStateException("'template' attribute is required");
+        throw new DevelopmentException("'template' attribute is required", context.getFullFrameId());
     }
 }

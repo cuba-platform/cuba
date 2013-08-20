@@ -645,12 +645,6 @@ public abstract class WindowManager {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             Class<Window> aClass = scripting.loadClass(screenClass);
-            if (aClass == null){
-                Map<String,Object> windowParams = new HashMap<>(4);
-                windowParams.put("screenClass", screenClass);
-                throw new DevelopmentException("Wrong path",windowParams);
-            }
-
             Window wrappingWindow = ((WrappedWindow) window).wrapBy(aClass);
 
             if (wrappingWindow instanceof AbstractWindow) {
@@ -672,7 +666,7 @@ public abstract class WindowManager {
                     Logger.getLogger(UIPerformanceLogger.class));
             injectStopWatch.start();
 
-            ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow,params);
+            ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow, params);
             dependencyInjector.inject();
 
             injectStopWatch.stop();
@@ -692,7 +686,7 @@ public abstract class WindowManager {
 
             return wrappingWindow;
         } else {
-            return window;
+            throw new DevelopmentException("Class attribute not defined in xml descriptor",window.getId());
         }
     }
 

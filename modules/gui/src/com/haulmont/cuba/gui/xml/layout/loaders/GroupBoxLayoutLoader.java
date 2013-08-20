@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -82,7 +83,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
 
     protected void loadOrientation(GroupBoxLayout component, Element element) {
         String orientation = element.attributeValue("orientation");
-        if (orientation == null)  {
+        if (orientation == null) {
             component.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
             return;
         }
@@ -92,7 +93,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
         } else if ("vertical".equalsIgnoreCase(orientation)) {
             component.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
         } else {
-            throw new IllegalStateException("Invalid groupBox orientation value: " + orientation);
+            throw new DevelopmentException("Invalid groupBox orientation value: " + orientation, context.getFullFrameId());
         }
     }
 }

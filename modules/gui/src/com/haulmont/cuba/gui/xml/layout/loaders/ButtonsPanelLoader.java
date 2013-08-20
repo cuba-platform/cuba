@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.Component;
@@ -56,8 +57,8 @@ public class ButtonsPanelLoader extends ContainerLoader {
                 }
 
             } else {
-                throw new IllegalStateException(
-                        "<buttonsPanel> element must contains \"class\" attribute or at least one <button> element");
+                throw new DevelopmentException("<buttonsPanel> element must contains \"class\" attribute or at least one <button> element",
+                        context.getFullFrameId());
             }
         }
 

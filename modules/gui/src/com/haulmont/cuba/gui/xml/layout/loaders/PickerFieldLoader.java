@@ -16,7 +16,9 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
-public class PickerFieldLoader extends AbstractFieldLoader{
+import java.util.Collections;
+
+public class PickerFieldLoader extends AbstractFieldLoader {
     public PickerFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
@@ -87,8 +89,17 @@ public class PickerFieldLoader extends AbstractFieldLoader{
     @Override
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
-        if (id == null)
-            throw new DevelopmentException("No action id provided",context.getFullFrameId());
+        if (id == null) {
+            Element component = element;
+            for (int i = 0; i < 2; i++) {
+                if (component.getParent() != null)
+                    component = component.getParent();
+                else
+                    throw new DevelopmentException("No action id provided", context.getFullFrameId());
+            }
+            throw new DevelopmentException("No action id provided", context.getFullFrameId(),
+                    Collections.<String, Object>singletonMap("PickerField Id", component.attributeValue("id")));
+        }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard picker action

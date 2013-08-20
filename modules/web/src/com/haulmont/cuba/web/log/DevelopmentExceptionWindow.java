@@ -7,15 +7,23 @@
 package com.haulmont.cuba.web.log;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,18 +38,41 @@ public class DevelopmentExceptionWindow extends Window {
     private float minWindowHeight = 350;
     private boolean isVisibleStackTrace = false;
 
-    public DevelopmentExceptionWindow(String rootCauseMessage, String stackTrace) {
-        this(rootCauseMessage, stackTrace, null);
-    }
-
-    public DevelopmentExceptionWindow(String rootCauseMessage, String stackTrace, Map<String, Object> params) {
+    public DevelopmentExceptionWindow(Throwable throwable) {
         super("Exception");
-        final Messages messages = AppBeans.get(Messages.class);
         setWidth(750, Unit.PIXELS);
         center();
+        final Messages messages = AppBeans.get(Messages.class);
+        final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+        Map<String, Object> tableMap = null;
+        Map<String, Object> info;
+        String frameId;
+        StringBuilder rootCauseMessage = new StringBuilder(messages.getMessage(getClass(), "exceptionDialog.message"));
+        StringBuilder stackTrace = new StringBuilder();
+        info = ((DevelopmentException) throwable).info;
+        frameId = ((DevelopmentException) throwable).frameId;
+        rootCauseMessage.append(throwable.getMessage());
+        stackTrace.append("<br/>");
+        stackTrace.append(StringUtils.replace(
+                StringEscapeUtils.escapeHtml(ExceptionUtils.getStackTrace(throwable)), "\n", "<br/>"));
+        stackTrace.append("<br/>");
+        try {
+            if (frameId != null) {
+                tableMap = new HashMap<>(8);
+                tableMap.put("Frame Id", frameId);
+                tableMap.put("Screen Descriptor", windowConfig.getWindowInfo(frameId).getTemplate());
+            }
+        } catch (NoSuchScreenException ex) {
+            //do nothing
+        }
+        if (info != null) {
+            if (tableMap == null)
+                tableMap = new HashMap<>(8);
+            tableMap.putAll(info);
+        }
         mainLayout = new VerticalLayout();
-        Label rootCauseMessageLabel = new Label(rootCauseMessage);
-        Label infoLabel = new Label(messages.getMessage(getClass(),"exceptionDialog.addInfo"));
+        Label rootCauseMessageLabel = new Label(rootCauseMessage.toString());
+        Label infoLabel = new Label(messages.getMessage(getClass(), "exceptionDialog.addInfo"));
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setSpacing(true);
 
@@ -70,15 +101,17 @@ public class DevelopmentExceptionWindow extends Window {
                 }
             }
         });
-
-        Table infoTable = new Table();
-        infoTable.addContainerProperty(messages.getMessage(getClass(),"key"), String.class, null);
-        infoTable.addContainerProperty(messages.getMessage(getClass(),"value"), Object.class, null);
-        infoTable.setHeight(150, Unit.PIXELS);
-        infoTable.setWidth(100, Unit.PERCENTAGE);
-        int tableId = 0;
-        for (Map.Entry<String, Object> entry : params.entrySet())
-            infoTable.addItem(new Object[]{entry.getKey(), entry.getValue()}, tableId++);
+        Table infoTable = null;
+        if (tableMap != null) {
+            infoTable = new Table();
+            infoTable.addContainerProperty(messages.getMessage(getClass(), "exceptionDialog.key"), String.class, null);
+            infoTable.addContainerProperty(messages.getMessage(getClass(), "exceptionDialog.value"), Object.class, null);
+            infoTable.setHeight(150, Unit.PIXELS);
+            infoTable.setWidth(100, Unit.PERCENTAGE);
+            int tableId = 0;
+            for (Map.Entry<String, Object> entry : tableMap.entrySet())
+                infoTable.addItem(new Object[]{entry.getKey(), entry.getValue()}, tableId++);
+        }
 
         stackTraceScrollablePanel = new Panel();
         stackTraceScrollablePanel.setSizeFull();
@@ -88,18 +121,18 @@ public class DevelopmentExceptionWindow extends Window {
 
         final Label stackTraceLabel = new Label();
         stackTraceLabel.setContentMode(ContentMode.HTML);
-        stackTraceLabel.setValue(stackTrace);
+        stackTraceLabel.setValue(stackTrace.toString());
         stackTraceLabel.setSizeUndefined();
         stackTraceLabel.setStyleName("cuba-log-content");
         ((Layout) stackTraceScrollablePanel.getContent()).addComponent(stackTraceLabel);
 
         mainLayout.addComponent(rootCauseMessageLabel);
         mainLayout.addComponent(infoLabel);
-        mainLayout.addComponent(infoTable);
+        if (infoTable != null)
+            mainLayout.addComponent(infoTable);
         mainLayout.addComponent(showStackTraceButton);
         mainLayout.addComponent(stackTraceScrollablePanel);
         mainLayout.addComponent(buttonsLayout);
-
         mainLayout.setSpacing(true);
         mainLayout.setHeight(100, Unit.PERCENTAGE);
         mainLayout.setExpandRatio(stackTraceScrollablePanel, 1.0f);

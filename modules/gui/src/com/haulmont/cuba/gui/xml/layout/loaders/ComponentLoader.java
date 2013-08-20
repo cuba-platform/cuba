@@ -226,15 +226,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
 
         final String width = element.attributeValue("width");
-        try{
-            if (!StringUtils.isBlank(width)) {
-                component.setWidth(width);
-            } else if (!StringUtils.isBlank(defaultValue)) {
-                component.setWidth(defaultValue);
-            }
-        }
-        catch (IllegalArgumentException ex){
-            throw  new DevelopmentException(ex.getMessage(),getContext().getFullFrameId(),Collections.<String,Object>singletonMap("Width",width));
+        if (!StringUtils.isBlank(width)) {
+            component.setWidth(width);
+        } else if (!StringUtils.isBlank(defaultValue)) {
+            component.setWidth(defaultValue);
         }
     }
 
@@ -266,7 +261,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (context.getFrame() != null) {
             component.setFrame(context.getFrame());
         } else
-            throw new DevelopmentException("ComponentLoaderContext.frame is null",context.getFullFrameId());
+            throw new DevelopmentException("ComponentLoaderContext.frame is null", context.getFullFrameId());
     }
 
     /**
@@ -323,7 +318,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         } else {
             final Class<Field.Validator> aClass = scripting.loadClass(className);
             if (aClass == null)
-                throw new DevelopmentException("Class " + className + " is not found",context.getFullFrameId());
+                throw new DevelopmentException("Class " + className + " is not found", context.getFullFrameId());
             if (!StringUtils.isBlank(getMessagesPack()))
                 try {
                     validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
@@ -375,10 +370,16 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
-        if (id == null){
-            String componentId = element.getParent().getParent().attributeValue("id");
-            throw new DevelopmentException("No action id provided",context.getFullFrameId(),
-                    Collections.<String,Object>singletonMap("Component Id",componentId));
+        if (id == null) {
+            Element component = element;
+            for (int i = 0; i < 2; i++) {
+                if (component.getParent() != null)
+                    component = component.getParent();
+                else
+                    throw new DevelopmentException("No action id provided", context.getFullFrameId());
+            }
+            throw new DevelopmentException("No action id provided", context.getFullFrameId(),
+                    Collections.<String, Object>singletonMap("Component Id", component.attributeValue("id")));
         }
 
 

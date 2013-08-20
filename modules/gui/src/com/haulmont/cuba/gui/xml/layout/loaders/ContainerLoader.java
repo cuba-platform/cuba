@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ExpandingLayout;
 import com.haulmont.cuba.gui.components.QuasiComponent;
@@ -34,14 +35,14 @@ public abstract class ContainerLoader extends ComponentLoader {
         this.factory = factory;
     }
 
-    protected Collection<Component> loadSubComponents(Component.Container component, Element element, String ...exceptTags) {
+    protected Collection<Component> loadSubComponents(Component.Container component, Element element, String... exceptTags) {
         final List<Component> res = new ArrayList<>();
 
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        for (Element subElement : (Collection<Element>)element.elements()) {
+        for (Element subElement : (Collection<Element>) element.elements()) {
             final String name = subElement.getName();
             if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {
                 final Component subComponent = loader.loadComponent(subElement, component);
@@ -73,18 +74,18 @@ public abstract class ContainerLoader extends ComponentLoader {
             if (margin.contains(";")) {
                 final String[] margins = margin.split(";");
                 if (margins.length != 4) {
-                    throw new IllegalStateException(
-                            "Margin attribute must contains 1 or 4 boolean values separeated by \";\"");
+                    throw new DevelopmentException(
+                            "Margin attribute must contains 1 or 4 boolean values separeated by \";\"", context.getFullFrameId());
                 }
                 layout.setMargin(Boolean.valueOf(margins[0]), Boolean.valueOf(margins[1]),
                         Boolean.valueOf(margins[2]), Boolean.valueOf(margins[3]));
-            } else if (isBoolean(margin)){
+            } else if (isBoolean(margin)) {
                 layout.setMargin(Boolean.valueOf(margin));
             }
         }
     }
 
-    protected void loadSubComponentsAndExpand(ExpandingLayout layout, Element element, String ...exceptTags) {
+    protected void loadSubComponentsAndExpand(ExpandingLayout layout, Element element, String... exceptTags) {
         loadSubComponents(layout, element, exceptTags);
 
         final String expand = element.attributeValue("expand");
@@ -115,7 +116,7 @@ public abstract class ContainerLoader extends ComponentLoader {
     protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
-            throw new IllegalStateException(String.format("Unknown component '%s'", name));
+            throw new DevelopmentException(String.format("Unknown component '%s'", name), context.getFullFrameId());
         }
 
         com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;

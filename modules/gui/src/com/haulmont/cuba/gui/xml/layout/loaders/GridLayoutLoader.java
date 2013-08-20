@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.Label;
@@ -16,10 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author abramov
@@ -50,7 +48,8 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             try {
                 columnCount = Integer.valueOf(columnsElement.attributeValue("count"));
             } catch (NumberFormatException e) {
-                throw new IllegalStateException("grid must contain either a set of 'column' elements or a 'count' attribute", e);
+                throw new DevelopmentException("grid must contain either a set of 'column' elements or a 'count' attribute",
+                        context.getFullFrameId(), Collections.<String, Object>singletonMap("Grid Id", component.getId()));
             }
             component.setColumns(columnCount);
             for (int i = 0; i < columnCount; i++) {
@@ -136,7 +135,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
         int col = 0;
 
-        for (Element subElement : (Collection<Element>)element.elements()) {
+        for (Element subElement : (Collection<Element>) element.elements()) {
             final Component subComponent = loader.loadComponent(subElement, component);
 
             String colspan = subElement.attributeValue("colspan");

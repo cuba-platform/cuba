@@ -58,7 +58,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         loadTimers(factory, window, element);
 
-        loadFocusedComponent(window,element);
+        loadFocusedComponent(window, element);
 
         return window;
     }
@@ -100,27 +100,26 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     private void loadTimer(ComponentsFactory factory, final Window component, Element element) {
-
         final Timer timer = factory.createTimer();
         timer.setXmlDescriptor(element);
         timer.setId(element.attributeValue("id"));
-
+        String delay = element.attributeValue("delay");
+        if (StringUtils.isEmpty(delay))
+            throw new DevelopmentException("Timer delay cannot be empty", context.getCurrentIFrameId(),
+                    Collections.<String, Object>singletonMap("Timer Id", timer.getId()));
+        int value;
         try {
-            String delay = element.attributeValue("delay");
-            if (StringUtils.isEmpty(delay))
-                throw new DevelopmentException("Timer delay cannot be empty", context.getCurrentIFrameId(),
-                        Collections.<String,Object>singletonMap("Timer Id",timer.getId()));
-            int value = Integer.parseInt(delay);
-            if (value <= 0)
-                throw new DevelopmentException("Timer delay must be greater than 0",context.getFullFrameId(),
-                        Collections.<String,Object>singletonMap("Timer Id",timer.getId()));
-            timer.setDelay(value);
+            value = Integer.parseInt(delay);
         } catch (NumberFormatException e) {
             Map<String, Object> info = new HashMap<>(4);
-            info.put("Timer Delay", timer.getDelay());
+            info.put("Timer Delay", delay);
             info.put("Timer Id", timer.getId());
             throw new DevelopmentException("Timer delay must be numeric", context.getFullFrameId(), info);
         }
+        if (value <= 0)
+            throw new DevelopmentException("Timer delay must be greater than 0", context.getFullFrameId(),
+                    Collections.<String, Object>singletonMap("Timer Id", timer.getId()));
+        timer.setDelay(value);
 
         timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
 

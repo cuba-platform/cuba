@@ -15,24 +15,24 @@ import java.util.Map;
 @SupportedByClient
 public class DevelopmentException extends RuntimeException {
 
-    public Map<String,Object> info;
+    public Map<String, Object> info;
     public String frameId;
 
     public DevelopmentException(String message) {
         super(message);
     }
 
-    public DevelopmentException(String message, String frameId){
+    public DevelopmentException(String message, String frameId) {
         super(message);
         this.frameId = frameId;
     }
 
-    public DevelopmentException(String message, Map<String, Object> info){
+    public DevelopmentException(String message, Map<String, Object> info) {
         super(message);
         this.info = info;
     }
 
-    public DevelopmentException(String message, String frameId, Map<String, Object> info){
+    public DevelopmentException(String message, String frameId, Map<String, Object> info) {
         super(message);
         this.frameId = frameId;
         this.info = info;
