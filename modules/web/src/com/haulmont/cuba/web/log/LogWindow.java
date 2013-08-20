@@ -116,7 +116,13 @@ public class LogWindow extends Window {
             sb.append(StringEscapeUtils.escapeHtml(item.getMessage()));
             if (item.getStacktrace() != null) {
                 sb.append(" ");
-                sb.append(StringUtils.replace(StringEscapeUtils.escapeHtml(item.getStacktrace()), "\n", "<br/>"));
+
+                String htmlMessage = StringEscapeUtils.escapeHtml(item.getStacktrace());
+                htmlMessage = StringUtils.replace(htmlMessage, "\n", "<br/>");
+                htmlMessage = StringUtils.replace(htmlMessage, " ", "&nbsp;");
+                htmlMessage = StringUtils.replace(htmlMessage, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+
+                sb.append(htmlMessage);
             }
             sb.append("<br/>");
         }

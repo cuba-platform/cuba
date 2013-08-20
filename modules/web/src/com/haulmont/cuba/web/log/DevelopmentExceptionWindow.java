@@ -12,17 +12,12 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,43 +27,50 @@ import java.util.Map;
  */
 public class DevelopmentExceptionWindow extends Window {
 
-    private VerticalLayout mainLayout;
-    private Panel stackTraceScrollablePanel;
-    private Button showStackTraceButton;
-    private float minWindowHeight = 350;
-    private boolean isVisibleStackTrace = false;
+    protected VerticalLayout mainLayout;
+    protected Panel stackTraceScrollablePanel;
+    protected Button showStackTraceButton;
+    protected boolean isStackTraceVisible = false;
+
+    protected final String showStackTraceMessage;
+
+    protected int stackTracePanelPosition;
 
     public DevelopmentExceptionWindow(Throwable throwable) {
         super("Exception");
+
         setWidth(750, Unit.PIXELS);
         center();
+
         final Messages messages = AppBeans.get(Messages.class);
         final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-        Map<String, Object> tableMap = null;
-        Map<String, Object> info;
-        String frameId;
+
         StringBuilder rootCauseMessage = new StringBuilder(messages.getMessage(getClass(), "exceptionDialog.message"));
         StringBuilder stackTrace = new StringBuilder();
-        info = ((DevelopmentException) throwable).info;
-        frameId = ((DevelopmentException) throwable).frameId;
-        rootCauseMessage.append(throwable.getMessage());
+        rootCauseMessage.append(" ").append(throwable.getMessage());
+
+        String htmlMessage = StringEscapeUtils.escapeHtml(ExceptionUtils.getStackTrace(throwable));
+        htmlMessage = StringUtils.replace(htmlMessage, "\n", "<br/>");
+        htmlMessage = StringUtils.replace(htmlMessage, " ", "&nbsp;");
+        htmlMessage = StringUtils.replace(htmlMessage, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+
+        stackTrace.append(htmlMessage);
         stackTrace.append("<br/>");
-        stackTrace.append(StringUtils.replace(
-                StringEscapeUtils.escapeHtml(ExceptionUtils.getStackTrace(throwable)), "\n", "<br/>"));
-        stackTrace.append("<br/>");
+
+        DevelopmentException exception = (DevelopmentException) throwable;
+
+        Map<String, Object> tableMap = new HashMap<>();
+
         try {
-            if (frameId != null) {
-                tableMap = new HashMap<>(8);
-                tableMap.put("Frame Id", frameId);
-                tableMap.put("Screen Descriptor", windowConfig.getWindowInfo(frameId).getTemplate());
+            if (exception.getFrameId() != null) {
+                tableMap.put("Frame Id", exception.getFrameId());
+                tableMap.put("Screen Descriptor", windowConfig.getWindowInfo(exception.getFrameId()).getTemplate());
             }
         } catch (NoSuchScreenException ex) {
-            //do nothing
+            tableMap.put("Screen Descriptor", "Not found screen xml for: " + exception.getFrameId());
         }
-        if (info != null) {
-            if (tableMap == null)
-                tableMap = new HashMap<>(8);
-            tableMap.putAll(info);
+        if (exception.getInfo() != null) {
+            tableMap.putAll(exception.getInfo());
         }
         mainLayout = new VerticalLayout();
         Label rootCauseMessageLabel = new Label(rootCauseMessage.toString());
@@ -84,37 +86,32 @@ public class DevelopmentExceptionWindow extends Window {
             }
         });
         buttonsLayout.addComponent(closeButton);
-        final String showStackTraceMessage = messages.getMessage(getClass(), "exceptionDialog.showStackTrace") + " >>";
-        showStackTraceButton = new Button(showStackTraceMessage);
+
+        showStackTraceMessage = messages.getMessage(getClass(), "exceptionDialog.showStackTrace");
+        showStackTraceButton = new Button(showStackTraceMessage + " >>");
         showStackTraceButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (!DevelopmentExceptionWindow.this.isVisibleStackTrace) {
-                    event.getButton().setCaption(messages.getMessage(getClass(), "exceptionDialog.showStackTrace") + " <<");
-
-                    showStackTrace(true);
-                    DevelopmentExceptionWindow.this.isVisibleStackTrace = true;
-                } else {
-                    event.getButton().setCaption(showStackTraceMessage);
-                    showStackTrace(false);
-                    DevelopmentExceptionWindow.this.isVisibleStackTrace = false;
-                }
+                setStackTraceVisible(!isStackTraceVisible);
             }
         });
+
         Table infoTable = null;
-        if (tableMap != null) {
+        if (!tableMap.isEmpty()) {
             infoTable = new Table();
             infoTable.addContainerProperty(messages.getMessage(getClass(), "exceptionDialog.key"), String.class, null);
             infoTable.addContainerProperty(messages.getMessage(getClass(), "exceptionDialog.value"), Object.class, null);
             infoTable.setHeight(150, Unit.PIXELS);
             infoTable.setWidth(100, Unit.PERCENTAGE);
-            int tableId = 0;
-            for (Map.Entry<String, Object> entry : tableMap.entrySet())
-                infoTable.addItem(new Object[]{entry.getKey(), entry.getValue()}, tableId++);
+            int itemId = 0;
+            for (Map.Entry<String, Object> entry : tableMap.entrySet()) {
+                infoTable.addItem(new Object[]{entry.getKey(), entry.getValue()}, itemId++);
+            }
         }
 
         stackTraceScrollablePanel = new Panel();
-        stackTraceScrollablePanel.setSizeFull();
+        stackTraceScrollablePanel.setStyleName("cuba-log-panel");
+        stackTraceScrollablePanel.setHeight("100%");
         VerticalLayout scrollContent = new VerticalLayout();
         scrollContent.setSizeUndefined();
         stackTraceScrollablePanel.setContent(scrollContent);
@@ -124,31 +121,52 @@ public class DevelopmentExceptionWindow extends Window {
         stackTraceLabel.setValue(stackTrace.toString());
         stackTraceLabel.setSizeUndefined();
         stackTraceLabel.setStyleName("cuba-log-content");
-        ((Layout) stackTraceScrollablePanel.getContent()).addComponent(stackTraceLabel);
+        scrollContent.addComponent(stackTraceLabel);
 
         mainLayout.addComponent(rootCauseMessageLabel);
         mainLayout.addComponent(infoLabel);
-        if (infoTable != null)
+        if (infoTable != null) {
             mainLayout.addComponent(infoTable);
+        }
+
         mainLayout.addComponent(showStackTraceButton);
-        mainLayout.addComponent(stackTraceScrollablePanel);
+
+        stackTracePanelPosition = mainLayout.getComponentCount();
+
         mainLayout.addComponent(buttonsLayout);
         mainLayout.setSpacing(true);
-        mainLayout.setHeight(100, Unit.PERCENTAGE);
-        mainLayout.setExpandRatio(stackTraceScrollablePanel, 1.0f);
+
         setContent(mainLayout);
-        showStackTrace(isVisibleStackTrace);
+        setResizable(false);
     }
 
-    public void showStackTrace(boolean value) {
-        if (value) {
-            minWindowHeight = getHeight();
-            mainLayout.setExpandRatio(showStackTraceButton, 0.0f);
-            this.setHeight(650, Unit.PIXELS);
+    public void setStackTraceVisible(boolean visible) {
+        isStackTraceVisible = visible;
+
+        if (visible) {
+            showStackTraceButton.setCaption(showStackTraceMessage + " <<");
+
+            mainLayout.addComponent(stackTraceScrollablePanel, stackTracePanelPosition);
+            mainLayout.setExpandRatio(stackTraceScrollablePanel, 1.0f);
+            mainLayout.setHeight(100, Unit.PERCENTAGE);
+
+            setHeight(650, Unit.PIXELS);
+
+            setResizable(true);
+            center();
         } else {
-            mainLayout.setExpandRatio(showStackTraceButton, 1.0f);
-            this.setHeight(minWindowHeight, Unit.PIXELS);
+            showStackTraceButton.setCaption(showStackTraceMessage + " >>");
+
+            mainLayout.setHeight(-1, Unit.PIXELS);
+            mainLayout.removeComponent(stackTraceScrollablePanel);
+
+            setHeight(-1, Unit.PERCENTAGE);
+            setWidth(750, Unit.PIXELS);
+
+            setResizable(false);
+            center();
+
+            setWindowMode(WindowMode.NORMAL);
         }
-        stackTraceScrollablePanel.setVisible(value);
     }
 }

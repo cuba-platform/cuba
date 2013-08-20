@@ -8,6 +8,10 @@
 
 @mixin cuba-log-control {
 
+  .cuba-log-panel {
+    border: $theme_fieldFocusedBorderColor 1px solid;
+  }
+
   .v-label.cuba-log-content {
     font-family: monospace;
   }

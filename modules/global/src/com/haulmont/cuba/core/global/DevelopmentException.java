@@ -15,8 +15,8 @@ import java.util.Map;
 @SupportedByClient
 public class DevelopmentException extends RuntimeException {
 
-    public Map<String, Object> info;
-    public String frameId;
+    protected Map<String, Object> info;
+    protected String frameId;
 
     public DevelopmentException(String message) {
         super(message);
@@ -35,6 +35,22 @@ public class DevelopmentException extends RuntimeException {
     public DevelopmentException(String message, String frameId, Map<String, Object> info) {
         super(message);
         this.frameId = frameId;
+        this.info = info;
+    }
+
+    public String getFrameId() {
+        return frameId;
+    }
+
+    public void setFrameId(String frameId) {
+        this.frameId = frameId;
+    }
+
+    public Map<String, Object> getInfo() {
+        return info;
+    }
+
+    public void setInfo(Map<String, Object> info) {
         this.info = info;
     }
 }
