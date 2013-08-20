@@ -55,7 +55,11 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
                     ownerWindowClosed();
                 }
             };
-            task.getOwnerWindow().addListener(closeListener);
+            Window ownerWindow = task.getOwnerWindow();
+            if (ownerWindow.getFrame() != null) {
+                ownerWindow = ownerWindow.getFrame();
+            }
+            ownerWindow.addListener(closeListener);
         }
         // remove close listener on done
         taskExecutor.setFinalizer(new Runnable() {
@@ -120,8 +124,13 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     private void disposeResources() {
         // force remove close listener
         Window ownerWindow = getTask().getOwnerWindow();
-        if (ownerWindow != null)
+        if (ownerWindow != null) {
+            if (ownerWindow.getFrame() != null) {
+                ownerWindow = ownerWindow.getFrame();
+            }
+
             ownerWindow.removeListener(closeListener);
+        }
         closeListener = null;
     }
 
@@ -151,8 +160,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
             if (ownerWindow != null) {
                 String windowClass = ownerWindow.getClass().getCanonicalName();
                 log.trace("Task killed. User: " + userId + " Window: " + windowClass);
-            } else
+            } else {
                 log.trace("Task killed. User: " + userId);
+            }
         }
 
         taskExecutor.cancelExecution();
