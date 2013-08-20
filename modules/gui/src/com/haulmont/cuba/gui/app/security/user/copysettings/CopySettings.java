@@ -28,11 +28,7 @@ public class CopySettings extends AbstractWindow {
     @Inject
     protected Button copyBtn;
 
-    private Set<User> users;
-
-    public CopySettings(IFrame frame) {
-        super(frame);
-    }
+    protected Set<User> users;
 
     @Override
     public void init(Map<String, Object> params) {

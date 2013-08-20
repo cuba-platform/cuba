@@ -15,10 +15,6 @@ public class PermissionShow extends AbstractWindow{
 
     private TextField permissionsMessage;
 
-    public PermissionShow(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);

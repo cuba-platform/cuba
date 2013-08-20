@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.10.2009 12:24:21
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.app.core.file;
 
@@ -17,23 +12,27 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FileBrowser extends AbstractWindow {
 
     @Inject
-    private Table filesTable;
+    protected Table filesTable;
 
     @Inject
-    private CollectionDatasource<FileDescriptor, UUID> filesDs;
+    protected CollectionDatasource<FileDescriptor, UUID> filesDs;
 
-    public FileBrowser(IFrame frame) {
-        super(frame);
-    }
+    @Resource(name = "multiupload")
+    protected Button uploadBtn;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -49,7 +48,6 @@ public class FileBrowser extends AbstractWindow {
             }
         });
 
-        Button uploadBtn = getComponent("multiupload");
         uploadBtn.setAction(new AbstractAction("multiupload") {
             @Override
             public void actionPerform(Component component) {

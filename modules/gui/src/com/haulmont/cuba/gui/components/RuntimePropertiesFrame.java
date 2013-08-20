@@ -34,7 +34,6 @@ import java.util.*;
  * @author devyatkin
  * @version $Id$
  */
-
 public class RuntimePropertiesFrame extends AbstractWindow {
 
     private RuntimePropsDatasource rds;

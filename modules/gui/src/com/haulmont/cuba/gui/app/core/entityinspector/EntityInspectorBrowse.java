@@ -38,10 +38,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     public static final String DEFAULT_FIELD_WIDTH = "300";
 
     @Inject
-    private Metadata metadata;
-
-    @Inject
-    private Messages messages;
+    protected Metadata metadata;
 
     @Inject
     protected BoxLayout lookupBox;
@@ -74,10 +71,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected CollectionDatasource entitiesDs;
     protected MetaClass selectedMeta;
 
-    public EntityInspectorBrowse(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         String entityName = (String) params.get("entity");
@@ -95,7 +88,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             showButton = componentsFactory.createComponent(Button.NAME);
             showButton.setIcon("icons/refresh.png");
             showButton.setAction(new ShowButtonAction("show"));
-            showButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "show"));
+            showButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "show"));
 
             lookupBox.add(entities);
             lookupBox.add(showButton);
@@ -103,7 +96,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
-        Map<String, Object> options = new TreeMap<String, Object>();
+        Map<String, Object> options = new TreeMap<>();
 
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (readPermitted(metaClass))
@@ -138,8 +131,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesTable.setFrame(frame);
 
         //collect properties in order to add non-system columns first
-        LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<Table.Column>();
-        LinkedList<Table.Column> systemPropertyColumns = new LinkedList<Table.Column>();
+        LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
+        LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
         for (MetaProperty metaProperty : meta.getProperties()) {
             //don't show embedded & multiple referred entities
             if (isEmbedded(metaProperty))
@@ -200,31 +193,31 @@ public class EntityInspectorBrowse extends AbstractLookup {
         ButtonsPanel buttonsPanel = componentsFactory.createComponent("buttonsPanel");
 
         createButton = componentsFactory.createComponent(Button.NAME);
-        createButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "create"));
+        createButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "create"));
         createButton.setAction(new CreateAction());
         createButton.setIcon("icons/create.png");
 
         editButton = componentsFactory.createComponent(Button.NAME);
-        editButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "edit"));
+        editButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "edit"));
         EditAction editAction = new EditAction();
         editButton.setAction(editAction);
         entitiesDs.addListener(editAction);
         editButton.setIcon("icons/edit.png");
 
         removeButton = componentsFactory.createComponent(Button.NAME);
-        removeButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "remove"));
+        removeButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "remove"));
         RemoveAction removeAction = new RemoveAction(entitiesTable);
         entitiesDs.addListener(removeAction);
         removeButton.setAction(removeAction);
         removeButton.setIcon("icons/remove.png");
 
         excelButton = componentsFactory.createComponent(Button.NAME);
-        excelButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "excel"));
+        excelButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "excel"));
         excelButton.setAction(new ExcelAction(entitiesTable));
         excelButton.setIcon("icons/excel.png");
 
         refreshButton = componentsFactory.createComponent(Button.NAME);
-        refreshButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "refresh"));
+        refreshButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "refresh"));
         refreshButton.setAction(new RefreshAction(entitiesTable));
         refreshButton.setIcon("icons/refresh.png");
 
@@ -247,7 +240,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                        View minimal = MetadataProvider.getViewRepository()
+                        View minimal = metadata.getViewRepository()
                                 .getView(metaProperty.getRange().asClass(), View.MINIMAL);
                         View propView = new View(minimal, metaProperty.getName() + "Ds", false);
                         view.addProperty(metaProperty.getName(), propView);
@@ -267,7 +260,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         @Override
         public void actionPerform(Component component) {
-            Map<String, Object> editorParams = new HashMap<String, Object>();
+            Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("metaClass", selectedMeta.getName());
             Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, editorParams);
             window.addListener(new CloseListener() {
@@ -292,7 +285,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 return;
 
             Entity item = (Entity) selected.toArray()[0];
-            Map<String, Object> editorParams = new HashMap<String, Object>();
+            Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("item", item);
             Window window = openWindow("entityInspector.edit", WINDOW_OPEN_TYPE, editorParams);
             window.addListener(new CloseListener() {
@@ -306,7 +299,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     private String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
         int idx = meta.getName().indexOf('$') + 1;
-        return MessageProvider.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
+        return messages.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
                 + "." + metaProperty.getFullName());
     }
 
@@ -315,7 +308,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = UserSessionProvider.getUserSession();
+        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
     }
 }

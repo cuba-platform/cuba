@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ScheduledTaskBrowser extends AbstractWindow {
 
@@ -41,10 +40,6 @@ public class ScheduledTaskBrowser extends AbstractWindow {
 
     @Inject
     protected SchedulingService service;
-
-    public ScheduledTaskBrowser(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
