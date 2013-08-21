@@ -45,6 +45,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -75,6 +76,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     protected Action enterPressAction;
 
     protected Table.StyleProvider styleProvider;
+    protected Table.IconProvider iconProvider;
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
@@ -377,6 +379,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
 //        vaadin7
 //        component.setStoreColWidth(true);
         component.setPageLength(15);
+        // CAUTION: vaadin considers null as row header property id;
+        component.setColumnWidth(null, 16);
 
         component.addActionHandler(new ActionsAdapter());
 
@@ -783,6 +787,46 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                 return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
             }
         });
+    }
+
+    @Override
+    public void setIconProvider(IconProvider iconProvider) {
+        this.iconProvider = iconProvider;
+        if (iconProvider != null) {
+            setRowHeaderMode(RowHeaderMode.ICON);
+        } else {
+            setRowHeaderMode(RowHeaderMode.NONE);
+        }
+        component.refreshRowCache();
+    }
+
+    // For vaadin component extensions.
+    protected Resource getItemIcon(Object itemId) {
+        if (iconProvider == null) {
+            return null;
+        }
+        // noinspection unchecked
+        String resourceUrl = iconProvider.getItemIcon(datasource.getItem(itemId));
+        if (StringUtils.isBlank(resourceUrl)) {
+            return null;
+        }
+        // noinspection ConstantConditions
+        if (!resourceUrl.contains(":")) {
+            resourceUrl = "theme:" + resourceUrl;
+        }
+        return WebComponentsHelper.getResource(resourceUrl);
+    }
+
+    @Override
+    public int getRowHeaderWidth() {
+        // CAUTION: vaadin considers null as row header property id;
+        return component.getColumnWidth(null);
+    }
+
+    @Override
+    public void setRowHeaderWidth(int width) {
+        // CAUTION: vaadin considers null as row header property id;
+        component.setColumnWidth(null, width);
     }
 
     @Override

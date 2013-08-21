@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -36,7 +35,7 @@ import java.util.*;
 public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements TreeTable, Component.Wrapper {
 
     protected String hierarchyProperty;
-    
+
     public WebTreeTable() {
         component = createTreeTableComponent();
         initComponent(component);
@@ -90,6 +89,12 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
     protected CollectionDsWrapper createContainerDatasource(
             CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
+    }
+
+    @Override
+    public void setIconProvider(IconProvider iconProvider) {
+        this.iconProvider = iconProvider;
+        component.refreshRowCache();
     }
 
     @Override
@@ -147,7 +152,7 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
 
         public TreeTableDsWrapper(HierarchicalDatasource datasource) {
             super(datasource);
-            treeTableDatasource  = (datasource instanceof TreeTableDatasource);
+            treeTableDatasource = (datasource instanceof TreeTableDatasource);
         }
 
         @Override
@@ -314,15 +319,7 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
     protected class CubaTreeTableExt extends CubaTreeTable {
         @Override
         public Resource getItemIcon(Object itemId) {
-            if (styleProvider != null) {
-                @SuppressWarnings({"unchecked"})
-                final Entity item = datasource.getItem(itemId);
-                final String resURL = styleProvider.getItemIcon(item);
-
-                return resURL == null ? null : WebComponentsHelper.getResource(resURL);
-            } else {
-                return null;
-            }
+            return WebTreeTable.this.getItemIcon(itemId);
         }
 
         @Override

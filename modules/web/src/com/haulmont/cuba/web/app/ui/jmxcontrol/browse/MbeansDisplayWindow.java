@@ -14,11 +14,11 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.web.jmx.JmxControlException;
-import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.jmx.JmxControlException;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -158,12 +158,6 @@ public class MbeansDisplayWindow extends AbstractWindow {
                             ((ManagedBeanInfo) entity).getObjectName() == null)
                         return "cuba-jmx-tree-table-domain";
                 }
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public String getItemIcon(@Nullable Entity entity) {
                 return null;
             }
         });

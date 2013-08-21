@@ -9,7 +9,10 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
@@ -45,14 +48,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             @Override
             @SuppressWarnings({"unchecked"})
             public Resource getItemIcon(Object itemId) {
-                if (styleProvider != null) {
-                    final Entity item = datasource.getItem(itemId);
-                    final String resURL = styleProvider.getItemIcon(item);
-
-                    return resURL == null ? null : WebComponentsHelper.getResource(resURL);
-                } else {
-                    return null;
-                }
+                return WebGroupTable.this.getItemIcon(itemId);
             }
 
             @Override
@@ -199,7 +195,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
             implements GroupTableContainer,
-                       AggregationContainer {
+            AggregationContainer {
 
         private boolean groupDatasource;
         private List<Object> aggregationProperties = null;
@@ -429,7 +425,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         public void collapse(Object id) {
             if (isGroup(id)) {
                 //noinspection RedundantCast
-                expanded.remove((GroupInfo)id);
+                expanded.remove((GroupInfo) id);
                 resetCachedItems();
             }
         }
@@ -437,7 +433,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         @Override
         public boolean isExpanded(Object id) {
             //noinspection RedundantCast
-            return isGroup(id) && expanded.contains((GroupInfo)id);
+            return isGroup(id) && expanded.contains((GroupInfo) id);
         }
 
         @Override

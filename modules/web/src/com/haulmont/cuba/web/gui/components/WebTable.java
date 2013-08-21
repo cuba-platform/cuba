@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -33,14 +32,7 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
         component = new CubaTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
-                if (styleProvider != null) {
-                    final Entity item = datasource.getItem(itemId);
-                    final String resURL = styleProvider.getItemIcon(item);
-
-                    return resURL == null ? null : WebComponentsHelper.getResource(resURL);
-                } else {
-                    return null;
-                }
+                return WebTable.this.getItemIcon(itemId);
             }
 
             @Override
@@ -72,8 +64,8 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
     @Override
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return datasource instanceof CollectionDatasource.Sortable && isSortable() ?
-            new SortableTableDsWrapper(datasource, columns) :
-            new TableDsWrapper(datasource, columns);
+                new SortableTableDsWrapper(datasource, columns) :
+                new TableDsWrapper(datasource, columns);
     }
 
     @Override

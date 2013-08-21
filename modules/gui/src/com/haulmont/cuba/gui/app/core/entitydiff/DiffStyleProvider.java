@@ -51,9 +51,4 @@ public class DiffStyleProvider implements Table.StyleProvider {
         }
         return null;
     }
-
-    @Override
-    public String getItemIcon(Entity entity) {
-        return null;
-    }
 }

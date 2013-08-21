@@ -84,6 +84,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected TableSettings tableSettings;
     protected boolean editable;
     protected StyleProvider styleProvider;
+    protected IconProvider iconProvider;
 
     protected Action itemClickAction;
     protected Action enterPressAction;
@@ -858,6 +859,21 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 tableColumn.setCellRenderer(styleProvider != null ? new StylingCellRenderer() : null);
             }
         }
+    }
+
+    @Override
+    public void setIconProvider(IconProvider iconProvider) {
+        this.iconProvider = iconProvider; // TODO Kozlov: PL-2411.
+    }
+
+    @Override
+    public int getRowHeaderWidth() {
+        return 0; // TODO Kozlov: PL-2411.
+    }
+
+    @Override
+    public void setRowHeaderWidth(int width) {
+        // TODO Kozlov: PL-2411.
     }
 
     @Override

@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.formatters.DateFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
@@ -18,48 +17,58 @@ import java.util.List;
  * @version $Id$
  */
 public interface Table
-    extends
+        extends
         ListComponent, Component.Editable, Component.HasSettings,
-        Component.HasButtonsPanel, Component.HasPresentations
-{
+        Component.HasButtonsPanel, Component.HasPresentations {
     String NAME = "table";
 
     String INSERT_SHORTCUT_ID = "INSERT_SHORTCUT";
     String REMOVE_SHORTCUT_ID = "REMOVE_SHORTCUT";
 
     List<Column> getColumns();
+
     Column getColumn(String id);
+
     void addColumn(Column column);
+
     void removeColumn(Column column);
 
     void setDatasource(CollectionDatasource datasource);
 
     void setRequired(Column column, boolean required, String message);
+
     void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator);
 
     void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator);
 
     void setItemClickAction(Action action);
+
     Action getItemClickAction();
 
     void setEnterPressAction(Action action);
+
     Action getEnterPressAction();
 
     List<Column> getNotCollapsedColumns();
 
     void setSortable(boolean sortable);
+
     boolean isSortable();
 
     void setAggregatable(boolean aggregatable);
+
     boolean isAggregatable();
 
     void setShowTotalAggregation(boolean showAggregation);
+
     boolean isShowTotalAggregation();
 
     void setColumnReorderingAllowed(boolean columnReorderingAllowed);
+
     boolean getColumnReorderingAllowed();
 
     void setColumnControlVisible(boolean columnCollapsingAllowed);
+
     boolean getColumnControlVisible();
 
     void sortBy(Object propertyId, boolean ascending);
@@ -67,13 +76,20 @@ public interface Table
     void selectAll();
 
     RowsCount getRowsCount();
+
     void setRowsCount(RowsCount rowsCount);
 
     boolean isAllowMultiStringCells();
+
     void setAllowMultiStringCells(boolean value);
 
     boolean isAllowPopupMenu();
+
     void setAllowPopupMenu(boolean value);
+
+    int getRowHeaderWidth();
+
+    void setRowHeaderWidth(int width);
 
     /**
      * Repaint UI representation of the table (columns, generated columns) without refreshing the table data
@@ -87,6 +103,7 @@ public interface Table
     }
 
     void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener);
+
     void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,17 +123,26 @@ public interface Table
     interface StyleProvider<E extends Entity> {
         /**
          * Called by {@link Table} to get a style for row or cell.
-         * @param entity    an entity instance represented by the current row
-         * @param property  column identifier if getting a style for a cell, or null if getting the style for a row
-         * @return          style name or null to apply the default
+         *
+         * @param entity   an entity instance represented by the current row
+         * @param property column identifier if getting a style for a cell, or null if getting the style for a row
+         * @return style name or null to apply the default
          */
         @Nullable
         String getStyleName(@Nullable E entity, @Nullable String property);
+    }
 
+    /**
+     * Allows to set icons for particular rows in the table.
+     *
+     * @param <E> entity class
+     */
+    interface IconProvider<E extends Entity> {
         /**
          * Called by {@link Table} to get an icon to be shown for a row.
-         * @param entity    an entity instance represented by the current row
-         * @return          icon name or null to show no icon
+         *
+         * @param entity an entity instance represented by the current row
+         * @return icon name or null to show no icon
          */
         @Nullable
         String getItemIcon(@Nullable E entity);
@@ -127,6 +153,11 @@ public interface Table
      */
     void setStyleProvider(StyleProvider styleProvider);
 
+    /**
+     * Set the row icon provider for the table.
+     */
+    void setIconProvider(IconProvider iconProvider);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -136,8 +167,8 @@ public interface Table
         /**
          * Called by {@link Table} when rendering a column for which the generator was created.
          *
-         * @param entity    an entity instance represented by the current row
-         * @return          a component to be rendered inside of the cell
+         * @param entity an entity instance represented by the current row
+         * @return a component to be rendered inside of the cell
          */
         Component generateCell(E entity);
     }
@@ -159,7 +190,7 @@ public interface Table
      * @param <E> entity type
      * @param <P> printable value type
      */
-    public interface PrintableColumnGenerator<E extends Entity, P> extends ColumnGenerator<E>, Printable<E, P>  {
+    public interface PrintableColumnGenerator<E extends Entity, P> extends ColumnGenerator<E>, Printable<E, P> {
     }
 
     /**
@@ -175,8 +206,8 @@ public interface Table
      * <p/> This method useful for desktop UI. Table can make addititional look, feel and performance tweaks
      * if it knows the class of components that will be generated.
      *
-     * @param columnId column identifier as defined in XML descriptor. May or may not correspond to an entity property.
-     * @param generator column generator instance
+     * @param columnId       column identifier as defined in XML descriptor. May or may not correspond to an entity property.
+     * @param generator      column generator instance
      * @param componentClass class of components that generator will provide
      */
     void addGeneratedColumn(String columnId, ColumnGenerator generator, Class<? extends Component> componentClass);
@@ -187,7 +218,7 @@ public interface Table
      * Adds {@link Printable} representation for column. <br/>
      * Excplicitly added Printable will be used instead of inherited from generated column.
      *
-     * @param columnId column id
+     * @param columnId  column id
      * @param printable printable representation
      */
     void addPrintable(String columnId, Printable printable);
