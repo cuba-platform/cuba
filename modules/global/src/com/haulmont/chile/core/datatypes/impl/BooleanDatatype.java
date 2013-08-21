@@ -50,9 +50,16 @@ public class BooleanDatatype implements Datatype<Boolean> {
 		return Types.BOOLEAN;
 	}
 
-	public Boolean parse(String value) {
-		return StringUtils.isBlank(value) ? null : Boolean.valueOf(value.trim());
-	}
+    public Boolean parse(String value) throws ParseException {
+        if (!StringUtils.isBlank(value)) {
+            String lowerCaseValue = StringUtils.lowerCase(value);
+            if ("true".equals(lowerCaseValue))
+                return true;
+            if ("false".equals(lowerCaseValue))
+                return false;
+        }
+        throw new ParseException(String.format("Can't parse '%s", value), 0);
+    }
 
     @Override
     public Boolean parse(String value, Locale locale) throws ParseException {

@@ -54,8 +54,9 @@ public class SessionAttributeEditor extends AbstractEditor {
         if (item.getStringValue() != null) {
             Datatype dt = Datatypes.get(item.getDatatype());
             try {
-                dt.parse(item.getStringValue());
-            } catch (ParseException e) {
+                Object object = dt.parse(item.getStringValue());
+                item.setStringValue(object.toString());
+            } catch (IllegalArgumentException | ParseException e) {
                 showNotification(getMessage("unableToParseValue"), NotificationType.ERROR);
                 return;
             }
