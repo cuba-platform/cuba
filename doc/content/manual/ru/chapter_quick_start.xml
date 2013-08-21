@@ -235,7 +235,7 @@
           <para>Создайте рабочую папку для проекта, например, <filename>c:/work/sales</filename>.</para>
         </listitem>
         <listitem>
-          <para>Загрузите архив с шаблоном проекта <ulink url="http://docs.cuba-platform.com/cuba/4.1/samples/sales.zip">http://docs.cuba-platform.com/cuba/4.1/samples/sales.zip</ulink> и распакуйте содержимое архива в рабочий каталог проекта.</para>
+          <para>Загрузите архив <filename>sales.zip</filename> с шаблоном проекта по адресу <ulink url="https://www.cuba-platform.com/download">https://www.cuba-platform.com/download</ulink> и распакуйте содержимое архива в рабочий каталог проекта.</para>
         </listitem>
         <listitem>
           <para>Запустите командную строку в рабочем каталоге <filename>c:/work/sales</filename>.</para>

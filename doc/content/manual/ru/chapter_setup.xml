@@ -31,13 +31,13 @@
     <para>Для установки Studio выполните следующий шаги:</para>
     <orderedlist>
       <listitem>
-        <para>Загрузите архив <filename>studio-0.8.zip</filename> по ссылке <ulink url="http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.8/studio-0.8.zip">http://repository.haulmont.com:8587/nexus/content/repositories/releases/com/haulmont/studio/studio/0.8/studio-0.8.zip</ulink>.</para>
+        <para>Загрузите архив <filename>studio-X.Y.Z.zip</filename> по ссылке <ulink url="https://www.cuba-platform.com/download">https://www.cuba-platform.com/download</ulink>.</para>
       </listitem>
       <listitem>
         <para>Распакуйте архив в локальный каталог, например, <filename>c:/work/studio</filename></para>
       </listitem>
       <listitem>
-        <para>Запустите командную строку, перейдите в подкаталог <filename>bin</filename> и запустите</para>
+        <para>Откройте командную строку, перейдите в подкаталог <filename>bin</filename> и запустите</para>
         <para><prompt>studio</prompt></para>
       </listitem>
       <listitem>
