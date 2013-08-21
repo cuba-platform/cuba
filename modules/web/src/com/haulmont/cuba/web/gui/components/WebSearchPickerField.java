@@ -159,24 +159,4 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     public boolean isRequired() {
         return pickerField.isRequired();
     }
-
-    @Override
-    public void setWidth(String width) {
-        pickerField.setWidth(width);
-    }
-
-    @Override
-    public void setHeight(String height) {
-        pickerField.setHeight(height);
-    }
-
-    @Override
-    public float getHeight() {
-        return pickerField.getHeight();
-    }
-
-    @Override
-    public float getWidth() {
-        return pickerField.getWidth();
-    }
 }

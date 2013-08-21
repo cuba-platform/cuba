@@ -70,12 +70,12 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public String getStyleName() {
-        return component.getStyleName();
+        return getComposition().getStyleName();
     }
 
     @Override
     public void setStyleName(String name) {
-        component.setStyleName(name);
+        getComposition().setStyleName(name);
     }
 
     @Override
@@ -107,32 +107,32 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public float getHeight() {
-        return component.getHeight();
+        return getComposition().getHeight();
     }
 
     @Override
     public int getHeightUnits() {
-        return UNIT_SYMBOLS.indexOf(component.getHeightUnits());
+        return UNIT_SYMBOLS.indexOf(getComposition().getHeightUnits());
     }
 
     @Override
     public void setHeight(String height) {
-        component.setHeight(height);
+        getComposition().setHeight(height);
     }
 
     @Override
     public float getWidth() {
-        return component.getWidth();
+        return getComposition().getWidth();
     }
 
     @Override
     public int getWidthUnits() {
-        return UNIT_SYMBOLS.indexOf(component.getWidthUnits());
+        return UNIT_SYMBOLS.indexOf(getComposition().getWidthUnits());
     }
 
     @Override
     public void setWidth(String width) {
-        component.setWidth(width);
+        getComposition().setWidth(width);
     }
 
     public boolean isExpandable() {
