@@ -856,31 +856,37 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
+        if (!item.getChildren().isEmpty())     //check item is menu
+            return null;
+
         WindowInfo windowInfo = null;
-        final boolean noItemId;
         final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
-            if (!item.getChildren().isEmpty())     //check item is menu
-                return null;
             log.warn(String.format("No IDs associated screen '%s'", item.getId()));
         }
-        noItemId = windowInfo == null ? true : false;
-        final MenuCommand command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
-        return new com.vaadin.ui.MenuBar.Command() {
 
+        final MenuCommand command;
+        if (windowInfo != null) {
+            command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
+        } else {
+            command = null;
+        }
+
+        return new com.vaadin.ui.MenuBar.Command() {
             @Override
             public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                if (!noItemId)
-                    command.execute();
-                else {
-                    if (item.getParent() != null)
+                if (command == null) {
+                    if (item.getParent() != null) {
                         throw new DevelopmentException(String.format("No IDs associated screen '%s'", item.getId()),
                                 Collections.<String, Object>singletonMap("Menu Id", item.getParent().getId()));
-                    else
+                    } else {
                         throw new DevelopmentException(String.format("No IDs associated screen '%s'", item.getId()));
+                    }
                 }
+
+                command.execute();
             }
         };
     }
