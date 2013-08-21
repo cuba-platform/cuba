@@ -13,6 +13,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.jmx.support.MBeanServerConnectionFactoryBean;
 
+import javax.annotation.Nullable;
 import javax.management.JMX;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
@@ -31,10 +32,11 @@ public abstract class JmxConnectionHelper {
     protected final static JmxInstance LOCAL_JMX_INSTANCE = new JmxInstance("Local");
 
     protected static MBeanServerConnection getConnection(JmxInstance instance) {
-        if (ObjectUtils.equals(instance, LOCAL_JMX_INSTANCE))
+        if (ObjectUtils.equals(instance, LOCAL_JMX_INSTANCE)) {
             return getLocalConnection();
-        else
+        } else {
             return getRemoteConnection(instance);
+        }
     }
 
     protected static MBeanServerConnection getLocalConnection() {
@@ -61,6 +63,7 @@ public abstract class JmxConnectionHelper {
         }
     }
 
+    @Nullable
     protected static ObjectName getObjectName(final MBeanServerConnection connection,
                                               final Class objectClass) throws IOException {
 

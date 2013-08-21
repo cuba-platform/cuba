@@ -103,6 +103,11 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
         } catch (IOException e) {
             throw new JmxControlException(e);
         }
+
+        if (objectName == null) {
+            throw new JmxControlException("Could not find JmxLogControl implementation");
+        }
+
         return JmxConnectionHelper.getProxy(connection, objectName, JmxLogControlMBean.class);
     }
 }
