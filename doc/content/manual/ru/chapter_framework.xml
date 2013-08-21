@@ -5251,7 +5251,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="80%" align="center" fileref="img/gui_textField_dia.png"/>
+                <imagedata contentwidth="80%" align="center" fileref="img/gui_TextField_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -5328,54 +5328,15 @@ protected boolean postCommit(boolean committed, boolean close) {
               </figure>
             </listitem>
             <listitem>
-              <para id="gui_attr_textField_cols_rows">Текстовому полю можно задавать количество строк и столбцов текста с помощью атрибутов <sgmltag>cols</sgmltag> и <sgmltag>rows</sgmltag>.</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldColsRows.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <figure>
-                <title/>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata contentwidth="450" contentdepth="96" align="center" fileref="img/gui_textFieldColsRows.png"/>
-                  </imageobject>
-                </mediaobject>
-              </figure>
-            </listitem>
-            <listitem>
               <para id="gui_attr_textField_maxLength">Для текстового компонента можно ограничить максимальную длину вводимого текста с помощью атрибута <sgmltag>maxLength</sgmltag>. Значение атрибута устанавливается по умолчанию на основании длины строкового атрибута <glossterm linkend="entity">сущности</glossterm>, если этот параметр указан в аннотации сущности. Значение &quot;-1&quot; означает отсутствие ограничения.</para>
               <para>Ниже показан пример, ограничивающий длину вводимого текста в 10 символов.</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldMaxLength.txt" encoding="UTF-8" parse="text"/></programlisting>
-            </listitem>
-            <listitem>
-              <para id="gui_attr_textField_resizable">Для компонента <code>textField</code> существует атрибут <sgmltag>resizable</sgmltag>. При задании атрибуту значения <literal>true</literal> и установке количества строк, больших одной, у пользователя появляется возможность  изменять размеры компонента.</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldResizable.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <figure>
-                <title/>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata contentwidth="330" align="center" fileref="img/gui_textField_resizable.png"/>
-                  </imageobject>
-                </mediaobject>
-              </figure>
             </listitem>
             <listitem>
               <para id="gui_attr_textField_trim">Для отсечения лишних пробелов в начале и конце значения используется атрибут <sgmltag>trim</sgmltag>. По умолчанию значение атрибута равно <literal>true</literal>. Пробелы отсекаются в момент получения значения поля с помощью метода доступа.</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldTrim.txt" encoding="UTF-8" parse="text"/></programlisting>
               <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="gui_Button">кнопку</link>.</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldTrimContr.txt" encoding="UTF-8" parse="text"/></programlisting>
-            </listitem>
-            <listitem>
-              <para id="gui_attr_textField_secret">Атрибут <sgmltag>secret</sgmltag> позволяет преобразовать текстовое поле в  поле, которое не показывает символы, введенные пользователем. Вместо этого поле отображает эхо-символы, отличные от введенных. </para>
-              <para>Текстовое поле с атрибутом <code>secret=&quot;true&quot;</code>  скрывает введенные данные только в визуальном представлении. При получении значения поля с помощью метода доступа это значение представляется в текстовой форме.</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldSecret.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="gui_Button">кнопку</link>.</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/textField/textFieldSecretContr.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <figure>
-                <title/>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata align="center" fileref="img/gui_textField_secret.png"/>
-                  </imageobject>
-                </mediaobject>
-              </figure>
             </listitem>
           </itemizedlist>
           <para>Атрибуты <sgmltag>textField</sgmltag>:</para>
@@ -5462,6 +5423,34 @@ protected boolean postCommit(boolean committed, boolean close) {
           <title>PasswordField</title>
           <para>Текстовое поле, которое не показывает символы, введенные пользователем. Вместо этого поле отображает эхо-символы. <code>PasswordField</code> скрывает введенные данные только в визуальном представлении. При получении значения поля с помощью метода доступа это значение представляется в текстовой форме. </para>
           <para>XML-имя компонента: <code>passwordField</code>.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="img/gui_PasswordField_dia.png" align="center" contentwidth="80%"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Компонент поля для ввода пароля реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
+          <itemizedlist>
+            <listitem>
+              <programlisting>&lt;passwordField id=&quot;passwordField&quot; caption=&quot;msg://name&quot;/&gt;
+&lt;!--Создаем кнопку,при нажатии на которую на экран будет выводиться значение текстового поля--&gt;
+&lt;button id=&quot;button1&quot; caption=&quot;msg://buttonsName&quot; invoke=&quot;getPass&quot;/&gt;</programlisting>
+              <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="gui_Button">кнопку</link>.</para>
+              <programlisting>public void getPass(){
+    showNotification(String.valueOf(passwordField.getValue()), NotificationType.HUMANIZED);
+}</programlisting>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_textField_secret.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+          </itemizedlist>
           <para>Атрибуты <sgmltag>passwordField</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/><colspec colname="cgen1"/>c <tbody>
@@ -5539,8 +5528,23 @@ protected boolean postCommit(boolean committed, boolean close) {
           <title>MaskedField</title>
           <para>Текстовое поле, в которое данные вводятся в определенном формате. <code>MaskedField</code> удобно использовать для ввода телефонных номеров, дат. Данные возвращаются вместе с маской, задающей формат. </para>
           <para>XML-имя компонента: <sgmltag>maskedField</sgmltag>.</para>
-          <para id="gui_attr_maskedField_mask">Атрибут <sgmltag>mask</sgmltag> задает маску для поля.</para>
-          <para id="gui_attr_maskedField_valueMode">Атрибут <sgmltag>valueMode</sgmltag> определяет, показывать маску, или нет.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" contentwidth="80%" fileref="img/gui_MaskedField_dia.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Компонент  текстового поля с маской реализован только для блока <structname>Web Client</structname>.</para>
+          <itemizedlist>
+            <listitem>
+              <para id="gui_attr_maskedField_mask_1">Атрибут <sgmltag>mask</sgmltag> задает маску для поля.</para>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_maskedField_valueMode_1">Атрибут <sgmltag>valueMode</sgmltag> определяет, показывать маску, или нет.</para>
+            </listitem>
+          </itemizedlist>
           <para>Атрибуты <sgmltag>maskedField</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="5" colsep="1" rowsep="1" align="left"><colspec colname="c0"/><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
@@ -5626,9 +5630,42 @@ protected boolean postCommit(boolean committed, boolean close) {
         </section>
         <section id="gui_TextArea">
           <title>TextArea</title>
-          <para>Текстовая область (<code>TextArea</code>) − многострочное текстовое поле для редактирования текста.</para>
+          <para>Текстовая область  − многострочное текстовое поле для редактирования текста.</para>
           <para>XML-имя компонента: <sgmltag>textArea</sgmltag></para>
-          <para id="gui_attr_textArea_resizable">Атрибут <sgmltag>resizable</sgmltag> позволяет менять размеры компонента.</para>
+          <figure>
+            <title/>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" contentwidth="80%" fileref="img/gui_TextArea_dia.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>Компонент многострочного текстового поля реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Текстовой области  можно задавать количество строк и столбцов текста с помощью атрибутов <sgmltag>cols</sgmltag> и <sgmltag>rows</sgmltag>.<programlisting>&lt;textArea id=&quot;textArea&quot; cols=&quot;20&quot; rows=&quot;5&quot; caption=&quot;msg://name&quot;/&gt;</programlisting></para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata contentwidth="450" contentdepth="96" align="center" fileref="img/gui_textFieldColsRows.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+            <listitem>
+              <para id="gui_attr_textField_resizable_1">Для компонента <code>textField</code> существует атрибут <sgmltag>resizable</sgmltag>. При задании атрибуту значения <literal>true</literal> и установке количества строк, больших одной, у пользователя появляется возможность  изменять размеры компонента.</para>
+              <programlisting>&lt;textArea id=&quot;textArea&quot; resizable=&quot;true&quot; caption=&quot;msg://name&quot; rows=&quot;5&quot;/&gt;</programlisting>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata contentwidth="330" align="center" fileref="img/gui_textField_resizable.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+          </itemizedlist>
           <para>Атрибуты <sgmltag>textArea</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="5" colsep="1" rowsep="1" align="left"><colspec colname="c0"/><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
@@ -5697,13 +5734,13 @@ protected boolean postCommit(boolean committed, boolean close) {
         </section>
         <section id="gui_RichTextArea">
           <title>RichTextArea</title>
-          <para>Текстовая область (<code>RichTextArea</code>) − многострочное текстовое поле для редактирования текста. Содержит элементы управления для форматирования текста.</para>
+          <para>Текстовая область, содержащая  элементы управления для форматирования текста.</para>
           <para>XML-имя компонента: <sgmltag>richTextArea</sgmltag></para>
           <figure>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="180" align="center" fileref="img/gui_textArea_dia.png"/>
+                <imagedata contentwidth="180" align="center" fileref="img/gui_RichTextArea_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -5753,9 +5790,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry>
                     <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_width">width</link>
-                  </entry>
+                  <entry/>
                 </row>
                 <row>
                   <entry align="left">
@@ -5770,24 +5805,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry/>
                 </row>
               </tbody></tgroup>
-          </informaltable>
-          <para>Элементы <sgmltag>textArea</sgmltag>:</para>
-          <informaltable frame="none" pgwide="0" align="left">
-            <tgroup cols="1" colsep="1" rowsep="1" align="left">
-              <colspec colname="c1"/>
-              <tbody>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_element_basic_formatter">formatter</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry>
-                    <link linkend="gui_element_basic_validator">validator</link>
-                  </entry>
-                </row>
-              </tbody>
-            </tgroup>
           </informaltable>
         </section>
         <section id="gui_DateField">

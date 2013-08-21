@@ -1,1 +1,0 @@
-﻿<textField id="textField1" resizable="true" caption="msg://name" rows="5"/>
