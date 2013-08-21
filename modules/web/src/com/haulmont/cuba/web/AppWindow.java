@@ -683,7 +683,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     @Nullable
     protected Component getLogoImage() {
         String logoImagePath = messages.getMainMessage("application.logoImage");
-        if ("application.logoImage".equals(logoImagePath))
+        if (StringUtils.isBlank(logoImagePath) || "application.logoImage".equals(logoImagePath))
             return null;
 
         return new Image(null, new VersionedThemeResource(logoImagePath));
@@ -1095,6 +1095,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                         public void run() {
                             App.getInstance().getWindowManager().reset();
                             String redirectionUrl = connection.logout();
+                            // vaadin7 unused redirectionUrl
                         }
                     },
                     null

@@ -240,7 +240,7 @@ public class LoginWindow extends UIView implements Action.Handler {
     @Nullable
     protected Image getLogoImage() {
         final String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", loc);
-        if ("loginWindow.logoImage".equals(loginLogoImagePath))
+        if (StringUtils.isBlank(loginLogoImagePath) || "loginWindow.logoImage".equals(loginLogoImagePath))
             return null;
 
         return new Image(null, new VersionedThemeResource(loginLogoImagePath));
