@@ -6,7 +6,7 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-tokenlist($primaryStyleName: cuba-tokenlist){
+@mixin havana-cuba-tokenlist($primaryStyleName: cuba-tokenlist) {
   .#{$primaryStyleName} .v-csslayout {
     clear: both;
   }
@@ -30,10 +30,12 @@
   }
 
   .#{$primaryStyleName} .cuba-tokenlist-label-content {
+    white-space: nowrap;
     outline: none;
   }
 
   .#{$primaryStyleName} .cuba-tokenlist-label-content .content {
+    font-size: 12px;
     white-space: nowrap;
     cursor: default;
     overflow: hidden;

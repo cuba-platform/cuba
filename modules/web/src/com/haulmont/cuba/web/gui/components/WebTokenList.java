@@ -32,9 +32,9 @@ import java.util.*;
  */
 public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> implements TokenList {
 
-    private CollectionDatasource datasource;
+    protected CollectionDatasource datasource;
 
-    private String captionProperty;
+    protected String captionProperty;
 
     protected CaptionMode captionMode;
 
@@ -431,6 +431,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
             scrollContainer = new Panel();
             scrollContainerlayout = new CssLayout();
+            scrollContainerlayout.setSizeUndefined();
+
             scrollContainer.setContent(scrollContainerlayout);
             scrollContainer.setSizeFull();
 
@@ -572,7 +574,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     }
                     f.setEditable(isEditable());
                     f.setText(instanceCaption(item));
-                    f.setWidth("100%");
+                    f.setWidth("-1px");
+
                     setTokenStyle(f, itemId);
                     scrollContainerlayout.addComponent(f);
                     usedItems.add(item);

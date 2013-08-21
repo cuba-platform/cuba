@@ -17,5 +17,4 @@ public class CubaTokenListLabelState extends PanelState {
     public String text;
     public boolean editable;
     public boolean canOpen;
-
 }

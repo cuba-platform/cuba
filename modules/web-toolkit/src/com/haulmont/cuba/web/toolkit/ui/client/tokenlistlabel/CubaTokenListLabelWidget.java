@@ -40,10 +40,6 @@ public class CubaTokenListLabelWidget extends VPanel {
         DOM.sinkEvents(closeDiv, Event.ONCLICK);
     }
 
-    @Override
-    public void setWidth(String width) {
-    }
-
     public void setEditable(boolean editable) {
         this.editable = editable;
         if (!editable) {
