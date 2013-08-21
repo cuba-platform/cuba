@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+@Deprecated
 public class ActionsFieldHelper {
     private ActionsField component;
     private MetaClass metaClass;
