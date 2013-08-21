@@ -23,7 +23,7 @@ import java.util.Date;
 public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
 
     protected final Layout composition;
-    private WebDateField dateField;
+    protected WebDateField dateField;
 
     public CubaDateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
@@ -81,17 +81,6 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     @Override
     public boolean isReadOnly() {
         return !dateField.isEditable();
-    }
-
-    @Override
-    public boolean isRequired() {
-        return dateField.isRequired();
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        dateField.setRequired(required);
-        super.setRequired(required);
     }
 
     @Override

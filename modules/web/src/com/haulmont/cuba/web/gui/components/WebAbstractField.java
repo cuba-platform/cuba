@@ -41,7 +41,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     protected boolean settingValue = false;
 
-    protected String requiredMessage;
+    protected Object prevValue;
 
     public Datasource getDatasource() {
         return datasource;
@@ -81,7 +81,6 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
         component.setRequiredError(msg);
     }
 
@@ -126,15 +125,15 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     @Override
     public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
     }
-
-    protected Object prevValue;
 
     protected void attachListener(T component) {
         component.addValueChangeListener(new Property.ValueChangeListener() {
@@ -208,7 +207,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         Object value = getValue();
         if (isEmpty(value)) {
             if (isRequired())
-                throw new RequiredValueMissingException(requiredMessage, this);
+                throw new RequiredValueMissingException(component.getRequiredError(), this);
             else
                 return;
         }

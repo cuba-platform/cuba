@@ -299,7 +299,7 @@ public class WebActionsField
         Object value = getValue();
         if (isEmpty(value)) {
             if (isRequired())
-                throw new RequiredValueMissingException(requiredMessage, this);
+                throw new RequiredValueMissingException(component.getRequiredError(), this);
             else
                 return;
         }
@@ -313,7 +313,7 @@ public class WebActionsField
         return lookupField;
     }
 
-
+    @Override
     public void disablePaging() {
     }
 }

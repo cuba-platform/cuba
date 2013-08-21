@@ -36,34 +36,34 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     private String captionProperty;
 
-    private CaptionMode captionMode;
+    protected CaptionMode captionMode;
 
-    private Position position = Position.TOP;
+    protected Position position = Position.TOP;
 
-    private ItemChangeHandler itemChangeHandler;
+    protected ItemChangeHandler itemChangeHandler;
 
-    private ItemClickListener itemClickListener;
+    protected ItemClickListener itemClickListener;
 
-    private boolean inline;
+    protected boolean inline;
 
-    private WebButton addButton;
+    protected WebButton addButton;
 
-    private WebLookupPickerField lookupPickerField;
+    protected WebLookupPickerField lookupPickerField;
 
-    private String lookupScreen;
-    private WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
-    private Map<String, Object> lookupScreenParams = null;
+    protected String lookupScreen;
+    protected WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
+    protected Map<String, Object> lookupScreenParams = null;
 
-    private TokenStyleGenerator tokenStyleGenerator;
+    protected TokenStyleGenerator tokenStyleGenerator;
 
-    private boolean lookup = false;
+    protected boolean lookup = false;
 
-    private boolean editable = true;
+    protected boolean editable = true;
 
-    private boolean simple = false;
+    protected boolean simple = false;
 
-    private boolean multiselect;
-    private PickerField.LookupAction lookupAction;
+    protected boolean multiselect;
+    protected PickerField.LookupAction lookupAction;
 
     public WebTokenList() {
         addButton = new WebButton();

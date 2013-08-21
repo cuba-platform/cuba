@@ -8,13 +8,13 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -28,7 +28,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author abramov
@@ -36,36 +38,26 @@ import java.util.*;
  */
 public class WebDateField
         extends
-        WebAbstractComponent<CubaDateFieldWrapper>
+            WebAbstractField<CubaDateFieldWrapper>
         implements
-        DateField, Component.Wrapper {
+            DateField, Component.Wrapper {
 
-    private Resolution resolution;
+    protected Resolution resolution;
 
-    private Object prevValue = null;
-    private boolean editable = true;
-    private boolean updatingInstance;
-    private boolean valid;
+    protected boolean editable = true;
+    protected boolean updatingInstance;
+    protected boolean valid;
 
-    private CubaDateField dateField;
-    private WebTimeField timeField;
-
-    protected List<ValueListener> listeners = new ArrayList<>();
-    protected List<Field.Validator> validators = new ArrayList<>();
+    protected CubaDateField dateField;
+    protected WebTimeField timeField;
 
     protected HorizontalLayout composition;
 
-    private Datasource datasource;
-    private MetaPropertyPath metaPropertyPath;
-    private MetaProperty metaProperty;
+    protected MetaPropertyPath metaPropertyPath;
 
-    private boolean required;
-
-    private String requiredMessage;
-
-    private String dateTimeFormat;
-    private String dateFormat;
-    private String timeFormat;
+    protected String dateTimeFormat;
+    protected String dateFormat;
+    protected String timeFormat;
 
     public WebDateField() {
         composition = new HorizontalLayout();
@@ -149,6 +141,11 @@ public class WebDateField
     }
 
     @Override
+    protected void attachListener(CubaDateFieldWrapper component) {
+        // do nothing
+    }
+
+    @Override
     public void setDateFormat(String dateFormat) {
         dateTimeFormat = dateFormat;
         StringBuilder date = new StringBuilder(dateFormat);
@@ -180,25 +177,6 @@ public class WebDateField
     }
 
     @Override
-    public boolean isRequired() {
-        return required;
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    @Override
-    public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
-    }
-
-    public String getRequiredMessage() {
-        return requiredMessage;
-    }
-
-    @Override
     public <T> T getValue() {
         return (T) constructDate();
     }
@@ -220,7 +198,7 @@ public class WebDateField
         updateInstance();
     }
 
-    private void setValueFromDs(Object value) {
+    protected void setValueFromDs(Object value) {
         boolean isEditable = editable;
         if (!editable)
             setEditable(true);
@@ -234,15 +212,15 @@ public class WebDateField
         setEditable(isEditable);
     }
 
-    private boolean isHourUsed() {
+    protected boolean isHourUsed() {
         return resolution != null && resolution.ordinal() <= Resolution.HOUR.ordinal();
     }
 
-    private boolean isMinUsed() {
+    protected boolean isMinUsed() {
         return resolution != null && resolution.ordinal() <= Resolution.MIN.ordinal();
     }
 
-    private void updateInstance() {
+    protected void updateInstance() {
         if (updatingInstance)
             return;
 
@@ -270,41 +248,11 @@ public class WebDateField
     }
 
     @Override
-    public void addListener(ValueListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
-    }
-
-    @Override
     public void setValueChangingListener(ValueChangingListener listener) {
     }
 
     @Override
     public void removeValueChangingListener() {
-    }
-
-    @Override
-    public void addValidator(Validator validator) {
-        validators.add(validator);
-    }
-
-    @Override
-    public void removeValidator(Validator validator) {
-        validators.remove(validator);
-    }
-
-    @Override
-    public Datasource getDatasource() {
-        return datasource;
-    }
-
-    @Override
-    public MetaProperty getMetaProperty() {
-        return metaProperty;
     }
 
     @Override
@@ -361,7 +309,7 @@ public class WebDateField
         }
     }
 
-    private Date constructDate() {
+    protected Date constructDate() {
         final Date datePickerDate = dateField.getValue();
         if (datePickerDate == null) {
             return null;
@@ -398,26 +346,6 @@ public class WebDateField
     }
 
     @Override
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    @Override
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        component.setDescription(description);
-    }
-
-    @Override
     public boolean isEditable() {
         return editable;
     }
@@ -433,24 +361,6 @@ public class WebDateField
 
     @Override
     public boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public void validate() throws ValidationException {
-        if (!isVisible() || !isEditable() || !isEnabled())
-            return;
-
-        Object value = getValue();
-        if (value == null) {
-            if (isRequired())
-                throw new RequiredValueMissingException(requiredMessage, this);
-            else
-                return;
-        }
-
-        for (Field.Validator validator : validators) {
-            validator.validate(value);
-        }
+        return valid && super.isValid();
     }
 }

@@ -166,32 +166,11 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
 
     @Override
     public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
         pickerField.setRequiredMessage(msg);
     }
 
     @Override
     public boolean isRequired() {
         return pickerField.isRequired();
-    }
-
-    @Override
-    public void setWidth(String width) {
-        pickerField.setWidth(width);
-    }
-
-    @Override
-    public void setHeight(String height) {
-        pickerField.setHeight(height);
-    }
-
-    @Override
-    public float getHeight() {
-        return pickerField.getHeight();
-    }
-
-    @Override
-    public float getWidth() {
-        return pickerField.getWidth();
     }
 }
