@@ -3570,8 +3570,8 @@ public void someServiceMethod() {
     <section id="dataService">
       <title>DataService и DataWorker</title>
       <para><link linkend="managed_beans">Управляемый бин</link> <code>DataWorker</code> является универсальным средством для загрузки графов сущностей из базы данных, и для сохранения изменений, произведенных в <link linkend="entity_states">Detached</link> экземплярах сущностей. <link linkend="services">Сервис</link> <code>DataService</code> является фасадом для вызова <code>DataWorker</code> с клиентского <link linkend="app_tiers">уровня</link> приложения.</para>
-      <para>Выделение бизнес-логики загрузки и сохранения в <code>DataWorker</code> дает возможность при необходимости создать свой сервис, делегирующий основную работу <code>DataWorker</code> и выполняющий дополнительные преобразования, например, перед возвратом данных на клиентский уровень.</para>
-      <para><code>DataWorker</code> всегда стартует новую транзакцию и по завершению работы выполняет коммит, таким образом возвращая сущности в состоянии <link linkend="entity_states">Detached</link>.</para>
+      <para>Выделение бизнес-логики загрузки и сохранение в <code>DataWorker</code> дает возможность при необходимости создать свой сервис, делегирующий основную работу <code>DataWorker</code> и выполняющий дополнительные преобразования, например, перед возвратом данных на клиентский уровень.</para>
+      <para><code>DataWorker</code> всегда стартует новую транзакцию и по завершении работы выполняет коммит, таким образом возвращая сущности в состоянии <link linkend="entity_states">Detached</link>.</para>
       <para>Методы <code>DataWorker</code>:<itemizedlist>
           <listitem>
             <para><code>load()</code>, <code>loadList()</code> - загружает граф сущностей в соответствии с параметрами переданного объекта <code>LoadContext</code>. </para>
@@ -4586,9 +4586,20 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </mediaobject>
                 </entry>
               </row>
+              <row>P<entry>
+                  <link linkend="gui_PasswordField">PasswordField</link>
+                </entry></row>
+              <row>M<entry>
+                  <link linkend="gui_MaskedField">MaskedField</link>
+                </entry></row>
+              <row>
+                <entry>
+                  <link linkend="gui_TextArea">TextArea</link>
+                </entry>
+              </row>
               <row>
                 <entry align="left">
-                  <link linkend="gui_TextArea">TextArea</link>
+                  <link linkend="gui_RichTextArea">RichTextArea</link>
                 </entry>
                 <entry align="left">
                   <mediaobject>
@@ -5182,10 +5193,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_align">align</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_property">property</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
                 <row>
@@ -5193,8 +5204,20 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry>
                   <entry align="left">
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
+                  <entry/>
                 </row>
                 <row>
                   <entry align="left">
@@ -5202,15 +5225,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                   <entry align="left">
                     <link linkend="gui_attr_label_value">value</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -5367,29 +5381,29 @@ protected boolean postCommit(boolean committed, boolean close) {
           <para>Атрибуты <sgmltag>textField</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_align">align</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
+                </row>
                 <row><entry align="left">
                     <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_editable">editable</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_basic_property">property</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_textField_secret">secret</link>
-                  </entry></row>
-                <row>
-                  <entry>
-                    <link linkend="gui_attr_textField_cols_rows">cols</link>
-                  </entry>
-                  <entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_textField_resizable">resizable</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
-                  </entry>
-                </row>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry></row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -5398,10 +5412,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_textField_trim">trim</link>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                 </row>
                 <row>
@@ -5412,10 +5423,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                 </row>
                 <row>
@@ -5426,10 +5434,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_textField_maxLength">maxLength</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_textField_cols_rows">rows</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_textField_trim">trim</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -5453,10 +5458,247 @@ protected boolean postCommit(boolean committed, boolean close) {
             </tgroup>
           </informaltable>
         </section>
+        <section id="gui_PasswordField">
+          <title>PasswordField</title>
+          <para>Текстовое поле, которое не показывает символы, введенные пользователем. Вместо этого поле отображает эхо-символы. <code>PasswordField</code> скрывает введенные данные только в визуальном представлении. При получении значения поля с помощью метода доступа это значение представляется в текстовой форме. </para>
+          <para>XML-имя компонента: <code>passwordField</code>.</para>
+          <para>Атрибуты <sgmltag>passwordField</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/><colspec colname="cgen1"/>c <tbody>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_align">align</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_textField_maxLength">maxLength</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                </row>
+                <row><entry align="left">
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>editable<entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry></row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_height">height</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_description">description</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                  </entry>
+                  <entry/>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Элементы <sgmltag>passwordField</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="1" colsep="1" rowsep="1" align="left">
+              <colspec colname="c1"/>
+              <tbody>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_element_basic_formatter">formatter</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_element_basic_validator">validator</link>
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </section>
+        <section id="gui_MaskedField">
+          <title>MaskedField</title>
+          <para>Текстовое поле, в которое данные вводятся в определенном формате. <code>MaskedField</code> удобно использовать для ввода телефонных номеров, дат. Данные возвращаются вместе с маской, задающей формат. </para>
+          <para>XML-имя компонента: <sgmltag>maskedField</sgmltag>.</para>
+          <para id="gui_attr_maskedField_mask">Атрибут <sgmltag>mask</sgmltag> задает маску для поля.</para>
+          <para id="gui_attr_maskedField_valueMode">Атрибут <sgmltag>valueMode</sgmltag> определяет, показывать маску, или нет.</para>
+          <para>Атрибуты <sgmltag>maskedField</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="5" colsep="1" rowsep="1" align="left"><colspec colname="c0"/><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry>
+                    <link linkend="gui_attr_basic_align">align</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_description">description</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_maskedField_valueMode">valueMode</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_maskedField_mask">mask</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_textField_maxLength">maxLength</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_textField_datatype">datatype</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_height">height</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_textField_trim">trim</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Элементы <sgmltag>maskedField</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="1" colsep="1" rowsep="1" align="left">
+              <colspec colname="c1"/>
+              <tbody>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_element_basic_formatter">formatter</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_element_basic_validator">validator</link>
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </section>
         <section id="gui_TextArea">
           <title>TextArea</title>
-          <para>Текстовая область (<code>TextArea</code>) − многострочное текстовое поле для редактирования текста. Содержит элементы управления для форматирования текста.</para>
+          <para>Текстовая область (<code>TextArea</code>) − многострочное текстовое поле для редактирования текста.</para>
           <para>XML-имя компонента: <sgmltag>textArea</sgmltag></para>
+          <para id="gui_attr_textArea_resizable">Атрибут <sgmltag>resizable</sgmltag> позволяет менять размеры компонента.</para>
+          <para>Атрибуты <sgmltag>textArea</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="5" colsep="1" rowsep="1" align="left"><colspec colname="c0"/><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row><entry>
+                    <link linkend="gui_attr_basic_align">align</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_description">description</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry>editable<entry align="left">
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_textField_trim">trim</link>
+                  </entry></row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_textField_maxLength">maxLength</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_textArea_resizable">resizable</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_textField_cols_rows">cols</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_textField_cols_rows">rows</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_height">height</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                  <entry/>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+        </section>
+        <section id="gui_RichTextArea">
+          <title>RichTextArea</title>
+          <para>Текстовая область (<code>RichTextArea</code>) − многострочное текстовое поле для редактирования текста. Содержит элементы управления для форматирования текста.</para>
+          <para>XML-имя компонента: <sgmltag>richTextArea</sgmltag></para>
           <figure>
             <title/>
             <mediaobject>
@@ -5466,7 +5708,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>Компонент текстовой области реализован только для блока <structname>Web Client</structname>.</para>
-          <para>К тексту, вводимому в компоненте <code>TextArea</code>, можно применять средства для форматирования: изменять начертание шрифта, его размер, гарнитуру − с помощью элементов управления, расположенных в верхней части компонента.</para>
+          <para>К тексту, вводимому в компоненте <code>RichTextArea</code>, можно применять средства для форматирования: изменять начертание шрифта, его размер, гарнитуру − с помощью элементов управления, расположенных в верхней части компонента.</para>
           <figure>
             <title/>
             <mediaobject>
@@ -5475,21 +5717,21 @@ protected boolean postCommit(boolean committed, boolean close) {
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Атрибуты <sgmltag>textArea</sgmltag>:</para>
+          <para>Атрибуты <sgmltag>richTextArea</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
                     <link linkend="gui_attr_basic_editable">editable</link>
                   </entry><entry align="left">
                     <link linkend="gui_attr_basic_property">property</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="gui_attr_textField_cols_rows">cols</link>
+                    <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>
                   <entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
@@ -5498,7 +5740,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_required">required</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                 </row>
                 <row>
@@ -5523,7 +5765,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_textField_cols_rows">rows</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                 </row>
