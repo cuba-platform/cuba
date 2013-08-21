@@ -69,8 +69,11 @@ public class BooleanDatatype implements Datatype<Boolean> {
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
         if (formatStrings == null)
             return parse(value);
-
-        return value.trim().equalsIgnoreCase(formatStrings.getTrueString());
+        if (value.trim().equalsIgnoreCase(formatStrings.getTrueString()))
+            return true;
+        if (value.trim().equalsIgnoreCase(formatStrings.getFalseString()))
+            return false;
+        throw new ParseException(String.format("Can't parse '%s", value), 0);
     }
 
 	public Boolean read(ResultSet resultSet, int index) throws SQLException {
