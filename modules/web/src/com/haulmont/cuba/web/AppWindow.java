@@ -856,22 +856,35 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
-        final WindowInfo windowInfo;
+        WindowInfo windowInfo = null;
+        final boolean noItemId;
         final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
-            return null;
+            if (!item.getChildren().isEmpty())     //check item is menu
+                return null;
+            log.warn(String.format("No IDs associated screen '%s'", item.getId()));
         }
+        noItemId = windowInfo == null ? true : false;
         final MenuCommand command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
         return new com.vaadin.ui.MenuBar.Command() {
 
             @Override
             public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                command.execute();
+                if (!noItemId)
+                    command.execute();
+                else {
+                    if (item.getParent() != null)
+                        throw new DevelopmentException(String.format("No IDs associated screen '%s'", item.getId()),
+                                Collections.<String, Object>singletonMap("Menu Id", item.getParent().getId()));
+                    else
+                        throw new DevelopmentException(String.format("No IDs associated screen '%s'", item.getId()));
+                }
             }
         };
     }
+
     @Override
     public void userSubstituted(Connection connection) {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
