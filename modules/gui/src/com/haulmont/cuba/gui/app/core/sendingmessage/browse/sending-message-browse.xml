@@ -50,7 +50,7 @@
                         <field id="address"/>
                         <field id="from"/>
                         <field id="caption"/>
-                        <field id="contentText" rows="20"/>
+                        <field id="contentText" custom="true"/>
                         <field id="status"/>
                         <field id="attachmentsName"/>
                         <field id="dateSent"/>
