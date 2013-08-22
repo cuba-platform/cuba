@@ -16,11 +16,11 @@ public class ToolsImplIE extends ToolsImpl {
 
     @Override
     protected native void setTextSelectionEnable(Element el) /*-{
-        el.onselectstart = null;
+        el.setAttribute('onselectstart', null);
     }-*/;
 
     @Override
     protected native void setTextSelectionDisable(Element el) /*-{
-        el.onselectstart = this.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::falseFunction;
+        el.setAttribute('onselectstart', this.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::falseFunction);
     }-*/;
 }
