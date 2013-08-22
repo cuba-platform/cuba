@@ -46,7 +46,7 @@
                     <row>
                         <label value="msg://roleType"/>
                         <lookupField id="typeLookup" datasource="roleDs" property="type"
-                                     required="true" width="100"/>
+                                     required="true" width="150"/>
                     </row>
                     <row>
                         <label value="msg://defaultRole"/>
