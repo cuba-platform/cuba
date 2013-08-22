@@ -9,8 +9,11 @@ package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.TooltipInfo;
+import com.vaadin.client.Util;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.treetable.TreeTableConnector;
+import com.google.gwt.dom.client.Element;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -59,5 +62,29 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().setPresentationsMenu(null);
             }
         }
+    }
+
+    @Override
+    public TooltipInfo getTooltipInfo(Element element) {
+
+        TooltipInfo info = null;
+
+        if (element != getWidget().getElement()) {
+            Object node = Util.findWidget(
+                    (com.google.gwt.user.client.Element) element,
+                    CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow.class);
+
+            if (node != null) {
+                CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow row
+                        = (CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow) node;
+                info = row.getTooltip(element);
+            }
+        }
+
+        if (info == null) {
+            info = super.getTooltipInfo(element);
+        }
+
+        return info;
     }
 }

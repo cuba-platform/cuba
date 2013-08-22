@@ -6,10 +6,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
+import com.google.gwt.dom.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaTable;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.UIDL;
+import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.table.TableConnector;
@@ -61,6 +60,30 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget().setPresentationsMenu(null);
             }
         }
+    }
+
+    @Override
+    public TooltipInfo getTooltipInfo(Element element) {
+
+        TooltipInfo info = null;
+
+        if (element != getWidget().getElement()) {
+            Object node = Util.findWidget(
+                    (com.google.gwt.user.client.Element) element,
+                    CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow.class);
+
+            if (node != null) {
+                CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow row
+                        = (CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow) node;
+                info = row.getTooltip(element);
+            }
+        }
+
+        if (info == null) {
+            info = super.getTooltipInfo(element);
+        }
+
+        return info;
     }
 
     @Override

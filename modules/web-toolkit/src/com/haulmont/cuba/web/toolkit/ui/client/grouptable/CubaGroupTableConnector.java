@@ -7,10 +7,13 @@
 package com.haulmont.cuba.web.toolkit.ui.client.grouptable;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupTable;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableConnector;
 import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.Util;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -38,5 +41,41 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
             getWidget().updateGroupColumns(null);
 
         super.updateFromUIDL(uidl, client);
+    }
+
+    @Override
+    public TooltipInfo getTooltipInfo(Element element) {
+
+        TooltipInfo info = null;
+
+        if (element != getWidget().getElement()) {
+            Object node = Util.findWidget(
+                    (com.google.gwt.user.client.Element) element,
+                    CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableRow.class);
+
+            if (node != null) {
+                CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableRow row
+                        = (CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableRow) node;
+                info = row.getTooltip(element);
+                return info;
+            }
+
+            node = Util.findWidget(
+                    (com.google.gwt.user.client.Element) element,
+                    CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow.class);
+
+            if (node != null) {
+                CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow row
+                        = (CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow) node;
+                info = row.getTooltip(element);
+                return info;
+            }
+        }
+
+        if (info == null) {
+            info = super.getTooltipInfo(element);
+        }
+
+        return info;
     }
 }
