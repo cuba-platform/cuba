@@ -7,6 +7,7 @@
 package com.haulmont.cuba.gui.app.core.locking;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.LockDescriptor;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupField;
@@ -38,5 +39,7 @@ public class LockEditor extends AbstractEditor {
             }
         }
         nameLookupField.setOptionsMap(options);
+        if (((LockDescriptor)params.get("item".toUpperCase())).getName() != null)
+            nameLookupField.setEditable(false);
     }
 }
