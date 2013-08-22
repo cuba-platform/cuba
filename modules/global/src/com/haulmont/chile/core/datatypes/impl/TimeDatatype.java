@@ -9,7 +9,6 @@ package com.haulmont.chile.core.datatypes.impl;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
