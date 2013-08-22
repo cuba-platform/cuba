@@ -19,6 +19,12 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class LongDatatype extends NumberDatatype implements Datatype<Long> {
 
 	public static String NAME = "long";
@@ -27,10 +33,13 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
         super(element);
     }
 
+    @Nonnull
+    @Override
     public String format(Long value) {
-        return value == null ? null : format.format(value);
+        return value == null ? "" : format.format(value);
 	}
 
+    @Nonnull
     @Override
     public String format(Long value, Locale locale) {
         if (value == null)
@@ -45,18 +54,22 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
         return format.format(value);
     }
 
+    @Override
 	public Class getJavaClass() {
 		return Long.class;
 	}
 
+    @Override
 	public String getName() {
 		return NAME;
 	}
 
+    @Override
 	public int getSqlType() {
 		return Types.BIGINT;
 	}
 
+    @Override
 	public Long parse(String value) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
@@ -78,11 +91,13 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
         return parse(value, format).longValue();
     }
 
+    @Override
 	public Long read(ResultSet resultSet, int index) throws SQLException {
 		Long value = resultSet.getLong(index);
 		return resultSet.wasNull() ? null : value;
 	}
 
+    @Override
 	public void write(PreparedStatement statement, int index, Long value) throws SQLException {
 		if (value == null) {
 			statement.setString(index, null);

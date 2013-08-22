@@ -12,6 +12,7 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +23,10 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class IntegerDatatype extends NumberDatatype implements Datatype<Integer> {
 
     public static String NAME = "int";
@@ -30,10 +35,14 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
         super(element);
     }
 
+    @Nonnull
+    @Override
     public String format(Integer value) {
-        return value == null ? null : format.format(value);
+        return value == null ? "" : format.format(value);
     }
 
+    @Nonnull
+    @Override
     public String format(Integer value, Locale locale) {
         if (value == null)
             return "";
@@ -47,18 +56,22 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
         return format.format(value);
     }
 
+    @Override
     public Class getJavaClass() {
         return Integer.class;
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
 
+    @Override
     public int getSqlType() {
         return Types.INTEGER;
     }
 
+    @Override
     public Integer parse(String value) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
@@ -66,6 +79,7 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
         return parse(value, format).intValue();
     }
 
+    @Override
     public Integer parse(String value, Locale locale) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
@@ -79,11 +93,13 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
         return parse(value, format).intValue();
     }
 
+    @Override
     public Integer read(ResultSet resultSet, int index) throws SQLException {
         Integer value = resultSet.getInt(index);
         return resultSet.wasNull() ? null : value;
     }
 
+    @Override
     public void write(PreparedStatement statement, int index, Integer value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);

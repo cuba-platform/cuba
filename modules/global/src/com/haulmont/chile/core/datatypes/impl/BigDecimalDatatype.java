@@ -12,6 +12,7 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,11 +38,13 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
             ((DecimalFormat) format).setParseBigDecimal(true);
     }
 
+    @Nonnull
     @Override
     public String format(BigDecimal value) {
-		return value == null ? null : format.format(value);
+		return value == null ? "" : format.format(value);
 	}
 
+    @Nonnull
     @Override
     public String format(BigDecimal value, Locale locale) {
         if (value == null)

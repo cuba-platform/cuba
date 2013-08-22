@@ -19,6 +19,12 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
 
 	public static String NAME = "double";
@@ -27,10 +33,13 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
         super(element);
     }
 
+    @Nonnull
+    @Override
     public String format(Double value) {
-		return value == null ? null : format.format(value);
+		return value == null ? "" : format.format(value);
 	}
 
+    @Nonnull
     @Override
     public String format(Double value, Locale locale) {
         if (value == null)
@@ -45,18 +54,22 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
         return format.format(value);
     }
 
+    @Override
 	public Class getJavaClass() {
 		return Double.class;
 	}
 
+    @Override
 	public String getName() {
 		return NAME;
 	}
 
+    @Override
 	public int getSqlType() {
 		return Types.NUMERIC;
 	}
 
+    @Override
 	public Double parse(String value) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
@@ -78,11 +91,13 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
         return parse(value, format).doubleValue();
     }
 
+    @Override
 	public Double read(ResultSet resultSet, int index) throws SQLException {
 		Double value = resultSet.getDouble(index);
 		return resultSet.wasNull() ? null : value;
 	}
 
+    @Override
 	public void write(PreparedStatement statement, int index, Double value) throws SQLException {
 		if (value == null) {
 			statement.setString(index, null);

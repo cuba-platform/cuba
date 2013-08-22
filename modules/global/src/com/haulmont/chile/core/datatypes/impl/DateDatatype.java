@@ -20,8 +20,13 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DateDatatype implements Datatype<Date> {
 
 	public static String NAME = "date";
@@ -32,9 +37,11 @@ public class DateDatatype implements Datatype<Date> {
         formatPattern = element.attributeValue("format");
     }
 
+    @Nonnull
+    @Override
     public String format(Date value) {
         if (value == null)
-            return null;
+            return "";
 
         DateFormat format;
         if (formatPattern != null) {
@@ -45,6 +52,8 @@ public class DateDatatype implements Datatype<Date> {
         return format.format((value));
 	}
 
+    @Nonnull
+    @Override
     public String format(Date value, Locale locale) {
         if (value == null)
             return "";
@@ -57,14 +66,17 @@ public class DateDatatype implements Datatype<Date> {
         return format.format(value);
     }
 
+    @Override
 	public Class getJavaClass() {
 		return java.sql.Date.class;
 	}
 
+    @Override
 	public String getName() {
 		return NAME;
 	}
 
+    @Override
 	public int getSqlType() {
 		return Types.DATE;
 	}
@@ -77,9 +89,9 @@ public class DateDatatype implements Datatype<Date> {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return new java.sql.Date(cal.getTimeInMillis());
-
     }
 
+    @Override
 	public Date parse(String value) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
@@ -93,6 +105,7 @@ public class DateDatatype implements Datatype<Date> {
         return normalize(format.parse(value.trim()));
 	}
 
+    @Override
     public Date parse(String value, Locale locale) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
@@ -105,18 +118,19 @@ public class DateDatatype implements Datatype<Date> {
         return normalize(format.parse(value.trim()));
     }
 
+    @Override
 	public Date read(ResultSet resultSet, int index) throws SQLException {
 		java.sql.Date value = resultSet.getDate(index);
 		return resultSet.wasNull() ? null : value;
 	}
 
+    @Override
 	public void write(PreparedStatement statement, int index, Date value) throws SQLException {
 		if (value == null) {
 			statement.setString(index, null);
 		} else {
 			statement.setDate(index, new java.sql.Date(value.getTime()));
 		}
-
 	}
 
     @Nullable

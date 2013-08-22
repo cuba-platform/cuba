@@ -6,8 +6,10 @@
 
 package com.haulmont.chile.core.datatypes;
 
-import java.sql.ResultSet;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Locale;
@@ -26,23 +28,28 @@ public interface Datatype<T> {
     /** Java class representing this Datatype */
     Class getJavaClass();
 
-    /** Converts value to String. Returns null for null value.  */
-    String format(T value);
+    /** Converts value to String. Returns not null string for null value.  */
+    @Nonnull
+    String format(@Nullable T value);
 
-    /** Converts value to String taking into account local formats. Returns empty string for null value. */
-    String format(T value, Locale locale);
+    /** Converts value to String taking into account local formats. Returns not null string for null value. */
+    @Nonnull
+    String format(@Nullable T value, Locale locale);
 
     /** Parses value from String */
-    T parse(String value) throws ParseException;
+    @Nullable
+    T parse(@Nullable String value) throws ParseException;
 
     /** Parses value from String taking into account local formats */
-    T parse(String value, Locale locale) throws ParseException;
+    @Nullable
+    T parse(@Nullable String value, Locale locale) throws ParseException;
 
     /** Reads value from JDBC ResultSet */
+    @Nullable
     T read(ResultSet resultSet, int index) throws SQLException;
 
     /** Write value to the JDBC Statement*/
-    void write(PreparedStatement statement, int index, T value) throws SQLException;
+    void write(PreparedStatement statement, int index, @Nullable T value) throws SQLException;
 
     /** Corresponding SQL type */
     int getSqlType();

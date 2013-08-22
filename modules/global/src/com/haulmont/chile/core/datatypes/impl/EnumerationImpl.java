@@ -16,6 +16,8 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+
 /**
  *
  * @param <T>
@@ -41,14 +43,16 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
         return javaClass;
     }
 
+    @Nonnull
     @Override
     public String format(T value) {
-        if (value == null) return null;
+        if (value == null) return "";
 
         final Object v = ((EnumClass) value).getId();
         return String.valueOf(v);
     }
 
+    @Nonnull
     @Override
     public String format(T value, Locale locale) {
         return format(value);
