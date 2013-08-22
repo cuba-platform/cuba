@@ -18,14 +18,24 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class BooleanDatatype implements Datatype<Boolean> {
 
 	public static String NAME = "boolean";
 
+    @Nonnull
+    @Override
 	public String format(Boolean value) {
-		return value == null ? null : Boolean.toString(value);
+		return value == null ? "" : Boolean.toString(value);
 	}
 
+    @Nonnull
     @Override
     public String format(Boolean value, Locale locale) {
         if (value == null)
@@ -38,27 +48,36 @@ public class BooleanDatatype implements Datatype<Boolean> {
         return value ? formatStrings.getTrueString() : formatStrings.getFalseString();
     }
 
+    @Override
 	public Class getJavaClass() {
 		return Boolean.class;
 	}
 
+    @Override
 	public String getName() {
 		return NAME;
 	}
 
+    @Override
 	public int getSqlType() {
 		return Types.BOOLEAN;
 	}
 
-    public Boolean parse(String value) throws ParseException {
+    protected Boolean parse(@Nullable String value, String trueString, String falseString) throws ParseException {
         if (!StringUtils.isBlank(value)) {
             String lowerCaseValue = StringUtils.lowerCase(value);
-            if ("true".equals(lowerCaseValue))
+            if (trueString.equals(lowerCaseValue))
                 return true;
-            if ("false".equals(lowerCaseValue))
+            if (falseString.equals(lowerCaseValue))
                 return false;
+            throw new ParseException(String.format("Can't parse '%s'", value), 0);
         }
-        throw new ParseException(String.format("Can't parse '%s", value), 0);
+        return null;
+    }
+
+    @Override
+    public Boolean parse(String value) throws ParseException {
+        return parse(value, "true", "false");
     }
 
     @Override
@@ -69,18 +88,17 @@ public class BooleanDatatype implements Datatype<Boolean> {
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
         if (formatStrings == null)
             return parse(value);
-        if (value.trim().equalsIgnoreCase(formatStrings.getTrueString()))
-            return true;
-        if (value.trim().equalsIgnoreCase(formatStrings.getFalseString()))
-            return false;
-        throw new ParseException(String.format("Can't parse '%s", value), 0);
+
+        return parse(value, formatStrings.getTrueString(), formatStrings.getFalseString());
     }
 
+    @Override
 	public Boolean read(ResultSet resultSet, int index) throws SQLException {
 		Boolean value = resultSet.getBoolean(index);
 		return resultSet.wasNull() ? null : value;
 	}
 
+    @Override
 	public void write(PreparedStatement statement, int index, Boolean value) throws SQLException {
 		if (value == null) {
 			statement.setString(index, null);

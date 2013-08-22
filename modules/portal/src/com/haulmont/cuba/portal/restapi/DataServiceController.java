@@ -399,7 +399,7 @@ public class DataServiceController {
         try {
             return datatype.parse(value);
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Cannot parse specified parameter");
+            throw new IllegalArgumentException(String.format("Cannot parse specified parameter of type '%s'", typeName), e);
         }
     }
 
