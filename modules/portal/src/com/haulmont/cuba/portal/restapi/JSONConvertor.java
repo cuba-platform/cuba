@@ -60,6 +60,9 @@ public class JSONConvertor implements Convertor {
         }
     }
 
+    public JSONConvertor() {
+    }
+
     @Override
     public MimeType getMimeType() {
         return MIME_TYPE_JSON;
@@ -101,7 +104,7 @@ public class JSONConvertor implements Convertor {
     }
 
     private MetaClass getMetaClass(Entity entity) {
-        return MetadataProvider.getSession().getClass(entity.getClass());
+        return AppBeans.get(Metadata.class).getSession().getClass(entity.getClass());
     }
 
     @Override
@@ -151,9 +154,9 @@ public class JSONConvertor implements Convertor {
         }
     }
 
-    private List<BaseUuidEntity> parseIntoList(CommitRequest commitRequest, JSONArray nodeList)
+    protected List<BaseUuidEntity> parseIntoList(CommitRequest commitRequest, JSONArray nodeList)
             throws JSONException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IntrospectionException, ParseException {
-        List<BaseUuidEntity> result = new ArrayList<BaseUuidEntity>(nodeList.length());
+        List<BaseUuidEntity> result = new ArrayList<>(nodeList.length());
 
         for (int j = 0; j < nodeList.length(); j++) {
             JSONObject jsonObject = nodeList.getJSONObject(j);
@@ -166,7 +169,7 @@ public class JSONConvertor implements Convertor {
         return result;
     }
 
-    private void asJavaTree(CommitRequest commitRequest, Object bean, MetaClass metaClass, JSONObject json)
+    protected void asJavaTree(CommitRequest commitRequest, Object bean, MetaClass metaClass, JSONObject json)
             throws JSONException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException, IntrospectionException, ParseException {
         Iterator iter = json.keys();
         while (iter.hasNext()) {
@@ -243,8 +246,8 @@ public class JSONConvertor implements Convertor {
                     } else {
                         JSONArray jsonArray = json.getJSONArray(key);
                         Collection<Object> coll = property.getRange().isOrdered()
-                                ? new ArrayList<Object>()
-                                : new HashSet<Object>();
+                                ? new ArrayList<>()
+                                : new HashSet<>();
                         setField(bean, key, coll);
 
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -268,7 +271,7 @@ public class JSONConvertor implements Convertor {
         }
     }
 
-    private void setField(Object bean, String field, Object value)
+    protected void setField(Object bean, String field, Object value)
             throws IllegalAccessException, InvocationTargetException, IntrospectionException {
         new PropertyDescriptor(field, bean.getClass()).getWriteMethod().invoke(bean, value);
     }
@@ -280,7 +283,7 @@ public class JSONConvertor implements Convertor {
      * @param visited the persistent instances that had been encoded already. Must not be null or immutable.
      * @return the new element. The element has been appended as a child to the given parent in this method.
      */
-    private MyJSONObject encodeInstance(final Entity entity, final Set<Entity> visited, MetaClass metaClass)
+    protected MyJSONObject encodeInstance(final Entity entity, final Set<Entity> visited, MetaClass metaClass)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (visited == null) {
             throw new IllegalArgumentException("null closure for encoder");
@@ -313,10 +316,20 @@ public class JSONConvertor implements Convertor {
             }
             switch (property.getType()) {
                 case DATATYPE:
-                    root.set(property.getName(), property.getRange().asDatatype().format(value));
+                    if (value != null) {
+                        root.set(property.getName(), property.getRange().asDatatype().format(value));
+                    } else {
+                        root.set(property.getName(), null);
+                    }
+
                     break;
                 case ENUM:
-                    root.set(property.getName(), property.getRange().asEnumeration().format(value));
+                    if (value != null) {
+                        //noinspection unchecked
+                        root.set(property.getName(), property.getRange().asEnumeration().format(value));
+                    } else {
+                        root.set(property.getName(), null);
+                    }
                     break;
                 case COMPOSITION:
                 case ASSOCIATION: {
@@ -362,37 +375,37 @@ public class JSONConvertor implements Convertor {
         return root;
     }
 
-    private String idof(Entity entity) {
+    protected String idof(Entity entity) {
         return EntityLoadInfo.create(entity).toString();
     }
 
-    private boolean attrViewPermitted(MetaClass metaClass, String property) {
+    protected boolean attrViewPermitted(MetaClass metaClass, String property) {
         return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
     }
 
-    private boolean attrModifyPermitted(MetaClass metaClass, String property) {
+    protected boolean attrModifyPermitted(MetaClass metaClass, String property) {
         return attrPermitted(metaClass, property, EntityAttrAccess.MODIFY);
     }
 
-    private boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        UserSession session = UserSessionProvider.getUserSession();
+    protected boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
+        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
-    private boolean readPermitted(MetaClass metaClass) {
+    protected boolean readPermitted(MetaClass metaClass) {
         return entityOpPermitted(metaClass, EntityOp.READ);
     }
 
-    private boolean updatePermitted(MetaClass metaClass) {
+    protected boolean updatePermitted(MetaClass metaClass) {
         return entityOpPermitted(metaClass, EntityOp.UPDATE);
     }
 
-    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = UserSessionProvider.getUserSession();
+    protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
     }
 
-    private MetaClass propertyMetaClass(MetaProperty property) {
+    protected MetaClass propertyMetaClass(MetaProperty property) {
         return property.getRange().asClass();
     }
 }

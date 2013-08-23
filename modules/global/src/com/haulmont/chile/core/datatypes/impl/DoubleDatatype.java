@@ -74,7 +74,7 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
         if (StringUtils.isBlank(value))
             return null;
 
-        return format.parse(value).doubleValue();
+        return parse(value, format).doubleValue();
 	}
 
     @Override

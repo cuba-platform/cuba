@@ -47,19 +47,19 @@ public class DataServiceController {
     private Log log = LogFactory.getLog(DataServiceController.class);
 
     //todo wire
-    private ConversionFactory conversionFactory = new ConversionFactory();
+    protected ConversionFactory conversionFactory = new ConversionFactory();
 
     @Inject
-    private MetadataTools metadataTools;
+    protected MetadataTools metadataTools;
 
     @Inject
-    private DataService dataService;
+    protected DataService dataService;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
 
     @RequestMapping(value = "/api/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,

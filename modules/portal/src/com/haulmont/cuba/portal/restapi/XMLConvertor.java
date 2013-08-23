@@ -44,6 +44,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
+ * @author krivopustov
  * @version $Id$
  */
 public class XMLConvertor implements Convertor {
@@ -62,20 +63,20 @@ public class XMLConvertor implements Convertor {
     public static final String ATTR_MEMBER_TYPE = "member-type";
     public static final String NULL_VALUE = "null";
 
-    private static final String EMPTY_TEXT = " ";
+    protected static final String EMPTY_TEXT = " ";
     public static final char DASH = '-';
     public static final char UNDERSCORE = '_';
 
     public static final String ROOT_ELEMENT_INSTANCE = "instances";
 
-    private static DocumentBuilder _builder;
+    protected static DocumentBuilder _builder;
 
     public static final String MAPPING_ROOT_ELEMENT_INSTANCE = "mapping";
     public static final String PAIR_ELEMENT = "pair";
 
-    private static final Transformer _transformer;
-    private static LSParser requestConfigParser;
-    private static DOMImplementationLS lsImpl;
+    protected static final Transformer _transformer;
+    protected static LSParser requestConfigParser;
+    protected static DOMImplementationLS lsImpl;
 
     static {
         try {
@@ -94,16 +95,19 @@ public class XMLConvertor implements Convertor {
             config.setParameter("element-content-whitespace", Boolean.FALSE);
             config.setParameter("comments", Boolean.FALSE);
             requestConfigParser.setFilter(new LSParserFilter() {
+                @Override
                 public short startElement(Element elementArg) {
                     return LSParserFilter.FILTER_ACCEPT;
                 }
 
+                @Override
                 public short acceptNode(Node nodeArg) {
                     return "".equals(nodeArg.getTextContent().trim()) ?
                             LSParserFilter.FILTER_REJECT :
                             LSParserFilter.FILTER_ACCEPT;
                 }
 
+                @Override
                 public int getWhatToShow() {
                     return NodeFilter.SHOW_TEXT;
                 }
@@ -122,10 +126,15 @@ public class XMLConvertor implements Convertor {
         }
     }
 
+    public XMLConvertor() {
+    }
+
+    @Override
     public MimeType getMimeType() {
         return MIME_TYPE_XML;
     }
 
+    @Override
     public Document process(Entity entity, MetaClass metaclass, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
@@ -135,17 +144,19 @@ public class XMLConvertor implements Convertor {
         return doc;
     }
 
+    @Override
     public Document process(List<Entity> entities, MetaClass metaClass, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
         for (Entity entity : entities) {
-            encodeEntityInstance(new HashSet(), entity, root, false, metaClass);
+            encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaClass);
         }
         Document doc = root.getOwnerDocument();
         decorate(doc, requestURI);
         return doc;
     }
 
+    @Override
     public Object process(Map<Entity, Entity> entityMap, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(MAPPING_ROOT_ELEMENT_INSTANCE);
@@ -154,12 +165,12 @@ public class XMLConvertor implements Convertor {
             Element pair = doc.createElement(PAIR_ELEMENT);
             root.appendChild(pair);
             encodeEntityInstance(
-                    new HashSet(), entry.getKey(),
+                    new HashSet<Entity>(), entry.getKey(),
                     pair, false,
                     getMetaClass(entry.getKey())
             );
             encodeEntityInstance(
-                    new HashSet(), entry.getValue(),
+                    new HashSet<Entity>(), entry.getValue(),
                     pair, false,
                     getMetaClass(entry.getValue())
             );
@@ -219,15 +230,8 @@ public class XMLConvertor implements Convertor {
                 }
             }
             return result;
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (IntrospectionException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
+        } catch (InstantiationException | IllegalAccessException | IntrospectionException
+                | InvocationTargetException | ParseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -323,7 +327,9 @@ public class XMLConvertor implements Convertor {
                         setField(bean, fieldName, value);
                     } else {
                         NodeList memberNodes = fieldNode.getChildNodes();
-                        Collection<Object> members = property.getRange().isOrdered() ? new ArrayList<Object>() : new HashSet<Object>();
+                        Collection<Object> members =
+                                property.getRange().isOrdered() ? new ArrayList<>() : new HashSet<>();
+
                         for (int memberIndex = 0; memberIndex < memberNodes.getLength(); memberIndex++) {
                             Node memberNode = memberNodes.item(memberIndex);
                             members.add(parseEntityReference(memberNode, commitRequest));
@@ -486,6 +492,7 @@ public class XMLConvertor implements Convertor {
                     if (value == null) {
                         encodeNull(child);
                     } else {
+                        //noinspection unchecked
                         String str = property.getRange().asEnumeration().format(value);
                         encodeBasic(child, str, property.getJavaType());
                     }
@@ -556,18 +563,18 @@ public class XMLConvertor implements Convertor {
      *
      * @param element the XML element to be set
      */
-    private void encodeNull(Element element) {
+    protected void encodeNull(Element element) {
         element.setAttribute(ATTR_NULL, "true");
     }
 
-    private boolean isNullValue(Node fieldNode) {
+    protected boolean isNullValue(Node fieldNode) {
         Node nullAttr = fieldNode.getAttributes().getNamedItem(ATTR_NULL);
         return nullAttr == null ?
                 false :
                 "true".equals(nullAttr.getNodeValue());
     }
 
-    private Element encodeRef(Element parent, Entity entity) {
+    protected Element encodeRef(Element parent, Entity entity) {
         Element ref = parent.getOwnerDocument().createElement(entity == null ? ELEMENT_NULL_REF : ELEMENT_REF);
         if (entity != null)
             ref.setAttribute(ATTR_ID, ior(entity));
@@ -587,7 +594,7 @@ public class XMLConvertor implements Convertor {
      * @param obj         value of the element. Never null.
      * @param runtimeType attribute type
      */
-    private void encodeBasic(Element element, Object obj, Class<?> runtimeType) {
+    protected void encodeBasic(Element element, Object obj, Class<?> runtimeType) {
         element.setTextContent(obj == null ? NULL_VALUE : obj.toString());
     }
 
@@ -599,38 +606,37 @@ public class XMLConvertor implements Convertor {
         return cls.getSimpleName();
     }
 
-    private String getCollectionReferenceTag(MetaProperty property) {
+    protected String getCollectionReferenceTag(MetaProperty property) {
         return property.getRange().getCardinality().name().replace(UNDERSCORE, DASH).toLowerCase();
     }
 
-    private MetaClass getMetaClass(Entity entity) {
-        return MetadataProvider.getSession().getClass(entity.getClass());
+    protected MetaClass getMetaClass(Entity entity) {
+        return AppBeans.get(Metadata.class).getSession().getClass(entity.getClass());
     }
 
-    private boolean attrViewPermitted(MetaClass metaClass, String property) {
+    protected boolean attrViewPermitted(MetaClass metaClass, String property) {
         return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
     }
 
-    private boolean attrModifyPermitted(MetaClass metaClass, String property) {
+    protected boolean attrModifyPermitted(MetaClass metaClass, String property) {
         return attrPermitted(metaClass, property, EntityAttrAccess.MODIFY);
     }
 
-    private boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        UserSession session = UserSessionProvider.getUserSession();
+    protected boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
+        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
-    private boolean readPermitted(MetaClass metaClass) {
+    protected boolean readPermitted(MetaClass metaClass) {
         return entityOpPermitted(metaClass, EntityOp.READ);
     }
 
-    private boolean updatePermitted(MetaClass metaClass) {
+    protected boolean updatePermitted(MetaClass metaClass) {
         return entityOpPermitted(metaClass, EntityOp.UPDATE);
     }
-    
-    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = UserSessionProvider.getUserSession();
+
+    protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
     }
-
 }
