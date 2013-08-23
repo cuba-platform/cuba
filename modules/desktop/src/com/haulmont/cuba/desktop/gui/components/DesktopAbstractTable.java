@@ -1371,8 +1371,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             }
             java.awt.Component component = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            String style = getStylename(table, row, column);
-            applyStylename(isSelected, hasFocus, component, style);
+            if (0 <= row) {
+                String style = getStylename(table, row, column);
+                applyStylename(isSelected, hasFocus, component, style);
+            }
             return component;
         }
     }

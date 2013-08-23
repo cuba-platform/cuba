@@ -152,11 +152,9 @@ public class MbeansDisplayWindow extends AbstractWindow {
         mbeansTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable
             @Override
-            public String getStyleName(@Nullable Entity entity, @Nullable String property) {
-                if (entity != null) {
-                    if (entity instanceof ManagedBeanInfo &&
-                            ((ManagedBeanInfo) entity).getObjectName() == null)
-                        return "cuba-jmx-tree-table-domain";
+            public String getStyleName(Entity entity, @Nullable String property) {
+                if (entity instanceof ManagedBeanInfo && ((ManagedBeanInfo) entity).getObjectName() == null) {
+                    return "cuba-jmx-tree-table-domain";
                 }
                 return null;
             }

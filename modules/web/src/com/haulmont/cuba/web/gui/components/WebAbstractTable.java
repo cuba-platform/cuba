@@ -806,7 +806,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
             return null;
         }
         // noinspection unchecked
-        String resourceUrl = iconProvider.getItemIcon(datasource.getItem(itemId));
+        Entity item = datasource.getItem(itemId);
+        if (item == null) {
+            return null;
+        }
+        // noinspection unchecked
+        String resourceUrl = iconProvider.getItemIcon(item);
         if (StringUtils.isBlank(resourceUrl)) {
             return null;
         }

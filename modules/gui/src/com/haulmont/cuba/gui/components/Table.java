@@ -129,7 +129,7 @@ public interface Table
          * @return style name or null to apply the default
          */
         @Nullable
-        String getStyleName(@Nullable E entity, @Nullable String property);
+        String getStyleName(E entity, @Nullable String property);
     }
 
     /**
@@ -145,7 +145,7 @@ public interface Table
          * @return icon name or null to show no icon
          */
         @Nullable
-        String getItemIcon(@Nullable E entity);
+        String getItemIcon(E entity);
     }
 
     /**
