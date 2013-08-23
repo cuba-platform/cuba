@@ -13,7 +13,6 @@ package com.haulmont.bali.datastruct;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,10 +52,10 @@ public class Tree<T> implements Serializable {
      */
     public List<Node<T>> getRootNodes() {
         if (rootNodes == null) {
-            return Collections.emptyList();
+            return rootNodes = new ArrayList<>();
         }
 
-        return Collections.unmodifiableList(this.rootNodes);
+        return this.rootNodes;
     }
 
     /**
