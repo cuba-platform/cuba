@@ -51,6 +51,8 @@
             <tab expand="setupTable" margin="true" id="setupTab" caption="msg://setup">
                 <groupTable id="setupTable" height="100%" width="100%">
                     <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
                         <action id="remove"/>
                         <action id="refresh"/>
                         <action invoke="reloadConfig" caption="msg://reloadconfig" id="reloadConfiguration"/>
