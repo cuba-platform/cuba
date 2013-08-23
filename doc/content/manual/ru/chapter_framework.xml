@@ -3823,7 +3823,7 @@ public void someServiceMethod() {
                 <para>Для небольших (&lt; 100 записей) редко изменяемых таблиц тип кластерного индекса не важен, можно оставить <database>ID</database>. </para>
               </listitem>
               <listitem>
-                <para>Для таблиц сущностей, унаследованных по стратегии <code>JOINED</code>, в которых нет поля <database>CREATE_TS</database>, нужно создать его искусственно с параметром <literal>default current_tmestamp</literal>. </para>
+                <para>Для таблиц сущностей, унаследованных по стратегии <code>JOINED</code>, в которых нет поля <database>CREATE_TS</database>, нужно создать его искусственно с параметром <literal>default current_timestamp</literal>. </para>
               </listitem>
             </itemizedlist></para>
           <para>Пример:<programlisting>create table SALES_CUSTOMER (
@@ -4065,32 +4065,32 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
                 </link>.</para>
               <para>Атрибуты <sgmltag>layout</sgmltag>:<itemizedlist>
                   <listitem>
-                    <para><link linkend="attr_spacing">
+                    <para><link linkend="gui_attr_basic_spacing">
                         <sgmltag>spacing</sgmltag>
                       </link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="attr_margin">
+                    <para><link linkend="gui_attr_basic_margin">
                         <sgmltag>margin</sgmltag>
                       </link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="attr_expand">
+                    <para><link linkend="gui_attr_basic_expand">
                         <sgmltag>expand</sgmltag>
                       </link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="attr_stylename">
+                    <para><link linkend="gui_attr_basic_stylename">
                         <sgmltag>stylename</sgmltag>
                       </link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="attr_height">
+                    <para><link linkend="gui_attr_basic_height">
                         <sgmltag>height</sgmltag>
                       </link></para>
                   </listitem>
                   <listitem>
-                    <para><link linkend="attr_width">
+                    <para><link linkend="gui_attr_basic_width">
                         <sgmltag>width</sgmltag>
                       </link></para>
                   </listitem>
@@ -4340,11 +4340,11 @@ protected void postInit() {
               <para>Данный метод не рекомендуется переопределять, лучше использовать специальные шаблонные методы <code>postValidate()</code>, <code>preCommit()</code> и <code>postCommit()</code>.</para>
             </listitem>
             <listitem>
-              <para><code>commitAndClose()</code> - валидировать экран, отправить изменения  на Middleware и закрыть экран. В метод <code>preClose()</code> и зарегистрированные слушатели <code>CloseListener</code> будет передано значение константы <code>Window.COMMIT_ACTION_ID</code>.</para>
+              <para><code>commitAndClose()</code> - валидировать экран, отправить изменения  на Middleware и закрыть экран. В метод <code>preClose()</code> и зарегистрированным слушателям <code>CloseListener</code> будет передано значение константы <code>Window.COMMIT_ACTION_ID</code>.</para>
               <para>Данный метод не рекомендуется переопределять, лучше использовать специальные шаблонные методы <code>postValidate()</code>, <code>preCommit()</code> и <code>postCommit()</code>.</para>
             </listitem>
             <listitem>
-              <para><code>preCommit()</code> - шаблонный метод, вызываемый фреймворком в процессе коммита изменений, после того как когда валидация завершена успешно и перед отправкой данных на Middleware.</para>
+              <para><code>preCommit()</code> - шаблонный метод, вызываемый фреймворком в процессе коммита изменений, после того как валидация завершена успешно и перед отправкой данных на Middleware.</para>
               <para>Данный метод можно имплементировать в контроллере. Если метод возвращает <code>false</code>, процесс коммита (и закрытия экрана, если был вызван <code>commitAndClose()</code>), прерывается. Например:<programlisting>@Override
 protected boolean preCommit() {
     if (somethingWentWrong) {
@@ -4588,13 +4588,32 @@ protected boolean postCommit(boolean committed, boolean close) {
               </row>
               <row>P<entry>
                   <link linkend="gui_PasswordField">PasswordField</link>
+                </entry><entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_PasswordField.png"/>
+                    </imageobject>
+                  </mediaobject>
                 </entry></row>
               <row>M<entry>
                   <link linkend="gui_MaskedField">MaskedField</link>
+                </entry><entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_MaskedField.png"/>
+                    </imageobject>
+                  </mediaobject>
                 </entry></row>
               <row>
                 <entry>
                   <link linkend="gui_TextArea">TextArea</link>
+                </entry>
+                <entry>
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/gui_TextArea.png"/>
+                    </imageobject>
+                  </mediaobject>
                 </entry>
               </row>
               <row>
@@ -4604,7 +4623,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <entry align="left">
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="img/gui_textArea.png"/>
+                      <imagedata fileref="img/gui_RichTextArea.png"/>
                     </imageobject>
                   </mediaobject>
                 </entry>
@@ -5427,19 +5446,19 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="img/gui_PasswordField_dia.png" align="center" contentwidth="80%"/>
+                <imagedata contentwidth="80%" align="center" fileref="img/gui_PasswordField_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
           <para>Компонент поля для ввода пароля реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
           <itemizedlist>
             <listitem>
-              <programlisting>&lt;passwordField id=&quot;passwordField&quot; caption=&quot;msg://name&quot;/&gt;
-&lt;!--Создаем кнопку,при нажатии на которую на экран будет выводиться значение текстового поля--&gt;
+              <programlisting>&lt;passwordField id=&quot;passwordField&quot; caption=&quot;msg://name&quot;/&gt;
+&lt;!--Создаем кнопку,при нажатии на которую на экран будет выводиться значение текстового поля--&gt;
 &lt;button id=&quot;button1&quot; caption=&quot;msg://buttonsName&quot; invoke=&quot;getPass&quot;/&gt;</programlisting>
               <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана определяем метод, который будет вызываться при нажатии на <link linkend="gui_Button">кнопку</link>.</para>
-              <programlisting>public void getPass(){
-    showNotification(String.valueOf(passwordField.getValue()), NotificationType.HUMANIZED);
+              <programlisting>public void getPass(){
+    showNotification(String.valueOf(passwordField.getValue()), NotificationType.HUMANIZED);
 }</programlisting>
               <figure>
                 <title/>
@@ -5526,23 +5545,71 @@ protected boolean postCommit(boolean committed, boolean close) {
         </section>
         <section id="gui_MaskedField">
           <title>MaskedField</title>
-          <para>Текстовое поле, в которое данные вводятся в определенном формате. <code>MaskedField</code> удобно использовать для ввода телефонных номеров, дат. Данные возвращаются вместе с маской, задающей формат. </para>
+          <para>Текстовое поле, в которое данные вводятся в определенном формате. <code>MaskedField</code> удобно использовать для ввода телефонных номеров, дат. </para>
           <para>XML-имя компонента: <sgmltag>maskedField</sgmltag>.</para>
           <figure>
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" contentwidth="80%" fileref="img/gui_MaskedField_dia.png"/>
+                <imagedata contentwidth="80%" align="center" fileref="img/gui_MaskedField_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
           <para>Компонент  текстового поля с маской реализован только для блока <structname>Web Client</structname>.</para>
           <itemizedlist>
             <listitem>
-              <para id="gui_attr_maskedField_mask_1">Атрибут <sgmltag>mask</sgmltag> задает маску для поля.</para>
+              <para id="gui_attr_maskedField_mask_1">Атрибут <sgmltag>mask</sgmltag> задает маску для поля. Чтобы задать маску, используются следующие символы:</para>
+              <informaltable frame="none">
+                <tgroup cols="1">
+                  <colspec colname="c1"/>
+                  <tbody>
+                    <row>
+                      <entry><sgmltag>#</sgmltag> - цифра</entry>
+                    </row>
+                    <row>
+                      <entry><sgmltag>U</sgmltag> - UpperCase буква</entry>
+                    </row>
+                    <row>
+                      <entry><sgmltag>L</sgmltag> - LowerCase буква</entry>
+                    </row>
+                    <row>
+                      <entry><sgmltag>?</sgmltag> - буква</entry>
+                    </row>
+                    <row>
+                      <entry><sgmltag>А</sgmltag> - буква или цифра</entry>
+                    </row>
+                    <row>
+                      <entry><sgmltag>*</sgmltag> - любой символ</entry>
+                    </row>
+                    <row>
+                      <entry><sgmltag>H</sgmltag> - hex символ</entry>
+                    </row>
+                    <row>
+                      <entry><sgmltag>~</sgmltag> - + или -</entry>
+                    </row>
+                  </tbody>
+                </tgroup>
+              </informaltable>
+              <para id="gui_attr_maskedField_mask_10">В качестве примера рассмотрим текстовое поле с маской, определяющей ввод номеров мобильного телефона: </para>
+              <programlisting>&lt;maskedField id=&quot;mobilePhone&quot; mask=&quot;(###)###-##-##&quot; valueMode=&quot;masked&quot; editable=&quot;true&quot;/&gt;</programlisting>
             </listitem>
             <listitem>
-              <para id="gui_attr_maskedField_valueMode_1">Атрибут <sgmltag>valueMode</sgmltag> определяет, показывать маску, или нет.</para>
+              <para id="gui_attr_maskedField_valueMode_1">Атрибут <sgmltag>valueMode</sgmltag> определяет формат возвращаемого значения (с маской, или без) и может принимать значение <sgmltag>masked</sgmltag> или <sgmltag>clear</sgmltag>.</para>
+              <programlisting>&lt;maskedField id=&quot;simpleMaskedField&quot; caption=&quot;msg://simpleMaskedField&quot; mask=&quot;(###)###-##-##&quot; valueMode=&quot;masked&quot;/&gt;
+&lt;!--Создаем кнопку,при нажатии на которую на экран будет выводиться значение текстового поля--&gt;
+&lt;button id=&quot;getMaskedMsg&quot; caption=&quot;msg://getValButton&quot; invoke=&quot;getMaskedValue&quot; align=&quot;BOTTOM_LEFT&quot;/&gt;</programlisting>
+              <para>В <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> определим метод, который будет вызываться при нажатии на  <link linkend="gui_Button">кнопку</link>.</para>
+              <programlisting>public void getMaskedValue(){
+        showNotification(String.valueOf(simpleMaskedField.getValue()), NotificationType.HUMANIZED);
+}</programlisting>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_MaskedField_maskedValueMode.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
             </listitem>
           </itemizedlist>
           <para>Атрибуты <sgmltag>maskedField</sgmltag>:</para>
@@ -5636,7 +5703,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" contentwidth="80%" fileref="img/gui_TextArea_dia.png"/>
+                <imagedata contentwidth="80%" align="center" fileref="img/gui_TextArea_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -5750,7 +5817,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="473" align="center" fileref="img/gui_textAreaInfo.png"/>
+                <imagedata contentwidth="473" align="center" fileref="img/gui_RichTextAreaInfo.png"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -5866,16 +5933,30 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_editable">editable</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_basic_property">property</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_dateField_resolution">resolution</link>
                   </entry></row>
                 <row>
                   <entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry>
                   <entry align="left">
@@ -5901,18 +5982,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry>
                     <link linkend="gui_attr_basic_width">width</link>
                   </entry>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_description">description</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_dateField_resolution">resolution</link>
-                  </entry>
-                  <entry/>
                 </row>
               </tbody></tgroup>
           </informaltable>
@@ -5978,16 +6047,30 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_enable">enable</link>
+                    <link linkend="gui_attr_basic_editable">editable</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_property">property</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry></row>
                 <row>
                   <entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry>
                   <entry align="left">
@@ -6009,18 +6092,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                   <entry>
                     <link linkend="gui_attr_timeField_showSeconds">showSeconds</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_editable">editable</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_property">property</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6268,21 +6339,35 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_enable">enable</link>
+                    <link linkend="gui_attr_basic_editable">editable</link>
                   </entry><entry align="left">
+                    <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>required<entry>
                     <link linkend="gui_attr_basic_property">property</link>
                   </entry><entry>
                     <link linkend="gui_attr_basic_width">width</link>
                   </entry></row>
-                <row><entry>
+                <row>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
+                  </entry>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_height">height</link>
-                  </entry>required<entry>
+                  </entry>
+                  <entry>
                     <link linkend="gui_attr_basic_required">required</link>
-                  </entry><entry/></row>
+                  </entry>
+                  <entry/>
+                </row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -6296,10 +6381,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry/>
                 </row>
                 <row>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_description">description</link>
                   </entry>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_lookupScreen">lookupScreen</link>
                   </entry>
                   <entry>
@@ -6307,19 +6392,25 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                   <entry/>
                 </row>
+              </tbody></tgroup>
+          </informaltable>
+          <para>Элементы <sgmltag>pickerField</sgmltag>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="1" colsep="1" rowsep="1" align="left">
+              <colspec colname="c1"/>
+              <tbody>
                 <row>
                   <entry>
-                    <link linkend="gui_attr_basic_editable">editable</link>
+                    <link linkend="gui_element_pickerField_actions">action</link>
                   </entry>
-                  <entry>
-                    <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
-                  </entry>
-                  <entry/>
                 </row>
-              </tbody></tgroup>
+                <row>
+                  <entry>
+                    <link linkend="gui_element_basic_validator">validator</link>
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
           </informaltable>
         </section>
         <section id="gui_OptionsGroup">
@@ -6370,34 +6461,36 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_enable">enable</link>
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry><entry align="left">
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>required<entry>
                     <link linkend="gui_attr_optionsGroup_orientation">orientation</link>
                   </entry><entry>
                     <link linkend="gui_attr_basic_visible">visible</link>
                   </entry></row>
-                <row><entry>
-                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_basic_height">height</link>
-                  </entry>required<entry>
-                    <link linkend="gui_attr_basic_property">property</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_width">width</link>
-                  </entry></row>
                 <row>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_datasource">datasource</link>
+                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
                   <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
+                    <link linkend="gui_attr_basic_property">property</link>
                   </entry>
-                  <entry/>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
                 </row>
                 <row>
                   <entry align="left">
@@ -6490,23 +6583,37 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_enable">enable</link>
+                    <link linkend="gui_attr_basic_editable">editable</link>
                   </entry><entry align="left">
+                    <link linkend="gui_attr_nullName">nullName</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry><entry>
                     <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
                   </entry><entry>
                     <link linkend="gui_attr_basic_visible">visible</link>
-                  </entry></row>
-                <row><entry>
-                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_property">property</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>required</row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_property">property</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
+                </row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -6519,25 +6626,14 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                 </row>
                 <row>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_description">description</link>
                   </entry>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
                     <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry>
-                    <link linkend="gui_attr_basic_editable">editable</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_nullName">nullName</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -6596,23 +6692,37 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
                   </entry><entry>
                     <link linkend="gui_attr_nullName">nullName</link>
                   </entry><entry>
                     <link linkend="gui_attr_basic_stylename">stylename</link>
-                  </entry></row>
-                <row><entry>
-                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>required</row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
+                </row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -6628,26 +6738,14 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                 </row>
                 <row>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_description">description</link>
                   </entry>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
                     <link linkend="gui_attr_basic_required">required</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry>
-                    <link linkend="gui_attr_basic_editable">editable</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6726,23 +6824,37 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_enable">enable</link>
+                    <link linkend="gui_attr_basic_editable">editable</link>
                   </entry><entry align="left">
+                    <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_required">required</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry><entry>
                     <link linkend="gui_attr_searchPickerField_minSearchStringLength">minSearchStringLength</link>
                   </entry><entry>
                     <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
-                  </entry></row>
-                <row><entry>
-                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_nullName">nullName</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>required</row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_lookupField_filterMode">filterMode</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_nullName">nullName</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                </row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -6758,10 +6870,10 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                 </row>
                 <row>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_description">description</link>
                   </entry>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
@@ -6770,18 +6882,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <entry>
                     <link linkend="gui_attr_basic_width">width</link>
                   </entry>
-                </row>
-                <row>
-                  <entry>
-                    <link linkend="gui_attr_basic_editable">editable</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_pickerField_metaclass">metaClass</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_required">required</link>
-                  </entry>
-                  <entry/>
                 </row>
               </tbody></tgroup>
           </informaltable>
@@ -6837,23 +6937,37 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_editable">editable</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry><entry>
+                    <link linkend="gui_attr_nullName">nullName</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_twinColumn_columns_rows">rows</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry><entry align="left">
                     <link linkend="gui_attr_basic_property">property</link>
                   </entry><entry>
                     <link linkend="gui_attr_basic_visible">visible</link>
-                  </entry></row>
-                <row><entry>
-                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_basic_enable">enable</link>
-                  </entry><entry align="left">
-                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
-                  </entry><entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>required</row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_optionsDatasource">optionsDatasource</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                </row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_twinColumn_columns_rows">columns</link>
@@ -6869,26 +6983,14 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                 </row>
                 <row>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_datasource">datasource</link>
                   </entry>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                   <entry>
                     <link linkend="gui_attr_basic_requiredMessage">requiredMessage</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry>
-                    <link linkend="gui_attr_basic_description">description</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_nullName">nullName</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_twinColumn_columns_rows">rows</link>
                   </entry>
                   <entry/>
                 </row>
@@ -6946,30 +7048,34 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
+                    <link linkend="gui_attr_basic_enable">enable</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry><entry/></row>
                 <row>
                   <entry>
-                    <link linkend="gui_attr_basic_description">description</link>
+                    <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
-                  <entry/>
+                  <entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
                   <entry/>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_height">height</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
-                  <entry/>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
                   <entry/>
                 </row>
               </tbody></tgroup>
@@ -7013,30 +7119,34 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
+                    <link linkend="gui_attr_basic_enable">enable</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry><entry/></row>
                 <row>
                   <entry>
-                    <link linkend="gui_attr_basic_description">description</link>
+                    <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                    <link linkend="gui_attr_basic_height">height</link>
                   </entry>
-                  <entry/>
+                  <entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
                   <entry/>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_height">height</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_visible">visible</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
-                  <entry/>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
                   <entry/>
                 </row>
               </tbody></tgroup>
@@ -7117,6 +7227,17 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para id="gui_attr_table_showTotalAggregation">Атрибут <sgmltag>showTotalAggregation</sgmltag> разрешает или запрещает отображение строки итоговой агрегации в таблице. По умолчанию имеет значение <literal>true</literal>.</para>
             </listitem>
             <listitem>
+              <para id="gui_attr_table_allowPopupMenu">Атрибут <sgmltag>allowPopupMenu</sgmltag> разрешает или запрещает показывать контекстное меню. По умолчанию атрибут имеет значение <sgmltag>true</sgmltag>.  </para>
+              <figure>
+                <title/>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/gui_Table_allowPopupMenu.png"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </listitem>
+            <listitem>
               <para id="gui_attr_table_multiselect">Можно задать множественное выделение строк в таблице с помощью присваивания атрибуту <sgmltag>multiselect</sgmltag>  значения <literal>true</literal>. По умолчанию значение атрибута равно <literal>false</literal>.</para>
             </listitem>
             <listitem>
@@ -7194,49 +7315,62 @@ protected boolean postCommit(boolean committed, boolean close) {
           </itemizedlist>
           <para>Атрибуты <sgmltag>table</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
-            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+            <tgroup cols="5" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/><colspec colname="cgen1"/>c <tbody>
                 <row><entry align="left">
                     <link linkend="gui_attr_table_aggregatable">aggregatable</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_table_showTotalAggregation">showTotalAggregation</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry><entry>
-                    <link linkend="gui_attr_basic_width">width</link>
-                  </entry>editable<entry/></row>
+                    <link linkend="gui_attr_table_reorderingAllowed">reorderingAllowed</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>editable</row>
                 <row>
                   <entry>
-                    <link linkend="gui_attr_table_columnControlVisible">columnControlVisible</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>
                   <entry align="left">
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_margin">margin</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_table_showTotalAggregation">showTotalAggregation</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_table_allowPopupMenu">allowPopupMenu</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>
+                  <entry>
                     <link linkend="gui_attr_table_multiselect">multiselect</link>
                   </entry>
-                  <entry align="left">
+                  <entry>
                     <link linkend="gui_attr_table_sortable">sortable</link>
                   </entry>
                   <entry/>
                 </row>
                 <row>
-                  <entry>
-                    <link linkend="gui_attr_basic_editable">editable</link>
-                  </entry>
                   <entry align="left">
+                    <link linkend="gui_attr_table_columnControlVisible">columnControlVisible</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_height">height</link>
+                  </entry>
+                  <entry>
                     <link linkend="gui_attr_table_presentations">presentations</link>
                   </entry>
                   <entry>
                     <link linkend="gui_attr_button_stylename">styleName</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_height">height</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_table_reorderingAllowed">reorderingAllowed</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
                   <entry/>
                 </row>
@@ -7375,6 +7509,7 @@ protected boolean postCommit(boolean committed, boolean close) {
           <warning>
             <para>Обязательными для иерархической таблицы являются элементы <link linkend="gui_element_table_columns">columns</link> и  <link linkend="gui_element_table_rows">rows</link>.</para>
           </warning>
+          <para>Атрибуты и элементы <sgmltag>TreeTable</sgmltag> аналогичны атрибутам и элементам <sgmltag>Table</sgmltag>.</para>
         </section>
         <section id="gui_GroupTable">
           <title>GroupTable</title>
@@ -7446,19 +7581,21 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_height">height</link>
+                    <link linkend="gui_attr_basic_align">align</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>editable</row>
                 <row><entry>
-                    <link linkend="gui_attr_basic_id">id</link>
-                  </entry>required<entry/></row>
+                    <link linkend="gui_attr_basic_height">height</link>
+                  </entry>required</row>
                 <row>
                   <entry align="left">
-                    <link linkend="gui_attr_table_multiselect">multiselect</link>
+                    <link linkend="gui_attr_basic_id">id</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_width">width</link>
+                    <link linkend="gui_attr_table_multiselect">multiselect</link>
                   </entry>
                 </row>
               </tbody></tgroup>
@@ -7520,17 +7657,6 @@ protected boolean postCommit(boolean committed, boolean close) {
               <para id="gui_attr_fieldGroup_datasource"><link linkend="datasources">Источник данных</link> (атрибут <link linkend="gui_attr_basic_datasource">datasource</link>) можно задать как для всего компонента целиком, так и для каждого поля в отдельности. Если для компонента <sgmltag>fieldGroup</sgmltag> атрибут не задан, то атрибут <sgmltag>datasource</sgmltag> должен быть задан для каждого <link linkend="gui_element_fieldGroup_field">поля</link> в отдельности, либо представление полей должно задаваться разработчиком.</para>
             </listitem>
             <listitem>
-              <para id="gui_attr_fieldGroup_collapsable">При установке  атрибута <sgmltag>collapsable</sgmltag>   в значение <literal>true</literal> компонент может сворачивать свое содержимое.</para>
-              <figure>
-                <title/>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata contentwidth="80%" align="center" fileref="img/gui_fieldGroup_collapsable.png"/>
-                  </imageobject>
-                </mediaobject>
-              </figure>
-            </listitem>
-            <listitem>
               <para id="gui_attr_fieldGroup_captionAlignment"><sgmltag>captionAlignment</sgmltag> − необязательный атрибут, задает позицию отображения заголовков полей. Может принимать два значения: <literal>LEFT</literal>, <literal>TOP</literal>.</para>
               <figure>
                 <title/>
@@ -7590,14 +7716,28 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_fieldGroup_border">border</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
                     <link linkend="gui_attr_fieldGroup_datasource">datasource</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
-                  </entry><entry/></row>
+                    <link linkend="gui_attr_basic_height">height</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry></row>
                 <row>
                   <entry>
+                    <link linkend="gui_attr_fieldGroup_border">border</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_description">description</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry>
+                  <entry/>
+                </row>
+                <row>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_caption">caption</link>
                   </entry>
                   <entry align="left">
@@ -7617,18 +7757,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                   <entry>
                     <link linkend="gui_attr_basic_visible">visible</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_fieldGroup_collapsable">collapsable</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_height">height</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_width">width</link>
                   </entry>
                   <entry/>
                 </row>
@@ -7727,7 +7855,25 @@ protected boolean postCommit(boolean committed, boolean close) {
                 </row>
               </tbody></tgroup>
           </informaltable>
-          <para>Атрибуты <link linkend="attr_fG_column" id="element_fG_column">column</link>:</para>
+          <para>Элементы<link linkend="gui_element_fieldGroup_field"> field</link>:</para>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="1" colsep="1" rowsep="1" align="left">
+              <colspec colname="c1"/>
+              <tbody>
+                <row>
+                  <entry>
+                    <link linkend="gui_element_basic_formatter">formatter</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_element_basic_validator">validator</link>
+                  </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          <para>Атрибуты <link linkend="gui_element_fieldGroup_column">column</link>:</para>
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
@@ -7854,23 +8000,37 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_basic_caption">caption</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_basic_editable">editable</link>
+                    <link linkend="gui_attr_basic_description">description</link>
                   </entry><entry align="left">
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry></row>
+                <row><entry>
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry><entry align="left">
+                    <link linkend="gui_attr_basic_editable">editable</link>
+                  </entry>required<entry>
                     <link linkend="gui_attr_tokenList_inline">inline</link>
                   </entry><entry>
                     <link linkend="gui_attr_basic_visible">visible</link>
                   </entry></row>
-                <row><entry>
+                <row>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_captionProperty">captionProperty</link>
-                  </entry><entry align="left">
+                  </entry>
+                  <entry align="left">
                     <link linkend="gui_attr_basic_enable">enable</link>
-                  </entry>required<entry>
+                  </entry>
+                  <entry>
                     <link linkend="gui_attr_tokenList_position">position</link>
-                  </entry><entry>
+                  </entry>
+                  <entry>
                     <link linkend="gui_attr_basic_width">width</link>
-                  </entry></row>
+                  </entry>
+                </row>
                 <row>
                   <entry align="left">
                     <link linkend="gui_attr_basic_datasource">datasource</link>
@@ -7880,18 +8040,6 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                   <entry>
                     <link linkend="gui_attr_tokenList_simple">simple</link>
-                  </entry>
-                  <entry/>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_description">description</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
-                  </entry>
-                  <entry>
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>
                   <entry/>
                 </row>
@@ -7980,7 +8128,7 @@ protected boolean postCommit(boolean committed, boolean close) {
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/progressBar/progressBar.txt" encoding="UTF-8" parse="text"/></programlisting>
           <para>В контроллере экрана определяем слушатель для таймера, и в нем устанавливаем соответствующее значение индикатора прогресса.</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/progressBar/progressBarContr.txt" encoding="UTF-8" parse="text"/></programlisting>
-          <para id="gui_attr_progressBar_indeterminate">С помощью атрибута <sgmltag>indeterminate</sgmltag> можно задать отображение неопределенного состояния индикатора. Если значение атрибута равно <literal>true</literal>, то индикатор отображает неопределенное состояние. Значение атрибута по умолчанию равно <literal>true</literal>.</para>
+          <para id="gui_attr_progressBar_indeterminate">С помощью атрибута <sgmltag>indeterminate</sgmltag> можно задать отображение неопределенного состояния индикатора. Если значение атрибута равно <literal>true</literal>, то индикатор отображает неопределенное состояние. Значение атрибута по умолчанию равно <literal>false</literal>.</para>
           <para>Значения прогресса задачи для индикатора прогресса следует передавать в  значениях типа <code>Float</code> в диапазоне от 0.0 до 1.0.</para>
           <para>Атрибуты <sgmltag>progressBar</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
@@ -8066,7 +8214,6 @@ protected boolean postCommit(boolean committed, boolean close) {
             </mediaobject>
           </figure>
           <para>Условия разделяются по группам условий. Группа <guilabel>Атрибуты</guilabel> − это те условия, которые перечислены в элементах <sgmltag>properties</sgmltag> и  <sgmltag>property</sgmltag> компонента фильтра. Группа <guilabel>Специальные условия</guilabel> − это пользовательские условия, заданные в элементе <sgmltag>custom</sgmltag>. Группы <guilabel>Группы</guilabel>, <guilabel>Динамический атрибут...</guilabel> и <guilabel>Создать новое...</guilabel> доступны для выбора всегда.</para>
-          <para/>
           <para>XML-имя компонента: <sgmltag>filter</sgmltag>.</para>
           <figure>
             <title/>
@@ -8322,26 +8469,20 @@ protected boolean postCommit(boolean committed, boolean close) {
           <informaltable frame="none" pgwide="0" align="left">
             <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
                 <row><entry align="left">
-                    <link linkend="gui_attr_filter_applyTo">applyTo</link>
+                    <link linkend="gui_attr_basic_align">align</link>
                   </entry><entry>
-                    <link linkend="gui_attr_filter_folderActionsEnabled">folderActionsEnabled</link>
+                    <link linkend="gui_attr_filter_editable">editable</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_filter_required">required</link>
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry><entry>
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
                   </entry>editable</row>
                 <row>
                   <entry>
-                    <link linkend="gui_attr_basic_datasource">datasource</link>
+                    <link linkend="gui_attr_filter_applyTo">applyTo</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_basic_id">id</link>
-                  </entry>
-                  <entry align="left">
-                    <link linkend="gui_attr_basic_stylename">stylename</link>
-                  </entry>
-                </row>
-                <row>
-                  <entry align="left">
-                    <link linkend="gui_attr_filter_editable">editable</link>
+                    <link linkend="gui_attr_basic_enable">enable</link>
                   </entry>
                   <entry align="left">
                     <link linkend="gui_attr_filter_manualApplyRequired">manualApplyRequired</link>
@@ -8351,6 +8492,15 @@ protected boolean postCommit(boolean committed, boolean close) {
                   </entry>
                 </row>
                 <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_datasource">datasource</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_filter_folderActionsEnabled">folderActionsEnabled</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_filter_required">required</link>
+                  </entry>
                   <entry>
                     <link linkend="gui_attr_basic_visible">visible</link>
                   </entry>
@@ -8394,24 +8544,27 @@ protected boolean postCommit(boolean committed, boolean close) {
                 <row><entry align="left">
                     <link linkend="gui_attr_filter_custom_caption">caption</link>
                   </entry>editable<entry align="left">
-                    <link linkend="gui_attr_filter_custom_operatorType">operatorType</link>
+                    <link linkend="gui_attr_filter_custom_name">name</link>
                   </entry><entry align="left">
-                    <link linkend="gui_attr_filter_paramWhere">paramWhere</link>
+                    <link linkend="gui_attr_filter_paramView">paramView</link>
                   </entry></row>
                 <row>
                   <entry>
-                    <link linkend="gui_attr_filter_custom_join">join</link>
+                    <link linkend="gui_attr_filter_custom_inExpr">inExpr</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_filter_custom_paramClass">paramClass</link>
+                    <link linkend="gui_attr_filter_custom_operatorType">operatorType</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_filter_paramWhere">paramWhere</link>
                   </entry>
                 </row>
                 <row>
                   <entry align="left">
-                    <link linkend="gui_attr_filter_custom_name">name</link>
+                    <link linkend="gui_attr_filter_custom_join">join</link>
                   </entry>
                   <entry align="left">
-                    <link linkend="gui_attr_filter_paramView">paramView</link>
+                    <link linkend="gui_attr_filter_custom_paramClass">paramClass</link>
                   </entry>
                 </row>
               </tbody></tgroup>
