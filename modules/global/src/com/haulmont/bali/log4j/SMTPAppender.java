@@ -212,7 +212,7 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
             }
             t = layout.getFooter();
             if (t != null) sb.append(t);
-            part.setContent(sb.toString(), layout.getContentType());
+            part.setContent(sb.toString(), layout.getContentType() + ";charset=UTF-8");
 
             Multipart mp = new MimeMultipart();
             mp.addBodyPart(part);
