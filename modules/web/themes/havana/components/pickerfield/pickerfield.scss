@@ -20,6 +20,8 @@
     }
 
     .v-button {
+      display: block;
+      text-align: center !important;
       border: 1px solid $theme_fieldBorderColor;
       background: #fff;
       border-left: 0;
@@ -30,12 +32,19 @@
       height: 25px;
       line-height: 18px;
       background: white;
+      min-width: 24px;
 
       .v-button-wrap {
         margin: 0;
 
         img {
           margin: 0;
+          border-top: 0;
+          border-bottom: 3px transparent solid;
+        }
+
+        .v-button-caption {
+          display: none;
         }
       }
     }

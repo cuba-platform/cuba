@@ -20,7 +20,11 @@
 
     .v-button-wrap {
       margin-top: 0;
-      line-height: 10px;
+      line-height: 12px;
+
+      .v-button-caption {
+        vertical-align: top;
+      }
     }
   }
 
@@ -30,7 +34,11 @@
     margin-top: 8px;
 
     .v-button-wrap {
-      line-height: 10px;
+      line-height: 12px;
+
+      .v-button-caption {
+        vertical-align: top;
+      }
     }
   }
 }
