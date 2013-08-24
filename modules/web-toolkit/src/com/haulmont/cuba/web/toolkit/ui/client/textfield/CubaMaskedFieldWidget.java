@@ -37,55 +37,11 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     protected List<Mask> maskTest;
 
-    private Map<Character, Mask> maskMap = new HashMap<Character, Mask>();
+    protected Map<Character, Mask> maskMap = new HashMap<Character, Mask>();
 
-    private boolean maskedMode = false;
+    protected boolean maskedMode = false;
 
-    private KeyPressHandler keyPressHandler = new KeyPressHandler() {
-        public void onKeyPress(KeyPressEvent e) {
-            if (isReadOnly())
-                return;
-
-            if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_BACKSPACE
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_END
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_HOME
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_LEFT
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_PAGEDOWN
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_PAGEUP
-                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_RIGHT
-                    || e.getNativeEvent().getAltKey()
-                    //|| e.getNativeEvent().getCtrlKey()
-                    || e.getNativeEvent().getMetaKey()) {
-
-                e.preventDefault(); // KK: otherwise incorrectly handles combinations like Shift+'='
-                return;
-            } else if (BrowserInfo.get().isGecko() && e.getCharCode() == '\u0000' || e.getNativeEvent().getCtrlKey()) {
-                //pressed tab in firefox or ctrl. because FF fires keyPressEvents on CTRL+C
-                return;
-            }
-            if (getCursorPos() < maskTest.size()) {
-                Mask m = maskTest.get(getCursorPos());
-                if (m != null) {
-                    if (m.isValid(e.getCharCode())) {
-
-                        int pos = getCursorPos();
-                        valueBuilder.setCharAt(pos, m.getChar(e.getCharCode()));
-                        setValue(valueBuilder.toString());
-                        updateCursor(pos);
-                    }
-                } else {
-                    updateCursor(getCursorPos());
-                }
-
-            }
-            e.preventDefault();
-        }
-    };
-
-    private KeyHandler keyHandler;
+    protected MaskedKeyHandler keyHandler;
 
     public CubaMaskedFieldWidget() {
         setStylePrimaryName(CLASSNAME);
@@ -93,10 +49,12 @@ public class CubaMaskedFieldWidget extends VTextField {
         valueBeforeEdit = "";
 
         initMaskMap();
-        addKeyPressHandler(keyPressHandler);
-        keyHandler = new KeyHandler();
+
+        keyHandler = new MaskedKeyHandler();
+        addKeyPressHandler(keyHandler);
         addKeyDownHandler(keyHandler);
         addKeyUpHandler(keyHandler);
+
         addInputHandler(getElement());
     }
 
@@ -137,6 +95,7 @@ public class CubaMaskedFieldWidget extends VTextField {
         return pos;
     }
 
+    @Override
     public void setText(String value) {
         valueBuilder = maskValue(value);
         if (valueBuilder.toString().equals(nullRepresentation) || valueBuilder.length() == 0) {
@@ -247,6 +206,7 @@ public class CubaMaskedFieldWidget extends VTextField {
         return true;
     }
 
+    @Override
     public void valueChange(boolean blurred) {
         if (client != null && paintableId != null) {
 
@@ -279,9 +239,16 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     protected native void addInputHandler(Element elementID)/*-{
         var temp = this;  // hack to hold on to 'this' reference
-        elementID.addEventListener("input", function (e) {
+
+        var listener = function (e) {
             temp.@com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedFieldWidget::handleInput()();
-        }, false)
+        };
+
+        if (elementID.addEventListener) {
+            elementID.addEventListener("input", listener, false);
+        } else {
+            elementID.attachEvent("input", listener);
+        }
     }-*/;
 
     public void handleInput() {
@@ -411,39 +378,46 @@ public class CubaMaskedFieldWidget extends VTextField {
         }
     }
 
-    public class KeyHandler implements KeyDownHandler, KeyUpHandler {
-        private boolean shitPressed = false;
-        private int shiftPressPos = -1;
+    public class MaskedKeyHandler implements KeyDownHandler, KeyUpHandler, KeyPressHandler {
 
-        private int getCursorPosSelection() {
+        protected boolean shiftPressed = false;
+        protected int shiftPressPos = -1;
+
+        protected int getCursorPosSelection() {
             return getCursorPos() + getSelectionLength();
         }
 
+        @Override
         public void onKeyDown(KeyDownEvent event) {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT && !shitPressed) {
-                shitPressed = true;
+            if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT && !shiftPressed) {
+                shiftPressed = true;
                 shiftPressPos = getCursorPos();
             }
             if (isReadOnly())
                 return;
             if (event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) {
                 int pos = getPreviousPos(getCursorPos());
-                Mask m = maskTest.get(pos);
-                if (m != null) {
-                    valueBuilder.setCharAt(pos, PLACE_HOLDER);
-                    setValue(valueBuilder.toString());
+
+                if (pos < maskTest.size()) {
+                    Mask m = maskTest.get(pos);
+                    if (m != null) {
+                        valueBuilder.setCharAt(pos, PLACE_HOLDER);
+                        setValue(valueBuilder.toString());
+                    }
+                    setCursorPos(pos);
                 }
-                setCursorPos(pos);
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_DELETE) {
                 int pos = getCursorPos();
 
-                Mask m = maskTest.get(pos);
-                if (m != null) {
-                    valueBuilder.setCharAt(pos, PLACE_HOLDER);
-                    setValue(valueBuilder.toString());
+                if (pos < maskTest.size()) {
+                    Mask m = maskTest.get(pos);
+                    if (m != null) {
+                        valueBuilder.setCharAt(pos, PLACE_HOLDER);
+                        setValue(valueBuilder.toString());
+                    }
+                    updateCursor(pos);
                 }
-                updateCursor(pos);
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_RIGHT) {
                 if (getCursorPosSelection() <= shiftPressPos) {
@@ -472,8 +446,8 @@ public class CubaMaskedFieldWidget extends VTextField {
             }
         }
 
-        private void updateSelectionRange() {
-            if (shitPressed) {
+        protected void updateSelectionRange() {
+            if (shiftPressed) {
                 if (getCursorPosSelection() > shiftPressPos) {
                     setSelectionRange(shiftPressPos, getCursorPosSelection() - shiftPressPos);
                 } else {
@@ -485,11 +459,50 @@ public class CubaMaskedFieldWidget extends VTextField {
         @Override
         public void onKeyUp(KeyUpEvent event) {
             if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT) {
-                shitPressed = false;
+                shiftPressed = false;
                 shiftPressPos = -1;
             }
         }
+
+        @Override
+        public void onKeyPress(KeyPressEvent e) {
+            if (isReadOnly())
+                return;
+
+            if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_BACKSPACE
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_END
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_HOME
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_LEFT
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_PAGEDOWN
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_PAGEUP
+                    || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_RIGHT
+                    || e.getNativeEvent().getAltKey()
+                    //|| e.getNativeEvent().getCtrlKey()
+                    || e.getNativeEvent().getMetaKey()) {
+
+                e.preventDefault(); // KK: otherwise incorrectly handles combinations like Shift+'='
+                return;
+            } else if (BrowserInfo.get().isGecko() && e.getCharCode() == '\u0000' || e.getNativeEvent().getCtrlKey()) {
+                //pressed tab in firefox or ctrl. because FF fires keyPressEvents on CTRL+C
+                return;
+            }
+            if (getCursorPos() < maskTest.size()) {
+                Mask m = maskTest.get(getCursorPos());
+                if (m != null) {
+                    if (m.isValid(e.getCharCode())) {
+                        int pos = getCursorPos();
+                        valueBuilder.setCharAt(pos, m.getChar(e.getCharCode()));
+                        setValue(valueBuilder.toString());
+                        updateCursor(pos);
+                    }
+                } else {
+                    updateCursor(getCursorPos());
+                }
+            }
+            e.preventDefault();
+        }
     }
-
-
 }

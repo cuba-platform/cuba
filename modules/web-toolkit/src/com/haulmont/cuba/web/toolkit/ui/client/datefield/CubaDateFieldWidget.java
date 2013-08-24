@@ -15,15 +15,16 @@ import com.vaadin.client.ui.VPopupCalendar;
  */
 public class CubaDateFieldWidget extends VPopupCalendar {
 
-    private static final String CLASSNAME = "cuba-datefield";
+    protected static final String CLASSNAME = "cuba-datefield";
 
-    private static final String EMPTY_FIELD_CLASS = "cuba-datefield-empty";
+    protected static final String EMPTY_FIELD_CLASS = "cuba-datefield-empty";
 
     public CubaDateFieldWidget() {
         setStylePrimaryName(CLASSNAME);
         setStyleName(CLASSNAME);
     }
 
+    @Override
     public CubaMaskedFieldWidget getImpl() {
         return (CubaMaskedFieldWidget) super.getImpl();
     }
@@ -36,8 +37,8 @@ public class CubaDateFieldWidget extends VPopupCalendar {
                 if (!prompting && newText != null
                         && !newText.equals(valueBeforeEdit)) {
                     if (validateText(newText)) {
-                        if (!newText.toString().equals(nullRepresentation)) {
-                            getElement().removeClassName(EMPTY_FIELD_CLASS);
+                        if (!newText.equals(nullRepresentation)) {
+                            getElement().removeClassName(CubaDateFieldWidget.EMPTY_FIELD_CLASS);
                         }
                         CubaDateFieldWidget.this.onChange(null);
                         valueBeforeEdit = newText;
@@ -48,6 +49,4 @@ public class CubaDateFieldWidget extends VPopupCalendar {
             }
         };
     }
-
-
 }
