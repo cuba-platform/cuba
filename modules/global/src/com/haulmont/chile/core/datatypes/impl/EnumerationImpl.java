@@ -19,7 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nonnull;
 
 /**
- *
  * @param <T>
  * @author krivopustov
  * @version $Id$
@@ -27,7 +26,6 @@ import javax.annotation.Nonnull;
 public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
 
     private Class<T> javaClass;
-    protected Map<Object, Object> enumValues;
 
     public EnumerationImpl(Class<T> javaClass) {
         this.javaClass = javaClass;
@@ -63,8 +61,12 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
         if (StringUtils.isBlank(value))
             return null;
 
-        final Integer v = Integer.valueOf(value);
-        return getByIntValue(v);
+        for (Enum enumValue : javaClass.getEnumConstants()) {
+            Object enumId = ((EnumClass) enumValue).getId();
+            if (value.equals(enumId.toString()))
+                return (T) enumValue;
+        }
+        return null;
     }
 
     @Override
@@ -72,25 +74,9 @@ public class EnumerationImpl<T extends Enum> implements Enumeration<T> {
         return parse(value);
     }
 
-    protected T getByIntValue(Integer v) {
-        if (enumValues == null) {
-            final Enum[] enums = javaClass.getEnumConstants();
-            enumValues = new HashMap<>();
-            for (Enum enumValue : enums) {
-                final Object i = ((EnumClass) enumValue).getId();
-                enumValues.put(i, enumValue);
-            }
-        }
-
-        return (T) enumValues.get(v);
-    }
-
     @Override
     public T read(ResultSet resultSet, int index) throws SQLException {
-        final int v = resultSet.getInt(index);
-        if (resultSet.wasNull()) return null;
-
-        return getByIntValue(v);
+        throw new UnsupportedOperationException();
     }
 
     @Override
