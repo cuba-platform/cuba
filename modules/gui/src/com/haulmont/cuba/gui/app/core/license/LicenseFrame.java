@@ -32,6 +32,8 @@ public class LicenseFrame extends AbstractFrame {
     @Inject
     private Label activeSessions;
 
+    private String linkAddressMsg;
+
     @Override
     public void init(Map<String, Object> params) {
         Map<String, Object> info = uss.getLicenseInfo();
@@ -45,9 +47,12 @@ public class LicenseFrame extends AbstractFrame {
         if (!linkMsg.equals(linkKey)) {
             licenseLink.setVisible(true);
             licenseLink.setCaption(linkMsg);
+
+            String linkAddressKey = licenseType + "LinkAddress";
+            linkAddressMsg = getMessage(linkAddressKey);
         }
 
-        if (!licenseType.equals("development")) {
+        if (!licenseType.equals("starter")) {
             licensedToField.setVisible(true);
             licensedToField.setValue(info.get("licensedTo"));
             licensedToField.setEditable(false);
@@ -61,6 +66,8 @@ public class LicenseFrame extends AbstractFrame {
     }
 
     public void showLicense() {
-        showWebPage(getMessage("developmentLinkAddress"), null);
+        if (linkAddressMsg != null) {
+            showWebPage(linkAddressMsg, null);
+        }
     }
 }
