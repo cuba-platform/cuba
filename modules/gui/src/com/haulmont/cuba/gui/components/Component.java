@@ -36,6 +36,8 @@ public interface Component {
     int UNITS_PIXELS = 0;
     int UNITS_PERCENTAGE = 8;
 
+    String UNDEFINED_CONSTANT = "-1px";
+
     /** Component ID as defined in <code>id</code> attribute */
     String getId();
     /** Set component ID */
