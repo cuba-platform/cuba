@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -28,6 +29,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.*;
 import com.vaadin.ui.PasswordField;
@@ -235,10 +237,11 @@ public class WebFieldGroup
                     }
                 }
 
-//                vaadin7
-//                if (f.getDescription() == null && field.getDescription() != null) {
-//                    f.setDescription(field.getDescription());
-//                }
+                if (f.getDescription() == null && field.getDescription() != null) {
+                    if (f instanceof AbstractComponent) {
+                        ((AbstractComponent) f).setDescription(field.getDescription());
+                    }
+                }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
                 if (/*f.getWidth() == -1f &&*/ field.getWidth() != null) {
@@ -394,10 +397,11 @@ public class WebFieldGroup
                     if (fieldConf.getCaption() != null) {
                         field.setCaption(fieldConf.getCaption());
                     }
-//                    vaadin7 descriptions support
-//                    if (fieldConf.getDescription() != null) {
-//                        field.setDescription(fieldConf.getDescription());
-//                    }
+                    if (fieldConf.getDescription() != null) {
+                        if (field instanceof AbstractComponent) {
+                            ((AbstractComponent) field).setDescription(fieldConf.getDescription());
+                        }
+                    }
                     if (!field.isRequired()) {
                         field.setRequired(fieldConf.isRequired());
                     }

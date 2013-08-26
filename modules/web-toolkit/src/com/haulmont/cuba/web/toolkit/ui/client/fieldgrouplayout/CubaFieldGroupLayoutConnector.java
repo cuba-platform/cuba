@@ -10,6 +10,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutConnector;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.UIDL;
@@ -24,7 +25,7 @@ import com.vaadin.shared.ui.Connect;
  * @version $Id$
  */
 @Connect(CubaFieldGroupLayout.class)
-public class CubaFieldGroupLayoutConnector extends GridLayoutConnector {
+public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
     protected boolean needUpdateCaptionSizes = false;
 
@@ -55,25 +56,7 @@ public class CubaFieldGroupLayoutConnector extends GridLayoutConnector {
 
     @Override
     public void updateCaption(ComponentConnector childConnector) {
-        // CAUTION copied from GridLayoutConnector.updateCaption(ComponentConnector childConnector)
-        VGridLayout layout = getWidget();
-        VGridLayout.Cell cell = layout.widgetToCell.get(childConnector.getWidget());
-        if (VCaption.isNeeded(childConnector.getState())) {
-            VLayoutSlot layoutSlot = cell.slot;
-            VCaption caption = layoutSlot.getCaption();
-            if (caption == null) {
-                // use our own caption widget
-                caption = new CubaCaptionWidget(childConnector, getConnection());
-
-                Widget widget = childConnector.getWidget();
-
-                layout.setCaption(widget, caption);
-            }
-            caption.updateCaption();
-        } else {
-            layout.setCaption(childConnector.getWidget(), null);
-        }
-
+        super.updateCaption(childConnector);
         needUpdateCaptionSizes = true;
     }
 

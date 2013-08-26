@@ -8,8 +8,10 @@ package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.StyleConstants;
 import com.vaadin.client.ui.ShortcutActionHandler;
+import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 
 /**
@@ -53,5 +55,14 @@ public class CubaOrderedActionsLayoutWidget extends VAbstractOrderedLayout {
 
     public void setShortcutHandler(ShortcutActionHandler shortcutHandler) {
         this.shortcutHandler = shortcutHandler;
+    }
+
+    public Slot getSlot(Widget widget) {
+        Slot slot = widgetToSlot.get(widget);
+        if (slot == null) {
+            slot = new CubaSlot(this, widget);
+            widgetToSlot.put(widget, slot);
+        }
+        return slot;
     }
 }

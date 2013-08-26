@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Layout;
 
@@ -17,7 +18,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout>
+public class WebGridLayout extends WebAbstractComponent<CubaGridLayout>
         implements GridLayout, Component.Wrapper {
 
     protected String id;
@@ -30,7 +31,7 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
     protected boolean expandable = true;
 
     public WebGridLayout() {
-        component = new com.vaadin.ui.GridLayout();
+        component = new CubaGridLayout();
     }
 
     @Override

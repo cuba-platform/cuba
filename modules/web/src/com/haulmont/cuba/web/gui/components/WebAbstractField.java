@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
@@ -109,8 +110,11 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     public void setDescription(String description) {
-//        vaadin7
-//        component.setDescription(description);
+        if (component instanceof AbstractComponent) {
+            ((AbstractComponent) component).setDescription(description);
+        } else {
+            throw new UnsupportedOperationException("Unable to set description for " + component.getClass().getName());
+        }
     }
 
     @Override

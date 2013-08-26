@@ -6,12 +6,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
+import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.Paintable;
-import com.vaadin.client.UIDL;
+import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
+import com.vaadin.client.*;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.orderedlayout.AbstractOrderedLayoutConnector;
+
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -30,14 +31,30 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         final int cnt = uidl.getChildCount();
-                for (int i = 0; i < cnt; i++) {
-                    UIDL childUidl = uidl.getChildUIDL(i);
-                    if (childUidl.getTag().equals("actions")) {
-                        if (getWidget().getShortcutHandler() == null) {
-                            getWidget().setShortcutHandler(new ShortcutActionHandler(uidl.getId(), client));
-                        }
-                        getWidget().getShortcutHandler().updateActionMap(childUidl);
-                    }
+        for (int i = 0; i < cnt; i++) {
+            UIDL childUidl = uidl.getChildUIDL(i);
+            if (childUidl.getTag().equals("actions")) {
+                if (getWidget().getShortcutHandler() == null) {
+                    getWidget().setShortcutHandler(new ShortcutActionHandler(uidl.getId(), client));
                 }
+                getWidget().getShortcutHandler().updateActionMap(childUidl);
+            }
+        }
+    }
+
+    @Override
+    protected void updateCaptionInternal(ComponentConnector child) {
+        CubaSlot slot = (CubaSlot) getWidget().getSlot(child.getWidget());
+        if (VCaption.isNeeded(child.getState())) {
+            VCaption caption = slot.getCaption();
+            if (caption == null) {
+                // use our own caption widget
+                caption = new CubaCaptionWidget(child, getConnection());
+                slot.setCaption(caption);
+            }
+            caption.updateCaption();
+        } else {
+            slot.setCaption(null);
+        }
     }
 }

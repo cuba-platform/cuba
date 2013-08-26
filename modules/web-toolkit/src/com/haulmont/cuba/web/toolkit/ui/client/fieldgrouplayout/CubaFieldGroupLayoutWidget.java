@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
+import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutWidget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
@@ -14,16 +15,12 @@ import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
  * @author artamonov
  * @version $Id$
  */
-public class CubaFieldGroupLayoutWidget extends VGridLayout {
+public class CubaFieldGroupLayoutWidget extends CubaGridLayoutWidget {
 
     public static final String CLASSNAME = "cuba-fieldgrouplayout";
 
     public CubaFieldGroupLayoutWidget() {
         setStyleName(CLASSNAME);
-    }
-
-    public Cell[][] getCellMatrix() {
-        return cells;
     }
 
     public class CubaGridLayoutCell extends Cell {

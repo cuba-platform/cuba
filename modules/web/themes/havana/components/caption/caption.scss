@@ -18,6 +18,18 @@
       cursor: pointer;
     }
 
+    .cuba-tooltip-button {
+      display: inline-block;
+      background: transparent none;
+      background: transparent url(images/question.png) no-repeat top right;
+      width: 16px;
+      height: 16px;
+    }
+
+    .cuba-tooltip-button:hover {
+      cursor: pointer;
+    }
+
     .#{$primaryStyleName}text {
       padding-bottom: 2px;
     }
