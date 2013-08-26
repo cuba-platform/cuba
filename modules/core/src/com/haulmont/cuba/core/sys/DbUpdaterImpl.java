@@ -11,6 +11,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.Scripting;
 import groovy.lang.Binding;
+import groovy.lang.Closure;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -30,14 +32,7 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     @Inject
     protected Persistence persistence;
 
-    public DbUpdaterImpl() {
-        extensionHandlers.put("groovy", new FileHandler() {
-            @Override
-            public void run(File file) {
-                executeGroovyScript(file);
-            }
-        });
-    }
+    protected PostUpdateScripts postUpdate;
 
     @Inject
     public void setConfigProvider(Configuration configuration) {
@@ -56,8 +51,28 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
         return persistence.getDbDialect();
     }
 
+    @Override
     protected void executeGroovyScript(File file) {
         Binding bind = new Binding();
+        bind.setProperty("ds", getDataSource());
+        bind.setProperty("log", LogFactory.getLog(file.getName()));
+        bind.setProperty("postUpdate", postUpdate);
+
         scripting.runGroovyScript(getScriptName(file), bind);
+    }
+
+    @Override
+    protected void doUpdate() {
+        postUpdate = new PostUpdateScripts();
+
+        super.doUpdate();
+
+        if (!postUpdate.getUpdates().isEmpty()) {
+            log.info(String.format("Execute '%s' post update actions", postUpdate.getUpdates().size()));
+
+            for (Closure closure : postUpdate.getUpdates()) {
+                closure.call();
+            }
+        }
     }
 }

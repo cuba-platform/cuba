@@ -70,7 +70,6 @@ public abstract class AbstractScripting implements Scripting {
                 if (!groovyClassPath.contains(string.trim() + File.pathSeparator))
                     groovyClassPath = groovyClassPath + string.trim() + File.pathSeparator;
             }
-
         }
 
         String importProp = AppContext.getProperty("cuba.groovyEvaluatorImport");
@@ -211,9 +210,7 @@ public abstract class AbstractScripting implements Scripting {
                     Script script = (Script) scriptClass.newInstance();
                     script.setBinding(binding);
                     return (T) script.run();
-                } catch (InstantiationException e1) {
-                    throw new RuntimeException(e1);
-                } catch (IllegalAccessException e1) {
+                } catch (InstantiationException | IllegalAccessException e1) {
                     throw new RuntimeException(e1);
                 }
             }

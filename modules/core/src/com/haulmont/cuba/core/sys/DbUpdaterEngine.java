@@ -11,6 +11,11 @@ import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.MssqlDbDialect;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
+import groovy.lang.Binding;
+import groovy.lang.Closure;
+import groovy.util.GroovyScriptEngine;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
@@ -42,10 +47,13 @@ public class DbUpdaterEngine implements DbUpdater {
     private static final String SQL_COMMENT_PREFIX = "--";
     private static final String SQL_DELIMITER = "^";
 
-    private static final Log log = LogFactory.getLog(DbUpdaterEngine.class);
+    private static final String GROOVY_EXTENSION = "groovy";
+
+    protected static final Log log = LogFactory.getLog(DbUpdaterEngine.class);
 
     protected DataSource dataSource;
     protected File dbDir;
+
     protected DbDialect dbDialect;
 
     protected boolean changelogTableExists = false;
@@ -60,12 +68,12 @@ public class DbUpdaterEngine implements DbUpdater {
                 executeSqlScript(file);
             }
         });
-    }
-
-    public DbUpdaterEngine(DataSource dataSource, File dbDir, DbDialect dbDialect) {
-        this.dataSource = dataSource;
-        this.dbDir = dbDir;
-        this.dbDialect = dbDialect;
+        extensionHandlers.put(GROOVY_EXTENSION, new FileHandler() {
+            @Override
+            public void run(File file) {
+                executeGroovyScript(file);
+            }
+        });
     }
 
     protected DbUpdaterEngine() {
@@ -91,12 +99,20 @@ public class DbUpdaterEngine implements DbUpdater {
         }
     }
 
-    protected List<File> getScriptsByExtension(Collection files, final URI scriptDirUri, final String extension) {
+    protected List<File> getScriptsByExtension(Collection files, final URI scriptDirUri,
+                                               final Collection<String> extensions) {
+        if (extensions == null)
+            return Collections.emptyList();
+
         Collection scriptsCollection = CollectionUtils.select(files, new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 File file = (File) object;
-                return extension.equals(FilenameUtils.getExtension(file.getName()));
+                for (String ext : extensions) {
+                    if (ext.equals(FilenameUtils.getExtension(file.getName())))
+                        return true;
+                }
+                return false;
             }
         });
         // noinspection unchecked
@@ -128,16 +144,9 @@ public class DbUpdaterEngine implements DbUpdater {
                     Collection list = FileUtils.listFiles(scriptDir, null, true);
                     URI scriptDirUri = scriptDir.toURI();
 
-                    List<File> sqlFiles = getScriptsByExtension(list, scriptDirUri, SQL_EXTENSION);
+                    List<File> updateFiles = getScriptsByExtension(list, scriptDirUri, extensionHandlers.keySet());
 
-                    for (String ext : extensionHandlers.keySet()) {
-                        if (!ext.equals(SQL_EXTENSION)) {
-                            List<File> additionalFiles = getScriptsByExtension(list, scriptDirUri, ext);
-                            additionalScripts.addAll(additionalFiles);
-                        }
-                    }
-
-                    databaseScripts.addAll(sqlFiles);
+                    databaseScripts.addAll(updateFiles);
                 }
             }
         }
@@ -274,6 +283,7 @@ public class DbUpdaterEngine implements DbUpdater {
     protected Set<String> getExecutedScripts() {
         QueryRunner runner = new QueryRunner(getDataSource());
         try {
+            //noinspection UnnecessaryLocalVariable
             Set<String> scripts = runner.query("select SCRIPT_NAME from SYS_DB_CHANGELOG",
                     new ResultSetHandler<Set<String>>() {
                         @Override
@@ -330,6 +340,30 @@ public class DbUpdaterEngine implements DbUpdater {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    protected void executeGroovyScript(File file) {
+        try {
+            String scriptRoot = file.getParentFile().getAbsolutePath();
+            ClassLoader classLoader = getClass().getClassLoader();
+            GroovyScriptEngine scriptEngine = new GroovyScriptEngine(scriptRoot, classLoader);
+
+            Binding bind = new Binding();
+            bind.setProperty("ds", getDataSource());
+            bind.setProperty("log", LogFactory.getLog(file.getName()));
+            bind.setProperty("postUpdate", new PostUpdateScripts() {
+                @Override
+                public void add(Closure closure) {
+                    super.add(closure);
+
+                    log.warn("Added post update action will be ignored");
+                }
+            });
+
+            scriptEngine.run(file.getAbsolutePath(), bind);
+        } catch (IOException | ResourceException | ScriptException e) {
+            throw new RuntimeException(e);
         }
     }
 
