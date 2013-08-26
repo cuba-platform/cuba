@@ -144,8 +144,9 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadVisible(Component component, Element element) {
         if (component instanceof DatasourceComponent
                 && ((DatasourceComponent) component).getDatasource() != null) {
-            MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
             MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
+            MetaClass metaClass = metaProperty != null ?
+                    metaProperty.getDomain() : ((DatasourceComponent) component).getDatasource().getMetaClass();
 
             UserSession userSession = userSessionSource.getUserSession();
             if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ)
