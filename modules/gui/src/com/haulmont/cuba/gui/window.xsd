@@ -77,8 +77,7 @@
 
     <xs:simpleType name="componentSize">
         <xs:union>
-           <xs:simpleType xml:base="xs:string">
-           </xs:simpleType>
+            <xs:simpleType xml:base="xs:string"/>
             <xs:restriction base="xs:string">
                 <xs:enumeration value="UNDEFINED"/>
             </xs:restriction>
@@ -1237,7 +1236,8 @@
                 <xs:element name="datasource" minOccurs="0" maxOccurs="unbounded" type="nestedDs"/>
                 <xs:element name="collectionDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedDs"/>
                 <xs:element name="groupDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedDs"/>
-                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedHierarchicalDs"/>
+                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded"
+                            type="nestedHierarchicalDs"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>

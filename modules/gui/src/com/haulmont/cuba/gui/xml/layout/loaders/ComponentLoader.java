@@ -213,14 +213,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadHeight(Component component, Element element, @Nullable String defaultValue) {
         final String height = element.attributeValue("height");
-        if (!StringUtils.isBlank(height)) {
-            if (height.equalsIgnoreCase("undefined"))
-                component.setHeight(Component.UNDEFINED_CONSTANT);
-            else
-                component.setHeight(height);
-        } else if (!StringUtils.isBlank(defaultValue)) {
-            component.setHeight(defaultValue);
-        }
+        if ("undefined".equalsIgnoreCase(height))
+            component.setHeight(Component.UNDEFINED_SIZE);
+        else
+            component.setHeight(height);
     }
 
     protected void loadWidth(Component component, Element element) {
@@ -228,16 +224,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
-
         final String width = element.attributeValue("width");
-        if (!StringUtils.isBlank(width)) {
-            if (width.equalsIgnoreCase("undefined"))
-                component.setWidth(Component.UNDEFINED_CONSTANT);
-            else
-                component.setWidth(width);
-        } else if (!StringUtils.isBlank(defaultValue)) {
-            component.setWidth(defaultValue);
-        }
+        if ("undefined".equalsIgnoreCase(width))
+            component.setWidth(Component.UNDEFINED_SIZE);
+        else
+            component.setWidth(width);
     }
 
     protected void loadCollapsible(Component.Collapsable component, Element element) {
