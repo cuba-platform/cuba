@@ -37,6 +37,7 @@ import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
@@ -85,17 +86,17 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     protected PersistenceManagerService persistenceManager;
 
-    private CollectionDatasource datasource;
-    private QueryFilter dsQueryFilter;
-    private FilterEntity filterEntity;
-    private ConditionsTree conditions = new ConditionsTree();
+    protected CollectionDatasource datasource;
+    protected QueryFilter dsQueryFilter;
+    protected FilterEntity filterEntity;
+    protected ConditionsTree conditions = new ConditionsTree();
 
-    private ComponentContainer paramsLayout;
-    private AbstractOrderedLayout editLayout;
-    private CubaComboBox select;
-    private WebPopupButton actionsButton;
+    protected ComponentContainer paramsLayout;
+    protected AbstractOrderedLayout editLayout;
+    protected CubaComboBox select;
+    protected WebPopupButton actionsButton;
 
-    private Button pinAppliedFilterBtn;
+    protected Button pinAppliedFilterBtn;
     private Button applyBtn;
 
     private boolean defaultFilterEmpty = true;
@@ -108,7 +109,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     private boolean useMaxResults;
     private CheckBox maxResultsCb;
     protected TextField maxResultsField;
-    private AbstractOrderedLayout maxResultsLayout;
+    protected AbstractOrderedLayout maxResultsLayout;
     private Boolean manualApplyRequired;
 
     private boolean editable = true;
@@ -120,12 +121,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
-    private FilterEntity noFilter;
+    protected FilterEntity noFilter;
     private FilterEntity filterEntityBeforeCopy;
 
-    private AppliedFilter lastAppliedFilter;
-    private LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
-    private VerticalLayout appliedFiltersLayout;
+    protected AppliedFilter lastAppliedFilter;
+    protected LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
+    protected VerticalLayout appliedFiltersLayout;
 
     private GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
     private ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
@@ -134,6 +135,14 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     protected HorizontalLayout topLayout = null;
 
     protected Metadata metadata = AppBeans.get(Metadata.class);
+
+    private static final String THESIS_MESSAGES_PACK = "com.haulmont.thesis.web.gui.components.filter";
+
+    protected ComponentsFactory factory;
+
+    protected com.haulmont.cuba.gui.components.Button filterModeButton;
+    protected HorizontalLayout modeLayout = new HorizontalLayout();
+    protected HorizontalLayout simpleTopLayout = new HorizontalLayout();
 
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
@@ -238,7 +247,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         updateControls();
     }
 
-    private void addApplied() {
+    protected void addApplied() {
         if (lastAppliedFilter == null)
             return;
 
@@ -506,7 +515,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             datasource.refresh();
     }
 
-    private void applyDatasourceFilter() {
+    protected void applyDatasourceFilter() {
         if (filterEntity != null && filterEntity.getXml() != null) {
             Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
             QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
@@ -554,7 +563,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         filterEntity = newFilterEntity;
     }
 
-    private String getComponentPath() {
+    protected String getComponentPath() {
         StringBuilder sb = new StringBuilder(getId());
         IFrame frame = getFrame();
         while (frame != null) {
@@ -570,7 +579,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return sb.toString();
     }
 
-    private void createParamsLayout(boolean focusOnConditions) {
+    protected void createParamsLayout(boolean focusOnConditions) {
         boolean hasGroups = false;
         for (AbstractCondition condition : conditions.getRoots()) {
             if (condition.isGroup() && !condition.isHidden()) {
@@ -931,7 +940,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private void loadFilterEntities() {
+    protected void loadFilterEntities() {
         DataService ds = AppBeans.get(DataService.class);
         LoadContext ctx = new LoadContext(metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class));
         ctx.setView("app");
@@ -1118,7 +1127,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private void switchToUse() {
+    protected void switchToUse() {
         editing = false;
         editor = null;
 
@@ -1139,7 +1148,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             component.addComponent(paramsLayout);
     }
 
-    private void switchToEdit() {
+    protected void switchToEdit() {
         editing = true;
         updateControls();
         component.removeComponent(paramsLayout);
@@ -1147,7 +1156,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         component.addComponent(editLayout);
     }
 
-    private void updateControls() {
+    protected void updateControls() {
         fillActions();
         actionsButton.setVisible(!editing);
         ((org.vaadin.hene.popupbutton.PopupButton) actionsButton.getComponent()).setPopupVisible(false);
@@ -1581,7 +1590,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return folderActionsEnabled;
     }
 
-    private boolean getResultingManualApplyRequired() {
+    protected boolean getResultingManualApplyRequired() {
         return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
