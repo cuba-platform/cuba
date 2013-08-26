@@ -88,7 +88,7 @@
           <para>Нажмите на кнопку <guibutton>OK</guibutton>. В указанном каталоге будет создан пустой проект, и откроется главное окно студии.</para>
         </listitem>
         <listitem>
-          <para>Сборка  проекта. В главном меню студии перейдите в пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Assemble project</guimenu>. На этом этапе будут загружены все необходимые библиотеки и в подкаталогах <filename>bin</filename> модулей будут собраны <link linkend="artifact">артефакты</link> проекта.</para>
+          <para>Сборка  проекта. В главном меню студии перейдите в пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Assemble project</guimenu>. На этом этапе будут загружены все необходимые библиотеки и в подкаталогах  <filename>build</filename>  модулей будут собраны <link linkend="artifact">артефакты</link> проекта.</para>
         </listitem>
         <listitem>
           <para>Создание базы данных на локальном сервере <application>HyperSQL</application>. Выберите пункт меню <guimenu>Run</guimenu> −&gt; <guimenu>Create database</guimenu>.  Имя БД по умолчанию совпадает с именем проекта.</para>
