@@ -9,10 +9,8 @@ package com.haulmont.cuba.gui.app.core.file;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,8 +27,14 @@ public class FileUploadDialog extends AbstractWindow {
 
     private UUID fileId;
 
+    private String fileName;
+
     public UUID getFileId() {
         return fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     @Override
@@ -40,6 +44,7 @@ public class FileUploadDialog extends AbstractWindow {
             @Override
             public void uploadSucceeded(Event event) {
                 fileId = fileUpload.getFileId();
+                fileName = fileUpload.getFileName();
                 close(Window.COMMIT_ACTION_ID);
             }
         });
