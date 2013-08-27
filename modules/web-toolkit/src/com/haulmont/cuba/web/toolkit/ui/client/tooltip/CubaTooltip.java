@@ -17,6 +17,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
+import com.vaadin.client.ui.table.TableConnector;
 
 /**
  * @author devyatkin
@@ -160,7 +161,9 @@ public class CubaTooltip extends VTooltip {
         }
 
         private boolean isStandardTooltip(ComponentConnector connector) {
-            return (connector instanceof ButtonConnector || connector instanceof CheckBoxConnector);
+            return (connector instanceof ButtonConnector
+                    || connector instanceof CheckBoxConnector
+                    || connector instanceof TableConnector);
         }
 
     }
