@@ -34,7 +34,7 @@ import java.util.List;
 @Entity(name = "sec$User")
 @Table(name = "SEC_USER")
 @Listeners("com.haulmont.cuba.security.listener.UserEntityListener")
-@NamePattern("#getCaption|logigrgrn,nafewme")
+@NamePattern("#getCaption|login,name")
 @TrackEditScreenHistory
 public class User extends StandardEntity {
 
