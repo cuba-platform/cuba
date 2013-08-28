@@ -69,9 +69,9 @@ public class MetadataTools {
 
     /**
      * Formats a value according to the property type.
-     * @param value     object to format
-     * @param property  metadata
-     * @return          formatted value as string, or null if value is null
+     * @param value    object to format
+     * @param property metadata
+     * @return formatted value as string, or null if value is null
      */
     @Nullable
     public String format(@Nullable Object value, MetaProperty property) {
@@ -166,8 +166,8 @@ public class MetadataTools {
      * Determine whether the given property is transient, that is not stored in the database.
      * <p/>Unlike {@link #isTransient(com.haulmont.chile.core.model.MetaProperty)} for objects and properties not
      * registered in metadata this method returns <code>true</code>.
-     * @param object    entity instance
-     * @param property  property name
+     * @param object   entity instance
+     * @param property property name
      */
     public boolean isTransient(Object object, String property) {
         Objects.requireNonNull(object, "object is null");
@@ -214,9 +214,9 @@ public class MetadataTools {
 
     /**
      * Determine whether the given annotation is present in the object's class or in any of its superclasses.
-     * @param object            entity instance
-     * @param property          property name
-     * @param annotationClass   annotation class
+     * @param object          entity instance
+     * @param property        property name
+     * @param annotationClass annotation class
      */
     public boolean isAnnotationPresent(Object object, String property, Class<? extends Annotation> annotationClass) {
         Objects.requireNonNull(object, "object is null");
@@ -225,9 +225,9 @@ public class MetadataTools {
 
     /**
      * Determine whether the given annotation is present in the object's class or in any of its superclasses.
-     * @param javaClass         entity class
-     * @param property          property name
-     * @param annotationClass   annotation class
+     * @param javaClass       entity class
+     * @param property        property name
+     * @param annotationClass annotation class
      * @return
      */
     public boolean isAnnotationPresent(Class javaClass, String property, Class<? extends Annotation> annotationClass) {
@@ -251,7 +251,7 @@ public class MetadataTools {
 
     /**
      * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
-     * @param metaClass     entity metaclass
+     * @param metaClass entity metaclass
      * @return collection of the name pattern properties
      */
     @Nonnull
@@ -261,9 +261,9 @@ public class MetadataTools {
 
     /**
      * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
-     * @param metaClass     entity metaclass
-     * @param useOriginal   if true, and if the given metaclass doesn't define a {@link NamePattern} and if it is an
-     *                      extended entity, this method tries to find a name pattern in an original entity
+     * @param metaClass   entity metaclass
+     * @param useOriginal if true, and if the given metaclass doesn't define a {@link NamePattern} and if it is an
+     *                    extended entity, this method tries to find a name pattern in an original entity
      * @return collection of the name pattern properties
      */
     @Nonnull
@@ -279,7 +279,12 @@ public class MetadataTools {
             String value = StringUtils.substringAfter(pattern, "|");
             String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
             for (String field : fields) {
-                properties.add(metaClass.getPropertyNN(field));
+                MetaProperty property = metaClass.getProperty(field);
+                if (property != null)
+                    properties.add(metaClass.getProperty(field));
+                else
+                    throw new DevelopmentException("Property '" + field + "' not found in "
+                            + metaClass.toString() + ". Pattern : '" + pattern + "'");
             }
         }
         return properties;
@@ -312,7 +317,7 @@ public class MetadataTools {
      * Collects {@link MetaPropertyPath}s defined by the given view, traversing the whole view graph.
      * @param view      starting view
      * @param metaClass metaclass for which the view was defined
-     * @return          collection of paths
+     * @return collection of paths
      */
     public Collection<MetaPropertyPath> getViewPropertyPaths(View view, MetaClass metaClass) {
         List<MetaPropertyPath> propertyPaths = new ArrayList<>(metaClass.getProperties().size());
@@ -327,8 +332,8 @@ public class MetadataTools {
 
     /**
      * Determine whether the view contains a property, traversing the view graph according to the given property path.
-     * @param view          view instance. If null, return false immediately.
-     * @param propertyPath  property path defining the property
+     * @param view         view instance. If null, return false immediately.
+     * @param propertyPath property path defining the property
      */
     public boolean viewContainsProperty(@Nullable View view, MetaPropertyPath propertyPath) {
         View currentView = view;
