@@ -99,7 +99,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     protected Button pinAppliedFilterBtn;
     private Button applyBtn;
 
-    private boolean defaultFilterEmpty = true;
+    protected boolean defaultFilterEmpty = true;
     private boolean changingFilter;
     private boolean applyingDefault;
     private boolean editing;
