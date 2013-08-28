@@ -1,17 +1,11 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 16.12.2008 19:33:33
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys.listener;
 
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.listener.*;
@@ -23,10 +17,16 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean("cuba_EntityListenerManager")
-public class EntityListenerManager
-{
+public class EntityListenerManager {
+
     private static class Key
     {
         private final Class entityClass;
@@ -62,22 +62,29 @@ public class EntityListenerManager
     @Inject
     private Persistence persistence;
 
-    private Map<Key, List> cache = new ConcurrentHashMap<Key, List>();
+    private Map<Key, List> cache = new ConcurrentHashMap<>();
 
-    private Map<Class<? extends BaseEntity>, Set<String>> dynamicListeners =
-            new ConcurrentHashMap<Class<? extends BaseEntity>, Set<String>>();
+    private Map<Class<? extends BaseEntity>, Set<String>> dynamicListeners = new ConcurrentHashMap<>();
+
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private volatile boolean enabled = true;
 
     public void addListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClass) {
-        Set<String> set = dynamicListeners.get(entityClass);
-        if (set == null) {
-            set = new HashSet<String>();
-            dynamicListeners.put(entityClass, set);
+        lock.writeLock().lock();
+        try {
+            Set<String> set = dynamicListeners.get(entityClass);
+            if (set == null) {
+                set = new HashSet<>();
+                dynamicListeners.put(entityClass, set);
+            }
+            set.add(listenerClass.getName());
+        } finally {
+            lock.writeLock().unlock();
         }
-        set.add(listenerClass.getName());
     }
 
+    @SuppressWarnings("unchecked")
     public void fireListener(BaseEntity entity, EntityListenerType type) {
         if (!enabled)
             return;
@@ -129,7 +136,7 @@ public class EntityListenerManager
             sb.append("Executing ").append(type).append(" entity listener for ")
                     .append(entity.getClass().getName()).append(" id=").append(entity.getId());
             if (type != EntityListenerType.BEFORE_DETACH) {
-                Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
+                Set<String> dirty = persistence.getTools().getDirtyFields(entity);
                 if (!dirty.isEmpty()) {
                     sb.append(", changedProperties: ");
                     for (Iterator<String> it = dirty.iterator(); it.hasNext();) {
@@ -180,9 +187,7 @@ public class EntityListenerManager
                 }
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Unable to find an Entity Listener class", e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to instantiate an Entity Listener", e);
-            } catch (InstantiationException e) {
+            } catch (IllegalAccessException | InstantiationException e) {
                 throw new RuntimeException("Unable to instantiate an Entity Listener", e);
             }
         }
@@ -190,33 +195,38 @@ public class EntityListenerManager
     }
 
     private List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
-         List<String> listeners = new ArrayList<String>();
+        lock.readLock().lock();
+        try {
+            List<String> listeners = new ArrayList<>();
 
-        List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
-        Collections.reverse(superclasses);
-        for (Class superclass : superclasses) {
-            Set<String> set = dynamicListeners.get(superclass);
+            List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
+            Collections.reverse(superclasses);
+            for (Class superclass : superclasses) {
+                Set<String> set = dynamicListeners.get(superclass);
+                if (set != null) {
+                    listeners.addAll(set);
+                }
+
+                Listeners annotation = (Listeners) superclass.getAnnotation(Listeners.class);
+                if (annotation != null) {
+                    listeners.addAll(Arrays.asList(annotation.value()));
+                }
+            }
+
+            Set<String> set = dynamicListeners.get(entityClass);
             if (set != null) {
                 listeners.addAll(set);
             }
 
-            Listeners annotation = (Listeners) superclass.getAnnotation(Listeners.class);
+            Listeners annotation = entityClass.getAnnotation(Listeners.class);
             if (annotation != null) {
                 listeners.addAll(Arrays.asList(annotation.value()));
             }
-        }
 
-        Set<String> set = dynamicListeners.get(entityClass);
-        if (set != null) {
-            listeners.addAll(set);
+            return listeners;
+        } finally {
+            lock.readLock().unlock();
         }
-
-        Listeners annotation = entityClass.getAnnotation(Listeners.class);
-        if (annotation != null) {
-            listeners.addAll(Arrays.asList(annotation.value()));
-        }
-
-        return listeners;
     }
 
 }
