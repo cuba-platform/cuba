@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -26,12 +25,12 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.*;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextArea;
@@ -1065,7 +1064,6 @@ public class WebFieldGroup
                             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                                 throw new RuntimeException("Unable to invoke clickAction", e);
                             }
-
                         } else {
                             throw new UnsupportedOperationException(String.format("Unsupported clickAction format: %s", clickAction));
                         }
@@ -1073,6 +1071,7 @@ public class WebFieldGroup
                 }
             });
             setStyleName("cuba-linkfield");
+            setConverter(new StringToEntityConverter());
         }
 
         @Override
@@ -1136,6 +1135,16 @@ public class WebFieldGroup
                         return field.getFormatter().format(value);
                     }
                     return super.getFormattedValue();
+                }
+
+                /**
+                 * Used in {@link LinkField#valueChange}.
+                 *
+                 * @return formatted value of property
+                 */
+                @Override
+                public String toString() {
+                    return getFormattedValue();
                 }
             };
         }
