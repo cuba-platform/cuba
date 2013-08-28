@@ -136,8 +136,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     protected Metadata metadata = AppBeans.get(Metadata.class);
 
-    private static final String THESIS_MESSAGES_PACK = "com.haulmont.thesis.web.gui.components.filter";
-
     protected ComponentsFactory factory;
 
     protected com.haulmont.cuba.gui.components.Button filterModeButton;
