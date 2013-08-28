@@ -73,6 +73,10 @@ public class App implements ConnectionListener {
 
     protected boolean exiting;
 
+    static {
+        initEnvironment();
+    }
+
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -82,6 +86,11 @@ public class App implements ConnectionListener {
                 app.showLoginDialog();
             }
         });
+    }
+
+    public static void initEnvironment() {
+        // Due to #PL-2421
+        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
     }
 
     public static App getInstance() {
