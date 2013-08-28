@@ -136,12 +136,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     protected Metadata metadata = AppBeans.get(Metadata.class);
 
-    protected ComponentsFactory factory;
-
-    protected com.haulmont.cuba.gui.components.Button filterModeButton;
-    protected HorizontalLayout modeLayout = new HorizontalLayout();
-    protected HorizontalLayout simpleTopLayout = new HorizontalLayout();
-
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         component = new CubaVerticalActionsLayout();
