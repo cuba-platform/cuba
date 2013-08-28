@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,16 +72,29 @@ public class WebLabel
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
 
-        if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
-            component.setConverter(new StringToEntityConverter());
-        else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
-            Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
-            if (datatype != null)
-                component.setConverter(new StringToDatatypeConverter(datatype));
-            else
+        switch (metaProperty.getType()) {
+            case ASSOCIATION:
+                component.setConverter(new StringToEntityConverter());
+                break;
+
+            case DATATYPE:
+                Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
+                if (datatype != null) {
+                    component.setConverter(new StringToDatatypeConverter(datatype));
+                } else {
+                    component.setConverter(null);
+                }
+                break;
+
+            case ENUM:
+                //noinspection unchecked
+                component.setConverter(new StringToEnumConverter(metaProperty.getRange().asEnumeration().getJavaClass()));
+                break;
+
+            default:
                 component.setConverter(null);
-        } else
-            component.setConverter(null);
+                break;
+        }
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
