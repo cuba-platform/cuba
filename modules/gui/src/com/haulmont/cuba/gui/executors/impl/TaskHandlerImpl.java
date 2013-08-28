@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
@@ -29,7 +30,8 @@ import static com.google.common.base.Preconditions.checkState;
  * @author artamonov
  * @version $Id$
  */
-public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
+public class
+        TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private Log log = LogFactory.getLog(BackgroundWorker.class);
 
@@ -57,7 +59,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
             };
             Window ownerWindow = task.getOwnerWindow();
             if (ownerWindow.getFrame() != null) {
-                ownerWindow = ownerWindow.getFrame();
+                ownerWindow = ComponentsHelper.getWindow(ownerWindow);
             }
             ownerWindow.addListener(closeListener);
         }
