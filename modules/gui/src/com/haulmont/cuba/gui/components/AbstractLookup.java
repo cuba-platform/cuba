@@ -16,14 +16,6 @@ public class AbstractLookup extends AbstractWindow implements Window.Lookup {
     public AbstractLookup() {
     }
 
-    /**
-     * DEPRECATED - use default constructor!
-     */
-    @Deprecated
-    public AbstractLookup(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public Component getLookupComponent() {
         return ((Lookup) frame).getLookupComponent();

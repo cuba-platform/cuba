@@ -20,14 +20,6 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     public AbstractEditor() {
     }
 
-    /**
-     * DEPRECATED - use default constructor!
-     */
-    @Deprecated
-    public AbstractEditor(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public T getItem() {
         return (T) ((Editor) frame).getItem();

@@ -183,7 +183,8 @@ public class EntityInspectorEditor extends AbstractEditor {
 
     private void createRuntimeDataComponents() {
         if (rDS != null && categories != null) {
-            RuntimePropertiesFrame runtimePropertiesFrame = new RuntimePropertiesFrame(frame);
+            RuntimePropertiesFrame runtimePropertiesFrame = new RuntimePropertiesFrame();
+            runtimePropertiesFrame.setFrame(frame);
             runtimePropertiesFrame.setDsContext(dsContext);
             runtimePropertiesFrame.setMessagesPack("com.haulmont.cuba.gui.app.core.entityinspector");
             Map<String, Object> params = new HashMap<String, Object>();

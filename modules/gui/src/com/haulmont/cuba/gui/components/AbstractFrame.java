@@ -34,14 +34,6 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     @Inject
     protected Messages messages;
 
-    /**
-     * DEPRECATED - use default constructor!
-     */
-    @Deprecated
-    public AbstractFrame(IFrame frame) {
-        this.frame = frame;
-    }
-
     public AbstractFrame() {
     }
 

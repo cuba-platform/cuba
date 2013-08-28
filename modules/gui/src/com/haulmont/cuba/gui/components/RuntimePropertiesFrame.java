@@ -25,7 +25,9 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Universal frame for editing Runtime properties
@@ -49,10 +51,6 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     private BoxLayout contentPane;
     private FieldGroup categoryFieldGroup;
     private boolean requiredControlEnabled = true;
-
-    public RuntimePropertiesFrame(IFrame frame) {
-        super(frame);
-    }
 
     public void init(Map<String, Object> params) {
         String dsId = (String) params.get("runtimeDs");
