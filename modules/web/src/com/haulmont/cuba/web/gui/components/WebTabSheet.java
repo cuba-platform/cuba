@@ -247,6 +247,9 @@ public class WebTabSheet
     @Override
     public Tab getTab() {
         final com.vaadin.ui.Component component = this.component.getSelectedTab();
+        if (component == null)
+            return null;
+
         final String name = components.get(component).getName();
         return tabs.get(name);
     }

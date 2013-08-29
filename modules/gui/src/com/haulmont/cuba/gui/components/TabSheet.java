@@ -22,6 +22,7 @@ public interface TabSheet extends Component, Component.BelongToFrame {
     Tab addLazyTab(String name, Element descriptor, ComponentLoader loader);
     void removeTab(String name);
 
+    /** Get current tab. May be null */
     Tab getTab();
     void setTab(Tab tab);
     void setTab(String name);
