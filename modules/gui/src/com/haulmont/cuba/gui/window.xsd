@@ -1366,12 +1366,7 @@
     <xs:element name="window">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="assign" minOccurs="0" maxOccurs="unbounded">
-                    <xs:complexType>
-                        <xs:attribute name="name" use="required"/>
-                        <xs:attribute name="value" use="required"/>
-                    </xs:complexType>
-                </xs:element>
+
                 <xs:element name="companions" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
@@ -1422,6 +1417,12 @@
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="actions" minOccurs="0" maxOccurs="1" type="frameActions"/>
+                <xs:element name="assign" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:attribute name="name" use="required"/>
+                        <xs:attribute name="value" use="required"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="layout" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>
@@ -1432,6 +1433,7 @@
                         <xs:attributeGroup ref="hasSpacingMargin"/>
                     </xs:complexType>
                 </xs:element>
+
             </xs:sequence>
 
             <xs:attribute name="extends" type="xs:string"/>
