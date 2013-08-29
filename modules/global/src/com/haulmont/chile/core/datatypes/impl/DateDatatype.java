@@ -99,6 +99,7 @@ public class DateDatatype implements Datatype<Date> {
         DateFormat format;
         if (formatPattern != null) {
             format = new SimpleDateFormat(formatPattern);
+            format.setLenient(false);
         } else {
             format = DateFormat.getDateInstance();
         }
@@ -115,6 +116,8 @@ public class DateDatatype implements Datatype<Date> {
             return parse(value);
 
         DateFormat format = new SimpleDateFormat(formatStrings.getDateFormat());
+        format.setLenient(false);
+
         return normalize(format.parse(value.trim()));
     }
 
