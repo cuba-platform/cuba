@@ -20,4 +20,15 @@
     font-size: 12px;
     cursor: pointer;
   }
+
+  .#{$primaryStyleName}-popup-abbreviated .v-csslayout {
+    width: 400px;
+    height: 300px;
+  }
+
+  .#{$primaryStyleName}-abbreviated {
+    text-decoration: none;
+    border-bottom: 1px dashed;
+    padding-bottom: 1px;
+  }
 }

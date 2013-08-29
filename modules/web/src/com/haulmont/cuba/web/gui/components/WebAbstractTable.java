@@ -108,6 +108,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     // Disable listener that points component value to follow the ds item.
     protected boolean disableItemListener = false;
 
+    protected static final int MAX_TEXT_LENGTH_GAP = 10;
+
     @Override
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -535,7 +537,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                         final Datatype datatype = propertyPath.getRange().asDatatype();
                         if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
-                        } else if (column.getMaxWidth() != null) {
+                        } else if (column.getMaxTextLength() != null) {
                             addGeneratedColumn(propertyPath, new AbbreviatedColumnGenerator(column));
                         }
                     }
@@ -1323,15 +1325,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
             com.vaadin.ui.Component cell;
 
             String stringValue = value.toString();
-            int maxWidth = column.getMaxWidth();
-            if (stringValue.length() > maxWidth)  {
+            int maxTextLength = column.getMaxTextLength();
+            if (stringValue.length() > maxTextLength + MAX_TEXT_LENGTH_GAP)  {
                 TextArea content = new TextArea(null, stringValue);
                 content.setWidth("100%");
                 content.setHeight("100%");
                 content.setReadOnly(true);
                 CssLayout cssLayout = new CssLayout();
                 cssLayout.addComponent(content);
-                cell = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(stringValue, maxWidth)),
+                cell = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(stringValue, maxTextLength)),
                         cssLayout);
                 cell.addStyleName("abbreviated");
             } else {

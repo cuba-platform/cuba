@@ -261,7 +261,7 @@ public interface Table
         protected boolean collapsed;
         protected AggregationInfo aggregation;
         protected boolean calculatable;
-        protected Integer maxWidth;
+        protected Integer maxTextLength;
 
         protected Class type;
         private Element element;
@@ -356,12 +356,12 @@ public interface Table
             this.calculatable = calculatable;
         }
 
-        public Integer getMaxWidth() {
-            return maxWidth;
+        public Integer getMaxTextLength() {
+            return maxTextLength;
         }
 
-        public void setMaxWidth(Integer maxWidth) {
-            this.maxWidth = maxWidth;
+        public void setMaxTextLength(Integer maxTextLength) {
+            this.maxTextLength = maxTextLength;
         }
 
         @Override

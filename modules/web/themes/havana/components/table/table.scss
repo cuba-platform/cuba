@@ -12,11 +12,6 @@
   background-position: center center;
 }
 
-.v-popupview-popup-abbreviated .v-csslayout {
-  width: 400px;
-  height: 300px;
-}
-
 @mixin havana-table($primaryStyleName : v-table) {
   .#{$primaryStyleName} {
     text-align: left;
@@ -29,12 +24,6 @@
     .checkbox-unchecked {
       @include readonly-checkbox;
       background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
-    }
-
-    .v-popupview-abbreviated {
-      text-decoration: none;
-      border-bottom: 1px dashed;
-      padding-bottom: 1px;
     }
 
     .#{$primaryStyleName}-header-wrap {
