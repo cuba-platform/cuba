@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -22,9 +23,9 @@ public class DeclarativeTrackingAction extends DeclarativeAction implements Coll
 
     protected boolean enabledFlag = true;
 
-    public DeclarativeTrackingAction(String id, String caption, String icon, String enable,
-                                     String visible, String methodName, Component.ActionsHolder holder) {
-        super(id, caption, icon, enable, visible, methodName, holder);
+    public DeclarativeTrackingAction(String id, String caption, String icon, String enable, String visible,
+                                     String methodName, @Nullable String shortcut, Component.ActionsHolder holder) {
+        super(id, caption, icon, enable, visible, methodName, shortcut, holder);
     }
 
     @Override

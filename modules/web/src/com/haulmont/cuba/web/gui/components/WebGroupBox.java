@@ -208,8 +208,8 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
 
     @Override
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
-        if (action instanceof ShortcutAction) {
-            actions.put(WebComponentsHelper.createShortcutAction((ShortcutAction) action), action);
+        if (action.getShortcut() != null) {
+            actions.put(WebComponentsHelper.createShortcutAction(action), action);
         }
         actionsOrder.add(action);
     }

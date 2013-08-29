@@ -6,11 +6,14 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.components.filter.ParamType;
@@ -48,15 +51,19 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
     }
 
     protected void initShortcuts() {
-        KeyStroke esc = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
+        KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
+
         Action escAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 closeDlg();
             }
         };
-        DesktopComponentsHelper.addShortcutAction("escape", impl.getRootPane(), esc, escAction);
-        KeyStroke commitKey = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, false);
+        DesktopComponentsHelper.addShortcutAction("close", impl.getRootPane(),
+                DesktopComponentsHelper.convertKeyCombination(close), escAction);
+
         Action commitAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,7 +72,8 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
                 }
             }
         };
-        DesktopComponentsHelper.addShortcutAction("commit", impl.getRootPane(), commitKey, commitAction);
+        DesktopComponentsHelper.addShortcutAction("commit", impl.getRootPane(),
+                DesktopComponentsHelper.convertKeyCombination(commit), commitAction);
     }
 
     @Override

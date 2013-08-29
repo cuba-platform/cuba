@@ -110,6 +110,22 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.tableRemoveShortcut")
     String getTableRemoveShortcut();
 
+    @DefaultString("ENTER")
+    @Property("cuba.gui.tableEditShortcut")
+    String getTableEditShortcut();
+
+    @DefaultString("CTRL-ENTER")
+    @Property("cuba.gui.commitShortcut")
+    String getCommitShortcut();
+
+    @DefaultString("ESCAPE")
+    @Property("cuba.gui.closeShortcut")
+    String getCloseShortcut();
+
+    @DefaultString("SHIFT-ENTER")
+    @Property("cuba.gui.filterApplyShortcut")
+    String getFilterApplyShortcut();
+
     /**
      * @return If false, the client loads all server views on startup.
      * If true, it loads views one by one only when needed.

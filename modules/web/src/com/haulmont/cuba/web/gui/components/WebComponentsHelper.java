@@ -291,13 +291,17 @@ public class WebComponentsHelper {
         );
     }
 
-    public static com.vaadin.event.ShortcutAction createShortcutAction(ShortcutAction action) {
-        ShortcutAction.KeyCombination keyCombination = action.getKeyCombination();
-        return new com.vaadin.event.ShortcutAction(
-                action.getCaption(),
-                keyCombination.getKey().getCode(),
-                ShortcutAction.Modifier.codes(keyCombination.getModifiers())
-        );
+    public static com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
+        KeyCombination keyCombination = action.getShortcut();
+        if (keyCombination != null) {
+            return new com.vaadin.event.ShortcutAction(
+                    action.getCaption(),
+                    keyCombination.getKey().getCode(),
+                    KeyCombination.Modifier.codes(keyCombination.getModifiers())
+            );
+        } else {
+            return null;
+        }
     }
 
     /**

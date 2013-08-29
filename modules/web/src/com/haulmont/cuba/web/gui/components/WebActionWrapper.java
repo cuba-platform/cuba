@@ -26,6 +26,11 @@ class WebActionWrapper extends com.vaadin.event.Action {
 
     @Override
     public String getCaption() {
-        return action.getCaption();
+        StringBuilder sb = new StringBuilder();
+        sb.append(action.getCaption());
+        if (action.getShortcut() != null) {
+            sb.append("(").append(action.getShortcut().format()).append(")");
+        }
+        return sb.toString();
     }
 }

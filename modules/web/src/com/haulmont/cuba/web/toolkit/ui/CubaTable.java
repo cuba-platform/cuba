@@ -183,15 +183,11 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     @Override
     public void addShortcutListener(ShortcutListener listener) {
-        /*if (listener.getKeyCode() != 13 || !(listener.getModifiers() == null || listener.getModifiers().length > 0)) {*/
         shortcutsManager.addAction(listener);
-        /*} else
-            shortcutListeners.add(listener);*/
     }
 
     @Override
     public void removeShortcutListener(ShortcutListener listener) {
-        /*shortcutListeners.remove(listener);*/
         shortcutsManager.removeAction(listener);
     }
 

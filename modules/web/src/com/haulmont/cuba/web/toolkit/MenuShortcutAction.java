@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.web.toolkit;
 
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.MenuBar;
 
@@ -23,8 +24,7 @@ public class MenuShortcutAction extends ShortcutListener {
         this.menuItem = menuItem;
     }
 
-    public MenuShortcutAction(MenuBar.MenuItem menuItem, String caption,
-                              com.haulmont.cuba.gui.components.ShortcutAction.KeyCombination key) {
+    public MenuShortcutAction(MenuBar.MenuItem menuItem, String caption, KeyCombination key) {
         this(menuItem, caption, key.getKey().getCode(), getShortcutModifiers(key.getModifiers()));
     }
 
@@ -33,7 +33,7 @@ public class MenuShortcutAction extends ShortcutListener {
         menuItem.getCommand().menuSelected(menuItem);
     }
 
-    public static int[] getShortcutModifiers(com.haulmont.cuba.gui.components.ShortcutAction.Modifier[] modifiers) {
+    public static int[] getShortcutModifiers(KeyCombination.Modifier[] modifiers) {
         if (modifiers == null) {
             return null;
         }

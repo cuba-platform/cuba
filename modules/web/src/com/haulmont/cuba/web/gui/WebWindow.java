@@ -944,9 +944,7 @@ public class WebWindow implements Window, Component.Wrapper,
         private SelectAction selectAction;
 
         public Lookup() {
-            super();
-            addAction(new AbstractShortcutAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID,
-                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
+            addAction(new AbstractAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID, "CTRL-ENTER") {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                     fireSelectAction();

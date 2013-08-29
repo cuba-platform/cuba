@@ -9,6 +9,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -45,12 +46,14 @@ public class EditorWindowDelegate extends WindowDelegate {
     public Window wrapBy(Class<Window> wrapperClass) {
         final Window.Editor editor = (Window.Editor) super.wrapBy(wrapperClass);
 
-        final Component commitAndCloseButton = ComponentsHelper.findComponent(editor, Window.Editor.WINDOW_COMMIT_AND_CLOSE);
+        final Component commitAndCloseButton = ComponentsHelper.findComponent(editor,
+                Window.Editor.WINDOW_COMMIT_AND_CLOSE);
+        String commitShortcut = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCommitShortcut();
         if (commitAndCloseButton != null) {
             commitAndCloseButtonExists = true;
 
             this.window.addAction(
-                    new AbstractAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE) {
+                    new AbstractAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE, commitShortcut) {
                         @Override
                         public String getCaption() {
                             return messages.getMainMessage("actions.OkClose");
@@ -63,33 +66,26 @@ public class EditorWindowDelegate extends WindowDelegate {
             );
         }
 
-        this.window.addAction(
-                new AbstractAction(Window.Editor.WINDOW_COMMIT) {
-                    @Override
-                    public String getCaption() {
-                        return messages.getMainMessage("actions.Ok");
-                    }
+        AbstractAction commitAction = new AbstractAction(Window.Editor.WINDOW_COMMIT) {
+            @Override
+            public String getCaption() {
+                return messages.getMainMessage("actions.Ok");
+            }
 
-                    public void actionPerform(Component component) {
-                        if (!commitAndCloseButtonExists) {
-                            editor.commitAndClose();
-                        } else {
-                            if (editor.commit()) {
-                                commitActionPerformed = true;
-                            }
-                        }
+            public void actionPerform(Component component) {
+                if (!commitAndCloseButtonExists) {
+                    editor.commitAndClose();
+                } else {
+                    if (editor.commit()) {
+                        commitActionPerformed = true;
                     }
                 }
-        );
-
-        this.window.addAction(new AbstractShortcutAction("commitAndCloseShortcutAction",
-                new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
-
-            @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                editor.commitAndClose();
             }
-        });
+        };
+        if (!commitAndCloseButtonExists) {
+            commitAction.setShortcut(commitShortcut);
+        }
+        this.window.addAction(commitAction);
 
 
         this.window.addAction(
@@ -153,8 +149,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         }
 
         if (PersistenceHelper.isNew(item)
-                && !ds.getMetaClass().equals(item.getMetaClass()))
-        {
+                && !ds.getMetaClass().equals(item.getMetaClass())) {
             Entity newItem = ds.getDataSupplier().newInstance(ds.getMetaClass());
             InstanceUtils.copy(item, newItem);
             item = newItem;

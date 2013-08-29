@@ -102,9 +102,13 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public abstract Action createAction(PickerField pickerField);
     }
 
-    public static abstract class StandardAction extends AbstractAction implements ShortcutAction {
+    ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+
+    public static abstract class StandardAction extends AbstractAction {
 
         protected PickerField pickerField;
+
+        protected ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
 
         public StandardAction(String id, PickerField pickerField) {
             super(id);
@@ -133,6 +137,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             super(NAME, pickerField);
             caption = "";
             icon = "components/pickerfield/images/lookup-btn.png";
+            setShortcut(clientConfig.getPickerLookupShortcut());
         }
 
         public String getLookupScreen() {
@@ -199,12 +204,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         public void afterCloseLookup(String actionId) {
         }
-
-        @Override
-        public KeyCombination getKeyCombination() {
-            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-            return KeyCombination.create(clientConfig.getPickerLookupShortcut());
-        }
     }
 
     public static class ClearAction extends StandardAction {
@@ -215,6 +214,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             super(NAME, pickerField);
             caption = "";
             icon = "components/pickerfield/images/clear-btn.png";
+            setShortcut(clientConfig.getPickerClearShortcut());
         }
 
         @Override
@@ -222,12 +222,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
             if (pickerField.isEditable()) {
                 pickerField.setValue(null);
             }
-        }
-
-        @Override
-        public KeyCombination getKeyCombination() {
-            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-            return KeyCombination.create(clientConfig.getPickerClearShortcut());
         }
     }
 
@@ -245,6 +239,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             super(NAME, pickerField);
             caption = "";
             icon = "components/pickerfield/images/open-btn.png";
+            setShortcut(clientConfig.getPickerOpenShortcut());
         }
 
         public String getEditScreen() {
@@ -376,12 +371,6 @@ public interface PickerField extends Field, Component.ActionsHolder {
             }
 
             return sb.toString();
-        }
-
-        @Override
-        public KeyCombination getKeyCombination() {
-            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-            return KeyCombination.create(clientConfig.getPickerOpenShortcut());
         }
     }
 }

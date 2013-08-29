@@ -37,6 +37,20 @@ public interface Action {
     void setCaption(String caption);
 
     /**
+     *
+     * @return action's shortcut
+     */
+    KeyCombination getShortcut();
+    void setShortcut(KeyCombination shortcut);
+
+    /**
+     * Set shortcut from string representation.
+     *
+     * @param shortcut string of type "Modifiers-Key", e.g. "Alt-N". Case-insensitive.
+     */
+    void setShortcut(String shortcut);
+
+    /**
      * @return  action's icon
      */
     String getIcon();

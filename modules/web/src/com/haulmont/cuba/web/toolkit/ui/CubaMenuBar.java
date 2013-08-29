@@ -6,9 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.web.toolkit.ui.client.menubar.CubaMenuBarState;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
@@ -44,22 +42,8 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
         }
     }
 
-    public void setShortcut(MenuItem item, ShortcutAction.KeyCombination shortcut) {
-        setShortcut(item, makeCaption(shortcut));
-    }
-
-    private String makeCaption(ShortcutAction.KeyCombination shortcut) {
-        Messages messages = AppBeans.get(Messages.class);
-
-        StringBuilder sb = new StringBuilder();
-        if (shortcut.getModifiers() != null) {
-            for (ShortcutAction.Modifier mod : shortcut.getModifiers()) {
-                sb.append(messages.getMessage(getClass(), "shortcut." + mod.name()))
-                        .append("+");
-            }
-        }
-        sb.append(messages.getMessage(getClass(), "shortcut." + shortcut.getKey().name()));
-        return sb.toString();
+    public void setShortcut(MenuItem item, KeyCombination shortcut) {
+        setShortcut(item, shortcut.format());
     }
 
     public void setShortcut(MenuItem item, String str) {

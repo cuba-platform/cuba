@@ -8,7 +8,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
@@ -26,7 +25,7 @@ import java.util.*;
 public class DesktopFrameActionsHolder {
 
     private List<Action> actionList = new LinkedList<Action>();
-    private Map<ShortcutAction,KeyStroke> shortcutActions = new HashMap<ShortcutAction,KeyStroke>();
+    private Map<Action, KeyStroke> shortcutActions = new HashMap<>();
 
     private Component component;
     private JPanel panel;
@@ -37,10 +36,8 @@ public class DesktopFrameActionsHolder {
     }
 
     public void addAction(final Action action) {
-        if (action instanceof ShortcutAction) {
-            ShortcutAction.KeyCombination combination = ((ShortcutAction) action).getKeyCombination();
-
-            KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(combination);
+        if (action.getShortcut() !=null ) {
+            KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
             InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             inputMap.put(keyStroke, action.getId());
             ActionMap actionMap = panel.getActionMap();
@@ -51,7 +48,7 @@ public class DesktopFrameActionsHolder {
                     action.actionPerform(component);
                 }
             });
-            shortcutActions.put((ShortcutAction) action, keyStroke);
+            shortcutActions.put(action, keyStroke);
         }
 
         for (int i = 0; i < actionList.size(); i++) {
@@ -65,7 +62,7 @@ public class DesktopFrameActionsHolder {
     }
 
     public void removeAction(Action action) {
-        if (action instanceof ShortcutAction) {
+        if (action.getShortcut() != null) {
             InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             ActionMap actionMap = panel.getActionMap();
             KeyStroke keyStroke = shortcutActions.get(action);

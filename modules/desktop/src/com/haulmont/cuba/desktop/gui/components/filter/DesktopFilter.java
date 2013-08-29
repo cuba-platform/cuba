@@ -136,18 +136,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
 
-        InputMap inputMap = impl.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        ActionMap actionMap = impl.getActionMap();
-
-        KeyStroke applyFilterKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK, false);
-        inputMap.put(applyFilterKeyStroke, "applyFilter");
-        actionMap.put("applyFilter", new javax.swing.AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                apply(false);
-            }
-        });
-
         noFilter = new FilterEntity() {
             @Override
             public String toString() {
@@ -194,6 +182,18 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl.add(paramsPanel);
 
         updateControls();
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        frame.addAction(new AbstractAction("applyFilter", clientConfig.getFilterApplyShortcut()) {
+            @Override
+            public void actionPerform(Component component) {
+                apply(false);
+            }
+        });
     }
 
     @Override

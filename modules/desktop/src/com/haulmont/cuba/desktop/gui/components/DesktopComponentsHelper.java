@@ -127,16 +127,16 @@ public class DesktopComponentsHelper {
     }
 
     /**
-     * Convert {@link ShortcutAction.KeyCombination} to {@link KeyStroke}.
+     * Convert {@link KeyCombination} to {@link KeyStroke}.
      *
      * @param combination Key combination to convert
      * @return KeyStroke
      */
-    public static KeyStroke convertKeyCombination(ShortcutAction.KeyCombination combination) {
-        ShortcutAction.Modifier[] modifiers = combination.getModifiers();
+    public static KeyStroke convertKeyCombination(KeyCombination combination) {
+        KeyCombination.Modifier[] modifiers = combination.getModifiers();
         int modifiersMask = 0;
         if (modifiers != null && modifiers.length > 0) {
-            for (ShortcutAction.Modifier modifier : modifiers) {
+            for (KeyCombination.Modifier modifier : modifiers) {
                 modifiersMask = modifiersMask | convertModifier(modifier);
             }
         }
@@ -149,7 +149,7 @@ public class DesktopComponentsHelper {
      * @param modifier modifier to convert
      * @return {@link InputEvent} modifier constraint
      */
-    public static int convertModifier(ShortcutAction.Modifier modifier) {
+    public static int convertModifier(KeyCombination.Modifier modifier) {
         switch (modifier) {
             case CTRL:
                 return InputEvent.CTRL_DOWN_MASK;

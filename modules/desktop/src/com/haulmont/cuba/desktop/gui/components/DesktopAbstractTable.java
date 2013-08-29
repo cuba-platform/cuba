@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
@@ -26,7 +25,6 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
@@ -207,9 +205,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     }
                 });
 
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-        addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
-        addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
 
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
@@ -239,16 +234,22 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         layout.setComponentConstraints(scrollPane, cc);
     }
 
-    protected void addShortcutActionBridge(String shortcutActionId, String keyCombination,
-                                           final ListActionType defaultAction) {
-        ShortcutAction.KeyCombination actionKeyCombination = ShortcutAction.KeyCombination.create(keyCombination);
-        impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(actionKeyCombination), shortcutActionId);
-        impl.getActionMap().put(shortcutActionId, new AbstractAction() {
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+        if (action.getShortcut() != null) {
+            addShortcutActionBridge(action.getId(), action.getShortcut());
+        }
+    }
+
+    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
+        impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
+        impl.getActionMap().put(actionId, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Action listAction = getAction(defaultAction.getId());
-                if ((listAction != null) && (listAction.isEnabled()))
-                    listAction.actionPerform(DesktopAbstractTable.this);
+                Action action = getAction(actionId);
+                if ((action != null) && (action.isEnabled()))
+                    action.actionPerform(DesktopAbstractTable.this);
             }
         });
     }
@@ -1177,6 +1178,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             menuItem = new JMenuItem(action.getCaption());
             if (action.getIcon() != null) {
                 menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
+            }
+            if(action.getShortcut()!=null){
+                menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
             }
             menuItem.setEnabled(action.isEnabled());
             menuItem.setVisible(action.isVisible());

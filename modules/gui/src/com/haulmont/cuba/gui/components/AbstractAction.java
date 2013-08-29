@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -44,15 +45,41 @@ public abstract class AbstractAction implements Action {
 
     protected UserSession userSession;
 
+    protected KeyCombination shortcut;
+
     protected AbstractAction(String id) {
         this.id = id;
         messages = AppBeans.get(Messages.class);
         userSession = AppBeans.get(UserSessionSource.class).getUserSession();
     }
 
+    protected AbstractAction(String id, @Nullable String shortcut){
+        this(id);
+        if (shortcut != null) {
+            this.shortcut = KeyCombination.create(shortcut);
+        }
+    }
+
     @Override
     public String getId() {
         return id;
+    }
+
+    public KeyCombination getShortcut() {
+        return shortcut;
+    }
+
+    public void setShortcut(KeyCombination shortcut) {
+        this.shortcut = shortcut;
+    }
+
+    @Override
+    public void setShortcut(String shortcut) {
+        if (shortcut != null) {
+            this.shortcut = KeyCombination.create(shortcut);
+        } else {
+            this.shortcut = null;
+        }
     }
 
     @Override

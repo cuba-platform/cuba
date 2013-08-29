@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -244,6 +245,19 @@ public class WebPopupButton
         @Override
         public void setCaption(String caption) {
             action.setCaption(caption);
+        }
+
+        @Override
+        public KeyCombination getShortcut() {
+            return null;
+        }
+
+        @Override
+        public void setShortcut(KeyCombination shortcut) {
+        }
+
+        @Override
+        public void setShortcut(String shortcut) {
         }
 
         @Override

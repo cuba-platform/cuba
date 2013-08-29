@@ -6,10 +6,14 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -68,6 +72,8 @@ public class EditAction extends ItemTrackingAction {
         this.owner = owner;
         this.openType = openType;
         this.icon = "icons/edit.png";
+        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        setShortcut(config.getTableEditShortcut());
     }
 
     @Override

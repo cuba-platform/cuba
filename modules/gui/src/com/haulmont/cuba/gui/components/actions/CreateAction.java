@@ -11,7 +11,10 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.*;
@@ -67,7 +70,7 @@ public class CreateAction extends AbstractAction {
      * @param id        action name
      */
     public CreateAction(ListComponent owner, WindowManager.OpenType openType, String id) {
-        super(id);
+        super(id, AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getTableInsertShortcut());
         this.owner = owner;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Create");

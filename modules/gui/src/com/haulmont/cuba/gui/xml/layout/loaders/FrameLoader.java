@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
-import com.haulmont.cuba.gui.xml.DeclarativeShortcutAction;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -227,29 +226,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         } else {
             frame.setMessagesPack(msgPack);
             setMessagesPack(this.messagesPack);
-        }
-    }
-
-    @Override
-    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
-        String shortcut = element.attributeValue("shortcut");
-        if (!StringUtils.isBlank(shortcut)) {
-            String id = element.attributeValue("id");
-            if (id == null)
-                throw new IllegalStateException("No action id provided");
-
-            return new DeclarativeShortcutAction(
-                    id,
-                    loadResourceString(element.attributeValue("caption")),
-                    loadResourceString(element.attributeValue("icon")),
-                    element.attributeValue("enable"),
-                    element.attributeValue("visible"),
-                    element.attributeValue("invoke"),
-                    shortcut,
-                    actionsHolder
-            );
-        } else {
-            return super.loadDeclarativeAction(actionsHolder, element);
         }
     }
 

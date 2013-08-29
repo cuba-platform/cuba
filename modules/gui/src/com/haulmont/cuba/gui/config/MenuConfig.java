@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -195,7 +195,7 @@ public class MenuConfig {
                 return;
         }
         try {
-            menuItem.setShortcut(ShortcutAction.KeyCombination.create(shortcut));
+            menuItem.setShortcut(KeyCombination.create(shortcut));
         } catch (IllegalArgumentException e) {
             log.warn("Invalid menu shortcut value: '" + shortcut + "'");
         }

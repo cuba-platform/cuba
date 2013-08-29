@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
@@ -194,9 +194,9 @@ public class MenuBuilder {
 
     private void assignShortcut(JMenuItem jMenuItem, MenuItem item) {
         if (item.getShortcut() != null) {
-            ShortcutAction.Key key = item.getShortcut().getKey();
-            ShortcutAction.Modifier[] modifiers = item.getShortcut().getModifiers();
-            ShortcutAction.KeyCombination combo = new ShortcutAction.KeyCombination(key, modifiers);
+            KeyCombination.Key key = item.getShortcut().getKey();
+            KeyCombination.Modifier[] modifiers = item.getShortcut().getModifiers();
+            KeyCombination combo = new KeyCombination(key, modifiers);
             jMenuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(combo));
         }
     }

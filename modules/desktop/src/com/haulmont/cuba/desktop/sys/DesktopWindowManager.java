@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.App;
@@ -271,10 +272,11 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected void addShortcuts(final Window window) {
-        window.addAction(new AbstractShortcutAction("escapeAction",
-                new ShortcutAction.KeyCombination(ShortcutAction.Key.ESCAPE)) {
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        String keys = clientConfig.getCloseShortcut();
+        window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("closeWindowShortcutAction", keys) {
             @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+            public void actionPerform(Component component) {
                 window.close("close");
             }
         });

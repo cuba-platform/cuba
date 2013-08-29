@@ -50,7 +50,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
     protected AutoCompleteTextField joinText;
     protected LookupField typeSelect;
     protected CheckBox typeCheckBox;
-    protected TextField entityParamWhereText;
+    protected TextArea entityParamWhereText;
     protected TextField entityParamViewText;
     protected Button btnOk;
     protected Button btnCancel;
@@ -156,9 +156,9 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         entityParamWhereLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityParamWhereLab"));
         entityParamWhereLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 
-        entityParamWhereText = factory.createComponent(TextField.NAME);
+        entityParamWhereText = factory.createComponent(TextArea.NAME);
         entityParamWhereText.setWidth(FIELD_WIDTH);
-        entityParamWhereText.setHeight("200px");
+        entityParamWhereText.setRows(4);
         entityParamWhereText.setValue(condition.getEntityParamWhere());
         entityParamWhereText.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 

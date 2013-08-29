@@ -9,7 +9,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
@@ -27,8 +26,8 @@ public class WebFrameActionsHolder {
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public void addAction(Action action) {
-        if (action instanceof ShortcutAction) {
-            actions.put(WebComponentsHelper.createShortcutAction((ShortcutAction) action), action);
+        if (action.getShortcut() != null) {
+            actions.put(WebComponentsHelper.createShortcutAction(action), action);
         }
 
         for (int i = 0; i < actionList.size(); i++) {

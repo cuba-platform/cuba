@@ -9,6 +9,7 @@ package com.haulmont.cuba.gui.xml;
 import com.haulmont.cuba.gui.components.*;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 /**
@@ -21,8 +22,8 @@ public class DeclarativeAction extends AbstractAction {
     private String methodName;
 
     public DeclarativeAction(String id, String caption, String icon, String enable, String visible,
-                             String methodName, Component.ActionsHolder holder) {
-        super(id);
+                             String methodName, @Nullable String shortcut, Component.ActionsHolder holder) {
+        super(id, shortcut);
         this.caption = caption;
         this.icon = icon;
         this.enabled = enable == null ? true : Boolean.valueOf(enable);

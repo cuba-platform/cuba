@@ -392,6 +392,16 @@
         <xs:attribute name="icon" type="xs:string" use="optional"/>
         <xs:attribute name="trackSelection" type="xs:boolean" use="optional"/>
         <xs:attribute name="invoke" type="xs:string" use="optional"/>
+        <xs:attribute name="shortcut" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="popupButtonAction">
+        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attribute name="icon" type="xs:string" use="optional"/>
+        <xs:attribute name="invoke" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- Components -->
@@ -678,7 +688,7 @@
     <!-- PopupButton -->
     <xs:complexType name="popupButtonComponent">
         <xs:sequence>
-            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="popupButtonAction"/>
         </xs:sequence>
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasCaption"/>

@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.event.Action;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.ui.*;
 
@@ -20,14 +21,14 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class CubaPickerField extends com.vaadin.ui.CustomField {
+public class CubaPickerField extends com.vaadin.ui.CustomField implements Action.Container {
 
     public static final int DEFAULT_WIDTH = 250;
 
     protected com.vaadin.ui.AbstractField field;
 
     protected List<Button> buttons = new ArrayList<>();
-    private HorizontalLayout container;
+    private CubaHorizontalActionsLayout container;
 
     public CubaPickerField() {
         initTextField();
@@ -50,7 +51,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField {
     }
 
     protected void initLayout() {
-        container = new HorizontalLayout();
+        container = new CubaHorizontalActionsLayout();
         container.setWidth("100%");
 
         container.addComponent(field);
@@ -186,4 +187,15 @@ public class CubaPickerField extends com.vaadin.ui.CustomField {
     public void removeAllValidators() {
         field.removeAllValidators();
     }
+
+    @Override
+    public void addActionHandler(Action.Handler actionHandler) {
+        container.addActionHandler(actionHandler);
+    }
+
+    @Override
+    public void removeActionHandler(Action.Handler actionHandler) {
+        container.removeActionHandler(actionHandler);
+    }
+
 }

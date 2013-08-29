@@ -6,7 +6,10 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -65,6 +68,8 @@ public class RemoveAction extends ItemTrackingAction {
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");
         this.icon = "icons/remove.png";
+        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        setShortcut(config.getTableRemoveShortcut());
     }
 
     /**

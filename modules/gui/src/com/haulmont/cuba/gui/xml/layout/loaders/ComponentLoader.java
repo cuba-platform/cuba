@@ -386,6 +386,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
 
         String trackSelection = element.attributeValue("trackSelection");
+        String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
         if (isBoolean(trackSelection) && Boolean.parseBoolean(trackSelection)) {
             return new DeclarativeTrackingAction(
                     id,
@@ -394,6 +395,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
                     element.attributeValue("invoke"),
+                    shortcut,
                     actionsHolder
             );
         } else {
@@ -404,6 +406,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
                     element.attributeValue("invoke"),
+                    shortcut,
                     actionsHolder
             );
         }

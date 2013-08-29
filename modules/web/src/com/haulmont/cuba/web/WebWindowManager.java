@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
@@ -71,7 +72,7 @@ public class WebWindowManager extends WindowManager {
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
-    private ShortcutListener escapeShortcut = null;
+    private ShortcutListener closeShortcut = null;
 
     public WebWindowManager(final App app) {
         this.app = app;
@@ -332,15 +333,18 @@ public class WebWindowManager extends WindowManager {
             }
         }
 
-        if (escapeShortcut == null)
-            escapeShortcut = createEscapeShortcut();
-
-//        vaadin7 actions
-//        appWindow.getMainLayout().getWindow().addAction(escapeShortcut);
+        if (closeShortcut == null)
+            closeShortcut = createCloseShortcut();
+        appWindow.addAction(closeShortcut);
     }
 
-    private ShortcutListener createEscapeShortcut() {
-        return new ShortcutListener("onEscape", com.vaadin.event.ShortcutAction.KeyCode.ESCAPE, null) {
+    private ShortcutListener createCloseShortcut() {
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        String closeShortcut = clientConfig.getCloseShortcut();
+        KeyCombination combination = KeyCombination.create(closeShortcut);
+
+        return new ShortcutListener("onClose", combination.getKey().getCode(),
+                KeyCombination.Modifier.codes(combination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
                 AppWindow appWindow = app.getAppWindow();
@@ -1029,12 +1033,13 @@ public class WebWindowManager extends WindowManager {
                 switch (((DialogAction) action).getType()) {
                     case OK:
                     case YES:
-                        button.setClickShortcut(ShortcutAction.Key.ENTER.getCode(), ShortcutAction.Modifier.CTRL.getCode());
+                        button.setClickShortcut(KeyCombination.Key.ENTER.getCode(),
+                                KeyCombination.Modifier.CTRL.getCode());
                         break;
                     case NO:
                     case CANCEL:
                     case CLOSE:
-                        button.setClickShortcut(ShortcutAction.Key.ESCAPE.getCode());
+                        button.setClickShortcut(KeyCombination.Key.ESCAPE.getCode());
                         break;
                 }
             }

@@ -320,11 +320,8 @@ public class WebPickerField
     }
 
     protected void initActionHandler() {
-//        vaadin7
-//        com.vaadin.event.Action.Container actionContainer = ((com.vaadin.event.Action.Container) component.getField());
         actionHandler = new WebPickerFieldActionHandler(this);
-//        vaadin7
-//        actionContainer.addActionHandler(actionHandler);
+        component.addActionHandler(actionHandler);
     }
 
     private static class PickerButton extends WebButton {

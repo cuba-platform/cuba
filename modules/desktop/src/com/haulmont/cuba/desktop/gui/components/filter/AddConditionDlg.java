@@ -7,12 +7,15 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
@@ -100,10 +103,16 @@ public class AddConditionDlg extends JDialog {
         add(cancelBtn);
         cancelBtn.addActionListener(cancelAction);
 
-        tree.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl ENTER"), "commit");
-        tree.getActionMap().put("commit", commitAction);
-        tree.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "cancel");
-        tree.getActionMap().put("cancel", new CancelAction());
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
+        KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
+
+        DesktopComponentsHelper.addShortcutAction("close", getRootPane(),
+                DesktopComponentsHelper.convertKeyCombination(close), cancelAction);
+
+
+        DesktopComponentsHelper.addShortcutAction("commit", getRootPane(),
+                DesktopComponentsHelper.convertKeyCombination(commit), commitAction);
 
         tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -111,7 +120,8 @@ public class AddConditionDlg extends JDialog {
                 TreePath newLeadSelectionPath = e.getNewLeadSelectionPath();
                 if (newLeadSelectionPath != null) {
                     Object pathComponent = newLeadSelectionPath.getLastPathComponent();
-                    okBtn.setEnabled(pathComponent instanceof ModelItem && ((ModelItem) pathComponent).getDescriptor() != null);
+                    okBtn.setEnabled(pathComponent instanceof ModelItem
+                            && ((ModelItem) pathComponent).getDescriptor() != null);
                 } else {
                     okBtn.setEnabled(false);
                 }

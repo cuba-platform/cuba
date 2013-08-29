@@ -11,7 +11,7 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +32,7 @@ public class MenuItem {
     private Element descriptor;
     private boolean separator = false;
 
-    private ShortcutAction.KeyCombination shortcut;
+    private KeyCombination shortcut;
 
     public MenuItem(MenuItem parent, String id) {
         this.parent = parent;
@@ -86,11 +86,11 @@ public class MenuItem {
         }
     }
 
-    public ShortcutAction.KeyCombination getShortcut() {
+    public KeyCombination getShortcut() {
         return shortcut;
     }
 
-    public void setShortcut(ShortcutAction.KeyCombination shortcut) {
+    public void setShortcut(KeyCombination shortcut) {
         this.shortcut = shortcut;
     }
 

@@ -19,8 +19,8 @@ import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
@@ -169,7 +169,7 @@ public class DesktopPickerField
         String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
 
         for (String strModifier : strModifiers) {
-            ShortcutAction.Modifier modifier = ShortcutAction.Modifier.valueOf(strModifier);
+            KeyCombination.Modifier modifier = KeyCombination.Modifier.valueOf(strModifier);
             modifiersMask = modifiersMask | DesktopComponentsHelper.convertModifier(modifier);
         }
     }
@@ -376,9 +376,8 @@ public class DesktopPickerField
                 action.actionPerform(dButton);
             }
         });
-        if (action instanceof ShortcutAction) {
-            ShortcutAction.KeyCombination combination = ((ShortcutAction) action).getKeyCombination();
-            KeyStroke shortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(combination);
+        if (action.getShortcut() != null) {
+            KeyStroke shortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
             inputMap.put(shortcutKeyStroke, action.getId());
         }
     }
