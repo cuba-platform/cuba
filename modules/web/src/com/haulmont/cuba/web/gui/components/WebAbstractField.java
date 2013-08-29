@@ -63,10 +63,15 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
             throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
         }
 
+        initFieldConverter();
+
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
 
         setRequired(metaProperty.isMandatory());
+    }
+
+    protected void initFieldConverter() {
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {

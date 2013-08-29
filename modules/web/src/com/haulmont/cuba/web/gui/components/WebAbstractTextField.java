@@ -18,9 +18,9 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -43,61 +43,13 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
     private static Log log = LogFactory.getLog(WebAbstractTextField.class);
 
-    private Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+    protected Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
 
     public WebAbstractTextField() {
         this.component = createTextFieldImpl();
         this.component.setValidationVisible(false);
 
-        component.setConverter(new Converter<String, Object>() {
-            @Override
-            public Object convertToModel(String value, Class<?> targetType, Locale locale) throws ConversionException {
-                if (getActualDatatype() != null) {
-                    try {
-                        if (locale == null)
-                            locale = VaadinSession.getCurrent().getLocale();
-
-                        if (locale != null)
-                            return getActualDatatype().parse(value, locale);
-
-                        return getActualDatatype().parse(value);
-                    } catch (ParseException e) {
-                        log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
-                        throw new ConversionException(e);
-                    }
-                } else {
-                    return value;
-                }
-            }
-
-            @Override
-            public String convertToPresentation(Object value, Class<? extends String> targetType, Locale locale)
-                    throws ConversionException {
-                if (getActualDatatype() != null && value != null) {
-                    if (locale == null)
-                        locale = VaadinSession.getCurrent().getLocale();
-
-                    if (locale != null)
-                        return getActualDatatype().format(value, locale);
-
-                    return getActualDatatype().format(value);
-                } else if (value != null) {
-                    return value.toString();
-                } else {
-                    return null;
-                }
-            }
-
-            @Override
-            public Class<Object> getModelType() {
-                return Object.class;
-            }
-
-            @Override
-            public Class<String> getPresentationType() {
-                return String.class;
-            }
-        });
+        component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)));
 
         attachListener(component);
         component.setImmediate(true);
@@ -169,22 +121,41 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     @Override
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
+
         Integer len = (Integer) metaProperty.getAnnotations().get("length");
         if (len != null) {
             component.setMaxLength(len);
         }
+    }
 
-        if (metaProperty.getType() == MetaProperty.Type.ASSOCIATION) {
-            component.setConverter(new StringToEntityConverter());
-        } else if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
-            Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
-            if (datatype != null) {
-                component.setConverter(new StringToDatatypeConverter(datatype));
-            } else {
-                component.setConverter(new StringToStringConverter());
+    @Override
+    protected void initFieldConverter() {
+        if (metaProperty != null) {
+            switch (metaProperty.getType()) {
+                case ASSOCIATION:
+                    component.setConverter(new StringToEntityConverter());
+                    break;
+
+                case DATATYPE:
+                    Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
+                    if (datatype != null) {
+                        component.setConverter(new StringToDatatypeConverter(datatype));
+                    } else {
+                        component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)));
+                    }
+                    break;
+
+                case ENUM:
+                    //noinspection unchecked
+                    component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()));
+                    break;
+
+                default:
+                    component.setConverter(new StringToStringConverter());
+                    break;
             }
         } else {
-            component.setConverter(new StringToStringConverter());
+            component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)));
         }
     }
 

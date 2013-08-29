@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 
 import java.util.Collection;
 
@@ -46,6 +47,11 @@ public class WebTextField
     @Override
     public void setDatatype(Datatype datatype) {
         this.datatype = datatype;
+        if (datatype == null) {
+            initFieldConverter();
+        } else {
+            component.setConverter(new StringToDatatypeConverter(datatype));
+        }
     }
 
     @Override

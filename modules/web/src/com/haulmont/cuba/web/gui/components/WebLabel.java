@@ -69,9 +69,6 @@ public class WebLabel
         metaPropertyPath = metaClass.getPropertyPath(property);
         metaProperty = metaPropertyPath.getMetaProperty();
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
-        component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
-
         switch (metaProperty.getType()) {
             case ASSOCIATION:
                 component.setConverter(new StringToEntityConverter());
@@ -88,13 +85,16 @@ public class WebLabel
 
             case ENUM:
                 //noinspection unchecked
-                component.setConverter(new StringToEnumConverter(metaProperty.getRange().asEnumeration().getJavaClass()));
+                component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()));
                 break;
 
             default:
                 component.setConverter(null);
                 break;
         }
+
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
