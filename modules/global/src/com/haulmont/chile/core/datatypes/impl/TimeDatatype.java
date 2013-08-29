@@ -46,6 +46,7 @@ public class TimeDatatype implements Datatype<Date> {
             } else {
                 format = DateFormat.getTimeInstance();
             }
+            format.setLenient(false);
             return format.format(value);
         }
     }
@@ -63,6 +64,8 @@ public class TimeDatatype implements Datatype<Date> {
         }
 
         DateFormat format = new SimpleDateFormat(formatStrings.getTimeFormat());
+        format.setLenient(false);
+
         return format.format(value);
     }
 
