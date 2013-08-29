@@ -280,6 +280,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         loadAggregation(column, element);
         loadCalculatable(column, element);
+        loadMaxWidth(column, element);
 
         return column;
     }
@@ -300,6 +301,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         String calc = columnElement.attributeValue("calculatable");
         if (!StringUtils.isEmpty(calc)) {
             column.setCalculatable(Boolean.valueOf(calc));
+        }
+    }
+
+    protected void loadMaxWidth(Table.Column column, Element columnElement) {
+        String maxWidth = columnElement.attributeValue("maxWidth");
+        if (!StringUtils.isBlank(maxWidth)) {
+            column.setMaxWidth(Integer.parseInt(maxWidth));
         }
     }
 

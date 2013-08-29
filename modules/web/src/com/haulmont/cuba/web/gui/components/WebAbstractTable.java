@@ -50,8 +50,10 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -534,6 +536,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                         final Datatype datatype = propertyPath.getRange().asDatatype();
                         if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
+                        } else if (column.getMaxWidth() != null) {
+                            addGeneratedColumn(propertyPath, new AbbreviatedColumnGenerator(column));
                         }
                     }
                 } else if (propertyPath.getRange().isEnum()) {
@@ -1294,6 +1298,47 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
                 checkPoxImage.setStyleName("checkbox-unchecked");
 
             return checkPoxImage;
+        }
+    }
+
+    protected class AbbreviatedColumnGenerator implements SystemTableColumnGenerator {
+
+        protected Table.Column column;
+
+        public AbbreviatedColumnGenerator(Table.Column column) {
+            this.column = column;
+        }
+
+        @Override
+        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+            return generateCell((AbstractSelect) source, itemId, columnId);
+        }
+
+        protected com.vaadin.ui.Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
+            final Property property = source.getItem(itemId).getItemProperty(columnId);
+            final Object value = property.getValue();
+
+            if (value == null) {
+                return null;
+            }
+            com.vaadin.ui.Component cell;
+
+            String stringValue = value.toString();
+            int maxWidth = column.getMaxWidth();
+            if (stringValue.length() > maxWidth)  {
+                TextArea content = new TextArea(null, stringValue);
+                content.setWidth("100%");
+                content.setHeight("100%");
+                content.setReadOnly(true);
+                CssLayout cssLayout = new CssLayout();
+                cssLayout.addComponent(content);
+                cell = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(stringValue, maxWidth)),
+                        cssLayout);
+                cell.addStyleName("abbreviated");
+            } else {
+                cell = new Label(stringValue);
+            }
+            return cell;
         }
     }
 

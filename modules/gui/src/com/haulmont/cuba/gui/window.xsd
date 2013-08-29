@@ -729,6 +729,7 @@
                 </xs:complexType>
             </xs:element>
             <xs:element name="visible" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="maxWidth" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
 
         <xs:attributeGroup ref="requiresId"/>
