@@ -227,6 +227,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     }
 
     @Override
+    protected boolean checkColumnForUpdateWidth(HeaderCell cell) {
+        return !GROUP_DIVIDER_COLUMN_KEY.equals(cell.getColKey());
+    }
+
+    @Override
     protected VScrollTableBody createScrollBody() {
         return new CubaGroupTableBody();
     }
