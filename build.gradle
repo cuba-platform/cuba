@@ -19,7 +19,7 @@ allprojects {
 
 buildscript {
     def cubaPluginVersion = '4.1-SNAPSHOT'
-    def docPluginVersion = '1.2.0-SNAPSHOT'
+    def docPluginVersion = '1.2.2'
 
     def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
     def DOC_PLUGIN_VERSION = 'docPluginVersion'
@@ -547,6 +547,16 @@ task transformSecurity(type: TransformDocbook) {
     sourceFile = new File(sourceDir, 'security.xml')
     destFile = new File(docTmpDir, 'security/ru/security.xml')
     classpath = configurations.buildDoc
+}
+
+task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
+    sourceFile = transformManual.destFile
+    imagesDir = new File(transformManual.sourceDir, "img")
+    destDir = new File(docDstDir, "manual/webhelp")
+    templateDir = new File(docToolsDir, "webhelp/template")
+    searchDir = new File(docToolsDir, "webhelp/search")
+    brand = "CUBA"
+    language = "ru"
 }
 
 task buildSecurityXhtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
