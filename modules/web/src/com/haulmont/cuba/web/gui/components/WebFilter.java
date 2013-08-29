@@ -37,7 +37,6 @@ import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
@@ -146,6 +145,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         // don't add margin because filter is usually placed inside a groupbox that adds margins to its content
         component.setMargin(false);
+        component.setSpacing(true);
         component.setStyleName("cuba-generic-filter");
 
         foldersPane = App.getInstance().getAppWindow().getFoldersPane();
@@ -569,6 +569,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         } else {
             paramsLayout = recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), null, 0);
         }
+        if (paramsLayout instanceof Layout.MarginHandler) {
+            ((Layout.MarginHandler) paramsLayout).setMargin(new MarginInfo(false));
+        }
     }
 
     private ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
@@ -890,7 +893,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return name;
     }
 
-
     public List<AbstractCondition> getConditions() {
         return Collections.unmodifiableList(conditions.toConditionsList());
     }
@@ -1034,9 +1036,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     private void createEditLayout() {
-        editLayout = new VerticalLayout();
-        editLayout.setSpacing(true);
-
         List<String> names = new ArrayList<>();
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
         for (Object id : select.getItemIds()) {
@@ -1054,7 +1053,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         editor = new FilterEditor(this, filterEntity, getXmlDescriptor(), names);
         editor.init();
-        editor.getSaveButton().addListener(new Button.ClickListener() {
+        editor.getSaveButton().addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
@@ -1066,7 +1065,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                 }
             }
         });
-        editLayout.addComponent(editor.getLayout());
+        editLayout = editor.getLayout();
     }
 
     @Override
@@ -1102,7 +1101,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         if (datasource instanceof CollectionDatasource.Lazy || datasource instanceof HierarchicalDatasource) {
             setUseMaxResults(false);
-
         } else {
             int maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
             maxResultsField.setValue(String.valueOf(maxResults));
@@ -1203,7 +1201,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public <T extends Component> T getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1)
-            return (T) getOwnComponent(id);
+            return getOwnComponent(id);
         else
             throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
     }

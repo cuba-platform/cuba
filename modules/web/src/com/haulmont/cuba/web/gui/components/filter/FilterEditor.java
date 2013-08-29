@@ -40,17 +40,17 @@ import java.util.List;
  */
 public class FilterEditor extends AbstractFilterEditor {
 
-    private AbstractOrderedLayout layout;
-    private TextField nameField;
-    private CubaTreeTable table;
-    private ComboBox addSelect;
-    private CheckBox defaultCb;
-    private CheckBox applyDefaultCb;
+    protected AbstractOrderedLayout layout;
+    protected TextField nameField;
+    protected CubaTreeTable table;
+    protected ComboBox addSelect;
+    protected CheckBox defaultCb;
+    protected CheckBox applyDefaultCb;
 
-    private static final String EDITOR_WIDTH = "700px";
-    private static final String TABLE_WIDTH = "660px";
-    private CheckBox globalCb;
-    private Button saveBtn;
+    protected static final String EDITOR_WIDTH = "700px";
+    protected static final String TABLE_WIDTH = "660px";
+    protected CheckBox globalCb;
+    protected Button saveBtn;
 
     protected ConditionsContainer container;
 
@@ -71,7 +71,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         layout = new VerticalLayout();
         layout.setSpacing(true);
-        layout.setMargin(new MarginInfo(true, false, false, false));
+        layout.setMargin(new MarginInfo(false, false, false, false));
         layout.setWidth(EDITOR_WIDTH);
 
         GridLayout topGrid = new GridLayout(2, 1);

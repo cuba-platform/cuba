@@ -30,6 +30,9 @@ public interface Filter
      */
     void loadFiltersAndApplyDefault();
 
+    /**
+     * Notice: Always is false for HierarchicalDatasource
+     */
     void setUseMaxResults(boolean useMaxResults);
     boolean getUseMaxResults();
 
