@@ -38,6 +38,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         super(baseClassName, child, layout);
     }
 
+    @Override
     public void captionUpdated(CubaCaptionWidget captionWidget) {
         moveIndicatorsRight(captionWidget);
     }
@@ -98,7 +99,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         }
 
         // Take into account right indicators
-        if (isCaptionInline() && rightCaption != null) {
+        if (rightCaption != null) {
             double indicatorsWidth = rightCaption.getOffsetWidth();
             availableWidth -= indicatorsWidth;
             if (availableWidth < 0) {
@@ -309,6 +310,8 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         if (rightCaption != null && widthChanged) {
             DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
         }
+
+//        getLayoutManager().setNeedsMeasure(getChild());
     }
 
     protected Element createRightCaption() {
