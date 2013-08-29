@@ -4,7 +4,7 @@
 
     <layout>
         <groupBox caption="msg://licenseTitle" spacing="true" expand="licenseTxtField" height="100%">
-            <textArea id="licenseTxtField" width="100%"/>
+            <textArea id="licenseTxtField" width="100%" rows="2"/>
             <linkButton id="licenseLink" invoke="showLicense" visible="false"/>
             <textField id="licensedToField" caption="msg://licensedTo" width="100%" visible="false"/>
             <label id="licensedSessions"/>

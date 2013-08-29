@@ -83,6 +83,8 @@ public class SessionBrowser extends AbstractLookup {
                             info.get("activeSessions"), info.get("licensedSessions")));
                     if (active > licensed) {
                         sessionsInfo.setStyleName("h2-red");
+                    } else {
+                        sessionsInfo.setStyleName(null);
                     }
                 }
             }

@@ -295,7 +295,7 @@ public final class UserSessions implements UserSessionsAPI {
             int licensed = (int) objects[2];
             if (licensed != 0 && count > licensed) {
                 LogFactory.getLog("com.haulmont.cuba.security.app.LoginWorkerBean").warn(
-                        String.format("Sessions active: %d, licensed: %d", count, licensed));
+                        String.format("Active sessions: %d, licensed: %d", count, licensed));
             }
         } else {
             LogFactory.getLog("com.haulmont.cuba.security.app.LoginWorkerBean").error("Invalid license data");
