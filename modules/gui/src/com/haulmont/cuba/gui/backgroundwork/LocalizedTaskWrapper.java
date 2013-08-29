@@ -46,17 +46,17 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     public boolean handleException(final Exception ex) {
         boolean handled = wrappedTask.handleException(ex);
         if (!handled) {
-            final Window ownerWindow = wrappedTask.getOwnerWindow();
-            if (ownerWindow != null) {
+            final IFrame ownerFrame = wrappedTask.getOwnerFrame();
+            if (ownerFrame != null) {
                 window.closeAndRun("close", new Runnable() {
                     @Override
                     public void run() {
                         String localizedMessage = ex.getLocalizedMessage();
                         if (StringUtils.isNotBlank(localizedMessage))
-                            ownerWindow.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
+                            ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
                                     localizedMessage, IFrame.NotificationType.WARNING);
                         else
-                            ownerWindow.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
+                            ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
                                     IFrame.NotificationType.WARNING);
                     }
                 });
@@ -72,12 +72,12 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     public boolean handleTimeoutException() {
         boolean handled = wrappedTask.handleTimeoutException();
         if (!handled) {
-            final Window ownerWindow = wrappedTask.getOwnerWindow();
-            if (ownerWindow != null) {
+            final IFrame ownerFrame = wrappedTask.getOwnerFrame();
+            if (ownerFrame != null) {
                 window.closeAndRun("close", new Runnable() {
                     @Override
                     public void run() {
-                        ownerWindow.showNotification(
+                        ownerFrame.showNotification(
                                 messages.getMessage(getClass(), "backgroundWorkProgress.timeout"),
                                 messages.getMessage(getClass(), "backgroundWorkProgress.timeoutMessage"),
                                 IFrame.NotificationType.WARNING);

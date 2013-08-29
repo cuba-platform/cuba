@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.gui.executors;
 
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Background task for execute by {@link BackgroundWorker}.
- * <p/> If the task is associated with a screen through ownerWindow constructor parameter, it will be canceled when
+ * <p/> If the task is associated with a screen through ownerFrame constructor parameter, it will be canceled when
  * the screen is closed.
  * <p/> If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
  *
@@ -42,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 public abstract class BackgroundTask<T, V> {
 
-    private final Window ownerWindow;
+    private final IFrame ownerFrame;
 
     private final long timeoutMilliseconds;
 
@@ -54,10 +55,10 @@ public abstract class BackgroundTask<T, V> {
      *
      * @param timeout     timeout
      * @param timeUnit    timeout time unit
-     * @param ownerWindow owner window
+     * @param ownerFrame
      */
-    protected BackgroundTask(long timeout, TimeUnit timeUnit, Window ownerWindow) {
-        this.ownerWindow = ownerWindow;
+    protected BackgroundTask(long timeout, TimeUnit timeUnit, IFrame ownerFrame) {
+        this.ownerFrame = ownerFrame;
         this.timeoutMilliseconds = timeUnit.toMillis(timeout);
     }
 
@@ -69,7 +70,7 @@ public abstract class BackgroundTask<T, V> {
      * @param timeUnit timeout time unit
      */
     protected BackgroundTask(long timeout, TimeUnit timeUnit) {
-        this.ownerWindow = null;
+        this.ownerFrame = null;
         this.timeoutMilliseconds = timeUnit.toMillis(timeout);
     }
 
@@ -80,7 +81,7 @@ public abstract class BackgroundTask<T, V> {
      * @param timeoutSeconds timeout in seconds
      */
     protected BackgroundTask(long timeoutSeconds) {
-        this.ownerWindow = null;
+        this.ownerFrame = null;
         this.timeoutMilliseconds = TimeUnit.SECONDS.toMillis(timeoutSeconds);
     }
 
@@ -91,7 +92,7 @@ public abstract class BackgroundTask<T, V> {
      * @param ownerWindow    owner window
      */
     protected BackgroundTask(long timeoutSeconds, Window ownerWindow) {
-        this.ownerWindow = ownerWindow;
+        this.ownerFrame = ownerWindow;
         this.timeoutMilliseconds = TimeUnit.SECONDS.toMillis(timeoutSeconds);
     }
 
@@ -169,8 +170,8 @@ public abstract class BackgroundTask<T, V> {
     /**
      * @return owner window
      */
-    public final Window getOwnerWindow() {
-        return ownerWindow;
+    public final IFrame getOwnerFrame() {
+        return ownerFrame;
     }
 
     /**

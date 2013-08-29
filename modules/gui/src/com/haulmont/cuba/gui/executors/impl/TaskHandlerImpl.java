@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
@@ -50,18 +51,18 @@ public class
         this.userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
         BackgroundTask<T, V> task = taskExecutor.getTask();
-        if (task.getOwnerWindow() != null) {
+        if (task.getOwnerFrame() != null) {
             closeListener = new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
                     ownerWindowClosed();
                 }
             };
-            Window ownerWindow = task.getOwnerWindow();
-            if (ownerWindow.getFrame() != null) {
-                ownerWindow = ComponentsHelper.getWindow(ownerWindow);
+            IFrame ownerFrame = task.getOwnerFrame();
+            if (ownerFrame.getFrame() != null) {
+                Window ownerWindow = ComponentsHelper.getWindow(ownerFrame);
+                ownerWindow.addListener(closeListener);
             }
-            ownerWindow.addListener(closeListener);
         }
         // remove close listener on done
         taskExecutor.setFinalizer(new Runnable() {
@@ -75,8 +76,8 @@ public class
     private void ownerWindowClosed() {
         if (isAlive()) {
             UUID userId = getUserSession().getId();
-            Window ownerWindow = getTask().getOwnerWindow();
-            String windowClass = ownerWindow.getClass().getCanonicalName();
+            IFrame ownerFrame = getTask().getOwnerFrame();
+            String windowClass = ownerFrame.getClass().getCanonicalName();
             log.trace("Window closed. User: " + userId + " Window: " + windowClass);
 
             taskExecutor.cancelExecution();
@@ -125,13 +126,12 @@ public class
 
     private void disposeResources() {
         // force remove close listener
-        Window ownerWindow = getTask().getOwnerWindow();
-        if (ownerWindow != null) {
-            if (ownerWindow.getFrame() != null) {
-                ownerWindow = ownerWindow.getFrame();
+        IFrame ownerFrame = getTask().getOwnerFrame();
+        if (ownerFrame != null) {
+            if (ownerFrame.getFrame() != null) {
+                Window owneWindow = ownerFrame.getFrame();
+                owneWindow.removeListener(closeListener);
             }
-
-            ownerWindow.removeListener(closeListener);
         }
         closeListener = null;
     }
@@ -155,13 +155,13 @@ public class
     public final void close() {
         if (AppContext.isStarted()) {
             UUID userId = getUserSession().getId();
-            Window ownerWindow = getTask().getOwnerWindow();
+            IFrame ownerFrame = getTask().getOwnerFrame();
 
             disposeResources();
 
-            if (ownerWindow != null) {
-                String windowClass = ownerWindow.getClass().getCanonicalName();
-                log.trace("Task killed. User: " + userId + " Window: " + windowClass);
+            if (ownerFrame != null) {
+                String windowClass = ownerFrame.getClass().getCanonicalName();
+                log.trace("Task killed. User: " + userId + " Frame: " + windowClass);
             } else {
                 log.trace("Task killed. User: " + userId);
             }
