@@ -13,8 +13,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -46,7 +45,6 @@ public class WebDateField
 
     protected boolean editable = true;
     protected boolean updatingInstance;
-    protected boolean valid;
 
     protected CubaDateField dateField;
     protected WebTimeField timeField;
@@ -184,8 +182,9 @@ public class WebDateField
     @Override
     public void setValue(Object value) {
         prevValue = getValue();
-        if (!editable)
+        if (!editable) {
             return;
+        }
 
         updatingInstance = true;
         try {
@@ -200,8 +199,9 @@ public class WebDateField
 
     protected void setValueFromDs(Object value) {
         boolean isEditable = editable;
-        if (!editable)
+        if (!editable) {
             setEditable(true);
+        }
         updatingInstance = true;
         try {
             dateField.setValue((Date) value);
@@ -221,8 +221,9 @@ public class WebDateField
     }
 
     protected void updateInstance() {
-        if (updatingInstance)
+        if (updatingInstance) {
             return;
+        }
 
         updatingInstance = true;
         try {
@@ -235,16 +236,12 @@ public class WebDateField
                 // support dateField in editable table
                 component.getPropertyDataSource().setValue(value);
             }
-            valid = true;
-        } catch (RuntimeException e) {
-            valid = false;
         } finally {
             updatingInstance = false;
         }
-        if (valid) {
-            Object newValue = getValue();
-            fireValueChanged(newValue);
-        }
+
+        Object newValue = getValue();
+        fireValueChanged(newValue);
     }
 
     @Override
@@ -271,8 +268,9 @@ public class WebDateField
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance)
+                        if (updatingInstance) {
                             return;
+                        }
                         Date value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         setValueFromDs(value);
                         fireValueChanged(value);
@@ -280,8 +278,9 @@ public class WebDateField
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance)
+                        if (updatingInstance) {
                             return;
+                        }
                         if (property.equals(metaPropertyPath.toString())) {
                             setValueFromDs(value);
                             fireValueChanged(value);
@@ -323,7 +322,6 @@ public class WebDateField
             c.set(Calendar.HOUR_OF_DAY, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
-
         } else {
             Calendar c2 = Calendar.getInstance(uss.getLocale());
             c2.setTime(timeField.<Date>getValue());
@@ -335,14 +333,16 @@ public class WebDateField
 
         if (metaProperty != null) {
             Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
-            if (javaClass.equals(java.sql.Date.class))
+            if (javaClass.equals(java.sql.Date.class)) {
                 return new java.sql.Date(c.getTimeInMillis());
-            else if (javaClass.equals(Time.class))
+            } else if (javaClass.equals(Time.class)) {
                 return new Time(c.getTimeInMillis());
-            else
+            } else {
                 return c.getTime();
-        } else
+            }
+        } else {
             return c.getTime();
+        }
     }
 
     @Override
@@ -352,15 +352,31 @@ public class WebDateField
 
     @Override
     public void setEditable(boolean editable) {
-        if (this.editable == editable)
+        if (this.editable == editable) {
             return;
+        }
         this.editable = editable;
         timeField.setEditable(editable);
         dateField.setReadOnly(!editable);
     }
 
     @Override
-    public boolean isValid() {
-        return valid && super.isValid();
+    public void validate() throws ValidationException {
+        if (!isVisible() || !isEditable() || !isEnabled())
+            return;
+
+        if (isRequired() && dateField.getValue() == null) {
+            throw new RequiredValueMissingException(component.getRequiredError(), this);
+        }
+
+        if (timeField.isVisible()) {
+            if (isRequired() && timeField.getValue() == null) {
+                throw new RequiredValueMissingException(component.getRequiredError(), timeField);
+            }
+        }
+
+        for (Field.Validator validator : validators) {
+            validator.validate(getValue());
+        }
     }
 }

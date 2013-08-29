@@ -74,6 +74,8 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                 if (StringUtils.isNotEmpty(formattedValue) && !formattedValue.equals(placeholder)) {
                     try {
                         SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+                        sdf.setLenient(false);
+
                         Date date = sdf.parse(formattedValue);
                         if (component.getComponentError() != null)
                             component.setComponentError(null);

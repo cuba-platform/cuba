@@ -784,6 +784,30 @@ public class DesktopWindow implements Window, Component.Disposable,
         return disposed;
     }
 
+    @Override
+    public boolean validate(List<Validatable> fields) {
+        ValidationErrors errors = new ValidationErrors();
+
+        for (Validatable field : fields) {
+            try {
+                field.validate();
+            } catch (ValidationException e) {
+                if (log.isTraceEnabled())
+                    log.trace("Validation failed", e);
+                else if (log.isDebugEnabled())
+                    log.debug("Validation failed: " + e);
+                if (e instanceof RequiredValueMissingException) {
+                    errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+                } else {
+                    errors.add((Component)field, e.getMessage());
+                }
+            }
+        }
+
+        return handleValidationErrors(errors);
+    }
+
+    @Override
     public boolean validateAll() {
         ValidationErrors errors = new ValidationErrors();
 
@@ -797,26 +821,35 @@ public class DesktopWindow implements Window, Component.Disposable,
                         log.trace("Validation failed", e);
                     else if (log.isDebugEnabled())
                         log.debug("Validation failed: " + e);
-                    errors.add(component, e.getMessage());
+                    if (e instanceof RequiredValueMissingException) {
+                        errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+                    } else {
+                        errors.add(component, e.getMessage());
+                    }
                 }
             }
         }
 
+        return handleValidationErrors(errors);
+    }
+
+    protected boolean handleValidationErrors(ValidationErrors errors) {
         delegate.postValidate(errors);
 
-        if (!errors.isEmpty()) {
-            StringBuilder buffer = new StringBuilder();
-            for (ValidationErrors.Item error : errors.getAll()) {
-                buffer.append(error.description).append("<br/>");
-            }
-            showNotification(
-                    messages.getMainMessage("validationFail.caption"),
-                    buffer.toString(),
-                    NotificationType.HUMANIZED
-            );
-            return false;
+        if (errors.isEmpty())
+            return true;
+
+        StringBuilder buffer = new StringBuilder();
+        for (ValidationErrors.Item error : errors.getAll()) {
+            buffer.append(error.description).append("<br/>");
         }
-        return true;
+        showNotification(
+                messages.getMainMessage("validationFail.caption"),
+                buffer.toString(),
+                NotificationType.HUMANIZED
+        );
+
+        return false;
     }
 
     public static class Editor extends DesktopWindow implements Window.Editor {
@@ -826,10 +859,12 @@ public class DesktopWindow implements Window, Component.Disposable,
             return new EditorWindowDelegate(this);
         }
 
+        @Override
         public Entity getItem() {
             return ((EditorWindowDelegate) delegate).getItem();
         }
 
+        @Override
         public void setItem(Entity item) {
             ((EditorWindowDelegate) delegate).setItem(item);
         }

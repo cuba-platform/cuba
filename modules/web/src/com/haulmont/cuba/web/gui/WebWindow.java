@@ -213,6 +213,29 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public boolean validate(List<Validatable> fields) {
+        ValidationErrors errors = new ValidationErrors();
+
+        for (Validatable field : fields) {
+            try {
+                field.validate();
+            } catch (ValidationException e) {
+                if (log.isTraceEnabled())
+                    log.trace("Validation failed", e);
+                else if (log.isDebugEnabled())
+                    log.debug("Validation failed: " + e);
+                if (e instanceof RequiredValueMissingException) {
+                    errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+                } else {
+                    errors.add((Component)field, e.getMessage());
+                }
+            }
+        }
+
+        return handleValidationErrors(errors);
+    }
+
+    @Override
     public boolean validateAll() {
         ValidationErrors errors = new ValidationErrors();
 
@@ -226,7 +249,11 @@ public class WebWindow implements Window, Component.Wrapper,
                         log.trace("Validation failed", e);
                     else if (log.isDebugEnabled())
                         log.debug("Validation failed: " + e);
-                    errors.add(component, e.getMessage());
+                    if (e instanceof RequiredValueMissingException) {
+                        errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+                    } else {
+                        errors.add(component, e.getMessage());
+                    }
                 }
             }
         }
@@ -250,6 +277,10 @@ public class WebWindow implements Window, Component.Wrapper,
 //                }
 //            });
 
+        return handleValidationErrors(errors);
+    }
+
+    protected boolean handleValidationErrors(ValidationErrors errors) {
         delegate.postValidate(errors);
 
         if (errors.isEmpty())
@@ -280,10 +311,11 @@ public class WebWindow implements Window, Component.Wrapper,
                     prevC = c;
                     c = c.getParent();
                 }
-                if (vComponent instanceof com.vaadin.ui.Component.Focusable)
+                if (vComponent instanceof com.vaadin.ui.Component.Focusable) {
                     ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+                }
             } catch (Exception e) {
-                //
+                log.warn("Error while validation handling ", e);
             }
         }
 

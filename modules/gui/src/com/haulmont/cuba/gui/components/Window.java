@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents an independent screen opened inside the main application window.
@@ -109,6 +110,13 @@ public interface Window extends IFrame, Component.HasCaption {
      */
     @Nullable
     Timer getTimer(String id);
+
+    /**
+     * Check validity by invoking validators on specified components which support them
+     * and show validation result notification.
+     * @return true if the validation was succesful, false if there were any problems
+     */
+    boolean validate(List<Validatable> fields);
 
     /**
      * Check validity by invoking validators on all components which support them

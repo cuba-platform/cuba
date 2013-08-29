@@ -7,9 +7,8 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RequiredValueMissingException extends ValidationException {
 

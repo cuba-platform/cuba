@@ -10,6 +10,8 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
 
+import java.util.List;
+
 /**
  * Base class for simple screen controllers.
  *
@@ -128,6 +130,12 @@ public class AbstractWindow extends AbstractFrame
     public Timer getTimer(String id) {
         return ((Window) frame).getTimer(id);
     }
+
+    @Override
+    public boolean validate(List<Validatable> fields) {
+        return ((Window) frame).validate(fields);
+    }
+
 
     /**
      * Check validity by invoking validators on all components which support them
