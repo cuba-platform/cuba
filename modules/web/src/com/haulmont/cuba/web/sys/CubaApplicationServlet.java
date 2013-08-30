@@ -14,6 +14,7 @@ import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,6 +66,9 @@ public class CubaApplicationServlet extends VaadinServlet {
 
         if (request.getParameter("restartApp") != null) {
             request.getSession().invalidate();
+            // remove parameters
+            requestURI = StringUtils.substring(requestURI, 0, StringUtils.indexOf(requestURI, '?'));
+
             response.sendRedirect(requestURI);
             return;
         }
