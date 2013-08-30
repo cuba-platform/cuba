@@ -739,7 +739,6 @@
                 </xs:complexType>
             </xs:element>
             <xs:element name="visible" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="maxTextLength" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
 
         <xs:attributeGroup ref="requiresId"/>
@@ -752,6 +751,7 @@
 
         <xs:attribute name="clickAction" type="xs:string" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
+        <xs:attribute name="maxTextLength" type="xs:integer" use="optional"/>
 
         <!-- Additional attributes, use only for editable table -->
         <xs:attributeGroup ref="hasOptions"/>

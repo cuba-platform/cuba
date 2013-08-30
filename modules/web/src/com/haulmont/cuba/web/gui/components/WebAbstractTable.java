@@ -1312,10 +1312,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
 
         @Override
         public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell((AbstractSelect) source, itemId, columnId);
-        }
-
-        protected com.vaadin.ui.Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
