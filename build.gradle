@@ -633,7 +633,7 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 }
 
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml, buildSecuritySingleHtml, buildSecurityPdf]) {
+        dependsOn: [buildManualSingleHtml, buildSecuritySingleHtml, buildSecurityPdf, buildManualWebHelp]) {
     //dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
