@@ -184,8 +184,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
+        if (!ObjectUtils.equals(prevValue, value)) {
+            for (ValueListener listener : listeners) {
+                listener.valueChanged(this, "value", prevValue, value);
+            }
         }
     }
 
