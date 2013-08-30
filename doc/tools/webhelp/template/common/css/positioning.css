@@ -603,7 +603,7 @@ p.breadcrumbs {
     /*margin: 0px 0px 0px 280px;*/
     width: auto;
     height: inherit;
-    padding-left: 5px;
+    padding-left: 10px;
     padding-right: 30px;
     border-left: 1px solid #cccccc;
     overflow-y: scroll !important;
@@ -630,7 +630,7 @@ color: #404040 !important;
 font-size: 170%;
 font-weight: normal;
 }
-.navfooter { bottom: 2%; }
+.navfooter { bottom: 2%; margin-top:20px; }
 .highlight { background-color: #c5d3c3; }
 .highlightButton{ font-size: 0; }
 
@@ -828,7 +828,6 @@ div#toolbar-left img {vertical-align: text-top;}
 div.note *, div.caution *, div.important *, div.tip *, div.warning * {
     background: inherit !important;
     color: inherit !important;
-    border: inherit  !important;    
 }
 
 #content table thead, #content table th{
@@ -839,9 +838,9 @@ div.note *, div.caution *, div.important *, div.tip *, div.warning * {
 
 #content table caption{font-weight: bold;}
 
-#content table td, #content table {border: 1px solid black;}
+#content table td, #content table {}
 
-#content table td, #content table th { padding: 5px;}
+#content table td, #content table th {padding: 5px;}
 
 #content table {margin-bottom: 20px;}
 

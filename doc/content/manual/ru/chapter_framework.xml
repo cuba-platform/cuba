@@ -5551,7 +5551,7 @@ protected boolean postCommit(boolean committed, boolean close) {
             <title/>
             <mediaobject>
               <imageobject>
-                <imagedata contentwidth="80%" align="center" fileref="img/gui_MaskedField_dia.png"/>
+                <imagedata align="center" fileref="img/gui_MaskedField_dia.png"/>
               </imageobject>
             </mediaobject>
           </figure>

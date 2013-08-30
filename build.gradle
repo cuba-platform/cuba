@@ -19,7 +19,7 @@ allprojects {
 
 buildscript {
     def cubaPluginVersion = '4.1-SNAPSHOT'
-    def docPluginVersion = '1.2.2'
+    def docPluginVersion = '1.2.3'
 
     def CUBA_PLUGIN_VERSION = 'cubaPluginVersion'
     def DOC_PLUGIN_VERSION = 'docPluginVersion'
@@ -557,6 +557,10 @@ task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
     searchDir = new File(docToolsDir, "webhelp/search")
     brand = "CUBA"
     language = "ru"
+    xslParameters = [
+        'toc.section.depth': '5',
+        'chunk.section.depth': '5'
+    ]
 }
 
 task buildSecurityXhtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
