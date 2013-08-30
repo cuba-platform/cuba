@@ -400,7 +400,6 @@
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attribute name="icon" type="xs:string" use="optional"/>
         <xs:attribute name="invoke" type="xs:string" use="optional"/>
     </xs:complexType>
 
@@ -687,9 +686,16 @@
 
     <!-- PopupButton -->
     <xs:complexType name="popupButtonComponent">
-        <xs:sequence>
-            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="popupButtonAction"/>
-        </xs:sequence>
+        <xs:element name="actions" nillable="true">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:choice minOccurs="1" maxOccurs="unbounded">
+                        <xs:element name="action" type="popupButtonAction"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasCaption"/>
 
