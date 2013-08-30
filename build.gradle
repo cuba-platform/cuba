@@ -552,7 +552,7 @@ task transformSecurity(type: TransformDocbook) {
 task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
     sourceFile = transformManual.destFile
     imagesDir = new File(transformManual.sourceDir, "img")
-    destDir = new File(docDstDir, "manual/webhelp")
+    destDir = new File(docDstDir, "manual/ru/webhelp")
     templateDir = new File(docToolsDir, "webhelp/template")
     searchDir = new File(docToolsDir, "webhelp/search")
     brand = "CUBA"
