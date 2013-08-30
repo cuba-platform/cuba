@@ -77,10 +77,14 @@
 
     <xs:simpleType name="componentSize">
         <xs:union>
-            <xs:simpleType xml:base="xs:string"/>
-            <xs:restriction base="xs:string">
-                <xs:enumeration value="UNDEFINED"/>
-            </xs:restriction>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="UNDEFINED"/>
+                </xs:restriction>
+            </xs:simpleType>
         </xs:union>
     </xs:simpleType>
 
@@ -504,6 +508,9 @@
     <xs:complexType name="passwordFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                </xs:sequence>
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
             </xs:extension>
         </xs:complexContent>
@@ -527,6 +534,9 @@
     <xs:complexType name="dateFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                </xs:sequence>
                 <xs:attribute name="resolution" type="dateFieldResolution" use="optional"/>
                 <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
             </xs:extension>
@@ -537,6 +547,9 @@
     <xs:complexType name="timeFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                </xs:sequence>
                 <xs:attribute name="showSeconds" type="xs:string" use="optional"/>
             </xs:extension>
         </xs:complexContent>
@@ -558,6 +571,9 @@
     <xs:complexType name="lookupFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                </xs:sequence>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasAlign"/>
@@ -582,6 +598,7 @@
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                     <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
                 </xs:sequence>
 
@@ -598,6 +615,7 @@
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                     <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
                 </xs:sequence>
 
@@ -623,6 +641,9 @@
     <xs:complexType name="optionsGroupComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                </xs:sequence>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasOptions"/>
 
@@ -686,15 +707,17 @@
 
     <!-- PopupButton -->
     <xs:complexType name="popupButtonComponent">
-        <xs:element name="actions" nillable="true">
-            <xs:complexType>
-                <xs:sequence>
-                    <xs:choice minOccurs="1" maxOccurs="unbounded">
-                        <xs:element name="action" type="popupButtonAction"/>
-                    </xs:choice>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:element>
+        <xs:sequence>
+            <xs:element name="actions" nillable="true">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:choice minOccurs="1" maxOccurs="unbounded">
+                            <xs:element name="action" type="popupButtonAction"/>
+                        </xs:choice>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasCaption"/>
@@ -979,6 +1002,10 @@
 
     <!-- TwinColumn -->
     <xs:complexType name="twinColumnComponent">
+        <xs:sequence>
+            <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+        </xs:sequence>
+
         <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasSize"/>
