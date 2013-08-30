@@ -70,11 +70,13 @@ public class CreateAction extends AbstractAction {
      * @param id        action name
      */
     public CreateAction(ListComponent owner, WindowManager.OpenType openType, String id) {
-        super(id, AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getTableInsertShortcut());
+        super(id);
         this.owner = owner;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Create");
         this.icon = "icons/create.png";
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        setShortcut(clientConfig.getTableInsertShortcut());
     }
 
     /**

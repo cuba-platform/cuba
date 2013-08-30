@@ -38,6 +38,7 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected Messages messages = AppBeans.get(Messages.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
     protected LockService lockService = AppBeans.get(LockService.class);
+    protected Configuration configuration = AppBeans.get(Configuration.class);
 
     public EditorWindowDelegate(Window window) {
         super(window);
@@ -48,7 +49,7 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         final Component commitAndCloseButton = ComponentsHelper.findComponent(editor,
                 Window.Editor.WINDOW_COMMIT_AND_CLOSE);
-        String commitShortcut = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCommitShortcut();
+        String commitShortcut = configuration.getConfig(ClientConfig.class).getCommitShortcut();
         if (commitAndCloseButton != null) {
             commitAndCloseButtonExists = true;
 
