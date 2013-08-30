@@ -6,18 +6,25 @@
 
 package com.haulmont.cuba.web.log;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.app.EmailService;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +43,7 @@ public class DevelopmentExceptionWindow extends Window {
 
     protected int stackTracePanelPosition;
 
-    public DevelopmentExceptionWindow(Throwable throwable) {
+    public DevelopmentExceptionWindow(final Throwable throwable) {
         super("Exception");
 
         setWidth(750, Unit.PIXELS);
@@ -78,7 +85,8 @@ public class DevelopmentExceptionWindow extends Window {
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setSpacing(true);
 
-        Button closeButton = new Button(messages.getMessage(getClass(), "exceptionDialog.closeBtn"));
+        final Button closeButton = new Button(messages.getMessage(getClass(), "exceptionDialog.closeBtn"));
+        final Button reportButton = new Button(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
         closeButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -86,7 +94,18 @@ public class DevelopmentExceptionWindow extends Window {
             }
         });
         buttonsLayout.addComponent(closeButton);
+        buttonsLayout.addComponent(reportButton);
 
+        final String rootMessage = rootCauseMessage.toString();
+        final Map<String, Object> reportMap = tableMap;
+        final String stackTraceMessage = htmlMessage;
+        reportButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                sendSupportEmail(rootMessage, reportMap, stackTraceMessage);
+                reportButton.setEnabled(false);
+            }
+        });
         showStackTraceMessage = messages.getMessage(getClass(), "exceptionDialog.showStackTrace");
         showStackTraceButton = new Button(showStackTraceMessage + " >>");
         showStackTraceButton.addClickListener(new Button.ClickListener() {
@@ -167,6 +186,54 @@ public class DevelopmentExceptionWindow extends Window {
             center();
 
             setWindowMode(WindowMode.NORMAL);
+        }
+    }
+
+    public void sendSupportEmail(String rootMessage, Map<String, Object> tableMap, String stackTraceMessage) {
+        WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+        User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
+        TimeSource timeSource = AppBeans.get(TimeSource.class);
+        EmailService emailService = AppBeans.get(EmailService.class);
+        String date = Datatypes.getNN(Date.class).format(timeSource.currentTimestamp());
+        Document document = DocumentHelper.createDocument();
+        Element htmlEl = document.addElement("html");
+        Element bodyEl = htmlEl.addElement("body");
+        Element rootMessageEl = bodyEl.addElement("p");
+        rootMessageEl.addText(rootMessage);
+        if (!tableMap.isEmpty()) {
+            Element captionEl = bodyEl.addElement("p");
+            captionEl.setText("Additional information :");
+            Element tableEl = bodyEl.addElement("table");
+            tableEl.addAttribute("style", "border: 1px solid RoyalBlue");
+            Element tr = tableEl.addElement("tr");
+            tr.addAttribute("style", "font-weight:bold");
+            tr.addElement("td").setText("Key");
+            tr.addElement("td").setText("Value");
+            for (Map.Entry<String, Object> entry : tableMap.entrySet()) {
+                Element tr2 = tableEl.addElement("tr");
+                tr2.addElement("td").setText(entry.getKey());
+                tr2.addElement("td").setText(StringEscapeUtils.escapeHtml(entry.getValue().toString()));
+            }
+        }
+        Element stackTraceCaptionEl = bodyEl.addElement("p");
+        stackTraceCaptionEl.addText("Stack Trace : ");
+        stackTraceMessage = StringUtils.replace(stackTraceMessage, "&nbsp;", " ");
+        stackTraceMessage = StringUtils.remove(stackTraceMessage, "\r");
+        try {
+            Document stackTraceDoc = DocumentHelper.parseText("<p>" + stackTraceMessage + "</p>");
+            bodyEl.add(stackTraceDoc.getRootElement());
+        } catch (DocumentException | IllegalArgumentException e) {
+            bodyEl.addText(stackTraceMessage);
+        }
+        EmailInfo info = new EmailInfo(webConfig.getSupportEmail(), "[Feedback Form][" + webConfig.getSystemID() + "]["
+                + user.getLogin() + "][" + date + "]" + " Development Exception", document.getRootElement().asXML());
+        if (user.getEmail() != null)
+            info.setFrom(user.getEmail());
+        try {
+            emailService.sendEmail(info);
+            Notification.show("Email sent");
+        } catch (Throwable e) {
+            Notification.show("Email sent error");
         }
     }
 }
