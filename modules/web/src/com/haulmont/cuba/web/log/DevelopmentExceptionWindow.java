@@ -42,6 +42,7 @@ public class DevelopmentExceptionWindow extends Window {
     protected final String showStackTraceMessage;
 
     protected int stackTracePanelPosition;
+    final Messages messages = AppBeans.get(Messages.class);
 
     public DevelopmentExceptionWindow(final Throwable throwable) {
         super("Exception");
@@ -49,7 +50,6 @@ public class DevelopmentExceptionWindow extends Window {
         setWidth(750, Unit.PIXELS);
         center();
 
-        final Messages messages = AppBeans.get(Messages.class);
         final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
         StringBuilder rootCauseMessage = new StringBuilder(messages.getMessage(getClass(), "exceptionDialog.message"));
@@ -231,9 +231,9 @@ public class DevelopmentExceptionWindow extends Window {
             info.setFrom(user.getEmail());
         try {
             emailService.sendEmail(info);
-            Notification.show("Email sent");
+            Notification.show(messages.getMessage(getClass(),"exceptionDialog.emailSent"));
         } catch (Throwable e) {
-            Notification.show("Email sent error");
+            Notification.show(messages.getMessage(getClass(),"exceptionDialog.emailSentErr"));
         }
     }
 }
