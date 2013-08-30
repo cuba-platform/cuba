@@ -161,7 +161,7 @@ public class CubaCaptionWidget extends VCaption {
             }
         } else if (requiredFieldIndicator != null) {
             // Remove existing
-            DOM.removeChild(getElement(), requiredFieldIndicator);
+            requiredFieldIndicator.removeFromParent();
             requiredFieldIndicator = null;
             disableFieldRequired();
         }
@@ -186,7 +186,7 @@ public class CubaCaptionWidget extends VCaption {
             }
         } else if (errorIndicatorElement != null) {
             // Remove existing
-            getElement().removeChild(errorIndicatorElement);
+            errorIndicatorElement.removeFromParent();
             errorIndicatorElement = null;
         }
 

@@ -80,9 +80,13 @@ public class CubaSlot extends Slot implements CaptionHolder {
 
             captionWidget.getElement().removeChild(captionWidget.getRequiredIndicatorElement());
 
-            // we clone element to disable all event listeners and prevent tootip events
-            requiredElement = (Element) captionWidget.getRequiredIndicatorElement().cloneNode(true);
-            rightCaption.appendChild(requiredElement);
+            requiredElement = captionWidget.getRequiredIndicatorElement();
+            if (tooltipElement != null && tooltipElement.getParentElement() == rightCaption) {
+                //insert required indicator before tooltip
+                rightCaption.insertBefore(requiredElement, tooltipElement);
+            } else {
+                rightCaption.appendChild(requiredElement);
+            }
 
             widthChanged = true;
 
@@ -99,7 +103,7 @@ public class CubaSlot extends Slot implements CaptionHolder {
 
             if (!(getWidget() instanceof VCheckBox)) {
                 captionWidget.getElement().removeChild(captionWidget.getTooltipElement());
-                tooltipElement = (Element) captionWidget.getTooltipElement().cloneNode(true);
+                tooltipElement =  captionWidget.getTooltipElement();
                 rightCaption.appendChild(tooltipElement);
             }
             widthChanged = true;
