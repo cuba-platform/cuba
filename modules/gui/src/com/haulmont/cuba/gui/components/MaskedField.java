@@ -9,6 +9,19 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 /**
+ * Masked field component generic interface.
+ * Field supports following format symbols:
+ * <ul>
+ * <li># - Digit</li>
+ * <li>U - Uppercase letter</li>
+ * <li>L - Lowercase letter</li>
+ * <li>A - Letter or digit</li>
+ * <li>* - Any symbol</li>
+ * <li>H - Hex symbol</li>
+ * <li>~ - + or -</li>
+ * </ul>
+ * Any other symbols in format will be treated as mask literals.
+ *
  * @author devyatkin
  * @version $Id$
  */
@@ -44,6 +57,16 @@ public interface MaskedField extends TextField {
     void setMask(String mask);
     String getMask();
 
+    /**
+     * Sets ValueMode for component
+     * <p>
+     * MASKED - value contain mask literals
+     * CLEAR - value contain only user input.
+     * </p>
+     *
+     * @param mode
+     */
     void setValueMode(ValueMode mode);
+
     ValueMode getValueMode();
 }
