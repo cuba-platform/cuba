@@ -22,10 +22,10 @@ public class LockDescriptor extends BaseUuidEntity {
 
     private static final long serialVersionUID = -5798715368435824090L;
 
-    @Column(name = "NAME", length = 100)
+    @Column(name = "NAME", length = 100, nullable = false)
     private String name;
 
-    @Column(name = "TIMEOUT_SEC")
+    @Column(name = "TIMEOUT_SEC", nullable = false)
     private Integer timeoutSec;
 
     public String getName() {

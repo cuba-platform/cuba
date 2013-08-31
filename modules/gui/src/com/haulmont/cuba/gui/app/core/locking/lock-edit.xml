@@ -10,7 +10,7 @@
         caption="msg://editorCaption"
         datasource="lockDescriptorDs"
         messagesPack="com.haulmont.cuba.gui.app.core.locking"
-        focusComponent="lockFieldGroup">
+        focusComponent="nameLookupField">
 
     <dsContext>
         <datasource id="lockDescriptorDs"
@@ -20,7 +20,7 @@
     </dsContext>
 
     <layout spacing="true" expand="windowActions">
-        <grid margin="true" spacing="true">
+        <grid spacing="true">
             <columns count="2"/>
             <rows>
                 <row>
