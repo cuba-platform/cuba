@@ -4,9 +4,9 @@
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
-        <item id="-"/>
+        <separator/>
         <item id="sys$Categories.browse"/>
-        <item id="-"/>
+        <separator/>
         <item id="sec$UserSessionEntity.browse"/>
         <item id="sys$LockInfo.browse"/>
         <item id="sys$FileDescriptor.browse"/>
@@ -14,7 +14,7 @@
         <item id="sys$ScheduledTask.browse"/>
         <item id="sys$Entity.restore"/>
         <item id="entityInspector.browse"/>
-        <item id="-"/>
+        <separator/>
         <item id="jmxcontrol$DisplayMbeans"/>
         <item id="logcontrol$ServerLog"/>
         <item id="entityLog"/>

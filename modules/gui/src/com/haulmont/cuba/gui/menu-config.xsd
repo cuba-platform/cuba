@@ -23,6 +23,7 @@
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element type="itemType" name="item"/>
                 <xs:element type="menuType" name="menu"/>
+                <xs:element name="separator"/>
             </xs:choice>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
