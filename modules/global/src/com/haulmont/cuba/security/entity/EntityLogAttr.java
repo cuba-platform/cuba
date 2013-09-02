@@ -130,9 +130,8 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
     }
 
     private com.haulmont.chile.core.model.MetaClass getClassFromEntityName(String entityName) throws ClassNotFoundException {
-        Class<?> entityClass = ReflectionHelper.loadClass(entityName);
         Metadata metadata = AppBeans.get(Metadata.class);
-        return metadata.getSession().getClass(entityClass);
+        return metadata.getSession().getClass(entityName);
     }
 
     @MetaProperty
