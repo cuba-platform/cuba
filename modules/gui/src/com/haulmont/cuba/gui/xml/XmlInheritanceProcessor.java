@@ -60,8 +60,7 @@ public class XmlInheritanceProcessor {
             if (ancestorStream == null) {
                 ancestorStream = getClass().getResourceAsStream(ancestorTemplate);
                 if (ancestorStream == null) {
-                    throw new DevelopmentException("Bad template path",
-                            Collections.<String,Object>singletonMap("Ancestor Template Path", ancestorTemplate));
+                    throw new DevelopmentException("Template is not found", "Ancestor's template path", ancestorTemplate);
                 }
             }
             Document ancestorDocument;

@@ -6,7 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.components.Component;
 import org.apache.commons.io.IOUtils;
@@ -112,7 +112,7 @@ public class LayoutLoader {
     protected ComponentLoader getLoader(Element element) {
         Class<? extends ComponentLoader> loaderClass = config.getLoader(element.getName());
         if (loaderClass == null) {
-                throw new DevelopmentException(String.format("Unknown component '%s'", element.getName()),context.getFullFrameId());
+            throw new GuiDevelopmentException("Unknown component: " + element.getName(), context.getFullFrameId());
         }
 
         ComponentLoader loader;

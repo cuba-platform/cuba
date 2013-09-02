@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -30,19 +30,15 @@ public abstract class AbstractDatasourceComponentLoader extends ComponentLoader 
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDsContext().get(datasource);
             if (ds == null){
-                throw new DevelopmentException(String.format(
-                        "Datasource '%s' not defined",
-                        datasource), getContext().getFullFrameId(),
-                        Collections.<String, Object>singletonMap("Component Id",component.getId()));
-
+                throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),
+                        getContext().getFullFrameId(), "Component ID", component.getId());
             }
             final String property = element.attributeValue("property");
             if (StringUtils.isEmpty(property))
-                throw new DevelopmentException(
-                        String.format(
-                                "Can't set assign datasource '%s' for component '%s' due 'property' " +
-                                        "attribute is not defined",
-                                datasource, component.getId()),context.getFullFrameId());
+                throw new GuiDevelopmentException(
+                        String.format("Can't set datasource '%s' for component '%s' because 'property' " +
+                                "attribute is not defined", datasource, component.getId()),
+                        context.getFullFrameId());
 
             component.setDatasource(ds, property);
         }
@@ -54,19 +50,21 @@ public abstract class AbstractDatasourceComponentLoader extends ComponentLoader 
             final String className = formatterElement.attributeValue("class");
             final Class<Formatter> aClass = scripting.loadClass(className);
             if (aClass == null)
-                throw new DevelopmentException("Class " + className + " is not found",context.getFullFrameId());
+                throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {
                     return constructor.newInstance(formatterElement);
                 } catch (Throwable e) {
-                    throw new DevelopmentException(e.getMessage(),context.getFullFrameId());
+                    throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e.toString(),
+                            context.getFullFrameId());
                 }
             } catch (NoSuchMethodException e) {
                 try {
                     return aClass.newInstance();
                 } catch (Exception e1) {
-                    throw new DevelopmentException(e1.getMessage(),context.getFullFrameId());
+                    throw new GuiDevelopmentException("Unable to instatiate class " + className + ": " + e1.toString(),
+                            context.getFullFrameId());
                 }
             }
         } else {

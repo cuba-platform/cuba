@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
@@ -118,7 +119,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         if (!StringUtils.isBlank(datasource)) {
             Datasource ds = context.getDsContext().get(datasource);
             if (ds == null) {
-                throw new DevelopmentException("Cannot find data source by name: " + datasource, context.getFullFrameId());
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getFullFrameId());
             }
             return ds;
         }
@@ -156,7 +157,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
 
         if (!customField && ds == null)
-            throw new DevelopmentException(String.format("Datasource is not defined for FieldGroup field '%s'. " +
+            throw new GuiDevelopmentException(String.format("Datasource is not defined for FieldGroup field '%s'. " +
                     "Only custom fields can have no datasource.", id), context.getFullFrameId());
 
         MetaPropertyPath metaPropertyPath = null;
@@ -164,7 +165,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         final MetaClass metaClass = ds.getMetaClass();
         if (metaClass.getPropertyPath(id) == null) {
             if (!customField) {
-                throw new DevelopmentException(String.format("Property '%s' not found in entity '%s'",
+                throw new GuiDevelopmentException(String.format("Property '%s' is not found in entity '%s'",
                         id, metaClass.getName()), context.getFullFrameId());
             }
         } else {
@@ -321,7 +322,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         } else if (component.getDatasource() != null) {
             datasource = component.getDatasource();
         } else {
-            throw new DevelopmentException(String.format("Unable to get datasource for field '%s'",
+            throw new GuiDevelopmentException(String.format("Unable to get datasource for field '%s'",
                     field.getId()), context.getFullFrameId());
         }
         return datasource.getMetaClass();

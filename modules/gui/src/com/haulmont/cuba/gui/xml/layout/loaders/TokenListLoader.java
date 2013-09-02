@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
@@ -19,8 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author gorodnov
@@ -71,8 +69,8 @@ public class TokenListLoader extends AbstractFieldLoader {
 
         Element lookupElement = element.element("lookup");
         if (lookupElement == null) {
-            throw new DevelopmentException("'tokenList' must contains 'lookup' element",context.getFullFrameId(),
-                    Collections.<String,Object>singletonMap("TokenList Id",element.attributeValue("id")));
+            throw new GuiDevelopmentException("'tokenList' must contain 'lookup' element", context.getFullFrameId(),
+                    "TokenList ID", element.attributeValue("id"));
         }
 
         String optionsDatasource = lookupElement.attributeValue("optionsDatasource");
@@ -141,7 +139,7 @@ public class TokenListLoader extends AbstractFieldLoader {
         if (!StringUtils.isEmpty(datasource)) {
             final CollectionDatasource ds = context.getDsContext().get(datasource);
             if (ds == null)
-                throw new DevelopmentException(String.format("Datasource '%s' not defined", datasource),context.getFullFrameId());
+                throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource), context.getFullFrameId());
             component.setDatasource(ds);
         }
     }

@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Timer;
@@ -47,7 +47,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         final Element layoutElement = element.element("layout");
         if (layoutElement == null)
-            throw new DevelopmentException("Required element not found: layout", context.getFullFrameId());
+            throw new GuiDevelopmentException("Required 'layout' element is not found", context.getFullFrameId());
 
         loadSubComponentsAndExpand(window, layoutElement);
         loadSpacing(window, layoutElement);
@@ -105,20 +105,20 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         timer.setId(element.attributeValue("id"));
         String delay = element.attributeValue("delay");
         if (StringUtils.isEmpty(delay))
-            throw new DevelopmentException("Timer delay cannot be empty", context.getCurrentIFrameId(),
-                    Collections.<String, Object>singletonMap("Timer Id", timer.getId()));
+            throw new GuiDevelopmentException("Timer 'delay' can't be empty", context.getCurrentIFrameId(),
+                    "Timer ID", timer.getId());
         int value;
         try {
             value = Integer.parseInt(delay);
         } catch (NumberFormatException e) {
-            Map<String, Object> info = new HashMap<>(4);
-            info.put("Timer Delay", delay);
-            info.put("Timer Id", timer.getId());
-            throw new DevelopmentException("Timer delay must be numeric", context.getFullFrameId(), info);
+            Map<String, Object> info = new HashMap<>(2);
+            info.put("Timer delay", delay);
+            info.put("Timer ID", timer.getId());
+            throw new GuiDevelopmentException("Timer 'delay' must be numeric", context.getFullFrameId(), info);
         }
         if (value <= 0)
-            throw new DevelopmentException("Timer delay must be greater than 0", context.getFullFrameId(),
-                    Collections.<String, Object>singletonMap("Timer Id", timer.getId()));
+            throw new GuiDevelopmentException("Timer 'delay' must be greater than 0", context.getFullFrameId(),
+                    "Timer ID", timer.getId());
         timer.setDelay(value);
 
         timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));

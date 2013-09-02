@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.Label;
@@ -48,8 +48,8 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             try {
                 columnCount = Integer.valueOf(columnsElement.attributeValue("count"));
             } catch (NumberFormatException e) {
-                throw new DevelopmentException("grid must contain either a set of 'column' elements or a 'count' attribute",
-                        context.getFullFrameId(), Collections.<String, Object>singletonMap("Grid Id", component.getId()));
+                throw new GuiDevelopmentException("'grid' element must contain either a set of 'column' elements or a 'count' attribute",
+                        context.getFullFrameId(), "Grid ID", component.getId());
             }
             component.setColumns(columnCount);
             for (int i = 0; i < columnCount; i++) {

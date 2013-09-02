@@ -6,8 +6,8 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
@@ -22,7 +22,6 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import java.io.InputStream;
-import java.util.Collections;
 
 /**
  * @author devyatkin
@@ -80,8 +79,7 @@ public class RuntimePropertiesFrameLoader extends IFrameLoader {
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
             if (stream == null)
-                throw new DevelopmentException("Bad template path", context.getFullFrameId(),
-                        Collections.<String,Object>singletonMap("Src", src));
+                throw new GuiDevelopmentException("Template is not found", context.getFullFrameId(), "src", src);
         }
 
         final IFrame component;

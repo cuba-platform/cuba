@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
@@ -79,7 +79,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
         } else if ("vertical".equalsIgnoreCase(orientation)) {
             component.setOrientation(ScrollBoxLayout.Orientation.VERTICAL);
         } else {
-            throw new DevelopmentException("Invalid scrollbox orientation value: " + orientation, context.getFullFrameId());
+            throw new GuiDevelopmentException("Invalid scrollbox orientation value: " + orientation, context.getFullFrameId());
         }
     }
 
@@ -97,7 +97,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
         } else if ("none".equalsIgnoreCase(scrollBars)) {
             component.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.NONE);
         } else {
-            throw new DevelopmentException("Invalid scrollbox scrollBars value: " + scrollBars, context.getFullFrameId());
+            throw new GuiDevelopmentException("Invalid scrollbox 'scrollBars' value: " + scrollBars, context.getFullFrameId());
         }
     }
 }

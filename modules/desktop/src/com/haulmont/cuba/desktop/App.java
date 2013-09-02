@@ -256,8 +256,8 @@ public class App implements ConnectionListener {
                 forceExit();
             }
         } catch (RemoteAccessException exception) {
-            String text = messages.getMainMessage("connectException.message");
-            String title = messages.getMainMessage("exceptionDialog.caption");
+            String title = messages.getMessage(getClass(), "errorPane.title");
+            String text = messages.getMessage(getClass(), "connectException.message");
 
             mainFrame.getWindowManager().showOptionDialog(title, text, IFrame.MessageType.WARNING,
                     new Action[]{new DialogAction(DialogAction.Type.OK) {
@@ -268,9 +268,9 @@ public class App implements ConnectionListener {
                     }});
         } catch (Throwable e) {
             log.error(e);
-            String caption = messages.getMainMessage("exceptionDialog.caption");
-            String text = messages.getMainMessage("unexpectedCloseException.message");
-            JOptionPane.showMessageDialog(mainFrame, text, caption, JOptionPane.ERROR_MESSAGE);
+            String title = messages.getMessage(getClass(), "errorPane.title");
+            String text = messages.getMessage(getClass(), "unexpectedCloseException.message");
+            JOptionPane.showMessageDialog(mainFrame, text, title, JOptionPane.ERROR_MESSAGE);
             forceExit();
         }
     }

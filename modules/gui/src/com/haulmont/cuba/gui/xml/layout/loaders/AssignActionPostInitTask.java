@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -47,19 +47,18 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
                     if (action != null) {
                         this.component.setAction(action);
                     } else {
-                        throw new DevelopmentException(String.format(
+                        throw new GuiDevelopmentException(String.format(
                                 "Can't find action '%s' in '%s'", id, holder.getId()), context.getFullFrameId(),
-                                Collections.<String,Object>singletonMap("Holder Id",holder.getId()));
+                                "Holder ID", holder.getId());
                     }
                 } else {
-                    throw new DevelopmentException(String.format(
+                    throw new GuiDevelopmentException(String.format(
                             "Component '%s' can't contain actions", holder.getId()), context.getFullFrameId(),
-                            Collections.<String,Object>singletonMap("Holder Id",holder.getId()));
+                            "Holder ID", holder.getId());
                 }
             } else {
-                throw new DevelopmentException(String.format(
-                        "Can't find component '%s'", Arrays.toString(subPath)), context.getFullFrameId(),
-                        Collections.<String,Object>singletonMap("ComponentId", Arrays.toString(subPath)));
+                throw new GuiDevelopmentException("Can't find component: " + Arrays.toString(subPath),
+                        context.getFullFrameId(), "Component ID", Arrays.toString(subPath));
             }
         } else if (elements.length == 1) {
             final String id = elements[0];
@@ -68,10 +67,10 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
             if (action != null) {
                 this.component.setAction(action);
             } else {
-                throw new DevelopmentException(String.format("Can't find action '%s' in window", id),context.getFullFrameId());
+                throw new GuiDevelopmentException(String.format("Can't find action '%s' in window", id), context.getFullFrameId());
             }
         } else {
-            throw new DevelopmentException("Action list is empty", context.getFullFrameId());
+            throw new GuiDevelopmentException("Empty action name", context.getFullFrameId());
         }
     }
 }

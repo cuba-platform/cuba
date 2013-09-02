@@ -38,8 +38,10 @@ public class RemoteException extends RuntimeException {
         public Cause(Throwable throwable) {
             className = throwable.getClass().getName();
             message = throwable.getMessage();
-            if (throwable.getClass().getAnnotation(SupportedByClient.class) != null)
+            if (throwable.getClass().getName().startsWith("java.")
+                    || throwable.getClass().getAnnotation(SupportedByClient.class) != null) {
                 this.throwable = throwable;
+            }
         }
 
         public String getClassName() {

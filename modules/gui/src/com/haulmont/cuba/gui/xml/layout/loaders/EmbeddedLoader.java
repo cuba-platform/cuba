@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -45,17 +45,16 @@ public class EmbeddedLoader extends ComponentLoader {
                     component.setType(Embedded.Type.BROWSER);
                     component.setSource(new URL(src));
                 } catch (MalformedURLException e) {
-                    throw new DevelopmentException("Unable to instantiate component", context.getFullFrameId(),
-                            Collections.<String, Object>singletonMap("Scr Attribute Value", srcAttr));
+                    throw new GuiDevelopmentException("Unable to instantiate component", context.getFullFrameId(),
+                            "src", srcAttr);
                 }
             } else if (srcAttr.startsWith(FILE_PREFIX + "://")) {
                 String src = srcAttr.substring(srcAttr.indexOf("//") + 2);
                 component.setType(Embedded.Type.OBJECT);
                 component.setSource(src);
             } else {
-                throw new DevelopmentException("Illegal src attribute value. Expect 'url:' or 'file:' prefix",
-                        context.getFullFrameId(),
-                        Collections.<String, Object>singletonMap("Scr Attribute Value", srcAttr));
+                throw new GuiDevelopmentException("Illegal src attribute value. 'url:' or 'file:' prefix expected",
+                        context.getFullFrameId(), "src", srcAttr);
             }
         }
 

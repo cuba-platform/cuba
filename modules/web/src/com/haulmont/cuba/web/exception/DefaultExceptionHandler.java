@@ -11,8 +11,8 @@ import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractComponent;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.vaadin.ui.Window;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.net.SocketException;
 
@@ -24,11 +24,9 @@ import java.net.SocketException;
  */
 public class DefaultExceptionHandler implements ExceptionHandler {
 
-    private final static Log log = LogFactory.getLog(DefaultExceptionHandler.class);
-
     @Override
     public boolean handle(ErrorEvent event, App app) {
-        // Copied com.vaadin.server.DefaultErrorHandler.doDefault()
+        // Copied from com.vaadin.server.DefaultErrorHandler.doDefault()
 
         //noinspection ThrowableResultOfMethodCallIgnored
         Throwable t = event.getThrowable();
@@ -37,17 +35,33 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             return true;
         }
 
-        // Finds the original source of the error/exception
-        AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
-        if (component != null) {
-            // Shows the error in AbstractComponent
-            ErrorMessage errorMessage = AbstractErrorMessage
-                    .getErrorMessageForException(t);
-            component.setComponentError(errorMessage);
+        if (t != null) {
+            showDialog(t);
+        } else {
+            // Finds the original source of the error/exception
+            AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
+            if (component != null) {
+                // Shows the error in AbstractComponent
+                ErrorMessage errorMessage = AbstractErrorMessage.getErrorMessageForException(t);
+                component.setComponentError(errorMessage);
+            }
         }
 
-        log.error("Unhandled error", event.getThrowable());
-
         return true;
+    }
+
+    protected void showDialog(Throwable exception) {
+        Throwable rootCause = ExceptionUtils.getRootCause(exception);
+        if (rootCause == null)
+            rootCause = exception;
+        ExceptionDialog dialog = new ExceptionDialog(rootCause);
+        for (Window window : App.getInstance().getAppUI().getWindows()) {
+            if (window.isModal()) {
+                dialog.setModal(true);
+                break;
+            }
+        }
+        App.getInstance().getAppUI().addWindow(dialog);
+        dialog.focus();
     }
 }

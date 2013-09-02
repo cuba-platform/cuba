@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -73,10 +73,10 @@ public class TreeLoader extends ComponentLoader {
                 if (component.getParent() != null)
                     component = component.getParent();
                 else
-                    throw new DevelopmentException("No action id provided", context.getFullFrameId());
+                    throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
             }
-            throw new DevelopmentException("No action id provided", context.getFullFrameId(),
-                    Collections.<String, Object>singletonMap("Tree Id", component.attributeValue("id")));
+            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId(),
+                    "Tree ID", component.attributeValue("id"));
         }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {

@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
@@ -21,8 +21,6 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-
-import java.util.Collections;
 
 public class OptionsGroupLoader extends AbstractFieldLoader {
     public OptionsGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -72,9 +70,8 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
         } else if ("vertical".equalsIgnoreCase(orientation)) {
             component.setOrientation(OptionsGroup.Orientation.VERTICAL);
         } else {
-            throw new DevelopmentException("Invalid orientation value for option group: " +
-                    orientation, context.getFullFrameId(),
-                    Collections.<String, Object>singletonMap("Options Group Id", component.getId()));
+            throw new GuiDevelopmentException("Invalid orientation value for option group: " +
+                    orientation, context.getFullFrameId(), "OptionsGroup ID", component.getId());
         }
     }
 }

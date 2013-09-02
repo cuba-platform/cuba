@@ -112,10 +112,7 @@ public abstract class WindowManager {
 
         InputStream stream = resources.getResourceAsStream(templatePath);
         if (stream == null) {
-            stream = getClass().getResourceAsStream(templatePath);
-            if (stream == null)
-                throw new DevelopmentException("Bad template path",
-                        Collections.<String, Object>singletonMap("Template path", templatePath));
+            throw new DevelopmentException("Template is not found", "Path", templatePath);
         }
 
         Document document = null;
@@ -534,10 +531,7 @@ public abstract class WindowManager {
 
         InputStream stream = resources.getResourceAsStream(src);
         if (stream == null) {
-            stream = getClass().getResourceAsStream(src);
-            if (stream == null)
-                throw new DevelopmentException("Bad template path", context.getFullFrameId(),
-                        Collections.<String,Object>singletonMap("Template Path", src));
+            throw new GuiDevelopmentException("Template is not found", context.getFullFrameId(), "Path", src);
         }
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
@@ -686,7 +680,7 @@ public abstract class WindowManager {
 
             return wrappingWindow;
         } else {
-            throw new DevelopmentException("Class attribute not defined in xml descriptor", window.getId());
+            throw new GuiDevelopmentException("'class' attribute is not defined in XML descriptor", window.getId());
         }
     }
 

@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -50,7 +50,7 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null)
-            throw new DevelopmentException("No action id provided", context.getFullFrameId());
+            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard picker action

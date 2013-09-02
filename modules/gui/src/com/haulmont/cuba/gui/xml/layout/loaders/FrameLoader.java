@@ -6,7 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -88,7 +88,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         final Element layoutElement = element.element("layout");
         if (layoutElement == null)
-            throw new DevelopmentException("Required element not found: layout", context.getFullFrameId());
+            throw new GuiDevelopmentException("Required element 'layout' is not found", context.getFullFrameId());
 
         loadSubComponentsAndExpand(component, layoutElement);
         loadSpacing(component, layoutElement);

@@ -283,8 +283,9 @@ public class MetadataTools {
                 if (property != null)
                     properties.add(metaClass.getProperty(field));
                 else
-                    throw new DevelopmentException("Property '" + field + "' not found in "
-                            + metaClass.toString() + ". Pattern : '" + pattern + "'");
+                    throw new DevelopmentException(
+                            String.format("Property '%s' is not found in %s", field, metaClass.toString()),
+                            "NamePattern", pattern);
             }
         }
         return properties;

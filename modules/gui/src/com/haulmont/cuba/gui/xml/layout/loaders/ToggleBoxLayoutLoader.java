@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ToggleBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -43,13 +43,13 @@ public class ToggleBoxLayoutLoader extends ContainerLoader
         Element onElement = element.element("on");
 
         if (onElement == null)
-            throw new DevelopmentException("Cannot find 'on' element", context.getFullFrameId(),
-                    Collections.<String,Object>singletonMap("Toggle Box Id",element.attributeValue("id")));
+            throw new GuiDevelopmentException("Can't find 'on' element", context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("ToggleBox ID",element.attributeValue("id")));
 
         Element offElement = element.element("off");
         if (offElement == null)
-            throw new DevelopmentException("Cannot find 'off' element", context.getFullFrameId(),
-                    Collections.<String,Object>singletonMap("Toggle Box Id",element.attributeValue("id")));
+            throw new GuiDevelopmentException("Can't find 'off' element", context.getFullFrameId(),
+                    Collections.<String,Object>singletonMap("ToggleBox ID", element.attributeValue("id")));
 
         loadSubComponents(component.getOnLayout(), onElement, "visible");
         loadSubComponents(component.getOffLayout(), offElement, "visible");

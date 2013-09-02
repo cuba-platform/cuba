@@ -13,6 +13,7 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
@@ -263,7 +264,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (context.getFrame() != null) {
             component.setFrame(context.getFrame());
         } else
-            throw new DevelopmentException("ComponentLoaderContext.frame is null", context.getFullFrameId());
+            throw new GuiDevelopmentException("ComponentLoaderContext.frame is null", context.getFullFrameId());
     }
 
     /**
@@ -320,7 +321,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         } else {
             final Class<Field.Validator> aClass = scripting.loadClass(className);
             if (aClass == null)
-                throw new DevelopmentException("Class " + className + " is not found", context.getFullFrameId());
+                throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
             if (!StringUtils.isBlank(getMessagesPack()))
                 try {
                     validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
@@ -378,10 +379,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 if (component.getParent() != null)
                     component = component.getParent();
                 else
-                    throw new DevelopmentException("No action id provided", context.getFullFrameId());
+                    throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
             }
-            throw new DevelopmentException("No action id provided", context.getFullFrameId(),
-                    Collections.<String, Object>singletonMap("Component Id", component.attributeValue("id")));
+            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId(),
+                    "Component ID", component.attributeValue("id"));
         }
 
 

@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.core.global.MetadataProvider;
@@ -95,10 +95,10 @@ public class PickerFieldLoader extends AbstractFieldLoader {
                 if (component.getParent() != null)
                     component = component.getParent();
                 else
-                    throw new DevelopmentException("No action id provided", context.getFullFrameId());
+                    throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
             }
-            throw new DevelopmentException("No action id provided", context.getFullFrameId(),
-                    Collections.<String, Object>singletonMap("PickerField Id", component.attributeValue("id")));
+            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId(),
+                    "PickerField ID", component.attributeValue("id"));
         }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {

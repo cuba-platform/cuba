@@ -11,7 +11,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -100,7 +100,7 @@ public class ActionsFieldLoader extends AbstractFieldLoader {
     private com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
-            throw new DevelopmentException(String.format("Unknown component '%s'", name),context.getFullFrameId());
+            throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
         }
 
         com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;

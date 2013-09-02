@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -75,8 +75,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final Element rowsElement = element.element("rows");
 
         if (rowsElement == null){
-            throw new DevelopmentException("Table doesn't have 'rows' element",context.getCurrentIFrameId(),
-                    Collections.<String,Object>singletonMap("Table Id",element.attributeValue("id")));
+            throw new GuiDevelopmentException("Table doesn't have 'rows' element", context.getCurrentIFrameId(),
+                    "Table ID", element.attributeValue("id"));
         }
 
         final String rowHeaderMode = rowsElement.attributeValue("headerMode");
@@ -90,18 +90,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final String datasource = rowsElement.attributeValue("datasource");
         if (StringUtils.isBlank(datasource)){
-            throw new DevelopmentException("Table.rows element doesn't have 'datasource' attribute",
-                    context.getCurrentIFrameId(),
-                    Collections.<String,Object>singletonMap("Table Id",element.attributeValue("id")));
+            throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
+                    context.getCurrentIFrameId(), "Table ID", element.attributeValue("id"));
         }
         context.getFullFrameId();
 
         Datasource ds = context.getDsContext().get(datasource);
         if (ds == null)
-            throw new DevelopmentException("Cannot find data source by name: " + datasource,context.getCurrentIFrameId());
+            throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentIFrameId());
 
         if (!(ds instanceof CollectionDatasource))
-            throw new DevelopmentException("Not a CollectionDatasource: " + datasource,context.getCurrentIFrameId());
+            throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentIFrameId());
 
         CollectionDatasource cds = (CollectionDatasource) ds;
         List<Table.Column> availableColumns;
@@ -271,8 +270,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             try {
                 column.setWidth(Integer.parseInt(width));
             } catch (NumberFormatException e) {
-                throw new DevelopmentException("Property 'width' must contain only numeric value", context.getCurrentIFrameId(),
-                        Collections.<String, Object>singletonMap("width", width));
+                throw new GuiDevelopmentException("Property 'width' must contain only numeric value",
+                        context.getCurrentIFrameId(), "width", element.attributeValue("width"));
             }
         }
 
@@ -317,7 +316,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             final String className = formatterElement.attributeValue("class");
             Class<Formatter> aClass = scripting.loadClass(className);
             if (aClass == null)
-                throw new DevelopmentException("Class " + className + " is not found",context.getFullFrameId());
+                throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {
@@ -373,8 +372,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             throws IllegalAccessException, InstantiationException {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
-            throw new DevelopmentException(String.format("Unknown component '%s'", name),context.getFullFrameId(),
-                    Collections.<String,Object>singletonMap("Component Name",name));
+            throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
         }
 
         com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
@@ -398,8 +396,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (id == null)
-            throw new DevelopmentException("No action id provided",context.getFullFrameId(),
-                    Collections.<String,Object>singletonMap("Actions Holder Id",actionsHolder.getId()));
+            throw new GuiDevelopmentException("No action id provided", context.getFullFrameId(),
+                    "ActionsHolder ID", actionsHolder.getId());
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard list action
             for (ListActionType type : ListActionType.values()) {

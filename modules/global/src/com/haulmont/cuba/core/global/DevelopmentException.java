@@ -6,51 +6,38 @@
 
 package com.haulmont.cuba.core.global;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @author hasanov
+ * @author krivopustov
  * @version $Id$
  */
 @SupportedByClient
 public class DevelopmentException extends RuntimeException {
 
-    protected Map<String, Object> info;
-    protected String frameId;
+    protected final Map<String, Object> params = new LinkedHashMap<>(1);
 
     public DevelopmentException(String message) {
         super(message);
     }
 
-    public DevelopmentException(String message, String frameId) {
+    public DevelopmentException(String message, String paramKey, Object paramValue) {
         super(message);
-        this.frameId = frameId;
+        params.put(paramKey, paramValue);
     }
 
-    public DevelopmentException(String message, Map<String, Object> info) {
+    public DevelopmentException(String message, Map<String, Object> params) {
         super(message);
-        this.info = info;
+        this.params.putAll(params);
     }
 
-    public DevelopmentException(String message, String frameId, Map<String, Object> info) {
-        super(message);
-        this.frameId = frameId;
-        this.info = info;
+    public Map<String, Object> getParams() {
+        return params;
     }
 
-    public String getFrameId() {
-        return frameId;
-    }
-
-    public void setFrameId(String frameId) {
-        this.frameId = frameId;
-    }
-
-    public Map<String, Object> getInfo() {
-        return info;
-    }
-
-    public void setInfo(Map<String, Object> info) {
-        this.info = info;
+    @Override
+    public String toString() {
+        return super.toString() + (params.isEmpty() ? "" : ", params=" + params);
     }
 }

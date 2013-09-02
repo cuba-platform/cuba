@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
@@ -864,7 +865,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
-            log.warn(String.format("No IDs associated screen '%s'", item.getId()));
+            log.warn("Invalid screen ID for menu item: " + item.getId());
         }
 
         final MenuCommand command;
@@ -879,10 +880,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
                 if (command == null) {
                     if (item.getParent() != null) {
-                        throw new DevelopmentException(String.format("No IDs associated screen '%s'", item.getId()),
-                                Collections.<String, Object>singletonMap("Menu Id", item.getParent().getId()));
+                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
+                                "Parent menu ID", item.getParent().getId());
                     } else {
-                        throw new DevelopmentException(String.format("No IDs associated screen '%s'", item.getId()));
+                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId());
                     }
                 }
 

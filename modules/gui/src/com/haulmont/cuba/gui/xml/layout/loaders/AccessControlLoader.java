@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -58,10 +58,10 @@ public class AccessControlLoader extends ContainerLoader {
             if (d == null) {
                 String dataClassName = element.attributeValue("data");
                 if (dataClassName == null)
-                    throw new DevelopmentException("Can not instantiate AccessData: no 'data' attribute",context.getFullFrameId());
+                    throw new GuiDevelopmentException("Can't instantiate AccessData: no 'data' attribute", context.getFullFrameId());
                 Class dataClass = scripting.loadClass(dataClassName);
                 if (dataClass == null)
-                    throw new DevelopmentException("Class not found: " + dataClassName,context.getFullFrameId());
+                    throw new GuiDevelopmentException("Class is not found: " + dataClassName, context.getFullFrameId());
                 try {
                     data = (AbstractAccessData) ReflectionHelper.newInstance(dataClass, context.getParams());
                     context.getParams().put(paramName, data);
