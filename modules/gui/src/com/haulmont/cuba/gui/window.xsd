@@ -312,7 +312,7 @@
         <xs:attribute name="type" type="xs:string" use="optional"/>
     </xs:complexType>
 
-    <xs:complexType name="validatorType">
+    <xs:complexType name="validatorType" mixed="true">
         <xs:attribute name="class" type="xs:string" use="optional"/>
         <xs:attribute name="message" type="xs:string" use="optional"/>
         <xs:attribute name="script" type="xs:string" use="optional"/>
