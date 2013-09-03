@@ -166,7 +166,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     private void loadButtonsPanel(Component.HasButtonsPanel component, Element element) {
         Element panelElement = element.element("buttonsPanel");
         if (panelElement != null) {
-            Window window = ComponentsHelper.getWindow((Component.BelongToFrame) component);
+            Window window = ComponentsHelper.getWindowImplementation((Component.BelongToFrame) component);
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
 
             if (!(window instanceof Window.Lookup) || "true".equals(alwaysVisible)) {

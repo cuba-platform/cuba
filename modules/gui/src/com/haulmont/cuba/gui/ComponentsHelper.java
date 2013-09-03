@@ -121,6 +121,24 @@ public abstract class ComponentsHelper {
         return null;
     }
 
+    /**
+     * Get the topmost window for the specified component.
+     * @param component component instance
+     * @return          topmost client specific window in the hierarchy of frames for this component.
+     *
+     * <br/>Can be null only if the component wasn't properly initialized.
+     */
+    public static Window getWindowImplementation(Component.BelongToFrame component) {
+        IFrame frame = component.getFrame();
+        while (frame != null) {
+            if (frame instanceof Window) {
+                return (Window) frame;
+            }
+            frame = frame.getFrame();
+        }
+        return null;
+    }
+
     public static String getFullFrameId(IFrame frame) {
         LinkedList<String> frameIds = new LinkedList<>();
         frameIds.addFirst(frame.getId());
