@@ -31,10 +31,7 @@ public class EmbeddedLoader extends ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(
-            ComponentsFactory factory,
-            Element element,
-            Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Embedded component = factory.createComponent("embedded");
 
         String srcAttr = element.attributeValue("src");

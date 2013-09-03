@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 05.03.2009 17:49:39
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -22,12 +18,17 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class OptionsGroupLoader extends AbstractFieldLoader {
+
     public OptionsGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final OptionsGroup component = (OptionsGroup) super.loadComponent(factory, element, parent);
 
         loadOrientation(component, element);

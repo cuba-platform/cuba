@@ -24,8 +24,7 @@ public class ResizableTextFieldLoader extends TextAreaLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Component component = super.loadComponent(factory, element, parent);
         if (component instanceof ResizableTextArea) {
             ResizableTextArea textField = (ResizableTextArea) super.loadComponent(factory, element, parent);

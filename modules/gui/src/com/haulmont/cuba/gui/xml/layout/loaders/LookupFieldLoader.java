@@ -24,8 +24,7 @@ public class LookupFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws IllegalAccessException, InstantiationException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final LookupField component = (LookupField) super.loadComponent(factory, element, parent);
 
         String captionProperty = element.attributeValue("captionProperty");

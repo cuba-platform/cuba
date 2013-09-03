@@ -17,14 +17,13 @@ import org.dom4j.Element;
  * @version $Id$
  */
 public class TextAreaLoader extends AbstractTextFieldLoader {
+
     public TextAreaLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
-
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final TextArea component = (TextArea) super.loadComponent(factory, element, parent);
 
         loadMaxLength(element, component);

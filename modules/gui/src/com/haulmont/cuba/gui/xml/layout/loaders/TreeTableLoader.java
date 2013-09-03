@@ -18,7 +18,7 @@ public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
         super(context, config, factory);
     }
 
-    protected TreeTable createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+    protected TreeTable createComponent(ComponentsFactory factory) {
         return factory.createComponent("treeTable");
     }
 }

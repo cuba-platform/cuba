@@ -18,13 +18,13 @@ import org.dom4j.Element;
  * @version $Id$
  */
 public class SearchFieldLoader extends LookupFieldLoader {
+
     public SearchFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         SearchField component = (SearchField) super.loadComponent(factory, element, parent);
 
         String minSearchStringLength = element.attributeValue("minSearchStringLength");

@@ -25,11 +25,7 @@ public class ToggleBoxLayoutLoader extends ContainerLoader
         super(context, config, factory);
     }
 
-    public Component loadComponent(
-            ComponentsFactory factory,
-            Element element,
-            Component parent
-    ) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final ToggleBoxLayout component = factory.createComponent(ToggleBoxLayout.NAME);
 
         assignXmlDescriptor(component, element);

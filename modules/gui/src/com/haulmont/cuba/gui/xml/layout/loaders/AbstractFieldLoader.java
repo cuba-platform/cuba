@@ -34,7 +34,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final Field component = factory.createComponent(element.getName());
 
         assignXmlDescriptor(component, element);

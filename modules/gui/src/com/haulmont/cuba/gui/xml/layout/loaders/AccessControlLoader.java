@@ -46,9 +46,7 @@ public class AccessControlLoader extends ContainerLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
-
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         AccessControl accessControl = factory.createComponent(element.getName());
 
         final AbstractAccessData data;

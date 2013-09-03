@@ -26,13 +26,13 @@ import java.util.Collections;
  */
 @SuppressWarnings("serial")
 public class TokenListLoader extends AbstractFieldLoader {
+
     public TokenListLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final TokenList component = factory.createComponent("tokenList");
 
         assignXmlDescriptor(component, element);

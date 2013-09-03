@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 17:24:51
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -16,12 +12,17 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class VBoxLoader extends ContainerLoader implements ComponentLoader {
+
     public VBoxLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final BoxLayout component = factory.createComponent("vbox");
 
         assignXmlDescriptor(component, element);

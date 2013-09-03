@@ -16,6 +16,7 @@ import org.dom4j.Element;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -99,14 +100,10 @@ public class LayoutLoader {
     }
 
     public Component loadComponent(InputStream stream, Component parent, Map<String, Object> params) {
-        try {
-            Document doc = parseDescriptor(stream, params == null ? Collections.<String, Object>emptyMap() : params);
-            Element element = doc.getRootElement();
+        Document doc = parseDescriptor(stream, params == null ? Collections.<String, Object>emptyMap() : params);
+        Element element = doc.getRootElement();
 
-            return loadComponent(element, parent);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        return loadComponent(element, parent);
     }
 
     protected ComponentLoader getLoader(Element element) {
@@ -123,27 +120,25 @@ public class LayoutLoader {
 
             loader.setLocale(locale);
             loader.setMessagesPack(messagesPack);
-        } catch (Throwable e) {
+        } catch (NoSuchMethodException e) {
             try {
                 final Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor(ComponentLoader.Context.class);
                 loader = constructor.newInstance(context);
                 loader.setLocale(locale);
                 loader.setMessagesPack(messagesPack);
             } catch (Throwable e1) {
-                throw new RuntimeException(e1);
+                throw new GuiDevelopmentException("Loader instatiation error: " + e1, context.getFullFrameId());
             }
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
         }
 
         return loader;
     }
 
     public <T extends Component> T loadComponent(Element element, Component parent) {
-        try {
-            ComponentLoader loader = getLoader(element);
-            return (T) loader.loadComponent(factory, element, parent);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        ComponentLoader loader = getLoader(element);
+        return (T) loader.loadComponent(factory, element, parent);
     }
 
     public Locale getLocale() {

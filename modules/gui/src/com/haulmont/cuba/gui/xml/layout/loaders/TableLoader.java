@@ -20,7 +20,7 @@ public class TableLoader extends AbstractTableLoader<Table> {
     }
 
     @Override
-    protected Table createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+    protected Table createComponent(ComponentsFactory factory) {
         return factory.createComponent("table");
     }
 }

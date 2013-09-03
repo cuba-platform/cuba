@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -42,8 +43,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
 
         final T component = createComponent(factory);
 
@@ -163,8 +163,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    private void loadButtonsPanel(Component.HasButtonsPanel component, Element element)
-            throws InstantiationException, IllegalAccessException {
+    private void loadButtonsPanel(Component.HasButtonsPanel component, Element element) {
         Element panelElement = element.element("buttonsPanel");
         if (panelElement != null) {
             Window window = ComponentsHelper.getWindow((Component.BelongToFrame) component);
@@ -207,8 +206,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected abstract T createComponent(ComponentsFactory factory)
-            throws InstantiationException, IllegalAccessException;
+    protected abstract T createComponent(ComponentsFactory factory);
 
     private Table.Column loadColumn(Element element, Datasource ds) {
         final String id = element.attributeValue("id");
@@ -368,8 +366,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name)
-            throws IllegalAccessException, InstantiationException {
+    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
             throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
@@ -383,10 +380,16 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
             loader.setLocale(locale);
             loader.setMessagesPack(messagesPack);
-        } catch (Throwable e) {
-            loader = loaderClass.newInstance();
+        } catch (NoSuchMethodException e) {
+            try {
+                loader = loaderClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e1) {
+                throw new GuiDevelopmentException("Loader instantiation error: " + e1, context.getFullFrameId());
+            }
             loader.setLocale(locale);
             loader.setMessagesPack(messagesPack);
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            throw new GuiDevelopmentException("Loader instantiation error: " + e, context.getFullFrameId());
         }
 
         return loader;

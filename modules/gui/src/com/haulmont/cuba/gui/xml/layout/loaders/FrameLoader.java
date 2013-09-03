@@ -42,8 +42,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
 
         final Map<String, Object> params = context.getParams();
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);

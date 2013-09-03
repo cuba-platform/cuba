@@ -26,8 +26,7 @@ public class FilterLoader extends ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final Filter filter = factory.createComponent("filter");
         initFilter(filter, element);
         return filter;

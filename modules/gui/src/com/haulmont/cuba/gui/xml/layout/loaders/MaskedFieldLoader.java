@@ -22,8 +22,7 @@ public class MaskedFieldLoader extends AbstractTextFieldLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Component component = super.loadComponent(factory, element, parent);
         if (component instanceof MaskedField) {
             MaskedField field = (MaskedField) component;

@@ -34,8 +34,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final Window window = createComponent(factory);
 
         context.setFrame(window);

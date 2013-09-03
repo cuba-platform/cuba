@@ -22,8 +22,7 @@ public class FlowBoxLayoutLoader extends ContainerLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final FlowBoxLayout component = factory.createComponent(FlowBoxLayout.NAME);
 
         assignXmlDescriptor(component, element);

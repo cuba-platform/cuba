@@ -19,7 +19,7 @@ public class FileUploadFieldLoader extends ComponentLoader {
         super(context);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Component component = factory.createComponent(element.getName());
         
         loadId(component, element);

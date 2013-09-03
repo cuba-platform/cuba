@@ -29,8 +29,7 @@ public class TextFieldLoader extends AbstractTextFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         if (element.attribute("rows") != null || element.attribute("cols") != null)
             log.warn("For textField element specified rows or cols attribute, use textArea for this purpose");
         if (element.attribute("secret") != null)

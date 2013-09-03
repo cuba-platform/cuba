@@ -27,8 +27,7 @@ public class ButtonsPanelLoader extends ContainerLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final ButtonsPanel component = factory.createComponent("buttonsPanel");
 
         assignXmlDescriptor(component, element);

@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 12.04.2010 10:48:45
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -22,15 +17,20 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 public class ActionsFieldLoader extends AbstractFieldLoader {
     public ActionsFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final ActionsField component = (ActionsField) super.loadComponent(factory, element, parent);
 
         String captionProperty = element.attributeValue("captionProperty");
@@ -97,7 +97,7 @@ public class ActionsFieldLoader extends AbstractFieldLoader {
         ((ActionsField) component).setOptionsDatasource(ds);
     }
 
-    private com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
+    private com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
             throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
@@ -111,10 +111,16 @@ public class ActionsFieldLoader extends AbstractFieldLoader {
 
             loader.setLocale(locale);
             loader.setMessagesPack(messagesPack);
-        } catch (Throwable e) {
-            loader = loaderClass.newInstance();
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
+        } catch (NoSuchMethodException e) {
+            try {
+                loader = loaderClass.newInstance();
+                loader.setLocale(locale);
+                loader.setMessagesPack(messagesPack);
+            } catch (InstantiationException | IllegalAccessException e1) {
+                throw new GuiDevelopmentException("Loader instatiation error: " + e1, context.getFullFrameId());
+            }
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
         }
 
         return loader;

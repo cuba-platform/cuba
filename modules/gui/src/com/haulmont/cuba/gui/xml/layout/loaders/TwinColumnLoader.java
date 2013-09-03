@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 05.08.2010 16:57:59
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -17,14 +12,18 @@ import com.haulmont.cuba.gui.xml.layout.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-@SuppressWarnings("serial")
+/**
+ * @author Gorodnov
+ * @version $Id$
+ */
 public class TwinColumnLoader extends AbstractFieldLoader {
+
     public TwinColumnLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         TwinColumn component = (TwinColumn) super.loadComponent(factory, element, parent);
 
         String captionProperty = element.attributeValue("captionProperty");

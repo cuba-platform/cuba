@@ -39,8 +39,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
 
         final FieldGroup component = factory.createComponent("fieldGroup");
 

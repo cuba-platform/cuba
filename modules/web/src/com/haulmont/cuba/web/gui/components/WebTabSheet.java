@@ -343,12 +343,7 @@ public class WebTabSheet
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
             com.vaadin.ui.Component tabComponent = tabContent.getComponent();
             if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
-                Component comp;
-                try {
-                    comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+                Component comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);
 
                 tabContent.add(comp);
                 com.vaadin.ui.Component impl = WebComponentsHelper.getComposition(comp);

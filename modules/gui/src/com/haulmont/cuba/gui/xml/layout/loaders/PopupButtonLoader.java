@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
  * @version $Id$
  */
 public class PopupButtonLoader extends ComponentLoader {
+
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
 
@@ -29,7 +30,7 @@ public class PopupButtonLoader extends ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         PopupButton component = factory.createComponent(element.getName());
 
         assignXmlDescriptor(component, element);

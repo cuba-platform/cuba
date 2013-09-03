@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 20.08.2009 11:32:53
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -18,8 +13,11 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 
+/**
+ * @author Gorodnov
+ * @version $Id$
+ */
 public abstract class AbstractDatasourceComponentLoader extends ComponentLoader {
     public AbstractDatasourceComponentLoader(Context context) {
         super(context);

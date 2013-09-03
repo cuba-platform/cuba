@@ -29,14 +29,12 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     }
 
     @Override
-    protected GroupTable createComponent(ComponentsFactory factory)
-            throws InstantiationException, IllegalAccessException {
+    protected GroupTable createComponent(ComponentsFactory factory) {
         return factory.createComponent("groupTable");
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         GroupTable component = (GroupTable) super.loadComponent(factory, element, parent);
 
         String fixedGroupingString = element.attributeValue("fixedGrouping");

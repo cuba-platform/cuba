@@ -24,7 +24,7 @@ public class ProgressBarLoader extends AbstractFieldLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         ProgressBar component = factory.createComponent(element.getName());
 
         assignXmlDescriptor(component, element);

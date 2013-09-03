@@ -1,16 +1,13 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 10.02.2009 10:40:28
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
@@ -22,13 +19,17 @@ import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class DateFieldLoader extends AbstractFieldLoader {
     public DateFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final DateField component = (DateField) super.loadComponent(factory, element, parent);
 
         TemporalType tt = null;
@@ -57,17 +58,17 @@ public class DateFieldLoader extends AbstractFieldLoader {
         }
 
         if (!StringUtils.isEmpty(dateFormat)) {
-               if (dateFormat.startsWith("msg://")) {
-                dateFormat = MessageProvider.getMessage(
-                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+            //noinspection ConstantConditions
+            if (dateFormat.startsWith("msg://")) {
+                dateFormat = messages.getMainMessage(dateFormat.substring(6, dateFormat.length()));
             }
             component.setDateFormat(dateFormat);
         } else {
             String formatStr;
             if (tt == TemporalType.DATE) {
-                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+                formatStr = messages.getMainMessage("dateFormat");
             } else {
-                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+                formatStr = messages.getMainMessage("dateTimeFormat");
             }
             component.setDateFormat(formatStr);
         }

@@ -31,7 +31,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         GridLayout component = factory.createComponent("grid");
 
         loadId(component, element);
@@ -128,7 +128,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         return component;
     }
 
-    protected void loadSubComponents(GridLayout component, Element element, int row) throws InstantiationException, IllegalAccessException {
+    protected void loadSubComponents(GridLayout component, Element element, int row) {
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
@@ -159,7 +159,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         }
     }
 
-    private void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) throws IllegalAccessException, InstantiationException {
+    private void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) {
         if (subComponent instanceof QuasiComponent) {
             Collection<Component> realComponents = ((QuasiComponent) subComponent).getRealComponents();
             if (realComponents.size() == 1) {

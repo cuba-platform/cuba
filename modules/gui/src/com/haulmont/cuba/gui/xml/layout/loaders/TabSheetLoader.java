@@ -26,9 +26,7 @@ public class TabSheetLoader extends ContainerLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
-
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final TabSheet component = factory.createComponent(TabSheet.NAME);
 
         assignXmlDescriptor(component, element);

@@ -21,6 +21,7 @@ import java.util.Collections;
  * @version $Id$
  */
 public class TreeLoader extends ComponentLoader {
+
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
 
@@ -31,8 +32,7 @@ public class TreeLoader extends ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Tree component = factory.createComponent("tree");
 
         assignXmlDescriptor(component, element);

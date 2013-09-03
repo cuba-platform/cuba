@@ -36,9 +36,7 @@ public class RuntimePropertiesFrameLoader extends IFrameLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
-
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         String src = element.attributeValue("src");
         if (src == null)
             src = DEFAULT_DESCRIPTOR;

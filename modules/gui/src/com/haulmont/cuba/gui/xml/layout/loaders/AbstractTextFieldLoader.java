@@ -23,8 +23,7 @@ public abstract class AbstractTextFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final TextInputField component = (TextInputField) super.loadComponent(factory, element, parent);
 
         loadStyleName(component, element);

@@ -1,30 +1,34 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 05.03.2009 14:10:16
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.xml.layout.*;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
-import java.util.Collections;
-
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class PickerFieldLoader extends AbstractFieldLoader {
+
     public PickerFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final PickerField component = (PickerField) super.loadComponent(factory, element, parent);
 
         assignFrame(component);
@@ -37,7 +41,7 @@ public class PickerFieldLoader extends AbstractFieldLoader {
 
         final String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
-            component.setMetaClass(MetadataProvider.getSession().getClass(metaClass));
+            component.setMetaClass(AppBeans.get(Metadata.class).getClassNN(metaClass));
         }
 
         loadActions(component, element);

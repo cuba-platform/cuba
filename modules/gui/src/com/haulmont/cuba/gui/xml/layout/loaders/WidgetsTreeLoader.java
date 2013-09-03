@@ -24,8 +24,7 @@ public class WidgetsTreeLoader extends TreeLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         WidgetsTree component = factory.createComponent("widgetsTree");
 
         assignXmlDescriptor(component, element);

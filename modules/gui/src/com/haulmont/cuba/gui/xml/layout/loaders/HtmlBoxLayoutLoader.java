@@ -25,9 +25,7 @@ public class HtmlBoxLayoutLoader extends ContainerLoader implements ComponentLoa
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
-
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final HtmlBoxLayout component = factory.createComponent(HtmlBoxLayout.NAME);
 
         assignXmlDescriptor(component, element);

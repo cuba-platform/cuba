@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -113,7 +114,7 @@ public abstract class ContainerLoader extends ComponentLoader {
         return null;
     }
 
-    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
+    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) {
         Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
         if (loaderClass == null) {
             throw new GuiDevelopmentException("Unknown component: " + name, context.getFullFrameId());
@@ -127,10 +128,16 @@ public abstract class ContainerLoader extends ComponentLoader {
 
             loader.setLocale(locale);
             loader.setMessagesPack(messagesPack);
-        } catch (Throwable e) {
-            loader = loaderClass.newInstance();
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
+        } catch (NoSuchMethodException e) {
+            try {
+                loader = loaderClass.newInstance();
+                loader.setLocale(locale);
+                loader.setMessagesPack(messagesPack);
+            } catch (InstantiationException | IllegalAccessException e1) {
+                throw new GuiDevelopmentException("Loader instatiation error: " + e1, context.getFullFrameId());
+            }
+        } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            throw new GuiDevelopmentException("Loader instatiation error: " + e, context.getFullFrameId());
         }
 
         return loader;

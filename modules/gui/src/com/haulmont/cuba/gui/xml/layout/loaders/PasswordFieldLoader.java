@@ -5,14 +5,10 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PasswordField;
-import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
@@ -26,8 +22,7 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         PasswordField component = (PasswordField) super.loadComponent(factory, element, parent);
 
         loadMaxLength(element, component);

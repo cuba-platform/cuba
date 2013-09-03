@@ -61,6 +61,5 @@ public interface ComponentLoader {
     String getMessagesPack();
     void setMessagesPack(String name);
 
-    Component loadComponent(ComponentsFactory factory, Element element, Component parent) 
-            throws InstantiationException, IllegalAccessException;
+    Component loadComponent(ComponentsFactory factory, Element element, Component parent);
 }

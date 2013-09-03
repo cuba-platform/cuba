@@ -37,9 +37,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
-
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         String src = element.attributeValue("src");
         final String screenId = element.attributeValue("screen");
         if (src == null && screenId == null)

@@ -24,8 +24,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
 
         final GroupBoxLayout component = factory.createComponent("groupBox");
 

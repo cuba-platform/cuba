@@ -29,9 +29,7 @@ public class SearchPickerFieldLoader extends SearchFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException {
-
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         SearchPickerField component = (SearchPickerField) super.loadComponent(factory, element, parent);
 
         final String metaClass = element.attributeValue("metaClass");

@@ -20,12 +20,13 @@ import java.util.Collection;
  * @version $Id$
  */
 public class SplitPanelLoader extends ContainerLoader{
+
     public SplitPanelLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final SplitPanel component = factory.createComponent(SplitPanel.NAME);
 
         assignXmlDescriptor(component, element);

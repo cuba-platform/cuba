@@ -18,9 +18,8 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class LookupPickerFieldLoader extends LookupFieldLoader {
 
@@ -29,7 +28,7 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         LookupPickerField component = (LookupPickerField) super.loadComponent(factory, element, parent);
 
         final String metaClass = element.attributeValue("metaClass");
