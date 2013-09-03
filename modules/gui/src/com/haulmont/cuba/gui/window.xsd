@@ -708,7 +708,7 @@
     <!-- PopupButton -->
     <xs:complexType name="popupButtonComponent">
         <xs:sequence>
-            <xs:element name="actions" nillable="true">
+            <xs:element name="actions" nillable="true" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:choice minOccurs="1" maxOccurs="unbounded">
