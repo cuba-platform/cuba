@@ -149,29 +149,26 @@ public interface Table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Use this for bind data to generated fields
+     * This method returns the datasource which contains the provided item. It can be used in data-aware components,
+     * created in generated columns.
      *
      * <pre>
-     * {@code
-     *
      * modelsTable.addGeneratedColumn(
      *     "numberOfSeats",
      *     new Table.ColumnGenerator<Model>() {
      *         public Component generateCell(Model entity) {
-     *             LookupField lookupField = AppConfig.getFactory().createComponent(LookupField.NAME);
+     *             LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
      *             lookupField.setDatasource(modelsTable.getItemDatasource(entity), "numberOfSeats");
      *             lookupField.setOptionsList(Arrays.asList(2, 4, 5));
-     *
      *             lookupField.setWidth("100px");
      *             return lookupField;
      *         }
      *     }
      * );
-     * }
      * </pre>
      *
-     * @param item Entity item
-     * @return datasource for binding
+     * @param item entity item
+     * @return datasource containing the item
      */
     public Datasource getItemDatasource(Entity item);
 
