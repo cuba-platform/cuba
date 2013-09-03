@@ -31,13 +31,14 @@ import java.util.*;
 public class DesktopTabSheet
         extends DesktopAbstractComponent<JTabbedPane>
         implements TabSheet, Component.Container, AutoExpanding {
-    protected Map<Component, String> components = new HashMap<Component, String>();
 
-    protected List<TabImpl> tabs = new ArrayList<TabImpl>();
+    protected Map<Component, String> components = new HashMap<>();
+
+    protected List<TabImpl> tabs = new ArrayList<>();
 
     protected Map<JComponent, TabImpl> tabContents = new LinkedHashMap<>();
     
-    protected Set<LazyTabInfo> lazyTabs = new HashSet<LazyTabInfo>();
+    protected Set<LazyTabInfo> lazyTabs = new HashSet<>();
 
     private ComponentLoader.Context context;
 
@@ -45,7 +46,7 @@ public class DesktopTabSheet
     private boolean postInitTaskAdded;
     private boolean componentTabChangeListenerInitialized;
 
-    protected Set<TabChangeListener> listeners = new HashSet<TabChangeListener>();
+    protected Set<TabChangeListener> listeners = new HashSet<>();
 
     public DesktopTabSheet() {
         impl = new JTabbedPane();
@@ -270,14 +271,7 @@ public class DesktopTabSheet
 
         lazyTabs.remove(lti);
 
-        Component comp;
-        try {
-            comp = lti.loader.loadComponent(AppConfig.getFactory(), lti.descriptor, null);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        Component comp = lti.loader.loadComponent(AppConfig.getFactory(), lti.descriptor, null);
         comp.setWidth("100%");
         lti.tabContent.add(comp);
         lti.tabContent.expand(comp, "", "");
