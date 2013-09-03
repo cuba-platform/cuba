@@ -6,13 +6,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgroup;
 
-import com.vaadin.shared.ui.form.FormState;
+import com.vaadin.shared.ui.panel.PanelState;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaFieldGroupState extends FormState {
+public class CubaFieldGroupState extends PanelState {
     {
         primaryStyleName = "cuba-fieldgroup";
     }

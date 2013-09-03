@@ -20,6 +20,7 @@ public interface Field
     boolean isRequired();
     void setRequired(boolean required);
     void setRequiredMessage(String msg);
+    String getRequiredMessage();
 
     /**
      * Use listeners on the component only if the component is not linked to a datasource.<br>

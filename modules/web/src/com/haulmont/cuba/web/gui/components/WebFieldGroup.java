@@ -6,44 +6,27 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
+import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.RichTextArea;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
-
-import com.haulmont.cuba.gui.components.FieldGroup.Field;
 
 /**
  * @author gorodnov
@@ -55,24 +38,20 @@ public class WebFieldGroup
         implements
             com.haulmont.cuba.gui.components.FieldGroup {
 
-    private Map<String, Field> fields = new LinkedHashMap<>();
-    private Map<Field, Integer> fieldsColumn = new HashMap<>();
-    private Map<Integer, List<Field>> columnFields = new HashMap<>();
+    protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
+    protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
+    protected Map<Integer, List<FieldConfig>> columnFields = new HashMap<>();
 
-    private Set<Field> readOnlyFields = new HashSet<>();
+    protected Set<FieldConfig> readOnlyFields = new HashSet<>();
 
-    private Map<Field, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators = new HashMap<>();
+    protected Map<FieldConfig, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators = new HashMap<>();
 
-    private Datasource<Entity> datasource;
+    protected Datasource<Entity> datasource;
+    protected FieldFactory fieldFactory = new WebFieldGroupFieldFactory();
 
-    private String caption;
-    private String description;
+    protected int cols = 1;
 
-    private int cols = 1;
-
-    private final FieldFactory fieldFactory = new FieldFactory();
-
-    private Item itemWrapper;
+    protected Item itemWrapper;
 
     protected Security security = AppBeans.get(Security.class);
 
@@ -80,13 +59,13 @@ public class WebFieldGroup
     protected Messages messages = AppBeans.get(Messages.class);
 
     public WebFieldGroup() {
-        component = new CubaFieldGroup(fieldFactory) {
+        component = new CubaFieldGroup() {
             @Override
             public void addField(Object propertyId, com.vaadin.ui.Field field) {
-                Field fieldConf = WebFieldGroup.this.getField(propertyId.toString());
+                FieldConfig fieldConf = WebFieldGroup.this.getField(propertyId.toString());
                 if (fieldConf != null) {
                     int col = fieldsColumn.get(fieldConf);
-                    List<Field> colFields = columnFields.get(col);
+                    List<FieldConfig> colFields = columnFields.get(col);
                     super.addField(propertyId.toString(), field, col, colFields.indexOf(fieldConf));
                 } else {
                     super.addField(propertyId.toString(), field, 0);
@@ -95,9 +74,9 @@ public class WebFieldGroup
 
             @Override
             public void addCustomField(Object propertyId, CustomFieldGenerator fieldGenerator) {
-                Field fieldConf = WebFieldGroup.this.getField(propertyId.toString());
+                FieldConfig fieldConf = WebFieldGroup.this.getField(propertyId.toString());
                 int col = fieldsColumn.get(fieldConf);
-                List<Field> colFields = columnFields.get(col);
+                List<FieldConfig> colFields = columnFields.get(col);
                 super.addCustomField(propertyId, fieldGenerator, col, colFields.indexOf(fieldConf));
             }
         };
@@ -107,8 +86,8 @@ public class WebFieldGroup
     @Override
     public void setDebugId(String id) {
         super.setDebugId(id);
-        final List<Field> fieldConfs = getFields();
-        for (final Field fieldConf : fieldConfs) {
+        final List<FieldConfig> fieldConfs = getFields();
+        for (final FieldConfig fieldConf : fieldConfs) {
             com.vaadin.ui.Field field = component.getField(fieldConf.getId());
             if (field != null) {
                 field.setId(id + ":" + fieldConf.getId());
@@ -117,24 +96,24 @@ public class WebFieldGroup
     }
 
     @Override
-    public List<Field> getFields() {
+    public List<FieldConfig> getFields() {
         return new ArrayList<>(fields.values());
     }
 
     @Override
-    public Field getField(String id) {
+    public FieldConfig getField(String id) {
         return fields.get(id);
     }
 
     @Override
-    public void addField(Field field) {
+    public void addField(FieldConfig field) {
         fields.put(field.getId(), field);
         fieldsColumn.put(field, 0);
         fillColumnFields(0, field);
     }
 
     @Override
-    public void addField(Field field, int col) {
+    public void addField(FieldConfig field, int col) {
         if (col < 0 || col >= cols) {
             throw new IllegalStateException(String.format("Illegal column number %s, available amount of columns is %s",
                     col, cols));
@@ -144,8 +123,8 @@ public class WebFieldGroup
         fillColumnFields(col, field);
     }
 
-    private void fillColumnFields(int col, Field field) {
-        List<Field> fields = columnFields.get(col);
+    private void fillColumnFields(int col, FieldConfig field) {
+        List<FieldConfig> fields = columnFields.get(col);
         if (fields == null) {
             fields = new ArrayList<>();
 
@@ -155,11 +134,11 @@ public class WebFieldGroup
     }
 
     @Override
-    public void removeField(Field field) {
+    public void removeField(FieldConfig field) {
         if (fields.remove(field.getId()) != null) {
             Integer col = fieldsColumn.get(field);
 
-            final List<Field> fields = columnFields.get(col);
+            final List<FieldConfig> fields = columnFields.get(col);
             fields.remove(field);
             fieldsColumn.remove(field);
         }
@@ -184,7 +163,7 @@ public class WebFieldGroup
 
     @Override
     public void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -192,91 +171,86 @@ public class WebFieldGroup
     }
 
     @Override
-    public void addCustomField(final Field field, final CustomFieldGenerator fieldGenerator) {
-        if (!field.isCustom()) {
-            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", field.getId()));
+    public void addCustomField(final FieldConfig fieldConf, final CustomFieldGenerator fieldGenerator) {
+        if (!fieldConf.isCustom()) {
+            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fieldConf.getId()));
         }
-        component.addCustomField(field.getId(), new CubaFieldGroup.CustomFieldGenerator() {
-            @Override
-            public com.vaadin.ui.Field generateField(Item item, Object propertyId, CubaFieldGroup component) {
-                Datasource ds;
-                if (field.getDatasource() != null) {
-                    ds = field.getDatasource();
-                } else {
-                    ds = datasource;
-                }
 
-                Component c;
-                com.vaadin.ui.Field f;
+        component.addCustomField(fieldConf.getId(), new CubaFieldGroup.CustomFieldGenerator() {
+            @Override
+            public com.vaadin.ui.Field generateField(Object propertyId, CubaFieldGroup component) {
+                Datasource fieldDatasource;
+                if (fieldConf.getDatasource() != null) {
+                    fieldDatasource = fieldConf.getDatasource();
+                } else {
+                    fieldDatasource = datasource;
+                }
 
                 String id = (String) propertyId;
 
-                c = fieldGenerator.generateField(ds, id);
-                assignTypicalAttributes(c);
-                f = getFieldComponent(c);
+                Component fieldComponent = fieldGenerator.generateField(fieldDatasource, id);
+                com.vaadin.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
 
-                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(id);
-                if (propertyPath != null) {
-                    if (f.getPropertyDataSource() == null) {
-                        if (field.getDatasource() != null) {
-                            final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
-                                    Collections.<MetaPropertyPath>singleton(propertyPath));
-                            f.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
+                assignTypicalAttributes(fieldComponent);
+
+                MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(id);
+                if (propertyPath != null && (fieldComponent instanceof DatasourceComponent)) {
+                    DatasourceComponent datasourceComponent = (DatasourceComponent) fieldComponent;
+                    if (datasourceComponent.getDatasource() == null) {
+                        if (fieldConf.getDatasource() != null) {
+                            datasourceComponent.setDatasource(fieldConf.getDatasource(), id);
                         } else {
-                            f.setPropertyDataSource(itemWrapper.getItemProperty(propertyPath));
+                            datasourceComponent.setDatasource(getDatasource(), id);
                         }
                     }
                 }
 
-                if (f.getCaption() == null) {
-                    if (field.getCaption() != null) {
-                        f.setCaption(field.getCaption());
-                    } else if (propertyPath != null) {
-                        f.setCaption(messageTools.getPropertyCaption(propertyPath.getMetaClass(), id));
-                    }
-                }
+                if (fieldComponent instanceof Field) {
+                    Field cubaField = (Field) fieldComponent;
 
-                if (f.getDescription() == null && field.getDescription() != null) {
-                    if (f instanceof AbstractComponent) {
-                        ((AbstractComponent) f).setDescription(field.getDescription());
+                    String caption = fieldConf.getCaption();
+                    if (caption == null) {
+                        if (propertyPath != null) {
+                            caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), fieldConf.getId());
+                        }
+                    }
+
+                    if (StringUtils.isEmpty(cubaField.getCaption())) {
+                        // if custom field hasn't manually set caption
+                        cubaField.setCaption(caption);
+                    }
+
+                    if (fieldConf.getDescription() != null && StringUtils.isEmpty(cubaField.getDescription())) {
+                        // custom field hasn't manually set description
+                        cubaField.setDescription(fieldConf.getDescription());
+                    }
+                    if (fieldConf.isRequired()) {
+                        cubaField.setRequired(fieldConf.isRequired());
+                    }
+                    if (fieldConf.getRequiredError() != null) {
+                        cubaField.setRequiredMessage(fieldConf.getRequiredError());
                     }
                 }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
-                if (/*f.getWidth() == -1f &&*/ field.getWidth() != null) {
-                    f.setWidth(field.getWidth());
+                if (/*f.getWidth() == -1f &&*/ fieldConf.getWidth() != null) {
+                    fieldComponent.setWidth(fieldConf.getWidth());
                 }
 
-                if (!f.isRequired()) {
-                    f.setRequired(field.isRequired());
-                }
+                applyPermissions(fieldComponent);
 
-                if ((f.getRequiredError() == null || f.getRequiredError().isEmpty())
-                        && field.getRequiredError() != null) {
-                    f.setRequiredError(field.getRequiredError());
-                }
-
-                applyPermissions(c);
-
-                return f;
+                return fieldImpl;
             }
         });
     }
 
-    protected com.vaadin.ui.Field getFieldComponent(Component c) {
-        com.vaadin.ui.Field f;
+    protected com.vaadin.ui.Field getFieldImplementation(Component c) {
         com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(c);
         if (composition instanceof com.vaadin.ui.Field) {
-            f = (com.vaadin.ui.Field) composition;
+            return  (com.vaadin.ui.Field) composition;
         } else {
-            com.vaadin.ui.Component innerComponent = WebComponentsHelper.unwrap(c);
-            if (innerComponent instanceof Field) {
-                f = (com.vaadin.ui.Field) innerComponent;
-            } else {
-                f = new SimpleComponentField(composition);
-            }
+            return new CubaFieldWrapper(composition);
         }
-        return f;
     }
 
     protected void assignTypicalAttributes(Component c) {
@@ -319,7 +293,7 @@ public class WebFieldGroup
                 final List<String> fieldIds = new ArrayList<>(this.fields.keySet());
                 fieldsMetaProps = new ArrayList<>();
                 for (final String id : fieldIds) {
-                    final Field field = getField(id);
+                    final FieldConfig field = getField(id);
                     final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
                     final Element descriptor = field.getXmlDescriptor();
                     final String clickAction = (descriptor == null) ? (null) : (descriptor.attributeValue("clickAction"));
@@ -340,81 +314,79 @@ public class WebFieldGroup
             if (!this.fields.isEmpty()) {
                 //Removes custom fieldsMetaProps from the list. We shouldn't to create components for custom fieldsMetaProps
                 for (MetaPropertyPath propertyPath : new ArrayList<>(fieldsMetaProps)) {
-                    final Field field = getField(propertyPath.toString());
+                    final FieldConfig field = getField(propertyPath.toString());
                     if (field.isCustom()) {
                         fieldsMetaProps.remove(propertyPath);
                     }
                 }
             }
-
-            component.setItemDataSource(itemWrapper, fieldsMetaProps);
-        } else {
-            component.setItemDataSource(null, null);
         }
 
         createFields(datasource);
     }
 
-    private void createFields(Datasource datasource) {
+    protected void createFields(Datasource datasource) {
         for (final String id : this.fields.keySet()) {
-            final Field fieldConf = getField(id);
+            final FieldConfig fieldConf = getField(id);
             if (!fieldConf.isCustom()) {
                 com.vaadin.ui.Field field;
+
                 Element descriptor = fieldConf.getXmlDescriptor();
-                final String clickAction = (descriptor == null) ? (null) : (descriptor.attributeValue("clickAction"));
-                Datasource fieldDs;
                 if (datasource != null && fieldConf.getDatasource() == null) {
-                    if (!StringUtils.isEmpty(clickAction)) {
-                        field = createField(datasource, fieldConf);
-                        component.addField(fieldConf.getId(), field);
-                    } else {
-                        field = component.getField(id);
-                    }
-                    fieldDs = datasource;
+                    field = createField(datasource, fieldConf);
+                    component.addField(fieldConf.getId(), field);
                 } else if (fieldConf.getDatasource() != null) {
-                    if (!StringUtils.isEmpty(clickAction)) {
-                        field = createField(fieldConf.getDatasource(), fieldConf);
-                        component.addField(fieldConf.getId(), field);
-                    } else {
-                        MetaPropertyPath propertyPath = fieldConf.getDatasource().getMetaClass().getPropertyPath(fieldConf.getId());
-                        final ItemWrapper dsWrapper = createDatasourceWrapper(fieldConf.getDatasource(),
-                                Collections.<MetaPropertyPath>singleton(propertyPath));
-
-                        field = fieldFactory.createField(dsWrapper, propertyPath, component);
-
-                        if (field != null && dsWrapper.getItemProperty(propertyPath) != null) {
-                            field.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
-                            component.addField(fieldConf.getId(), field);
-                        }
-                    }
-                    fieldDs = fieldConf.getDatasource();
+                    field = createField(fieldConf.getDatasource(), fieldConf);
+                    component.addField(fieldConf.getId(), field);
                 } else {
                     throw new IllegalStateException(String.format("Unable to get datasource for field '%s'", id));
                 }
-
-                if (field != null) {
-                    if (fieldConf.getCaption() != null) {
-                        field.setCaption(fieldConf.getCaption());
-                    }
-                    if (fieldConf.getDescription() != null) {
-                        if (field instanceof AbstractComponent) {
-                            ((AbstractComponent) field).setDescription(fieldConf.getDescription());
-                        }
-                    }
-                    if (!field.isRequired()) {
-                        field.setRequired(fieldConf.isRequired());
-                    }
-                    if (fieldConf.getRequiredError() != null) {
-                        field.setRequiredError(fieldConf.getRequiredError());
-                    }
-                }
-
-                applyPermissions(fieldConf, fieldDs);
             }
         }
     }
 
-    private void applyPermissions(Component c) {
+    protected com.vaadin.ui.Field createField(Datasource fieldDatasource, FieldConfig fieldConf) {
+        Component fieldComponent =
+                fieldFactory.createField(fieldDatasource, fieldConf.getId(), fieldConf.getXmlDescriptor());
+
+        com.vaadin.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
+
+        assignTypicalAttributes(fieldComponent);
+
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
+            String caption = fieldConf.getCaption();
+            if (caption == null) {
+                MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(fieldConf.getId());
+                if (propertyPath != null) {
+                    caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), fieldConf.getId());
+                }
+            }
+
+            cubaField.setCaption(caption);
+
+            if (fieldConf.getDescription() != null) {
+                cubaField.setDescription(fieldConf.getDescription());
+            }
+            if (fieldConf.isRequired()) {
+                cubaField.setRequired(fieldConf.isRequired());
+            }
+            if (fieldConf.getRequiredError() != null) {
+                cubaField.setRequiredMessage(fieldConf.getRequiredError());
+            }
+        }
+
+        // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
+        if (/*f.getWidth() == -1f &&*/ fieldConf.getWidth() != null) {
+            fieldComponent.setWidth(fieldConf.getWidth());
+        }
+
+        applyPermissions(fieldComponent);
+
+        return fieldImpl;
+    }
+
+    protected void applyPermissions(Component c) {
         if (c instanceof DatasourceComponent) {
             DatasourceComponent dsComponent = (DatasourceComponent) c;
             MetaProperty metaProperty = dsComponent.getMetaProperty();
@@ -426,19 +398,9 @@ public class WebFieldGroup
         }
     }
 
-    private void applyPermissions(Field fieldConf, Datasource datasource) {
-        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConf.getId());
-        if (propertyPath != null) {
-            MetaProperty metaProperty = propertyPath.getMetaProperty();
-
-            setEditable(fieldConf, security.isEntityAttrModificationPermitted(metaProperty)
-                    && isEditable(fieldConf));
-        }
-    }
-
-    private int rowsCount() {
+    protected int rowsCount() {
         int rowsCount = 0;
-        for (final List<Field> fields : columnFields.values()) {
+        for (final List<FieldConfig> fields : columnFields.values()) {
             rowsCount = Math.max(rowsCount, fields.size());
         }
         return rowsCount;
@@ -454,7 +416,7 @@ public class WebFieldGroup
         this.cols = cols;
     }
 
-    protected Object convertRawValue(Field field, Object value) throws ValidationException {
+    protected Object convertRawValue(FieldConfig field, Object value) throws ValidationException {
         if (value instanceof String) {
             Datatype datatype = null;
             MetaPropertyPath propertyPath = null;
@@ -486,7 +448,7 @@ public class WebFieldGroup
     }
 
     @Override
-    public void addValidator(final Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
+    public void addValidator(final FieldConfig field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
         if (validators == null) {
             validators = new ArrayList<>();
@@ -499,7 +461,7 @@ public class WebFieldGroup
 
     @Override
     public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -508,23 +470,21 @@ public class WebFieldGroup
 
     @Override
     public String getCaption() {
-        return caption;
+        return component.getCaption();
     }
 
     @Override
     public void setCaption(String caption) {
-        this.caption = caption;
         component.setCaption(caption);
     }
 
     @Override
     public String getDescription() {
-        return description;
+        return component.getDescription();
     }
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
         component.setDescription(description);
     }
 
@@ -538,7 +498,7 @@ public class WebFieldGroup
         component.setReadOnly(!editable);
         // if we have editable field group with some read-only fields then we keep them read-only
         if (editable) {
-            for (Field field : readOnlyFields) {
+            for (FieldConfig field : readOnlyFields) {
                 com.vaadin.ui.Field f = component.getField(field.getId());
                 f.setReadOnly(true);
             }
@@ -546,13 +506,13 @@ public class WebFieldGroup
     }
 
     @Override
-    public boolean isRequired(Field field) {
+    public boolean isRequired(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isRequired();
     }
 
     @Override
-    public void setRequired(Field field, boolean required, String message) {
+    public void setRequired(FieldConfig field, boolean required, String message) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setRequired(required);
         if (required) {
@@ -562,7 +522,7 @@ public class WebFieldGroup
 
     @Override
     public boolean isRequired(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -571,7 +531,7 @@ public class WebFieldGroup
 
     @Override
     public void setRequired(String fieldId, boolean required, String message) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -579,12 +539,12 @@ public class WebFieldGroup
     }
 
     @Override
-    public boolean isEditable(Field field) {
+    public boolean isEditable(FieldConfig field) {
         return !readOnlyFields.contains(field);
     }
 
     @Override
-    public void setEditable(Field field, boolean editable) {
+    public void setEditable(FieldConfig field, boolean editable) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setReadOnly(!editable);
         if (editable) {
@@ -596,7 +556,7 @@ public class WebFieldGroup
 
     @Override
     public void setEditable(String fieldId, boolean editable) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -605,7 +565,7 @@ public class WebFieldGroup
 
     @Override
     public boolean isEditable(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -613,20 +573,20 @@ public class WebFieldGroup
     }
 
     @Override
-    public boolean isEnabled(Field field) {
+    public boolean isEnabled(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isEnabled();
     }
 
     @Override
-    public void setEnabled(Field field, boolean enabled) {
+    public void setEnabled(FieldConfig field, boolean enabled) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setEnabled(enabled);
     }
 
     @Override
     public boolean isEnabled(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -635,7 +595,7 @@ public class WebFieldGroup
 
     @Override
     public void setEnabled(String fieldId, boolean enabled) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -643,20 +603,20 @@ public class WebFieldGroup
     }
 
     @Override
-    public boolean isVisible(Field field) {
+    public boolean isVisible(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isVisible();
     }
 
     @Override
-    public void setVisible(Field field, boolean visible) {
+    public void setVisible(FieldConfig field, boolean visible) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setVisible(visible);
     }
 
     @Override
     public boolean isVisible(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -665,7 +625,7 @@ public class WebFieldGroup
 
     @Override
     public void setVisible(String fieldId, boolean visible) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -683,20 +643,20 @@ public class WebFieldGroup
     }
 
     @Override
-    public Object getFieldValue(Field field) {
+    public Object getFieldValue(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.getValue();
     }
 
     @Override
-    public void setFieldValue(Field field, Object value) {
+    public void setFieldValue(FieldConfig field, Object value) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setValue(value);
     }
 
     @Override
     public Object getFieldValue(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -705,7 +665,7 @@ public class WebFieldGroup
 
     @Override
     public void setFieldValue(String fieldId, Object value) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -714,7 +674,7 @@ public class WebFieldGroup
 
     @Override
     public void requestFocus(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -726,7 +686,7 @@ public class WebFieldGroup
 
     @Override
     public void setFieldCaption(String fieldId, String caption) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         }
@@ -757,7 +717,7 @@ public class WebFieldGroup
     public void validate() throws ValidationException {
         final Map<Object, Exception> problems = new HashMap<>();
 
-        for (Field field : getFields()) {
+        for (FieldConfig field : getFields()) {
             com.vaadin.ui.Field f = component.getField(field.getId());
             if (f != null && f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
                 Object value = convertRawValue(field, getFieldValue(field));
@@ -781,14 +741,14 @@ public class WebFieldGroup
         }
 
         if (!problems.isEmpty()) {
-            Map<Field, Exception> problemFields = new HashMap<>();
+            Map<FieldConfig, Exception> problemFields = new HashMap<>();
             for (Map.Entry<Object, Exception> entry : problems.entrySet()) {
                 problemFields.put(getField(entry.getKey().toString()), entry.getValue());
             }
 
             StringBuilder msgBuilder = new StringBuilder();
-            for (Iterator<Field> iterator = problemFields.keySet().iterator(); iterator.hasNext(); ) {
-                Field field = iterator.next();
+            for (Iterator<FieldConfig> iterator = problemFields.keySet().iterator(); iterator.hasNext(); ) {
+                FieldConfig field = iterator.next();
                 Exception ex = problemFields.get(field);
                 msgBuilder.append(ex.getMessage());
                 if (iterator.hasNext()) {
@@ -803,7 +763,7 @@ public class WebFieldGroup
         }
     }
 
-    private boolean isEmpty(Object value) {
+    protected boolean isEmpty(Object value) {
         if (value instanceof String) {
             return StringUtils.isBlank((String) value);
         } else {
@@ -811,87 +771,57 @@ public class WebFieldGroup
         }
     }
 
-    protected static class SimpleComponentField extends CustomField {
+    public class FieldGroupItemWrapper extends ItemWrapper {
 
-        protected com.vaadin.ui.Component composition;
+        private static final long serialVersionUID = -7877886198903628220L;
 
-        public SimpleComponentField(com.vaadin.ui.Component composition) {
-            this.composition = composition;
-            this.setCaption(" "); // use space in caption for proper layout
+        public FieldGroupItemWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+            super(datasource, propertyPaths);
+        }
+
+        public Datasource getDatasource() {
+            return (Datasource) item;
         }
 
         @Override
-        protected com.vaadin.ui.Component initContent() {
-            return composition;
-        }
+        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            return new PropertyWrapper(item, propertyPath) {
+                @Override
+                public boolean isReadOnly() {
+                    FieldConfig field = fields.get(propertyPath.toString());
+                    return !isEditable(field);
+                }
 
-        @Override
-        public Class getType() {
-            return Object.class;
+                @Override
+                public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
+                    if (newValue instanceof String) {
+                        newValue = ((String) newValue).trim();
+                    }
+                    super.setValue(newValue);
+                }
+
+                @Override
+                public String getFormattedValue() {
+                    Object value = getValue();
+                    if (value == null) {
+                        return "";
+                    }
+
+                    FieldConfig field = fields.get(propertyPath.toString());
+                    if (field.getFormatter() != null) {
+                        return field.getFormatter().format(value);
+                    }
+                    return super.getFormattedValue();
+                }
+            };
         }
     }
 
-    protected class FieldFactory extends AbstractFieldFactory {
-        @Override
-        protected Datasource getDatasource() {
-            return datasource;
-        }
+    protected class WebFieldGroupFieldFactory extends com.haulmont.cuba.web.gui.components.AbstractFieldFactory {
 
         @Override
-        protected void initCommon(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField,
-                                  MetaPropertyPath propertyPath) {
-            final Field fieldConf = getField(propertyPath.toString());
-            if ("timeField".equals(fieldType(propertyPath)) || (cubaField instanceof WebTimeField)) {
-                String s = fieldConf.getXmlDescriptor().attributeValue("showSeconds");
-                if (Boolean.valueOf(s)) {
-                    ((TimeField) cubaField).setShowSeconds(true);
-                }
-            } else if (cubaField instanceof WebMaskedField) {
-                initMaskedField((WebMaskedField) cubaField, propertyPath.getMetaProperty(),
-                        fieldConf.getXmlDescriptor());
-            } else if (field instanceof TextField) {
-                ((TextField) field).setNullRepresentation("");
-                if (fieldConf != null) {
-                    initTextField((TextField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
-                }
-            } else if (field instanceof TextArea) {
-                ((TextArea) field).setNullRepresentation("");
-                if (fieldConf != null) {
-                    initTextArea(((TextArea) field), propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
-                }
-            } else if (cubaField instanceof WebDateField) {
-                if (getFormatter(propertyPath) != null) {
-                    String format = getFormat(propertyPath);
-                    if (format != null) {
-                        ((WebDateField) cubaField).setDateFormat(format);
-                    }
-                }
-                if (fieldConf != null) {
-                    initDateField(field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
-                }
-            } else if (field instanceof RichTextArea) {
-                ((RichTextArea) field).setNullRepresentation("");
-            } else if (field instanceof PasswordField) {
-                ((PasswordField) field).setNullRepresentation("");
-            }  //else if (field instanceof CheckBox) {
-//                vaadin7
-//                ((CheckBox) field).setLayoutCaption(true);
-//            }
-
-            field.setInvalidCommitted(true);
-
-            if (fieldConf != null && fieldConf.getWidth() != null) {
-                field.setWidth(fieldConf.getWidth());
-            }
-
-            if (cubaField != null) {
-                cubaField.setFrame(getFrame());
-            }
-        }
-
-        @Override
-        protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, MetaPropertyPath propertyPath) {
-            final Field field = fields.get(propertyPath.toString());
+        protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
+            final FieldConfig field = fields.get(property);
 
             Datasource ds = datasource;
 
@@ -917,236 +847,6 @@ public class WebFieldGroup
             } else {
                 return null;
             }
-        }
-
-        @Override
-        protected void initValidators(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField,
-                                      MetaPropertyPath propertyPath, boolean validationVisible) {
-            //do nothing
-        }
-
-        @Override
-        protected Collection<com.haulmont.cuba.gui.components.Field.Validator> getValidators(MetaPropertyPath propertyPath) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        protected boolean required(MetaPropertyPath propertyPath) {
-            return false;
-        }
-
-        @Override
-        protected String requiredMessage(MetaPropertyPath propertyPath) {
-            return null;
-        }
-
-        @Override
-        protected Formatter getFormatter(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
-            if (field != null) {
-                return field.getFormatter();
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        protected String getFormat(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
-            if (field != null) {
-                Element formatterElement = field.getXmlDescriptor().element("formatter");
-                return formatterElement.attributeValue("format");
-            }
-            return null;
-        }
-
-        @Override
-        protected String fieldType(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
-            if (field != null) {
-                if (field.getXmlDescriptor() != null) {
-                    String fieldType = field.getXmlDescriptor().attributeValue("field");
-                    if (!StringUtils.isEmpty(fieldType)) {
-                        return fieldType;
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected com.vaadin.ui.Field<?> createDefaultField(Item item, Object propertyId,
-                                                            com.vaadin.ui.Component uiContext) {
-            Field fieldConf = fields.get(propertyId.toString());
-            if (fieldConf != null && fieldConf.getXmlDescriptor() != null) {
-                final String rows = fieldConf.getXmlDescriptor().attributeValue("rows");
-                if (!StringUtils.isEmpty(rows)) {
-                    return new TextArea();
-                }
-            }
-
-            return super.createDefaultField(item, propertyId, uiContext);
-        }
-
-        @Override
-        protected Element getXmlDescriptor(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
-            return field != null ? field.getXmlDescriptor() : null;
-        }
-
-        @Override
-        protected void setCaption(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
-            // if caption not already loaded from attributes then load default caption
-            Field fieldConf = WebFieldGroup.this.fields.get(propertyPath.toString());
-            if ((fieldConf == null) || (StringUtils.isEmpty(fieldConf.getCaption()))) {
-                super.setCaption(field, propertyPath);
-            }
-        }
-    }
-
-    private com.vaadin.ui.Field createField(final Datasource datasource, final Field fieldConf) {
-        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConf.getId());
-        final ItemWrapper dsWrapper = createDatasourceWrapper(
-                datasource,
-                Collections.<MetaPropertyPath>singleton(propertyPath)
-        );
-
-        final LinkField field = new LinkField(datasource, fieldConf);
-        field.setCaption(messageTools.getPropertyCaption(propertyPath.getMetaProperty()));
-        field.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
-
-        return field;
-    }
-
-    private class LinkField extends com.vaadin.ui.CustomField {
-        private static final long serialVersionUID = 5555318337278242796L;
-
-        private Button component;
-
-        private LinkField(final Datasource datasource, final Field fieldConf) {
-            component = new Button();
-            component.setStyleName("link");
-            component.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    final Instance entity = datasource.getItem();
-                    final Entity value = entity.getValueEx(fieldConf.getId());
-                    String clickAction = fieldConf.getXmlDescriptor().attributeValue("clickAction");
-                    if (!StringUtils.isEmpty(clickAction)) {
-                        if (clickAction.startsWith("open:")) {
-                            final com.haulmont.cuba.gui.components.IFrame frame = WebFieldGroup.this.getFrame();
-                            String screenName = clickAction.substring("open:".length()).trim();
-                            final com.haulmont.cuba.gui.components.Window window =
-                                    frame.openEditor(
-                                            screenName,
-                                            value,
-                                            WindowManager.OpenType.THIS_TAB);
-
-                            window.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
-                                @Override
-                                public void windowClosed(String actionId) {
-                                    if (com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID.equals(actionId)
-                                            && window instanceof com.haulmont.cuba.gui.components.Window.Editor) {
-                                        Entity item = ((com.haulmont.cuba.gui.components.Window.Editor) window).getItem();
-                                        if (item != null) {
-                                            entity.setValueEx(fieldConf.getId(), item);
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (clickAction.startsWith("invoke:")) {
-                            final com.haulmont.cuba.gui.components.IFrame frame = WebFieldGroup.this.getFrame();
-                            String methodName = clickAction.substring("invoke:".length()).trim();
-                            try {
-                                IFrame controllerFrame = WebComponentsHelper.getControllerFrame(frame);
-                                Method method = controllerFrame.getClass().getMethod(methodName, Object.class);
-                                method.invoke(controllerFrame, value);
-                            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                                throw new RuntimeException("Unable to invoke clickAction", e);
-                            }
-                        } else {
-                            throw new UnsupportedOperationException(String.format("Unsupported clickAction format: %s", clickAction));
-                        }
-                    }
-                }
-            });
-            setStyleName("cuba-linkfield");
-            setConverter(new StringToEntityConverter());
-        }
-
-        @Override
-        public Class<?> getType() {
-            return String.class;
-        }
-
-        @Override
-        public void valueChange(Property.ValueChangeEvent event) {
-            super.valueChange(event);
-            component.setCaption(event.getProperty().getValue() == null
-                    ? "" : event.getProperty().toString());
-        }
-
-        @Override
-        protected com.vaadin.ui.Component initContent() {
-            return component;
-        }
-    }
-
-    public class FieldGroupItemWrapper extends ItemWrapper {
-
-        private static final long serialVersionUID = -7877886198903628220L;
-
-        public FieldGroupItemWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-            super(datasource, propertyPaths);
-        }
-
-        public Datasource getDatasource() {
-            return (Datasource) item;
-        }
-
-        @Override
-        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-            return new PropertyWrapper(item, propertyPath) {
-                @Override
-                public boolean isReadOnly() {
-                    Field field = fields.get(propertyPath.toString());
-                    return !isEditable(field);
-                }
-
-                @Override
-                public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                    if (newValue instanceof String) {
-                        newValue = ((String) newValue).trim();
-                    }
-                    super.setValue(newValue);
-                }
-
-                @Override
-                public String getFormattedValue() {
-                    Object value = getValue();
-                    if (value == null) {
-                        return null;
-                    }
-                    Field field = fields.get(propertyPath.toString());
-                    if (field.getFormatter() != null) {
-                        if (value instanceof Instance) {
-                            value = ((Instance) value).getInstanceName();
-                        }
-                        return field.getFormatter().format(value);
-                    }
-                    return super.getFormattedValue();
-                }
-
-                /**
-                 * Used in {@link LinkField#valueChange}.
-                 *
-                 * @return formatted value of property
-                 */
-                @Override
-                public String toString() {
-                    return getFormattedValue();
-                }
-            };
         }
     }
 }

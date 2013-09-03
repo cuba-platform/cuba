@@ -18,6 +18,14 @@ public interface CubaEnhancedTable {
     TablePresentations getPresentations();
 
     void setPresentations(TablePresentations presentations);
-
     void hidePresentationsPopup();
+
+    Object[] getEditableColumns();
+    void setEditableColumns(Object[] editableColumns);
+
+    boolean isAllowPopupMenu();
+    void setAllowPopupMenu(boolean allowPopupMenu);
+
+    boolean isTextSelectionEnabled();
+    void setTextSelectionEnabled(boolean textSelectionEnabled);
 }

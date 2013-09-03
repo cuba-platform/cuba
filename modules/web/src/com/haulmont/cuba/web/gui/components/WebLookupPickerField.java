@@ -118,6 +118,16 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     }
 
     @Override
+    public void setCaption(String caption) {
+        pickerField.setCaption(caption);
+    }
+
+    @Override
+    public String getCaption() {
+        return pickerField.getCaption();
+    }
+
+    @Override
     public void setDescription(String description) {
         pickerField.setDescription(description);
     }
@@ -167,6 +177,11 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     @Override
     public void setRequiredMessage(String msg) {
         pickerField.setRequiredMessage(msg);
+    }
+
+    @Override
+    public String getRequiredMessage() {
+        return pickerField.getRequiredMessage();
     }
 
     @Override

@@ -19,41 +19,41 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
     String NAME = "fieldGroup";
 
-    java.util.List<Field> getFields();
-    Field getField(String id);
+    java.util.List<FieldConfig> getFields();
+    FieldConfig getField(String id);
 
-    void addField(Field field);
-    void addField(Field field, int col);
-    void removeField(Field field);
+    void addField(FieldConfig field);
+    void addField(FieldConfig field, int col);
+    void removeField(FieldConfig field);
 
     Datasource getDatasource();
     void setDatasource(Datasource datasource);
 
-    boolean isRequired(Field field);
-    void setRequired(Field field, boolean required, String message);
+    boolean isRequired(FieldConfig field);
+    void setRequired(FieldConfig field, boolean required, String message);
     boolean isRequired(String fieldId);
     void setRequired(String fieldId, boolean required, String message);
 
-    void addValidator(Field field, com.haulmont.cuba.gui.components.Field.Validator validator);
+    void addValidator(FieldConfig field, com.haulmont.cuba.gui.components.Field.Validator validator);
     void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator);
 
-    boolean isEditable(Field field);
-    void setEditable(Field field, boolean editable);
+    boolean isEditable(FieldConfig field);
+    void setEditable(FieldConfig field, boolean editable);
     boolean isEditable(String fieldId);
     void setEditable(String fieldId, boolean editable);
 
-    boolean isEnabled(Field field);
-    void setEnabled(Field field, boolean enabled);
+    boolean isEnabled(FieldConfig field);
+    void setEnabled(FieldConfig field, boolean enabled);
     boolean isEnabled(String fieldId);
     void setEnabled(String fieldId, boolean enabled);
 
-    boolean isVisible(Field field);
-    void setVisible(Field field, boolean visible);
+    boolean isVisible(FieldConfig field);
+    void setVisible(FieldConfig field, boolean visible);
     boolean isVisible(String fieldId);
     void setVisible(String fieldId, boolean visible);
 
-    Object getFieldValue(Field field);
-    void setFieldValue(Field field, Object value);
+    Object getFieldValue(FieldConfig field);
+    void setFieldValue(FieldConfig field, Object value);
     Object getFieldValue(String fieldId);
     void setFieldValue(String fieldId, Object value);
 
@@ -74,7 +74,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     void setColumnExpandRatio(int col, float ratio);
 
     void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator);
-    void addCustomField(Field field, CustomFieldGenerator fieldGenerator);
+    void addCustomField(FieldConfig field, CustomFieldGenerator fieldGenerator);
 
     void postInit();
 
@@ -83,7 +83,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         TOP
     }
 
-    public class Field implements HasXmlDescriptor, HasCaption, HasFormatter {
+    public class FieldConfig implements HasXmlDescriptor, HasCaption, HasFormatter {
         private String id;
         private String caption;
         private String description;
@@ -98,7 +98,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         
         private Class type;
         
-        public Field(String id) {
+        public FieldConfig(String id) {
             this.id = id;
         }
 
@@ -196,7 +196,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     }
 
     public class FieldsValidationException extends ValidationException {
-        private Map<Field, Exception> problemFields;
+        private Map<FieldConfig, Exception> problemFields;
 
         public FieldsValidationException() {
         }
@@ -213,11 +213,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
             super(cause);
         }
 
-        public Map<Field, Exception> getProblemFields() {
+        public Map<FieldConfig, Exception> getProblemFields() {
             return problemFields;
         }
 
-        public void setProblemFields(Map<Field, Exception> problemFields) {
+        public void setProblemFields(Map<FieldConfig, Exception> problemFields) {
             this.problemFields = problemFields;
         }
     }

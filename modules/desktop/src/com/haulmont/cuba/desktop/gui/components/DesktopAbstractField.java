@@ -20,14 +20,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class DesktopAbstractField<C extends JComponent>
-        extends DesktopAbstractComponent<C>
-        implements Field {
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+        extends
+            DesktopAbstractComponent<C>
+        implements
+            Field {
+
+    protected List<ValueListener> listeners = new ArrayList<>();
     protected ValueChangingListener valueChangingListener;
 
     protected boolean required;
@@ -138,5 +140,10 @@ public abstract class DesktopAbstractField<C extends JComponent>
     @Override
     public void setRequiredMessage(String msg) {
         requiredMessage = msg;
+    }
+
+    @Override
+    public String getRequiredMessage() {
+        return requiredMessage;
     }
 }

@@ -880,7 +880,7 @@
         <xs:attribute name="folderActionsEnabled" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
-    <!-- FieldGroup.Field -->
+    <!-- FieldGroup.FieldConfig -->
     <xs:complexType name="fieldGroupField">
         <xs:sequence>
             <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
@@ -905,7 +905,6 @@
 
         <xs:attribute name="cols" type="xs:int" use="optional"/>
         <xs:attribute name="rows" type="xs:int" use="optional"/>
-        <xs:attribute name="clickAction" type="xs:string" use="optional"/>
 
         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>

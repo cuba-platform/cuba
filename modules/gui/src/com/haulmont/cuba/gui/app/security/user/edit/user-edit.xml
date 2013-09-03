@@ -5,15 +5,13 @@
   -->
 
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         datasource="userDs"
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.user.edit.UserEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.user.edit"
         focusComponent="fieldGroup"
         >
-
-    <assign name="width" value="250px"/>
 
     <companions>
         <web class="com.haulmont.cuba.web.app.ui.security.user.UserEditorCompanion"/>
@@ -29,8 +27,10 @@
         </datasource>
     </dsContext>
 
+    <assign name="width" value="250px"/>
+
     <layout expand="split" spacing="true">
-        <fieldGroup id="fieldGroup" width="100%" datasource="userDs" collapsable="false" border="visible">
+        <fieldGroup id="fieldGroup" width="100%" datasource="userDs" border="visible">
             <column flex="1" width="${width}" id="fieldGroupColumn1">
                 <field id="login" required="true" requiredMessage="msg://loginMsg"/>
                 <field id="passw" custom="true" caption="msg://password"/>

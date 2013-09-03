@@ -14,7 +14,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
@@ -52,6 +51,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     private FieldGroup categoryFieldGroup;
     private boolean requiredControlEnabled = true;
 
+    @Override
     public void init(Map<String, Object> params) {
         String dsId = (String) params.get("runtimeDs");
         String categoriesDsId = (String) params.get("categoriesDs");
@@ -80,7 +80,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         contentPane.add(categoryFieldGroup);
         registerComponent(categoryFieldGroup);
 
-        FieldGroup.Field field = new FieldGroup.Field("category");
+        FieldGroup.FieldConfig field = new FieldGroup.FieldConfig("category");
 
         field.setCustom(true);
         categoryFieldGroup.addField(field);
@@ -124,8 +124,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 contentPane.add(newRuntime);
                 registerComponent(newRuntime);
 
-                final java.util.List<FieldGroup.Field> fields = newRuntime.getFields();
-                for (FieldGroup.Field field : fields)
+                final java.util.List<FieldGroup.FieldConfig> fields = newRuntime.getFields();
+                for (FieldGroup.FieldConfig field : fields)
                     newRuntime.removeField(field);
 
                 int rowsPerColumn;
@@ -144,8 +144,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
                 int columnNo = 0;
                 int fieldsCount = 0;
-                final java.util.List<FieldGroup.Field> rootFields = loadFields(newRuntime, ds);
-                for (final FieldGroup.Field field : rootFields) {
+                final java.util.List<FieldGroup.FieldConfig> rootFields = loadFields(newRuntime, ds);
+                for (final FieldGroup.FieldConfig field : rootFields) {
                     fieldsCount++;
                     newRuntime.addField(field, columnNo);
                     if (fieldsCount % rowsPerColumn == 0) {
@@ -158,7 +158,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
                 addCustomFields(newRuntime, rootFields, ds);
 
-                for (final FieldGroup.Field field : newRuntime.getFields()) {
+                for (final FieldGroup.FieldConfig field : newRuntime.getFields()) {
                     loadValidators(newRuntime, field);
                     loadRequired(newRuntime, field);
                     //loadEditable(component, field);
@@ -168,14 +168,14 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         });
     }
 
-    protected void addCustomFields(FieldGroup component, java.util.List<FieldGroup.Field> fields, final Datasource ds) {
+    protected void addCustomFields(FieldGroup component, java.util.List<FieldGroup.FieldConfig> fields, final Datasource ds) {
         MetaClass meta = ds.getMetaClass();
         Collection<MetaProperty> metaProperties = meta.getProperties();
         for (final MetaProperty property : metaProperties) {
             Range range = property.getRange();
             if (!range.isDatatype()) {
                 if (range.asClass().getJavaClass().equals(SetValueEntity.class)) {
-                    for (FieldGroup.Field field : fields) {
+                    for (FieldGroup.FieldConfig field : fields) {
                         if (field.getId().equals(property.getName())) {
                             field.setCustom(true);
                             component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
@@ -244,12 +244,12 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         }
     }
 
-    protected java.util.List<FieldGroup.Field> loadFields(FieldGroup component, Datasource ds) {
+    protected java.util.List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Datasource ds) {
         MetaClass meta = ds.getMetaClass();
         Collection<MetaProperty> metaProperties = meta.getProperties();
-        java.util.List<FieldGroup.Field> fields = new ArrayList<FieldGroup.Field>();
+        java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<FieldGroup.FieldConfig>();
         for (MetaProperty property : metaProperties) {
-            FieldGroup.Field field = new FieldGroup.Field(property.getName());
+            FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
             field.setCaption(property.getName());
             field.setWidth(fieldWidth);
             fields.add(field);
@@ -268,21 +268,21 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
             if (dt.equals(Datatypes.get(IntegerDatatype.NAME)) || dt.equals(Datatypes.get(LongDatatype.NAME))) {
                 validator = new IntegerValidator(
-                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
+                        messages.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
             } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
                 validator = new DoubleValidator(
-                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
+                        messages.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
             } else if (dt.equals(Datatypes.get(DateDatatype.NAME))) {
-                validator = new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(),
+                validator = new DateValidator(messages.getMessage(AppConfig.getMessagesPack(),
                         "validation.invalidDate"));
             }
         }
         return validator;
     }
 
-    protected void loadValidators(FieldGroup newRuntime, FieldGroup.Field field) {
+    protected void loadValidators(FieldGroup newRuntime, FieldGroup.FieldConfig field) {
         MetaPropertyPath metaPropertyPath = rds.getMetaClass().getPropertyPath(field.getId());
         if (metaPropertyPath != null) {
             MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
@@ -295,10 +295,10 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         }
     }
 
-    protected void loadRequired(FieldGroup fieldGroup, FieldGroup.Field field) {
+    protected void loadRequired(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
         RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) rds.getItem();
         CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(field.getId());
-        String requiredMessage = MessageProvider.formatMessage(
+        String requiredMessage = messages.formatMessage(
                 AppConfig.getMessagesPack(),
                 "validation.required.defaultMsg",
                 field.getId()
@@ -318,7 +318,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         this.requiredControlEnabled = requiredControlEnabled;
         FieldGroup newRuntime = getComponent("runtime");
         if (newRuntime != null) {
-            for (final FieldGroup.Field field : newRuntime.getFields()) {
+            for (final FieldGroup.FieldConfig field : newRuntime.getFields()) {
                 loadRequired(newRuntime, field);
             }
         }

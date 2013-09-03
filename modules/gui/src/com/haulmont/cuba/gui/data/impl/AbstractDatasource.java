@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * @author abramov
+ * @author abramov                                                                            1
  * @version $Id$
  */
 public abstract class AbstractDatasource<T extends Entity>
@@ -36,7 +36,7 @@ public abstract class AbstractDatasource<T extends Entity>
     protected Datasource parentDs;
     protected Metadata metadata = AppBeans.get(Metadata.class);
 
-    protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
+    protected List<DatasourceListener> dsListeners = new ArrayList<>();
 
     protected Collection itemToCreate = new HashSet();
     protected Collection itemToUpdate = new HashSet();
@@ -188,13 +188,13 @@ public abstract class AbstractDatasource<T extends Entity>
     }
 
     protected void fireItemChanged(Object prevItem) {
-        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
             dsListener.itemChanged(this, (Entity) prevItem, getItem());
         }
     }
 
     protected void fireStateChanged(State prevStatus) {
-        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+        for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
             dsListener.stateChanged(this, prevStatus, getState());
         }
     }
@@ -205,9 +205,10 @@ public abstract class AbstractDatasource<T extends Entity>
             if (!listenersEnabled)
                 return;
 
-            log.trace("propertyChanged: item=" + item + ", property=" + property + ", value=" + value + ", prevValue=" + prevValue);
+            log.trace("propertyChanged: item=" + item + ", property=" + property +
+                    ", value=" + value + ", prevValue=" + prevValue);
 
-            for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+            for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
                 dsListener.valueChanged(item, property, prevValue, value);
             }
             if (!metadata.getTools().isTransient(item, property))

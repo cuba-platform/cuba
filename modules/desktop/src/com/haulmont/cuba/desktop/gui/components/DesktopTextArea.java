@@ -16,7 +16,7 @@ import java.awt.*;
  * @author artamonov
  * @version $Id$
  */
-public class DesktopTextArea extends DesktopAbstractTextInput<JTextArea> implements TextArea, Component.Wrapper {
+public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> implements TextArea, Component.Wrapper {
 
     protected JComponent composition;
 

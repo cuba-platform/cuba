@@ -10,7 +10,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 /**
  * Masked field component generic interface.
- * Field supports following format symbols:
+ * FieldConfig supports following format symbols:
  * <ul>
  * <li># - Digit</li>
  * <li>U - Uppercase letter</li>

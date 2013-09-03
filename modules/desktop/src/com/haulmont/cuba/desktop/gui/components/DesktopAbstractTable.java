@@ -27,8 +27,10 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -66,7 +68,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected static final int DEFAULT_ROW_MARGIN = 4;
 
-
     protected boolean allowPopupMenu = true;
     protected MigLayout layout;
     protected JPanel panel;
@@ -102,6 +103,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected Set<Entity> selectedItems = Collections.emptySet();
 
     protected Map<String, Printable> printables = new HashMap<>();
+
+    protected Map<Entity, Datasource> fieldDatasources = new WeakHashMap<>();
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -875,6 +878,26 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public void setRowHeaderWidth(int width) {
         // TODO Kozlov: PL-2411.
+    }
+
+    @Override
+    public Datasource getItemDatasource(Entity item) {
+        Datasource fieldDatasource = fieldDatasources.get(item);
+
+        if (fieldDatasource == null) {
+            fieldDatasource = new DsBuilder()
+                    .setAllowCommit(false)
+                    .setMetaClass(datasource.getMetaClass())
+                    .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
+                    .setViewName("_local")
+                    .buildDatasource();
+
+            ((DatasourceImplementation)fieldDatasource).valid();
+
+            fieldDatasource.setItem(item);
+        }
+
+        return fieldDatasource;
     }
 
     @Override

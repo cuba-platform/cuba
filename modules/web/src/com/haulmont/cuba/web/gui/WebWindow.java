@@ -262,13 +262,13 @@ public class WebWindow implements Window, Component.Wrapper,
 //                    if (impl instanceof com.vaadin.ui.Table) {
 //                        Set visibleComponents = ((Table) impl).getVisibleComponents();
 //                        for (Object visibleComponent : visibleComponents) {
-//                            if (visibleComponent instanceof com.vaadin.ui.Field
-//                                    && ((com.vaadin.ui.Field) visibleComponent).isEnabled() &&
-//                                    !((com.vaadin.ui.Field) visibleComponent).isReadOnly()) {
+//                            if (visibleComponent instanceof com.vaadin.ui.FieldConfig
+//                                    && ((com.vaadin.ui.FieldConfig) visibleComponent).isEnabled() &&
+//                                    !((com.vaadin.ui.FieldConfig) visibleComponent).isReadOnly()) {
 //                                try {
-//                                    ((com.vaadin.ui.Field) visibleComponent).validate();
+//                                    ((com.vaadin.ui.FieldConfig) visibleComponent).validate();
 //                                } catch (Validator.InvalidValueException e) {
-//                                    problems.put(e, ((com.vaadin.ui.Field) visibleComponent));
+//                                    problems.put(e, ((com.vaadin.ui.FieldConfig) visibleComponent));
 //                                }
 //                            }
 //                        }

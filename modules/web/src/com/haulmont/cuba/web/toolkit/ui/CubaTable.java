@@ -59,20 +59,24 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         getRpcProxy(CubaTableClientRpc.class).hidePresentationsPopup();
     }
 
+    @Override
     public boolean isTextSelectionEnabled() {
         return getState(false).textSelectionEnabled;
     }
 
+    @Override
     public void setTextSelectionEnabled(boolean textSelectionEnabled) {
         if (isTextSelectionEnabled() != textSelectionEnabled) {
             getState(true).textSelectionEnabled = textSelectionEnabled;
         }
     }
 
+    @Override
     public boolean isAllowPopupMenu() {
         return getState(false).allowPopupMenu;
     }
 
+    @Override
     public void setAllowPopupMenu(boolean allowPopupMenu) {
         if (isAllowPopupMenu() != allowPopupMenu) {
             getState(true).allowPopupMenu = allowPopupMenu;
@@ -97,6 +101,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         }
     }
 
+    @Override
     public Object[] getEditableColumns() {
         if (editableColumns == null) {
             return null;
@@ -104,6 +109,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         return editableColumns.toArray();
     }
 
+    @Override
     public void setEditableColumns(Object[] editableColumns) {
         checkNotNull(editableColumns, "You cannot set null as editable columns");
 
@@ -116,7 +122,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         final Collection properties = getContainerPropertyIds();
         for (final Object editableColumn : editableColumns) {
             if (editableColumn == null) {
-                throw new NullPointerException("Ids must be non-nulls");
+                throw new IllegalStateException("Ids must be non-nulls");
             } else if (!properties.contains(editableColumn)
                     || columnGenerators.containsKey(editableColumn)) {
                 throw new IllegalArgumentException(

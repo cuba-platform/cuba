@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -18,8 +19,8 @@ import java.util.List;
  */
 public interface Table
         extends
-        ListComponent, Component.Editable, Component.HasSettings,
-        Component.HasButtonsPanel, Component.HasPresentations {
+            ListComponent, Component.Editable, Component.HasSettings,
+            Component.HasButtonsPanel, Component.HasPresentations {
     String NAME = "table";
 
     String INSERT_SHORTCUT_ID = "INSERT_SHORTCUT";
@@ -38,37 +39,29 @@ public interface Table
     void setRequired(Column column, boolean required, String message);
 
     void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator);
-
     void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator);
 
     void setItemClickAction(Action action);
-
     Action getItemClickAction();
 
     void setEnterPressAction(Action action);
-
     Action getEnterPressAction();
 
     List<Column> getNotCollapsedColumns();
 
     void setSortable(boolean sortable);
-
     boolean isSortable();
 
     void setAggregatable(boolean aggregatable);
-
     boolean isAggregatable();
 
     void setShowTotalAggregation(boolean showAggregation);
-
     boolean isShowTotalAggregation();
 
     void setColumnReorderingAllowed(boolean columnReorderingAllowed);
-
     boolean getColumnReorderingAllowed();
 
     void setColumnControlVisible(boolean columnCollapsingAllowed);
-
     boolean getColumnControlVisible();
 
     void sortBy(Object propertyId, boolean ascending);
@@ -76,19 +69,15 @@ public interface Table
     void selectAll();
 
     RowsCount getRowsCount();
-
     void setRowsCount(RowsCount rowsCount);
 
     boolean isAllowMultiStringCells();
-
     void setAllowMultiStringCells(boolean value);
 
     boolean isAllowPopupMenu();
-
     void setAllowPopupMenu(boolean value);
 
     int getRowHeaderWidth();
-
     void setRowHeaderWidth(int width);
 
     /**
@@ -103,7 +92,6 @@ public interface Table
     }
 
     void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener);
-
     void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,6 +147,33 @@ public interface Table
     void setIconProvider(IconProvider iconProvider);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Use this for bind data to generated fields
+     *
+     * <pre>
+     * {@code
+     *
+     * modelsTable.addGeneratedColumn(
+     *     "numberOfSeats",
+     *     new Table.ColumnGenerator<Model>() {
+     *         public Component generateCell(Model entity) {
+     *             LookupField lookupField = AppConfig.getFactory().createComponent(LookupField.NAME);
+     *             lookupField.setDatasource(modelsTable.getItemDatasource(entity), "numberOfSeats");
+     *             lookupField.setOptionsList(Arrays.asList(2, 4, 5));
+     *
+     *             lookupField.setWidth("100px");
+     *             return lookupField;
+     *         }
+     *     }
+     * );
+     * }
+     * </pre>
+     *
+     * @param item Entity item
+     * @return datasource for binding
+     */
+    public Datasource getItemDatasource(Entity item);
 
     /**
      * Allows rendering of an arbitrary {@link Component} inside a table cell.

@@ -30,7 +30,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         extends
             WebAbstractComponent<T>
         implements
-            Component.HasValue, Component.Validatable {
+            Field {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -44,14 +44,17 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     protected Object prevValue;
 
+    @Override
     public Datasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public MetaProperty getMetaProperty() {
         return metaProperty;
     }
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -78,16 +81,24 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         return new ItemWrapper(datasource, propertyPaths);
     }
 
+    @Override
     public boolean isRequired() {
         return component.isRequired();
     }
 
+    @Override
     public void setRequired(boolean required) {
         component.setRequired(required);
     }
 
+    @Override
     public void setRequiredMessage(String msg) {
         component.setRequiredError(msg);
+    }
+
+    @Override
+    public String getRequiredMessage() {
+        return component.getRequiredError();
     }
 
     @Override
@@ -102,18 +113,22 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         component.setValue(value);
     }
 
+    @Override
     public String getCaption() {
         return component.getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return component.getDescription();
     }
 
+    @Override
     public void setDescription(String description) {
         if (component instanceof AbstractComponent) {
             ((AbstractComponent) component).setDescription(description);
@@ -191,11 +206,13 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         }
     }
 
+    @Override
     public void addValidator(Field.Validator validator) {
         if (!validators.contains(validator))
             validators.add(validator);
     }
 
+    @Override
     public void removeValidator(Field.Validator validator) {
         validators.remove(validator);
     }

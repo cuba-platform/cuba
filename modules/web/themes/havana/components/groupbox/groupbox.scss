@@ -39,6 +39,7 @@ $groupBoxCaptionLineHeight: 18px;
 
       .#{$primaryStyleName}-caption {
         @include cuba-groupbox-defaults;
+        font-weight: bold;
         padding: 0 4px;
         line-height: $groupBoxCaptionLineHeight;
 

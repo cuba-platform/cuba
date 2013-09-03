@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -17,7 +16,6 @@ import com.vaadin.data.Property;
 import com.vaadin.server.ErrorMessage;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 
 /**
@@ -27,8 +25,6 @@ import java.util.Collections;
 public class WebSearchField extends WebLookupField implements SearchField {
 
     protected int minSearchStringLength = 0;
-
-    protected Entity newSettingValue = null;
 
     protected Messages messages;
 
@@ -105,16 +101,6 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
     private CubaSearchSelect getSearchComponent() {
         return (CubaSearchSelect) component;
-    }
-
-    @Override
-    public void setValue(@Nullable Object value) {
-        if (value instanceof Entity)
-            newSettingValue = (Entity) value;
-        else
-            newSettingValue = null;
-
-        super.setValue(value);
     }
 
     @Override

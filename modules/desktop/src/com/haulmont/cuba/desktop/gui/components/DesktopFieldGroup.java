@@ -36,36 +36,37 @@ import java.util.*;
  */
 public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implements FieldGroup, AutoExpanding {
 
-    private MigLayout layout;
-    private Datasource datasource;
-    private int rows;
-    private int cols = 1;
-    private boolean editable = true;
-    private boolean enabled = true;
-    private boolean borderVisible = false;
+    protected MigLayout layout;
+    protected Datasource datasource;
+    protected int rows;
+    protected int cols = 1;
+    protected boolean editable = true;
+    protected boolean enabled = true;
+    protected boolean borderVisible = false;
 
-    private Map<String, Field> fields = new LinkedHashMap<>();
-    private Map<Field, Integer> fieldsColumn = new HashMap<>();
-    private Map<Field, Component> fieldComponents = new HashMap<>();
-    private Map<Field, JLabel> fieldLabels = new HashMap<>();
-    private Map<Field, ToolTipButton> fieldTooltips = new HashMap<>();
-    private Map<Integer, List<Field>> columnFields = new HashMap<>();
-    private Map<Field, CustomFieldGenerator> generators = new HashMap<>();
-    private AbstractFieldFactory fieldFactory = new FieldFactory();
+    protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
+    protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
+    protected Map<FieldConfig, Component> fieldComponents = new HashMap<>();
+    protected Map<FieldConfig, JLabel> fieldLabels = new HashMap<>();
+    protected Map<FieldConfig, ToolTipButton> fieldTooltips = new HashMap<>();
+    protected Map<Integer, List<FieldConfig>> columnFields = new HashMap<>();
+    protected Map<FieldConfig, CustomFieldGenerator> generators = new HashMap<>();
+    protected AbstractFieldFactory fieldFactory = new FieldFactory();
 
-    private Set<Field> readOnlyFields = new HashSet<>();
-    private Set<Field> disabledFields = new HashSet<>();
+    protected Set<FieldConfig> readOnlyFields = new HashSet<>();
+    protected Set<FieldConfig> disabledFields = new HashSet<>();
 
-    private CollapsiblePanel collapsiblePanel;
+    protected CollapsiblePanel collapsiblePanel;
 
-    private Security security = AppBeans.get(Security.NAME);
+    protected Security security = AppBeans.get(Security.NAME);
 
     public DesktopFieldGroup() {
         LC lc = new LC();
         lc.hideMode(3); // Invisible components will not participate in the layout at all and it will for instance not take up a grid cell.
         lc.insets("0 0 0 0");
-        if (LayoutAdapter.isDebug())
+        if (LayoutAdapter.isDebug()) {
             lc.debug(1000);
+        }
 
         layout = new MigLayout(lc);
         impl = new JPanel(layout);
@@ -76,13 +77,13 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public List<Field> getFields() {
+    public List<FieldConfig> getFields() {
         return new ArrayList<>(fields.values());
     }
 
     @Override
-    public Field getField(String id) {
-        for (final Map.Entry<String, Field> entry : fields.entrySet()) {
+    public FieldConfig getField(String id) {
+        for (final Map.Entry<String, FieldConfig> entry : fields.entrySet()) {
             if (entry.getKey().equals(id)) {
                 return entry.getValue();
             }
@@ -90,8 +91,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         return null;
     }
 
-    private void fillColumnFields(int col, Field field) {
-        List<Field> fields = columnFields.get(col);
+    private void fillColumnFields(int col, FieldConfig field) {
+        List<FieldConfig> fields = columnFields.get(col);
         if (fields == null) {
             fields = new ArrayList<>();
 
@@ -101,7 +102,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void addField(Field field) {
+    public void addField(FieldConfig field) {
         if (cols == 0) {
             cols = 1;
         }
@@ -109,7 +110,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void addField(Field field, int col) {
+    public void addField(FieldConfig field, int col) {
         if (col < 0 || col >= cols) {
             throw new IllegalStateException(String.format("Illegal column number %s, available amount of columns is %s",
                     col, cols));
@@ -120,11 +121,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void removeField(Field field) {
+    public void removeField(FieldConfig field) {
         if (fields.remove(field.getId()) != null) {
             Integer col = fieldsColumn.get(field.getId());
 
-            final List<Field> fields = columnFields.get(col);
+            final List<FieldConfig> fields = columnFields.get(col);
             fields.remove(field);
             fieldsColumn.remove(field.getId());
         }
@@ -135,9 +136,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 if (!columnFields.isEmpty()) {
-                    List<Field> fields = columnFields.get(0);
+                    List<FieldConfig> fields = columnFields.get(0);
                     if (!fields.isEmpty()) {
-                        Field f = fields.get(0);
+                        FieldConfig f = fields.get(0);
                         Component c = fieldComponents.get(f);
                         if (c != null) {
                             c.requestFocus();
@@ -163,7 +164,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             for (MetaPropertyPath mpp : fieldsMetaProps) {
                 MetaProperty mp = mpp.getMetaProperty();
                 if (!mp.getRange().getCardinality().isMany() && !metadataTools.isSystem(mp)) {
-                    Field field = new Field(mpp.toString());
+                    FieldConfig field = new FieldConfig(mpp.toString());
                     addField(field);
                 }
             }
@@ -174,55 +175,57 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public boolean isRequired(Field field) {
+    public boolean isRequired(FieldConfig field) {
         Component component = fieldComponents.get(field);
         return component instanceof com.haulmont.cuba.gui.components.Field && ((com.haulmont.cuba.gui.components.Field) component).isRequired();
     }
 
     @Override
-    public void setRequired(Field field, boolean required, String message) {
+    public void setRequired(FieldConfig field, boolean required, String message) {
         Component component = fieldComponents.get(field);
-        if (component instanceof com.haulmont.cuba.gui.components.Field) {
-            ((com.haulmont.cuba.gui.components.Field) component).setRequired(required);
-            ((com.haulmont.cuba.gui.components.Field) component).setRequiredMessage(message);
+        if (component instanceof Field) {
+            ((Field) component).setRequired(required);
+            ((Field) component).setRequiredMessage(message);
         }
     }
 
     @Override
     public boolean isRequired(String fieldId) {
-        Field field = fields.get(fieldId);
+        FieldConfig field = fields.get(fieldId);
         return field != null && isRequired(field);
     }
 
     @Override
     public void setRequired(String fieldId, boolean required, String message) {
-        Field field = fields.get(fieldId);
-        if (field != null)
+        FieldConfig field = fields.get(fieldId);
+        if (field != null) {
             setRequired(field, required, message);
-    }
-
-    @Override
-    public void addValidator(Field field, com.haulmont.cuba.gui.components.Field.Validator validator) {
-        Component component = fieldComponents.get(field);
-        if (component instanceof com.haulmont.cuba.gui.components.Field) {
-            ((com.haulmont.cuba.gui.components.Field) component).addValidator(validator);
         }
     }
 
     @Override
-    public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
-        Field field = fields.get(fieldId);
-        if (fieldId != null)
-            addValidator(field, validator);
+    public void addValidator(FieldConfig field, Field.Validator validator) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof Field) {
+            ((Field) component).addValidator(validator);
+        }
     }
 
     @Override
-    public boolean isEditable(Field field) {
+    public void addValidator(String fieldId, Field.Validator validator) {
+        FieldConfig field = fields.get(fieldId);
+        if (fieldId != null) {
+            addValidator(field, validator);
+        }
+    }
+
+    @Override
+    public boolean isEditable(FieldConfig field) {
         return !readOnlyFields.contains(field);
     }
 
     @Override
-    public void setEditable(Field field, boolean editable) {
+    public void setEditable(FieldConfig field, boolean editable) {
         doSetEditable(field, editable);
 
         if (editable) {
@@ -232,7 +235,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
-    private void doSetEditable(Field field, boolean editable) {
+    protected void doSetEditable(FieldConfig field, boolean editable) {
         Component component = fieldComponents.get(field);
         if (component instanceof Editable) {
             ((Editable) component).setEditable(editable);
@@ -244,37 +247,40 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public boolean isEditable(String fieldId) {
-        Field field = fields.get(fieldId);
+        FieldConfig field = fields.get(fieldId);
         return field != null && isEditable(field);
     }
 
     @Override
     public void setEditable(String fieldId, boolean editable) {
-        Field field = fields.get(fieldId);
-        if (field != null)
+        FieldConfig field = fields.get(fieldId);
+        if (field != null) {
             setEditable(field, editable);
+        }
     }
 
     @Override
-    public boolean isEnabled(Field field) {
+    public boolean isEnabled(FieldConfig field) {
         Component component = fieldComponents.get(field);
         return component != null && component.isEnabled();
     }
 
     @Override
-    public void setEnabled(Field field, boolean enabled) {
+    public void setEnabled(FieldConfig field, boolean enabled) {
         doSetEnabled(field, enabled);
 
-        if (enabled)
+        if (enabled) {
             disabledFields.remove(field);
-        else
+        } else {
             disabledFields.add(field);
+        }
     }
 
-    private void doSetEnabled(Field field, boolean enabled) {
+    protected void doSetEnabled(FieldConfig field, boolean enabled) {
         Component component = fieldComponents.get(field);
-        if (component != null)
+        if (component != null) {
             component.setEnabled(enabled);
+        }
         if (fieldLabels.containsKey(field)) {
             fieldLabels.get(field).setEnabled(enabled);
         }
@@ -282,34 +288,40 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public boolean isEnabled(String fieldId) {
-        Field field = fields.get(fieldId);
+        FieldConfig field = fields.get(fieldId);
         return field != null && isEnabled(field);
     }
 
     @Override
     public void setEnabled(String fieldId, boolean enabled) {
-        Field field = fields.get(fieldId);
-        if (field != null)
+        FieldConfig field = fields.get(fieldId);
+        if (field != null) {
             setEnabled(field, enabled);
+        }
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
 
-        for (FieldGroup.Field field : fields.values()) {
+        for (FieldConfig field : fields.values()) {
             doSetEnabled(field, enabled && !disabledFields.contains(field));
         }
     }
 
     @Override
-    public boolean isVisible(Field field) {
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public boolean isVisible(FieldConfig field) {
         Component component = fieldComponents.get(field);
         return component != null && component.isVisible() && isVisible();
     }
 
     @Override
-    public void setVisible(Field field, boolean visible) {
+    public void setVisible(FieldConfig field, boolean visible) {
         Component component = fieldComponents.get(field);
         if (component != null) {
             component.setVisible(visible);
@@ -321,15 +333,16 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public boolean isVisible(String fieldId) {
-        Field field = fields.get(fieldId);
+        FieldConfig field = fields.get(fieldId);
         return field != null && isVisible(field);
     }
 
     @Override
     public void setVisible(String fieldId, boolean visible) {
-        Field field = fields.get(fieldId);
-        if (field != null)
+        FieldConfig field = fields.get(fieldId);
+        if (field != null) {
             setVisible(field, visible);
+        }
     }
 
     @Override
@@ -344,7 +357,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public Object getFieldValue(Field field) {
+    public Object getFieldValue(FieldConfig field) {
         Component component = fieldComponents.get(field);
         if (component instanceof HasValue) {
             return ((HasValue) component).getValue();
@@ -353,7 +366,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void setFieldValue(Field field, Object value) {
+    public void setFieldValue(FieldConfig field, Object value) {
         Component component = fieldComponents.get(field);
         if (component instanceof HasValue) {
             ((HasValue) component).setValue(value);
@@ -362,25 +375,28 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public Object getFieldValue(String fieldId) {
-        Field field = getField(fieldId);
-        if (field == null)
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         return getFieldValue(field);
     }
 
     @Override
     public void setFieldValue(String fieldId, Object value) {
-        Field field = getField(fieldId);
-        if (field == null)
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         setFieldValue(field, value);
     }
 
     @Override
     public void requestFocus(String fieldId) {
-        Field field = getField(fieldId);
-        if (field == null)
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         final Component fieldComponent = fieldComponents.get(field);
         if (fieldComponent != null) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -394,13 +410,15 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void setFieldCaption(String fieldId, String caption) {
-        Field field = getField(fieldId);
-        if (field == null)
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
 
         JLabel label = fieldLabels.get(field);
-        if (label == null)
+        if (label == null) {
             throw new IllegalStateException(String.format("Label for field '%s' not found", fieldId));
+        }
         label.setText(caption);
     }
 
@@ -408,9 +426,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
     }
 
-    private int rowsCount() {
+    protected int rowsCount() {
         int rowsCount = 0;
-        for (final List<Field> fields : columnFields.values()) {
+        for (final List<FieldConfig> fields : columnFields.values()) {
             rowsCount = Math.max(rowsCount, fields.size());
         }
         return rowsCount;
@@ -437,14 +455,15 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator) {
-        Field field = getField(fieldId);
-        if (field == null)
+        FieldConfig field = getField(fieldId);
+        if (field == null) {
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        }
         addCustomField(field, fieldGenerator);
     }
 
     @Override
-    public void addCustomField(Field field, CustomFieldGenerator fieldGenerator) {
+    public void addCustomField(FieldConfig field, CustomFieldGenerator fieldGenerator) {
         if (!field.isCustom()) {
             throw new IllegalStateException(String.format("Field '%s' must be custom", field.getId()));
         }
@@ -457,9 +476,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     public void postInit() {
     }
 
-    private void createFields() {
+    protected void createFields() {
         impl.removeAll();
-        for (Field field : fields.values()) {
+        for (FieldConfig field : fields.values()) {
             if (field.isCustom()) {
                 continue; // custom field is generated in another method
             }
@@ -468,13 +487,13 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
-    private void createFieldComponent(Field field) {
-        int col = fieldsColumn.get(field);
-        int row = columnFields.get(col).indexOf(field);
+    protected void createFieldComponent(FieldConfig fieldConf) {
+        int col = fieldsColumn.get(fieldConf);
+        int row = columnFields.get(col).indexOf(fieldConf);
 
         Datasource ds;
-        if (field.getDatasource() != null) {
-            ds = field.getDatasource();
+        if (fieldConf.getDatasource() != null) {
+            ds = fieldConf.getDatasource();
         } else {
             ds = datasource;
         }
@@ -482,65 +501,75 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         String caption = null;
         String description = null;
 
-        CustomFieldGenerator generator = generators.get(field);
-        if (generator == null)
-            generator = createDefaultGenerator(field);
+        CustomFieldGenerator generator = generators.get(fieldConf);
+        if (generator == null) {
+            generator = createDefaultGenerator(fieldConf);
+        }
 
-        Component component = generator.generateField(ds, field.getId());
-        applyPermissions(component);
+        Component fieldComponent = generator.generateField(ds, fieldConf.getId());
 
-        if (component instanceof com.haulmont.cuba.gui.components.Field) { // do not create caption for buttons etc.
-            caption = field.getCaption();
+        if (fieldComponent instanceof Field) { // do not create caption for buttons etc.
+            Field cubaField = (Field) fieldComponent;
+
+            caption = fieldConf.getCaption();
             if (caption == null) {
-                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(field.getId());
-                if (propertyPath != null)
-                    caption = AppBeans.get(MessageTools.class).getPropertyCaption(propertyPath.getMetaClass(), field.getId());
+                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(fieldConf.getId());
+                if (propertyPath != null) {
+                    caption = AppBeans.get(MessageTools.class).getPropertyCaption(propertyPath.getMetaClass(), fieldConf.getId());
+                }
             }
 
-            if (StringUtils.isNotEmpty(((HasCaption) component).getCaption())) {
-                caption = ((HasCaption) component).getCaption();     // custom field has manually set caption
+            if (StringUtils.isNotEmpty(cubaField.getCaption())) {
+                caption = cubaField.getCaption();     // custom field has manually set caption
             }
 
-            description = field.getDescription();
-            if (StringUtils.isNotEmpty(((HasCaption) component).getDescription())) {
-                description = ((HasCaption) component).getDescription();  // custom field has manually set description
+            description = fieldConf.getDescription();
+            if (StringUtils.isNotEmpty(cubaField.getDescription())) {
+                description = cubaField.getDescription();  // custom field has manually set description
             } else if (StringUtils.isNotEmpty(description)) {
-                ((HasCaption) component).setDescription(description);
+                cubaField.setDescription(description);
             }
-            if (!((com.haulmont.cuba.gui.components.Field) component).isRequired()) {
-                ((com.haulmont.cuba.gui.components.Field) component).setRequired(field.isRequired());
-                ((com.haulmont.cuba.gui.components.Field) component).setRequiredMessage(field.getRequiredError());
+
+            if (!cubaField.isRequired()) {
+                cubaField.setRequired(fieldConf.isRequired());
+            }
+            if (fieldConf.getRequiredError() != null) {
+                cubaField.setRequiredMessage(fieldConf.getRequiredError());
             }
         }
 
+        // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
+        if (/*f.getWidth() == -1f &&*/ fieldConf.getWidth() != null) {
+            fieldComponent.setWidth(fieldConf.getWidth());
+        }
+
+        applyPermissions(fieldComponent);
+
         JLabel label = new JLabel(caption);
-        label.setVisible(component.isVisible());
+        label.setVisible(fieldComponent.isVisible());
         impl.add(label, new CC().cell(col * 3, row, 1, 1));
-        fieldLabels.put(field, label);
-        if (description != null && !(component instanceof CheckBox)) {
-            field.setDescription(description);
+        fieldLabels.put(fieldConf, label);
+        if (description != null && !(fieldComponent instanceof CheckBox)) {
+            fieldConf.setDescription(description);
             ToolTipButton tooltipBtn = new ToolTipButton();
-            tooltipBtn.setVisible(component.isVisible());
+            tooltipBtn.setVisible(fieldComponent.isVisible());
             tooltipBtn.setToolTipText(description);
             DesktopToolTipManager.getInstance().registerTooltip(tooltipBtn);
             impl.add(tooltipBtn, new CC().cell(col * 3 + 2, row, 1, 1).alignY("top"));
-            fieldTooltips.put(field, tooltipBtn);
+            fieldTooltips.put(fieldConf, tooltipBtn);
         }
-        fieldComponents.put(field, component);
-        assignTypicalAttributes(component);
-        JComponent jComponent = DesktopComponentsHelper.getComposition(component);
+        fieldComponents.put(fieldConf, fieldComponent);
+        assignTypicalAttributes(fieldComponent);
+        JComponent jComponent = DesktopComponentsHelper.getComposition(fieldComponent);
         CC cell = new CC().cell(col * 3 + 1, row, 1, 1);
 
-        if (field.getWidth() != null && component.getWidth() == 0 && component.getWidthUnits() == 0) {
-            component.setWidth(field.getWidth());
-        }
-        MigLayoutHelper.applyWidth(cell, (int) component.getWidth(), component.getWidthUnits(), false);
-        MigLayoutHelper.applyHeight(cell, (int) component.getHeight(), component.getHeightUnits(), false);
-        jComponent.putClientProperty(getSwingPropertyId(), field.getId());
+        MigLayoutHelper.applyWidth(cell, (int) fieldComponent.getWidth(), fieldComponent.getWidthUnits(), false);
+        MigLayoutHelper.applyHeight(cell, (int) fieldComponent.getHeight(), fieldComponent.getHeightUnits(), false);
+        jComponent.putClientProperty(getSwingPropertyId(), fieldConf.getId());
         impl.add(jComponent, cell);
     }
 
-    private void applyPermissions(Component c) {
+    protected void applyPermissions(Component c) {
         if (c instanceof DatasourceComponent) {
             DatasourceComponent dsComponent = (DatasourceComponent) c;
             MetaProperty metaProperty = dsComponent.getMetaProperty();
@@ -552,7 +581,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
-    private void assignTypicalAttributes(Component c) {
+    protected void assignTypicalAttributes(Component c) {
         if (c instanceof BelongToFrame) {
             BelongToFrame belongToFrame = (BelongToFrame) c;
             if (belongToFrame.getFrame() == null) {
@@ -561,8 +590,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
-    private CustomFieldGenerator createDefaultGenerator(final Field field) {
+    protected CustomFieldGenerator createDefaultGenerator(final FieldConfig field) {
         return new CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 Component component = fieldFactory.createField(datasource, propertyId, field.getXmlDescriptor());
                 if (component instanceof HasFormatter) {
@@ -582,7 +612,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     public void setEditable(boolean editable) {
         this.editable = editable;
 
-        for (FieldGroup.Field field : fields.values()) {
+        for (FieldConfig field : fields.values()) {
             doSetEditable(field, editable && !readOnlyFields.contains(field));
         }
     }
@@ -637,17 +667,19 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void validate() throws ValidationException {
-        if (!isVisible() || !isEditable() || !isEnabled())
+        if (!isVisible() || !isEditable() || !isEnabled()) {
             return;
+        }
 
-        Map<Field, Exception> problems = new HashMap<>();
+        Map<FieldConfig, Exception> problems = new HashMap<>();
 
-        for (Map.Entry<Field, Component> componentEntry : fieldComponents.entrySet()) {
-            Field field = componentEntry.getKey();
+        for (Map.Entry<FieldConfig, Component> componentEntry : fieldComponents.entrySet()) {
+            FieldConfig field = componentEntry.getKey();
             Component component = componentEntry.getValue();
 
-            if (!isEditable(field) || !isEnabled(field) || !isVisible(field))
+            if (!isEditable(field) || !isEnabled(field) || !isVisible(field)) {
                 continue;
+            }
 
             // If has valid state
             if ((component instanceof Validatable) &&
@@ -668,12 +700,13 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         if (!problems.isEmpty()) {
             StringBuilder msgBuilder = new StringBuilder();
-            for (Iterator<Field> iterator = problems.keySet().iterator(); iterator.hasNext(); ) {
-                Field field = iterator.next();
+            for (Iterator<FieldConfig> iterator = problems.keySet().iterator(); iterator.hasNext(); ) {
+                FieldConfig field = iterator.next();
                 Exception ex = problems.get(field);
                 msgBuilder.append(ex.getMessage());
-                if (iterator.hasNext())
+                if (iterator.hasNext()) {
                     msgBuilder.append("<br>");
+                }
             }
 
             FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());
@@ -686,7 +719,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         @Override
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
-            final Field field = fields.get(property);
+            final FieldConfig field = fields.get(property);
 
             DsContext dsContext;
             if (datasource == null) {

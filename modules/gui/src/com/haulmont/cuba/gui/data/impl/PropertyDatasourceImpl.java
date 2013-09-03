@@ -43,7 +43,7 @@ public class PropertyDatasourceImpl<T extends Entity>
 
     protected void initParentDsListeners() {
         masterDs.addListener(new DatasourceListener<Entity>() {
-
+            @Override
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                 Entity prevValue = getItem(prevItem);
                 Entity newValue = getItem(item);
@@ -51,12 +51,14 @@ public class PropertyDatasourceImpl<T extends Entity>
                 fireItemChanged(prevValue);
             }
 
+            @Override
             public void stateChanged(Datasource ds, State prevState, State state) {
                 for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                     dsListener.stateChanged(PropertyDatasourceImpl.this, prevState, state);
                 }
             }
 
+            @Override
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
                     reattachListeners((Entity) prevValue, (Entity) value);
@@ -73,10 +75,12 @@ public class PropertyDatasourceImpl<T extends Entity>
         });
     }
 
+    @Override
     public State getState() {
         return masterDs.getState();
     }
 
+    @Override
     public T getItem() {
         final Instance item = masterDs.getItem();
         return getItem(item);
@@ -86,6 +90,7 @@ public class PropertyDatasourceImpl<T extends Entity>
         return item == null ? null : (T) item.getValue(metaProperty.getName());
     }
 
+    @Override
     public MetaClass getMetaClass() {
         if (metaClass == null) {
             MetaClass propertyMetaClass = metaProperty.getRange().asClass();
@@ -94,6 +99,7 @@ public class PropertyDatasourceImpl<T extends Entity>
         return metaClass;
     }
 
+    @Override
     public View getView() {
         if (view == null) {
             View masterView = masterDs.getView();
@@ -113,14 +119,17 @@ public class PropertyDatasourceImpl<T extends Entity>
         return view;
     }
 
+    @Override
     public DsContext getDsContext() {
         return masterDs.getDsContext();
     }
 
+    @Override
     public DataSupplier getDataSupplier() {
         return masterDs.getDataSupplier();
     }
 
+    @Override
     public void commit() {
         if (!allowCommit)
             return;
@@ -130,26 +139,29 @@ public class PropertyDatasourceImpl<T extends Entity>
                 throw new IllegalStateException("parentDs is null while commitMode=PARENT");
 
             if (parentDs instanceof CollectionDatasource) {
+                CollectionDatasource parentCollectionDs = (CollectionDatasource) parentDs;
                 for (Object item : itemToCreate) {
-                    ((CollectionDatasource) parentDs).addItem((Entity) item);
+                    parentCollectionDs.addItem((Entity) item);
                 }
                 for (Object item : itemToUpdate) {
-                    ((CollectionDatasource) parentDs).modifyItem((Entity) item);
+                    parentCollectionDs.modifyItem((Entity) item);
                 }
                 for (Object item : itemToDelete) {
-                    ((CollectionDatasource) parentDs).removeItem((Entity) item);
+                    parentCollectionDs.removeItem((Entity) item);
                 }
-            } else {
+            } /* else {
                 // ??? No idea what to do here
-            }
+            } */
             clearCommitLists();
             modified = false;
         }
     }
 
+    @Override
     public void refresh() {
     }
 
+    @Override
     public void setItem(T item) {
         if (getItem() != null) {
             InstanceUtils.copy(item, getItem());
@@ -161,6 +173,7 @@ public class PropertyDatasourceImpl<T extends Entity>
         setModified(true);
     }
 
+    @Override
     public void invalidate() {
     }
 
@@ -172,12 +185,15 @@ public class PropertyDatasourceImpl<T extends Entity>
             ((AbstractDatasource) masterDs).setModified(true);
     }
 
+    @Override
     public void initialized() {
     }
 
+    @Override
     public void valid() {
     }
 
+    @Override
     public void committed(Set<Entity> entities) {
         Entity parentItem = masterDs.getItem();
 

@@ -156,6 +156,11 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     }
 
     @Override
+    public String getRequiredMessage() {
+        return pickerField.getRequiredMessage();
+    }
+
+    @Override
     public boolean isRequired() {
         return pickerField.isRequired();
     }

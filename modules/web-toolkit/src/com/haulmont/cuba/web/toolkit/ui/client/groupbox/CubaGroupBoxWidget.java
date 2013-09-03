@@ -32,8 +32,8 @@ public class CubaGroupBoxWidget extends VPanel {
 
     protected ExpandHandler expandHandler;
 
-    public CubaGroupBoxWidget() {
-        setStyleName(CLASSNAME);
+    public CubaGroupBoxWidget(String primaryStyleName) {
+        setStyleName(primaryStyleName);
 
         // remove parent DOM structure
         getElement().removeChild(captionNode.getParentElement());
@@ -42,11 +42,11 @@ public class CubaGroupBoxWidget extends VPanel {
 
         captionNode.getParentElement().removeChild(captionNode);
 
-        captionNode.setClassName(CLASSNAME + "-caption");
-        descriptionNode.setClassName(CLASSNAME + "-description");
-        contentNode.setClassName(CLASSNAME + "-content");
-        bottomDecoration.setClassName(CLASSNAME + "-deco");
-        expander.setClassName(CLASSNAME + "-expander");
+        captionNode.setClassName(primaryStyleName + "-caption");
+        descriptionNode.setClassName(primaryStyleName + "-description");
+        contentNode.setClassName(primaryStyleName + "-content");
+        bottomDecoration.setClassName(primaryStyleName + "-deco");
+        expander.setClassName(primaryStyleName + "-expander");
 
         setExpanded(true);
 
@@ -64,16 +64,21 @@ public class CubaGroupBoxWidget extends VPanel {
         DOM.sinkEvents(expander, Event.ONCLICK);
     }
 
+    public CubaGroupBoxWidget() {
+        this(CLASSNAME);
+    }
+
     public void setDescription(String text) {
         DOM.setInnerText(descriptionNode, text);
     }
 
     @Override
     public void setCaption(String text) {
-        if (text == null || text.equals(""))
+        if (text == null || text.equals("")) {
             addStyleDependentName("nocaption");
-        else
+        } else {
             removeStyleDependentName("nocaption");
+        }
 
         super.setCaption(text);
     }
@@ -83,10 +88,11 @@ public class CubaGroupBoxWidget extends VPanel {
     }
 
     public void setExpanded(boolean expanded) {
-        if (expanded)
+        if (expanded) {
             expander.addClassName("expanded");
-        else
+        } else {
             expander.removeClassName("expanded");
+        }
 
         this.expanded = expanded;
     }
@@ -112,10 +118,11 @@ public class CubaGroupBoxWidget extends VPanel {
             setExpanded(!expanded);
 
             if (collapsable && expandHandler != null) {
-                if (expanded)
+                if (expanded) {
                     expandHandler.expand();
-                else
+                } else {
                     expandHandler.collapse();
+                }
             }
             DOM.eventCancelBubble(event, true);
         } else {

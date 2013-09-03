@@ -17,7 +17,7 @@ import java.awt.*;
  * @version $Id$
  */
 public class DesktopPasswordField
-        extends DesktopAbstractTextInput<JPasswordField>
+        extends DesktopAbstractTextField<JPasswordField>
         implements PasswordField, Component.Wrapper {
 
     @Override

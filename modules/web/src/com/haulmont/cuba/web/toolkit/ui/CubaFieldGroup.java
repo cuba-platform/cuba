@@ -5,32 +5,27 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgroup.CubaFieldGroupState;
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-public class CubaFieldGroup extends Form {
+public class CubaFieldGroup extends Panel {
 
     protected int currentX = 0;
     protected int currentY = 0;
 
-    public CubaFieldGroup() {
-        this(DefaultFieldFactory.get());
-    }
+    protected Map<Object, Field> fields = new HashMap<>();
 
-    public CubaFieldGroup(FormFieldFactory fieldFactory) {
-        setFormFieldFactory(fieldFactory);
+    public CubaFieldGroup() {
         setLayout(new CubaFieldGroupLayout());
     }
 
@@ -55,50 +50,6 @@ public class CubaFieldGroup extends Form {
         return (CubaFieldGroupState) super.getState(markAsDirty);
     }
 
-    @Override
-    public void setItemDataSource(Item newDataSource, Collection propertyIds) {
-        if (super.getLayout() instanceof GridLayout) {
-            GridLayout gl = (GridLayout) super.getLayout();
-            if (gridlayoutCursorX == -1) {
-                // first setItemDataSource, remember initial cursor
-                gridlayoutCursorX = gl.getCursorX();
-                gridlayoutCursorY = gl.getCursorY();
-            } else {
-                // restore initial cursor
-                gl.setCursorX(gridlayoutCursorX);
-                gl.setCursorY(gridlayoutCursorY);
-            }
-        }
-
-        // Removes all fields first from the form
-        removeAllProperties();
-
-        // Sets the datasource
-        itemDatasource = newDataSource;
-
-        // If the new datasource is null, just set null datasource
-        if (itemDatasource == null) {
-            return;
-        }
-
-        // Adds all the properties to this form
-        for (final Object id : propertyIds) {
-            final Property property = itemDatasource.getItemProperty(id);
-            if (id != null && property != null) {
-                final Field f = fieldFactory.createField(itemDatasource, id, this);
-                if (f != null) {
-                    f.setPropertyDataSource(property);
-                    if (f instanceof AbstractTextField) {
-                        Datatype datatype = Datatypes.get(property.getType());
-                        ((AbstractField) f).setConverter(new StringToDatatypeConverter(datatype));
-                    }
-                    addField(id, f);
-                }
-            }
-        }
-    }
-
-    @Override
     public void addField(Object propertyId, Field field) {
         addField(propertyId, field, currentX, currentY);
     }
@@ -115,7 +66,8 @@ public class CubaFieldGroup extends Form {
         currentX = col;
         currentY = row;
 
-        super.addField(propertyId, field);
+        attachField(propertyId, field);
+
         if (isReadOnly() != field.isReadOnly() && isReadOnly()) {
             field.setReadOnly(isReadOnly());
         }
@@ -127,7 +79,6 @@ public class CubaFieldGroup extends Form {
         }
     }
 
-    @Override
     protected void attachField(Object propertyId, Field field) {
         if (propertyId == null || field == null) {
             return;
@@ -135,6 +86,8 @@ public class CubaFieldGroup extends Form {
 
         final CubaFieldGroupLayout layout = getLayout();
         layout.addComponent(field, currentX, currentY);
+
+        fields.put(propertyId, field);
     }
 
     public void addCustomField(Object propertyId, CustomFieldGenerator fieldGenerator) {
@@ -146,17 +99,17 @@ public class CubaFieldGroup extends Form {
     }
 
     public void addCustomField(Object propertyId, CustomFieldGenerator fieldGenerator, int col, int row) {
-        Field field = fieldGenerator.generateField(itemDatasource, propertyId, this);
+        Field field = fieldGenerator.generateField(propertyId, this);
         addField(propertyId, field, col, row);
     }
 
-    @Override
     public void setLayout(Layout newLayout) {
         if (newLayout == null) {
             newLayout = new CubaFieldGroupLayout();
         }
         if (newLayout instanceof CubaFieldGroupLayout) {
-            super.setLayout(newLayout);
+            super.setContent(newLayout);
+
             getLayout().setWidth("100%");
             getLayout().setSpacing(true);
         } else {
@@ -164,9 +117,8 @@ public class CubaFieldGroup extends Form {
         }
     }
 
-    @Override
     public CubaFieldGroupLayout getLayout() {
-        return (CubaFieldGroupLayout) super.getLayout();
+        return (CubaFieldGroupLayout) super.getContent();
     }
 
     public float getColumnExpandRatio(int col) {
@@ -193,7 +145,11 @@ public class CubaFieldGroup extends Form {
         getLayout().setRows(rows);
     }
 
+    public Field getField(Object propertyId) {
+        return fields.get(propertyId);
+    }
+
     public interface CustomFieldGenerator extends Serializable {
-        com.vaadin.ui.Field generateField(Item item, Object propertyId, CubaFieldGroup component);
+        com.vaadin.ui.Field generateField(Object propertyId, CubaFieldGroup component);
     }
 }

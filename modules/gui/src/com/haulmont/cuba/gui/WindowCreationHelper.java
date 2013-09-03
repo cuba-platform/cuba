@@ -112,7 +112,7 @@ public class WindowCreationHelper {
                     }
                 } else if (customComponent instanceof FieldGroup) {
                     FieldGroup fieldGroup = (FieldGroup) customComponent;
-                    final FieldGroup.Field field = fieldGroup.getField(subComponentId);
+                    final FieldGroup.FieldConfig field = fieldGroup.getField(subComponentId);
                     if (field != null) {
                         Integer permissionValue = permissionEntry.getValue();
                         if (permissionValue == UiPermissionValue.HIDE.getValue()) {

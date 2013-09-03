@@ -15,10 +15,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringUtils;
@@ -32,8 +29,9 @@ import java.util.TreeMap;
  * @author krivopustov
  * @version $Id$
  */
-public abstract class AbstractFieldFactory {
+public abstract class AbstractFieldFactory implements FieldFactory {
 
+    @Override
     public Component createField(Datasource datasource, String property, Element xmlDescriptor) {
         MetaClass metaClass = datasource.getMetaClass();
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
@@ -48,7 +46,7 @@ public abstract class AbstractFieldFactory {
                 } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
                     return createDateField(datasource, property, mpp, xmlDescriptor);
                 } else if (typeName.equals(TimeDatatype.NAME)) {
-                    return createTimeField(datasource, property, mpp);
+                    return createTimeField(datasource, property, xmlDescriptor);
                 } else if (datatype instanceof NumberDatatype) {
                     return createNumberField(datasource, property);
                 }
@@ -61,37 +59,44 @@ public abstract class AbstractFieldFactory {
         return createUnsupportedField(mpp);
     }
 
-    private Component createNumberField(Datasource datasource, String property) {
+    protected Component createNumberField(Datasource datasource, String property) {
         DesktopTextField textField = new DesktopTextField();
         textField.setDatasource(datasource, property);
         return textField;
     }
 
-    private Component createBooleanField(Datasource datasource, String property) {
+    protected Component createBooleanField(Datasource datasource, String property) {
         DesktopCheckBox checkBox = new DesktopCheckBox();
         checkBox.setDatasource(datasource, property);
         return checkBox;
     }
 
-    private Component createStringField(Datasource datasource, String property, Element xmlDescriptor) {
-        DesktopTextField textField = new DesktopTextField();
+    protected Component createStringField(Datasource datasource, String property, Element xmlDescriptor) {
+        DesktopAbstractTextField textField = null;
+
+        if (xmlDescriptor != null) {
+            final String rows = xmlDescriptor.attributeValue("rows");
+            if (!StringUtils.isEmpty(rows)) {
+                DesktopTextArea textArea = new DesktopTextArea();
+                textArea.setRows(Integer.valueOf(rows));
+                textField = textArea;
+            }
+        }
+
+        if (textField == null) {
+            textField = new DesktopTextField();
+        }
+
         textField.setDatasource(datasource, property);
         MetaProperty metaProperty = textField.getMetaProperty();
 
-        /*if (xmlDescriptor != null) {
-            final String rows = xmlDescriptor.attributeValue("rows");
-            if (!StringUtils.isEmpty(rows)) {
-                textField.setRows(Integer.valueOf(rows));
-            }
-        }*/
-
         final String maxLength = xmlDescriptor != null ? xmlDescriptor.attributeValue("maxLength") : null;
         if (!StringUtils.isEmpty(maxLength)) {
-            textField.setMaxLength(Integer.valueOf(maxLength));
+            ((TextInputField.MaxLengthLimited) textField).setMaxLength(Integer.valueOf(maxLength));
         } else {
             Integer len = (Integer) metaProperty.getAnnotations().get("length");
             if (len != null) {
-                textField.setMaxLength(len);
+                ((TextInputField.MaxLengthLimited) textField).setMaxLength(len);
             }
         }
 
@@ -99,45 +104,71 @@ public abstract class AbstractFieldFactory {
         return textField;
     }
 
-    private Component createDateField(Datasource datasource, String property, MetaPropertyPath mpp,
-                                      Element xmlDescriptor) {
+    protected Component createDateField(Datasource datasource, String property, MetaPropertyPath mpp,
+                                        Element xmlDescriptor) {
         DesktopDateField dateField = new DesktopDateField();
         dateField.setDatasource(datasource, property);
 
         MetaProperty metaProperty = mpp.getMetaProperty();
         TemporalType tt = null;
         if (metaProperty != null) {
-            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
+            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
                 tt = TemporalType.DATE;
-            else if (metaProperty.getAnnotations() != null)
+            } else if (metaProperty.getAnnotations() != null) {
                 tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
+            }
         }
 
         final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
+        String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
+
+        DateField.Resolution dateResolution = DateField.Resolution.DAY;
 
         if (!StringUtils.isEmpty(resolution)) {
-            dateField.setResolution(DateField.Resolution.valueOf(resolution));
+            dateResolution = DateField.Resolution.valueOf(resolution);
+            dateField.setResolution(dateResolution);
         } else if (tt == TemporalType.DATE) {
             dateField.setResolution(DateField.Resolution.DAY);
         }
-        String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
+
+        if (dateFormat == null) {
+            if (dateResolution == DateField.Resolution.DAY) {
+                dateFormat = "msg://dateFormat";
+            } else if (dateResolution == DateField.Resolution.MIN) {
+                dateFormat = "msg://dateTimeFormat";
+            }
+        }
+        Messages messages = AppBeans.get(Messages.class);
+
         if (!StringUtils.isEmpty(dateFormat)) {
             if (dateFormat.startsWith("msg://")) {
-                dateFormat = AppBeans.get(Messages.class).getMessage(
-                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+                dateFormat = messages.getMainMessage(dateFormat.substring(6, dateFormat.length()));
             }
             dateField.setDateFormat(dateFormat);
+        } else {
+            String formatStr;
+            if (tt == TemporalType.DATE) {
+                formatStr = messages.getMainMessage("dateFormat");
+            } else {
+                formatStr = messages.getMainMessage("dateTimeFormat");
+            }
+            dateField.setDateFormat(formatStr);
         }
+
         return dateField;
     }
 
-    private Component createTimeField(Datasource datasource, String property, MetaPropertyPath mpp) {
+    protected Component createTimeField(Datasource datasource, String property, Element xmlDescriptor) {
         DesktopTimeField timeField = new DesktopTimeField();
         timeField.setDatasource(datasource, property);
+        String showSeconds = xmlDescriptor.attributeValue("showSeconds");
+        if (Boolean.valueOf(showSeconds)) {
+            timeField.setShowSeconds(true);
+        }
         return timeField;
     }
 
-    private Component createEntityField(Datasource datasource, String property) {
+    protected Component createEntityField(Datasource datasource, String property) {
         PickerField pickerField;
 
         CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
@@ -148,14 +179,15 @@ public abstract class AbstractFieldFactory {
         } else {
             pickerField = new DesktopLookupPickerField();
             ((DesktopLookupPickerField) pickerField).setOptionsDatasource(optionsDatasource);
-            if (pickerField.getAction(PickerField.LookupAction.NAME) != null)
+            if (pickerField.getAction(PickerField.LookupAction.NAME) != null) {
                 pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
+            }
         }
         pickerField.setDatasource(datasource, property);
         return pickerField;
     }
 
-    private Component createEnumField(Datasource datasource, String property, MetaProperty metaProperty) {
+    protected Component createEnumField(Datasource datasource, String property, MetaProperty metaProperty) {
         Map<String, Object> options = new TreeMap<>();
         Enumeration<Enum> enumeration = metaProperty.getRange().asEnumeration();
         for (Enum value : enumeration.getValues()) {
@@ -169,7 +201,7 @@ public abstract class AbstractFieldFactory {
         return lookupField;
     }
 
-    private Component createUnsupportedField(MetaPropertyPath mpp) {
+    protected Component createUnsupportedField(MetaPropertyPath mpp) {
         DesktopLabel label = new DesktopLabel();
         label.setValue("TODO: " + (mpp != null ? mpp.getRange() : ""));
         return label;

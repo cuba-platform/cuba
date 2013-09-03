@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
@@ -26,6 +25,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     public static final int DEFAULT_WIDTH = 250;
 
     protected com.vaadin.ui.AbstractField field;
+    protected Converter captionFormatter;
 
     protected List<Button> buttons = new ArrayList<>();
     private CubaHorizontalActionsLayout container;
@@ -38,11 +38,6 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     public CubaPickerField(com.vaadin.ui.AbstractField field) {
         this.field = field;
         initLayout();
-    }
-
-    @Override
-    protected boolean isEmpty() {
-        return getValue() == null;
     }
 
     @Override
@@ -64,30 +59,30 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     }
 
     protected void initTextField() {
-        field = new TextField() {
-            @Override
-            public boolean isRequired() {
-                return CubaPickerField.this.isRequired();
-            }
+        field = new TextField();
 
-            @Override
-            public String getRequiredError() {
-                return CubaPickerField.this.getRequiredError();
-            }
-
-            @Override
-            public void setPropertyDataSource(Property newDataSource) {
-                super.setPropertyDataSource(newDataSource);
-//                vaadin7 converters
-                setConverter(new StringToEntityConverter());
-            }
-        };
         field.setImmediate(true);
         field.setReadOnly(true);
-        field.setConverter(new StringToEntityConverter());
         ((TextField) field).setNullRepresentation("");
 //        vaadin7
 //        ((TextField) field).setAllowFocusReadonly(true);
+        addValueChangeListener(new ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                TextField textField = (TextField) field;
+                Property property = event.getProperty();
+
+                boolean textFieldReadonly = textField.isReadOnly();
+                textField.setReadOnly(false);
+                if (captionFormatter != null) {
+                    Object captionValue = captionFormatter.convertToPresentation(getValue(), String.class, getLocale());
+                    textField.setValue((String) captionValue);
+                } else {
+                    textField.setValue(String.valueOf(property.getValue()));
+                }
+                textField.setReadOnly(textFieldReadonly);
+            }
+        });
     }
 
     public List<Button> getButtons() {
@@ -122,70 +117,13 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     }
 
     @Override
-    public Object getValue() {
-        Property property = getPropertyDataSource();
-        if (property != null) {
-            return property.getValue();
-        }
-        return field.getValue();
-    }
-
-    @Override
-    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-        boolean fieldReadOnly = field.isReadOnly();
-        field.setReadOnly(false);
-        getPropertyDataSource().setValue(newValue);
-        field.setReadOnly(fieldReadOnly);
-    }
-
-    @Override
-    public void addValueChangeListener(ValueChangeListener listener) {
-        field.addValueChangeListener(listener);
-    }
-
-    @Override
-    public void removeValueChangeListener(ValueChangeListener listener) {
-        field.removeValueChangeListener(listener);
-    }
-
-    @Override
-    public void valueChange(Property.ValueChangeEvent event) {
-        field.valueChange(event);
-    }
-
-    @Override
     public Class getType() {
-        return field.getType();
-    }
-
-    @Override
-    public Property getPropertyDataSource() {
-        return field.getPropertyDataSource();
-    }
-
-    @Override
-    public void setPropertyDataSource(Property newDataSource) {
-        field.setPropertyDataSource(newDataSource);
+        return Object.class;
     }
 
     @Override
     public void focus() {
         field.focus();
-    }
-
-    @Override
-    public void setBuffered(boolean buffered) {
-        field.setBuffered(buffered);
-    }
-
-    @Override
-    public boolean isBuffered() {
-        return field.isBuffered();
-    }
-
-    @Override
-    public void removeAllValidators() {
-        field.removeAllValidators();
     }
 
     @Override
@@ -198,4 +136,11 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         container.removeActionHandler(actionHandler);
     }
 
+    public Converter getCaptionFormatter() {
+        return captionFormatter;
+    }
+
+    public void setCaptionFormatter(Converter captionFormatter) {
+        this.captionFormatter = captionFormatter;
+    }
 }

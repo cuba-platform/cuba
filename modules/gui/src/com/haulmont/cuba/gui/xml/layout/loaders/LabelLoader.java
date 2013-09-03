@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -21,6 +21,7 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
         super(context);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final Label component = factory.createComponent("label");
 

@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -66,16 +65,6 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         initComponent(component);
 
         component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
-    }
-
-    @Override
-    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
-        component.setEditableColumns(editableColumns.toArray());
-    }
-
-    @Override
-    protected void setTablePresentations(TablePresentations tablePresentations) {
-        component.setPresentations(tablePresentations);
     }
 
     @Override
@@ -636,7 +625,6 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
                 super.collectionChanged(ds, operation, items);
             }
         }
-
     }
 
     protected class AggregatableGroupPropertyValueFormatter extends DefaultGroupPropertyValueFormatter {

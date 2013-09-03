@@ -13,42 +13,41 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
+import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaPlaceHolder;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
-import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.themes.BaseTheme;
@@ -68,11 +67,15 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends WebAbstractList<T> implements Table {
+public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable>
+        extends
+            WebAbstractList<T>
+        implements
+            Table {
 
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
-    protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
+
     protected boolean editable;
     protected Action itemClickAction;
     protected Action enterPressAction;
@@ -85,6 +88,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     protected Map<Table.Column, Set<Field.Validator>> validatorsMap = new HashMap<>();
 
     protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators = new LinkedHashSet<>();
+
+    protected Map<Entity, Datasource> fieldDatasources = new WeakHashMap<>();
 
     protected CompositionLayout componentComposition;
 
@@ -109,6 +114,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     protected boolean disableItemListener = false;
 
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
+
+    protected Security security = AppBeans.get(Security.class);
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -140,6 +147,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         //noinspection RedundantCast
         columns.remove((MetaPropertyPath) column.getId());
         columnsOrder.remove(column);
+    }
+
+    @Override
+    public Datasource getItemDatasource(Entity item) {
+        Datasource fieldDatasource = fieldDatasources.get(item);
+
+        if (fieldDatasource == null) {
+            fieldDatasource = new DsBuilder()
+                    .setAllowCommit(false)
+                    .setMetaClass(datasource.getMetaClass())
+                    .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
+                    .setViewName("_local")
+                    .buildDatasource();
+
+            ((DatasourceImplementation)fieldDatasource).valid();
+
+            fieldDatasource.setItem(item);
+        }
+
+        return fieldDatasource;
     }
 
     protected void addGeneratedColumn(Object id, Object generator) {
@@ -198,7 +225,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
-        throw new UnsupportedOperationException();
+        component.setEditableColumns(editableColumns.toArray());
     }
 
     @Override
@@ -337,42 +364,18 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         return UNIT_SYMBOLS.indexOf(componentComposition.getWidthUnits());
     }
 
-    protected abstract void setTablePresentations(TablePresentations tablePresentations);
+    @Override
+    public boolean isAllowPopupMenu() {
+        return component.isAllowPopupMenu();
+    }
 
-    protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Table.Column column) {
-        if (datasource == null)
-            throw new IllegalStateException("Table datasource is null");
+    @Override
+    public void setAllowPopupMenu(boolean value) {
+        component.setAllowPopupMenu(value);
+    }
 
-        final DsContext dsContext = datasource.getDsContext();
-
-        String optDsName = column.getXmlDescriptor().attributeValue("optionsDatasource");
-        if (StringUtils.isBlank(optDsName)) {
-            CollectionDatasource ds = optionsDatasources.get(metaClass);
-            if (ds != null) return ds;
-
-            final DataSupplier dataSupplier = datasource.getDataSupplier();
-
-            final String id = metaClass.getName();
-            final String viewName = null; //metaClass.getName() + ".lookup";
-
-            ds = new DsBuilder(dsContext)
-                    .setDataSupplier(dataSupplier)
-                    .setId(id)
-                    .setMetaClass(metaClass)
-                    .setViewName(viewName)
-                    .buildCollectionDatasource();
-
-            ds.refresh();
-
-            optionsDatasources.put(metaClass, ds);
-
-            return ds;
-        } else {
-            CollectionDatasource ds = dsContext.get(optDsName);
-            if (ds == null)
-                throw new IllegalStateException("Options datasource not found: " + optDsName);
-            return ds;
-        }
+    protected void setTablePresentations(TablePresentations tablePresentations) {
+        component.setPresentations(tablePresentations);
     }
 
     protected void initComponent(T component) {
@@ -440,7 +443,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
 //        });
 
         component.setSelectable(true);
-        component.setTableFieldFactory(new FieldFactory());
+        component.setTableFieldFactory(new WebTableFieldFactory());
         component.setColumnCollapsingAllowed(true);
         component.setColumnReorderingAllowed(true);
 
@@ -1413,79 +1416,121 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table> extends We
         }
     }
 
-    protected class FieldFactory extends AbstractFieldFactory {
-        @Override
-        protected Datasource getDatasource() {
-            return datasource;
-        }
+    protected class WebTableFieldFactory extends AbstractFieldFactory implements TableFieldFactory {
+
+        protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
 
         @Override
-        protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, MetaPropertyPath propertyPath) {
-            return WebAbstractTable.this.getOptionsDatasource(metaClass, columns.get(propertyPath));
-        }
+        public com.vaadin.ui.Field<?> createField(com.vaadin.data.Container container,
+                                                  Object itemId, Object propertyId, Component uiContext) {
 
-        @Override
-        protected Collection<Field.Validator> getValidators(MetaPropertyPath propertyPath) {
-            return validatorsMap.get(columns.get(propertyPath));
-        }
+            String fieldPropertyId = String.valueOf(propertyId);
 
-        @Override
-        protected boolean required(MetaPropertyPath propertyPath) {
-            return requiredColumns.containsKey(columns.get(propertyPath));
-        }
+            Column columnConf = columns.get(propertyId);
 
-        @Override
-        protected String requiredMessage(MetaPropertyPath propertyPath) {
-            return requiredColumns.get(columns.get(propertyPath));
-        }
+            Item item = container.getItem(itemId);
+            Entity entity = ((ItemWrapper)item).getItem();
+            Datasource fieldDatasource = getItemDatasource(entity);
 
-        @Override
-        protected Formatter getFormatter(MetaPropertyPath propertyPath) {
-            Table.Column column = columns.get(propertyPath);
-            return column.getFormatter();
-        }
+            com.haulmont.cuba.gui.components.Component columnComponent =
+                    createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
+            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(columnComponent);
 
-        @Override
-        protected String getFormat(MetaPropertyPath propertyPath) {
-            Table.Column column = columns.get(propertyPath);
-            Element formatterElement = column.getXmlDescriptor().element("formatter");
-            return formatterElement.attributeValue("format");
-        }
+            com.vaadin.ui.Field fieldImpl = getFieldImplementation(composition);
 
-        @Override
-        protected String fieldType(MetaPropertyPath propertyPath) {
-            return null; //todo gorodnov: implement this method
-        }
+            if (columnComponent instanceof Field) {
+                Field cubaField = (Field) columnComponent;
 
-        @Override
-        protected Element getXmlDescriptor(MetaPropertyPath propertyPath) {
-            Table.Column column = columns.get(propertyPath);
-            return column.getXmlDescriptor();
-        }
+                if (columnConf.getDescription() != null) {
+                    cubaField.setDescription(columnConf.getDescription());
+                }
+                if (requiredColumns.containsKey(columnConf)) {
+                    cubaField.setRequired(true);
+                    cubaField.setRequiredMessage(requiredColumns.get(columnConf));
+                }
+            }
 
-        @Override
-        protected void initCommon(com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath) {
-            super.initCommon(field, cubaField, propertyPath);
-
-            final Table.Column column = columns.get(propertyPath);
-            final MetaProperty metaProperty;
-            if (column.getId() != null) {
-                metaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
+            if (columnConf.getWidth() != null) {
+                columnComponent.setWidth(columnConf.getWidth() + "px");
             } else {
-                metaProperty = null;
+                columnComponent.setWidth("100%");
             }
 
-            if (field instanceof com.vaadin.ui.TextField) {
-                initTextField((com.vaadin.ui.TextField) field, metaProperty, column.getXmlDescriptor());
+            if (columnComponent instanceof BelongToFrame) {
+                BelongToFrame belongToFrame = (BelongToFrame) columnComponent;
+                if (belongToFrame.getFrame() == null) {
+                    belongToFrame.setFrame(getFrame());
+                }
             }
 
-            if (cubaField instanceof WebDateField) {
-                initDateField(field, metaProperty, column.getXmlDescriptor());
-            }
+            applyPermissions(columnComponent);
 
-            if (field instanceof com.vaadin.ui.CheckBox) {
-                field.setCaption("");
-                field.setWidth(Sizeable.SIZE_UNDEFINED, Sizeable.Unit.PIXELS);
+            return fieldImpl;
+        }
+
+        protected com.vaadin.ui.Field getFieldImplementation(Component composition) {
+            com.vaadin.ui.Field fieldImpl;
+            if (composition instanceof com.vaadin.ui.Field) {
+                fieldImpl = (com.vaadin.ui.Field) composition;
+            } else {
+                fieldImpl = new CubaFieldWrapper(composition);
+            }
+            return fieldImpl;
+        }
+
+        protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
+            if (columnComponent instanceof DatasourceComponent) {
+                DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
+                MetaProperty metaProperty = dsComponent.getMetaProperty();
+
+                if (metaProperty != null) {
+                    dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
+                            && dsComponent.isEditable());
+                }
+            }
+        }
+
+        @Override
+        protected CollectionDatasource getOptionsDatasource(Datasource fieldDatasource, String propertyId) {
+            if (datasource == null)
+                throw new IllegalStateException("Table datasource is null");
+
+            Column columnConf = columns.get(datasource.getMetaClass().getPropertyPath(propertyId));
+
+            final DsContext dsContext = datasource.getDsContext();
+
+            String optDsName = columnConf.getXmlDescriptor().attributeValue("optionsDatasource");
+
+            if (StringUtils.isBlank(optDsName)) {
+                MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(propertyId);
+                MetaClass metaClass = propertyPath.getRange().asClass();
+
+                CollectionDatasource ds = optionsDatasources.get(metaClass);
+                if (ds != null) return ds;
+
+                final DataSupplier dataSupplier = fieldDatasource.getDataSupplier();
+
+                final String id = metaClass.getName();
+                final String viewName = null; //metaClass.getName() + ".lookup";
+
+                ds = new DsBuilder(dsContext)
+                        .setDataSupplier(dataSupplier)
+                        .setId(id)
+                        .setMetaClass(metaClass)
+                        .setViewName(viewName)
+                        .buildCollectionDatasource();
+
+                ds.refresh();
+
+                optionsDatasources.put(metaClass, ds);
+
+                return ds;
+            } else {
+                CollectionDatasource ds = dsContext.get(optDsName);
+                if (ds == null)
+                    throw new IllegalStateException("Options datasource not found: " + optDsName);
+
+                return ds;
             }
         }
     }

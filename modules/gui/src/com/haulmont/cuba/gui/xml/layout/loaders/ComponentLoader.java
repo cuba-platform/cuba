@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -253,10 +252,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadBorder(Component.HasBorder component, Element element) {
         String border = element.attributeValue("border");
         if (!StringUtils.isEmpty(border)) {
-            if ("visible".equalsIgnoreCase(border))
+            if ("visible".equalsIgnoreCase(border)) {
                 component.setBorderVisible(true);
-            else if ("hidden".equalsIgnoreCase(border))
+            } else if ("hidden".equalsIgnoreCase(border)) {
                 component.setBorderVisible(false);
+            }
         }
     }
 

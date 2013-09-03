@@ -37,7 +37,7 @@ import java.util.Locale;
  * @author artamonov
  * @version $Id$
  */
-public abstract class DesktopAbstractTextInput<T extends JTextComponent> extends DesktopAbstractField<T> {
+public abstract class DesktopAbstractTextField<T extends JTextComponent> extends DesktopAbstractField<T> {
 
     protected TextComponentDocument doc;
 
@@ -61,7 +61,7 @@ public abstract class DesktopAbstractTextInput<T extends JTextComponent> extends
     protected Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
     protected DefaultValueFormatter valueFormatter;
 
-    protected DesktopAbstractTextInput() {
+    protected DesktopAbstractTextField() {
         doc = new TextComponentDocument();
 
         impl = createTextComponentImpl();

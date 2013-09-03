@@ -177,6 +177,9 @@ public class WebActionsField
 
     @Override
     public void setValue(Object value) {
+        if (!isEditable())
+            return;
+
         CollectionDatasource optionsDatasource = lookupField.getOptionsDatasource();
         if (value != null && value instanceof Entity && optionsDatasource != null &&
                 !optionsDatasource.containsItem(((Entity) value).getId())) {

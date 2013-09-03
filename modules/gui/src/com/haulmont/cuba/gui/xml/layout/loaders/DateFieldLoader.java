@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
@@ -7,9 +7,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -34,10 +31,11 @@ public class DateFieldLoader extends AbstractFieldLoader {
 
         TemporalType tt = null;
         if (component.getMetaProperty() != null) {
-            if (component.getMetaProperty().getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
+            if (component.getMetaProperty().getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
                 tt = TemporalType.DATE;
-            else if (component.getMetaProperty().getAnnotations() != null)
+            } else if (component.getMetaProperty().getAnnotations() != null) {
                 tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
+            }
         }
 
         final String resolution = element.attributeValue("resolution");
@@ -48,9 +46,8 @@ public class DateFieldLoader extends AbstractFieldLoader {
             if (dateFormat == null) {
                 if (res == DateField.Resolution.DAY) {
                     dateFormat = "msg://dateFormat";
-                }
-                else if (res == DateField.Resolution.MIN) {
-                    dateFormat = "msg://dateTimeFormat";                        
+                } else if (res == DateField.Resolution.MIN) {
+                    dateFormat = "msg://dateTimeFormat";
                 }
             }
         } else if (tt == TemporalType.DATE) {

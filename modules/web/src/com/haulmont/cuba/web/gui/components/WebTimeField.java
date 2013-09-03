@@ -160,10 +160,15 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
     @Override
     public void setValue(Object value) {
+        if (!isEditable())
+            return;
+
         Preconditions.checkArgument(value == null || value instanceof Date, "Value must be an instance of Date");
         if (datasource == null && value != null) {
-            String s = new SimpleDateFormat(timeFormat).format(value);
-            super.setValue(s);
+            SimpleDateFormat format = new SimpleDateFormat(this.timeFormat);
+            format.setLenient(false);
+
+            super.setValue(format.format(value));
         } else
             super.setValue(value);
     }

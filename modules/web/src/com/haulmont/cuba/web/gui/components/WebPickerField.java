@@ -17,22 +17,17 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaPickerField;
+import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.AbstractProperty;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author abramov
@@ -47,8 +42,6 @@ public class WebPickerField
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
-    protected Object value;
-
     protected MetaClass metaClass;
 
     protected List<Action> actions = new ArrayList<>();
@@ -60,19 +53,14 @@ public class WebPickerField
         component.setImmediate(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
-        component.setPropertyDataSource(new AbstractProperty() {
+        component.setCaptionFormatter(new StringToEntityConverter() {
             @Override
-            public Object getValue() {
-                return value;
-            }
+            public String convertToPresentation(Entity value, Class<? extends String> targetType, Locale locale)
+                    throws ConversionException {
+                if (captionMode == CaptionMode.PROPERTY && StringUtils.isNotEmpty(captionProperty))
+                    return ((Instance) getValue()).getValue(captionProperty);
 
-            @Override
-            public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-            }
-
-            @Override
-            public Class<?> getType() {
-                return String.class;
+                return super.convertToPresentation(value, targetType, locale);
             }
         });
 
@@ -91,8 +79,8 @@ public class WebPickerField
         return new ItemWrapper(newValue, metaClass) {
             @Override
             public String toString() {
-                if (CaptionMode.PROPERTY.equals(getCaptionMode()) && (value instanceof Instance)) {
-                    return String.valueOf(((Instance) value).getValue(getCaptionProperty()));
+                if (CaptionMode.PROPERTY.equals(getCaptionMode()) && (getValue() instanceof Instance)) {
+                    return String.valueOf(((Instance) getValue()).getValue(getCaptionProperty()));
                 } else {
                     return super.toString();
                 }
@@ -139,29 +127,6 @@ public class WebPickerField
     }
 
     @Override
-    public <T> T getValue() {
-        if (component.getPropertyDataSource() != null) {
-            return (T) super.getValue();
-        } else {
-            return (T) value;
-        }
-    }
-
-    @Override
-    public void setValue(Object value) {
-        if (component.isReadOnly())
-            return;
-        if (component.getPropertyDataSource() != null) {
-            this.value = value;
-            super.setValue(value);
-        } else {
-            this.value = value;
-            ItemWrapper wrapper = createItemWrapper(value);
-            super.setValue(wrapper);
-        }
-    }
-
-    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -181,8 +146,7 @@ public class WebPickerField
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-
-                        Object prevValue = value;
+                        Object prevValue = getValue();
                         Object newValue = InstanceUtils.getValueEx(item, propertyPath.getPath());
                         setValue(newValue);
                         fireValueChanged(prevValue, newValue);
@@ -201,53 +165,15 @@ public class WebPickerField
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(propertyPath.toString())) {
-                Object prevValue = value;
+                Object prevValue = getValue();
                 Object newValue = InstanceUtils.getValueEx(datasource.getItem(), propertyPath.getPath());
                 setValue(newValue);
                 fireValueChanged(prevValue, newValue);
             }
         }
-
-
         setRequired(metaProperty.isMandatory());
 
         this.metaClass = metaProperty.getRange().asClass();
-
-
-    }
-
-    @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new PropertyWrapper(item, propertyPath) {
-                    @Override
-                    public Object getValue() {
-                        if (value == null)
-                            return super.getValue();
-                        else
-                            return value;
-                    }
-
-                    @Override
-                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                        if (newValue instanceof String)
-                            return;
-                        value = newValue;
-                        super.setValue(newValue);
-                    }
-
-                    @Override
-                    public String getFormattedValue() {
-                        if (CaptionMode.PROPERTY.equals(captionMode))
-                            return String.valueOf(getValue() == null ? "" : ((Instance) getValue()).getValue(captionProperty));
-                        else
-                            return super.getFormattedValue();
-                    }
-                };
-            }
-        };
     }
 
     @Override

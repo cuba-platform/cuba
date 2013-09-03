@@ -181,10 +181,11 @@ public class WebDateField
 
     @Override
     public void setValue(Object value) {
-        prevValue = getValue();
         if (!editable) {
             return;
         }
+
+        prevValue = getValue();
 
         updatingInstance = true;
         try {

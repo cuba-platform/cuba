@@ -45,7 +45,6 @@ public class EntityInspectorEditor extends AbstractEditor {
     public static final String DEFAULT_FIELD_WIDTH = "300";
     public static final int CAPTION_MAX_LENGTH = 100;
 
-
     public static final WindowManager.OpenType OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
 
     @Inject
@@ -90,7 +89,7 @@ public class EntityInspectorEditor extends AbstractEditor {
     protected CollectionDatasource categories;
     protected FieldGroup fieldGroup;
 
-    protected LinkedList<FieldGroup.Field> customFields;
+    protected LinkedList<FieldGroup.FieldConfig> customFields;
     protected ButtonsPanel buttonsPanel;
     protected Button commitButton;
     protected Button cancelButton;
@@ -102,7 +101,7 @@ public class EntityInspectorEditor extends AbstractEditor {
 
     public EntityInspectorEditor() {
         super();
-        customFields = new LinkedList<FieldGroup.Field>();
+        customFields = new LinkedList<FieldGroup.FieldConfig>();
         datasources = new HashMap<String, Datasource>();
         tables = new LinkedList<Table>();
         isNew = true;
@@ -364,7 +363,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         fieldGroup.setFrame(frame);
         fieldGroup.setCaption(getPropertyCaption(meta, embeddedMetaProperty));
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
-        Collection<FieldGroup.Field> customFields = new LinkedList<FieldGroup.Field>();
+        Collection<FieldGroup.FieldConfig> customFields = new LinkedList<FieldGroup.FieldConfig>();
         boolean custom;
         for (MetaProperty metaProperty : embeddableMetaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty) || metaProperty.equals(nullIndicatorProperty);
@@ -486,7 +485,7 @@ public class EntityInspectorEditor extends AbstractEditor {
      */
     private void addField(MetaClass meta, MetaProperty metaProperty,
                           FieldGroup fieldGroup, boolean required, boolean custom,
-                          Collection<FieldGroup.Field> customFields) {
+                          Collection<FieldGroup.FieldConfig> customFields) {
         if (!attrViewPermitted(metaProperty))
             return;
 
@@ -495,7 +494,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                 && !entityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ))
             return;
 
-        FieldGroup.Field field = new FieldGroup.Field(metaProperty.getName());
+        FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(metaProperty.getName());
         String caption = getPropertyCaption(meta, metaProperty);
         field.setCaption(caption);
         field.setType(metaProperty.getJavaType());
@@ -523,8 +522,8 @@ public class EntityInspectorEditor extends AbstractEditor {
     /**
      * Creates custom fields and adds them to the fieldGroup
      */
-    private void createCustomFields(FieldGroup fieldGroup, Collection<FieldGroup.Field> customFields) {
-        for (FieldGroup.Field field : customFields) {
+    private void createCustomFields(FieldGroup fieldGroup, Collection<FieldGroup.FieldConfig> customFields) {
+        for (FieldGroup.FieldConfig field : customFields) {
             //custom field generator creates an pickerField
             fieldGroup.addCustomField(field, new FieldGroup.CustomFieldGenerator() {
                 @Override

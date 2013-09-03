@@ -52,8 +52,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         final Datasource ds = loadDatasource(element);
         if (element.elements("column").isEmpty()) {
-            final List<FieldGroup.Field> rootFields = loadFields(component, element, ds);
-            for (final FieldGroup.Field field : rootFields) {
+            final List<FieldGroup.FieldConfig> rootFields = loadFields(component, element, ds);
+            for (final FieldGroup.FieldConfig field : rootFields) {
                 component.addField(field);
             }
         } else {
@@ -69,8 +69,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
                 String width = columnElement.attributeValue("width");
 
-                final List<FieldGroup.Field> columnFields = loadFields(component, columnElement, ds);
-                for (final FieldGroup.Field field : columnFields) {
+                final List<FieldGroup.FieldConfig> columnFields = loadFields(component, columnElement, ds);
+                for (final FieldGroup.FieldConfig field : columnFields) {
                     component.addField(field, colIndex);
                     if (!StringUtils.isEmpty(width) && field.getWidth() == null) {
                         field.setWidth(width);
@@ -99,8 +99,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             @Override
             public void execute(Context context, IFrame window) {
                 component.postInit();
-                final List<FieldGroup.Field> fields = component.getFields();
-                for (final FieldGroup.Field field : fields) {
+                final List<FieldGroup.FieldConfig> fields = component.getFields();
+                for (final FieldGroup.FieldConfig field : fields) {
                     loadValidators(component, field);
                     loadRequired(component, field);
                     loadEditable(component, field);
@@ -125,7 +125,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return null;
     }
 
-    protected List<FieldGroup.Field> loadFields(FieldGroup component, Element element, Datasource ds) {
+    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Element element, Datasource ds) {
         final List<Element> fieldElements = element.elements("field");
         if (!fieldElements.isEmpty()) {
             return loadFields(component, fieldElements, ds);
@@ -133,15 +133,15 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return Collections.emptyList();
     }
 
-    protected List<FieldGroup.Field> loadFields(FieldGroup component, List<Element> elements, Datasource ds) {
-        final List<FieldGroup.Field> fields = new ArrayList<>(elements.size());
+    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, List<Element> elements, Datasource ds) {
+        final List<FieldGroup.FieldConfig> fields = new ArrayList<>(elements.size());
         for (final Element fieldElement : elements) {
             fields.add(loadField(component, fieldElement, ds));
         }
         return fields;
     }
 
-    protected FieldGroup.Field loadField(FieldGroup component, Element element, Datasource ds) {
+    protected FieldGroup.FieldConfig loadField(FieldGroup component, Element element, Datasource ds) {
         final String id = element.attributeValue("id");
 
         final Datasource datasource = loadDatasource(element);
@@ -171,7 +171,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             metaPropertyPath = metaClass.getPropertyPath(id);
         }
 
-        final FieldGroup.Field field = new FieldGroup.Field(id);
+        final FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(id);
 
         if (datasource != null) {
             field.setDatasource(datasource);
@@ -197,7 +197,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return field;
     }
 
-    protected void loadValidators(FieldGroup component, FieldGroup.Field field) {
+    protected void loadValidators(FieldGroup component, FieldGroup.FieldConfig field) {
         Element descriptor = field.getXmlDescriptor();
         final List<Element> validatorElements = (descriptor == null) ? null : descriptor.elements("validator");
         if (validatorElements != null) {
@@ -234,7 +234,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    protected void loadRequired(FieldGroup component, FieldGroup.Field field) {
+    protected void loadRequired(FieldGroup component, FieldGroup.FieldConfig field) {
         boolean isMandatory = false;
         MetaClass metaClass = metaClass(component, field);
         if (metaClass != null) {
@@ -279,7 +279,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    protected void loadEditable(FieldGroup component, FieldGroup.Field field) {
+    protected void loadEditable(FieldGroup component, FieldGroup.FieldConfig field) {
         if (field.isCustom()) {
             Element element = field.getXmlDescriptor();
             final String editable = element.attributeValue("editable");
@@ -313,7 +313,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    private MetaClass metaClass(FieldGroup component, FieldGroup.Field field) {
+    private MetaClass metaClass(FieldGroup component, FieldGroup.FieldConfig field) {
         if (field.isCustom()) return null;
         Datasource datasource;
         if (field.getDatasource() != null) {
@@ -327,7 +327,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return datasource.getMetaClass();
     }
 
-    protected void loadEnabled(FieldGroup component, FieldGroup.Field field) {
+    protected void loadEnabled(FieldGroup component, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
         final String enabled = element.attributeValue("enabled");
         if (!StringUtils.isEmpty(enabled)) {
@@ -335,7 +335,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    protected void loadVisible(FieldGroup component, FieldGroup.Field field) {
+    protected void loadVisible(FieldGroup component, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
         final String visible = element.attributeValue("visible");
         if (!StringUtils.isEmpty(visible)) {

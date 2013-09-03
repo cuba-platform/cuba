@@ -6,34 +6,30 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgroup;
 
-import com.vaadin.client.ui.VForm;
+import com.google.gwt.dom.client.Element;
+import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxWidget;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaFieldGroupWidget extends VForm {
+public class CubaFieldGroupWidget extends CubaGroupBoxWidget {
 
-    private static final String CLASSNAME = "cuba-fieldgroup";
-
-    protected boolean borderVisible = false;
+    protected static final String CLASSNAME = "cuba-fieldgroup";
 
     public CubaFieldGroupWidget() {
-        setStyleName(CLASSNAME);
-
-        fieldSet.setClassName(CLASSNAME + "-fieldset");
-    }
-
-    public boolean isBorderVisible() {
-        return borderVisible;
+        super(CLASSNAME);
     }
 
     public void setBorderVisible(boolean borderVisible) {
-        this.borderVisible = borderVisible;
+        if (borderVisible) {
+            addStyleDependentName("border");
+        } else {
+            removeStyleDependentName("border");
+        }
+    }
 
-        if (borderVisible)
-            fieldSet.addClassName("border");
-        else
-            fieldSet.removeClassName("border");
+    protected Element getLegend() {
+        return legend;
     }
 }

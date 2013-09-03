@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -52,30 +51,10 @@ public class WebTable extends WebAbstractTable<CubaTable> implements Component.W
     }
 
     @Override
-    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
-        component.setEditableColumns(editableColumns.toArray());
-    }
-
-    @Override
-    protected void setTablePresentations(TablePresentations presentations) {
-        component.setPresentations(presentations);
-    }
-
-    @Override
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return datasource instanceof CollectionDatasource.Sortable && isSortable() ?
                 new SortableTableDsWrapper(datasource, columns) :
                 new TableDsWrapper(datasource, columns);
-    }
-
-    @Override
-    public boolean isAllowPopupMenu() {
-        return component.isAllowPopupMenu();
-    }
-
-    @Override
-    public void setAllowPopupMenu(boolean value) {
-        component.setAllowPopupMenu(value);
     }
 
     protected class TableDsWrapper extends CollectionDsWrapper

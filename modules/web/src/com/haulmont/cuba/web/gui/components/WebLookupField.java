@@ -70,6 +70,12 @@ public class WebLookupField
 
     protected void createComponent() {
         this.component = new CubaComboBox() {
+
+            @Override
+            protected void setValue(Object newValue, boolean repaintIsNotNeeded) throws ReadOnlyException {
+                super.setValue(newValue, repaintIsNotNeeded);
+            }
+
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 if (newDataSource == null)
@@ -130,7 +136,7 @@ public class WebLookupField
             if (Datasource.State.INVALID == optionsDatasource.getState()) {
                 optionsDatasource.refresh();
             }
-            v = (T) optionsDatasource.getItem(key);
+            v = optionsDatasource.getItem(key);
         } else {
             v = key;
         }

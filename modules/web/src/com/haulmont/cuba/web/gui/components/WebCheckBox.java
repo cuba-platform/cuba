@@ -36,20 +36,20 @@ public class WebCheckBox
         component.setInvalidCommitted(true);
     }
 
-    @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new PropertyWrapper(item, propertyPath) {
-                    @Override
-                    public Object getValue() {
-                        return BooleanUtils.toBoolean((Boolean) super.getValue());
-                    }
-                };
-            }
-        };
-    }
+//    @Override
+//    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+//        return new ItemWrapper(datasource, propertyPaths) {
+//            @Override
+//            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+//                return new PropertyWrapper(item, propertyPath) {
+//                    @Override
+//                    public Object getValue() {
+//                        return BooleanUtils.toBoolean((Boolean) super.getValue());
+//                    }
+//                };
+//            }
+//        };
+//    }
 
     @Override
     public void setValue(Object value) {
