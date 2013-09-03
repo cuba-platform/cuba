@@ -1,4 +1,4 @@
-package com.haulmont.cuba.web.sys;
+package com.haulmont.cuba.web.auth;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -46,11 +46,11 @@ public class RequestContext {
         return request != null ? request.getCookies() : null;
     }
 
-    static void create(HttpServletRequest request, HttpServletResponse response) {
+    public static void create(HttpServletRequest request, HttpServletResponse response) {
         current.set(new RequestContext(request, response));
     }
 
-    static void destroy() {
+    public static void destroy() {
         current.set(null);
     }
 

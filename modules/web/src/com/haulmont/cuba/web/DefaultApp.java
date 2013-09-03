@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -134,7 +134,7 @@ public class DefaultApp extends App implements ConnectionListener {
      * Perform actions after success login
      */
     protected void afterLoggedIn() {
-        if (!webConfig.getUseActiveDirectory()) {
+        if (!webAuthConfig.getUseActiveDirectory()) {
             final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
             // Change password on logon
             if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {

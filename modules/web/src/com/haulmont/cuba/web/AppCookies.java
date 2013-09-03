@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.web.sys.RequestContext;
+import com.haulmont.cuba.web.auth.RequestContext;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;

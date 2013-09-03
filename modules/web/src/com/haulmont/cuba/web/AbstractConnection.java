@@ -9,7 +9,6 @@ import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
@@ -17,7 +16,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 //import com.vaadin.terminal.gwt.server.WebApplicationContext;
 //import com.vaadin.terminal.gwt.server.WebBrowser;
-import com.haulmont.cuba.web.sys.RequestContext;
+//import com.haulmont.cuba.web.sys.RequestContext;
 import com.haulmont.cuba.web.sys.VaadinSessionAwareSecurityContext;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
@@ -27,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 

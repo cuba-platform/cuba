@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.sys.RequestContext;
+import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
 import com.vaadin.server.PaintException;

@@ -9,7 +9,7 @@ package com.haulmont.cuba.web.app.ui.security.user;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.components.PasswordField;
-import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import javax.inject.Inject;
 
@@ -24,6 +24,6 @@ public class UserEditorCompanion implements UserEditor.Companion {
 
     @Override
     public void initPasswordField(PasswordField passwordField) {
-        passwordField.setRequired(!configuration.getConfig(WebConfig.class).getUseActiveDirectory());
+        passwordField.setRequired(!configuration.getConfig(WebAuthConfig.class).getUseActiveDirectory());
     }
 }

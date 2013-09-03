@@ -4,13 +4,11 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.sys.auth;
+package com.haulmont.cuba.web.auth;
 
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import jespa.http.HttpSecurityService;
 import jespa.ntlm.NtlmSecurityProvider;
 import jespa.security.PasswordCredential;
@@ -154,7 +152,7 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
     }
 
     private void initDomains() {
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        WebAuthConfig webConfig = configuration.getConfig(WebAuthConfig.class);
 
         String domainsStr = webConfig.getActiveDirectoryDomains();
         if (!StringUtils.isBlank(domainsStr)) {

@@ -7,10 +7,10 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import java.util.Locale;
 
@@ -37,7 +37,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        String password = configuration.getConfig(WebConfig.class).getTrustedClientPassword();
+        String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
         update(loginService.loginTrusted(login, password, locale));
     }
 

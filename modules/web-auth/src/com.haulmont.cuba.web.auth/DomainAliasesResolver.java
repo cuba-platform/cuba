@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.sys.auth;
+package com.haulmont.cuba.web.auth;
 
 /**
  * @author artamonov

@@ -4,10 +4,9 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.sys.auth;
+package com.haulmont.cuba.web.auth;
 
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.web.WebConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +28,7 @@ public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
 
     @Inject
     public DefaultDomainAliasesResolver(Configuration configuration) {
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        WebAuthConfig webConfig = configuration.getConfig(WebAuthConfig.class);
         String aliasesConfig = webConfig.getActiveDirectoryAliases();
         if (StringUtils.isNotBlank(aliasesConfig)) {
             String[] aliasesPairs = StringUtils.split(aliasesConfig, ';');

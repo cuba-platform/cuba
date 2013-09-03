@@ -9,11 +9,12 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.RequestContext;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.sys.RequestContext;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
@@ -47,6 +48,8 @@ public abstract class App implements Serializable {
 
     protected final WebConfig webConfig;
 
+    protected final WebAuthConfig webAuthConfig;
+
     private AppCookies cookies;
 
     protected LinkHandler linkHandler;
@@ -74,6 +77,7 @@ public abstract class App implements Serializable {
             Configuration configuration = AppBeans.get(Configuration.class);
 
             webConfig = configuration.getConfig(WebConfig.class);
+            webAuthConfig = configuration.getConfig(WebAuthConfig.class);
             globalConfig = configuration.getConfig(GlobalConfig.class);
 
             appLog = new AppLog();

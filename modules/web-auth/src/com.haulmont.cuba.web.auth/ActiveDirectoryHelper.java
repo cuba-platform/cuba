@@ -3,12 +3,10 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
-package com.haulmont.cuba.web.sys;
+package com.haulmont.cuba.web.auth;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.sys.auth.CubaAuthProvider;
 
 import javax.servlet.http.HttpSession;
 
@@ -21,7 +19,7 @@ public class ActiveDirectoryHelper {
     private final static ThreadLocal<HttpSession> currentSession = new ThreadLocal<>();
 
     public static boolean useActiveDirectory() {
-        WebConfig config = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+        WebAuthConfig config = AppBeans.get(Configuration.class).getConfig(WebAuthConfig.class);
         return config.getUseActiveDirectory();
     }
 

@@ -4,13 +4,11 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.sys.auth;
+package com.haulmont.cuba.web.auth;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,7 +47,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        WebAuthConfig webConfig = configuration.getConfig(WebAuthConfig.class);
         // Setup system properties
         System.setProperty("sun.security.krb5.debug", Boolean.toString(webConfig.getActiveDirectoryDebug()));
         System.setProperty("sun.security.jgss.debug", Boolean.toString(webConfig.getActiveDirectoryDebug()));
@@ -223,7 +221,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * @throws LoginException Kerberos login exception
      */
     private LoginContext loginAsServicePrincipal() throws LoginException {
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        WebAuthConfig webConfig = configuration.getConfig(WebAuthConfig.class);
         LoginContext loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosLoginModule()),
                 new CallbackHandler() {
                     @Override
@@ -269,7 +267,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
     @Override
     public void authenticate(String login, String password, Locale loc)
             throws com.haulmont.cuba.security.global.LoginException {
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        WebAuthConfig webConfig = configuration.getConfig(WebAuthConfig.class);
         DomainAliasesResolver aliasesResolver = AppBeans.get(DomainAliasesResolver.NAME);
 
         // Convert domain name to kerberos form "user@DOMAIN"
