@@ -82,7 +82,7 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
-                    <xs:enumeration value="UNDEFINED"/>
+                    <xs:enumeration value="AUTO"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>

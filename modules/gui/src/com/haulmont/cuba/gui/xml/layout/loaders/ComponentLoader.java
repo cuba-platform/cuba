@@ -213,8 +213,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadHeight(Component component, Element element, @Nullable String defaultValue) {
         final String height = element.attributeValue("height");
-        if ("undefined".equalsIgnoreCase(height))
-            component.setHeight(Component.UNDEFINED_SIZE);
+        if ("auto".equalsIgnoreCase(height))
+            component.setHeight(Component.AUTO_SIZE);
         else if (!StringUtils.isBlank(height))
             component.setHeight(height);
         else if (!StringUtils.isBlank(defaultValue))
@@ -227,8 +227,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
         final String width = element.attributeValue("width");
-        if ("undefined".equalsIgnoreCase(width))
-            component.setWidth(Component.UNDEFINED_SIZE);
+        if ("auto".equalsIgnoreCase(width))
+            component.setWidth(Component.AUTO_SIZE);
         else if (!StringUtils.isBlank(width))
             component.setWidth(width);
         else if (!StringUtils.isBlank(defaultValue))
