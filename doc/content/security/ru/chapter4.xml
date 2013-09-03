@@ -151,11 +151,10 @@ useTicketCache=false;};</programlisting></para>
         <listitem>
           <para>Настройки приложения <filename>local.app.properties</filename> в каталоге <filename>conf</filename> приложения.  По умолчанию для <application>Active Directory</application> используются следующие настройки:</para>
           <para><programlisting># Использовать Kerberos
-              cuba.web.activeDirectoryAuthClass=com.haulmont.cuba.web.auth.KerberosAuthProvider
-              # Файлы конфигурации расположены в каталоге conf приложения
-              cuba.web.kerberosConf=${catalina.home}/conf/${cuba.webContextName}/krb5.ini
-              cuba.web.kerberosJaasConf=${catalina.home}/conf/${cuba.webContextName}/jaas.conf
-          </programlisting></para>
+cuba.web.activeDirectoryAuthClass=com.haulmont.cuba.web.auth.KerberosAuthProvider
+# Файлы конфигурации расположены в каталоге conf приложения
+cuba.web.kerberosConf=${catalina.home}/conf/${cuba.webContextName}/krb5.ini
+cuba.web.kerberosJaasConf=${catalina.home}/conf/${cuba.webContextName}/jaas.conf   </programlisting></para>
           <para>Для использования <application>Kerberos</application> необходимо задать следующее:</para>
           <para><programlisting># Разрешить использование Active Directory
 cuba.web.useActiveDirectory=false
