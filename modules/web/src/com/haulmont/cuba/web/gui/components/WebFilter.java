@@ -105,7 +105,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     private FoldersPane foldersPane;
 
     private boolean useMaxResults;
-    private CheckBox maxResultsCb;
+    protected CheckBox maxResultsCb;
     protected TextField maxResultsField;
     protected AbstractOrderedLayout maxResultsLayout;
     private Boolean manualApplyRequired;
