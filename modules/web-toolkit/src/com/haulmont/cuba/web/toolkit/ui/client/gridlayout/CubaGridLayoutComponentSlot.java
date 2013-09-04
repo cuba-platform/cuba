@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.gridlayout;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -33,25 +32,13 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
 
     protected Element rightCaption = null;
 
-    protected boolean deferredLayout = false;
-
     public CubaGridLayoutComponentSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
         super(baseClassName, child, layout);
     }
 
     @Override
     public void captionUpdated(CubaCaptionWidget captionWidget) {
-        if (moveIndicatorsRight(captionWidget) && !deferredLayout) {
-            deferredLayout = true;
-            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                @Override
-                public void execute() {
-                    getLayoutManager().forceLayout();
-
-                    deferredLayout = false;
-                }
-            });
-        }
+        moveIndicatorsRight(captionWidget);
     }
 
     @Override
@@ -269,7 +256,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         }
     }
 
-    protected boolean moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
+    protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
         // todo move error indicator right
 
         int fakeCaptionWidth = 0;
@@ -326,18 +313,15 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
             fakeCaptionWidth += Util.getRequiredWidth(tooltipElement);
         }
 
-        if (widthChanged) {
-            if (rightCaption != null) {
-                DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
-            }
-            return true;
+        if (widthChanged && rightCaption != null) {
+            DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
         }
-
-        return false;
     }
 
     protected Element createRightCaption() {
         Element rightCaption = DOM.createDiv();
+
+        getLayoutManager().registerDependency((ManagedLayout) getChild().getParent(), rightCaption);
 
         rightCaption.setClassName(VCaption.CLASSNAME);
         rightCaption.addClassName(INDICATORS_CLASSNAME);
