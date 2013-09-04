@@ -1312,6 +1312,15 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.web.foldersPaneEnabled">
+        <term>cuba.web.foldersPaneEnabled</term>
+        <listitem>
+          <para>Если <code>false</code>, то функциональность панели папок отключена.</para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.web.foldersPaneVisibleByDefault">
         <term>cuba.web.foldersPaneVisibleByDefault</term>
         <listitem>
