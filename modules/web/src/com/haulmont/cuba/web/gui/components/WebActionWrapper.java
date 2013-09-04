@@ -29,7 +29,7 @@ class WebActionWrapper extends com.vaadin.event.Action {
         StringBuilder sb = new StringBuilder();
         sb.append(action.getCaption());
         if (action.getShortcut() != null) {
-            sb.append("(").append(action.getShortcut().format()).append(")");
+            sb.append(" (").append(action.getShortcut().format()).append(")");
         }
         return sb.toString();
     }
