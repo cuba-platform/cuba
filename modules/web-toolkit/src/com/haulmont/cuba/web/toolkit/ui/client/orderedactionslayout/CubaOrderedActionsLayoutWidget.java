@@ -57,6 +57,7 @@ public class CubaOrderedActionsLayoutWidget extends VAbstractOrderedLayout {
         this.shortcutHandler = shortcutHandler;
     }
 
+    @Override
     public Slot getSlot(Widget widget) {
         Slot slot = widgetToSlot.get(widget);
         if (slot == null) {

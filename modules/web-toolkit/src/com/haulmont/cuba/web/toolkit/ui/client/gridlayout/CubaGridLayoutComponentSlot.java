@@ -43,12 +43,17 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
 
     @Override
     public void setCaption(VCaption caption) {
+        if (rightCaption != null) {
+            getLayoutManager().unregisterDependency(getLayout(), rightCaption);
+
+            rightCaption.removeFromParent();
+            rightCaption = null;
+        }
+
         super.setCaption(caption);
 
         if (caption instanceof CubaCaptionWidget) {
-            if (isCaptionInline()) {
-                moveIndicatorsRight((CubaCaptionWidget) caption);
-            }
+            moveIndicatorsRight((CubaCaptionWidget) caption);
             ((CubaCaptionWidget) caption).setCaptionHolder(this);
         }
     }
