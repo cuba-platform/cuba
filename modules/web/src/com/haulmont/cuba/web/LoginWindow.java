@@ -151,7 +151,9 @@ public class LoginWindow extends UIView implements Action.Handler {
         welcomeLayout.setHeight(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
         welcomeLayout.setSpacing(true);
 
-        Label label = new Label(messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
+        String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc);
+        Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
+        label.setContentMode(ContentMode.HTML);
         label.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
         label.setStyleName(getStyle("caption"));
 
