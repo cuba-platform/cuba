@@ -17,18 +17,14 @@ import javax.swing.*;
 import java.util.Collection;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopLookupPickerField
-    extends DesktopLookupField
-    implements LookupPickerField
-{
-    private DesktopPickerField pickerField;
+public class DesktopLookupPickerField extends DesktopLookupField implements LookupPickerField {
+
+    protected DesktopPickerField pickerField;
 
     public DesktopLookupPickerField() {
-        super();
         pickerField = new DesktopPickerField(new Picker());
     }
 

@@ -82,7 +82,7 @@ public class MigLayoutHelper {
         return cc;
     }
 
-    private static void applyAlignment(CC cc, Component.Alignment align) {
+    public static void applyAlignment(CC cc, Component.Alignment align) {
         if (align == null) {
             align = Component.Alignment.TOP_LEFT; // same as for web
         }

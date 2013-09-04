@@ -547,8 +547,12 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         JLabel label = new JLabel(caption);
         label.setVisible(fieldComponent.isVisible());
-        impl.add(label, new CC().cell(col * 3, row, 1, 1));
+        CC labelCc = new CC();
+        MigLayoutHelper.applyAlignment(labelCc, Alignment.TOP_LEFT);
+
+        impl.add(label, labelCc.cell(col * 3, row, 1, 1));
         fieldLabels.put(fieldConf, label);
+
         if (description != null && !(fieldComponent instanceof CheckBox)) {
             fieldConf.setDescription(description);
             ToolTipButton tooltipBtn = new ToolTipButton();
@@ -565,6 +569,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         MigLayoutHelper.applyWidth(cell, (int) fieldComponent.getWidth(), fieldComponent.getWidthUnits(), false);
         MigLayoutHelper.applyHeight(cell, (int) fieldComponent.getHeight(), fieldComponent.getHeightUnits(), false);
+        MigLayoutHelper.applyAlignment(cell, fieldComponent.getAlignment());
+
         jComponent.putClientProperty(getSwingPropertyId(), fieldConf.getId());
         impl.add(jComponent, cell);
     }

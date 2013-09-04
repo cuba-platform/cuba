@@ -71,7 +71,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         impl.setDocument(doc);
         impl.setVisible(isVisible());
 
-        TextFieldListener listener = new TextFieldListener();
+        TextFieldListener listener = createTextListener();
         impl.addKeyListener(listener);
         impl.addFocusListener(listener);
         impl.putClientProperty(getSwingPropertyId(), getId());
@@ -79,6 +79,10 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         updateMissingValueState();
 
         valueFormatter = new DefaultValueFormatter(locale);
+    }
+
+    protected TextFieldListener createTextListener() {
+        return new TextFieldListener();
     }
 
     protected abstract T createTextComponentImpl();

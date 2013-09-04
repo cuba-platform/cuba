@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.TextArea;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 /**
  * @author artamonov
@@ -45,6 +46,16 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     }
 
     @Override
+    protected TextFieldListener createTextListener() {
+        return new TextFieldListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                 updateMissingValueState();
+            }
+        };
+    }
+
+    @Override
     public int getRows() {
         return impl.getRows();
     }
@@ -52,6 +63,15 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     @Override
     public void setRows(int rows) {
         impl.setRows(rows);
+
+        int minHeight = impl.getPreferredSize().height;
+        int minWidth = impl.getMinimumSize().width;
+
+        Insets insets = impl.getInsets();
+        minWidth += insets.left + insets.right;
+        minHeight += insets.bottom + insets.top;
+
+        composition.setMinimumSize(new Dimension(minWidth, minHeight));
     }
 
     @Override
@@ -62,6 +82,24 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     @Override
     public void setColumns(int columns) {
         impl.setColumns(columns);
+
+        if (columns > 1) {
+            int minHeight = impl.getMinimumSize().height;
+            int minWidth = impl.getPreferredSize().width;
+
+            Insets insets = impl.getInsets();
+            minWidth += insets.left + insets.right;
+            minHeight += insets.bottom + insets.top;
+
+            composition.setMinimumSize(new Dimension(minWidth, minHeight));
+        } else {
+            int minHeight = impl.getMinimumSize().height;
+
+            Insets insets = impl.getInsets();
+            minHeight += insets.bottom + insets.top;
+
+            composition.setMinimumSize(new Dimension(0, minHeight));
+        }
     }
 
     @Override
