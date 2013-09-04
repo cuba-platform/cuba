@@ -8,11 +8,9 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Date;
 
@@ -29,7 +27,7 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
         this.dateField = dateField;
         this.composition = composition;
 
-        this.composition.setWidth("100%");
+        this.composition.setSizeUndefined();
 
         setSizeUndefined();
         setConverter(new ObjectToObjectConverter());
@@ -46,15 +44,11 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
 
     @Override
     public Object getValue() {
-        if (getPropertyDataSource() != null)
-            return getPropertyDataSource().getValue();
         return dateField.getValue();
     }
 
     @Override
     public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-        if (getPropertyDataSource() != null)
-            getPropertyDataSource().setValue(newValue);
         dateField.setValue(newValue);
     }
 
@@ -74,6 +68,32 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     }
 
     @Override
+    public void setWidth(float width, Unit unit) {
+        super.setWidth(width, unit);
+
+        if (composition != null) {
+            if (width < 0) {
+                composition.setWidth(-1, Unit.PIXELS);
+            } else {
+                composition.setWidth(100, Unit.PERCENTAGE);
+            }
+        }
+    }
+
+    @Override
+    public void setHeight(float height, Unit unit) {
+        super.setHeight(height, unit);
+
+        if (composition != null) {
+            if (height < 0) {
+                composition.setHeight(-1, Unit.PIXELS);
+            } else {
+                composition.setHeight(100, Unit.PERCENTAGE);
+            }
+        }
+    }
+
+    @Override
     public void setReadOnly(boolean readOnly) {
         dateField.setEditable(!readOnly);
     }
@@ -81,25 +101,5 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     @Override
     public boolean isReadOnly() {
         return !dateField.isEditable();
-    }
-
-    @Override
-    public void valueChange(Property.ValueChangeEvent event) {
-        super.valueChange(event);
-        // support dateField in editable table
-        Property property = event.getProperty();
-        if (property != null && !ObjectUtils.equals(property.getValue(), getValue()))
-            dateField.setValue(property.getValue());
-    }
-
-    @Override
-    public void setPropertyDataSource(Property newDataSource) {
-        Object newValue = newDataSource != null ? newDataSource.getValue() : null;
-        Object oldValue = getValue();
-
-        super.setPropertyDataSource(newDataSource);
-        // support dateField in editable table
-        if (newDataSource != null && !ObjectUtils.equals(newValue, oldValue))
-            dateField.setValue(newValue);
     }
 }
