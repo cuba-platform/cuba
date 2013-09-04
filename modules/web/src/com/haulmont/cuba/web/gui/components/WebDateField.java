@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -22,7 +25,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.Property;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -370,7 +373,8 @@ public class WebDateField
             throw new RequiredValueMissingException(component.getRequiredError(), this);
         }
 
-        if (timeField.isVisible()) {
+        com.vaadin.ui.Component timeComponent = timeField.getComponent();
+        if ((timeComponent.getParent() != null) && timeField.isVisible()) {
             if (isRequired() && timeField.getValue() == null) {
                 throw new RequiredValueMissingException(component.getRequiredError(), timeField);
             }
