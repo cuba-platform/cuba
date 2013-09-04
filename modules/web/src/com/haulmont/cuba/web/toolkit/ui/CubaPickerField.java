@@ -6,11 +6,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.gui.components.PickerField;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.ui.*;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +30,9 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     protected Converter captionFormatter;
 
     protected List<Button> buttons = new ArrayList<>();
-    private CubaHorizontalActionsLayout container;
+    protected CubaHorizontalActionsLayout container;
+
+    protected boolean suppressTextChangeListener = false;
 
     public CubaPickerField() {
         initTextField();
@@ -69,20 +73,31 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                TextField textField = (TextField) field;
-                Property property = event.getProperty();
-
-                boolean textFieldReadonly = textField.isReadOnly();
-                textField.setReadOnly(false);
-                if (captionFormatter != null) {
-                    Object captionValue = captionFormatter.convertToPresentation(getValue(), String.class, getLocale());
-                    textField.setValue((String) captionValue);
-                } else {
-                    textField.setValue(String.valueOf(property.getValue()));
-                }
-                textField.setReadOnly(textFieldReadonly);
+                updateTextRepresentaion();
             }
         });
+    }
+
+    protected void updateTextRepresentaion() {
+        TextField textField = (TextField) field;
+
+        boolean textFieldReadonly = textField.isReadOnly();
+
+        suppressTextChangeListener = true;
+
+        textField.setReadOnly(false);
+        textField.setValue(getStringRepresentaion());
+        textField.setReadOnly(textFieldReadonly);
+
+        suppressTextChangeListener = false;
+    }
+
+    protected String getStringRepresentaion() {
+        if (captionFormatter != null) {
+            return (String) captionFormatter.convertToPresentation(getValue(), String.class, getLocale());
+        }
+
+        return String.valueOf(getValue());
     }
 
     public List<Button> getButtons() {
@@ -105,13 +120,22 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         return field;
     }
 
-    public void addFieldListener(final com.haulmont.cuba.gui.components.PickerField.FieldListener listener) {
+    public void addFieldListener(final PickerField.FieldListener listener) {
         ((TextField) field).addTextChangeListener(new FieldEvents.TextChangeListener() {
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                if (getValue() != null && event.getText().equals(getValue().toString()))
-                    return;
-                listener.actionPerformed(event.getText(), getValue());
+                if (!suppressTextChangeListener && !StringUtils.equals(getStringRepresentaion(), event.getText())) {
+                    suppressTextChangeListener = true;
+
+                    listener.actionPerformed(event.getText(), getValue());
+
+                    suppressTextChangeListener = false;
+
+                    // update text representaion manually
+                    if (field instanceof TextField) {
+                        updateTextRepresentaion();
+                    }
+                }
             }
         });
     }
