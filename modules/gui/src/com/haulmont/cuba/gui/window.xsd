@@ -301,6 +301,7 @@
     <xs:attributeGroup name="isNestedDatasource">
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="property" type="xs:string" use="required"/>
+        <xs:attribute name="datasourceClass" type="xs:string" use="optional"/>
         <xs:attribute name="allowCommit" type="xs:boolean" use="optional"/>
     </xs:attributeGroup>
 
