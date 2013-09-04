@@ -275,9 +275,11 @@ public class DesktopPickerField
 
     private void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue)) {
+            Object oldValue = prevValue;
+
             prevValue = newValue;
 
-            fireValueChanged(prevValue, newValue);
+            fireValueChanged(oldValue, newValue);
         }
     }
 
