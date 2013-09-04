@@ -11,15 +11,12 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
-import com.haulmont.cuba.portal.restapi.template.MetaClassRepresentation;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +28,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -60,6 +56,9 @@ public class DataServiceController {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected DomainDescriptionService domainDescriptionService;
 
     @RequestMapping(value = "/api/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,
@@ -274,49 +273,10 @@ public class DataServiceController {
             response.setContentType("text/html");
             response.setCharacterEncoding("UTF-8");
             response.setLocale(userSessionSource.getLocale());
-            PrintWriter writer = response.getWriter();
 
-            AbstractViewRepository viewRepository = (AbstractViewRepository) metadata.getViewRepository();
-            List<View> views = viewRepository.getAll();
+            String domainDescription = domainDescriptionService.getDomainDescription();
+            response.getWriter().write(domainDescription);
 
-            List<MetaClassRepresentation> classes = new ArrayList<>();
-
-            Set<MetaClass> metas = new HashSet<>(metadataTools.getAllPersistentMetaClasses());
-            metas.addAll(metadataTools.getAllEmbeddableMetaClasses());
-            for (MetaClass meta : metas) {
-                if (metadata.getExtendedEntities().getExtendedClass(meta) != null)
-                    continue;
-                if (!readPermitted(meta))
-                    continue;
-
-                List<View> metaClassViews = new ArrayList<>();
-                for (View view : views) {
-                    if (view.getEntityClass().equals(meta.getJavaClass())) {
-                        metaClassViews.add(view);
-                    }
-                }
-
-                MetaClassRepresentation rep = new MetaClassRepresentation(meta, metaClassViews);
-                classes.add(rep);
-            }
-            Collections.sort(classes, new Comparator<MetaClassRepresentation>() {
-                public int compare(MetaClassRepresentation o1, MetaClassRepresentation o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
-
-            Map<String, Object> values = new HashMap<>();
-            values.put("knownEntities", classes);
-
-            String[] availableTypes = getAvailableBasicTypes();
-            values.put("availableTypes", availableTypes);
-            Configuration cfg = new Configuration();
-            cfg.setDefaultEncoding("UTF-8");
-            cfg.setOutputEncoding("UTF-8");
-            cfg.setClassForTemplateLoading(DataServiceController.class, "template");
-            cfg.setObjectWrapper(new DefaultObjectWrapper());
-            Template template = cfg.getTemplate("domain.ftl");
-            template.process(values, writer);
         } catch (Throwable e) {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -496,17 +456,5 @@ public class DataServiceController {
         else if ("delete".equals(op))
             return EntityOp.DELETE;
         return null;
-    }
-
-    public String[] getAvailableBasicTypes() {
-        Set<String> allAvailableTypes = Datatypes.getNames();
-        TreeSet<String> availableTypes = new TreeSet<>();
-
-        //byteArray is not supported as a GET parameter
-        for (String type : allAvailableTypes)
-            if (!"byteArray".equals(type))
-                availableTypes.add(type);
-
-        return availableTypes.toArray(new String[availableTypes.size()]);
     }
 }

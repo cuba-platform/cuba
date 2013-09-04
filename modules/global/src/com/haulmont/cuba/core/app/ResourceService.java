@@ -11,9 +11,8 @@ import javax.annotation.Nullable;
 /**
  * This service is intended for fetching resources from the core layer.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ResourceService {
 

@@ -6,19 +6,24 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Service(ResourceService.NAME)
 public class ResourceServiceBean implements ResourceService {
 
+    @Inject
+    protected Resources resources;
+
     @Override
     public String getResourceAsString(String name) {
-        return ScriptingProvider.getResourceAsString(name);
+        return resources.getResourceAsString(name);
     }
 }
