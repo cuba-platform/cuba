@@ -25,6 +25,7 @@ import com.vaadin.shared.ui.ComponentStateUtil;
  * @version $Id$
  */
 public class CubaCaptionWidget extends VCaption {
+
     public static final String CUBA_CLASSNAME = "cuba-caption";
     public static final String TOOLTIP_CLASSNAME = "cuba-tooltip-button";
 
@@ -44,7 +45,7 @@ public class CubaCaptionWidget extends VCaption {
 
     @Override
     public boolean updateCaption() {
-        /* copied from super class with small changes */
+        /* CAUTION copied from super class with small changes */
         boolean wasPlacedAfterComponent = placedAfterComponent;
 
         // Caption is placed after component unless there is some part which
@@ -156,14 +157,11 @@ public class CubaCaptionWidget extends VCaption {
                 // Hide the required indicator from assistive device
                 Roles.getTextboxRole().setAriaHiddenState(
                         requiredFieldIndicator, true);
-
-                enableFieldRequired();
             }
         } else if (requiredFieldIndicator != null) {
             // Remove existing
             requiredFieldIndicator.removeFromParent();
             requiredFieldIndicator = null;
-            disableFieldRequired();
         }
 
         AriaHelper.handleInputInvalid(owner.getWidget(), showError);
@@ -181,8 +179,6 @@ public class CubaCaptionWidget extends VCaption {
                 // Hide error indicator from assistive devices
                 Roles.getTextboxRole().setAriaHiddenState(
                         errorIndicatorElement, true);
-
-                enableFieldRequired();
             }
         } else if (errorIndicatorElement != null) {
             // Remove existing
@@ -192,33 +188,26 @@ public class CubaCaptionWidget extends VCaption {
 
         addStyleName(CLASSNAME);
 
-        if (captionHolder != null)
+        if (captionHolder != null) {
             captionHolder.captionUpdated(this);
+        }
         return (wasPlacedAfterComponent != placedAfterComponent);
     }
 
-    @Override
     protected void enableFieldDescription() {
         if (toolTipIndicator == null) {
             toolTipIndicator = DOM.createDiv();
             toolTipIndicator.setClassName(TOOLTIP_CLASSNAME);
 
             DOM.insertChild(getElement(), toolTipIndicator, getDescriptionInsertPosition());
-            // vaadin7 tooltips
         }
     }
 
-    @Override
     protected void disableFieldDescription() {
         if (toolTipIndicator != null) {
             toolTipIndicator.removeFromParent();
             toolTipIndicator = null;
         }
-    }
-
-    @Override
-    protected void enableFieldRequired() {
-        // vaadin7 tooltips
     }
 
     @Override

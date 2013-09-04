@@ -22,6 +22,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutComponentSl
         super(baseClassName, child, layout);
     }
 
+    @Override
     protected boolean isCaptionInline() {
         // todo artamonov implement vertical/horizontal option for captions
         return true;

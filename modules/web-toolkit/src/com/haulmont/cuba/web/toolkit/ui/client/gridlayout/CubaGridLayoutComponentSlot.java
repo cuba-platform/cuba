@@ -6,12 +6,14 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.gridlayout;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.Util;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.ui.ManagedLayout;
 import com.vaadin.client.ui.VCheckBox;
@@ -26,13 +28,12 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
 
     protected static final String INDICATORS_CLASSNAME = "caption-indicators";
 
-    protected static final int REQUIRED_INDICATOR_WIDTH = 10;
-    protected static final int TOOLTIP_INDICATOR_WIDTH = 16;
-
     protected Element requiredElement = null;
     protected Element tooltipElement = null;
 
     protected Element rightCaption = null;
+
+    protected boolean deferredLayout = false;
 
     public CubaGridLayoutComponentSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
         super(baseClassName, child, layout);
@@ -40,7 +41,17 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
 
     @Override
     public void captionUpdated(CubaCaptionWidget captionWidget) {
-        moveIndicatorsRight(captionWidget);
+        if (moveIndicatorsRight(captionWidget) && !deferredLayout) {
+            deferredLayout = true;
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    getLayoutManager().forceLayout();
+
+                    deferredLayout = false;
+                }
+            });
+        }
     }
 
     @Override
@@ -64,15 +75,15 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         double availableWidth = allocatedSpace;
 
         VCaption caption = getCaption();
-        Style captionStyle = caption != null ? caption.getElement().getStyle()
-                : null;
+        Style captionStyle = caption != null ? caption.getElement().getStyle() : null;
         int captionWidth = getCaptionWidth();
 
         boolean captionAboveCompnent;
         if (caption == null) {
             captionAboveCompnent = false;
-            if (isCaptionInline())
+            if (isCaptionInline()) {
                 style.clearPaddingLeft();
+            }
             style.clearPaddingRight();
         } else {
             captionAboveCompnent = !caption.shouldBePlacedAfterComponent();
@@ -100,7 +111,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
 
         // Take into account right indicators
         if (rightCaption != null) {
-            double indicatorsWidth = rightCaption.getOffsetWidth();
+            double indicatorsWidth = Util.getRequiredWidth(rightCaption);
             availableWidth -= indicatorsWidth;
             if (availableWidth < 0) {
                 availableWidth = 0;
@@ -133,10 +144,11 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         if (!alignment.isLeft()) {
             double usedWidth;
             if (isRelativeWidth()) {
-                if (isCaptionInline())
+                if (isCaptionInline()) {
                     usedWidth = allocatedContentWidth + captionWidth;
-                else
+                } else {
                     usedWidth = allocatedContentWidth;
+                }
             } else {
                 usedWidth = getWidgetWidth();
             }
@@ -208,10 +220,11 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         if (!alignment.isTop()) {
             double usedHeight;
             if (isRelativeHeight()) {
-                if (isCaptionInline())
+                if (isCaptionInline()) {
                     usedHeight = allocatedContentHeight;
-                else
+                } else {
                     usedHeight = captionHeight + allocatedContentHeight;
+                }
             } else {
                 usedHeight = getUsedHeight();
             }
@@ -232,10 +245,14 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
             return widgetWidth;
         } else if (getCaption().shouldBePlacedAfterComponent() || isCaptionInline()) {
             widgetWidth += getCaptionWidth();
-            if (rightCaption != null)
-                widgetWidth += rightCaption.getOffsetWidth();
+            if (rightCaption != null) {
+                widgetWidth += Util.getRequiredWidth(rightCaption);
+            }
             return widgetWidth;
         } else {
+            if (rightCaption != null) {
+                widgetWidth += Util.getRequiredWidth(rightCaption);
+            }
             return Math.max(widgetWidth, getCaptionWidth());
         }
     }
@@ -252,7 +269,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         }
     }
 
-    protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
+    protected boolean moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
         // todo move error indicator right
 
         int fakeCaptionWidth = 0;
@@ -278,6 +295,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
             captionWidget.getRequiredIndicatorElement().removeFromParent();
 
         } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
+            requiredElement.removeFromParent();
             requiredElement = null;
             widthChanged = true;
         }
@@ -296,22 +314,26 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
             }
             widthChanged = true;
         } else if (captionWidget.getTooltipElement() == null && tooltipElement != null) {
+            tooltipElement.removeFromParent();
             tooltipElement = null;
             widthChanged = true;
         }
 
         if (requiredElement != null) {
-            fakeCaptionWidth += REQUIRED_INDICATOR_WIDTH;
+            fakeCaptionWidth += Util.getRequiredWidth(requiredElement);
         }
         if (tooltipElement != null) {
-            fakeCaptionWidth += TOOLTIP_INDICATOR_WIDTH;
+            fakeCaptionWidth += Util.getRequiredWidth(tooltipElement);
         }
 
-        if (rightCaption != null && widthChanged) {
-            DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
+        if (widthChanged) {
+            if (rightCaption != null) {
+                DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
+            }
+            return true;
         }
 
-//        getLayoutManager().setNeedsMeasure(getChild());
+        return false;
     }
 
     protected Element createRightCaption() {

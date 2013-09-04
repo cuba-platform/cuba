@@ -6,13 +6,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.orderedlayout.AbstractOrderedLayoutConnector;
-
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -21,7 +19,6 @@ import com.vaadin.shared.ui.Connect;
  */
 @Connect(value = CubaOrderedActionsLayout.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConnector implements Paintable {
-
 
     @Override
     public CubaOrderedActionsLayoutWidget getWidget() {

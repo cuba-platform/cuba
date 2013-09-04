@@ -12,16 +12,11 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
-import com.haulmont.cuba.web.toolkit.ui.client.tooltip.CubaTooltip;
-import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Util;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.ui.VCheckBox;
-import com.vaadin.client.ui.orderedlayout.CaptionPosition;
 import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
-
-import java.util.List;
 
 /**
  * @author devyatkin
@@ -31,14 +26,11 @@ public class CubaSlot extends Slot implements CaptionHolder {
 
     protected static final String INDICATORS_CLASSNAME = "caption-indicators";
 
-    private static final int REQUIRED_INDICATOR_WIDTH = 10;
-    private static final int TOOLTIP_INDICATOR_WIDTH = 16;
-
     protected Element requiredElement = null;
     protected Element tooltipElement = null;
     protected Element rightCaption = null;
 
-    private VCaption caption;
+    protected VCaption caption;
 
     public CubaSlot(VAbstractOrderedLayout layout, Widget widget) {
         super(layout, widget);
@@ -64,12 +56,12 @@ public class CubaSlot extends Slot implements CaptionHolder {
        return caption;
     }
 
+    @Override
     public void captionUpdated(CubaCaptionWidget captionWidget){
         moveIndicatorsRight(captionWidget);
     }
 
     protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
-
         int fakeCaptionWidth = 0;
         boolean widthChanged = false;
         if (captionWidget.getRequiredIndicatorElement() != null && requiredElement == null) {
@@ -91,6 +83,7 @@ public class CubaSlot extends Slot implements CaptionHolder {
             widthChanged = true;
 
         } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
+            requiredElement.removeFromParent();
             requiredElement = null;
             widthChanged = true;
         }
@@ -108,15 +101,16 @@ public class CubaSlot extends Slot implements CaptionHolder {
             }
             widthChanged = true;
         } else if (captionWidget.getTooltipElement() == null && tooltipElement != null) {
+            tooltipElement.removeFromParent();
             tooltipElement = null;
             widthChanged = true;
         }
 
         if (requiredElement != null) {
-            fakeCaptionWidth += REQUIRED_INDICATOR_WIDTH;
+            fakeCaptionWidth += Util.getRequiredWidth(requiredElement);
         }
         if (tooltipElement != null) {
-            fakeCaptionWidth += TOOLTIP_INDICATOR_WIDTH;
+            fakeCaptionWidth += Util.getRequiredWidth(tooltipElement);
         }
 
         if (rightCaption != null && widthChanged) {

@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutWidget;
 import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.layout.ComponentConnectorLayoutSlot;
 
 /**
@@ -23,9 +22,9 @@ public class CubaFieldGroupLayoutWidget extends CubaGridLayoutWidget {
         setStyleName(CLASSNAME);
     }
 
-    public class CubaGridLayoutCell extends Cell {
+    public class CubaFieldGroupLayoutCell extends CubaGridLayoutCell {
 
-        public CubaGridLayoutCell(int row, int col) {
+        public CubaFieldGroupLayoutCell(int row, int col) {
             super(row, col);
         }
 
@@ -38,7 +37,7 @@ public class CubaFieldGroupLayoutWidget extends CubaGridLayoutWidget {
     @Override
     public Cell createNewCell(int row, int col) {
         // CAUTION copied from VGridLayout.createNewCell(int row, int col)
-        Cell cell = new CubaGridLayoutCell(row, col);
+        Cell cell = new CubaFieldGroupLayoutCell(row, col);
         cells[col][row] = cell;
         return cell;
     }
