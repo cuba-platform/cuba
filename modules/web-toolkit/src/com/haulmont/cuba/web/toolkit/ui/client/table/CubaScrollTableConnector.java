@@ -50,7 +50,7 @@ public class CubaScrollTableConnector extends TableConnector {
             getWidget().textSelectionEnabled = getState().textSelectionEnabled;
         }
         if (stateChangeEvent.hasPropertyChanged("allowPopupMenu")) {
-            getWidget().isAllowPopupMenu = getState().allowPopupMenu;
+            getWidget().allowPopupMenu = getState().allowPopupMenu;
         }
         if (stateChangeEvent.hasPropertyChanged("presentations")) {
             if (getState().presentations != null) {

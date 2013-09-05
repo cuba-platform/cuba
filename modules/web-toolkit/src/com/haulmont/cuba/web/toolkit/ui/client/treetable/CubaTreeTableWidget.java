@@ -15,6 +15,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -261,9 +262,46 @@ public class CubaTreeTableWidget extends VTreeTable {
             }
 
             @Override
-            public void showContextMenu(int left, int top) {
-                if (allowPopupMenu) {
+            public void showContextMenu(Event event) {
+                if (allowPopupMenu && enabled && actionKeys != null) {
+                    // Show context menu if there are registered action handlers
+                    int left = Util.getTouchOrMouseClientX(event)
+                            + Window.getScrollLeft();
+                    int top = Util.getTouchOrMouseClientY(event)
+                            + Window.getScrollTop();
+
+                    selectRowForContextMenuActions(event);
+
                     super.showContextMenu(left, top);
+                }
+            }
+
+            protected void selectRowForContextMenuActions(Event event) {
+                boolean clickEventSent = handleClickEvent(event, getElement(), false);
+                if (isSelectable()) {
+                    boolean currentlyJustThisRowSelected = selectedRowKeys
+                            .size() == 1
+                            && selectedRowKeys.contains(getKey());
+
+                    if (!currentlyJustThisRowSelected) {
+                        if (isSingleSelectMode()
+                                || isMultiSelectModeDefault()) {
+                            deselectAll();
+                        }
+                        toggleSelection();
+                    } else if ((isSingleSelectMode() || isMultiSelectModeSimple())
+                            && nullSelectionAllowed) {
+                        toggleSelection();
+                    }
+
+                    selectionRangeStart = this;
+                    setRowFocus(this);
+
+                    // Queue value change
+                    sendSelectedRows(true);
+                }
+                if (immediate || clickEventSent) {
+                    client.sendPendingVariableChanges();
                 }
             }
 

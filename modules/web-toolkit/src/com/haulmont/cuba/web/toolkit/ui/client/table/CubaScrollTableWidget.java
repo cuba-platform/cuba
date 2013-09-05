@@ -18,6 +18,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -44,7 +45,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean textSelectionEnabled = false;
-    protected boolean isAllowPopupMenu = true;
+    protected boolean allowPopupMenu = true;
 
     protected int sortClickCounter = 0;
 
@@ -126,7 +127,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     @Override
     public void handleBodyContextMenu(ContextMenuEvent event) {
-        if (isAllowPopupMenu) {
+        if (allowPopupMenu) {
             super.handleBodyContextMenu(event);
         }
     }
@@ -383,9 +384,46 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
 
             @Override
-            public void showContextMenu(int left, int top) {
-                if (isAllowPopupMenu) {
+            public void showContextMenu(Event event) {
+                if (allowPopupMenu && enabled && actionKeys != null) {
+                    // Show context menu if there are registered action handlers
+                    int left = Util.getTouchOrMouseClientX(event)
+                            + Window.getScrollLeft();
+                    int top = Util.getTouchOrMouseClientY(event)
+                            + Window.getScrollTop();
+
+                    selectRowForContextMenuActions(event);
+
                     super.showContextMenu(left, top);
+                }
+            }
+
+            protected void selectRowForContextMenuActions(Event event) {
+                boolean clickEventSent = handleClickEvent(event, getElement(), false);
+                if (isSelectable()) {
+                    boolean currentlyJustThisRowSelected = selectedRowKeys
+                            .size() == 1
+                            && selectedRowKeys.contains(getKey());
+
+                    if (!currentlyJustThisRowSelected) {
+                        if (isSingleSelectMode()
+                                || isMultiSelectModeDefault()) {
+                            deselectAll();
+                        }
+                        toggleSelection();
+                    } else if ((isSingleSelectMode() || isMultiSelectModeSimple())
+                            && nullSelectionAllowed) {
+                        toggleSelection();
+                    }
+
+                    selectionRangeStart = this;
+                    setRowFocus(this);
+
+                    // Queue value change
+                    sendSelectedRows(true);
+                }
+                if (immediate || clickEventSent) {
+                    client.sendPendingVariableChanges();
                 }
             }
         }
