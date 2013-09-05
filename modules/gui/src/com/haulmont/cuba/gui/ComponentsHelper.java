@@ -112,7 +112,7 @@ public abstract class ComponentsHelper {
     public static Window getWindow(Component.BelongToFrame component) {
         IFrame frame = component.getFrame();
         while (frame != null) {
-            if (frame instanceof Window) {
+            if (frame instanceof Window && frame.getFrame() == frame) {
                 Window window = (Window) frame;
                 return window instanceof WrappedWindow ? ((WrappedWindow) window).getWrapper() : window;
             }
@@ -131,8 +131,9 @@ public abstract class ComponentsHelper {
     public static Window getWindowImplementation(Component.BelongToFrame component) {
         IFrame frame = component.getFrame();
         while (frame != null) {
-            if (frame instanceof Window) {
-                return (Window) frame;
+            if (frame instanceof Window && frame.getFrame() == frame) {
+                Window window = (Window) frame;
+                return window instanceof Window.Wrapper ? ((Window.Wrapper) window).getWrappedWindow() : window;
             }
             frame = frame.getFrame();
         }

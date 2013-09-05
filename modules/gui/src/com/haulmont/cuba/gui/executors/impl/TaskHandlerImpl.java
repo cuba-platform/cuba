@@ -31,8 +31,7 @@ import static com.google.common.base.Preconditions.checkState;
  * @author artamonov
  * @version $Id$
  */
-public class
-        TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
+public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private Log log = LogFactory.getLog(BackgroundWorker.class);
 
@@ -52,15 +51,15 @@ public class
 
         BackgroundTask<T, V> task = taskExecutor.getTask();
         if (task.getOwnerFrame() != null) {
-            closeListener = new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    ownerWindowClosed();
-                }
-            };
             IFrame ownerFrame = task.getOwnerFrame();
             if (ownerFrame.getFrame() != null) {
-                Window ownerWindow = ComponentsHelper.getWindow(ownerFrame);
+                closeListener = new Window.CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        ownerWindowClosed();
+                    }
+                };
+                Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
                 ownerWindow.addListener(closeListener);
             }
         }
@@ -128,10 +127,8 @@ public class
         // force remove close listener
         IFrame ownerFrame = getTask().getOwnerFrame();
         if (ownerFrame != null) {
-            if (ownerFrame.getFrame() != null) {
-                Window owneWindow = ownerFrame.getFrame();
-                owneWindow.removeListener(closeListener);
-            }
+            Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
+            ownerWindow.removeListener(closeListener);
         }
         closeListener = null;
     }

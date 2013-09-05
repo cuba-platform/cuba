@@ -378,8 +378,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     @Override
     public <A extends IFrame> A getFrame() {
-        //noinspection unchecked
-        return (A) this.frame.getFrame();
+        return this.frame.getFrame();
     }
 
     @Override
