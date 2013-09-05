@@ -122,7 +122,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
         String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
 
-        DateField.Resolution dateResolution = DateField.Resolution.DAY;
+        DateField.Resolution dateResolution = DateField.Resolution.MIN;
 
         if (!StringUtils.isEmpty(resolution)) {
             dateResolution = DateField.Resolution.valueOf(resolution);

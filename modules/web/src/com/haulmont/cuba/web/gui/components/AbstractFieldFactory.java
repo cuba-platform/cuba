@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -22,8 +21,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @author artamonov
@@ -133,7 +130,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
         String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
 
-        DateField.Resolution dateResolution = DateField.Resolution.DAY;
+        DateField.Resolution dateResolution = DateField.Resolution.MIN;
 
         if (!StringUtils.isEmpty(resolution)) {
             dateResolution = DateField.Resolution.valueOf(resolution);
