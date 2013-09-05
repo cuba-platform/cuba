@@ -78,10 +78,11 @@ public class AppUI extends UI implements ErrorHandler {
             applicationInitRequired = false;
         }
 
+        setLocale(App.getInstance().getLocale());
+
         // place login/main window
         App.getInstance().initView();
 
-        setLocale(App.getInstance().getLocale());
 
         processExternalLink(request);
     }

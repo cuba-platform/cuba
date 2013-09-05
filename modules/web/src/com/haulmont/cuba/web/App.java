@@ -122,7 +122,7 @@ public abstract class App implements Serializable {
         return AppUI.getCurrent();
     }
 
-    protected abstract boolean loginOnStart(HttpServletRequest request);
+    protected abstract boolean loginOnStart();
 
     protected abstract Connection createConnection();
 

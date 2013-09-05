@@ -19,7 +19,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Map;
 
@@ -75,9 +74,10 @@ public class DefaultApp extends App implements ConnectionListener {
 
     @Override
     protected void initView() {
-        if (!connection.isConnected())
-            showView(createLoginWindow());
-        else
+        if (!connection.isConnected()) {
+            if (!loginOnStart())
+                showView(createLoginWindow());
+        } else
             showView(createAppWindow());
     }
 
@@ -160,15 +160,15 @@ public class DefaultApp extends App implements ConnectionListener {
     }
 
     @Override
-    protected boolean loginOnStart(HttpServletRequest request) {
+    protected boolean loginOnStart() {
         if (tryLoginOnStart &&
-                request.getUserPrincipal() != null
+                principal != null
                 && ActiveDirectoryHelper.useActiveDirectory()) {
 
-            String userName = request.getUserPrincipal().getName();
+            String userName = principal.getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
             try {
-                ((ActiveDirectoryConnection) connection).loginActiveDirectory(userName, request.getLocale());
+                ((ActiveDirectoryConnection) connection).loginActiveDirectory(userName, locale);
 
                 return true;
             } catch (LoginException e) {

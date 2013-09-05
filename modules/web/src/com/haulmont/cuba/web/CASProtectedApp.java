@@ -26,11 +26,11 @@ public class CASProtectedApp extends DefaultApp implements ConnectionListener {
     }
 
     @Override
-    protected boolean loginOnStart(HttpServletRequest request) {
+    protected boolean loginOnStart() {
         try {
-            Principal principal = request.getUserPrincipal();
+            Principal principal = getPrincipal();
             if (principal != null && principal.getName() != null && !connection.isConnected()) {
-                connection.login(principal.getName(), null, request.getLocale());
+                connection.login(principal.getName(), null, locale);
 
                 return true;
             }
