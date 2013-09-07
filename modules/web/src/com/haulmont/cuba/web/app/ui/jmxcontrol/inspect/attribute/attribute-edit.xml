@@ -11,7 +11,7 @@
 
     <layout expand="windowActions">
         <vbox spacing="true" id="vbox">
-            <scrollBox id="scrollbox" spacing="true" stylename="edit-area">
+            <scrollBox id="scrollbox" spacing="true">
                 <grid spacing="true" id="valueContainer">
                     <columns>
                         <column flex="1"/>

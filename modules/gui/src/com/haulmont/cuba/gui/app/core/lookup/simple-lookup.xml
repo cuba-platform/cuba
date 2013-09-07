@@ -5,15 +5,13 @@
   -->
 
 <window
-    xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+    xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
     class="com.haulmont.cuba.gui.app.core.lookup.SimpleLookup">
 
     <dsContext/>
 
     <layout>
-        <vbox id="mainPanel" expand="lookupPanel" spacing="true" margin="true" stylename="edit-area">
-            <label id="lookupCaption"/>
-            <vbox id="lookupPanel"/>
-        </vbox>
+        <label id="lookupCaption"/>
+        <vbox id="lookupPanel"/>
     </layout>
 </window>

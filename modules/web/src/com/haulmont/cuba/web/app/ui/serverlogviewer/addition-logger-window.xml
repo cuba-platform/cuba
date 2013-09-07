@@ -12,7 +12,7 @@
         focusComponent="loggerNameField">
 
     <layout spacing="true">
-        <hbox spacing="true" stylename="edit-area" width="100%" expand="loggerNameField">
+        <hbox spacing="true" width="100%" expand="loggerNameField">
             <label value="msg://logger.name"/>
             <textField id="loggerNameField"/>
             <label value="msg://logger.level"/>

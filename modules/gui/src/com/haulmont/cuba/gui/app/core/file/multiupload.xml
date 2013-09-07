@@ -1,36 +1,34 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.MultiUploader"
         datasource="filesDs"
         messagesPack="com.haulmont.cuba.gui.app.core.file"
         caption="msg://editorCaption"
         focusComponent="multiUpload">
 
-    <assign name="width" value="560"/>
-    <assign name="height" value="300"/>
-
     <dsContext>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor"
                               view="browse" refreshMode="NEVER"/>
     </dsContext>
 
-    <layout expand="windowActions">
-        <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
-            <hbox height="30" spacing="true">
-                <multiUpload id="multiUpload" width="90px"/>
-                <button action="uploadsTable.remove" icon="icons/remove.png"/>
-            </hbox>
+    <assign name="width" value="560"/>
+    <assign name="height" value="300"/>
 
-            <table id="uploadsTable" editable="true" height="${height}" width="${width}">
-                <columns>
-                    <column id="name" caption="msg://name" editable="true" width="170"
-                            required="true" requiredMessage="msg://notNullFileNames"/>
-                    <column id="extension" caption="msg://extension" editable="false" width="70"/>
-                    <column id="size" caption="msg://size" editable="false" width="100"/>
-                </columns>
-                <rows datasource="filesDs"/>
-            </table>
-        </vbox>
+    <layout expand="windowActions">
+        <hbox height="30" spacing="true">
+            <multiUpload id="multiUpload" width="90px"/>
+            <button action="uploadsTable.remove" icon="icons/remove.png"/>
+        </hbox>
+
+        <table id="uploadsTable" editable="true" height="${height}" width="${width}">
+            <columns>
+                <column id="name" caption="msg://name" editable="true" width="170"
+                        required="true" requiredMessage="msg://notNullFileNames"/>
+                <column id="extension" caption="msg://extension" editable="false" width="70"/>
+                <column id="size" caption="msg://size" editable="false" width="100"/>
+            </columns>
+            <rows datasource="filesDs"/>
+        </table>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

@@ -5,15 +5,13 @@
   -->
 
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         datasource="roleDs"
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.role.edit.RoleEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.role.edit"
         lookupComponent="name"
         focusComponent="name">
-
-    <assign name="width" value="200"/>
 
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/gui/app/security/role/role.views.xml"/>
@@ -23,8 +21,10 @@
         <datasource id="roleDs" class="com.haulmont.cuba.security.entity.Role" view="_local"/>
     </dsContext>
 
+    <assign name="width" value="200"/>
+
     <layout expand="permissionsTabsheet" spacing="true">
-        <hbox spacing="true" margin="true" stylename="edit-area">
+        <hbox spacing="true" margin="true">
             <grid spacing="true">
                 <columns count="3"/>
                 <rows>

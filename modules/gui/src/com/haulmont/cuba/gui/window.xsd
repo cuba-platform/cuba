@@ -1120,6 +1120,8 @@
                             <xs:complexType>
                                 <xs:group ref="layoutOrComponent"/>
 
+                                <xs:attributeGroup ref="hasId"/>
+
                                 <xs:attribute name="flex" type="xs:float" use="optional"/>
 
                                 <xs:attributeGroup ref="hasVisibility"/>

@@ -1,5 +1,5 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.FileEditor"
         datasource="fileDs"
         caption="msg://editorCaption"
@@ -14,37 +14,35 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <vbox margin="true" spacing="true" stylename="edit-area">
-            <upload id="uploadField"/>
-            <grid spacing="true" expandable="false">
-                <columns>
-                    <column flex="1"/>
-                    <column flex="1"/>
-                </columns>
-                <rows>
-                    <row>
-                        <label value="msg://name"/>
-                        <textField id="nameField" datasource="fileDs" property="name"
-                                   width="200px"/>
-                    </row>
-                    <row>
-                        <label value="msg://extension"/>
-                        <label id="extLabel" datasource="fileDs" property="extension"/>
-                    </row>
-                    <row>
-                        <label value="msg://size"/>
-                        <label id="sizeLabel" datasource="fileDs" property="size"/>
-                    </row>
-                    <row>
-                        <label value="msg://createDate"/>
-                        <label id="createDateLabel" datasource="fileDs" property="createDate">
-                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
-                                       format="msg://dateTimeFormat"/>
-                        </label>
-                    </row>
-                </rows>
-            </grid>
-        </vbox>
+        <upload id="uploadField"/>
+        <grid spacing="true">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://name"/>
+                    <textField id="nameField" datasource="fileDs" property="name"
+                               width="200px"/>
+                </row>
+                <row>
+                    <label value="msg://extension"/>
+                    <label id="extLabel" datasource="fileDs" property="extension"/>
+                </row>
+                <row>
+                    <label value="msg://size"/>
+                    <label id="sizeLabel" datasource="fileDs" property="size"/>
+                </row>
+                <row>
+                    <label value="msg://createDate"/>
+                    <label id="createDateLabel" datasource="fileDs" property="createDate">
+                        <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                   format="msg://dateTimeFormat"/>
+                    </label>
+                </row>
+            </rows>
+        </grid>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

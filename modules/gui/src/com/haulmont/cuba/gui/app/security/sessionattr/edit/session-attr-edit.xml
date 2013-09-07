@@ -4,7 +4,7 @@
   ~ Use is subject to license terms.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.security.sessionattr.edit.SessionAttributeEditor"
         datasource="attribute"
         messagesPack="com.haulmont.cuba.gui.app.security.sessionattr"
@@ -17,15 +17,13 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <vbox margin="true" stylename="edit-area">
-            <fieldGroup id="fields" width="100%" datasource="attribute" collapsable="false">
-                <column width="250px">
-                    <field id="name" required="true" requiredMessage="msg://nameMsg"/>
-                    <field id="datatype" custom="true" requiredMessage="msg://datatypeMsg"/>
-                    <field id="stringValue"/>
-                </column>
-            </fieldGroup>
-        </vbox>
+        <fieldGroup id="fields" width="100%" datasource="attribute">
+            <column width="250px">
+                <field id="name" required="true" requiredMessage="msg://nameMsg"/>
+                <field id="datatype" custom="true" requiredMessage="msg://datatypeMsg"/>
+                <field id="stringValue"/>
+            </column>
+        </fieldGroup>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 

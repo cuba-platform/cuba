@@ -17,7 +17,7 @@
 
     <layout expand="windowActions">
         <vbox margin="true">
-            <grid id="grid" margin="true" spacing="true" stylename="edit-area">
+            <grid id="grid" margin="true" spacing="true">
                 <columns count="2"/>
                 <rows>
                     <row>
@@ -40,5 +40,4 @@
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
-
 </window>

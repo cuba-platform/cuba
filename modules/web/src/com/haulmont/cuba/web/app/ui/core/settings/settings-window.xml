@@ -7,7 +7,7 @@
     <dsContext/>
 
     <layout expand="buttons">
-        <groupBox stylename="edit-area">
+        <groupBox>
             <grid spacing="true">
                 <columns>
                     <column flex="1"/>

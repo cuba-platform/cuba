@@ -17,7 +17,7 @@
         </hbox>
 
         <scrollBox id="loggersGroupBox" height="320" scrollBars="vertical">
-            <grid id="loggersGrid" stylename="edit-area" width="100%" spacing="true">
+            <grid id="loggersGrid" width="100%" spacing="true">
                 <columns>
                     <column flex="1"/>
                     <column flex="0"/>

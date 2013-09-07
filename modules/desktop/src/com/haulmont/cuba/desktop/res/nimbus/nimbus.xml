@@ -3,7 +3,7 @@
   ~ Haulmont Technology proprietary and confidential.
   ~ Use is subject to license terms.
   -->
-<theme xmlns="http://schemas.haulmont.com/cuba/4.0/desktop-theme.xsd">
+<theme xmlns="http://schemas.haulmont.com/cuba/4.1/desktop-theme.xsd">
 
     <lookAndFeel>javax.swing.plaf.nimbus.NimbusLookAndFeel</lookAndFeel>
     <class>com.haulmont.cuba.desktop.theme.impl.NimbusTheme</class>
@@ -29,25 +29,6 @@
     </style>
 
     <style name="centered">
-    </style>
-
-    <style name="edit-area">
-        <components>
-            com.haulmont.cuba.desktop.gui.components.DesktopVBox
-            com.haulmont.cuba.desktop.gui.components.DesktopHBox
-            com.haulmont.cuba.desktop.gui.components.DesktopGridLayout
-        </components>
-        <border type="compound">
-            <border type="empty" margins="5 5 5 5"/>
-            <border type="line" color="128 128 128"/>
-        </border>
-    </style>
-
-    <style name="edit-area">
-        <components>
-            com.haulmont.cuba.desktop.gui.components.DesktopGroupBox
-            com.haulmont.cuba.desktop.gui.components.DesktopFieldGroup
-        </components>
     </style>
 
     <!-- empty styles for diff-view frame -->

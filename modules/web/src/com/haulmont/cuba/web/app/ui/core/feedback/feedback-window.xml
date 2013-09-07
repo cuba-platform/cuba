@@ -14,7 +14,7 @@
     <dsContext/>
 
     <layout expand="buttons">
-        <groupBox stylename="edit-area">
+        <groupBox>
             <label value="msg://theme"/>
             <lookupField id="reason" required="true" width="200px" requiredMessage="msg://themeMsg"/>
             <textField id="reasonFreeText" required="true" width="400px" requiredMessage="msg://themeMsg"/>

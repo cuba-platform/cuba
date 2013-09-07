@@ -4,7 +4,7 @@
   ~ Use is subject to license terms.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.security.usersubst.edit.UsersubstEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.usersubst"
         caption="msg://userSubstitution.caption"
@@ -39,7 +39,6 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <vbox stylename="edit-area" margin="true">
             <grid spacing="true">
                 <columns>
                     <column flex="1"/>
@@ -66,7 +65,6 @@
                     </row>
                 </rows>
             </grid>
-        </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

@@ -1,5 +1,5 @@
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.web.app.ui.export.excel.ExcelExportBrowser"
         messagesPack="com.haulmont.cuba.web.app.ui.export.excel"
         caption="msg://caption"
@@ -9,7 +9,7 @@
     </dsContext>
 
     <layout expand="table-panel">
-        <vbox id="table-panel" expand="exportOptions" spacing="true" stylename="edit-area" margin="true">
+        <vbox id="table-panel" expand="exportOptions" spacing="true" margin="true">
             <label id="label1" value="msg://availableColumns" stylename="large"/>
             <optionsGroup id="exportOptions" multiselect="true" captionProperty="caption"/>
             <hbox spacing="true">
