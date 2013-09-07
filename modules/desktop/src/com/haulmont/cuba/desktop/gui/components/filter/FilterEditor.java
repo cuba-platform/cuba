@@ -640,7 +640,7 @@ public class FilterEditor extends AbstractFilterEditor {
     protected class DeleteCell extends AbstractCell {
 
         protected JComponent getComponent(final Object value) {
-            final JButton delBtn = new JButton(App.getInstance().getResources().getIcon("icons/tab-remove.png"));
+            final JButton delBtn = new JButton(App.getInstance().getResources().getIcon("icons/item-remove.png"));
             delBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

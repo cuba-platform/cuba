@@ -121,8 +121,8 @@ public class CollapsiblePanel extends JPanel {
     }
 
     private void loadIcons() {
-        expandedIcon = App.getInstance().getResources().getIcon("icons/item-expanded.png");
-        collapsedIcon = App.getInstance().getResources().getIcon("icons/item-collapsed.png");
+        expandedIcon = App.getInstance().getResources().getIcon("components/groupbox/item-expanded.png");
+        collapsedIcon = App.getInstance().getResources().getIcon("components/groupbox/item-collapsed.png");
     }
 
     private void expandPanel() {

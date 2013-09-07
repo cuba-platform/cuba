@@ -326,7 +326,7 @@ public class ListEditComponent extends Picker {
             itemPanel.add(itemLab);
 
             JButton delItemBtn = new JButton();
-            delItemBtn.setIcon(App.getInstance().getResources().getIcon("icons/tab-remove.png"));
+            delItemBtn.setIcon(App.getInstance().getResources().getIcon("icons/item-remove.png"));
             DesktopComponentsHelper.adjustSize(delItemBtn);
             delItemBtn.addActionListener(new ActionListener() {
                 @Override
