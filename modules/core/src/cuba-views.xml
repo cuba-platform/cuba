@@ -186,4 +186,11 @@
             <property name="login"/>
         </property>
     </view>
+
+    <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="usersubst.edit">
+        <property name="user" view="_minimal"/>
+        <property name="substitutedUser" view="_minimal"/>
+        <property name="startDate"/>
+        <property name="endDate"/>
+    </view>
 </views>

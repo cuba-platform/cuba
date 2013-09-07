@@ -11,15 +11,6 @@
         datasource="subst"
         focusComponent="substUser">
 
-    <metadataContext>
-        <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="usersubst.edit">
-            <property name="user" view="_minimal"/>
-            <property name="substitutedUser" view="_minimal"/>
-            <property name="startDate"/>
-            <property name="endDate"/>
-        </view>
-    </metadataContext>
-
     <dsContext>
         <datasource id="subst"
                     class="com.haulmont.cuba.security.entity.UserSubstitution"
