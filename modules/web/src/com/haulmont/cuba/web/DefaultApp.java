@@ -172,7 +172,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
                 return true;
             } catch (LoginException e) {
-                // todo log
+                log.trace("Unable to login on start", e);
             } finally {
                 // Close attempt login on start
                 tryLoginOnStart = false;
