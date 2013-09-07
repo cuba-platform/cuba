@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.converters;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.server.VaadinSession;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +23,8 @@ public class StringToEnumConverter implements Converter<String, Enum> {
 
     protected Class<Enum> enumClass;
     protected Messages messages;
+    protected Formatter formatter;
+    protected boolean trimming = false;
 
     public StringToEnumConverter(Class<Enum> enumClass) {
         this.enumClass = enumClass;
@@ -31,13 +34,16 @@ public class StringToEnumConverter implements Converter<String, Enum> {
     @Override
     public Enum convertToModel(String value, Class<? extends Enum> targetType, Locale locale)
             throws ConversionException {
-
         if (value == null) {
             return null;
         }
 
         if (locale == null) {
             locale = VaadinSession.getCurrent().getLocale();
+        }
+
+        if (isTrimming()) {
+            value = StringUtils.trimToEmpty(value);
         }
 
         Object[] enumConstants = enumClass.getEnumConstants();
@@ -55,6 +61,10 @@ public class StringToEnumConverter implements Converter<String, Enum> {
     @Override
     public String convertToPresentation(Enum value, Class<? extends String> targetType, Locale locale)
             throws ConversionException {
+
+        if (getFormatter() != null) {
+            return getFormatter().format(value);
+        }
 
         if (value == null) {
             return null;
@@ -75,5 +85,21 @@ public class StringToEnumConverter implements Converter<String, Enum> {
     @Override
     public Class<String> getPresentationType() {
         return String.class;
+    }
+
+    public Formatter getFormatter() {
+        return formatter;
+    }
+
+    public void setFormatter(Formatter formatter) {
+        this.formatter = formatter;
+    }
+
+    public boolean isTrimming() {
+        return trimming;
+    }
+
+    public void setTrimming(boolean trimming) {
+        this.trimming = trimming;
     }
 }

@@ -7,27 +7,21 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
-import com.haulmont.cuba.web.toolkit.ui.converters.StringToStringConverter;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -131,71 +125,57 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         }
     }
 
+    protected Formatter getFormatter() {
+        return null;
+    }
+
+    protected boolean isTrimming() {
+        return false;
+    }
+
     @Override
     protected void initFieldConverter() {
         if (metaProperty != null) {
             switch (metaProperty.getType()) {
                 case ASSOCIATION:
-                    component.setConverter(new StringToEntityConverter());
+                    component.setConverter(new StringToEntityConverter() {
+                        @Override
+                        public Formatter getFormatter() {
+                            return WebAbstractTextField.this.getFormatter();
+                        }
+                    });
                     break;
 
                 case DATATYPE:
                     Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
-                    if (datatype != null) {
-                        component.setConverter(new StringToDatatypeConverter(datatype));
-                    } else {
-                        component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)));
+                    if (datatype == null) {
+                        datatype = Datatypes.getNN(String.class);
                     }
+
+                    component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
                     break;
 
                 case ENUM:
                     //noinspection unchecked
-                    component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()));
+                    component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()){
+                        @Override
+                        public Formatter getFormatter() {
+                            return WebAbstractTextField.this.getFormatter();
+                        }
+
+                        @Override
+                        public boolean isTrimming() {
+                            return WebAbstractTextField.this.isTrimming();
+                        }
+                    });
                     break;
 
                 default:
-                    component.setConverter(new StringToStringConverter());
+                    component.setConverter(new TextFieldStringToDatatypeConverter(Datatypes.getNN(String.class)));
                     break;
             }
         } else {
-            component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)));
-        }
-    }
-
-    @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        if (this instanceof TrimSupported) {
-            return new TextItemWrapper(datasource, propertyPaths);
-        } else {
-            return super.createDatasourceWrapper(datasource, propertyPaths);
-        }
-    }
-
-    protected class TextItemWrapper extends ItemWrapper {
-        public TextItemWrapper(Object item, Collection<MetaPropertyPath> properties) {
-            super(item, properties);
-        }
-
-        @Override
-        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-            return new TextPropertyWrapper(item, propertyPath);
-        }
-    }
-
-    protected class TextPropertyWrapper extends PropertyWrapper {
-        public TextPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-            super(item, propertyPath);
-        }
-
-        @Override
-        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-            WebAbstractTextField<T> impl = WebAbstractTextField.this;
-            if ((newValue instanceof String) && (impl instanceof TrimSupported)) {
-                if (((TrimSupported) impl).isTrimming()) {
-                    newValue = ((String) newValue).trim();
-                }
-            }
-            super.setValue(newValue);
+            component.setConverter(new TextFieldStringToDatatypeConverter(Datatypes.getNN(String.class)));
         }
     }
 
@@ -205,6 +185,22 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             return StringUtils.isBlank((String) value);
         } else {
             return value == null;
+        }
+    }
+
+    protected class TextFieldStringToDatatypeConverter extends StringToDatatypeConverter {
+        public TextFieldStringToDatatypeConverter(Datatype datatype) {
+            super(datatype);
+        }
+
+        @Override
+        public Formatter getFormatter() {
+            return WebAbstractTextField.this.getFormatter();
+        }
+
+        @Override
+        public boolean isTrimming() {
+            return WebAbstractTextField.this.isTrimming();
         }
     }
 }

@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -19,7 +18,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
@@ -34,10 +32,10 @@ import java.util.List;
  * @version $Id$
  */
 public class WebLabel
-    extends
-        WebAbstractComponent<com.vaadin.ui.Label>
-    implements
-        Label, Component.Wrapper {
+        extends
+            WebAbstractComponent<com.vaadin.ui.Label>
+        implements
+            Label, Component.Wrapper {
 
     protected List<ValueListener> listeners = new ArrayList<>();
 
@@ -71,13 +69,23 @@ public class WebLabel
 
         switch (metaProperty.getType()) {
             case ASSOCIATION:
-                component.setConverter(new StringToEntityConverter());
+                component.setConverter(new StringToEntityConverter() {
+                    @Override
+                    public Formatter getFormatter() {
+                        return WebLabel.this.formatter;
+                    }
+                });
                 break;
 
             case DATATYPE:
                 Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
                 if (datatype != null) {
-                    component.setConverter(new StringToDatatypeConverter(datatype));
+                    component.setConverter(new StringToDatatypeConverter(datatype) {
+                        @Override
+                        public Formatter getFormatter() {
+                            return WebLabel.this.formatter;
+                        }
+                    });
                 } else {
                     component.setConverter(null);
                 }
@@ -85,11 +93,21 @@ public class WebLabel
 
             case ENUM:
                 //noinspection unchecked
-                component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()));
+                component.setConverter(new StringToEnumConverter((Class<Enum>) metaProperty.getJavaType()) {
+                    @Override
+                    public Formatter getFormatter() {
+                        return WebLabel.this.formatter;
+                    }
+                });
                 break;
 
             default:
-                component.setConverter(null);
+                component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)) {
+                    @Override
+                    public Formatter getFormatter() {
+                        return WebLabel.this.formatter;
+                    }
+                });
                 break;
         }
 
@@ -98,24 +116,7 @@ public class WebLabel
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new PropertyWrapper(item, propertyPath) {
-
-                    @Override
-                    public String getFormattedValue() {
-                        if (formatter != null) {
-                            Object value = getValue();
-                            if (value instanceof Instance)
-                                value = ((Instance) value).getInstanceName();
-                            return formatter.format(value);
-                        } else
-                            return super.getFormattedValue();
-                    }
-                };
-            }
-        };
+        return new ItemWrapper(datasource, propertyPaths);
     }
 
     @Override
@@ -141,7 +142,9 @@ public class WebLabel
 
     @Override
     public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     @Override
