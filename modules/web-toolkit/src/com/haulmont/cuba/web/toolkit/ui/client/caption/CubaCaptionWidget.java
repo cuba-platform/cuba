@@ -31,6 +31,8 @@ public class CubaCaptionWidget extends VCaption {
 
     protected Element toolTipIndicator;
 
+    protected boolean captionPlacedAfterComponentByDefault = true;
+
     protected CaptionHolder captionHolder = null;
 
     public CubaCaptionWidget(ComponentConnector component, ApplicationConnection client) {
@@ -50,7 +52,7 @@ public class CubaCaptionWidget extends VCaption {
 
         // Caption is placed after component unless there is some part which
         // moves it above.
-        placedAfterComponent = true;
+        placedAfterComponent = captionPlacedAfterComponentByDefault;
 
         String style = CLASSNAME;
         if (ComponentStateUtil.hasStyles(owner.getState())) {
@@ -213,7 +215,8 @@ public class CubaCaptionWidget extends VCaption {
     @Override
     public int getRenderedWidth() {
         int renderedWidth = super.getRenderedWidth();
-        if (toolTipIndicator != null) {
+        // only if attached to current element
+        if (toolTipIndicator != null && toolTipIndicator.getParentElement() == getElement()) {
             renderedWidth += Util.getRequiredWidth(toolTipIndicator);
         }
         return renderedWidth;
@@ -253,5 +256,13 @@ public class CubaCaptionWidget extends VCaption {
 
     public void setCaptionHolder(CaptionHolder captionHolder) {
         this.captionHolder = captionHolder;
+    }
+
+    public boolean isCaptionPlacedAfterComponentByDefault() {
+        return captionPlacedAfterComponentByDefault;
+    }
+
+    public void setCaptionPlacedAfterComponentByDefault(boolean captionPlacedAfterComponentByDefault) {
+        this.captionPlacedAfterComponentByDefault = captionPlacedAfterComponentByDefault;
     }
 }

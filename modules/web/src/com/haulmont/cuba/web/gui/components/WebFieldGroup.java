@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
@@ -352,6 +353,11 @@ public class WebFieldGroup
         com.vaadin.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
 
         assignTypicalAttributes(fieldComponent);
+
+        // move checkbox caption to captions column
+        if (fieldImpl instanceof CubaCheckBox) {
+            ((CubaCheckBox) fieldImpl).setCaptionManagedByLayout(true);
+        }
 
         if (fieldComponent instanceof Field) {
             Field cubaField = (Field) fieldComponent;

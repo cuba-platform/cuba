@@ -41,6 +41,9 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
         super.updateFromUIDL(uidl, client);
     }
 
+    protected void setDefaultCaptionParameters(CubaCaptionWidget widget) {
+    }
+
     @Override
     public void updateCaption(ComponentConnector childConnector) {
         // CAUTION copied from GridLayoutConnector.updateCaption(ComponentConnector childConnector)
@@ -53,6 +56,8 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
                 // use our own caption widget
                 caption = new CubaCaptionWidget(childConnector, getConnection());
 
+                setDefaultCaptionParameters((CubaCaptionWidget)caption);
+
                 Widget widget = childConnector.getWidget();
 
                 layout.setCaption(widget, caption);
@@ -62,5 +67,4 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
             layout.setCaption(childConnector.getWidget(), null);
         }
     }
-
 }

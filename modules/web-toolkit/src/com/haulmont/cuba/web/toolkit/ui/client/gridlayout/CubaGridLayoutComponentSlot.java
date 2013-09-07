@@ -29,6 +29,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
 
     protected Element requiredElement = null;
     protected Element tooltipElement = null;
+    protected Element errorIndicatorElement = null;
 
     protected Element rightCaption = null;
 
@@ -261,19 +262,34 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         }
     }
 
+    public int getIndicatorsWidth() {
+        if (rightCaption != null) {
+            return Util.getRequiredWidth(rightCaption);
+        } else {
+            return 0;
+        }
+    }
+
+    public void setInidcatorsWidth(String width) {
+        if (rightCaption != null) {
+            DOM.setStyleAttribute(rightCaption, "width", width);
+        }
+    }
+
+    public void resetIndicatorsWidth() {
+        if (rightCaption != null) {
+            rightCaption.getStyle().clearWidth();
+        }
+    }
+
     protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
-        // todo move error indicator right
+        // Indicators element always present in DOM tree of slot
+        if (rightCaption == null) {
+            rightCaption = createRightCaption();
+            getWrapperElement().insertAfter(rightCaption, getWidget().getElement());
+        }
 
-        int fakeCaptionWidth = 0;
-        boolean widthChanged = false;
         if (captionWidget.getRequiredIndicatorElement() != null && requiredElement == null) {
-            if (rightCaption == null) {
-                rightCaption = createRightCaption();
-                getWrapperElement().insertAfter(rightCaption, getWidget().getElement());
-            }
-
-            captionWidget.getElement().removeChild(captionWidget.getRequiredIndicatorElement());
-
             // we clone element to disable all event listeners and prevent tootip events
             requiredElement = (Element) captionWidget.getRequiredIndicatorElement().cloneNode(true);
             rightCaption.appendChild(requiredElement);
@@ -281,45 +297,36 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
                 rightCaption.appendChild(captionWidget.getTooltipElement());
             }
 
-            widthChanged = true;
-
             // remove old requiredIndicatorElement from DOM
             captionWidget.getRequiredIndicatorElement().removeFromParent();
 
         } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
             requiredElement.removeFromParent();
             requiredElement = null;
-            widthChanged = true;
         }
 
         if (captionWidget.getTooltipElement() != null && tooltipElement == null) {
-            if (rightCaption == null) {
-                rightCaption = createRightCaption();
-                getWrapperElement().insertAfter(rightCaption, getWidget().getElement());
-            }
-            if (!captionWidget.getTooltipElement().getParentElement().equals(rightCaption)) {
-                captionWidget.getElement().removeChild(captionWidget.getTooltipElement());
-            }
+            captionWidget.getTooltipElement().removeFromParent();
+
             if (!(getWidget() instanceof VCheckBox)) {
                 tooltipElement = captionWidget.getTooltipElement();
                 rightCaption.appendChild(tooltipElement);
             }
-            widthChanged = true;
         } else if (captionWidget.getTooltipElement() == null && tooltipElement != null) {
             tooltipElement.removeFromParent();
             tooltipElement = null;
-            widthChanged = true;
         }
 
-        if (requiredElement != null) {
-            fakeCaptionWidth += Util.getRequiredWidth(requiredElement);
-        }
-        if (tooltipElement != null) {
-            fakeCaptionWidth += Util.getRequiredWidth(tooltipElement);
-        }
+        if (captionWidget.getErrorIndicatorElement() != null && errorIndicatorElement == null) {
+            captionWidget.getErrorIndicatorElement().removeFromParent();
 
-        if (widthChanged && rightCaption != null) {
-            DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
+            if (!(getWidget() instanceof VCheckBox)) {
+                errorIndicatorElement = captionWidget.getErrorIndicatorElement();
+                rightCaption.appendChild(errorIndicatorElement);
+            }
+        } else if (captionWidget.getErrorIndicatorElement() == null && errorIndicatorElement != null) {
+            errorIndicatorElement.removeFromParent();
+            errorIndicatorElement = null;
         }
     }
 
