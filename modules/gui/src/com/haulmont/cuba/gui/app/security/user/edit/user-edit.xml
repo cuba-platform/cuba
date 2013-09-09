@@ -45,7 +45,7 @@
                 <!--<field id="permissionsLookupField" caption="msg://permissions" custom="true" visible="false"/>-->
             </column>
             <column flex="3" width="${width}" id="fieldGroupColumn2">
-                <field id="group" required="true" requiredMessage="msg://groupMsg"/>
+                <field id="group" custom="true"/>
                 <field id="confirmPassw" custom="true" caption="msg://confirmPassword"/>
                 <field id="firstName"/>
                 <field id="name"/>

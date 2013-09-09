@@ -196,6 +196,21 @@ public class UserEditor extends AbstractEditor<User> {
                 return languageLookup;
             }
         });
+
+        fieldGroup.addCustomField("group", new FieldGroup.CustomFieldGenerator() {
+            @Override
+            public Component generateField(Datasource datasource, String propertyId) {
+                PickerField pickerField = factory.createComponent(PickerField.NAME);
+                pickerField.setDatasource(datasource, propertyId);
+                pickerField.setRequired(true);
+                pickerField.setRequiredMessage(getMessage("groupMsg"));
+
+                PickerField.LookupAction action = pickerField.addLookupAction();
+                action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+
+                return pickerField;
+            }
+        });
     }
 
     @Override

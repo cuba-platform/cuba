@@ -29,6 +29,8 @@ public class GroupLookup extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidth(600).setHeight(400);
+
         groupsDs.refresh();
         groups.expandTree();
 
