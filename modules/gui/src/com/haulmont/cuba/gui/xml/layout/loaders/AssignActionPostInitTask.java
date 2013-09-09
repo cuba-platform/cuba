@@ -57,7 +57,8 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
                             "Holder ID", holder.getId());
                 }
             } else {
-                throw new GuiDevelopmentException("Can't find component: " + Arrays.toString(subPath),
+                throw new GuiDevelopmentException(
+                        "Can't find component: " + Arrays.toString(subPath) + " for action: " + actionName,
                         context.getFullFrameId(), "Component ID", Arrays.toString(subPath));
             }
         } else if (elements.length == 1) {
