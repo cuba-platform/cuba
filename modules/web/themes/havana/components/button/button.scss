@@ -51,6 +51,15 @@
     }
   }
 
+  .#{$primaryStyleName}-empty-caption {
+
+    .#{$primaryStyleName}-wrap {
+      .v-icon {
+        margin-right: 0;
+      }
+    }
+  }
+
   .#{$primaryStyleName}:hover {
     background: transparent url(images/button-hover.gif) repeat-x;
   }
