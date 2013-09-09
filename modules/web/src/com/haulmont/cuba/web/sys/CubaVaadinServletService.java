@@ -14,8 +14,12 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.*;
+import com.vaadin.server.communication.PublishedFileHandler;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -24,9 +28,9 @@ import java.util.Locale;
  */
 public class CubaVaadinServletService extends VaadinServletService {
 
-    private WebConfig webConfig;
+    protected WebConfig webConfig;
 
-    private final String webResourceTimestamp;
+    protected final String webResourceTimestamp;
 
     public CubaVaadinServletService(VaadinServlet servlet, DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
@@ -95,5 +99,31 @@ public class CubaVaadinServletService extends VaadinServletService {
     @Override
     public String getApplicationVersion() {
         return webResourceTimestamp;
+    }
+
+    @Override
+    protected List<RequestHandler> createRequestHandlers() throws ServiceException {
+        List<RequestHandler> requestHandlers = super.createRequestHandlers();
+        // replace PublishedFileHandler for support resources from VAADIN directory
+
+        List<RequestHandler> cubaRequestHandlers = new ArrayList<>();
+        for (RequestHandler handler : requestHandlers) {
+            if (handler instanceof PublishedFileHandler) {
+                // replace PublishedFileHandler with CubaPublishedFileHandler
+                cubaRequestHandlers.add(new CubaPublishedFileHandler());
+            } else {
+                cubaRequestHandlers.add(handler);
+            }
+        }
+
+        return cubaRequestHandlers;
+    }
+
+    // Add ability to load JS and CSS resources from VAADIN directory
+    protected static class CubaPublishedFileHandler extends PublishedFileHandler {
+        @Override
+        protected InputStream getApplicationResourceAsStream(Class<?> contextClass, String fileName) {
+            return VaadinServlet.getCurrent().getServletContext().getResourceAsStream("VAADIN/" + fileName);
+        }
     }
 }
