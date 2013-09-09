@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
-import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutComponentSlot;
+import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutSlot;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ui.ManagedLayout;
 
@@ -16,7 +16,7 @@ import com.vaadin.client.ui.ManagedLayout;
  * @author artamonov
  * @version $Id$
  */
-public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutComponentSlot {
+public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot {
 
     public CubaFieldGroupLayoutComponentSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
         super(baseClassName, child, layout);

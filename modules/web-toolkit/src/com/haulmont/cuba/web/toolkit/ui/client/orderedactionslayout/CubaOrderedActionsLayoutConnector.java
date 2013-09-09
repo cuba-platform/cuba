@@ -41,7 +41,7 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
 
     @Override
     protected void updateCaptionInternal(ComponentConnector child) {
-        CubaSlot slot = (CubaSlot) getWidget().getSlot(child.getWidget());
+        CubaOrderedLayoutSlot slot = (CubaOrderedLayoutSlot) getWidget().getSlot(child.getWidget());
         if (VCaption.isNeeded(child.getState())) {
             VCaption caption = slot.getCaption();
             if (caption == null) {
@@ -50,6 +50,8 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
                 slot.setCaption(caption);
             }
             caption.updateCaption();
+
+            getLayoutManager().setNeedsMeasure(child);
         } else {
             slot.setCaption(null);
         }

@@ -23,7 +23,7 @@ import com.vaadin.shared.ui.AlignmentInfo;
  * @author devyatkin
  * @version $Id$
  */
-public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot implements CaptionHolder {
+public class CubaGridLayoutSlot extends ComponentConnectorLayoutSlot implements CaptionHolder {
 
     protected static final String INDICATORS_CLASSNAME = "caption-indicators";
 
@@ -33,7 +33,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
 
     protected Element rightCaption = null;
 
-    public CubaGridLayoutComponentSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
+    public CubaGridLayoutSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
         super(baseClassName, child, layout);
     }
 
@@ -339,6 +339,7 @@ public class CubaGridLayoutComponentSlot extends ComponentConnectorLayoutSlot im
         rightCaption.addClassName(INDICATORS_CLASSNAME);
         rightCaption.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         rightCaption.getStyle().setPosition(Style.Position.ABSOLUTE);
+
         return rightCaption;
     }
 

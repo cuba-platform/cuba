@@ -28,7 +28,7 @@ public class CubaGridLayoutWidget extends VGridLayout {
 
         @Override
         protected ComponentConnectorLayoutSlot createComponentConnectorLayoutSlot(ComponentConnector component) {
-            return new CubaGridLayoutComponentSlot(VGridLayout.CLASSNAME, component, getConnector());
+            return new CubaGridLayoutSlot(VGridLayout.CLASSNAME, component, getConnector());
         }
     }
 

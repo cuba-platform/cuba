@@ -61,7 +61,7 @@ public class CubaOrderedActionsLayoutWidget extends VAbstractOrderedLayout {
     public Slot getSlot(Widget widget) {
         Slot slot = widgetToSlot.get(widget);
         if (slot == null) {
-            slot = new CubaSlot(this, widget);
+            slot = new CubaOrderedLayoutSlot(this, widget);
             widgetToSlot.put(widget, slot);
         }
         return slot;

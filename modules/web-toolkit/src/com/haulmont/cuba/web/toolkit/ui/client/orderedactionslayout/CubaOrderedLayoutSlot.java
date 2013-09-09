@@ -12,7 +12,6 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
-import com.vaadin.client.Util;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.ui.VCheckBox;
 import com.vaadin.client.ui.orderedlayout.Slot;
@@ -22,7 +21,7 @@ import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
  * @author devyatkin
  * @version $Id$
  */
-public class CubaSlot extends Slot implements CaptionHolder {
+public class CubaOrderedLayoutSlot extends Slot implements CaptionHolder {
 
     protected static final String INDICATORS_CLASSNAME = "caption-indicators";
 
@@ -32,7 +31,7 @@ public class CubaSlot extends Slot implements CaptionHolder {
 
     protected VCaption caption;
 
-    public CubaSlot(VAbstractOrderedLayout layout, Widget widget) {
+    public CubaOrderedLayoutSlot(VAbstractOrderedLayout layout, Widget widget) {
         super(layout, widget);
     }
 
@@ -62,13 +61,12 @@ public class CubaSlot extends Slot implements CaptionHolder {
     }
 
     protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
-        int fakeCaptionWidth = 0;
-        boolean widthChanged = false;
+        if (rightCaption == null) {
+            rightCaption = createRightCaption();
+            getWidget().getElement().getParentElement().insertAfter(rightCaption, getWidget().getElement());
+        }
+
         if (captionWidget.getRequiredIndicatorElement() != null && requiredElement == null) {
-            if (rightCaption == null) {
-                rightCaption = createRightCaption();
-                getWidget().getElement().getParentElement().insertAfter(rightCaption, getWidget().getElement());
-            }
 
             captionWidget.getElement().removeChild(captionWidget.getRequiredIndicatorElement());
 
@@ -80,12 +78,9 @@ public class CubaSlot extends Slot implements CaptionHolder {
                 rightCaption.appendChild(requiredElement);
             }
 
-            widthChanged = true;
-
         } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
             requiredElement.removeFromParent();
             requiredElement = null;
-            widthChanged = true;
         }
 
         if (captionWidget.getTooltipElement() != null && tooltipElement == null) {
@@ -99,22 +94,9 @@ public class CubaSlot extends Slot implements CaptionHolder {
                 tooltipElement =  captionWidget.getTooltipElement();
                 rightCaption.appendChild(tooltipElement);
             }
-            widthChanged = true;
         } else if (captionWidget.getTooltipElement() == null && tooltipElement != null) {
             tooltipElement.removeFromParent();
             tooltipElement = null;
-            widthChanged = true;
-        }
-
-        if (requiredElement != null) {
-            fakeCaptionWidth += Util.getRequiredWidth(requiredElement);
-        }
-        if (tooltipElement != null) {
-            fakeCaptionWidth += Util.getRequiredWidth(tooltipElement);
-        }
-
-        if (rightCaption != null && widthChanged) {
-            DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
         }
     }
 
@@ -125,7 +107,6 @@ public class CubaSlot extends Slot implements CaptionHolder {
         rightCaption.addClassName(INDICATORS_CLASSNAME);
         rightCaption.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         rightCaption.getStyle().setPosition(Style.Position.RELATIVE);
-        rightCaption.getStyle().setRight(0, Style.Unit.PX);
 
         return rightCaption;
     }
