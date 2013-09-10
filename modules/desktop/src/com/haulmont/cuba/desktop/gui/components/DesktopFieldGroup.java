@@ -538,6 +538,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             }
         }
 
+        if (fieldComponent instanceof HasFormatter) {
+            ((HasFormatter) fieldComponent).setFormatter(fieldConf.getFormatter());
+        }
+
         // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
         if (/*f.getWidth() == -1f &&*/ fieldConf.getWidth() != null) {
             fieldComponent.setWidth(fieldConf.getWidth());
