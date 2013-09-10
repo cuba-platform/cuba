@@ -21,6 +21,7 @@ public class ComponentCaption extends JPanel {
 
     private Component owner;
     private JLabel label;
+    private ToolTipButton toolTipButton;
 
     public ComponentCaption(Component owner) {
         BoxLayoutAdapter.create(this);
@@ -36,11 +37,16 @@ public class ComponentCaption extends JPanel {
 
         label.setText(((Component.HasCaption) owner).getCaption());
         if (((Component.HasCaption) owner).getDescription() != null) {
-            ToolTipButton btn = new ToolTipButton();
-            btn.setFocusable(false);
-            btn.setToolTipText(((Component.HasCaption) owner).getDescription());
-            DesktopToolTipManager.getInstance().registerTooltip(btn);
-            add(btn);
+            if (toolTipButton == null) {
+                toolTipButton = new ToolTipButton();
+                toolTipButton.setFocusable(false);
+                DesktopToolTipManager.getInstance().registerTooltip(toolTipButton);
+                add(toolTipButton);
+            }
+            toolTipButton.setToolTipText(((Component.HasCaption) owner).getDescription());
+        } else if (toolTipButton != null) {
+            remove(toolTipButton);
+            toolTipButton = null;
         }
 
         setVisible(owner.isVisible());
