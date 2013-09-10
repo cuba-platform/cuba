@@ -50,8 +50,6 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
                 slot.setCaption(caption);
             }
             caption.updateCaption();
-
-            getLayoutManager().setNeedsMeasure(child);
         } else {
             slot.setCaption(null);
         }

@@ -6,12 +6,14 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
+import com.vaadin.client.Util;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.ui.VCheckBox;
 import com.vaadin.client.ui.orderedlayout.Slot;
@@ -27,12 +29,16 @@ public class CubaOrderedLayoutSlot extends Slot implements CaptionHolder {
 
     protected Element requiredElement = null;
     protected Element tooltipElement = null;
+    protected Element errorIndicatorElement = null;
+
     protected Element rightCaption = null;
 
     protected VCaption caption;
 
     public CubaOrderedLayoutSlot(VAbstractOrderedLayout layout, Widget widget) {
         super(layout, widget);
+
+        getStyleElement().getStyle().setProperty("box-sizing", "border-box");
     }
 
     public void setCaption(VCaption caption){
@@ -56,47 +62,83 @@ public class CubaOrderedLayoutSlot extends Slot implements CaptionHolder {
     }
 
     @Override
-    public void captionUpdated(CubaCaptionWidget captionWidget){
+    public void captionUpdated(CubaCaptionWidget captionWidget) {
         moveIndicatorsRight(captionWidget);
     }
 
     protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
+        // Indicators element always present in DOM tree of slot
         if (rightCaption == null) {
             rightCaption = createRightCaption();
             getWidget().getElement().getParentElement().insertAfter(rightCaption, getWidget().getElement());
         }
 
-        if (captionWidget.getRequiredIndicatorElement() != null && requiredElement == null) {
+        // detach all indicators
+        for (int i = 0; i < rightCaption.getChildCount(); i++) {
+            rightCaption.getChild(i).removeFromParent();
+        }
 
-            captionWidget.getElement().removeChild(captionWidget.getRequiredIndicatorElement());
+        /* now attach only necessary indicators */
 
-            requiredElement = captionWidget.getRequiredIndicatorElement();
-            if (tooltipElement != null && tooltipElement.getParentElement() == rightCaption) {
-                //insert required indicator before tooltip
-                rightCaption.insertBefore(requiredElement, tooltipElement);
-            } else {
+        if (captionWidget.getRequiredIndicatorElement() != null) {
+            captionWidget.getRequiredIndicatorElement().removeFromParent();
+
+            if (!(getWidget() instanceof VCheckBox)) {
+                requiredElement = captionWidget.getRequiredIndicatorElement();
                 rightCaption.appendChild(requiredElement);
             }
-
         } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
             requiredElement.removeFromParent();
             requiredElement = null;
         }
 
-        if (captionWidget.getTooltipElement() != null && tooltipElement == null) {
-            if (rightCaption == null) {
-                rightCaption = createRightCaption();
-                getWidget().getElement().getParentElement().insertAfter(rightCaption, getWidget().getElement());
-            }
+        if (captionWidget.getTooltipElement() != null) {
+            captionWidget.getTooltipElement().removeFromParent();
 
             if (!(getWidget() instanceof VCheckBox)) {
-                captionWidget.getElement().removeChild(captionWidget.getTooltipElement());
                 tooltipElement =  captionWidget.getTooltipElement();
                 rightCaption.appendChild(tooltipElement);
             }
         } else if (captionWidget.getTooltipElement() == null && tooltipElement != null) {
             tooltipElement.removeFromParent();
             tooltipElement = null;
+        }
+
+        if (captionWidget.getErrorIndicatorElement() != null) {
+            captionWidget.getErrorIndicatorElement().removeFromParent();
+
+            if (!(getWidget() instanceof VCheckBox)) {
+                errorIndicatorElement = captionWidget.getErrorIndicatorElement();
+                rightCaption.appendChild(errorIndicatorElement);
+            }
+        } else if (captionWidget.getErrorIndicatorElement() == null && errorIndicatorElement != null) {
+            errorIndicatorElement.removeFromParent();
+            errorIndicatorElement = null;
+        }
+
+        if (!(getWidget() instanceof VCheckBox)) {
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    allocateSpaceForIndicators();
+                }
+            });
+        }
+    }
+
+    protected void allocateSpaceForIndicators() {
+        int widgetWidth = getWidget().getOffsetWidth();
+        int indicatorsWidth = Util.getRequiredWidth(rightCaption);
+        int captionWidth = getCaption().getElement().getOffsetWidth();
+
+        if (captionWidth >= widgetWidth + indicatorsWidth) {
+            getStyleElement().getStyle().clearPaddingRight();
+        } else {
+            int requiredHorizontalSpace = indicatorsWidth;
+            if (captionWidth > widgetWidth) {
+                requiredHorizontalSpace -= (captionWidth - widgetWidth);
+            }
+            getStyleElement().getStyle().setPaddingRight(requiredHorizontalSpace, Style.Unit.PX);
         }
     }
 
@@ -106,7 +148,7 @@ public class CubaOrderedLayoutSlot extends Slot implements CaptionHolder {
         rightCaption.setClassName(VCaption.CLASSNAME);
         rightCaption.addClassName(INDICATORS_CLASSNAME);
         rightCaption.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-        rightCaption.getStyle().setPosition(Style.Position.RELATIVE);
+        rightCaption.getStyle().setPosition(Style.Position.ABSOLUTE);
 
         return rightCaption;
     }

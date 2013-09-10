@@ -214,12 +214,25 @@ public class CubaCaptionWidget extends VCaption {
 
     @Override
     public int getRenderedWidth() {
-        int renderedWidth = super.getRenderedWidth();
-        // only if attached to current element
-        if (toolTipIndicator != null && toolTipIndicator.getParentElement() == getElement()) {
-            renderedWidth += Util.getRequiredWidth(toolTipIndicator);
+        int width = 0;
+
+        if (icon != null) {
+            width += Util.getRequiredWidth(icon.getElement());
         }
-        return renderedWidth;
+
+        if (captionText != null) {
+            width += Util.getRequiredWidth(captionText);
+        }
+        if (requiredFieldIndicator != null && requiredFieldIndicator.getParentElement() == getElement()) {
+            width += Util.getRequiredWidth(requiredFieldIndicator);
+        }
+        if (errorIndicatorElement != null && errorIndicatorElement.getParentElement() == getElement()) {
+            width += Util.getRequiredWidth(errorIndicatorElement);
+        }
+        if (toolTipIndicator != null && toolTipIndicator.getParentElement() == getElement()) {
+            width += Util.getRequiredWidth(toolTipIndicator);
+        }
+        return width;
     }
 
     @Override

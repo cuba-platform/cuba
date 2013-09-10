@@ -289,23 +289,26 @@ public class CubaGridLayoutSlot extends ComponentConnectorLayoutSlot implements 
             getWrapperElement().insertAfter(rightCaption, getWidget().getElement());
         }
 
-        if (captionWidget.getRequiredIndicatorElement() != null && requiredElement == null) {
-            // we clone element to disable all event listeners and prevent tootip events
-            requiredElement = (Element) captionWidget.getRequiredIndicatorElement().cloneNode(true);
-            rightCaption.appendChild(requiredElement);
-            if (captionWidget.getTooltipElement() != null) {
-                rightCaption.appendChild(captionWidget.getTooltipElement());
-            }
+        // detach all indicators
+        for (int i = 0; i < rightCaption.getChildCount(); i++) {
+            rightCaption.getChild(i).removeFromParent();
+        }
 
-            // remove old requiredIndicatorElement from DOM
+        /* now attach only necessary indicators */
+
+        if (captionWidget.getRequiredIndicatorElement() != null) {
             captionWidget.getRequiredIndicatorElement().removeFromParent();
 
+            if (!(getWidget() instanceof VCheckBox)) {
+                requiredElement = captionWidget.getRequiredIndicatorElement();
+                rightCaption.appendChild(requiredElement);
+            }
         } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
             requiredElement.removeFromParent();
             requiredElement = null;
         }
 
-        if (captionWidget.getTooltipElement() != null && tooltipElement == null) {
+        if (captionWidget.getTooltipElement() != null) {
             captionWidget.getTooltipElement().removeFromParent();
 
             if (!(getWidget() instanceof VCheckBox)) {
@@ -317,7 +320,7 @@ public class CubaGridLayoutSlot extends ComponentConnectorLayoutSlot implements 
             tooltipElement = null;
         }
 
-        if (captionWidget.getErrorIndicatorElement() != null && errorIndicatorElement == null) {
+        if (captionWidget.getErrorIndicatorElement() != null) {
             captionWidget.getErrorIndicatorElement().removeFromParent();
 
             if (!(getWidget() instanceof VCheckBox)) {
