@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
@@ -34,7 +35,6 @@ public class DesktopPopupButton
     private JPopupMenu popup;
 
     private String icon;
-    private String description;
 
     public static final String DEFAULT_ICON = "/components/popupbutton/open-popup.png";
 
@@ -152,12 +152,13 @@ public class DesktopPopupButton
 
     @Override
     public String getDescription() {
-        return description;
+        return getImpl().getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
+        getImpl().setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
     @Override
