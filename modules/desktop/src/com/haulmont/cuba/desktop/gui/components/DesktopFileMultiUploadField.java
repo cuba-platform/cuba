@@ -124,7 +124,11 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     private void notifyFileSizeExceedLimit(File file) {
         Messages messages = AppBeans.get(Messages.class);
-        String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message", file.getName());
+
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
+
+        String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
         WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
         wm.showNotification(warningMsg, IFrame.NotificationType.WARNING);
     }
