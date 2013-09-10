@@ -18,7 +18,7 @@ import java.awt.*;
  */
 public abstract class BoxLayoutAdapter extends LayoutAdapter {
 
-    public abstract Object getCaptionConstraints();
+    public abstract Object getCaptionConstraints(com.haulmont.cuba.gui.components.Component component);
 
     public enum FlowDirection { X, Y }
 

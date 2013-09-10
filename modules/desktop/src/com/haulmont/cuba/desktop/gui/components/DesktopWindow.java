@@ -515,7 +515,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         if (DesktopContainerHelper.hasExternalCaption(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
-            getContainer().add(caption, layoutAdapter.getCaptionConstraints());
+            getContainer().add(caption, layoutAdapter.getCaptionConstraints(component));
         } else if (DesktopContainerHelper.hasExternalDescription(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
@@ -768,7 +768,9 @@ public class DesktopWindow implements Window, Component.Disposable,
         JComponent composition = DesktopComponentsHelper.getComposition(child);
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
         if (captions.containsKey(child)) {
-            captions.get(child).update();
+            ComponentCaption caption = captions.get(child);
+            caption.update();
+            layoutAdapter.updateConstraints(caption, layoutAdapter.getCaptionConstraints(child));
         }
     }
 

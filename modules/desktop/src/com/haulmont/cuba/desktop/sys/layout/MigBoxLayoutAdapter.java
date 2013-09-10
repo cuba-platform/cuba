@@ -90,11 +90,12 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     }
 
     @Override
-    public Object getCaptionConstraints() {
+    public Object getCaptionConstraints(com.haulmont.cuba.gui.components.Component component) {
         CC cc = new CC();
         cc.split(2);
         cc.width("min!");
         cc.height("min!");
+        MigLayoutHelper.applyAlignment(cc, component.getAlignment());
         return cc;
     }
 
