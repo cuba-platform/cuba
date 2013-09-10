@@ -9,14 +9,12 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.vaadin.data.Property;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 
 import java.util.Set;
@@ -58,6 +56,34 @@ public class WebTree
                     }
                 }
         );
+    }
+
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+        if (action.getShortcut() != null) {
+            addShortcutActionBridge(action.getId(), action.getShortcut());
+        }
+    }
+
+    /**
+     * Connect shortcut action to default list action
+     *
+     * @param actionId Shortcut action id
+     * @param keyCombination   KeyCombination object
+     */
+    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
+        component.addShortcutListener(new ShortcutListener(actionId, keyCombination.getKey().getCode(),
+                KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                if (target == component) {
+                    Action action = getAction(actionId);
+                    if (action != null && action.isEnabled())
+                        action.actionPerform(WebTree.this);
+                }
+            }
+        });
     }
 
     @Override
