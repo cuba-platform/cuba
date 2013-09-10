@@ -12,6 +12,7 @@
   $comboBoxBorderReadonly: 1px solid $theme_fieldReadonlyBorderColor;
 
   .#{$primaryStyleName} {
+    line-height: 0;
     height: 25px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */

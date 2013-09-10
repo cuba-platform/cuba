@@ -10,12 +10,16 @@
   @include base-gridlayout($primaryStyleName);
 
   .#{$primaryStyleName}-slot > .v-caption {
-      line-height: 25px;
-      margin-right: 5px;
-      vertical-align: top;
+    margin-right: 5px;
+    vertical-align: top;
   }
 
   .#{$primaryStyleName}-slot > .v-caption.caption-indicators {
     margin-right: 0;
+  }
+
+  .#{$primaryStyleName}-slot > .v-caption .v-captiontext {
+    line-height: 25px;
+    padding-bottom: 0px;
   }
 }

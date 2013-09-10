@@ -11,7 +11,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -19,24 +20,23 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
+import org.jdesktop.swingx.JXLabel;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements Label
-{
+public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements Label {
+
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected List<ValueListener> listeners = new ArrayList<>();
 
     private DefaultValueFormatter valueFormatter;
 
@@ -45,11 +45,12 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     private boolean updatingInstance = false;
 
     public DesktopLabel() {
-        impl = new JLabel();
+        impl = new JXLabel();
+        impl.setLineWrap(true);
         impl.setFocusable(false);
         setAlignment(Alignment.MIDDLE_LEFT);
 
-        Locale locale = UserSessionProvider.getLocale();
+        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
         valueFormatter = new DefaultValueFormatter(locale);
     }
 

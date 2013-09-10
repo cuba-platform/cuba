@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
@@ -46,7 +47,7 @@ public class WebLabel
     protected Formatter formatter;
 
     public WebLabel() {
-        component = new com.vaadin.ui.Label();
+        component = new CubaLabel();
     }
 
     @Override

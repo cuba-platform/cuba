@@ -42,6 +42,7 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
         }
 
         loadWidth(component, element, "-1px");
+        loadHeight(component, element, "-1px");
 
         component.setFormatter(loadFormatter(element));
 

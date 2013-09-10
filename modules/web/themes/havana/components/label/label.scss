@@ -8,17 +8,24 @@
 
 @mixin havana-label($primaryStyleName: v-label) {
   .#{$primaryStyleName} {
-    line-height: 25px;
+    border-top: 5px transparent solid;
+    border-bottom: 6px transparent solid;
   }
+
   .#{$primaryStyleName}.h2 {
     font-family: verdana, tahoma, sans-serif;
     font-size: 14px;
+    border: 0;
+    line-height: 25px;
     font-weight: bold;
   }
+
   .#{$primaryStyleName}.h2-red {
     font-family: verdana, tahoma, sans-serif;
     font-size: 14px;
     font-weight: bold;
     color: red;
+    border: 0;
+    line-height: 25px;
   }
 }
