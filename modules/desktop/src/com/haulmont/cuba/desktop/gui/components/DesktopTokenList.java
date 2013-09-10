@@ -11,6 +11,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.*;
@@ -71,13 +72,13 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
     public DesktopTokenList() {
         impl = new TokenListImpl();
-
         addButton = new DesktopButton();
         addButton.setCaption(AppBeans.get(Messages.class).getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new DesktopLookupPickerField();
 
         setMultiSelect(false);
+        setWidth("100%");
     }
 
     @Override
@@ -349,11 +350,13 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
     @Override
     public String getDescription() {
-        return null;
+        return getImpl().getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
+        getImpl().setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
     @Override
@@ -436,6 +439,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         public TokenListLabel() {
             label = new DesktopLabel();
             composition = new DesktopHBox();
+            composition.setSpacing(true);
             composition.add(label);
             composition.expand(label);
             removeButton = new DesktopButton();
@@ -457,7 +461,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             removeButton.setIcon("icons/remove.png");
 
             JButton button = removeButton.getComponent();
-            button.setBorder(new EmptyBorder(0,3,0,3));
+            button.setBorder(new EmptyBorder(0, 3, 0, 3));
             button.setFocusPainted(false);
             button.setBorderPainted(false);
 
@@ -478,7 +482,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             openButton.setVisible(false);
 
             button = openButton.getComponent();
-            button.setBorder(new EmptyBorder(0,3,0,3));
+            button.setBorder(new EmptyBorder(0, 3, 0, 3));
             button.setFocusPainted(false);
             button.setBorderPainted(false);
 
@@ -624,6 +628,14 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         }
     }
 
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+        if (height.endsWith("px")) {
+            impl.addScroll();
+        }
+    }
+
     public class TokenListImpl extends JPanel {
 
         private DesktopVBox root;
@@ -651,12 +663,20 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             scrollContainer.setHeight("100%");
 
             tokensContainer = new DesktopVBox();
-            tokensContainer.setWidth("100%");
-            scrollContainer.add(tokensContainer);
+            tokensContainer.setWidth("-1px");
+            //scrollContainer.add(tokensContainer);
 
-            root.add(scrollContainer);
+            root.add(tokensContainer);
 
             this.add(root.getComposition());
+        }
+
+        public void addScroll() {
+            root.remove(scrollContainer);
+            root.remove(tokensContainer);
+            scrollContainer.remove(tokensContainer);
+            scrollContainer.add(tokensContainer);
+            root.add(scrollContainer);
         }
 
         protected void initField() {
@@ -716,7 +736,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 }
             }
 
-            for (Component ownComponent : new ArrayList<Component>(tokensContainer.getOwnComponents()))
+            for (Component ownComponent : new ArrayList<>(tokensContainer.getOwnComponents()))
                 tokensContainer.remove(ownComponent);
 
             if (datasource != null) {
@@ -741,7 +761,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 }
 
                 // Remove obsolete items
-                for (Instance componentItem : new ArrayList<Instance>(itemComponents.keySet())) {
+                for (Instance componentItem : new ArrayList<>(itemComponents.keySet())) {
                     if (!usedItems.contains(componentItem)) {
                         componentItems.remove(itemComponents.get(componentItem));
                         itemComponents.remove(componentItem);

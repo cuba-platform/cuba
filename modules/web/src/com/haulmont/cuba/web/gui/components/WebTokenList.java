@@ -356,15 +356,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     @Override
-    public String getDescription() {
-        return null;
-    }
-
-    @Override
-    public void setDescription(String description) {
-    }
-
-    @Override
     public boolean isEditable() {
         return editable;
     }
