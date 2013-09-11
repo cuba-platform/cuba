@@ -21,6 +21,8 @@ import com.vaadin.client.ui.VTextArea;
  */
 public class CubaResizableTextAreaWidget extends VTextArea {
 
+    public static final String TEXT_AREA_WRAPPER = "text-area-wrapper";
+
     protected boolean dragDrop = false;
     protected boolean composed = false;
     protected boolean resizable = false;
@@ -48,9 +50,9 @@ public class CubaResizableTextAreaWidget extends VTextArea {
                 DOM.setStyleAttribute(parentDiv, "position", "relative");
                 DOM.setStyleAttribute(parentDiv, "overflow", "hidden");
                 DOM.setStyleAttribute(parentDiv, "display", "inline");
+                parentDiv.setClassName(TEXT_AREA_WRAPPER);
 
-                getElement().getParentElement().appendChild(parentDiv);
-                getElement().getParentElement().removeChild(getElement());
+                getElement().getParentElement().replaceChild(parentDiv,getElement());
                 parentDiv.appendChild(getElement());
                 parentDiv.appendChild(resizeElement);
 
