@@ -8,19 +8,25 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 
 import javax.swing.*;
+import javax.swing.AbstractAction;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,9 +37,8 @@ import java.util.Set;
  * @author krivopustov
  */
 public class DesktopTree
-    extends DesktopAbstractActionsHolderComponent<JTree>
-    implements Tree
-{
+        extends DesktopAbstractActionsHolderComponent<JTree>
+        implements Tree {
     protected String hierarchyProperty;
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;
     private JScrollPane treeView;
@@ -48,6 +53,36 @@ public class DesktopTree
         impl.setRootVisible(false);
         impl.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         impl.setExpandsSelectedPaths(true);
+
+        impl.addMouseListener(
+                new MouseAdapter() {
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        showPopup(e);
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        showPopup(e);
+                    }
+
+                    private void showPopup(MouseEvent e) {
+                        if (e.isPopupTrigger()) {
+                            // select row
+                            Point p = e.getPoint();
+                            TreePath treePath = impl.getPathForLocation(p.x, p.y);
+                            if (treePath != null) {
+                                TreeSelectionModel model = impl.getSelectionModel();
+                                model.setSelectionPath(treePath);
+                            }
+                            // show popup menu
+                            createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+                        }
+                    }
+                }
+        );
+
     }
 
     @Override
@@ -115,6 +150,26 @@ public class DesktopTree
             return false;
 
         return impl.isExpanded(model.getTreePath(item));
+    }
+
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+        if (action.getShortcut() != null) {
+            addShortcutActionBridge(action.getId(), action.getShortcut());
+        }
+    }
+
+    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
+        impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
+        impl.getActionMap().put(actionId, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Action action = getAction(actionId);
+                if ((action != null) && (action.isEnabled()))
+                    action.actionPerform(DesktopTree.this);
+            }
+        });
     }
 
     @Override
@@ -240,5 +295,31 @@ public class DesktopTree
                 }
             }
         }
+    }
+
+    protected JPopupMenu createPopupMenu() {
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem menuItem;
+        for (final com.haulmont.cuba.gui.components.Action action : actionList) {
+            menuItem = new JMenuItem(action.getCaption());
+            if (action.getIcon() != null) {
+                menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
+            }
+            if (action.getShortcut() != null) {
+                menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
+            }
+            menuItem.setEnabled(action.isEnabled());
+            menuItem.setVisible(action.isVisible());
+            menuItem.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            action.actionPerform(DesktopTree.this);
+                        }
+                    }
+            );
+            popup.add(menuItem);
+        }
+        return popup;
     }
 }
