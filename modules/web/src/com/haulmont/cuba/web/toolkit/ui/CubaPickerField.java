@@ -11,6 +11,9 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.server.AbstractErrorMessage;
+import com.vaadin.server.CompositeErrorMessage;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
@@ -37,6 +40,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     public CubaPickerField() {
         initTextField();
         initLayout();
+        setValidationVisible(false);
     }
 
     public CubaPickerField(com.vaadin.ui.AbstractField field) {
@@ -158,6 +162,21 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         container.removeActionHandler(actionHandler);
+    }
+
+    @Override
+    public ErrorMessage getErrorMessage() {
+        ErrorMessage superError = super.getErrorMessage();
+        if (isRequired() && isEmpty()) {
+
+            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
+                    new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
+            if (error != null) {
+                return new CompositeErrorMessage(superError, error);
+            }
+        }
+
+        return superError;
     }
 
     public Converter getCaptionFormatter() {

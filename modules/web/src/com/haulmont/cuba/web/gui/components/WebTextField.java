@@ -10,6 +10,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 
 /**
  * @author abramov
@@ -17,7 +18,7 @@ import com.haulmont.cuba.gui.components.TextField;
  */
 public class WebTextField
         extends
-            WebAbstractTextField<com.vaadin.ui.TextField>
+            WebAbstractTextField<CubaTextField>
         implements
             TextField, Component.Wrapper {
 
@@ -27,8 +28,8 @@ public class WebTextField
     protected boolean trimming = true;
 
     @Override
-    protected com.vaadin.ui.TextField createTextFieldImpl() {
-        return new com.vaadin.ui.TextField();
+    protected CubaTextField createTextFieldImpl() {
+        return new CubaTextField();
     }
 
     @Override

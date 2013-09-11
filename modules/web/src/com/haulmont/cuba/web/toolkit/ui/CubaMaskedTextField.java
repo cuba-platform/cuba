@@ -12,7 +12,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedTextFieldStat
  * @author artamonov
  * @version $Id$
  */
-public class CubaMaskedTextField extends com.vaadin.ui.TextField {
+public class CubaMaskedTextField extends CubaTextField {
 
     public CubaMaskedTextField() {
         // directly init value locale to avoid unnecessary converted value setting

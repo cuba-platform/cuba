@@ -7,7 +7,6 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaState;
-import com.vaadin.ui.TextArea;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
  * @author artamonov
  * @version $Id$
  */
-public class CubaResizableTextArea extends TextArea {
+public class CubaResizableTextArea extends CubaTextArea {
 
     protected boolean resizable = false;
     protected List<ResizeListener> listeners = new ArrayList<>();

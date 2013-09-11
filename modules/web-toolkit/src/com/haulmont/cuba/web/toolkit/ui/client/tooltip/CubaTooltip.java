@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.vaadin.client.*;
@@ -46,6 +47,71 @@ public class CubaTooltip extends VTooltip {
         }
         showTimer.schedule(timeout);
         opening = true;
+    }
+
+    /* CAUTION copied from super class with small changes */
+    protected void show(TooltipInfo info) {
+        boolean hasContent = false;
+        if (info.getErrorMessage() != null && !info.getErrorMessage().isEmpty()) {
+            em.setVisible(true);
+            em.updateMessage(info.getErrorMessage());
+            hasContent = true;
+        } else {
+            em.setVisible(false);
+        }
+        if (info.getTitle() != null && !"".equals(info.getTitle())) {
+            DOM.setInnerHTML(description, info.getTitle());
+            DOM.setStyleAttribute(description, "display", "");
+            hasContent = true;
+        } else {
+            DOM.setInnerHTML(description, "");
+            DOM.setStyleAttribute(description, "display", "none");
+        }
+        if (hasContent) {
+            // Issue #8454: With IE7 the tooltips size is calculated based on
+            // the last tooltip's position, causing problems if the last one was
+            // in the right or bottom edge. For this reason the tooltip is moved
+            // first to 0,0 position so that the calculation goes correctly.
+            setPopupPosition(0, 0);
+            setPopupPositionAndShow(new PositionCallback() {
+                @Override
+                public void setPosition(int offsetWidth, int offsetHeight) {
+
+                    if (offsetWidth > getMaxWidth()) {
+                        setWidth(getMaxWidth() + "px");
+
+                        // Check new height and width with reflowed content
+                        offsetWidth = getOffsetWidth();
+                        offsetHeight = getOffsetHeight();
+                    }
+
+                    int x = tooltipEventMouseX + 10 + Window.getScrollLeft();
+                    int y = tooltipEventMouseY + 10 + Window.getScrollTop();
+
+                    if (x + offsetWidth + MARGIN - Window.getScrollLeft() > Window
+                            .getClientWidth()) {
+                        x = Window.getClientWidth() - offsetWidth - MARGIN
+                                + Window.getScrollLeft();
+                    }
+
+                    if (y + offsetHeight + MARGIN - Window.getScrollTop() > Window
+                            .getClientHeight()) {
+                        y = tooltipEventMouseY - 5 - offsetHeight
+                                + Window.getScrollTop();
+                        if (y - Window.getScrollTop() < 0) {
+                            // tooltip does not fit on top of the mouse either,
+                            // put it at the top of the screen
+                            y = Window.getScrollTop();
+                        }
+                    }
+
+                    setPopupPosition(x, y);
+                    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT);
+                }
+            });
+        } else {
+            hide();
+        }
     }
 
     public class CubaTooltipEventHandler extends TooltipEventHandler {

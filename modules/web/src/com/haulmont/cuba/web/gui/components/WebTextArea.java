@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
 import com.vaadin.ui.TextArea;
 
 /**
@@ -21,6 +22,6 @@ public class WebTextArea
 
     @Override
     protected TextArea createTextFieldImpl() {
-        return new TextArea();
+        return new CubaTextArea();
     }
 }
