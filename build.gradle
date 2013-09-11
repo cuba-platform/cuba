@@ -572,7 +572,10 @@ task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
     language = "ru"
     xslParameters = [
         'toc.section.depth': '5',
-        'chunk.section.depth': '5'
+        'chunk.section.depth': '5',
+        'section.autolabel': '1',
+        'chapter.autolabel': '1',
+        'appendix.autolabel': 'A'
     ]
 }
 
