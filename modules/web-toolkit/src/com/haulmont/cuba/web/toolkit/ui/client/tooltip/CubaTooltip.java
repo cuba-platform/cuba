@@ -15,6 +15,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
+import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWidget;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
@@ -52,7 +53,13 @@ public class CubaTooltip extends VTooltip {
     /* CAUTION copied from super class with small changes */
     protected void show(TooltipInfo info) {
         boolean hasContent = false;
-        if (info.getErrorMessage() != null && !info.getErrorMessage().isEmpty()) {
+        boolean isErrorMsgEmpty = info.getErrorMessage() == null || info.getErrorMessage().isEmpty();
+        if (!isErrorMsgEmpty) {
+            Element errorMsgTestEl = DOM.createDiv();
+            DOM.setInnerHTML(errorMsgTestEl, info.getErrorMessage());
+            isErrorMsgEmpty = DOM.getChild(errorMsgTestEl, 0).getInnerHTML().isEmpty();
+        }
+        if (!isErrorMsgEmpty) {
             em.setVisible(true);
             em.updateMessage(info.getErrorMessage());
             hasContent = true;
@@ -130,6 +137,10 @@ public class CubaTooltip extends VTooltip {
 
                 int index = DOM.getChildIndex(element.getParentElement().<Element>cast(), element);
                 element = DOM.getChild(element.getParentElement().<Element>cast(), index - 1);
+                //special case for ResizableTextArea.
+                if(CubaResizableTextAreaWidget.TEXT_AREA_WRAPPER.equals(element.getClassName())) {
+                    element = DOM.getChild(element, 0);
+                }
             }
 
             ApplicationConnection ac = getApplicationConnection();
