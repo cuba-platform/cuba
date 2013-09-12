@@ -79,11 +79,15 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
     @Override
     public <T> T getValue() {
-        Object value = super.getValue();
+        String value = super.getValue();
+        if (isTrimming()) {
+            value = StringUtils.trim(value);
+        }
+
         Datatype datatype = getActualDatatype();
-        if (value instanceof String && datatype != null) {
+        if (value != null && datatype != null) {
             try {
-                return (T) datatype.parse((String) value, locale);
+                return (T) datatype.parse(value, locale);
             } catch (ParseException e) {
                 log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
