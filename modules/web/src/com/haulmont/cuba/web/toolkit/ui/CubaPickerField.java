@@ -67,13 +67,11 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     }
 
     protected void initTextField() {
-        field = new TextField();
+        field = new CubaPickerTextField();
 
         field.setImmediate(true);
         field.setReadOnly(true);
         ((TextField) field).setNullRepresentation("");
-//        vaadin7
-//        ((TextField) field).setAllowFocusReadonly(true);
         addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
