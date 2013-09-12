@@ -55,6 +55,7 @@
 @import "components/resizabletextarea/resizabletextarea";
 @import "components/tokenlist/tokenlist";
 @import "components/twincolumn/twincolumn";
+@import "components/richtextarea/richtextarea";
 
 // Application specific
 @import "app/app-window";
@@ -94,6 +95,7 @@
   @include havana-maskedfield;
   @include havana-notification;
   @include havana-filterselect;
+  @include havana-richtextarea;
   @include havana-orderedlayout;
   @include havana-errorindicator;
   @include havana-fieldgrouplayout;

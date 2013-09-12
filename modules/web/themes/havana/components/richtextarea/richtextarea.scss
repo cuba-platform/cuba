@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+// Version: $Id$
+
+@mixin havana-richtextarea($primaryStyleName: v-richtextarea) {
+
+  .#{$primaryStyleName} {
+    border: 1px solid $theme_fieldBorderColor;
+  }
+
+  .#{$primaryStyleName} .gwt-RichTextToolbar {
+    background: #8398AF url(images/richtext-toolbar-bg.png) repeat-x 0 -42px;
+    border-bottom: 1px solid #8398AF;
+  }
+
+  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-ToggleButton,
+  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-PushButton {
+    outline: 0;
+    background: transparent url(images/richtext-toolbar-bg.png) repeat-x;
+  }
+
+  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-ToggleButton-down,
+  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-PushButton-down,
+  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-ToggleButton-down-hovering,
+  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-PushButton-down-hovering {
+    background-position: 0 -21px;
+  }
+}
