@@ -73,7 +73,7 @@ public abstract class AbstractMessages implements Messages {
     protected void init() {
         mainMessagePack = AppContext.getProperty("cuba.mainMessagePack");
         if (mainMessagePack == null)
-            throw new IllegalStateException("Property cuba.messagePack is not set");
+            throw new IllegalStateException("Property cuba.mainMessagePack is not set");
         log.debug("Main message pack: " + mainMessagePack);
 
         for (Locale locale : globalConfig.getAvailableLocales().values()) {
