@@ -78,7 +78,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                     for (Object collItem : coll) {
                         if (PersistenceHelper.isNew(collItem)) {
                             itemToCreate.remove(collItem);
-                            itemToCreate.add((T) collItem);
+                            itemToCreate.add(collItem);
                             modified = true;
                         }
                     }
@@ -519,7 +519,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         Collection<T> collection = __getCollection();
         if (collection != null) {
-            for (T item : new ArrayList<T>(collection)) {
+            for (T item : new ArrayList<>(collection)) {
                 for (Entity entity : entities) {
                     if (entity.equals(item)) {
                         if (collection instanceof List) {
@@ -593,6 +593,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             //noinspection unchecked
             this.sortInfos = sortInfos;
             doSort();
+
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
         }
     }
 

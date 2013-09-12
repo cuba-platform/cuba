@@ -61,7 +61,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
         @Override
         public void actionPerform(Component component) {
-            String url = ControllerUtils.getLocationWithoutParams() + "?restartApplication";
+            String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
 
             Page.getCurrent().open(url, "_self");
         }

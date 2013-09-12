@@ -195,12 +195,12 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
 
         @Override
         public void sort(Object[] propertyId, boolean[] ascending) {
-            List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<CollectionDatasource.Sortable.SortInfo>();
+            List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<>();
             for (int i = 0; i < propertyId.length; i++) {
                 final MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId[i];
 
                 final CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> info =
-                        new CollectionDatasource.Sortable.SortInfo<MetaPropertyPath>();
+                        new CollectionDatasource.Sortable.SortInfo<>();
                 info.setPropertyPath(propertyPath);
                 info.setOrder(ascending[i] ? CollectionDatasource.Sortable.Order.ASC : CollectionDatasource.Sortable.Order.DESC);
 

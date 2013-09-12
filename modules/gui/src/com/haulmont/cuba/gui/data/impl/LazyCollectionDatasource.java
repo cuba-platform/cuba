@@ -428,6 +428,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (!Arrays.equals(this.sortInfos, sortInfos)) {
             this.sortInfos = sortInfos;
             doSort();
+
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
         }
     }
 

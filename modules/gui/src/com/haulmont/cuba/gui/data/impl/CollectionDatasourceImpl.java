@@ -207,6 +207,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             if (data.size() > 0) {
                 if (!sortOnDb || containsAllDataFromDb()) {
                     doSort();
+
+                    fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
                 } else {
                     refresh();
                 }
