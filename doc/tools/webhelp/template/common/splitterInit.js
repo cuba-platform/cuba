@@ -29,7 +29,7 @@
 		,	west__fxName_close:			"none"	
 
 	
-		,	stateManagement__enabled:	false // automatic cookie load & save enabled by default
+		,	stateManagement__enabled:	true // automatic cookie load & save enabled by default
                 ,       stateManagement__cookie__name:    "sidebar_state" 
 		});
 

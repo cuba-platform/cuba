@@ -45,7 +45,7 @@ $(document).ready(function() {
         collapsed: true,
         animated: "medium",
         control: "#sidetreecontrol",
-        persist: "cookie"
+        persist: "location"
     });
 
     //after toc fully styled, display it. Until loading, a 'loading' image will be displayed
