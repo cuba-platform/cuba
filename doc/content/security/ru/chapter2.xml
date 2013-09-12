@@ -175,15 +175,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
         </imageobject>
       </mediaobject>
     </figure>
-    <para>Следует иметь в виду следующие моменты:<itemizedlist>
-        <listitem>
-          <para>при задании только оператора <literal>Where</literal> в нем заменяется алиас основной сущности;</para>
-        </listitem>
-        <listitem>
-          <para>при задании и оператора <literal>Join</literal>, и оператора <literal>Where</literal> в операторе <literal>Join</literal> алиас заменяется, а в операторе <literal>Where</literal> − нет.</para>
-        </listitem>
-      </itemizedlist></para>
-    <para>В обоих случаях в текст оператора <literal>Join</literal> и оператора <literal>Where</literal> можно помещать метку <literal>{E}</literal>, которая будет заменена на алиас основной сущности запроса. Если в тексте встречается метка <literal>{E}</literal>, то никаких других алиасов, кроме указанных меткой, заменяться не будет.</para>
+    <para>Для ссылки на атрибуты сущности в текст операторов <literal>Join</literal> и <literal>Where</literal> можно помещать метку <literal>{E}</literal>, которая будет заменена на алиас основной сущности запроса.</para>
     <para>Пример создания ограничений находится в <xref linkend="example_access_group"/>.</para>
     <para id="detail_session_attr"><firstterm>Атрибуты пользовательской сессии (Session Attributes)</firstterm> могут быть заданы при настройке системы. Это может понадобиться при настройке <link linkend="constraints_id">ограничений</link>, а также для любой другой прикладной функциональности.</para>
     <para>В <link linkend="section_session_id">пользовательскую сессию</link> при входе в систему будут помещены все атрибуты, заданные для группы, в которой находится пользователь, и для всех родительских групп вверх по иерархии. При этом если атрибут встречается в иерархии групп несколько раз, значение он получит от самой верхней группы, то есть переопределение значений атрибутов на нижнем уровне невозможно. При попытке переопределения в журнал сообщений сервера будет выведено сообщение с уровнем <literal>WARN</literal>.</para>
