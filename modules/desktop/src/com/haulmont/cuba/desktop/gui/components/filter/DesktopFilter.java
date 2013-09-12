@@ -22,7 +22,9 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -32,7 +34,10 @@ import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.Op;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
@@ -176,7 +181,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl.add(actionsButton.<java.awt.Component>getComponent());
 
         initMaxResultsPanel();
-        impl.add(maxResultsPanel, new CC().wrap());
+        impl.add(maxResultsPanel, new CC().wrap().hideMode(0));
 
         createParamsPanel(false);
         impl.add(paramsPanel);
