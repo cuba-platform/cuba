@@ -8,8 +8,9 @@
 
 @mixin havana-label($primaryStyleName: v-label) {
   .#{$primaryStyleName} {
-    border-top: 5px transparent solid;
-    border-bottom: 6px transparent solid;
+    border-top: 4px transparent solid;
+    border-bottom: 5px transparent solid;
+    line-height: 16px;
   }
 
   .#{$primaryStyleName}.h2 {

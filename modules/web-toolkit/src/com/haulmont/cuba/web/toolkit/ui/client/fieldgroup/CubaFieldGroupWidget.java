@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgroup;
 
-import com.google.gwt.dom.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxWidget;
 
 /**
@@ -27,9 +26,5 @@ public class CubaFieldGroupWidget extends CubaGroupBoxWidget {
         } else {
             removeStyleDependentName("border");
         }
-    }
-
-    protected Element getLegend() {
-        return legend;
     }
 }

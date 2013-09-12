@@ -6,129 +6,119 @@
 
 // Version: $Id$
 
-@mixin cuba-groupbox-defaults {
-  outline: none; /* Prevent selection outline which might break layouts or cause scrollbars */
-  text-align: left; /* Force default alignment */
-  border: 0;
-}
-
-$groupBoxInnerPadding: 5px;
-$groupBoxCaptionLineHeight: 18px;
-
 @mixin havana-cuba-groupbox($primaryStyleName : cuba-groupbox) {
+    @include base-panel($primaryStyleName);
 
-  .#{$primaryStyleName}.v-widget {
-    @include cuba-groupbox-defaults;
+  .#{$primaryStyleName}-content {
+    outline: none;
+    border-left: 1px solid $theme_groupBoxBorderColor;
+    border-right: 1px solid $theme_groupBoxBorderColor;
+    border-bottom: 1px solid $theme_groupBoxBorderColor;
+    padding: 0 5px;
+    padding-bottom: 5px;
+  }
 
-    .#{$primaryStyleName}-fieldset {
-      border: 1px solid #babfc0;
-      margin: 0;
-      padding: $groupBoxInnerPadding $groupBoxInnerPadding $groupBoxInnerPadding;
+  .#{$primaryStyleName}-captionwrap {
+    display: table;
+  }
+
+  .#{$primaryStyleName}-caption-start-deco {
+    display: table-cell;
+    height: 20px;
+    padding-top: 10px;
+
+    div {
+      width: 10px;
+      height: 10px;
+      border-left: 1px solid $theme_groupBoxBorderColor;
+      border-top: 1px solid $theme_groupBoxBorderColor;
+    }
+  }
+
+  .#{$primaryStyleName}-caption {
+    display: table-cell;
+    height: 20px;
+    vertical-align: top;
+    padding: 0 5px;
+  }
+
+  .#{$primaryStyleName}-caption-end-deco {
+    display: table-cell;
+    height: 20px;
+    border: 0;
+    width: 100%;
+    padding-top: 10px;
+
+    div {
       width: 100%;
-      height: 100%;
-      -moz-box-sizing: border-box;
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
-
-      legend {
-        margin: 0;
-        padding: 0;
-        font-weight: bold;
-        white-space: nowrap;
-      }
-
-      .#{$primaryStyleName}-caption {
-        @include cuba-groupbox-defaults;
-        font-weight: bold;
-        padding: 0 4px;
-        line-height: $groupBoxCaptionLineHeight;
-
-        .#{$primaryStyleName}-expander {
-          width: 9px;
-          height: 9px;
-          float: left;
-          cursor: pointer;
-          margin-top: 4px;
-          margin-right: 2px;
-          background: transparent;
-          background-repeat: no-repeat;
-          background-position: center left;
-          background-image: url(sprites/expand.png); /** sprite-ref: components; */
-        }
-
-        .#{$primaryStyleName}-expander.expanded {
-          background-image: url(sprites/collapse.png); /** sprite-ref: components; */
-        }
-
-        .v-errorindicator {
-          float: none;
-          padding-right: 10px;
-          display: inline;
-          background: transparent;
-        }
-
-        .v-icon {
-          display: inline;
-          vertical-align: middle;
-        }
-      }
-
-      .#{$primaryStyleName}-content {
-        @include cuba-groupbox-defaults;
-        overflow: hidden;
-        border: none;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        box-sizing: border-box;
-        width: 100%;
-        height: 100%;
-      }
-
-      .#{$primaryStyleName}-deco {
-        @include cuba-groupbox-defaults;
-        height: 0;
-        background: transparent;
-        margin: 0;
-      }
-
-      .#{$primaryStyleName}-deco:before {
-        display: block;
-        content: "";
-        width: 0;
-        height: 0;
-        margin-left: 0;
-        background: transparent;
-      }
+      height: 10px;
+      border-right: 1px solid $theme_groupBoxBorderColor;
+      border-top: 1px solid $theme_groupBoxBorderColor;
     }
   }
 
-  .#{$primaryStyleName}.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-fieldset {
-    border: none;
-    padding: 0;
-  }
-}
-
-@mixin havana-cuba-groupbox-browser-fixes($primaryStyleName : cuba-groupbox) {
-  .#{$primaryStyleName}.v-widget {
-    .#{$primaryStyleName}-fieldset {
-      .#{$primaryStyleName}-content.first-child-expanded {
-        padding-bottom: $groupBoxCaptionLineHeight;
-      }
-    }
+  .#{$primaryStyleName}-expander {
+    width: 9px;
+    height: 9px;
+    float: left;
+    cursor: pointer;
+    margin-top: 4px;
+    margin-right: 2px;
+    background: transparent;
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-image: url(sprites/expand.png); /** sprite-ref: components; */
   }
 
-  .#{$primaryStyleName}.v-widget.first-child-expanded.#{$primaryStyleName}-nocaption {
-    .#{$primaryStyleName}-fieldset {
-      .#{$primaryStyleName}-content {
-        padding-bottom: 0;
-      }
-    }
+  .#{$primaryStyleName}-nocollapsable > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-expander {
+    display: none;
   }
-}
 
-// include without .themename
-.v-webkit,
-.v-ie,
-.v-opera {
-  @include havana-cuba-groupbox-browser-fixes;
+  .#{$primaryStyleName}-expander.expanded {
+    background-image: url(sprites/collapse.png); /** sprite-ref: components; */
+  }
+
+  .#{$primaryStyleName}-deco {
+    line-height: 0;
+    height: 0;
+    width: 0;
+    display: none;
+  }
+
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-content {
+    border-left: 1px solid $theme_groupBoxNoCaptionBorderColor;
+    border-right: 1px solid $theme_groupBoxNoCaptionBorderColor;
+    border-bottom: 1px solid $theme_groupBoxNoCaptionBorderColor;
+    background-color: $theme_groupBoxNoCaptionBackgroundColor;
+  }
+
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+    border-color: $theme_groupBoxNoCaptionBorderColor;
+    background-color: $theme_groupBoxNoCaptionBackgroundColor;
+    height: 5px;
+  }
+
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco ,
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco {
+    height: 7px;
+    padding-top: 2px;
+  }
+
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-expander {
+    display: none;
+  }
+
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-nocaption {
+    display: none;
+  }
+
+  .#{$primaryStyleName}-caption,
+  .#{$primaryStyleName}-captionwrap,
+  .#{$primaryStyleName}-caption-end-deco,
+  .#{$primaryStyleName}-caption-end-deco > div,
+  .#{$primaryStyleName}-caption-start-deco,
+  .#{$primaryStyleName}-caption-start-deco > div {
+    @include box-defaults;
+  }
 }

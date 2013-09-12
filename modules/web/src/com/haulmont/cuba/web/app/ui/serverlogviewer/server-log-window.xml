@@ -23,28 +23,27 @@
     </timers>
 
     <layout expand="logFieldBox" spacing="true">
-        <groupBox>
-            <grid spacing="true">
-                <columns>
-                    <column/>
-                    <column/>
-                </columns>
-                <rows>
-                    <row>
-                        <label value="msg://jmx.localJmxNode"/>
-                        <label id="localJmxField" stylename="h2" width="400px"/>
-                    </row>
-                    <row>
-                        <label value="msg://jmx.targetJmxNode"/>
-                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
-                    </row>
-                </rows>
-            </grid>
-        </groupBox>
+
+        <grid spacing="true">
+            <columns>
+                <column/>
+                <column/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://jmx.localJmxNode"/>
+                    <label id="localJmxField" stylename="h2" width="400px"/>
+                </row>
+                <row>
+                    <label value="msg://jmx.targetJmxNode"/>
+                    <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
+                </row>
+            </rows>
+        </grid>
 
         <tabSheet width="100%">
             <tab id="viewTab" caption="msg://tab.view" margin="true">
-                <hbox id="logSelectBox" spacing="true" expandable="false">
+                <hbox id="logSelectBox" spacing="true">
                     <label id="labelLogFile" value="msg://log.file"/>
                     <lookupField id="logFileNameField" width="300px"/>
                     <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
@@ -53,7 +52,7 @@
                 </hbox>
             </tab>
             <tab id="optionsTab" caption="msg://tab.options" margin="true">
-                <hbox id="logLevelBox" spacing="true" expandable="false">
+                <hbox id="logLevelBox" spacing="true">
                     <grid spacing="true">
                         <columns count="5"/>
                         <rows>
@@ -85,6 +84,9 @@
         </tabSheet>
 
         <groupBox id="logFieldBox" width="100%" caption="msg://log.content">
+            <scrollBox id="logContainer" scrollBars="both" orientation="vertical" width="100%" height="100%">
+                <label id="logTailLabel"/>
+            </scrollBox>
         </groupBox>
     </layout>
 </window>

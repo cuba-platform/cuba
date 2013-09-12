@@ -13,6 +13,9 @@ import com.vaadin.shared.ui.panel.PanelState;
  * @version $Id$
  */
 public class CubaGroupBoxState extends PanelState {
+    {
+        primaryStyleName = "cuba-groupbox";
+    }
 
     public boolean collapsable = false;
 

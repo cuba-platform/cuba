@@ -39,14 +39,13 @@
   .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active,
   .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon:hover,
   .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active:hover {
+    @include box-defaults;
+
     padding-bottom: 5px;
     padding-top: 1px;
     width: 26px;
     height: 21px;
     border: 0;
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     background-clip: border-box;
     background-origin: border-box;
   }

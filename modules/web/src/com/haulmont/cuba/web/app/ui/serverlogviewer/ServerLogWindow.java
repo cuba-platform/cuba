@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
@@ -22,9 +23,7 @@ import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
 import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -81,10 +80,13 @@ public class ServerLogWindow extends AbstractWindow {
     @Inject
     protected CheckBox autoRefreshCheck;
 
-    protected JmxInstance localJmxInstance;
+    @Inject
+    protected Label logTailLabel;
 
-    protected final com.vaadin.ui.Label logTailLabel = new com.vaadin.ui.Label();
-    protected final com.vaadin.ui.Panel logContainer = new com.vaadin.ui.Panel();
+    @Inject
+    protected ScrollBoxLayout logContainer;
+
+    protected JmxInstance localJmxInstance;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -145,20 +147,11 @@ public class ServerLogWindow extends AbstractWindow {
             }
         });
 
-        logContainer.setSizeFull();
+        com.vaadin.ui.Label vlogTailLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(logTailLabel);
 
-        Panel groupBox = (Panel) WebComponentsHelper.unwrap(logFieldBox);
-        VerticalLayout logContent = new VerticalLayout();
-        logContent.setSizeUndefined();
-        logContent.addComponent(logTailLabel);
-        logContainer.setContent(logContent);
-
-        ComponentContainer groupBoxContent = (ComponentContainer) groupBox.getContent();
-        groupBoxContent.addComponent(logContainer);
-
-        logTailLabel.setSizeUndefined();
-        logTailLabel.setContentMode(ContentMode.HTML);
-        logTailLabel.setStyleName("cuba-log-content");
+        vlogTailLabel.setSizeUndefined();
+        vlogTailLabel.setContentMode(ContentMode.HTML);
+        vlogTailLabel.setStyleName("cuba-log-content");
 
         loggerLevelField.setOptionsList(LoggingHelper.getLevels());
         appenderLevelField.setOptionsList(LoggingHelper.getLevels());
@@ -234,10 +227,25 @@ public class ServerLogWindow extends AbstractWindow {
             StringBuilder coloredLog = new StringBuilder();
             BufferedReader reader = new BufferedReader(new StringReader(value));
             try {
+                List<String> logLevels = new LinkedList<>();
+                // highlight tomcat catalina levels
+                logLevels.add("WARNING");
+                logLevels.add("SEVERE");
+                // highlight log4j levels
+                for (Level level : LoggingHelper.getLevels()) {
+                    logLevels.add(level.toString());
+                }
+
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    for (Level level : LoggingHelper.getLevels())
-                        line = highlightLevel(line, level.toString());
+                    // replace one level per line
+                    for (String level : logLevels) {
+                        String highlightedLine = highlightLevel(line, level);
+                        if (!StringUtils.equals(highlightedLine, line)) {
+                            line = highlightedLine;
+                            break;
+                        }
+                    }
                     coloredLog.append(line).append("<br/>");
                 }
             } catch (IOException e) {
@@ -245,11 +253,14 @@ public class ServerLogWindow extends AbstractWindow {
                 return;
             }
             logTailLabel.setValue(coloredLog.toString());
-        } else
+        } else {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
+        }
 
-        int scrollPos = logContainer.getScrollTop() + 30000;
-        logContainer.setScrollTop(scrollPos);
+        Panel vlogContainer = (Panel) WebComponentsHelper.unwrap(logContainer);
+
+        int scrollPos = vlogContainer.getScrollTop() + 30000;
+        vlogContainer.setScrollTop(scrollPos);
     }
 
     // action method
@@ -415,7 +426,8 @@ public class ServerLogWindow extends AbstractWindow {
 
     protected String highlightLevel(String line, String level) {
         // use css classes for highlight different log levels
-        return line.replaceFirst(level, "<span class='cuba-log-level cuba-log-level-" + level + "'>" + level + "</span>");
+        return line.replaceFirst(level,
+                "<span class='cuba-log-level cuba-log-level-" + level + "'>" + level + "</span>");
     }
 
     protected JmxInstance getSelectedConnection() {

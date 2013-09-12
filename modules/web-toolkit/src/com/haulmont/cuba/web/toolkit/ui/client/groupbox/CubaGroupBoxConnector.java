@@ -7,7 +7,6 @@
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ApplicationConnection;
@@ -52,32 +51,33 @@ public class CubaGroupBoxConnector extends PanelConnector {
     }
 
     @Override
+    public void init() {
+        super.init();
+
+        getLayoutManager().registerDependency(this, getWidget().expander);
+        getLayoutManager().registerDependency(this, getWidget().captionStartDeco);
+        getLayoutManager().registerDependency(this, getWidget().captionEndDeco);
+    }
+
+    @Override
+    public void onUnregister() {
+        super.onUnregister();
+
+        getLayoutManager().unregisterDependency(this, getWidget().expander);
+        getLayoutManager().unregisterDependency(this, getWidget().captionStartDeco);
+        getLayoutManager().unregisterDependency(this, getWidget().captionEndDeco);
+    }
+
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
         // replace VPanel classnames
-        Tools.replaceClassNames(getWidget().captionNode, VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
-        Tools.replaceClassNames(getWidget().contentNode, VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
-        Tools.replaceClassNames(getWidget().bottomDecoration, VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
-        Tools.replaceClassNames(getWidget().getElement(), VPanel.CLASSNAME, CubaGroupBoxWidget.CLASSNAME);
-    }
-
-    @Override
-    public void layout() {
-        super.layout();
-
-        // fix padding
-        getWidget().legend.getStyle().clearMarginTop();
-
-        Style style = getWidget().getElement().getStyle();
-        style.clearPaddingTop();
-        style.clearPaddingBottom();
-
-        com.google.gwt.dom.client.Element firstChildElement = getWidget().contentNode.getFirstChildElement();
-        if (firstChildElement != null && "100%".equals(firstChildElement.getStyle().getHeight()))
-            getWidget().contentNode.addClassName("first-child-expanded");
-        else
-            getWidget().contentNode.removeClassName("first-child-expanded");
+        Tools.replaceClassNames(getWidget().captionNode, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
+        Tools.replaceClassNames(getWidget().captionWrap, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
+        Tools.replaceClassNames(getWidget().contentNode, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
+        Tools.replaceClassNames(getWidget().bottomDecoration, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
+        Tools.replaceClassNames(getWidget().getElement(), VPanel.CLASSNAME, getWidget().getStylePrimaryName());
     }
 
     @Override

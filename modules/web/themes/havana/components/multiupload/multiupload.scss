@@ -8,16 +8,17 @@
 
 @mixin havana-cuba-multiupload($primaryStyleName : cuba-multiupload) {
   .#{$primaryStyleName} {
+    @include box-defaults;
+
     z-index: auto;
   }
 
   .#{$primaryStyleName}-disabled {
+    @include box-defaults;
+
     z-index: auto;
     border: #000000 solid 1px;
     background-color: gray;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
   }
 
   .#{$primaryStyleName}-progress {

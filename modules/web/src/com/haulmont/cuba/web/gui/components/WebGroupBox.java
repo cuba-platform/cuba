@@ -8,7 +8,9 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
@@ -38,6 +40,8 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
+    protected com.vaadin.event.Action.Handler actionHandler;
+
     public WebGroupBox() {
         component = new CubaGroupBox();
         component.setExpandChangeHandler(this);
@@ -47,23 +51,26 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
     }
 
     private void initContainer(AbstractOrderedLayout container) {
-        container.setSizeFull();
         component.setContent(container);
-        component.addActionHandler(new com.vaadin.event.Action.Handler() {
-            @Override
-            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-                final Set<com.vaadin.event.Action> keys = actions.keySet();
-                return keys.toArray(new com.vaadin.event.Action[keys.size()]);
-            }
-
-            @Override
-            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-                Action act = actions.get(action);
-                if (act != null && act.isEnabled()) {
-                    act.actionPerform(WebGroupBox.this);
+        if (actionHandler == null) {
+            actionHandler = new com.vaadin.event.Action.Handler() {
+                @Override
+                public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                    final Set<com.vaadin.event.Action> keys = actions.keySet();
+                    return keys.toArray(new com.vaadin.event.Action[keys.size()]);
                 }
-            }
-        });
+
+                @Override
+                public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+                    Action act = actions.get(action);
+                    if (act != null && act.isEnabled()) {
+                        act.actionPerform(WebGroupBox.this);
+                    }
+                }
+            };
+            component.addActionHandler(actionHandler);
+        }
+        container.setSizeFull();
     }
 
     @Override
@@ -71,8 +78,9 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
         AbstractOrderedLayout newContent = null;
         if (orientation == Orientation.VERTICAL && !(component.getContent() instanceof CubaVerticalActionsLayout)) {
             newContent = new CubaVerticalActionsLayout();
-        } else if (orientation == Orientation.HORIZONTAL && !(component.getContent() instanceof CubaHorizontalActionsLayout))
+        } else if (orientation == Orientation.HORIZONTAL && !(component.getContent() instanceof CubaHorizontalActionsLayout)) {
             newContent = new CubaHorizontalActionsLayout();
+        }
 
         if (newContent != null) {
             initContainer(newContent);
@@ -92,14 +100,15 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
     }
 
     private AbstractOrderedLayout getComponentContent() {
-        return ((AbstractOrderedLayout)component.getContent());
+        return ((AbstractOrderedLayout) component.getContent());
     }
 
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         for (Component component : components) {
-            if (ObjectUtils.equals(component.getId(), id))
+            if (ObjectUtils.equals(component.getId(), id)) {
                 return (T) component;
+            }
         }
         return null;
     }
@@ -107,8 +116,9 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
     @Override
     public <T extends Component> T getComponent(String id) {
         for (Component component : getComponents()) {
-            if (ObjectUtils.equals(component.getId(), id))
+            if (ObjectUtils.equals(component.getId(), id)) {
                 return (T) component;
+            }
         }
         return null;
     }
@@ -279,7 +289,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
 
     @Override
     public void requestFocus() {
-        Iterator<com.vaadin.ui.Component> componentIterator = getComponentContent().getComponentIterator();
+        Iterator<com.vaadin.ui.Component> componentIterator = getComponentContent().iterator();
         if (componentIterator.hasNext()) {
             com.vaadin.ui.Component component = componentIterator.next();
             if (component instanceof com.vaadin.ui.Component.Focusable) {
@@ -316,8 +326,9 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
     @Override
     public void setOrientation(Orientation orientation) {
         if (!ObjectUtils.equals(orientation, this.orientation)) {
-            if (!components.isEmpty())
+            if (!components.isEmpty()) {
                 throw new IllegalStateException("Unable to change groupBox orientation after adding components to it");
+            }
 
             this.orientation = orientation;
         }
@@ -345,9 +356,10 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
 
     @Override
     public void expandStateChanged(boolean expanded) {
-        if (expanded)
+        if (expanded) {
             fireExpandListeners();
-        else
+        } else {
             fireCollapseListeners();
+        }
     }
 }

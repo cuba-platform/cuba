@@ -24,43 +24,45 @@
     <assign name="width" value="200"/>
 
     <layout expand="permissionsTabsheet" spacing="true">
-        <hbox spacing="true" margin="true">
-            <grid spacing="true">
-                <columns count="3"/>
-                <rows>
-                    <row>
-                        <label value="msg://name"/>
-                        <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
-                                   requiredMessage="msg://nameMsg"/>
-                    </row>
-                    <row>
-                        <label value="msg://locName"/>
-                        <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
-                    </row>
-                </rows>
-            </grid>
+        <groupBox>
+            <hbox spacing="true">
+                <grid spacing="true">
+                    <columns count="3"/>
+                    <rows>
+                        <row>
+                            <label value="msg://name"/>
+                            <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
+                                       requiredMessage="msg://nameMsg"/>
+                        </row>
+                        <row>
+                            <label value="msg://locName"/>
+                            <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
+                        </row>
+                    </rows>
+                </grid>
 
-            <grid spacing="true">
-                <columns count="3"/>
-                <rows>
-                    <row>
-                        <label value="msg://roleType"/>
-                        <lookupField id="typeLookup" datasource="roleDs" property="type"
-                                     required="true" width="150"/>
-                    </row>
-                    <row>
-                        <label value="msg://defaultRole"/>
-                        <checkBox id="defaultRole" datasource="roleDs" property="defaultRole"/>
-                    </row>
-                </rows>
-            </grid>
+                <grid spacing="true">
+                    <columns count="3"/>
+                    <rows>
+                        <row>
+                            <label value="msg://roleType"/>
+                            <lookupField id="typeLookup" datasource="roleDs" property="type"
+                                         required="true" width="150"/>
+                        </row>
+                        <row>
+                            <label value="msg://defaultRole"/>
+                            <checkBox id="defaultRole" datasource="roleDs" property="defaultRole"/>
+                        </row>
+                    </rows>
+                </grid>
 
-            <hbox spacing="true" id="descrBox" height="100%">
-                <label value="msg://description"/>
-                <textArea id="description" datasource="roleDs" property="description" rows="4"
-                           height="100%" width="300px"/>
+                <hbox spacing="true" id="descrBox" height="100%">
+                    <label value="msg://description"/>
+                    <textArea id="description" datasource="roleDs" property="description" rows="4"
+                              height="100%" width="300px"/>
+                </hbox>
             </hbox>
-        </hbox>
+        </groupBox>
 
         <tabSheet id="permissionsTabsheet">
             <tab id="screenPermissionsTab" caption="msg://screen-permissions">

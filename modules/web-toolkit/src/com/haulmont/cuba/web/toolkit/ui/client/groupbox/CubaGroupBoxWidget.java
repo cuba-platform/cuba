@@ -19,57 +19,47 @@ public class CubaGroupBoxWidget extends VPanel {
 
     public static final String CLASSNAME = "cuba-groupbox";
 
-    protected Element descriptionNode = DOM.createDiv();
-
-    protected Element fieldset = DOM.createFieldSet();
-    protected Element legend = DOM.createLegend();
-
-    protected Element expander = DOM.createSpan();
-
     protected boolean expanded = true;
 
     protected boolean collapsable = false;
 
     protected ExpandHandler expandHandler;
 
+    public Element captionWrap;
+
+    public Element expander = DOM.createSpan();
+
+    public Element captionStartDeco = DOM.createDiv();
+    public Element captionEndDeco = DOM.createDiv();
+
     public CubaGroupBoxWidget(String primaryStyleName) {
+        setStylePrimaryName(primaryStyleName);
         setStyleName(primaryStyleName);
 
-        // remove parent DOM structure
-        getElement().removeChild(captionNode.getParentElement());
-        getElement().removeChild(bottomDecoration);
-        getElement().removeChild(contentNode);
-
-        captionNode.getParentElement().removeChild(captionNode);
+        captionWrap = captionNode.getParentElement().cast();
 
         captionNode.setClassName(primaryStyleName + "-caption");
-        descriptionNode.setClassName(primaryStyleName + "-description");
         contentNode.setClassName(primaryStyleName + "-content");
         bottomDecoration.setClassName(primaryStyleName + "-deco");
         expander.setClassName(primaryStyleName + "-expander");
 
         setExpanded(true);
 
+        captionStartDeco.appendChild(DOM.createDiv());
+        captionStartDeco.setClassName(primaryStyleName + "-caption-start-deco");
+        captionWrap.insertFirst(captionStartDeco);
+
+        captionEndDeco.appendChild(DOM.createDiv());
+        captionEndDeco.setClassName(primaryStyleName + "-caption-end-deco");
+        captionWrap.appendChild(captionEndDeco);
+
         captionNode.insertFirst(expander);
-
-        legend.appendChild(captionNode);
-
-        fieldset.setClassName(primaryStyleName + "-fieldset");
-        fieldset.appendChild(legend);
-        fieldset.appendChild(descriptionNode);
-        fieldset.appendChild(contentNode);
-        fieldset.appendChild(bottomDecoration);
-        getElement().appendChild(fieldset);
 
         DOM.sinkEvents(expander, Event.ONCLICK);
     }
 
     public CubaGroupBoxWidget() {
         this(CLASSNAME);
-    }
-
-    public void setDescription(String text) {
-        DOM.setInnerText(descriptionNode, text);
     }
 
     @Override

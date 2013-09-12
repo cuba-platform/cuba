@@ -49,3 +49,10 @@
     }
   }
 }
+
+@mixin box-defaults {
+  box-sizing: border-box;
+  -webkit-border-sizing: border-box;
+  -o-border-sizing: border-box;
+  -moz-border-sizing: border-box;
+}

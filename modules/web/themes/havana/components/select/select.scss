@@ -12,6 +12,8 @@
   $comboBoxBorderReadonly: 1px solid $theme_fieldReadonlyBorderColor;
 
   .#{$primaryStyleName} {
+    @include box-defaults;
+
     line-height: 0;
     height: 25px;
     white-space: nowrap;
@@ -20,10 +22,6 @@
     background: #fff;
     padding-right: 25px;
 
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-
     border-left: $comboBoxBorder;
 
     .v-icon {
@@ -31,10 +29,9 @@
     }
 
     .#{$primaryStyleName}-input {
+      @include box-defaults;
+
       background-color: transparent;
-      -moz-box-sizing: border-box;
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
       outline: 0;
 
       border: $comboBoxBorder;
@@ -47,6 +44,8 @@
     }
 
     .#{$primaryStyleName}-button {
+      @include box-defaults;
+
       cursor: pointer;
       height: 100%;
       width: 25px;
@@ -58,9 +57,6 @@
       background-position: middle center;
       background-image: url(sprites/filter-button-bg.png);      /** sprite-ref: components; */
 
-      -moz-box-sizing: border-box;
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
       border: $comboBoxBorder;
       border-left: 0;
     }
