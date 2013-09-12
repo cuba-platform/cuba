@@ -268,4 +268,14 @@ public class DesktopComponentsHelper {
             throw new IllegalArgumentException("Can not get top level frame for " + frame);
         }
     }
+
+    /**
+     * Determines whether component will be displayed on the screen.
+     *
+     * @param component
+     * @return true if the component and all of its ancestors are visible
+     */
+    public static boolean isRecursivelyVisible(java.awt.Component component) {
+        return component.isVisible() && (component.getParent() == null || isRecursivelyVisible(component.getParent()));
+    }
 }

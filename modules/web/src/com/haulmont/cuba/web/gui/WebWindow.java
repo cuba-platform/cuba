@@ -444,12 +444,43 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setFocusComponent(String componentId) {
         this.focusComponentId = componentId;
-        Component component = getComponent(componentId);
-        if (component != null) {
-            component.requestFocus();
+        if (componentId != null) {
+            Component focusComponent = getComponent(componentId);
+            if (focusComponent != null) {
+                focusComponent.requestFocus();
+            } else {
+                log.error("Can't find focus component: " + componentId);
+            }
         } else {
-            log.error("Can't find focus component: " + componentId);
+            com.vaadin.ui.Component.Focusable focusComponent = getComponentToFocus(getContainer());
+            if (focusComponent != null) {
+                focusComponent.focus();
+            }
         }
+    }
+
+    private com.vaadin.ui.Component.Focusable getComponentToFocus(ComponentContainer container) {
+        for (com.vaadin.ui.Component child : container) {
+            if (child instanceof Panel) {
+                child = ((Panel) child).getContent();
+            }
+            if (child instanceof ComponentContainer) {
+                com.vaadin.ui.Component.Focusable result = getComponentToFocus((ComponentContainer) child);
+                if (result != null) {
+                    return result;
+                }
+            } else {
+                if (child instanceof com.vaadin.ui.Component.Focusable
+                        && !child.isReadOnly()
+                        && child.isVisible()
+                        && child.isEnabled()
+                        && !(child instanceof Button)) {
+
+                    return (com.vaadin.ui.Component.Focusable) child;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

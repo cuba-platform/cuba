@@ -159,9 +159,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
     protected void loadFocusedComponent(Window window, Element element) {
         String componentId = element.attributeValue("focusComponent");
-        if (componentId != null) {
-            window.setFocusComponent(componentId);
-        }
+        window.setFocusComponent(componentId);
     }
 
     private void addAssignTimerFrameTask(final Timer timer) {

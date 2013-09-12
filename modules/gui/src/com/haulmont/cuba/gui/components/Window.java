@@ -56,7 +56,7 @@ public interface Window extends IFrame, Component.HasCaption {
 
     /**
      * Set a component to be focused after the screen is opened.
-     * @param componentId component's ID in XML
+     * @param componentId component's ID in XML. If null, then first focusable component will be focused
      */
     void setFocusComponent(String componentId);
 

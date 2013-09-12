@@ -38,6 +38,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -146,12 +147,51 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void setFocusComponent(String componentId) {
         this.focusComponentId = componentId;
-        Component component = getComponent(componentId);
-        if (component != null) {
-            component.requestFocus();
+        if (componentId != null) {
+            Component component = getComponent(componentId);
+            if (component != null) {
+                component.requestFocus();
+            } else {
+                log.error("Can't find focus component: " + componentId);
+            }
         } else {
-            log.error("Can't find focus component: " + componentId);
+
+            final java.awt.Component focusComponent = getComponentToFocus(getContainer());
+            if (focusComponent != null) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        focusComponent.requestFocus();
+                    }
+                });
+            }
         }
+    }
+
+    //todo devyatkin find another way to get component to focus
+    private java.awt.Component getComponentToFocus(java.awt.Container component) {
+        if (component.isFocusable() && component.isEnabled()
+                && DesktopComponentsHelper.isRecursivelyVisible(component)) {
+            if (component instanceof JComboBox
+                    || component instanceof JCheckBox
+                    || component instanceof JTable
+                    || component instanceof JTree) {
+                return component;
+            } else if (component instanceof JTextComponent && ((JTextComponent) component).isEditable()) {
+                return component;
+            }
+        }
+        for (java.awt.Component child : component.getComponents()) {
+            if (child instanceof java.awt.Container) {
+                java.awt.Component result = getComponentToFocus((java.awt.Container) child);
+                if (result != null) {
+                    return result;
+                }
+            } else {
+                return child;
+            }
+        }
+        return null;
     }
 
     @Override

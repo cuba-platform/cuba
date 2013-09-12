@@ -18,9 +18,9 @@ import javax.swing.*;
  * @author devyatkin
  */
 public class ToolTipButton extends JXHyperlink {
-   
-    public ToolTipButton(){
-        setText("[?]");
 
+    public ToolTipButton() {
+        setText("[?]");
+        setFocusable(false);
     }
 }
