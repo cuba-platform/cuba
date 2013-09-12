@@ -235,7 +235,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         Object value = getValue();
         if (isEmpty(value)) {
             if (isRequired())
-                throw new RequiredValueMissingException(component.getRequiredError(), this);
+                throw new RequiredValueMissingException(getRequiredMessage(), this);
             else
                 return;
         }

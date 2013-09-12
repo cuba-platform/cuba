@@ -376,7 +376,7 @@ public class WebDateField
         com.vaadin.ui.Component timeComponent = timeField.getComponent();
         if ((timeComponent.getParent() != null) && timeField.isVisible()) {
             if (isRequired() && timeField.getValue() == null) {
-                throw new RequiredValueMissingException(component.getRequiredError(), timeField);
+                throw new RequiredValueMissingException(getRequiredMessage(), timeField);
             }
         }
 
