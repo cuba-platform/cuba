@@ -70,7 +70,7 @@ public class WebWindowManager extends WindowManager {
     private static Log log = LogFactory.getLog(WebWindowManager.class);
 
     private boolean disableSavingScreenHistory;
-    private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
+    protected ScreenHistorySupport screenHistorySupport;
 
     private ShortcutListener closeShortcut = null;
 
@@ -86,6 +86,7 @@ public class WebWindowManager extends WindowManager {
                 showStartupScreen(app.getAppWindow());
             }
         });
+        screenHistorySupport = new ScreenHistorySupport();
     }
 
     private WindowData getCurrentWindowData() {
