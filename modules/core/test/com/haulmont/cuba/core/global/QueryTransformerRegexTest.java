@@ -21,7 +21,7 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par",
                 "sec$GroupHierarchy");
 
-        transformer.addWhere("a.createdBy = :par1");
+        transformer.addWhere("{E}.createdBy = :par1");
         String res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1)",
@@ -32,7 +32,7 @@ public class QueryTransformerRegexTest extends TestCase
                         "group by c.level having c.level > 0 order by c.level",
                 "sec$GroupHierarchy");
 
-        transformer.addWhere("a.createdBy = :par1");
+        transformer.addWhere("{E}.createdBy = :par1");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -42,7 +42,7 @@ public class QueryTransformerRegexTest extends TestCase
         assertEquals(1, set.size());
         assertEquals("par1", set.iterator().next());
 
-        transformer.addWhere("(a.updatedBy = :par2 and a.groupId = :par3)");
+        transformer.addWhere("({E}.updatedBy = :par2 and {E}.groupId = :par3)");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -53,7 +53,7 @@ public class QueryTransformerRegexTest extends TestCase
 
         transformer.reset();
 
-        transformer.mergeWhere("select gh from sec$GroupHierarchy gh where gh.version between 1 and 2");
+        transformer.mergeWhere("select h from sec$GroupHierarchy h where h.version between 1 and 2");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -284,7 +284,7 @@ public class QueryTransformerRegexTest extends TestCase
                 "select h from sec$GroupHierarchy h where h.group = :par",
                 "sec$GroupHierarchy");
 
-        transformer.addWhere("group.createdBy = :par1 and group.updatedBy = (select u.login from sec$User u where u.login = :par2) and group.createTs = :par3");
+        transformer.addWhere("{E}.createdBy = :par1 and {E}.updatedBy = (select u.login from sec$User u where u.login = :par2) and {E}.createTs = :par3");
         res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h where h.group = :par and (h.createdBy = :par1" +
@@ -300,8 +300,8 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h where h.group = :par",
                 "sec$GroupHierarchy");
 
-        transformer.addJoinAndWhere("join group.parent.constraints c", "group.createdBy = :par1 and group.updatedBy = " +
-                "(select u.login from sec$User u where u.login = group.param) and c.createTs = :par3");
+        transformer.addJoinAndWhere("join {E}.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = " +
+                "(select u.login from sec$User u where u.login = {E}.param) and c.createTs = :par3");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and (h.createdBy = :par1" +

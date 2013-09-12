@@ -95,7 +95,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         if (em.isSoftDeletion()
                 && PersistenceHelper.isSoftDeleted(effectiveClass)) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(result, effectiveEntityName);
-            transformer.addWhere("e.deleteTs is null");
+            transformer.addWhere("{E}.deleteTs is null");
             result = transformer.getResult();
         }
 

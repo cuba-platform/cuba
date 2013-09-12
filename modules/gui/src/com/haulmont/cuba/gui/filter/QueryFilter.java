@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.09.2009 12:09:22
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.filter;
 
@@ -22,6 +17,10 @@ import org.apache.commons.lang.text.StrBuilder;
 
 import java.util.*;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class QueryFilter {
 
     private final Condition root;

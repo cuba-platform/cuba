@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.cuba.core.sys.jpql.transform;
 
 import com.haulmont.cuba.core.global.QueryTransformer;
@@ -14,9 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Author: Alexander Chevelev
- * Date: 26.03.2011
- * Time: 1:25:51
+ * @author Chevelev
+ * @version $Id$
  */
 public class QueryTransformerAstBased implements QueryTransformer {
     private DomainModel model;

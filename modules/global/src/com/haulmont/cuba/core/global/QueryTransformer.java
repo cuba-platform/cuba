@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.12.2008 10:17:29
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -14,9 +9,12 @@ import java.util.Set;
 
 /**
  * Transforms JPQL query
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public interface QueryTransformer
-{
+public interface QueryTransformer {
+
     /** Main entity alias placeholder  */
     String ALIAS_PLACEHOLDER = "{E}";
 
