@@ -8,12 +8,8 @@ package com.haulmont.cuba.web.toolkit.ui.client.fieldgroup;
 
 import com.google.gwt.core.client.GWT;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
-import com.haulmont.cuba.web.toolkit.ui.client.Tools;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.UIDL;
+import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxConnector;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.VPanel;
-import com.vaadin.client.ui.panel.PanelConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -21,7 +17,7 @@ import com.vaadin.shared.ui.Connect;
  * @version $Id$
  */
 @Connect(CubaFieldGroup.class)
-public class CubaFieldGroupConnector extends PanelConnector {
+public class CubaFieldGroupConnector extends CubaGroupBoxConnector {
 
     @Override
     public CubaFieldGroupWidget getWidget() {
@@ -36,18 +32,6 @@ public class CubaFieldGroupConnector extends PanelConnector {
     @Override
     public CubaFieldGroupState getState() {
         return (CubaFieldGroupState) super.getState();
-    }
-
-    @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
-        // replace VPanel classnames
-        Tools.replaceClassNames(getWidget().captionNode, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().captionWrap, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().contentNode, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().bottomDecoration, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().getElement(), VPanel.CLASSNAME, getWidget().getStylePrimaryName());
     }
 
     @Override

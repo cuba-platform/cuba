@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgroup.CubaFieldGroupState;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Panel;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ import java.util.Map;
  * @author gorodnov
  * @version $Id$
  */
-public class CubaFieldGroup extends Panel {
+public class CubaFieldGroup extends CubaGroupBox {
 
     protected int currentX = 0;
     protected int currentY = 0;

@@ -9,11 +9,57 @@
 @mixin havana-fieldgroup($primaryStyleName: cuba-fieldgroup) {
   @include havana-cuba-groupbox($primaryStyleName);
 
+  /*
+   * Style variations:
+   * - caption (default) / nocaption
+   * - border / noborder (default)
+   */
+
   .#{$primaryStyleName}-expander {
     display: none;
   }
 
-  .#{$primaryStyleName}-content {
+  .#{$primaryStyleName}-content,
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-content {
+    padding: 0;
+    border-width: 0;
+    background-color: transparent;
+  }
+
+  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-end-deco div,
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-end-deco div {
+    border-width: 0;
+    border-color: $theme_groupBoxNoCaptionBorderColor;
+    height: 0;
+  }
+
+  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco {
+    display: none;
+  }
+
+  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption {
+    padding: 0;
+  }
+
+  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption {
+    padding: 0 5px;
+  }
+
+  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco {
+    display: table-cell;
+  }
+
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap {
+    display: none;
+  }
+
+  .#{$primaryStyleName}-border.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap {
+    display: table;
+  }
+
+  .#{$primaryStyleName}-border > .#{$primaryStyleName}-content {
     border-left: 1px solid $theme_groupBoxNoCaptionBorderColor;
     border-right: 1px solid $theme_groupBoxNoCaptionBorderColor;
     border-bottom: 1px solid $theme_groupBoxNoCaptionBorderColor;
@@ -23,19 +69,24 @@
     padding-bottom: 10px;
   }
 
-  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-end-deco div {
-    border-color: $theme_groupBoxNoCaptionBorderColor;
+  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+    height: 10px;
     background-color: $theme_groupBoxNoCaptionBackgroundColor;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div ,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
-    height: 10px;
+  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-start-deco div {
+    border-left-width: 1px;
+    border-top-width: 1px;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco ,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco {
+  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-end-deco div {
+    border-right-width: 1px;
+    border-top-width: 1px;
+  }
+
+  .#{$primaryStyleName}-border.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-border.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
     height: 12px;
     padding-top: 2px;
   }
