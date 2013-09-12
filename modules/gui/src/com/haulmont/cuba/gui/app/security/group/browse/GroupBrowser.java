@@ -227,6 +227,7 @@ public class GroupBrowser extends AbstractWindow {
         );
 
         constraintsTabInitialized = true;
+        constraintsTable.refresh();
     }
 
     protected void initAttributesTab() {
@@ -238,6 +239,7 @@ public class GroupBrowser extends AbstractWindow {
         attributesTable.addAction(attributeCreateAction);
 
         attributesTabInitialized = true;
+        attributesTable.refresh();
     }
 
     /**
