@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
-import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -43,6 +42,11 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
 
     protected CubaTreeTable createTreeTableComponent() {
         return new CubaTreeTableExt();
+    }
+
+    @Override
+    public void setRowHeaderMode(RowHeaderMode rowHeaderMode) {
+        // Row Header mode for TreeTable ignored
     }
 
     @Override
