@@ -18,8 +18,10 @@ public enum ExportFormat {
 
     PDF("application/pdf", "pdf"),
     XLS("application/vnd.ms-excel", "xls"),
+    XLSX("application/vnd.ms-excel", "xlsx"),
     RTF("application/rtf", "rtf"),
     DOC("application/doc", "doc"),
+    DOCX("application/docx", "docx"),
     XML("text/xml", "xml"),
     CSV("application/csv", "csv"),
 
