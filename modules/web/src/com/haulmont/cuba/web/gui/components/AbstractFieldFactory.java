@@ -53,7 +53,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     return createNumberField(datasource, property);
                 }
             } else if (mpp.getRange().isClass()) {
-                return createEntityField(datasource, property);
+                return createEntityField(datasource, property, xmlDescriptor);
             } else if (mpp.getRange().isEnum()) {
                 return createEnumField(datasource, property, mpp.getMetaProperty());
             }
@@ -176,7 +176,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         return timeField;
     }
 
-    protected Component createEntityField(Datasource datasource, String property) {
+    protected Component createEntityField(Datasource datasource, String property, Element xmlDescriptor) {
         PickerField pickerField;
 
         CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
@@ -195,6 +195,13 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
             }
         }
+
+        String captionProperty = xmlDescriptor.attributeValue("captionProperty");
+        if (StringUtils.isEmpty(captionProperty)) {
+            pickerField.setCaptionMode(CaptionMode.PROPERTY);
+            pickerField.setCaptionProperty(captionProperty);
+        }
+
         pickerField.setDatasource(datasource, property);
 
         return pickerField;
