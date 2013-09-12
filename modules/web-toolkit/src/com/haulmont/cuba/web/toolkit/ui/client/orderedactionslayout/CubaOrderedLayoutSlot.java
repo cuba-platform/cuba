@@ -37,8 +37,6 @@ public class CubaOrderedLayoutSlot extends Slot implements CaptionHolder {
 
     public CubaOrderedLayoutSlot(VAbstractOrderedLayout layout, Widget widget) {
         super(layout, widget);
-
-        getStyleElement().getStyle().setProperty("box-sizing", "border-box");
     }
 
     public void setCaption(VCaption caption){
