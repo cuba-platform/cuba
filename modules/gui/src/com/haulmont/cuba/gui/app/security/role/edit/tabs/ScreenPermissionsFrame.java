@@ -196,8 +196,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             } else {
                 // Remove permission
                 Permission permission = null;
-                for (UUID id : screenPermissionsDs.getItemIds()) {
-                    Permission p = screenPermissionsDs.getItem(id);
+                for (Permission p : screenPermissionsDs.getItems()) {
                     if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
                         permission = p;
                         break;

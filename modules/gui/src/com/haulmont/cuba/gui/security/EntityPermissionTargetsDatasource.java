@@ -71,8 +71,7 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
     }
 
     private void loadPermissionVariants(OperationPermissionTarget target) {
-        for (UUID id : permissionDs.getItemIds()) {
-            Permission p = permissionDs.getItem(id);
+        for (Permission p : permissionDs.getItems()) {
             String permissionTargetString = p.getTarget();
             if (StringUtils.isNotEmpty(permissionTargetString)) {
                 int delimeterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);

@@ -73,8 +73,8 @@ public class DesktopOptionsGroup
             if (!optionsDatasource.getState().equals(Datasource.State.VALID)) {
                 optionsDatasource.refresh();
             }
-            for (Object id : optionsDatasource.getItemIds()) {
-                addItem(new EntityWrapper(optionsDatasource.getItem(id)));
+            for (Entity item : optionsDatasource.getItems()) {
+                addItem(new EntityWrapper(item));
             }
 
             optionsDatasource.addListener(

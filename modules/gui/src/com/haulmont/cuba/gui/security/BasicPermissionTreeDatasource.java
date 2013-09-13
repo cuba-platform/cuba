@@ -84,8 +84,7 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
 
     private void loadPermissionVariant(BasicPermissionTarget target) {
         Permission permission = null;
-        for (UUID id : permissionDs.getItemIds()) {
-            Permission p = permissionDs.getItem(id);
+        for (Permission p : permissionDs.getItems()) {
             if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
                 permission = p;
                 break;

@@ -122,9 +122,7 @@ public class HierarchicalPropertyDatasourceImpl<T extends Entity<K>, K>
         if (item == null) return false;
 
         if (hierarchyPropertyName != null) {
-            Collection<K> ids = getItemIds();
-            for (K id : ids) {
-                Entity currentItem = getItem(id);
+            for (T currentItem : getItems()) {
                 Object parentItem = currentItem.getValue(hierarchyPropertyName);
                 if (parentItem != null && parentItem.equals(item))
                     return true;

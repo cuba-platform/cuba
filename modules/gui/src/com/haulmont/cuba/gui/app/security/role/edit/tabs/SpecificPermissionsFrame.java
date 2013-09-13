@@ -9,18 +9,21 @@ package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.app.security.role.edit.BasicPermissionTreeStyleProvider;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.security.SpecificPermissionTreeDatasource;
+import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -172,8 +175,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
             } else {
                 // Remove permission
                 Permission permission = null;
-                for (UUID id : specificPermissionsDs.getItemIds()) {
-                    Permission p = specificPermissionsDs.getItem(id);
+                for (Permission p : specificPermissionsDs.getItems()) {
                     if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
                         permission = p;
                         break;

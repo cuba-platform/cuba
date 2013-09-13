@@ -266,8 +266,8 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     public void initCopy() {
-        for (UUID id : rolesDs.getItemIds()) {
-            ((DatasourceImplementation)rolesDs).modified(rolesDs.getItem(id));
+        for (Entity item : rolesDs.getItems()) {
+            ((DatasourceImplementation) rolesDs).modified(item);
         }
     }
 

@@ -5,6 +5,8 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -22,6 +24,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -162,6 +165,21 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
                 return ids;
             }
+        }
+    }
+
+    @Override
+    public Collection<T> getItems() {
+        if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
+            return Collections.emptyList();
+        } else {
+            return Collections2.transform(getItemIds(), new Function<K, T>() {
+                @Nullable
+                @Override
+                public T apply(@Nullable K id) {
+                    return id == null ? null : getItem(id);
+                }
+            });
         }
     }
 

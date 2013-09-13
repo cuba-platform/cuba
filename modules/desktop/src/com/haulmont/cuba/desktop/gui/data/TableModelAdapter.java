@@ -234,9 +234,8 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                     idx++;
                 }
             } else {
-                Collection itemIds = datasource.getItemIds();
-                for (Object id : itemIds) {
-                    if (entity.equals(datasource.getItem(id)))
+                for (Entity item : datasource.getItems()) {
+                    if (entity.equals(item))
                         return idx;
                     idx++;
                 }

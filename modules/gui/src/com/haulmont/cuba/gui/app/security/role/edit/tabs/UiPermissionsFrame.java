@@ -178,8 +178,7 @@ public class UiPermissionsFrame extends AbstractFrame {
             } else {
                 // Remove permission
                 Permission permission = null;
-                for (UUID id : uiPermissionsDs.getItemIds()) {
-                    Permission p = uiPermissionsDs.getItem(id);
+                for (Permission p : uiPermissionsDs.getItems()) {
                     if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
                         permission = p;
                         break;

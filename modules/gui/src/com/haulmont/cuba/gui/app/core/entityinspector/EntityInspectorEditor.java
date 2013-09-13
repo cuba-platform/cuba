@@ -721,18 +721,8 @@ public class EntityInspectorEditor extends AbstractEditor {
             public void handleLookup(Collection items) {
                 for (Object item : items) {
                     Entity entity = (Entity) item;
-                    Iterable existingPropertyEntities = Iterables.transform(
-                            propertyDs.getItemIds(),
-                            new Function<UUID, Entity>() {
-                                @Override
-                                public Entity apply(@Nullable UUID id) {
-                                    return propertyDs.getItem(id);
-                                }
-                            }
-                    );
-
                     //set currently editing item to the child's parent property
-                    if (!Iterables.contains(existingPropertyEntities, entity)) {
+                    if (!propertyDs.getItems().contains(entity)) {
                         MetaProperty inverseProperty = metaProperty.getInverse();
                         entity.setValue(inverseProperty.getName(), datasource.getItem());
                         propertyDs.addItem(entity);

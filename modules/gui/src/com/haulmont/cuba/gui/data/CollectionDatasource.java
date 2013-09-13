@@ -52,6 +52,15 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     Collection<K> getItemIds();
 
     /**
+     * In standard implementations this is a wrapper method around {@link #getItemIds()} and {@link #getItem(Object)}.
+     * Use it only if you really need the collection of items. Otherwise use {@link #getItemIds()} or {@link #size()}
+     * directly.
+     *
+     * @return collection of all items
+     */
+    Collection<T> getItems();
+
+    /**
      * @return size of the underlying collection. For {@link FetchMode#LAZY} datasource it is not equal
      * to the size of currently loaded data. 
      */

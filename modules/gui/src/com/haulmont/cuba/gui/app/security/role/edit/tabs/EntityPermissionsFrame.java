@@ -508,8 +508,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
             } else {
                 // Remove permission
                 Permission permission = null;
-                for (UUID id : entityPermissionsDs.getItemIds()) {
-                    Permission p = entityPermissionsDs.getItem(id);
+                for (Permission p : entityPermissionsDs.getItems()) {
                     if (ObjectUtils.equals(p.getTarget(), permissionValue)) {
                         permission = p;
                         break;

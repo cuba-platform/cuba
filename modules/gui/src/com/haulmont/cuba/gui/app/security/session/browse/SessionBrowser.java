@@ -118,10 +118,7 @@ public class SessionBrowser extends AbstractLookup {
 
     public void message() {
         final Set<UserSessionEntity> selected = sessionsTable.getSelected();
-        final Set<UserSessionEntity> all = new HashSet<>();
-        for (UUID id : sessionsDs.getItemIds()) {
-            all.add(sessionsDs.getItem(id));
-        }
+        final Set<UserSessionEntity> all = new HashSet<>(sessionsDs.getItems());
 
         Map<String, Object> params = new HashMap<>();
         params.put("selectedSessions", selected);

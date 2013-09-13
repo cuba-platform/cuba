@@ -77,8 +77,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
                 if (StringUtils.length(newFilter) >= minSearchStringLength) {
                     optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) newFilter));
                     if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 1) {
-                        Object id = optionsDatasource.getItemIds().iterator().next();
-                        setValue(optionsDatasource.getItem(id));
+                        setValue(optionsDatasource.getItems().iterator().next());
                     }
 
                     if (searchNotifications != null) {

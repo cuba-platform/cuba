@@ -183,10 +183,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @SuppressWarnings("unchecked")
     public <T> T getValue() {
         if (datasource != null) {
-            List<Object> items = new ArrayList<>();
-            for (final Object itemId : datasource.getItemIds()) {
-                items.add(datasource.getItem(itemId));
-            }
+            List<Object> items = new ArrayList(datasource.getItems());
             return (T) items;
         } else
             return (T) Collections.emptyList();

@@ -5,6 +5,8 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -28,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -184,6 +187,21 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             return Collections.emptyList();
         } else {
             return (Collection<K>) data.keySet();
+        }
+    }
+
+    @Override
+    public Collection<T> getItems() {
+        if (state == State.NOT_INITIALIZED) {
+            return Collections.emptyList();
+        } else {
+            return Collections2.transform(getItemIds(), new Function<K, T>() {
+                @Nullable
+                @Override
+                public T apply(@Nullable K id) {
+                    return id == null ? null : getItem(id);
+                }
+            });
         }
     }
 

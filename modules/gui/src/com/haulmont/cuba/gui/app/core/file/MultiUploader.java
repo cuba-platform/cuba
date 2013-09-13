@@ -29,7 +29,7 @@ public class MultiUploader extends AbstractEditor {
     private FileMultiUploadField uploadField = null;
     private Button okBtn;
     private boolean needSave;
-    private CollectionDatasource filesDs = null;
+    private CollectionDatasource<FileDescriptor, UUID> filesDs = null;
     private Table uploadsTable = null;
     private List<FileDescriptor> files = new ArrayList<>();
 
@@ -110,9 +110,7 @@ public class MultiUploader extends AbstractEditor {
         FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             // Relocate the file from temporary storage to permanent
-            Collection ids = filesDs.getItemIds();
-            for (Object id : ids) {
-                FileDescriptor fDesc = (FileDescriptor) filesDs.getItem(id);
+            for (FileDescriptor fDesc : filesDs.getItems()) {
                 fileUploading.putFileIntoStorage(descriptors.get(fDesc), fDesc);
                 files.add(fDesc);
             }

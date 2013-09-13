@@ -70,8 +70,7 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
     }
 
     private void loadPermissionVariants(final MultiplePermissionTarget target) {
-        for (UUID id : permissionDs.getItemIds()) {
-            Permission p = permissionDs.getItem(id);
+        for (Permission p : permissionDs.getItems()) {
             String permissionTargetString = p.getTarget();
             if (StringUtils.isNotEmpty(permissionTargetString)) {
                 int delimeterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);

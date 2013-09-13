@@ -95,11 +95,8 @@ public class PermissionUiHelper {
      */
     public static void createPermissionItem(CollectionDatasource<Permission, UUID> ds, Datasource<Role> roleDs,
                                             final String permissionTarget, PermissionType type, Integer value) {
-        final Collection<UUID> permissionIds = ds.getItemIds();
-
         Permission permission = null;
-        for (UUID id : permissionIds) {
-            Permission p = ds.getItem(id);
+        for (Permission p : ds.getItems()) {
             if (ObjectUtils.equals(p.getTarget(), permissionTarget)) {
                 permission = p;
                 break;
