@@ -22,6 +22,9 @@
         <!-- Rest API functionality should be initialized in dispatcher-spring.xml
              and should be turned on only by demand of user -->
         <context:exclude-filter type="regex" expression="com.haulmont.cuba.portal.restapi.*"/>
+
+        <!-- Exclude default CUBA controllers -->
+        <context:exclude-filter type="regex" expression="com.haulmont.cuba.portal.controllers.*"/>
     </context:component-scan>
 
     <bean id="cuba_UserSessionSource" class="com.haulmont.cuba.portal.sys.security.PortalUserSessionSource"/>
