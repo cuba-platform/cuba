@@ -228,7 +228,9 @@ public final class UserSessions implements UserSessionsAPI {
                     new TimerTask() {
                         @Override
                         public void run() {
-                            count = updateCurrentSessions(cache.values());
+                            if (AppContext.isStarted()) {
+                                count = updateCurrentSessions(cache.values());
+                            }
                         }
                     },
                     20000,
