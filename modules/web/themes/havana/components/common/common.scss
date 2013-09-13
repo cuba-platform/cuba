@@ -24,8 +24,7 @@
     select,
     button,
     label,
-    textarea,
-    .v-widget {
+    textarea {
       font-family: $theme_fonts;
     }
 
@@ -33,20 +32,28 @@
     select,
     button,
     label,
-    textarea,
-    .v-widget {
+    textarea {
       font-size: 12px;
       color: #464f52;
     }
+  }
 
-    .v-panel,
-    .v-scrollable,
-    .v-gridlayout,
-    .v-verticallayout,
-    .v-horizontallayout,
-    .cuba-fieldgrouplayout {
-      font-size: 0px;
-    }
+  .v-widget {
+    font-family: $theme_fonts;
+  }
+
+  .v-widget {
+    font-size: 12px;
+    color: #464f52;
+  }
+
+  .v-panel,
+  .v-scrollable,
+  .v-gridlayout,
+  .v-verticallayout,
+  .v-horizontallayout,
+  .cuba-fieldgrouplayout {
+    font-size: 0px;
   }
 }
 

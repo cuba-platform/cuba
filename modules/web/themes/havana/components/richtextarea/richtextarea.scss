@@ -12,6 +12,10 @@
     border: 1px solid $theme_fieldBorderColor;
   }
 
+  .#{$primaryStyleName}-readonly {
+    border: 0;
+  }
+
   .#{$primaryStyleName} .gwt-RichTextToolbar {
     background: #8398AF url(images/richtext-toolbar-bg.png) repeat-x 0 -42px;
     border-bottom: 1px solid #8398AF;
