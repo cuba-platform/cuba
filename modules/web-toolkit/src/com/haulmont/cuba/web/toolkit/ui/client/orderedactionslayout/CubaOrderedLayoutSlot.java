@@ -18,6 +18,7 @@ import com.vaadin.client.VCaption;
 import com.vaadin.client.ui.VCheckBox;
 import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
+import com.vaadin.shared.ui.AlignmentInfo;
 
 /**
  * @author devyatkin
@@ -128,8 +129,9 @@ public class CubaOrderedLayoutSlot extends Slot implements CaptionHolder {
         int widgetWidth = getWidget().getOffsetWidth();
         int indicatorsWidth = Util.getRequiredWidth(rightCaption);
         int captionWidth = getCaption().getElement().getOffsetWidth();
-
-        if (captionWidth >= widgetWidth + indicatorsWidth) {
+        if ((getAlignment().getBitMask() & AlignmentInfo.RIGHT.getBitMask()) == AlignmentInfo.RIGHT.getBitMask()) {
+            getStyleElement().getStyle().setPaddingRight(indicatorsWidth, Style.Unit.PX);
+        } else if (captionWidth >= widgetWidth + indicatorsWidth) {
             getStyleElement().getStyle().clearPaddingRight();
         } else {
             int requiredHorizontalSpace = indicatorsWidth;

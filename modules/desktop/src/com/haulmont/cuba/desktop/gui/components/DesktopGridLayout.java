@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.GridLayoutAdapter;
@@ -31,7 +32,7 @@ public class DesktopGridLayout
     protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
     protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
-    protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
+    protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     public DesktopGridLayout() {
         impl = new JPanel();
@@ -68,7 +69,7 @@ public class DesktopGridLayout
         if (DesktopContainerHelper.hasExternalCaption(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
-            impl.add(caption, layoutAdapter.getCaptionConstraints(col, row, col2, row2));
+            impl.add(caption, layoutAdapter.getCaptionConstraints(component, col, row, col2, row2));
         } else if (DesktopContainerHelper.hasExternalDescription(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
@@ -85,7 +86,7 @@ public class DesktopGridLayout
             wrapper.add(composition);
             wrapper.add(caption, new CC().alignY("top"));
             impl.add(wrapper, layoutAdapter.getConstraints(component, col, row, col2, row2));
-            wrappers.put(component, wrapper);
+            wrappers.put(component, new Pair<>(wrapper, adapter));
         } else {
             impl.add(composition, layoutAdapter.getConstraints(component, col, row, col2, row2));
         }
@@ -136,7 +137,7 @@ public class DesktopGridLayout
 
     public void remove(Component component) {
         if (wrappers.containsKey(component)) {
-            impl.remove(wrappers.get(component));
+            impl.remove(wrappers.get(component).getFirst());
             wrappers.remove(component);
         } else {
             impl.remove(DesktopComponentsHelper.getComposition(component));
@@ -192,10 +193,21 @@ public class DesktopGridLayout
 
     @Override
     public void updateComponent(Component child) {
-        JComponent composition = DesktopComponentsHelper.getComposition(child);
+        JComponent composition;
+        if (wrappers.containsKey(child)) {
+            composition = wrappers.get(child).getFirst();
+        } else {
+            composition = DesktopComponentsHelper.getComposition(child);
+        }
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
         if (captions.containsKey(child)) {
-            captions.get(child).update();
+            ComponentCaption caption = captions.get(child);
+            caption.update();
+            if (!wrappers.containsKey(child)) {
+                CC c = (CC) layoutAdapter.getConstraints(child);
+                layoutAdapter.updateConstraints(caption, layoutAdapter.getCaptionConstraints(child,
+                        c.getCellX(), c.getCellY(), c.getCellX(), c.getCellY()));
+            }
         }
     }
 }

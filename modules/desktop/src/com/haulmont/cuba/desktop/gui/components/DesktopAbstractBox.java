@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -31,7 +32,7 @@ public abstract class DesktopAbstractBox
 
     protected Component expandedComponent;
     protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
-    protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
+    protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     public DesktopAbstractBox() {
         impl = new JPanel();
@@ -66,8 +67,8 @@ public abstract class DesktopAbstractBox
             adapter.setMargin(false);
             wrapper.add(composition);
             wrapper.add(caption,new CC().alignY("top"));
-            impl.add(wrapper);
-            wrappers.put(component, wrapper);
+            impl.add(wrapper, layoutAdapter.getConstraints(component));
+            wrappers.put(component, new Pair<>(wrapper, adapter));
         } else {
             impl.add(composition, layoutAdapter.getConstraints(component));
         }
@@ -87,7 +88,7 @@ public abstract class DesktopAbstractBox
     public void remove(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         if (wrappers.containsKey(component)) {
-            impl.remove(wrappers.get(component));
+            impl.remove(wrappers.get(component).getFirst());
             wrappers.remove(component);
         } else {
             impl.remove(composition);
@@ -118,12 +119,21 @@ public abstract class DesktopAbstractBox
 
     @Override
     public void updateComponent(Component child) {
-        JComponent composition = DesktopComponentsHelper.getComposition(child);
+        JComponent composition;
+        if (wrappers.containsKey(child)) {
+            composition = wrappers.get(child).getFirst();
+        } else {
+            composition = DesktopComponentsHelper.getComposition(child);
+        }
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
         if (captions.containsKey(child)) {
             ComponentCaption caption = captions.get(child);
             caption.update();
-            layoutAdapter.updateConstraints(caption, layoutAdapter.getCaptionConstraints(child));
+            BoxLayoutAdapter adapterForCaption = layoutAdapter;
+            if (wrappers.containsKey(child)) {
+                adapterForCaption = wrappers.get(child).getSecond();
+            }
+            adapterForCaption.updateConstraints(caption, adapterForCaption.getCaptionConstraints(child));
         }
     }
 

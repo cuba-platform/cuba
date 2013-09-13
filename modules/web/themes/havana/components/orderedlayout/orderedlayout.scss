@@ -32,4 +32,8 @@
   .v-verticallayout.v-margin-left {
     padding-left: 5px;
   }
+
+  .v-slot {
+    @include box-defaults;
+  }
 }

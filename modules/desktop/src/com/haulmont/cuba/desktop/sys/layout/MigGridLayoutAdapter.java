@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -91,13 +93,15 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     }
 
     @Override
-    public Object getCaptionConstraints(int col, int row, int col2, int row2) {
+    public Object getCaptionConstraints(com.haulmont.cuba.gui.components.Component component,
+                                        int col, int row, int col2, int row2) {
         CC constraints = new CC();
         constraints.cell(col, row);
+        constraints.split(2);
         constraints.flowY();
         constraints.width("min!");
         constraints.height("min!");
-
+        MigLayoutHelper.applyAlignment(constraints, component.getAlignment());
         return constraints;
     }
 

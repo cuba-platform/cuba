@@ -103,8 +103,9 @@ public class CubaGridLayoutSlot extends ComponentConnectorLayoutSlot implements 
         }
 
         // Take into account right indicators
+        double indicatorsWidth = 0;
         if (rightCaption != null) {
-            double indicatorsWidth = Util.getRequiredWidth(rightCaption);
+            indicatorsWidth = Util.getRequiredWidth(rightCaption);
             availableWidth -= indicatorsWidth;
             if (availableWidth < 0) {
                 availableWidth = 0;
@@ -138,12 +139,12 @@ public class CubaGridLayoutSlot extends ComponentConnectorLayoutSlot implements 
             double usedWidth;
             if (isRelativeWidth()) {
                 if (isCaptionInline()) {
-                    usedWidth = allocatedContentWidth + captionWidth;
+                    usedWidth = allocatedContentWidth + indicatorsWidth + captionWidth ;
                 } else {
-                    usedWidth = allocatedContentWidth;
+                    usedWidth = allocatedContentWidth + indicatorsWidth;
                 }
             } else {
-                usedWidth = getWidgetWidth();
+                usedWidth = getWidgetWidth() + indicatorsWidth;
             }
             if (alignment.isHorizontalCenter()) {
                 currentLocation += (allocatedSpace - usedWidth) / 2d;

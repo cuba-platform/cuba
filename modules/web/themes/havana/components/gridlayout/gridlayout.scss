@@ -1,0 +1,6 @@
+@mixin havana-gridlayout {
+
+  .v-gridlayout-slot {
+    @include box-defaults;
+  }
+}

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
@@ -35,6 +37,7 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import sun.swing.plaf.synth.Paint9Painter;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -78,7 +81,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected String description;
     protected Component expandedComponent;
     protected Map<Component, ComponentCaption> captions = new HashMap<>();
-    protected Map<Component, JPanel> wrappers = new HashMap<>();
+    protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     protected WindowDelegate delegate;
 
@@ -573,8 +576,8 @@ public class DesktopWindow implements Window, Component.Disposable,
             adapter.setMargin(false);
             wrapper.add(composition);
             wrapper.add(caption, new CC().alignY("top"));
-            getContainer().add(wrapper);
-            wrappers.put(component, wrapper);
+            getContainer().add(wrapper, layoutAdapter.getConstraints(component));
+            wrappers.put(component, new Pair<>(wrapper, adapter));
         } else {
             getContainer().add(composition, layoutAdapter.getConstraints(component));
         }
@@ -590,7 +593,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void remove(Component component) {
         if (wrappers.containsKey(component)) {
-            getContainer().remove(wrappers.get(component));
+            getContainer().remove(wrappers.get(component).getFirst());
             wrappers.remove(component);
         } else {
             getContainer().remove(DesktopComponentsHelper.getComposition(component));
@@ -805,12 +808,21 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void updateComponent(Component child) {
-        JComponent composition = DesktopComponentsHelper.getComposition(child);
+        JComponent composition;
+        if (wrappers.containsKey(child)) {
+            composition = wrappers.get(child).getFirst();
+        } else {
+            composition = DesktopComponentsHelper.getComposition(child);
+        }
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
         if (captions.containsKey(child)) {
             ComponentCaption caption = captions.get(child);
             caption.update();
-            layoutAdapter.updateConstraints(caption, layoutAdapter.getCaptionConstraints(child));
+            BoxLayoutAdapter adapterForCaption = layoutAdapter;
+            if (wrappers.containsKey(child)) {
+                adapterForCaption = wrappers.get(child).getSecond();
+            }
+            adapterForCaption.updateConstraints(caption, adapterForCaption.getCaptionConstraints(child));
         }
     }
 

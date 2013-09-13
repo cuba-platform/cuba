@@ -37,6 +37,7 @@
 @import "components/popupview/popupview";
 @import "components/fieldgroup/fieldgroup";
 @import "components/flowlayout/flowlayout";
+@import "components/gridlayout/gridlayout";
 @import "components/splitpanel/splitpanel";
 @import "components/grouptable/grouptable";
 @import "components/widgetstree/widgetstree";
@@ -89,6 +90,7 @@
   @include havana-popupview;
   @include havana-splitpanel;
   @include havana-fieldgroup;
+  @include havana-gridlayout;
   @include havana-popupbutton;
   @include havana-contextmenu;
   @include havana-pickerfield;

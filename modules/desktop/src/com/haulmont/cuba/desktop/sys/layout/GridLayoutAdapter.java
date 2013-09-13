@@ -69,7 +69,7 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
     public abstract Object getConstraints(
             com.haulmont.cuba.gui.components.Component component, int col, int row, int col2, int row2);
 
-    public abstract Object getCaptionConstraints(
+    public abstract Object getCaptionConstraints(com.haulmont.cuba.gui.components.Component component,
             int col, int row, int col2, int row2
     );
 
