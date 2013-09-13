@@ -127,7 +127,7 @@ public class LoginWorkerBean implements LoginWorker {
         return login(login, password, locale);
     }
 
-    private String getInvalidCredentialsMessage(String login, Locale locale) {
+    protected String getInvalidCredentialsMessage(String login, Locale locale) {
         return messages.formatMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale, login);
     }
 
@@ -161,8 +161,8 @@ public class LoginWorkerBean implements LoginWorker {
         if (remoteClientInfo != null) {
             // reject request from not permitted client ip
             if (!permittedIpMaskPattern.matcher(remoteClientInfo.getAddress()).find()) {
-                log.warn("Login trusted request from not permitted ip address: " + remoteClientInfo.getAddress());
-                return null;
+                log.warn("Attempt of trusted login from not permitted IP address: " + remoteClientInfo.getAddress());
+                throw new LoginException(getInvalidCredentialsMessage(login, locale));
             }
         }
 
