@@ -237,6 +237,8 @@ public class FileStorage implements FileStorageAPI {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getId().toString(), e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
