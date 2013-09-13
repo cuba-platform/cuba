@@ -24,7 +24,7 @@ public abstract class LayoutAdapter
 
     public static boolean isDebug() {
         String property = System.getProperty("cuba.desktop.debugLayouts");
-        return true;
+        return Boolean.valueOf(property);
     }
 
     public abstract LayoutManager getLayout();
