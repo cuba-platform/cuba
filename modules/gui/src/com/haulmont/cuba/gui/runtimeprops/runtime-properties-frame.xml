@@ -7,13 +7,7 @@
 <window xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.components.RuntimePropertiesFrame"
         messagesPack="com.haulmont.cuba.gui">
-    <dsContext>
-
-    </dsContext>
     <layout width="100%" spacing="true">
        <vbox id="contentPane" spacing="true" width="100%"/>
-       <!-- <lookupField id="category" datasource="carDs" optionsDatasource="categories" property="category"
-                  captionProperty="name" expandable="false" height="-1px" width="100%"/>-->
     </layout>
 </window>
-

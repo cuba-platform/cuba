@@ -393,17 +393,17 @@ public abstract class WindowManager {
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
                                            Datasource parentDs) {
         //noinspection unchecked
-        return (T) openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+        return openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
         //noinspection unchecked
-        return (T) openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
+        return openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
         //noinspection unchecked
-        return (T) openEditor(windowInfo, item, openType, params, null);
+        return openEditor(windowInfo, item, openType, params, null);
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
@@ -507,7 +507,7 @@ public abstract class WindowManager {
             Component parent,
             WindowInfo windowInfo
     ) {
-        return (T) openFrame(window, parent, windowInfo, Collections.<String, Object>emptyMap());
+        return openFrame(window, parent, windowInfo, Collections.<String, Object>emptyMap());
     }
 
     public <T extends IFrame> T openFrame(
@@ -562,7 +562,7 @@ public abstract class WindowManager {
     }
 
     protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
-        final Map<String, Object> map = new HashMap<String, Object>(params.size());
+        final Map<String, Object> map = new HashMap<>(params.size());
 
         final Element element = windowInfo.getDescriptor();
         if (element != null) {

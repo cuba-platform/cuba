@@ -4,14 +4,14 @@
   ~ Use is subject to license terms.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorEditor"
-        caption="msg://editorCaption">
+        caption="">
     <dsContext/>
     <layout expand="fieldsScrollBox" spacing="true">
         <scrollBox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
             <vbox id="contentPane" spacing="true" width="600px"/>
+            <vbox id="runtimePane" spacing="true" width="600px"/>
             <vbox id="tablesBox" spacing="true" width="600px"/>
         </scrollBox>
         <vbox id="buttonsBox"/>

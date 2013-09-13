@@ -6,8 +6,6 @@
 
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
@@ -28,7 +26,6 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -66,6 +63,9 @@ public class EntityInspectorEditor extends AbstractEditor {
     protected BoxLayout contentPane;
 
     @Inject
+    protected BoxLayout runtimePane;
+
+    @Inject
     protected BoxLayout tablesBox;
 
     @Inject
@@ -86,29 +86,22 @@ public class EntityInspectorEditor extends AbstractEditor {
     protected Collection<Table> tables;
 
     protected RuntimePropsDatasource rDS;
-    protected CollectionDatasource categories;
-    protected FieldGroup fieldGroup;
+    protected CollectionDatasource categoriesDs;
 
-    protected LinkedList<FieldGroup.FieldConfig> customFields;
     protected ButtonsPanel buttonsPanel;
     protected Button commitButton;
     protected Button cancelButton;
 
-    private boolean categorizedEntity;
     private boolean createRequest;
     private final String TABLE_MAX_HEIGHT;
-    private final int TABLE_MAX_ROW;
 
     public EntityInspectorEditor() {
-        super();
-        customFields = new LinkedList<FieldGroup.FieldConfig>();
-        datasources = new HashMap<String, Datasource>();
-        tables = new LinkedList<Table>();
+        datasources = new HashMap<>();
+        tables = new LinkedList<>();
         isNew = true;
         TABLE_MAX_HEIGHT = "200px";
         autocommit = true;
         showSystemFields = false;
-        TABLE_MAX_ROW = 5;
     }
 
     @Override
@@ -127,6 +120,10 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         View view = createView(meta);
 
+        dsContext = new DsContextImpl(dataSupplier);
+        dsContext.setWindowContext(getDsContext().getWindowContext());
+        setDsContext(dsContext);
+
         createRequest = item == null || item.getId() == null;
         if (createRequest) {
             item = metadata.create(meta);
@@ -138,10 +135,8 @@ public class EntityInspectorEditor extends AbstractEditor {
                 item = loadSingleItem(meta, item.getId(), view);
         }
 
-        categorizedEntity = item instanceof CategorizedEntity;
+        boolean categorizedEntity = item instanceof CategorizedEntity;
 
-
-        dsContext = new DsContextImpl(dataSupplier);
         if (datasource == null) {
             datasource = new DatasourceImpl<Entity>();
             datasource.setup(dsContext, dataSupplier, meta.getName() + "Ds", item.getMetaClass(), view);
@@ -181,30 +176,34 @@ public class EntityInspectorEditor extends AbstractEditor {
     }
 
     private void createRuntimeDataComponents() {
-        if (rDS != null && categories != null) {
-            RuntimePropertiesFrame runtimePropertiesFrame = new RuntimePropertiesFrame();
-            runtimePropertiesFrame.setFrame(frame);
-            runtimePropertiesFrame.setDsContext(dsContext);
-            runtimePropertiesFrame.setMessagesPack("com.haulmont.cuba.gui.app.core.entityinspector");
-            Map<String, Object> params = new HashMap<String, Object>();
+        if (rDS != null && categoriesDs != null) {
+            Map<String, Object> params = new HashMap<>();
             params.put("runtimeDs", rDS.getId());
-            params.put("categoriesDs", categories.getId());
+            params.put("categoriesDs", categoriesDs.getId());
             params.put("fieldWidth", DEFAULT_FIELD_WIDTH);
             params.put("borderVisible", "true");
-            runtimePropertiesFrame.init(params);
+
+            RuntimePropertiesFrame runtimePropertiesFrame = openFrame(runtimePane, "runtimePropertiesFrame", params);
+            runtimePropertiesFrame.setFrame(this.getFrame());
+            runtimePropertiesFrame.setMessagesPack("com.haulmont.cuba.gui.app.core.entityinspector");
             runtimePropertiesFrame.setCategoryFieldVisible(false);
+
+            runtimePropertiesFrame.setHeight(Component.AUTO_SIZE);
+            runtimePropertiesFrame.setWidth("100%");
+
+            runtimePane.add(runtimePropertiesFrame);
         }
     }
 
     private void initRuntimePropertiesDatasources(View view) {
         rDS = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, "rDS", datasource.getId());
         MetaClass categoriesMeta = metadata.getSession().getClass(Category.class);
-        categories = new CollectionDatasourceImpl();
-        categories.setup(dsContext, dataSupplier, "categories", categoriesMeta, view);
-        categories.setQuery(String.format("select c from sys$Category c where c.entityType='%s'", meta.getName()));
-        categories.refresh();
+        categoriesDs = new CollectionDatasourceImpl();
+        categoriesDs.setup(dsContext, dataSupplier, "categoriesDs", categoriesMeta, view.getProperty("category").getView());
+        categoriesDs.setQuery(String.format("select c from sys$Category c where c.entityType='%s'", meta.getName()));
+        categoriesDs.refresh();
         dsContext.register(rDS);
-        dsContext.register(categories);
+        dsContext.register(categoriesDs);
     }
 
     /**
@@ -312,7 +311,9 @@ public class EntityInspectorEditor extends AbstractEditor {
      * @param metaClass item meta class
      */
     private void createDataComponents(MetaClass metaClass) {
-        fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
+        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
+        LinkedList<FieldGroup.FieldConfig> customFields = new LinkedList<>();
+
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
         boolean custom;
@@ -363,7 +364,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         fieldGroup.setFrame(frame);
         fieldGroup.setCaption(getPropertyCaption(meta, embeddedMetaProperty));
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
-        Collection<FieldGroup.FieldConfig> customFields = new LinkedList<FieldGroup.FieldConfig>();
+        Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
         boolean custom;
         for (MetaProperty metaProperty : embeddableMetaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty) || metaProperty.equals(nullIndicatorProperty);
@@ -571,9 +572,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                 if (property.getType() == MetaProperty.Type.DATATYPE)
                     try {
                         entity.setValue(property.getName(), property.getJavaType().newInstance());
-                    } catch (InstantiationException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
+                    } catch (InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
             }
@@ -615,8 +614,8 @@ public class EntityInspectorEditor extends AbstractEditor {
         table.setMultiSelect(true);
         table.setFrame(frame);
         //place non-system properties columns first
-        LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<Table.Column>();
-        LinkedList<Table.Column> systemPropertyColumns = new LinkedList<Table.Column>();
+        LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
+        LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
         for (MetaProperty metaProperty : meta.getProperties()) {
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
             if (!metadata.getTools().isSystem(metaProperty)) {
@@ -705,7 +704,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         Lookup.Handler addHandler = createAddHandler(metaProperty, propertyDs);
         AddAction addAction = new AddAction(table, addHandler, OPEN_TYPE);
         addAction.setWindowId(EntityInspectorBrowse.SCREEN_NAME);
-        HashMap<String, Object> params = new HashMap<String, Object>();
+        HashMap<String, Object> params = new HashMap<>();
         params.put("entity", propertyMetaClass.getName());
         MetaProperty inverseProperty = metaProperty.getInverse();
         if (inverseProperty != null)
@@ -867,7 +866,7 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         @Override
         public void actionPerform(Component component) {
-            Map<String, Object> editorParams = new HashMap<String, Object>();
+            Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("metaClass", entityMeta.getName());
             editorParams.put("datasource", entitiesDs);
             editorParams.put("autocommit", Boolean.FALSE);
@@ -907,7 +906,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                 return;
 
             Entity editItem = (Entity) selected.toArray()[0];
-            Map<String, Object> editorParams = new HashMap<String, Object>();
+            Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("metaClass", editItem.getMetaClass());
             editorParams.put("item", editItem);
             editorParams.put("parent", item);

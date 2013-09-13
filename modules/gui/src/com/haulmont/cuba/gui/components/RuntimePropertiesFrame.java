@@ -64,7 +64,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             fieldWidth = DEFAULT_FIELD_WIDTH;
         }
         rds = getDsContext().get(dsId);
-        categoriesDs = getDsContext().<CollectionDatasource>get(categoriesDsId);
+        categoriesDs = getDsContext().get(categoriesDsId);
 
         contentPane = getComponent("contentPane");
         initCategoryField();
@@ -247,7 +247,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     protected java.util.List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Datasource ds) {
         MetaClass meta = ds.getMetaClass();
         Collection<MetaProperty> metaProperties = meta.getProperties();
-        java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<FieldGroup.FieldConfig>();
+        java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
         for (MetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
             field.setCaption(property.getName());
@@ -286,8 +286,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         MetaPropertyPath metaPropertyPath = rds.getMetaClass().getPropertyPath(field.getId());
         if (metaPropertyPath != null) {
             MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-            Field.Validator validator = null;
-            validator = getValidator(metaProperty);
+            Field.Validator validator = getValidator(metaProperty);
 
             if (validator != null) {
                 newRuntime.addValidator(field, validator);

@@ -27,7 +27,7 @@ import java.util.List;
 public class CollectionDsHelper {
 
     public static List<MetaPropertyPath> createProperties(View view, MetaClass metaClass) {
-        List<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
+        List<MetaPropertyPath> properties = new ArrayList<>();
         if (view != null) {
             for (ViewProperty property : view.getProperties()) {
                 final String name = property.getName();
@@ -54,7 +54,6 @@ public class CollectionDsHelper {
         }
         return properties;
     }
-
 
     public static void autoRefreshInvalid(CollectionDatasource datasource, boolean autoRefresh) {
         if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
