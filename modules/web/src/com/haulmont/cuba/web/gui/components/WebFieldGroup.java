@@ -250,7 +250,7 @@ public class WebFieldGroup
         if (composition instanceof com.vaadin.ui.Field) {
             return  (com.vaadin.ui.Field) composition;
         } else {
-            return new CubaFieldWrapper(composition);
+            return new CubaFieldWrapper(c);
         }
     }
 
@@ -332,7 +332,6 @@ public class WebFieldGroup
             if (!fieldConf.isCustom()) {
                 com.vaadin.ui.Field field;
 
-                Element descriptor = fieldConf.getXmlDescriptor();
                 if (datasource != null && fieldConf.getDatasource() == null) {
                     field = createField(datasource, fieldConf);
                     component.addField(fieldConf.getId(), field);

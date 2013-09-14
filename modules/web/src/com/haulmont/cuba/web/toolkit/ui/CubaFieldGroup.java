@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgroup.CubaFieldGroupState;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
@@ -36,6 +37,15 @@ public class CubaFieldGroup extends CubaGroupBox {
         if (getState().borderVisible != borderVisible) {
             getState().borderVisible = borderVisible;
             markAsDirty();
+        }
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+
+        for (Field field : fields.values()) {
+            field.setReadOnly(readOnly);
         }
     }
 

@@ -1153,11 +1153,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         @Override
-        public void setReadOnly(boolean newStatus) {
-            super.setReadOnly(newStatus);
-        }
-
-        @Override
         public String getFormattedValue() {
             final Table.Column column = WebAbstractTable.this.columns.get(propertyPath);
             if (column != null) {
@@ -1434,9 +1429,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             com.haulmont.cuba.gui.components.Component columnComponent =
                     createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
-            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(columnComponent);
 
-            com.vaadin.ui.Field fieldImpl = getFieldImplementation(composition);
+            com.vaadin.ui.Field fieldImpl = getFieldImplementation(columnComponent);
 
             if (columnComponent instanceof Field) {
                 Field cubaField = (Field) columnComponent;
@@ -1468,12 +1462,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             return fieldImpl;
         }
 
-        protected com.vaadin.ui.Field getFieldImplementation(Component composition) {
+        protected com.vaadin.ui.Field getFieldImplementation(com.haulmont.cuba.gui.components.Component columnComponent) {
+            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(columnComponent);
             com.vaadin.ui.Field fieldImpl;
             if (composition instanceof com.vaadin.ui.Field) {
                 fieldImpl = (com.vaadin.ui.Field) composition;
             } else {
-                fieldImpl = new CubaFieldWrapper(composition);
+                fieldImpl = new CubaFieldWrapper(columnComponent);
             }
             return fieldImpl;
         }
