@@ -6,8 +6,9 @@
 
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
-import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.entity.JmxInstance;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
@@ -16,6 +17,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.export.LogDataProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -48,7 +50,7 @@ public class ServerLogWindow extends AbstractWindow {
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;
 
     @Inject
-    protected com.haulmont.cuba.gui.components.Label localJmxField;
+    protected Label localJmxField;
 
     @Inject
     protected LookupPickerField jmxConnectionField;
@@ -85,6 +87,9 @@ public class ServerLogWindow extends AbstractWindow {
 
     @Inject
     protected ScrollBoxLayout logContainer;
+
+    @Inject
+    protected Button downloadButton;
 
     protected JmxInstance localJmxInstance;
 
@@ -172,6 +177,9 @@ public class ServerLogWindow extends AbstractWindow {
                 }
             }
         });
+
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        downloadButton.setEnabled(userSession.isSpecificPermitted("cuba.gui.administration.downloadlogs"));
     }
 
     protected void openAddLoggerDialog() {

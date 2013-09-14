@@ -51,6 +51,11 @@ public class LogDownloadController {
         if (userSession == null)
             return;
 
+        if (!userSession.isSpecificPermitted("cuba.gui.administration.downloadlogs")) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         // security check, handle only valid file name
         String filename = FilenameUtils.getName(logFileName);
 
@@ -95,6 +100,7 @@ public class LogDownloadController {
         UserSession session = userSessionManager.findSession(sessionUUID);
         if (session == null)
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
+
         return session;
     }
 }

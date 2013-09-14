@@ -21,6 +21,9 @@
                 <permission id="cuba.gui.searchFolder.global"/>
                 <permission id="cuba.gui.presentations.global"/>
                 <permission id="cuba.gui.appFolder.global"/>
+                <category id="cuba.gui.administration">
+                    <permission id="cuba.gui.administration.downloadlogs"/>
+                </category>
             </category>
         </category>
         
