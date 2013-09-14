@@ -61,8 +61,14 @@ public class CubaLabelConnector extends LabelConnector {
             default:
                 getWidget().setText("");
                 break;
-
         }
+
+        if ("".equals(getWidget().getText()) || getWidget().getText() == null) {
+            getWidget().addStyleDependentName("empty");
+        } else {
+            getWidget().removeStyleDependentName("empty");
+        }
+
         Profiler.leave("LabelConnector.onStateChanged update content");
 
         if (sinkOnloads) {

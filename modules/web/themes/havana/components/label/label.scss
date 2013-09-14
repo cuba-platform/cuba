@@ -13,6 +13,10 @@
     line-height: 16px;
   }
 
+  .#{$primaryStyleName}-empty {
+    border: 0;
+  }
+
   .#{$primaryStyleName}.h2 {
     font-family: verdana, tahoma, sans-serif;
     font-size: 14px;
