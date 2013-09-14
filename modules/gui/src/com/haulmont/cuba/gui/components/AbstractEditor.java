@@ -17,6 +17,8 @@ import com.haulmont.cuba.gui.data.Datasource;
  */
 public class AbstractEditor<T extends Entity> extends AbstractWindow implements Window.Editor {
 
+    protected boolean showSaveNotification = true;
+
     public AbstractEditor() {
     }
 
@@ -122,11 +124,21 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      */
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed && !close) {
-            frame.showNotification(messages.formatMessage(AppConfig.getMessagesPack(),
-                    "info.EntitySave", ((Editor) frame).getItem().getInstanceName()),
-                    NotificationType.HUMANIZED);
+            if (showSaveNotification) {
+                frame.showNotification(messages.formatMessage(AppConfig.getMessagesPack(),
+                        "info.EntitySave", ((Editor) frame).getItem().getInstanceName()),
+                        NotificationType.HUMANIZED);
+            }
             postInit();
         }
         return true;
+    }
+
+    public boolean isShowSaveNotification() {
+        return showSaveNotification;
+    }
+
+    public void setShowSaveNotification(boolean showSaveNotification) {
+        this.showSaveNotification = showSaveNotification;
     }
 }

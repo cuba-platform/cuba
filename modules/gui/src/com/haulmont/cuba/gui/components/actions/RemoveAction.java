@@ -72,23 +72,21 @@ public class RemoveAction extends ItemTrackingAction {
         setShortcut(config.getTableRemoveShortcut());
     }
 
-    /**
-     * Whether the action is currently enabled. Override to provide specific behaviour.
-     * @return  true if enabled
-     */
-    public boolean isEnabled() {
-        if (!super.isEnabled())
-            return false;
+    @Override
+    public void addOwner(Component.ActionOwner actionOwner) {
+        super.addOwner(actionOwner);
 
-        if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.DELETE))
-            return false;
+        if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.DELETE)) {
+            super.setEnabled(false);
+        }
 
         if (owner.getDatasource() instanceof PropertyDatasource) {
             MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-            return userSession.isEntityAttrPermitted(
-                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+            if (!userSession.isEntityAttrPermitted(
+                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY)) {
+                super.setEnabled(false);
+            }
         }
-        return true;
     }
 
     /**

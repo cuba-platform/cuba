@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
@@ -37,7 +38,7 @@ public abstract class AbstractAction implements Action {
 
     protected boolean visible = true;
 
-    protected List<Component.ActionOwner> owners = new ArrayList<Component.ActionOwner>();
+    protected List<Component.ActionOwner> owners = new ArrayList<>();
 
     protected PropertyChangeSupport changeSupport;
 
@@ -53,7 +54,7 @@ public abstract class AbstractAction implements Action {
         userSession = AppBeans.get(UserSessionSource.class).getUserSession();
     }
 
-    protected AbstractAction(String id, @Nullable String shortcut){
+    protected AbstractAction(String id, @Nullable String shortcut) {
         this(id);
         if (shortcut != null) {
             this.shortcut = KeyCombination.create(shortcut);
@@ -90,7 +91,7 @@ public abstract class AbstractAction implements Action {
     @Override
     public void setCaption(String caption) {
         String oldValue = this.caption;
-        if (!ObjectUtils.equals(oldValue, caption)) {
+        if (!StringUtils.equals(oldValue, caption)) {
             this.caption = caption;
             firePropertyChange(PROP_CAPTION, oldValue, caption);
         }
@@ -146,8 +147,9 @@ public abstract class AbstractAction implements Action {
 
     @Override
     public void addOwner(Component.ActionOwner actionOwner) {
-        if (!owners.contains(actionOwner))
+        if (!owners.contains(actionOwner)) {
             owners.add(actionOwner);
+        }
     }
 
     @Override
@@ -158,7 +160,7 @@ public abstract class AbstractAction implements Action {
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         if (changeSupport == null) {
-	        changeSupport = new PropertyChangeSupport(this);
+            changeSupport = new PropertyChangeSupport(this);
         }
         changeSupport.addPropertyChangeListener(listener);
     }
@@ -172,8 +174,9 @@ public abstract class AbstractAction implements Action {
     }
 
     protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        if (changeSupport == null || ObjectUtils.equals(oldValue, newValue))
+        if (changeSupport == null || ObjectUtils.equals(oldValue, newValue)) {
             return;
+        }
         changeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 
@@ -185,7 +188,7 @@ public abstract class AbstractAction implements Action {
     @Override
     public void setIcon(String icon) {
         String oldValue = this.icon;
-        if (!ObjectUtils.equals(oldValue, icon)) {
+        if (!StringUtils.equals(oldValue, icon)) {
             this.icon = icon;
             firePropertyChange(PROP_ICON, oldValue, icon);
         }

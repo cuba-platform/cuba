@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -82,17 +81,23 @@ public class EditAction extends ItemTrackingAction {
             return caption;
 
         final String messagesPackage = AppConfig.getMessagesPack();
-        if (userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
+        if (userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE)) {
             return messages.getMessage(messagesPackage, "actions.Edit");
-        else
+        } else {
             return messages.getMessage(messagesPackage, "actions.View");
+        }
     }
 
     @Override
-    public boolean isEnabled() {
-        return super.isEnabled() &&
-                owner.getSelected().size() == 1 &&
-                userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
+    public void addOwner(Component.ActionOwner actionOwner) {
+        super.addOwner(actionOwner);
+
+        super.setEnabled(userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ));
+    }
+
+    @Override
+    public boolean isApplicableTo(Datasource.State state, Entity item) {
+        return super.isApplicableTo(state, item) && owner.getSelected().size() < 2;
     }
 
     /**
@@ -127,6 +132,7 @@ public class EditAction extends ItemTrackingAction {
                         Entity item = ((Window.Editor) window).getItem();
                         if (item != null) {
                             if (pDs == null) {
+                                //noinspection unchecked
                                 datasource.updateItem(item);
                             }
                             afterCommit(item);

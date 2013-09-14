@@ -46,6 +46,10 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
         return Datasource.State.VALID.equals(state) && item != null;
     }
 
+    public void updateApplicableTo(boolean applicableTo) {
+        super.setEnabled(enabledFlag && applicableTo);
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         this.enabledFlag = enabled;
