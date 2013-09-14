@@ -11,11 +11,12 @@ import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.ExcelAction;
-import com.haulmont.cuba.gui.components.actions.ListActionType;
+import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
@@ -30,7 +31,8 @@ import java.util.*;
  */
 public class RoleBrowser extends AbstractLookup {
 
-    private Table table;
+    @Inject
+    protected Table rolesTable;
 
     @Inject
     protected Security security;
@@ -41,19 +43,17 @@ public class RoleBrowser extends AbstractLookup {
     @Inject
     protected DataService dataService;
 
+    @Override
     public void init(Map<String, Object> params) {
-        table = getComponent("roles");
+        super.init(params);
 
-        ComponentsHelper.createActions(table, EnumSet.allOf(ListActionType.class));
-        table.addAction(new ExcelAction(table));
-
-        table.addAction(new AbstractAction("assignToUsers") {
+        rolesTable.addAction(new ItemTrackingAction("assignToUsers") {
             public void actionPerform(Component component) {
-                if (table.getSelected().size() < 1) {
+                if (rolesTable.getSelected().size() < 1) {
                     showNotification(getMessage("selectRole.msg"), NotificationType.HUMANIZED);
                     return;
                 }
-                final Role role = table.<Role>getSelected().iterator().next();
+                final Role role = rolesTable.<Role>getSelected().iterator().next();
                 Map<String, Object> params = new HashMap<>();
                 params.put("multiSelect", "true");
                 openLookup("sec$User.lookup", new Handler() {
@@ -99,16 +99,14 @@ public class RoleBrowser extends AbstractLookup {
 
         boolean hasPermissionsToCreateUserRole = security.isEntityOpPermitted(UserRole.class, EntityOp.CREATE);
 
-        Action copy = table.getAction("assignToUsers");
+        Action copy = rolesTable.getAction("assignToUsers");
         if (copy != null) {
             copy.setEnabled(hasPermissionsToCreateUserRole);
         }
 
-        table.refresh();
-
         String windowOpener = (String) params.get("param$windowOpener");
         if ("sec$User.edit".equals(windowOpener)) {
-            table.setMultiSelect(true);
+            rolesTable.setMultiSelect(true);
         }
     }
 }

@@ -8,13 +8,13 @@
         xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.gui.app.security.role.browse.RoleBrowser"
         messagesPack="com.haulmont.cuba.gui.app.security.role.browse"
-        lookupComponent="roles"
+        lookupComponent="rolesTable"
         caption="msg://caption"
-        focusComponent="roles"
+        focusComponent="rolesTable"
         >
 
     <dsContext>
-        <collectionDatasource id="roles" class="com.haulmont.cuba.security.entity.Role" view="_local">
+        <collectionDatasource id="rolesDs" class="com.haulmont.cuba.security.entity.Role" view="_local">
             <query>
                 select r from sec$Role r order by r.name
             </query>
@@ -22,14 +22,21 @@
     </dsContext>
 
     <layout>
-        <table id="roles" height="100%" width="100%">
+        <table id="rolesTable" height="100%" width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+                <action id="excel"/>
+                <action id="refresh"/>
+            </actions>
             <buttonsPanel>
-                <button action="roles.create" icon="icons/create.png"/>
-                <button action="roles.edit" icon="icons/edit.png"/>
-                <button action="roles.remove" icon="icons/remove.png"/>
-                <button action="roles.refresh" icon="icons/refresh.png"/>
-                <button action="roles.excel" icon="icons/excel.png"/>
-                <button action="roles.assignToUsers" icon="icons/user-group-ok.png"/>
+                <button action="rolesTable.create"/>
+                <button action="rolesTable.edit"/>
+                <button action="rolesTable.remove"/>
+                <button action="rolesTable.refresh"/>
+                <button action="rolesTable.excel"/>
+                <button action="rolesTable.assignToUsers" icon="icons/user-group-ok.png"/>
             </buttonsPanel>
             <columns>
                 <column id="name" caption="msg://role.name"/>
@@ -38,7 +45,7 @@
                 <column id="defaultRole" caption="msg://role.defaultRole"/>
                 <column id="type" caption="msg://role.type"/>
             </columns>
-            <rows datasource="roles"/>
+            <rows datasource="rolesDs"/>
         </table>
     </layout>
 </window>
