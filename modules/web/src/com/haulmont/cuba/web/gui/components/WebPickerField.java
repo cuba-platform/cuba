@@ -57,8 +57,11 @@ public class WebPickerField
             @Override
             public String convertToPresentation(Entity value, Class<? extends String> targetType, Locale locale)
                     throws ConversionException {
-                if (captionMode == CaptionMode.PROPERTY && StringUtils.isNotEmpty(captionProperty))
-                    return ((Instance) getValue()).getValue(captionProperty);
+                if (captionMode == CaptionMode.PROPERTY
+                        && StringUtils.isNotEmpty(captionProperty)
+                        && (value != null)) {
+                    return ((Instance) value).getValue(captionProperty);
+                }
 
                 return super.convertToPresentation(value, targetType, locale);
             }
@@ -75,19 +78,6 @@ public class WebPickerField
         initActionHandler();
     }
 
-    private ItemWrapper createItemWrapper(final Object newValue) {
-        return new ItemWrapper(newValue, metaClass) {
-            @Override
-            public String toString() {
-                if (CaptionMode.PROPERTY.equals(getCaptionMode()) && (getValue() instanceof Instance)) {
-                    return String.valueOf(((Instance) getValue()).getValue(getCaptionProperty()));
-                } else {
-                    return super.toString();
-                }
-            }
-        };
-    }
-
     @Override
     public MetaClass getMetaClass() {
         final Datasource ds = getDatasource();
@@ -101,7 +91,9 @@ public class WebPickerField
     @Override
     public void setMetaClass(MetaClass metaClass) {
         final Datasource ds = getDatasource();
-        if (ds != null) throw new IllegalStateException("Datasource is not null");
+        if (ds != null) {
+            throw new IllegalStateException("Datasource is not null");
+        }
         this.metaClass = metaClass;
     }
 
@@ -206,8 +198,9 @@ public class WebPickerField
         pButton.<Button>getComponent().setCaption("");
         component.addButton(pButton.<Button>getComponent());
         // apply Editable after action owner is set
-        if (action instanceof StandardAction)
+        if (action instanceof StandardAction) {
             ((StandardAction) action).setEditable(isEditable());
+        }
     }
 
     @Override
@@ -227,8 +220,9 @@ public class WebPickerField
 
     @Override
     public void setFieldEditable(boolean editable) {
-        if (isEditable())
+        if (isEditable()) {
             component.getField().setReadOnly(!editable);
+        }
     }
 
     @Override
@@ -239,8 +233,9 @@ public class WebPickerField
     @Override
     public Action getAction(String id) {
         for (Action action : actions) {
-            if (ObjectUtils.equals(id, action.getId()))
+            if (ObjectUtils.equals(id, action.getId())) {
                 return action;
+            }
         }
         return null;
     }
@@ -279,8 +274,9 @@ public class WebPickerField
         @Override
         public void setReadOnly(boolean readOnly) {
             super.setReadOnly(readOnly);
-            if (readOnly)
+            if (readOnly) {
                 field.setReadOnly(readOnly);
+            }
             for (Action action : owner.getActions()) {
                 if (action instanceof StandardAction) {
                     ((StandardAction) action).setEditable(!readOnly);

@@ -75,9 +75,25 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                updateTextRepresentaion();
+                if (!suppressTextChangeListener) {
+                    updateTextRepresentaion();
+                }
             }
         });
+    }
+
+    @Override
+    public void attach() {
+        suppressTextChangeListener = true;
+
+        super.attach();
+
+        suppressTextChangeListener = false;
+
+        // update text representaion manually
+        if (field instanceof TextField) {
+            updateTextRepresentaion();
+        }
     }
 
     protected void updateTextRepresentaion() {

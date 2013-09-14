@@ -28,8 +28,10 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -335,8 +337,9 @@ public class DesktopPickerField
     public void setEditable(boolean editable) {
         this.editable = editable;
         for (Action action : actionsOrder) {
-            if (action instanceof StandardAction)
+            if (action instanceof StandardAction) {
                 ((StandardAction) action).setEditable(isEditable());
+            }
         }
         if (!editable && impl.getEditor() instanceof JTextComponent) {
             JTextComponent editor = (JTextComponent) impl.getEditor();
@@ -348,6 +351,12 @@ public class DesktopPickerField
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
+
+        for (Action action : actionsOrder) {
+            if (action instanceof StandardAction) {
+                action.setEnabled(isEnabled());
+            }
+        }
 
         if (impl.getEditor() instanceof JTextComponent) {
             JTextComponent editor = (JTextComponent) impl.getEditor();
@@ -361,10 +370,13 @@ public class DesktopPickerField
         final DesktopButton dButton = new DesktopButton();
         dButton.setAction(action);
         dButton.getImpl().setFocusable(false);
+        dButton.getImpl().setText("");
+
         impl.addButton(dButton.getImpl());
         // apply Editable after action owner is set
-        if (action instanceof StandardAction)
+        if (action instanceof StandardAction) {
             ((StandardAction) action).setEditable(isEditable());
+        }
 
         KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_1 + actionsOrder.size() - 1, modifiersMask, false);
         List<KeyStroke> keyStrokes = new LinkedList<>();
