@@ -10,11 +10,9 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import com.haulmont.chile.core.datatypes.Enumeration;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
@@ -44,29 +42,30 @@ import java.util.Map;
 public class DesktopLookupField
         extends DesktopAbstractOptionsField<JComponent>
         implements LookupField {
-    private static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
-    private BasicEventList<Object> items = new BasicEventList<>();
-    private AutoCompleteSupport<Object> autoComplete;
-    private String caption;
-    private NewOptionHandler newOptionHandler;
+    protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
-    private boolean optionsInitialized;
-    private boolean resetValueState = false;
+    protected BasicEventList<Object> items = new BasicEventList<>();
+    protected AutoCompleteSupport<Object> autoComplete;
+    protected String caption;
+    protected NewOptionHandler newOptionHandler;
 
-    private boolean editable = true;
-    private boolean newOptionAllowed;
-    private boolean settingValue;
+    protected boolean optionsInitialized;
+    protected boolean resetValueState = false;
 
-    private Object nullOption;
+    protected boolean editable = true;
+    protected boolean newOptionAllowed;
+    protected boolean settingValue;
 
-    private ExtendedComboBox comboBox;
-    private JTextField textField;
+    protected Object nullOption;
 
-    private JPanel composition;
+    protected ExtendedComboBox comboBox;
+    protected JTextField textField;
 
-    private DefaultValueFormatter valueFormatter;
-    private boolean enabled = true;
+    protected JPanel composition;
+
+    protected DefaultValueFormatter valueFormatter;
+    protected boolean enabled = true;
 
     public DesktopLookupField() {
         composition = new JPanel();
@@ -151,7 +150,7 @@ public class DesktopLookupField
         DesktopComponentsHelper.adjustSize(comboBox);
     }
 
-    private void updateOptionsDsItem() {
+    protected void updateOptionsDsItem() {
         if (optionsDatasource != null) {
             updatingInstance = true;
             if (optionsDatasource.getState() == Datasource.State.VALID) {
@@ -162,7 +161,7 @@ public class DesktopLookupField
         }
     }
 
-    private void checkSelectedValue() {
+    protected void checkSelectedValue() {
         if (!resetValueState) {
             resetValueState = true;
             Object selectedItem = comboBox.getSelectedItem();
@@ -179,7 +178,7 @@ public class DesktopLookupField
         }
     }
 
-    private void initOptions() {
+    protected void initOptions() {
         if (optionsInitialized)
             return;
 
@@ -190,7 +189,7 @@ public class DesktopLookupField
         }
 
         if (optionsDatasource != null) {
-            if (!optionsDatasource.getState().equals(Datasource.State.VALID)) {
+            if (!(optionsDatasource.getState() == Datasource.State.VALID)) {
                 optionsDatasource.refresh();
             }
             for (Object id : optionsDatasource.getItemIds()) {
@@ -226,32 +225,6 @@ public class DesktopLookupField
         optionsInitialized = true;
     }
 
-    private ValueWrapper createValueWrapper(Object value) {
-        if (value instanceof ValueWrapper) {
-            return (ValueWrapper) value;
-        } else if (optionsDatasource != null) {
-            return new EntityWrapper((Entity) value);
-        } else if (optionsMap != null) {
-            String title = "";
-
-            if (value == null)
-                title = "";
-
-            if (value instanceof Instance)
-                title = InstanceUtils.getInstanceName((Instance) value);
-
-            if (value instanceof Enum)
-                title = AppBeans.get(Messages.class).getMessage((Enum) value);
-
-            return new MapKeyWrapper(title);
-        } else if (optionsList != null) {
-            return new ObjectWrapper(value);
-        } else if (datasource != null && metaProperty != null && metaProperty.getRange().isEnum()) {
-            return new ObjectWrapper(value);
-        }
-        return new ObjectWrapper(value);
-    }
-
     @Override
     public JComponent getComposition() {
         return composition;
@@ -265,7 +238,7 @@ public class DesktopLookupField
     @Override
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
-        autoComplete.setFirstItem(createValueWrapper(nullOption));
+        autoComplete.setFirstItem(new NullOption());
     }
 
     @Override
@@ -422,6 +395,13 @@ public class DesktopLookupField
     }
 
     @Override
+    protected void updateComponent(Object value) {
+        if (value == null && nullOption != null)
+            value = new NullOption();
+        super.updateComponent(value);
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         comboBox.setEnabled(enabled);
@@ -436,5 +416,27 @@ public class DesktopLookupField
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    protected class NullOption extends EntityWrapper {
+        public NullOption() {
+            super(new AbstractNotPersistentEntity() {
+                @Override
+                public String getInstanceName() {
+                    return String.valueOf(DesktopLookupField.this.nullOption);
+                }
+
+                // Used for captionProperty of null entity
+                @Override
+                public <T> T getValue(String s) {
+                    return (T) getInstanceName();
+                }
+            });
+        }
+
+        @Override
+        public Entity getValue() {
+            return null;
+        }
     }
 }

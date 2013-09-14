@@ -8,12 +8,10 @@ package com.haulmont.cuba.desktop.sys.vcl;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Vector;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class ExtendedComboBox extends JComboBox {
 
@@ -21,18 +19,6 @@ public class ExtendedComboBox extends JComboBox {
 
     private boolean layingOut = false;
     private int widestLengh = 0;
-
-    public ExtendedComboBox(ComboBoxModel aModel) {
-        super(aModel);
-    }
-
-    public ExtendedComboBox(Object items[]) {
-        super(items);
-    }
-
-    public ExtendedComboBox(Vector<?> items) {
-        super(items);
-    }
 
     public ExtendedComboBox() {
     }
@@ -91,7 +77,11 @@ public class ExtendedComboBox extends JComboBox {
             for (int i = 0; i < numOfItems; i++) {
                 Object item = this.getItemAt(i);
                 if (item != null) {
-                    int lineWidth = metrics.stringWidth(item.toString());
+                    String itemString = item.toString();
+                    if (itemString == null)
+                        itemString = "";
+
+                    int lineWidth = metrics.stringWidth(itemString);
                     widest = Math.max(widest, lineWidth);
                 }
             }

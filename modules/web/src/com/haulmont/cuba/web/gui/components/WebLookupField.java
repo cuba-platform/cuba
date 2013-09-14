@@ -115,11 +115,9 @@ public class WebLookupField
                 if (Datasource.State.INVALID == optionsDatasource.getState()) {
                     optionsDatasource.refresh();
                 }
-                return (value instanceof Entity) ? ((Entity) value).getId() : value;
+                return value;
             } else {
-                if ((optionsList != null) || (optionsMap != null))
-                    return value;
-                return (value instanceof Entity) ? ((Entity) value).getId() : value;
+                return value;
             }
         }
     }
@@ -200,6 +198,12 @@ public class WebLookupField
             @Override
             public String getInstanceName() {
                 return String.valueOf(WebLookupField.this.nullOption);
+            }
+
+            // Used for captionProperty of null entity
+            @Override
+            public <T> T getValue(String s) {
+                return (T) getInstanceName();
             }
         };
         component.setNullSelectionItemId(nullEntity);
@@ -453,4 +457,5 @@ public class WebLookupField
     protected interface ComponentErrorHandler {
         boolean handleError(ErrorMessage message);
     }
+
 }

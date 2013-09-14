@@ -212,10 +212,15 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             return;
         }
 
-        if (value instanceof Entity) {
-            selectedItem = new EntityWrapper((Entity) value);
-        } else
-            selectedItem = new ObjectWrapper(value);
+        if (!(value instanceof ValueWrapper)) {
+            if (value instanceof Entity) {
+                selectedItem = new EntityWrapper((Entity) value);
+            } else {
+                selectedItem = new ObjectWrapper(value);
+            }
+        } else {
+            selectedItem = value;
+        }
         setSelectedItem(selectedItem);
     }
 
@@ -263,10 +268,18 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         public String toString() {
             if (entity == null)
                 return "";
-            if (captionMode.equals(CaptionMode.PROPERTY) && !StringUtils.isBlank(captionProperty))
-                return entity.getValueEx(captionProperty);
-            else
-                return entity.getInstanceName();
+
+            String captionValue;
+            if (captionMode.equals(CaptionMode.PROPERTY) && !StringUtils.isBlank(captionProperty)) {
+                captionValue = entity.getValueEx(captionProperty);
+            } else {
+                captionValue = entity.getInstanceName();
+            }
+
+            if (captionValue == null)
+                captionValue = "";
+
+            return captionValue;
         }
     }
 
