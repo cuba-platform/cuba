@@ -168,6 +168,9 @@ public class WebLookupField
                 fireValueChanged(prevValue, value);
                 prevValue = value;
                 if (optionsDatasource != null) {
+                    if (Datasource.State.INVALID == optionsDatasource.getState()) {
+                        optionsDatasource.refresh();
+                    }
                     optionsDatasource.setItem((Entity) value);
                 }
             }
