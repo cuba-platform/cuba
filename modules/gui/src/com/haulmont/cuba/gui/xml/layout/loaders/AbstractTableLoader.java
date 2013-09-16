@@ -7,11 +7,13 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -23,7 +25,9 @@ import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @param <T>
@@ -404,7 +408,28 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             // Try to create a standard list action
             for (ListActionType type : ListActionType.values()) {
                 if (type.getId().equals(id)) {
-                    return type.createAction((ListComponent) actionsHolder);
+                    Action instance = type.createAction((ListComponent) actionsHolder);
+                    if (type != ListActionType.CREATE && type != ListActionType.EDIT) {
+                        return instance;
+                    }
+                    String openType = element.attributeValue("openType");
+                    if (openType == null) {
+                        return instance;
+                    }
+                    try {
+                        WindowManager.OpenType open = WindowManager.OpenType.valueOf(openType);
+                        if (type == ListActionType.CREATE) {
+                            CreateAction create = (CreateAction) instance;
+                            create.setOpenType(open);
+                        } else {
+                            EditAction edit = (EditAction) instance;
+                            edit.setOpenType(open);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        throw new GuiDevelopmentException(
+                                "Unknown open type: '" + openType + "'", context.getFullFrameId());
+                    }
+                    return instance;
                 }
             }
         }
