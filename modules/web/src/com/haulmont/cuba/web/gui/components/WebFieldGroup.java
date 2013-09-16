@@ -190,6 +190,9 @@ public class WebFieldGroup
 
                 Component fieldComponent = fieldGenerator.generateField(fieldDatasource, id);
                 com.vaadin.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
+                if (fieldComponent instanceof WebCheckBox) {
+                    ((CubaCheckBox)fieldImpl).setCaptionManagedByLayout(true);
+                }
 
                 assignTypicalAttributes(fieldComponent);
 
