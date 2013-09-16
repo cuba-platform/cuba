@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgroup.CubaFieldGroupState;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
@@ -26,6 +25,7 @@ public class CubaFieldGroup extends CubaGroupBox {
 
     public CubaFieldGroup() {
         setLayout(new CubaFieldGroupLayout());
+        setSizeUndefined();
     }
 
     public boolean isBorderVisible() {
