@@ -2,7 +2,7 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_quickStart" lang="ru">
   <title>Быстрый старт</title>
-  <para>В качестве первого знакомства с платформой <trademark>CUBA</trademark> мы создадим простое приложение для управления информацией о покупателях и заказах. Задача − демонстрация основных шагов по созданию модели данных и пользовательского интерфейса, а также по развертыванию приложения на сервере.</para>
+  <para>В качестве первого знакомства с платформой CUBA мы создадим простое приложение для управления информацией о покупателях и заказах. Задача − демонстрация основных шагов по созданию модели данных и пользовательского интерфейса, а также по развертыванию приложения на сервере.</para>
   <para>На Вашей рабочей машине уже должно быть установлено и настроено необходимое программное обеспечение, см.   <xref linkend="chapter_setup"/>.</para>
   <para>Основные задачи, стоящие при разработке нашего приложения:</para>
   <orderedlist>
@@ -56,6 +56,7 @@
   </section>
   <section>
     <title>Создание приложения в CUBA Studio</title>
+    <para>В данном разделе рассматривается создание приложения при помощи <application>CUBA Studio</application>.</para>
     <section id="qs_studio_setup">
       <title>Создание проекта</title>
       <orderedlist>
@@ -156,6 +157,7 @@
     </section>
     <section>
       <title>Создание пользовательского интерфейса приложения</title>
+      <para>Создадим  экраны приложения, позволяющие управлять информацией о Покупателях и Заказах.</para>
       <section>
         <title>Экраны управления Покупателями</title>
         <para>Для создания стандартных экранов просмотра и редактирования Покупателей необходимо  выделить  класс <classname>com.sample.sales.entity.Customer</classname> на вкладке <guilabel>Entities</guilabel> панели навигатора и нажать на кнопку <guibutton>Create standard screens</guibutton>. После этого на экране отобразится окно <guilabel>Create standard screens</guilabel>. Все поля этого окна  заполнены значениями по умолчанию, менять их не нужно. Нажмите на кнопку <guibutton>Create</guibutton>. Во вкладке <guilabel>Screens</guilabel> панели навигатора в модуле GUI Module появятся файлы <filename>customer-edit.xml</filename> и <filename>customer-browse.xml</filename>. Для этих файлов следует задать <glossterm linkend="localization">локализацию</glossterm> заголовков. Для этого выделите один из файлов и нажмите на кнопку <guibutton>Edit</guibutton>. Отобразится страница <guilabel>Screen designer</guilabel>, вкладка <guilabel>Properties</guilabel>. Нажмите на кнопку <guibutton>...</guibutton>  рядом с полем <guilabel>Caption</guilabel> и задайте локализованные названия экрана. Повторите те же действия для другого экрана.</para>
@@ -228,6 +230,7 @@
   </section>
   <section>
     <title>Создание приложения вручную</title>
+    <para>В данном разделе рассматривается создание приложения на основе шаблона без использования <application>CUBA Studio</application>.</para>
     <section id="qs_setup">
       <title>Настройка проекта приложения</title>
       <orderedlist>

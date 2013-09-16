@@ -2,6 +2,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_development" lang="ru">
   <title>Разработка приложений</title>
+  <para>Данная глава содержит практическую информацию по созданию приложений на основе платформы.</para>
   <section>
     <title>Рекомендуемый стиль кода</title>
     <para><emphasis role="bold">Форматирование кода</emphasis></para>
@@ -491,6 +492,7 @@
   </section>
   <section>
     <title>Отладка и тестирование</title>
+    <para>В данном разделе рассмотрены различные аспекты отладки и тестирования  CUBA-приложений.</para>
     <section>
       <title>Подключение отладчика</title>
       <para>Запустить сервер Tomcat в режиме отладки можно либо выполнением команды сборки</para>

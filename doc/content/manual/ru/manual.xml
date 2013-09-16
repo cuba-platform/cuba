@@ -11,10 +11,7 @@
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
-    <section id="appointment_id">
-      <title>Назначение</title>
-      <para>Данное руководство содержит информацию, необходимую для разработки <firstterm>бизнес-приложений</firstterm> на  платформе <trademark>CUBA</trademark>. Под бизнес-приложениями здесь понимается широкий спектр информационных систем, предназначенных для поддержки деятельности предприятия, управления и принятия решений. </para>
-    </section>
+    <para>Данное руководство содержит информацию, необходимую для разработки <firstterm>бизнес-приложений</firstterm> на  платформе <trademark>CUBA</trademark>. Под бизнес-приложениями здесь понимается широкий спектр информационных систем, предназначенных для поддержки деятельности предприятия, управления и принятия решений. </para>
     <section>
       <title>Целевая аудитория</title>
       <para>Данное Руководство предназначено для разработчиков, создающих бизнес-приложения с помощью платформы <trademark>CUBA</trademark>. Для успешной работы требуется знание следующих технологий:
@@ -52,34 +49,6 @@
         </listitem>
       </itemizedlist>
     </section>
-    <section>
-      <title>Структура руководства</title>
-      <para>Данное Руководство состоит из следующих глав.</para>
-      <para><link linkend="chapter_introduction">
-          <emphasis role="bold">Глава 1. Введение</emphasis>
-        </link></para>
-      <para>Во вводной главе приводятся  сведения о назначении и возможностях платформы <trademark>CUBA</trademark>.</para>
-      <para><link linkend="chapter_setup">
-          <emphasis role="bold">Глава 2. Установка и настройка инструментария</emphasis>
-        </link></para>
-      <para>В данной главе приводится список программного обеспечения, необходимого для создания приложений на основе платформы <trademark>CUBA</trademark>. Приведены инструкции по установке и настройке инструментов.</para>
-      <para><link linkend="chapter_quickStart">
-          <emphasis role="bold">Глава 3. Быстрый старт</emphasis>
-        </link></para>
-      <para>В данной главе приведен пример  создания простого приложения на основе платформы. Информация изложена в краткой форме.</para>
-      <para><link linkend="chapter_framework">
-          <emphasis role="bold">Глава 4. Устройство платформы</emphasis>
-        </link></para>
-      <para>Данная глава содержит подробное описание архитектуры, компонентов и механизмов платформы.</para>
-      <para><link linkend="chapter_development">
-          <emphasis role="bold">Глава 5. Разработка приложений</emphasis>
-        </link></para>
-      <para>Данная глава содержит практическую информацию по  созданию приложений на основе платформы.</para>
-      <para><link linkend="chapter_deployment">
-          <emphasis role="bold">Глава 6. Развертывание приложений</emphasis>
-        </link></para>
-      <para>В данной главе содержится информация о развертывании приложений в различной конфигурации.</para>
-    </section>
     <section id="additional_info">
       <title>Дополнительные материалы</title>
       <para>Настоящее Руководство, а также другая документация по платформе <trademark>CUBA</trademark>, доступны по адресу <ulink url="http://docs.cuba-platform.com/cuba">http://docs.cuba-platform.com/cuba/</ulink></para>
@@ -98,7 +67,7 @@
     </section>
     <section>
       <title>Обратная связь</title>
-      <para>Если  у Вас имеются предложения по улучшению данного руководства, пожалуйста, обратитесь в службу поддержки по электронной почте <email>info@cuba-platform.com</email>. В теме письма укажите тег <code>[Documentation]</code>.</para>
+      <para>Если  у Вас имеются предложения по улучшению данного руководства,  обратитесь в службу поддержки по адресу <ulink url="https://www.cuba-platform.com/support">https://www.cuba-platform.com/support</ulink>. </para>
       <para>Если Вы обнаружили ошибку, укажите, пожалуйста, номер главы и приведите небольшой участок окружающего текста для облегчения поиска. </para>
     </section>
   </preface>
@@ -110,6 +79,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_deployment.xml" encoding="UTF-8"/>
   <appendix>
     <title>Конфигурационные файлы</title>
+    <para>В данном приложении описаны основные конфигурационные файлы, входящие в состав CUBA-приложений.</para>
     <section id="context.xml">
       <title>context.xml</title>
       <para>Файл <filename>context.xml</filename> является дескриптором развертывания приложения на сервере <application>Apache Tomcat</application>. В развернутом приложении этот файл располагается  в подкаталоге <filename>META-INF</filename> каталога веб-приложения или WAR-файла, например, <filename>tomcat/webapps/app-core/META-INF/context.xml</filename>. В проекте файлы данного типа находятся в каталогах <filename>/web/META-INF</filename> модулей <structname>core</structname>, <structname>web</structname>, <structname>portal</structname>.</para>
@@ -706,6 +676,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
   </appendix>
   <appendix id="app_properties_reference">
     <title>Свойства приложения</title>
+    <para>В данном приложении в алфавитном порядке описаны доступные <link linkend="app_properties">свойства приложения</link>.</para>
     <variablelist>
       <varlistentry id="cuba.allowQueryFromSelected">
         <term>cuba.allowQueryFromSelected</term>
@@ -1468,7 +1439,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
   <appendix>
     <title>Схема базы данных</title>
     <figure>
-      <title>Схема базы данных</title>
+      <title>Схема базы данных базового проекта cuba</title>
       <mediaobject>
         <imageobject>
           <imagedata align="center" fileref="img/dbStructure.png"/>

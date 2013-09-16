@@ -3,6 +3,7 @@
 <!-- This document was created with Syntext Serna Free. -->
 <chapter id="chapter_introduction" lang="ru">
   <title>Введение</title>
+  <para>В данной главе приводятся сведения о назначении и возможностях платформы CUBA. </para>
   <section>
     <title>Основные возможности платформы</title>
     <para>Платформа <trademark>CUBA</trademark> развивается компанией
@@ -178,7 +179,7 @@
   <section>
     <title>Технические требования</title>
     <para><emphasis role="bold">Минимальные требования</emphasis>
-    для ведения разработки на платформе <trademark>CUBA</trademark></para>
+    для ведения разработки на платформе CUBA:</para>
     <itemizedlist>
       <listitem>
         <para>Оперативная память 4 ГБ</para>

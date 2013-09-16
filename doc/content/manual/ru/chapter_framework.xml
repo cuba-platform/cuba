@@ -2,14 +2,15 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <chapter id="chapter_framework" lang="ru">
   <title>Устройство платформы</title>
+  <para>Данная глава содержит подробное описание архитектуры, компонентов и механизмов платформы.</para>
   <section>
     <title>Архитектура</title>
     <para>В данной главе рассмотрена архитектура CUBA-приложений в различных разрезах: по уровням, блокам, модулям, и по используемым базовым проектам.</para>
     <section id="app_tiers">
       <title>Уровни и блоки приложения</title>
-      <para>Платформа позволяет строить приложения по классической трехуровневой схеме:  клиентский уровень, средний слой, база данных. <firstterm>Уровень</firstterm> отражает степень &quot;удаленности&quot; пользователя от хранимых данных. </para>
+      <para>Платформа позволяет строить приложения по классической трехуровневой схеме:  клиентский уровень, средний слой, база данных. <firstterm>Уровень</firstterm> отражает степень &quot;удаленности&quot;  от хранимых данных. </para>
       <para>В дальнейшем речь пойдет в основном о среднем слое и клиентах, поэтому для краткости выражение &quot;все уровни&quot; означает два этих уровня.</para>
-      <para>На каждом уровне возможно создание одного или нескольких <firstterm>блоков</firstterm> (units) приложения. Блок представляет собой обособленную исполняемую программу, взаимодействующую с другими блоками приложения. Средства платформы <productname>CUBA</productname> позволяют создавать блоки в виде веб-приложений и десктопных приложений. Разработка блоков для мобильных платформ на данный момент остается за рамками  CUBA, однако такие блоки, созданные другими средствами, могут быть интегрированы со стандартными блоками приложения. </para>
+      <para>На каждом уровне возможно создание одного или нескольких <firstterm>блоков</firstterm> (units) приложения. Блок представляет собой обособленную исполняемую программу, взаимодействующую с другими блоками приложения. Средства платформы CUBA позволяют создавать блоки в виде веб-приложений и десктопных приложений. Разработка блоков для мобильных платформ на данный момент остается за рамками  CUBA, однако такие блоки, созданные другими средствами, могут быть интегрированы со стандартными блоками приложения. </para>
       <figure>
         <title>Уровни и блоки приложения</title>
         <mediaobject>
@@ -45,7 +46,7 @@
         </varlistentry>
       </variablelist>
       <para>Обязательным блоком любого приложения является средний слой - <structname>Middleware</structname>. Для реализации пользовательского интерфейса, как правило, используется один или несколько клиентских блоков, например, <structname>Web Client</structname> и <structname>Web Portal</structname>. </para>
-      <para>Вышеперечисленные блоки являются стандартными, однако в комплексном приложении для разделения функциональности можно без труда создать произвольное количество как клиентских блоков, так и блоков среднего слоя.</para>
+      <para>Вышеперечисленные блоки являются стандартными, однако в сложном приложении для разделения функциональности можно без труда создать произвольное количество как клиентских блоков, так и блоков среднего слоя.</para>
       <para>Все клиентские блоки  взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым экраном. Следует отметить, что при развертывании в простейшем случае среднего слоя и веб-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
     </section>
     <section id="app_modules">
@@ -1532,83 +1533,80 @@ private Double latitude;</programlisting></para>
     </section>
     <section id="views">
       <title>Представления</title>
-      <section>
-        <title>Общие сведения</title>
-        <para>При извлечении сущностей из базы данных обычно встает вопрос - как обеспечить загрузку связанных сущностей на нужную глубину? </para>
-        <para>Например,  для браузера Заказов нужно отобразить дату и сумму заказа совместно с названием Покупателя, т.е. загрузить связанный экземпляр Покупателя. А для экрана редактирования Заказа необходимо загрузить еще и коллекцию Пунктов заказа, причем каждый Пункт заказа должен содержать связанный экземпляр Товара для отображения его наименования. </para>
-        <para><link linkend="lazy_loading">Загрузка по требованию</link> в большинстве случаев не может помочь, так как обработка данных, как правило, происходит не в транзакции, в которой загружаются сущности, а, например, на клиентском <link linkend="app_tiers">уровне</link> в пользовательском интерфейсе. В то же время задание <glossterm linkend="eager_fetching">энергичной загрузки</glossterm> в <link linkend="entity_annotations">аннотациях сущностей</link> недопустимо, так как приводит к постоянному извлечению всего графа связанных сущностей, который может быть очень большим.</para>
-        <para>Другой похожей проблемой является ограничение набора <glossterm linkend="local_attribute">локальных</glossterm> атрибутов сущностей загружаемого графа: например, некоторая сущность имеет 50 атрибутов, в том числе BLOB, а в экране отображается только 10 атрибутов. Зачем загружать из БД, затем сериализовать и передавать клиенту 40 атрибутов, которые ему в данный момент не нужны?</para>
-        <para>Механизм <firstterm>представлений</firstterm> (views)  решает эти проблемы, обеспечивая извлечение из базы данных и передачу клиенту графов сущностей, ограниченных в глубину и по атрибутам. <firstterm>Представление</firstterm> является описателем графа объектов, который требуется в некотором экране UI или другом процессе обработки данных.</para>
-        <para>Обработка представлений производится следующим образом:<itemizedlist>
+      <para>При извлечении сущностей из базы данных обычно встает вопрос - как обеспечить загрузку связанных сущностей на нужную глубину? </para>
+      <para>Например,  для браузера Заказов нужно отобразить дату и сумму заказа совместно с названием Покупателя, т.е. загрузить связанный экземпляр Покупателя. А для экрана редактирования Заказа необходимо загрузить еще и коллекцию Пунктов заказа, причем каждый Пункт заказа должен содержать связанный экземпляр Товара для отображения его наименования. </para>
+      <para><link linkend="lazy_loading">Загрузка по требованию</link> в большинстве случаев не может помочь, так как обработка данных, как правило, происходит не в транзакции, в которой загружаются сущности, а, например, на клиентском <link linkend="app_tiers">уровне</link> в пользовательском интерфейсе. В то же время задание <glossterm linkend="eager_fetching">энергичной загрузки</glossterm> в <link linkend="entity_annotations">аннотациях сущностей</link> недопустимо, так как приводит к постоянному извлечению всего графа связанных сущностей, который может быть очень большим.</para>
+      <para>Другой похожей проблемой является ограничение набора <glossterm linkend="local_attribute">локальных</glossterm> атрибутов сущностей загружаемого графа: например, некоторая сущность имеет 50 атрибутов, в том числе BLOB, а в экране отображается только 10 атрибутов. Зачем загружать из БД, затем сериализовать и передавать клиенту 40 атрибутов, которые ему в данный момент не нужны?</para>
+      <para>Механизм <firstterm>представлений</firstterm> (views)  решает эти проблемы, обеспечивая извлечение из базы данных и передачу клиенту графов сущностей, ограниченных в глубину и по атрибутам. <firstterm>Представление</firstterm> является описателем графа объектов, который требуется в некотором экране UI или другом процессе обработки данных.</para>
+      <para>Обработка представлений производится следующим образом:<itemizedlist>
+          <listitem>
+            <para>все связи в модели данных объявляются с признаком <link linkend="lazy_loading">загрузки по требованию</link> (<code>fetch = FetchType.LAZY</code>, см. <xref linkend="entity_annotations"/>)</para>
+          </listitem>
+          <listitem>
+            <para>в процессе загрузки данных через <link linkend="dataService">DataService</link> клиентский код помимо <glossterm linkend="jpql">JPQL</glossterm> запроса указывает нужное  представление</para>
+          </listitem>
+          <listitem>
+            <para>на основе представления формируется так называемый <firstterm>Fetch Plan</firstterm> - особенность лежащего в основе <link linkend="orm">слоя ORM</link> фреймворка <application>Apache OpenJPA</application>. Fetch Plan влияет на формирование SQL запроса к базе данных: как на список возвращаемых полей, так и на соединения с другими таблицами, содержащими связанные сущности.</para>
+          </listitem>
+          <listitem>
+            <para>ссылки, не включенные в Fetch Plan (иногда это полезно  для упрощения основного SQL запроса), загружаются отдельными SQL запросами, для чего механизм обработки представлений просто обращается к соответствующим методам чтения атрибутов</para>
+          </listitem>
+          <listitem>
+            <para>в результате на момент завершения <link linkend="transactions">транзакции</link>, загружающей данные, в памяти <structname>Middleware</structname> содержится граф объектов, заданный  JPQL запросом и представлением.</para>
+          </listitem>
+        </itemizedlist></para>
+      <figure>
+        <title>Классы представления</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/View.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>Представление определяется экземпляром класса <code>View</code>, в котором:<itemizedlist>
+          <listitem>
+            <para><code>entityClass</code> - класс сущности, для  которого определено представление. Другими словами, &quot;корень&quot; дерева загружаемых сущностей.</para>
+          </listitem>
+          <listitem>
+            <para><code>name</code> - имя представления. Должно быть либо <code>null</code>, либо уникальным в пределах данной сущности.</para>
+          </listitem>
+          <listitem>
+            <para><code>properties</code> - коллекция экземпляров класса ViewProperty, соответствующих загружаемым атрибутам сущности.</para>
+          </listitem>
+          <listitem>
+            <para><code>includeSystemProperties</code> - признак включения системных атрибутов (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <code>BaseEntity</code> и  <code>Updatable</code>). Системные атрибуты не перечисляются в <code>properties</code>  явно, а учитываются механизмом обработки представлений в зависимости от того, какие интерфейсы реализует данная сущность.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Класс <code>ViewProperty</code> имеет следующие свойства:<itemizedlist>
+          <listitem>
+            <para><code>name</code> - имя атрибута сущности</para>
+          </listitem>
+          <listitem>
+            <para><code>view</code> - для ссылочных атрибутов задает представление, с которым необходимо загружать связанную сущность</para>
+          </listitem>
+          <listitem>
+            <para><code>lazy</code> - для ссылочных атрибутов признак того, что данный атрибут нужно не  включать в Fetch Plan, а загружать отдельным SQL запросом, инициированным обращением к атрибуту. Следует иметь в виду, что атрибут в любом случае будет загружен на момент окончания транзакции, данный признак влияет только на способ загрузки. </para>
+          </listitem>
+        </itemizedlist></para>
+      <warning>
+        <para>Независимо от набора атрибутов, определенного в представлении, всегда загружаются следующие атрибуты:<itemizedlist>
             <listitem>
-              <para>все связи в модели данных объявляются с признаком <link linkend="lazy_loading">загрузки по требованию</link> (<code>fetch = FetchType.LAZY</code>, см. <xref linkend="entity_annotations"/>)</para>
+              <para><code>id</code> - идентификатор сущности</para>
             </listitem>
             <listitem>
-              <para>в процессе загрузки данных через <link linkend="dataService">DataService</link> клиентский код помимо <glossterm linkend="jpql">JPQL</glossterm> запроса указывает нужное  представление</para>
+              <para><code>version</code> - для оптимистично блокируемых сущностей, реализующих <code>Versioned</code></para>
             </listitem>
             <listitem>
-              <para>на основе представления формируется так называемый <firstterm>Fetch Plan</firstterm> - особенность лежащего в основе <link linkend="orm">слоя ORM</link> фреймворка <application>Apache OpenJPA</application>. Fetch Plan влияет на формирование SQL запроса к базе данных: как на список возвращаемых полей, так и на соединения с другими таблицами, содержащими связанные сущности.</para>
-            </listitem>
-            <listitem>
-              <para>ссылки, не включенные в Fetch Plan (иногда это полезно  для упрощения основного SQL запроса), загружаются отдельными SQL запросами, для чего механизм обработки представлений просто обращается к соответствующим методам чтения атрибутов</para>
-            </listitem>
-            <listitem>
-              <para>в результате на момент завершения <link linkend="transactions">транзакции</link>, загружающей данные, в памяти <structname>Middleware</structname> содержится граф объектов, заданный  JPQL запросом и представлением.</para>
+              <para><code>deleteTs</code>, <code>deletedBy</code> - для сущностей, реализующих <code>
+                  <link linkend="soft_deletion">SoftDelete</link>
+                </code></para>
             </listitem>
           </itemizedlist></para>
-        <figure>
-          <title>Классы представления</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/View.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>Представление определяется экземпляром класса <code>View</code>, в котором:<itemizedlist>
-            <listitem>
-              <para><code>entityClass</code> - класс сущности, для  которого определено представление. Другими словами, &quot;корень&quot; дерева загружаемых сущностей.</para>
-            </listitem>
-            <listitem>
-              <para><code>name</code> - имя представления. Должно быть либо <code>null</code>, либо уникальным в пределах данной сущности.</para>
-            </listitem>
-            <listitem>
-              <para><code>properties</code> - коллекция экземпляров класса ViewProperty, соответствующих загружаемым атрибутам сущности.</para>
-            </listitem>
-            <listitem>
-              <para><code>includeSystemProperties</code> - признак включения системных атрибутов (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <code>BaseEntity</code> и  <code>Updatable</code>). Системные атрибуты не перечисляются в <code>properties</code>  явно, а учитываются механизмом обработки представлений в зависимости от того, какие интерфейсы реализует данная сущность.</para>
-            </listitem>
-          </itemizedlist></para>
-        <para>Класс <code>ViewProperty</code> имеет следующие свойства:<itemizedlist>
-            <listitem>
-              <para><code>name</code> - имя атрибута сущности</para>
-            </listitem>
-            <listitem>
-              <para><code>view</code> - для ссылочных атрибутов задает представление, с которым необходимо загружать связанную сущность</para>
-            </listitem>
-            <listitem>
-              <para><code>lazy</code> - для ссылочных атрибутов признак того, что данный атрибут нужно не  включать в Fetch Plan, а загружать отдельным SQL запросом, инициированным обращением к атрибуту. Следует иметь в виду, что атрибут в любом случае будет загружен на момент окончания транзакции, данный признак влияет только на способ загрузки. </para>
-            </listitem>
-          </itemizedlist></para>
-        <warning>
-          <para>Независимо от набора атрибутов, определенного в представлении, всегда загружаются следующие атрибуты:<itemizedlist>
-              <listitem>
-                <para><code>id</code> - идентификатор сущности</para>
-              </listitem>
-              <listitem>
-                <para><code>version</code> - для оптимистично блокируемых сущностей, реализующих <code>Versioned</code></para>
-              </listitem>
-              <listitem>
-                <para><code>deleteTs</code>, <code>deletedBy</code> - для сущностей, реализующих <code>
-                    <link linkend="soft_deletion">SoftDelete</link>
-                  </code></para>
-              </listitem>
-            </itemizedlist></para>
-        </warning>
-        <para>Незагруженные атрибуты имеют значение <code>null</code>. По умолчанию попытка установки значения незагруженного атрибута (вызов setter) для <link linkend="entity_states">Detached</link> сущности вызывает исключение. Это поведение можно изменить с помощью свойства приложения <property>
-            <link linkend="cuba.allowSetNotLoadedAttributes">cuba.allowSetNotLoadedAttributes</link>
-          </property>. Если данное свойство установлено в <code>true</code>, то вызов setter не приведет к исключению, но значение все равно сохранено не будет.</para>
-        <para>Следует иметь в виду, что незагруженные ссылочные атрибуты Detached сущности, соответствующие внешним ключам (т.е. ManyToOne, OneToOne), можно установить в новое ненулевое значение в любом случае, и изменения будут сохранены при последующем <code>merge()</code>.</para>
-      </section>
+      </warning>
+      <para>Незагруженные атрибуты имеют значение <code>null</code>. По умолчанию попытка установки значения незагруженного атрибута (вызов setter) для <link linkend="entity_states">Detached</link> сущности вызывает исключение. Это поведение можно изменить с помощью свойства приложения <property>
+          <link linkend="cuba.allowSetNotLoadedAttributes">cuba.allowSetNotLoadedAttributes</link>
+        </property>. Если данное свойство установлено в <code>true</code>, то вызов setter не приведет к исключению, но значение все равно сохранено не будет.</para>
+      <para>Следует иметь в виду, что незагруженные ссылочные атрибуты Detached сущности, соответствующие внешним ключам (т.е. ManyToOne, OneToOne), можно установить в новое ненулевое значение в любом случае, и изменения будут сохранены при последующем <code>merge()</code>.</para>
       <section>
         <title>Создание представлений</title>
         <para>Представление может быть создано двумя путями:<itemizedlist>
@@ -2025,44 +2023,41 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting>long 
     </section>
     <section id="app_properties">
       <title>Свойства приложения</title>
-      <section>
-        <title>Основные понятия</title>
-        <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
-        <para>По назначению свойства приложения можно классифицировать следующим образом:</para>
-        <itemizedlist>
+      <para>Свойства приложения − именованные данные различных типов, определяющие всевозможные аспекты конфигурации и функционирования приложения.</para>
+      <para>По назначению свойства приложения можно классифицировать следующим образом:</para>
+      <itemizedlist>
+        <listitem>
+          <para><firstterm>Конфигурационные параметры</firstterm> - задают наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса, т.е. определяют функциональность приложения. </para>
+          <para>Например: <property>cuba.springContextConfig</property>, <property>cuba.web.useLightHeader</property>.</para>
+        </listitem>
+        <listitem>
+          <para><firstterm>Параметры развертывания</firstterm> - различные URL для соединения <link linkend="app_tiers">блоков</link> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. </para>
+          <para>Например: <property>cuba.connectionUrl</property>, <property>cuba.dbmsType</property>, <property>
+              <link linkend="cuba.userSessionExpirationTimeoutSec">cuba.userSessionExpirationTimeoutSec</link>
+            </property>.</para>
+        </listitem>
+        <listitem>
+          <para><firstterm>Параметры времени выполнения</firstterm> - активность аудита, параметры отсылки email и т.д. </para>
+          <para>Например: <property>cuba.security.EntityLog.enabled</property>, <property>cuba.email.smtpHost</property>.</para>
+        </listitem>
+      </itemizedlist>
+      <para>Как правило, некоторое свойство принадлежит только одному или нескольким <link linkend="app_tiers">блокам</link> приложения. Например, <property>
+          <link linkend="cuba.persistenceConfig">cuba.persistenceConfig</link>
+        </property> имеет смысл только для <structname>Middleware</structname>, <property> cuba.web.useLightHeader</property> − только для <structname>Web Client</structname>, а <property>
+          <link linkend="cuba.springContextConfig">cuba.springContextConfig</link>
+        </property> − для всех блоков. </para>
+      <para>Принадлежность к блоку означает, что если нужно задать значение некоторому свойству, это необходимо сделать <emphasis>во всех блоках</emphasis>, которым данное свойство принадлежит (и которые используются в приложении). </para>
+      <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
           <listitem>
-            <para><firstterm>Конфигурационные параметры</firstterm> - задают наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса, т.е. определяют функциональность приложения. </para>
-            <para>Например: <property>cuba.springContextConfig</property>, <property>cuba.web.useLightHeader</property>.</para>
+            <para>Из документации: см. <xref linkend="app_properties_reference"/> </para>
           </listitem>
           <listitem>
-            <para><firstterm>Параметры развертывания</firstterm> - различные URL для соединения <link linkend="app_tiers">блоков</link> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. </para>
-            <para>Например: <property>cuba.connectionUrl</property>, <property>cuba.dbmsType</property>, <property>
-                <link linkend="cuba.userSessionExpirationTimeoutSec">cuba.userSessionExpirationTimeoutSec</link>
-              </property>.</para>
+            <para>Проследив использование свойства в коде приложения</para>
           </listitem>
           <listitem>
-            <para><firstterm>Параметры времени выполнения</firstterm> - активность аудита, параметры отсылки email и т.д. </para>
-            <para>Например: <property>cuba.security.EntityLog.enabled</property>, <property>cuba.email.smtpHost</property>.</para>
+            <para>Если к свойству есть доступ через <link linkend="config_interfaces">конфигурационный интерфейс</link>, то по принадлежности интерфейса <link linkend="app_modules">модулю</link> проекта.</para>
           </listitem>
-        </itemizedlist>
-        <para>Как правило, некоторое свойство принадлежит только одному или нескольким <link linkend="app_tiers">блокам</link> приложения. Например, <property>
-            <link linkend="cuba.persistenceConfig">cuba.persistenceConfig</link>
-          </property> имеет смысл только для <structname>Middleware</structname>, <property> cuba.web.useLightHeader</property> − только для <structname>Web Client</structname>, а <property>
-            <link linkend="cuba.springContextConfig">cuba.springContextConfig</link>
-          </property> − для всех блоков. </para>
-        <para>Принадлежность к блоку означает, что если нужно задать значение некоторому свойству, это необходимо сделать <emphasis>во всех блоках</emphasis>, которым данное свойство принадлежит (и которые используются в приложении). </para>
-        <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
-            <listitem>
-              <para>Из документации: см. <xref linkend="app_properties_reference"/> </para>
-            </listitem>
-            <listitem>
-              <para>Проследив использование свойства в коде приложения</para>
-            </listitem>
-            <listitem>
-              <para>Если к свойству есть доступ через <link linkend="config_interfaces">конфигурационный интерфейс</link>, то по принадлежности интерфейса <link linkend="app_modules">модулю</link> проекта.</para>
-            </listitem>
-          </itemizedlist></para>
-      </section>
+        </itemizedlist></para>
       <section>
         <title>Доступ к свойствам</title>
         <para><para>Основной способ доступа к свойствам приложения из прикладного кода − использование механизма <link linkend="config_interfaces">конфигурационных интерфейсов</link>. Кроме того, все параметры конфигурации и развертывания доступны через методы класса <code>
@@ -2469,6 +2464,7 @@ executor.submit(new Runnable() {
     </section>
     <section>
       <title>Обработка исключений</title>
+      <para>В данном разделе рассмотрены различные аспекты генерации и обработки исключений в CUBA-приложениях.</para>
       <section>
         <title>Классы исключений</title>
         <para>При создании собственных классов исключений следует придерживаться следующих правил:<itemizedlist>
@@ -3065,51 +3061,48 @@ tools.foo();</programlisting><programlisting>((MyPersistenceTools) persistence.g
     </section>
     <section id="orm">
       <title>Слой ORM</title>
-      <section>
-        <title>Общие сведения</title>
-        <para>Object-Relational Mapping - объектно-реляционное отображение - технология связывания таблиц реляционной базы данных с объектами языка программирования. </para>
-        <variablelist>
-          <varlistentry>
-            <term>Преимущества использования ORM:</term>
-            <listitem>
-              <itemizedlist>
-                <listitem>
-                  <para>Позволяет работать с  данными реляционной СУБД, манипулируя объектами Java</para>
-                </listitem>
-                <listitem>
-                  <para>Упрощает программирование, избавляя от рутины написания тривиальных SQL-запросов</para>
-                </listitem>
-                <listitem>
-                  <para>Упрощает программирование, позволяя извлекать и сохранять целые графы объектов одной командой</para>
-                </listitem>
-                <listitem>
-                  <para>Обеспечивает легкое портирование приложения на различные СУБД</para>
-                </listitem>
-                <listitem>
-                  <para>Использует лаконичный язык запросов <glossterm linkend="jpql">JPQL</glossterm></para>
-                </listitem>
-                <listitem>
-                  <para>Оптимизирует количество выполняемых SQL-запросов на команды insert и update</para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-          </varlistentry>
-          <varlistentry>
-            <term>Недостатки:</term>
-            <listitem>
-              <itemizedlist>
-                <listitem>
-                  <para>Требует понимания особенностей работы с ORM</para>
-                </listitem>
-                <listitem>
-                  <para>Не позволяет напрямую оптимизировать SQL или использовать особенности применяемой СУБД</para>
-                </listitem>
-              </itemizedlist>
-            </listitem>
-          </varlistentry>
-        </variablelist>
-        <para>В платформе <productname>CUBA</productname> используется реализация ORM по стандарту Java Persistence API на основе фреймворка <application>Apache OpenJPA</application>.</para>
-      </section>
+      <para>Object-Relational Mapping - объектно-реляционное отображение - технология связывания таблиц реляционной базы данных с объектами языка программирования. </para>
+      <variablelist>
+        <varlistentry>
+          <term>Преимущества использования ORM:</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>Позволяет работать с  данными реляционной СУБД, манипулируя объектами Java</para>
+              </listitem>
+              <listitem>
+                <para>Упрощает программирование, избавляя от рутины написания тривиальных SQL-запросов</para>
+              </listitem>
+              <listitem>
+                <para>Упрощает программирование, позволяя извлекать и сохранять целые графы объектов одной командой</para>
+              </listitem>
+              <listitem>
+                <para>Обеспечивает легкое портирование приложения на различные СУБД</para>
+              </listitem>
+              <listitem>
+                <para>Использует лаконичный язык запросов <glossterm linkend="jpql">JPQL</glossterm></para>
+              </listitem>
+              <listitem>
+                <para>Оптимизирует количество выполняемых SQL-запросов на команды insert и update</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Недостатки:</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>Требует понимания особенностей работы с ORM</para>
+              </listitem>
+              <listitem>
+                <para>Не позволяет напрямую оптимизировать SQL или использовать особенности применяемой СУБД</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>В платформе <productname>CUBA</productname> используется реализация ORM по стандарту Java Persistence API на основе фреймворка <application>Apache OpenJPA</application>.</para>
       <section id="entityManager">
         <title>EntityManager</title>
         <para><code>EntityManager</code> - основной интерфейс ORM, служит для управления персистентными <link linkend="data_model">сущностями</link>.
@@ -3370,6 +3363,7 @@ List&lt;Customer&gt; list = query.getResultList();</programlisting></para>
     </section>
     <section id="transactions">
       <title>Управление транзакциями</title>
+      <para>В данном разделе рассмотрены различные аспекты управления транзакциями в CUBA-приложениях.</para>
       <section>
         <title>Программное управление транзакциями</title>
         <para>Программное управление транзакциями осуществляется с помощью интерфейса <code>com.haulmont.cuba.core.Transaction</code>, ссылку на который можно получить методами <code>createTransaction()</code> или <code>getTransaction()</code> интерфейса инфраструктуры <code>
@@ -3637,29 +3631,26 @@ public void someServiceMethod() {
     </section>
     <section id="dbms_types">
       <title>Работа с СУБД</title>
-      <section>
-        <title>Выбор и подключение</title>
-        <para>Тип используемой СУБД определяется свойством приложения <property>
-            <link linkend="cuba.dbmsType">cuba.dbmsType</link>
-          </property> и настройкой источника данных. Конфигурационный файл для <application>Tomcat</application>, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
-        <warning>
-          <para>Обратите внимание на применимость СУБД в зависимости от используемых <link linkend="base_projects">базовых проектов</link> платформы:<itemizedlist>
-              <listitem>
-                <para><application>HSQLDB</application> - поддерживается всеми базовыми проектами платформы</para>
-              </listitem>
-              <listitem>
-                <para><application>PostgreSQL</application> - поддерживается всеми базовыми проектами платформы</para>
-              </listitem>
-              <listitem>
-                <para><application>Microsoft SQL Server</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname></para>
-              </listitem>
-              <listitem>
-                <para><application>Oracle</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname>, <structname>ccpayments</structname></para>
-              </listitem>
-            </itemizedlist></para>
-        </warning>
-        <para>При использовании <application>Oracle</application> имеется следующая особенность: в связи с политикой распространения JDBC драйвера Oracle его можно скачать только вручную с сайта <ulink url="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html">http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html</ulink>. После скачивания разместите JAR с драйвером в подкаталоге <filename>lib</filename> установленного сервера <application>Tomcat</application>.</para>
-      </section>
+      <para>Тип используемой СУБД определяется свойством приложения <property>
+          <link linkend="cuba.dbmsType">cuba.dbmsType</link>
+        </property> и настройкой источника данных. Конфигурационный файл для <application>Tomcat</application>, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
+      <warning>
+        <para>Обратите внимание на применимость СУБД в зависимости от используемых <link linkend="base_projects">базовых проектов</link> платформы:<itemizedlist>
+            <listitem>
+              <para><application>HSQLDB</application> - поддерживается всеми базовыми проектами платформы</para>
+            </listitem>
+            <listitem>
+              <para><application>PostgreSQL</application> - поддерживается всеми базовыми проектами платформы</para>
+            </listitem>
+            <listitem>
+              <para><application>Microsoft SQL Server</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname></para>
+            </listitem>
+            <listitem>
+              <para><application>Oracle</application> - поддерживается базовыми проектами <structname>cuba</structname>, <structname>reports</structname>, <structname>workflow</structname>, <structname>fts</structname>, <structname>ccpayments</structname></para>
+            </listitem>
+          </itemizedlist></para>
+      </warning>
+      <para>При использовании <application>Oracle</application> имеется следующая особенность: в связи с политикой распространения JDBC драйвера Oracle его можно скачать только вручную с сайта <ulink url="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html">http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html</ulink>. После скачивания разместите JAR с драйвером в подкаталоге <filename>lib</filename> установленного сервера <application>Tomcat</application>.</para>
       <section id="db_scripts">
         <title>Создание и обновление БД</title>
         <para>Проект CUBA-приложения всегда содержит два набора SQL скриптов:<itemizedlist>
@@ -9882,68 +9873,65 @@ protected boolean postCommit(boolean committed, boolean close) {
     </section>
     <section id="datasources">
       <title>Источники данных</title>
-      <section>
-        <title>Общие сведения</title>
-        <para>Источники данных обеспечивают работу связанных с данными (data-aware) компонентов.</para>
-        <para>Визуальные компоненты сами не обращаются к Middleware, а получают экземпляры сущностей  из связанных источников данных. При этом один источник данных может обслуживать несколько визуальных компонентов, если им нужен один и тот же экземпляр или набор экземпляров.</para>
-        <para>Источники данных также отслеживают изменения содержащихся в них сущностей, и могут отправлять измененные экземпляры обратно на Middleware для сохранения в базе данных.</para>
-        <para>Рассмотрим основные интерфейсы источников.</para>
-        <figure>
-          <title>Интерфейсы источников данных</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/Datasources.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <itemizedlist>
-          <listitem>
-            <para><code>Datasource</code> − простейший источник данных, предназначенный для работы с одним экземпляром сущности. Экземпляр устанавливается методом <code>setItem()</code> и  доступен через <code>getItem()</code>. </para>
-            <para>Стандартной реализацией такого источника является класс <code>DatasourceImpl</code>, который используется, например, как главный источник данных в <link linkend="screen_edit">экранах редактирования</link> сущностей.</para>
-          </listitem>
-          <listitem>
-            <para><code>CollectionDatasource</code> − источник данных, предназначенный для работы с коллекцией экземпляров сущности. Коллекция загружается при вызове метода <code>refresh()</code>, ключи экземпляров доступны через метод <code>getItemIds()</code>. Метод <code>setItem()</code> устанавливает, а <code>getItem()</code> возвращает  &quot;текущий&quot; экземпляр коллекции, т.е., например, соответствующий выбранной в данный момент строке таблицы.</para>
-            <para>Способ загрузки коллекции сущностей определяется реализацией. Наиболее типичный - загрузка с Middleware через <code>
-                <link linkend="dataService">DataService</link>
-              </code>, при этом для формирования JPQL запроса используются методы <code>setQuery()</code>, <code>setQueryFilter()</code>.</para>
-            <para>Стандартной реализацией такого источника является класс <code>CollectionDatasourceImpl</code>, который используется в экранах, отображающих списки сущностей.</para>
-            <itemizedlist>
-              <listitem>
-                <para><code>GroupDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентом <code>
-                    <link linkend="gui_GroupTable">GroupTable</link>
-                  </code>.</para>
-                <para>Стандартной реализацией является класс <code>GroupDatasourceImpl</code>.</para>
-              </listitem>
-              <listitem>
-                <para><code>HierarchicalDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентами <code>
-                    <link linkend="gui_Tree">Tree</link>
-                  </code> и  <code>
-                    <link linkend="gui_TreeTable">TreeTable</link>
-                  </code>.</para>
-                <para>Стандартной реализацией является класс <code>HierarchicalDatasourceImpl</code>.</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-          <listitem>
-            <para><code>NestedDatasource</code> - источник данных, предназначенный для работы с экземплярами, загруженными в атрибуте другой сущности. При этом источник, содержащий сущность-хозяина, доступен методом <code>getMaster()</code>, а <link linkend="metaProperty">мета-свойство</link>, соответствующее атрибуту хозяина, содержащему экземпляры данного источника, доступно через метод <code>getProperty()</code>.</para>
-            <para>Например,  в источнике <code>dsOrder</code> установлен экземпляр сущности <code>Order</code>, содержащий ссылку на экземпляр <code>Customer</code>. Тогда для связи экземпляра <code>Customer</code> с визуальными компонентами достаточно создать <code>NestedDatasource</code>, у которого хозяином является <code>dsOrder</code>, а мета-свойство указывает на атрибут <code>Order.customer</code>.</para>
-            <itemizedlist>
-              <listitem>
-                <para><code>PropertyDatasource</code> - подвид <code>NestedDatasource</code>, предназначенный для работы с одним экземпляром или коллекцией связанных сущностей, не являющихся встроенными (embedded).</para>
-                <para>Стандартные реализации: для работы с одним экземпляром - <code>PropertyDatasourceImpl</code>, для работы с коллекцией - <code>CollectionPropertyDatasourceImpl</code>, <code>GroupPropertyDatasourceImpl</code>, <code>HierarchicalPropertyDatasourceImpl</code>. Последние реализуют также интерфейс <code>CollectionDatasource</code>, однако некоторые его нерелевантные методы, связанные с загрузкой, например, <code>setQuery()</code>, выбрасывают <code>UnsupportedOperationException</code>.</para>
-              </listitem>
-              <listitem>
-                <para><code>EmbeddedDatasource</code> - подвид <code>NestedDatasource</code>, содержащий экземпляр встроенной сущности.</para>
-                <para>Стандартной реализацией является класс <code>EmbeddedDatasourceImpl</code>.</para>
-              </listitem>
-            </itemizedlist>
-          </listitem>
-          <listitem>
-            <para><code>RuntimePropsDatasource</code> − специфический источник, предназначенный для работы с <link linkend="runtime_properties">динамическими атрибутами</link> сущностей.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
-      </section>
+      <para>Источники данных обеспечивают работу связанных с данными (data-aware) компонентов.</para>
+      <para>Визуальные компоненты сами не обращаются к Middleware, а получают экземпляры сущностей  из связанных источников данных. При этом один источник данных может обслуживать несколько визуальных компонентов, если им нужен один и тот же экземпляр или набор экземпляров.</para>
+      <para>Источники данных также отслеживают изменения содержащихся в них сущностей, и могут отправлять измененные экземпляры обратно на Middleware для сохранения в базе данных.</para>
+      <para>Рассмотрим основные интерфейсы источников.</para>
+      <figure>
+        <title>Интерфейсы источников данных</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/Datasources.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <itemizedlist>
+        <listitem>
+          <para><code>Datasource</code> − простейший источник данных, предназначенный для работы с одним экземпляром сущности. Экземпляр устанавливается методом <code>setItem()</code> и  доступен через <code>getItem()</code>. </para>
+          <para>Стандартной реализацией такого источника является класс <code>DatasourceImpl</code>, который используется, например, как главный источник данных в <link linkend="screen_edit">экранах редактирования</link> сущностей.</para>
+        </listitem>
+        <listitem>
+          <para><code>CollectionDatasource</code> − источник данных, предназначенный для работы с коллекцией экземпляров сущности. Коллекция загружается при вызове метода <code>refresh()</code>, ключи экземпляров доступны через метод <code>getItemIds()</code>. Метод <code>setItem()</code> устанавливает, а <code>getItem()</code> возвращает  &quot;текущий&quot; экземпляр коллекции, т.е., например, соответствующий выбранной в данный момент строке таблицы.</para>
+          <para>Способ загрузки коллекции сущностей определяется реализацией. Наиболее типичный - загрузка с Middleware через <code>
+              <link linkend="dataService">DataService</link>
+            </code>, при этом для формирования JPQL запроса используются методы <code>setQuery()</code>, <code>setQueryFilter()</code>.</para>
+          <para>Стандартной реализацией такого источника является класс <code>CollectionDatasourceImpl</code>, который используется в экранах, отображающих списки сущностей.</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>GroupDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентом <code>
+                  <link linkend="gui_GroupTable">GroupTable</link>
+                </code>.</para>
+              <para>Стандартной реализацией является класс <code>GroupDatasourceImpl</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>HierarchicalDatasource</code> − подвид <code>CollectionDatasource</code>, предназначенный для работы с компонентами <code>
+                  <link linkend="gui_Tree">Tree</link>
+                </code> и  <code>
+                  <link linkend="gui_TreeTable">TreeTable</link>
+                </code>.</para>
+              <para>Стандартной реализацией является класс <code>HierarchicalDatasourceImpl</code>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para><code>NestedDatasource</code> - источник данных, предназначенный для работы с экземплярами, загруженными в атрибуте другой сущности. При этом источник, содержащий сущность-хозяина, доступен методом <code>getMaster()</code>, а <link linkend="metaProperty">мета-свойство</link>, соответствующее атрибуту хозяина, содержащему экземпляры данного источника, доступно через метод <code>getProperty()</code>.</para>
+          <para>Например,  в источнике <code>dsOrder</code> установлен экземпляр сущности <code>Order</code>, содержащий ссылку на экземпляр <code>Customer</code>. Тогда для связи экземпляра <code>Customer</code> с визуальными компонентами достаточно создать <code>NestedDatasource</code>, у которого хозяином является <code>dsOrder</code>, а мета-свойство указывает на атрибут <code>Order.customer</code>.</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>PropertyDatasource</code> - подвид <code>NestedDatasource</code>, предназначенный для работы с одним экземпляром или коллекцией связанных сущностей, не являющихся встроенными (embedded).</para>
+              <para>Стандартные реализации: для работы с одним экземпляром - <code>PropertyDatasourceImpl</code>, для работы с коллекцией - <code>CollectionPropertyDatasourceImpl</code>, <code>GroupPropertyDatasourceImpl</code>, <code>HierarchicalPropertyDatasourceImpl</code>. Последние реализуют также интерфейс <code>CollectionDatasource</code>, однако некоторые его нерелевантные методы, связанные с загрузкой, например, <code>setQuery()</code>, выбрасывают <code>UnsupportedOperationException</code>.</para>
+            </listitem>
+            <listitem>
+              <para><code>EmbeddedDatasource</code> - подвид <code>NestedDatasource</code>, содержащий экземпляр встроенной сущности.</para>
+              <para>Стандартной реализацией является класс <code>EmbeddedDatasourceImpl</code>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para><code>RuntimePropsDatasource</code> − специфический источник, предназначенный для работы с <link linkend="runtime_properties">динамическими атрибутами</link> сущностей.</para>
+        </listitem>
+      </itemizedlist>
+      <para>Как правило, источники данных объявляются декларативно в секции <sgmltag>dsContext</sgmltag> <link linkend="screen_xml">дескриптора экрана</link>.</para>
       <section id="dataSupplier">
         <title>DataSupplier</title>
         <para><code>DataSupplier</code> - интерфейс, через который код  универсального пользовательского интерфейса (в том числе и источники данных) обращается к Middleware для загрузки и сохранения сущностей. Он расширяет интерфейс <code>
@@ -10258,11 +10246,8 @@ where
     </section>
     <section id="background_tasks">
       <title>Фоновые задачи</title>
-      <section>
-        <title>Назначение</title>
-        <para>Фоновые задачи используются на клиентском уровне для асинхронного выполнения длительных операций без заморозки пользовательского интерфейса. </para>
-        <para>В платформе реализован бин <code>BackgroundWorker</code>, который  управляет фоновыми задачами. Ссылка на него может быть получена инжекцией в <link linkend="screen_controller">контроллер экрана</link>, либо статическим методом класса <code>AppBeans</code>.</para>
-      </section>
+      <para>Фоновые задачи используются на клиентском уровне для асинхронного выполнения длительных операций без заморозки пользовательского интерфейса. </para>
+      <para>В платформе реализован бин <code>BackgroundWorker</code>, который  управляет фоновыми задачами. Ссылка на него может быть получена инжекцией в <link linkend="screen_controller">контроллер экрана</link>, либо статическим методом класса <code>AppBeans</code>.</para>
       <section><title>Использование</title><orderedlist>
           <listitem>
             <para>Задача описывается как наследник абстрактного класса <code>BackgroundTask</code>. В конструктор задачи необходимо передать ссылку на контроллер экрана, с которым будет связана задача, и значение таймаута ее выполнения.</para>
@@ -10430,28 +10415,25 @@ taskHandler.execute();</programlisting><para>Подробная информац
     </section>
     <section id="rest_api">
       <title>REST API</title>
-      <section>
-        <title>Общие сведения</title>
-        <para>Универсальный REST API платформы позволяет выполнять загрузку и сохранение  любых сущностей модели данных приложения посредством отправки простых HTTP запросов. Это открывает возможность легкой интеграции со сторонними приложениями самого широкого спектра − от JavaScript кода, выполняющегося в  браузере, до произвольных систем, работающих на Java, .NET, PHP или любой другой платформе. </para>
-        <para>Основные возможности API:<itemizedlist>
-            <listitem>
-              <para>загрузка экземпляров сущностей из базы данных по идентификатору или по JPQL запросу с параметрами</para>
-            </listitem>
-            <listitem>
-              <para>сохранение новых и измененных экземпляров, удаление экземпляров</para>
-            </listitem>
-            <listitem>
-              <para>получение описания модели данных в формате HTML</para>
-            </listitem>
-            <listitem>
-              <para>представление данных в форматах JSON и XML на выбор</para>
-            </listitem>
-            <listitem>
-              <para>аутентификация пользователя</para>
-            </listitem>
-          </itemizedlist></para>
-        <para>Все функции работают с данными в кодировке UTF-8. </para>
-      </section>
+      <para>Универсальный REST API платформы позволяет выполнять загрузку и сохранение  любых сущностей модели данных приложения посредством отправки простых HTTP запросов. Это открывает возможность легкой интеграции со сторонними приложениями самого широкого спектра − от JavaScript кода, выполняющегося в  браузере, до произвольных систем, работающих на Java, .NET, PHP или любой другой платформе. </para>
+      <para>Основные возможности API:<itemizedlist>
+          <listitem>
+            <para>загрузка экземпляров сущностей из базы данных по идентификатору или по JPQL запросу с параметрами</para>
+          </listitem>
+          <listitem>
+            <para>сохранение новых и измененных экземпляров, удаление экземпляров</para>
+          </listitem>
+          <listitem>
+            <para>получение описания модели данных в формате HTML</para>
+          </listitem>
+          <listitem>
+            <para>представление данных в форматах JSON и XML на выбор</para>
+          </listitem>
+          <listitem>
+            <para>аутентификация пользователя</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Все функции работают с данными в кодировке UTF-8. </para>
       <section>
         <title>Включение в проект</title>
         <para>REST API реализован в модуле <structname>portal</structname> базового проекта <structname>cuba</structname>, поэтому для его использования необходимо создать модуль <structname>portal</structname> в проекте приложения. Пример содержится в шаблоне проекта,  рассмотренном в  <xref linkend="qs_setup"/> </para>
@@ -10718,6 +10700,7 @@ locale: en</programlisting>
   </section>
   <section>
     <title>Механизмы платформы</title>
+    <para>В данной главе рассматриваются различные опциональные возможности, предоставляемые платформой.</para>
     <section id="scheduled_tasks">
       <title>Выполнение задач по расписанию</title>
       <para>Платформа предлагает два способа запуска задач по расписанию:<itemizedlist>
@@ -10990,37 +10973,34 @@ locale: en</programlisting>
     </section>
     <section id="runtime_properties">
       <title>Динамические атрибуты</title>
-      <section>
-        <title>Общие сведения</title>
-        <para>Механизм динамических атрибутов предназначен для описания новых свойств сущностей на этапе настройки и эксплуатации системы. При этом для одного типа сущности может быть задано несколько наборов динамических атрибутов.</para>
-        <figure>
-          <title>Диаграмма классов механизма динамических атрибутов</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata contentwidth="" align="center" fileref="img/RuntimeProperties.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>Рассмотрим приведенные на диаграмме классы.</para>
-        <itemizedlist>
-          <listitem>
-            <para><code>CategorizedEntity</code> - базовый класс сущностей, которые могут иметь динамические атрибуты. Содержит ссылку на объект <code>Category</code>, т.е. каждый экземпляр сущности <code>SomeEntity</code> может быть отнесен к одной из определенных заранее категорий.</para>
-          </listitem>
-          <listitem>
-            <para><code>Category</code> - определяет категорию объектов и соответствующий набор динамических атрибутов. Категория должна быть отнесена к некоторому типу сущности.</para>
-            <para>Например, имеется сущность типа <userinput>Автомобиль</userinput>. Для нее можно определить две категории: <userinput>Грузовой</userinput> и <userinput>Пассажирский</userinput>. При этом категория <userinput>Грузовой</userinput>  будет содержать атрибуты <userinput>Грузоподъемность</userinput> и <userinput>Вид кузова</userinput>, а категория <userinput>Пассажирский</userinput> - атрибуты <userinput>Количество мест</userinput> и <userinput>Наличие детского сидения</userinput>.</para>
-            <para>Атрибут <code>isDefault</code> указывает, что при создании нового экземпляра сущности для него автоматически выбирается данная категория.</para>
-            <para>Атрибут <code>special</code> указывает, что данная категория обрабатывается в приложении специальным образом, и не отображается в универсальном UI редактирования категорий.</para>
-          </listitem>
-          <listitem>
-            <para><code>CategoryAttribute</code> - определяет динамический атрибут, относящийся к некоторой категории. Содержит значение по умолчанию для различных типов данных. Значение перечислений задается в виде списка строк через запятую.</para>
-          </listitem>
-          <listitem>
-            <para><code>CategoryAttributeValue</code> - значение динамического атрибута для конкретного экземпляра сущности.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Управление категориями и описаниями атрибутов осуществляется с помощью специальных экранов, доступных через меню <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Категории</guimenuitem>.</para>
-      </section>
+      <para>Механизм динамических атрибутов предназначен для описания новых свойств сущностей на этапе настройки и эксплуатации системы. При этом для одного типа сущности может быть задано несколько наборов динамических атрибутов.</para>
+      <figure>
+        <title>Диаграмма классов механизма динамических атрибутов</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata contentwidth="" align="center" fileref="img/RuntimeProperties.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>Рассмотрим приведенные на диаграмме классы.</para>
+      <itemizedlist>
+        <listitem>
+          <para><code>CategorizedEntity</code> - базовый класс сущностей, которые могут иметь динамические атрибуты. Содержит ссылку на объект <code>Category</code>, т.е. каждый экземпляр сущности <code>SomeEntity</code> может быть отнесен к одной из определенных заранее категорий.</para>
+        </listitem>
+        <listitem>
+          <para><code>Category</code> - определяет категорию объектов и соответствующий набор динамических атрибутов. Категория должна быть отнесена к некоторому типу сущности.</para>
+          <para>Например, имеется сущность типа <userinput>Автомобиль</userinput>. Для нее можно определить две категории: <userinput>Грузовой</userinput> и <userinput>Пассажирский</userinput>. При этом категория <userinput>Грузовой</userinput>  будет содержать атрибуты <userinput>Грузоподъемность</userinput> и <userinput>Вид кузова</userinput>, а категория <userinput>Пассажирский</userinput> - атрибуты <userinput>Количество мест</userinput> и <userinput>Наличие детского сидения</userinput>.</para>
+          <para>Атрибут <code>isDefault</code> указывает, что при создании нового экземпляра сущности для него автоматически выбирается данная категория.</para>
+          <para>Атрибут <code>special</code> указывает, что данная категория обрабатывается в приложении специальным образом, и не отображается в универсальном UI редактирования категорий.</para>
+        </listitem>
+        <listitem>
+          <para><code>CategoryAttribute</code> - определяет динамический атрибут, относящийся к некоторой категории. Содержит значение по умолчанию для различных типов данных. Значение перечислений задается в виде списка строк через запятую.</para>
+        </listitem>
+        <listitem>
+          <para><code>CategoryAttributeValue</code> - значение динамического атрибута для конкретного экземпляра сущности.</para>
+        </listitem>
+      </itemizedlist>
+      <para>Управление категориями и описаниями атрибутов осуществляется с помощью специальных экранов, доступных через меню <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Категории</guimenuitem>.</para>
       <section>
         <title>Применение</title>
         <para>Для того чтобы некоторая сущность могла иметь динамические атрибуты, ее класс необходимо унаследовать от <code>CategorizedEntity</code>, и, соответственно, обеспечить в таблице наличие поля <database>CATEGORY_ID</database> типа <code>UUID</code>.</para>
@@ -11062,6 +11042,7 @@ locale: en</programlisting>
     </section>
     <section>
       <title>Пессимистичная блокировка</title>
+      <para>В данном разделе описано применение пессимистичной блокировки  в CUBA-приложениях.</para>
       <section>
         <title>Блокировка редактирования сущностей</title>
         <para>Пессимистичная блокировка сущностей применяется, если велика вероятность одновременного редактирования одного и того же экземпляра, и стандартная <link linkend="optimistic_locking">оптимистичная блокировка</link>, основанная на версионности сущностей, порождает слишком много коллизий.</para>

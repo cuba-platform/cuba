@@ -2,6 +2,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_deployment" lang="ru">
   <title>Развертывание приложений</title>
+  <para>В данной главе содержится информация о развертывании приложений в различной конфигурации.</para>
   <para>На диаграмме ниже приведена возможная структура развернутого приложения, созданного на базе платформы. </para>
   <figure>
     <title>Структура CUBA-приложения</title>
@@ -92,6 +93,7 @@
   </section>
   <section>
     <title>Использование инструментов JMX</title>
+    <para>В данном разделе рассмотрены различные аспекты использования инструментов <application>Java Management Extensions</application>  в CUBA-приложениях.</para>
     <section>
       <title>Встроенная JMX консоль</title>
       <para>Модуль Web Client базового проекта <structname>cuba</structname> платформы содержит средство просмотра и редактирования JMX объектов. Точкой входа в этот инструмент является экран <filename>com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml</filename>, зарегистрированный под идентификатором <code>jmxcontrol$DisplayMbeans</code> и в стандартном меню доступный через пункт <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Консоль JMX</guimenuitem>.</para>
@@ -197,6 +199,7 @@ CATALINA_OPTS=&quot;$CATALINA_OPTS -Dcom.sun.management.jmxremote.password.file=
   </section>
   <section>
     <title>Отказоустойчивость и балансировка нагрузки</title>
+    <para>В данном разделе рассмотрены различные аспекты обеспечения отказоустойчивости и балансировки нагрузки  в CUBA-приложениях.</para>
     <section id="serverId">
       <title>Server Id</title>
       <para><firstterm>Server Id</firstterm> служит для надежной идентификации серверов в кластере Middleware. Идентификатор имеет вид <literal>host:port/context</literal>, например:<programlisting>tezis.haulmont.com:80/app-core</programlisting><programlisting>192.168.44.55:8080/app-core</programlisting></para>

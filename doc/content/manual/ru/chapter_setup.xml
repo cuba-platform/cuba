@@ -2,7 +2,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <!-- This document was created with Syntext Serna Free. --><chapter id="chapter_setup" lang="ru">
   <title>Установка и настройка инструментария</title>
-  <para>Все программное обеспечение, требуемое для разработки на платформе <trademark>CUBA</trademark>, является свободно распространяемыми и кросс-платформенным. </para>
+  <para>Все программное обеспечение, требуемое для разработки на платформе CUBA, является свободно распространяемыми и кросс-платформенным. </para>
   <para>Веб-интерфейс приложений, создаваемых на основе платформы, поддерживает все популярные современные браузеры, в том числе <application>Google Chrome</application>, <application>Mozilla Firefox</application>, <application>Safari</application>,  <application>Internet Explorer 8+</application>.</para>
   <para>Минимально необходимым набором  программного обеспечения является:</para>
   <itemizedlist>
@@ -71,22 +71,39 @@
     </orderedlist>
     <section id="ide_integration">
       <title>Интеграция с IDE</title>
-      <para>Для интеграции с <application>IntelliJ IDEA 12</application> выполните следующие шаги:</para>
+      <para>Для интеграции с <application>IntelliJ IDEA</application> или <application>Eclipse</application> выполните следующие шаги:</para>
       <orderedlist>
         <listitem>
           <para>Откройте или <link linkend="qs_studio_setup">создайте новый</link> проект в Studio</para>
         </listitem>
         <listitem>
-          <para>В главном меню Studio выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create IDEA project files</guimenu>. В каталоге проекта будут созданы файлы <filename>*.ipr</filename>, <filename>*.iml</filename></para>
+          <para>Перейдите в секцию <guilabel>Project properties</guilabel> и нажмите кнопку <guibutton>Edit</guibutton>. Выберите нужную <guilabel>Java IDE</guilabel> флажками <guibutton> IntelliJ IDEA</guibutton> или <guibutton>Eclipse</guibutton>.</para>
         </listitem>
         <listitem>
-          <para>Запустите IntelliJ IDEA 12 и установите плагин <application>CUBA Framework Integration</application>, доступный в репозитории плагинов: <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Browse Repositories</guimenuitem>.</para>
+          <para>В главном меню Studio выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create &lt;your IDE&gt; project files</guimenu>. В каталоге проекта будут созданы соответствующие файлы</para>
         </listitem>
         <listitem>
-          <para>В IntelliJ IDEA в меню <guimenu>Settings</guimenu> в группе <guilabel>Project Settings</guilabel> найдите пункт <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите флажок <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
+          <para>Для интеграции с IntelliJ IDEA 12:<orderedlist>
+              <listitem>
+                <para>Запустите IntelliJ IDEA 12 и установите плагин <application>CUBA Framework Integration</application>, доступный в репозитории плагинов: <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Browse Repositories</guimenuitem></para>
+              </listitem>
+              <listitem>
+                <para>В IntelliJ IDEA в меню <guimenu>Settings</guimenu> в группе <guilabel>Project Settings</guilabel> найдите пункт <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите флажок <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton></para>
+              </listitem>
+            </orderedlist></para>
+        </listitem>
+        <listitem>
+          <para>Для интеграции с Eclipse 4.3:<orderedlist>
+              <listitem>
+                <para>Запустите Eclipse, откройте <guimenu>Help</guimenu> -&gt; <guimenu>Install New Software</guimenu>, добавьте репозиторий <literal>http://files.cuba-platform.com/eclipse-update-site</literal> и установите плагин <application>CUBA Plugin</application></para>
+              </listitem>
+              <listitem>
+                <para>В Eclipse в меню <guimenu>Window</guimenu> -&gt; <guimenu>Preferences</guimenu> в секции <guilabel>CUBA</guilabel> установите флажок <guilabel>Studio Integration Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton></para>
+              </listitem>
+            </orderedlist></para>
         </listitem>
       </orderedlist>
-      <para>Обратите внимание, что в  панели статуса Studio загорелась надпись <guilabel>IDE: on port 48561</guilabel>. Теперь при нажатии кнопок <guilabel>IDE</guilabel> в Studio соответствующие файлы исходных кодов будут открываться редактором IntelliJ IDEA.</para>
+      <para>Обратите внимание, что в  панели статуса Studio загорелась надпись <guilabel>IDE: on port 48561</guilabel>. Теперь при нажатии кнопок <guilabel>IDE</guilabel> в Studio соответствующие файлы исходных кодов будут открываться редактором IDE.</para>
     </section>
   </section>
 </chapter>
