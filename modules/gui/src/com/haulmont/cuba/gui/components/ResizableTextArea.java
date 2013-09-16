@@ -13,8 +13,9 @@ public interface ResizableTextArea extends TextArea {
 
     String NAME = TextArea.NAME;
 
-    boolean isResizable();
+    /** Note: TextArea with fixed rows or cols can not be resizable */
     void setResizable(boolean resizable);
+    boolean isResizable();
 
     public void addResizeListener(ResizeListener resizeListener);
     public void removeResizeListener(ResizeListener resizeListener);

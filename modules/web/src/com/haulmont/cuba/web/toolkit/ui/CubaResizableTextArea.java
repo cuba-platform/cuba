@@ -41,6 +41,17 @@ public class CubaResizableTextArea extends CubaTextArea {
         getState().resizable = resizable;
     }
 
+
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        if (getState(false).rows > 0 && getState(false).columns > 0) {
+            // TextArea with fixed rows or cols can not be resizable
+            getState().resizable = false;
+        }
+    }
+
     public void addResizeListener(ResizeListener resizeListener) {
         if (!listeners.contains(resizeListener))
             listeners.add(resizeListener);
