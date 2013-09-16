@@ -220,7 +220,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
     }
 
     protected String replaceParamWithQuestionMark(String where) {
-        String res = where.trim();
+        String res = StringUtils.trim(where);
         if (!StringUtils.isBlank(res)) {
             Matcher matcher = QueryParserRegex.PARAM_PATTERN.matcher(res);
             StringBuffer sb = new StringBuffer();
