@@ -13,21 +13,14 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
 import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.app.UserSettingService;
-import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -102,6 +95,8 @@ public class FoldersPane extends VerticalLayout {
     protected DataService dataService = AppBeans.get(DataService.class);
 
     protected UserSettingsTools userSettingsTools = AppBeans.get(UserSettingsTools.class);
+
+    protected Folders folders = AppBeans.get(Folders.class);
 
     public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
         this.menuBar = menuBar;
@@ -506,68 +501,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected void openFolder(AbstractSearchFolder folder) {
-        if (StringUtils.isBlank(folder.getFilterComponentId())) {
-            log.warn("Unable to open folder: componentId is blank");
-            return;
-        }
-
-        String[] strings = ValuePathHelper.parse(folder.getFilterComponentId());
-        String screenId = strings[0];
-
-        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
-
-        Map<String, Object> params = new HashMap<>();
-
-        WindowParams.DISABLE_AUTO_REFRESH.set(params, true);
-        WindowParams.DISABLE_APPLY_SETTINGS.set(params, true);
-        WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
-
-        if (!StringUtils.isBlank(folder.getTabName())) {
-            WindowParams.DESCRIPTION.set(params, messages.getMainMessage(folder.getTabName()));
-        } else {
-            WindowParams.DESCRIPTION.set(params, messages.getMainMessage(folder.getName()));
-        }
-
-        WindowParams.FOLDER_ID.set(params, folder.getId());
-            
-        com.haulmont.cuba.gui.components.Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
-                WindowManager.OpenType.NEW_TAB, params);
-
-        Filter filterComponent = null;
-
-        if (strings.length > 1) {
-            String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');
-
-            filterComponent = window.getComponent(filterComponentId);
-
-            FilterEntity filterEntity = new FilterEntity();
-            filterEntity.setFolder(folder);
-            filterEntity.setComponentId(folder.getFilterComponentId());
-            if (folder instanceof AppFolder) {
-                filterEntity.setName(((AppFolder) folder).getLocName());
-                filterEntity.setCode(folder.getName());
-            } else {
-                filterEntity.setName(folder.getName());
-                filterEntity.setCode(folder.getName());
-            }
-            filterEntity.setXml(folder.getFilterXml());
-            filterEntity.setApplyDefault(BooleanUtils.isNotFalse(folder.getApplyDefault()));
-            if (folder instanceof SearchFolder) {
-                filterEntity.setIsSet(((SearchFolder) folder).getIsSet());
-            }
-            filterComponent.setFilterEntity(filterEntity);
-        }
-        window.applySettings(new SettingsImpl(window.getId()));
-
-        if (filterComponent != null && folder instanceof SearchFolder) {
-            final SearchFolder searchFolder = (SearchFolder) folder;
-            if (searchFolder.getPresentation() != null) {
-                ((com.haulmont.cuba.gui.components.Component.HasPresentations) filterComponent.getApplyTo())
-                        .applyPresentation(searchFolder.getPresentation().getId());
-            }
-        }
-            
-        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+        folders.openFolder(folder);
     }
 
     protected boolean isNeedRootAppFolder() {

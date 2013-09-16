@@ -6,7 +6,9 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager;
@@ -22,6 +24,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
+import com.haulmont.cuba.web.app.folders.Folders;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
 import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
 import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
@@ -64,6 +67,9 @@ public class LinkHandler {
     @Inject
     protected DataService dataService;
 
+    @Inject
+    protected Folders folders;
+
     protected App app;
     protected String action;
     protected Map<String, String> requestParams;
@@ -79,6 +85,18 @@ public class LinkHandler {
      */
     public void handle() {
         try {
+            String folderId = requestParams.get("folder");
+            if (!StringUtils.isEmpty(folderId)) {
+                AbstractSearchFolder folder = loadFolder(UUID.fromString(folderId));
+                if (folder != null) {
+                    folders.openFolder(folder);
+                } else {
+                    log.warn("Folder not found: " + folderId);
+                }
+                return;
+            }
+
+
             String screenName = requestParams.get("screen");
             if (screenName == null) {
                 log.warn("ScreenId not found in request parameters");
@@ -294,5 +312,10 @@ public class LinkHandler {
             return null;
         }
         return entity;
+    }
+
+    protected AbstractSearchFolder loadFolder(UUID folderId) {
+        LoadContext ctx = new LoadContext(Folder.class).setId(folderId);
+        return dataService.load(ctx);
     }
 }
