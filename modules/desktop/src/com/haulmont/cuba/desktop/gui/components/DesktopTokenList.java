@@ -681,7 +681,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             hBox.setSpacing(true);
             hBox.setWidth("100%");
 
-            if (isSimple()) {
+            if (!isSimple()) {
                 lookupPickerField.setWidth("100%");
                 hBox.add(lookupPickerField);
                 hBox.expand(lookupPickerField);
