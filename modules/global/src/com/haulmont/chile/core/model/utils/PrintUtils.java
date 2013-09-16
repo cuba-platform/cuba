@@ -1,11 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: FIRSTNAME LASTNAME
- * Created: 01.11.2008 11:19:15
- * $Id: PrintUtils.java 4890 2011-05-30 14:27:43Z krivopustov $
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.chile.core.model.utils;
 

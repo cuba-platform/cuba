@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 JPA.g 2012-08-06 14:42:50
 
 package com.haulmont.cuba.core.sys.jpql.antlr;

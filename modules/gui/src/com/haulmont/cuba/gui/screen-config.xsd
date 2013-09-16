@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema 
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<xs:schema
         targetNamespace="http://schemas.haulmont.com/cuba/4.1/screens.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns="http://schemas.haulmont.com/cuba/4.1/screens.xsd"
