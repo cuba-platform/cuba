@@ -169,11 +169,12 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
 
     @Override
     public String getDescription() {
-        return "";
+        return component.getDescription();
     }
 
     @Override
     public void setDescription(String description) {
+        component.setDescription(description);
     }
 
     public int getButtonWidth() {

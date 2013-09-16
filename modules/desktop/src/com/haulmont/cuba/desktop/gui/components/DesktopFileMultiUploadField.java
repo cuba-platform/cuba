@@ -10,6 +10,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
@@ -165,11 +166,12 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     @Override
     public String getDescription() {
-        return description;
+        return impl.getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
+        impl.setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 }

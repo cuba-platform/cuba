@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -193,11 +194,12 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     @Override
     public String getDescription() {
-        return description;
+        return impl.getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
+        impl.setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 }
