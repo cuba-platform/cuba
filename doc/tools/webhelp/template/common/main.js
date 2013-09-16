@@ -81,10 +81,15 @@ $(document).ready(function() {
     // you click on a link from another page. 
     var hash = window.location.hash;
     if(hash){ 
-	var targetOffset = $(hash).offset().top - 120;
-	$('html,body').animate({scrollTop: targetOffset}, 200);
-	return false;
+        // Also escape dot symbols.
+        hash = hash.split('.').join('\\.');
+        $hash = $(hash);
+        if ($hash.length) {
+            var offset = $hash.offset().top - 120;
+            $('html,body').animate({scrollTop: offset}, 200);
+        }
     }
+    return false;
 });
 
 
