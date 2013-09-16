@@ -552,7 +552,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         JLabel label = new JLabel(caption);
         label.setVisible(fieldComponent.isVisible());
         CC labelCc = new CC();
-        MigLayoutHelper.applyAlignment(labelCc, Alignment.TOP_LEFT);
+        MigLayoutHelper.applyAlignment(labelCc, Alignment.MIDDLE_LEFT);
 
         impl.add(label, labelCc.cell(col * 3, row, 1, 1));
         fieldLabels.put(fieldConf, label);
