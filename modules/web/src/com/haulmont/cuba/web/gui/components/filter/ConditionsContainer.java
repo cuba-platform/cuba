@@ -13,6 +13,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.UI;
@@ -375,22 +376,26 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         @Override
         public Property getItemProperty(Object id) {
             if (id.equals(NAME_PROP_ID)) {
-                return new ObjectProperty<NameEditor>(new NameEditor(condition));
+                return new ObjectProperty<>(new NameEditor(condition));
 
             } else if (id.equals(OP_PROP_ID)) {
-                return new ObjectProperty<OperationEditor.Editor>((OperationEditor.Editor) condition.createOperationEditor().getImpl());
+                return new ObjectProperty<>((OperationEditor.Editor) condition.createOperationEditor().getImpl());
 
             } else if (id.equals(PARAM_PROP_ID)) {
-                return new ObjectProperty<ParamEditor>(new ParamEditor(condition, false));
+                ParamEditor paramEditor = new ParamEditor(condition, false, false);
+                // pack editor component to table cell
+                paramEditor.setWidth(100, Sizeable.Unit.PERCENTAGE);
+                paramEditor.setFieldWidth("100%");
+                return new ObjectProperty<>(paramEditor);
 
             } else if (id.equals(HIDDEN_PROP_ID)) {
-                return new ObjectProperty<CheckBox>(createHiddenCheckbox(condition));
+                return new ObjectProperty<>(createHiddenCheckbox(condition));
 
             } else if (id.equals(REQUIRED_PROP_ID)) {
-                return new ObjectProperty<CheckBox>(createRequiredCheckbox(condition));
+                return new ObjectProperty<>(createRequiredCheckbox(condition));
 
             } else if (id.equals(CONTROL_PROP_ID)) {
-                return new ObjectProperty<Button>(createDeleteConditionBtn(condition));
+                return new ObjectProperty<>(createDeleteConditionBtn(condition));
             }
             return null;
         }

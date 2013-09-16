@@ -7,9 +7,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxState;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Panel;
+import com.vaadin.ui.*;
 
 import java.util.Iterator;
 
@@ -34,6 +32,10 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
             }
         };
         registerRpc(rpc);
+
+        Layout content = new CubaVerticalActionsLayout();
+        content.setSizeFull();
+        setContent(content);
     }
 
     @Override
@@ -121,22 +123,22 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
 
     @Override
     public void addListener(ComponentAttachListener listener) {
-        getContent().addListener(listener);
+        getContent().addComponentAttachListener(listener);
     }
 
     @Override
     public void removeListener(ComponentAttachListener listener) {
-        getContent().removeListener(listener);
+        getContent().removeComponentAttachListener(listener);
     }
 
     @Override
     public void addListener(ComponentDetachListener listener) {
-        getContent().addListener(listener);
+        getContent().addComponentDetachListener(listener);
     }
 
     @Override
     public void removeListener(ComponentDetachListener listener) {
-        getContent().removeListener(listener);
+        getContent().removeComponentDetachListener(listener);
     }
 
     public interface ExpandChangeHandler {

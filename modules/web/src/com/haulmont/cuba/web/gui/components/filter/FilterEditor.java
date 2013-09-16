@@ -69,6 +69,7 @@ public class FilterEditor extends AbstractFilterEditor {
         });
 
         layout = new VerticalLayout();
+        layout.setStyleName("cuba-generic-filter-editorlayout");
         layout.setSpacing(true);
         layout.setMargin(new MarginInfo(false, false, false, false));
         layout.setWidth(EDITOR_WIDTH);

@@ -47,6 +47,7 @@ import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
+import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.converters.SimpleStringToIntegerConverter;
 import com.vaadin.data.Property;
@@ -76,7 +77,12 @@ import java.util.regex.Pattern;
  */
 public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> implements Filter {
 
-    private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
+    protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
+
+    protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
+    protected static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
+
+    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
 
     protected Messages messages;
     protected UserSessionSource userSessionSource;
@@ -94,44 +100,43 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     protected WebPopupButton actionsButton;
 
     protected Button pinAppliedFilterBtn;
-    private Button applyBtn;
+    protected Button applyBtn;
 
     protected boolean defaultFilterEmpty = true;
-    private boolean changingFilter;
-    private boolean applyingDefault;
-    private boolean editing;
-    private FilterEditor editor;
-    private FoldersPane foldersPane;
+    protected boolean changingFilter;
+    protected boolean applyingDefault;
+    protected boolean editing;
+    protected FilterEditor editor;
+    protected FoldersPane foldersPane;
 
-    private boolean useMaxResults;
+    protected boolean useMaxResults;
     protected CheckBox maxResultsCb;
     protected TextField maxResultsField;
     protected AbstractOrderedLayout maxResultsLayout;
-    private Boolean manualApplyRequired;
+    protected Boolean manualApplyRequired;
 
-    private boolean editable = true;
-    private boolean required = false;
-    private boolean folderActionsEnabled = true;
+    protected boolean editable = true;
+    protected boolean required = false;
+    protected boolean folderActionsEnabled = true;
 
-    private Component applyTo;
-
-    private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
-    private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
+    protected Component applyTo;
 
     protected FilterEntity noFilter;
-    private FilterEntity filterEntityBeforeCopy;
+    protected FilterEntity filterEntityBeforeCopy;
 
     protected AppliedFilter lastAppliedFilter;
     protected LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
     protected VerticalLayout appliedFiltersLayout;
 
-    private GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-    private ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-    private String defaultFilterCaption;
+    protected GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+    protected ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+    protected String defaultFilterCaption;
 
     protected HorizontalLayout topLayout = null;
 
     protected Metadata metadata = AppBeans.get(Metadata.class);
+
+    protected String userStyleName = null;
 
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
@@ -262,7 +267,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         appliedFilters.add(new AppliedFilterHolder(lastAppliedFilter, layout, button));
     }
 
-    private void removeLastApplied() {
+    protected void removeLastApplied() {
         if (!appliedFilters.isEmpty()) {
             AppliedFilterHolder holder = appliedFilters.removeLast();
             appliedFiltersLayout.removeComponent(holder.layout);
@@ -281,7 +286,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         select.focus();
     }
 
-    private void initMaxResultsLayout() {
+    protected void initMaxResultsLayout() {
         maxResultsLayout = new HorizontalLayout();
         maxResultsLayout.setSpacing(true);
         maxResultsCb = new CheckBox(messages.getMainMessage("filter.maxResults.label1"));
@@ -327,7 +332,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         maxResultsLayout.setStyleName("cuba-filter-maxresults");
     }
 
-    private void fillActions() {
+    protected void fillActions() {
         for (Action action : new ArrayList<>(actionsButton.getActions())) {
             actionsButton.removeAction(action);
         }
@@ -374,7 +379,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         updateFolderActions();
     }
 
-    private void updateFolderActions() {
+    protected void updateFolderActions() {
         Action saveAsFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_FOLDER);
         Action saveAsAppFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_APP_FOLDER);
 
@@ -502,7 +507,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private void createFilterEntity() {
+    protected void createFilterEntity() {
         filterEntity = metadata.create(FilterEntity.class);
 
         filterEntity.setComponentId(getComponentPath());
@@ -522,7 +527,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 //        );
     }
 
-    private void copyFilterEntity() {
+    protected void copyFilterEntity() {
 
         FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
         newFilterEntity.setComponentId(filterEntity.getComponentId());
@@ -560,7 +565,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
         if (hasGroups && conditions.getRootNodes().size() > 1) {
             WebGroupBox groupBox = new WebGroupBox();
-            groupBox.setWidth("-1");
+            groupBox.setWidth(Component.AUTO_SIZE);
             groupBox.setCaption(messages.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
             ComponentContainer container = groupBox.getComponent();
             paramsLayout = container;
@@ -571,9 +576,10 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         if (paramsLayout instanceof Layout.MarginHandler) {
             ((Layout.MarginHandler) paramsLayout).setMargin(new MarginInfo(false));
         }
+        paramsLayout.setStyleName("cuba-generic-filter-paramslayout");
     }
 
-    private ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
+    protected ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
                                                              List<Node<AbstractCondition>> nodes,
                                                              ComponentContainer parentContainer,
                                                              int level) {
@@ -609,45 +615,46 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             AbstractCondition condition = node.getData();
             com.vaadin.ui.Component cellContent;
             if (condition.isGroup()) {
-                WebGroupBox groupBox = new WebGroupBox();
-                groupBox.setWidth("-1");
+                CubaGroupBox groupBox = new CubaGroupBox();
+                groupBox.setWidth(Component.AUTO_SIZE);
                 groupBox.setCaption(condition.getLocCaption());
 
                 if (!node.getChildren().isEmpty()) {
-                    ComponentContainer container = groupBox.getComponent();
                     recursivelyCreateParamsLayout(
-                            focusOnConditions && !focusSet, node.getChildren(), container, level++);
+                            focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
                 }
-                cellContent = groupBox.getComponent();
+                cellContent = groupBox;
             } else {
-                HorizontalLayout paramLayout = new HorizontalLayout();
-                paramLayout.setSpacing(true);
-                paramLayout.setMargin(false);
                 if (condition.getParam().getJavaClass() != null) {
-                    Label label = new Label(condition.getLocCaption());
-                    paramLayout.addComponent(label);
-
-                    ParamEditor paramEditor = new ParamEditor(condition, true);
+                    ParamEditor paramEditor = new ParamEditor(condition, true, true);
                     if (focusOnConditions && !focusSet) {
                         paramEditor.setFocused();
                         focusSet = true;
                     }
 
-                    paramLayout.addComponent(paramEditor);
+                    cellContent = paramEditor;
+                } else {
+                    HorizontalLayout paramLayout = new HorizontalLayout();
+                    paramLayout.setSpacing(true);
+                    paramLayout.setMargin(false);
+                    paramLayout.setSizeUndefined();
+                    paramLayout.setStyleName("cuba-generic-filter-paramcell");
+
+                    cellContent = paramLayout;
                 }
-                cellContent = paramLayout;
             }
             grid.addComponent(cellContent, i % columns, i / columns);
             grid.setComponentAlignment(cellContent, com.vaadin.ui.Alignment.MIDDLE_RIGHT);
         }
 
-        if (parentContainer != null)
+        if (parentContainer != null) {
             parentContainer.addComponent(grid);
+        }
 
         return grid;
     }
 
-    private void setActions(Table table) {
+    protected void setActions(Table table) {
         if (foldersPane == null) {
             return;
         }
@@ -826,7 +833,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private void internalSetFilterEntity() {
+    protected void internalSetFilterEntity() {
         List<FilterEntity> list = new ArrayList(select.getItemIds());
         list.remove(filterEntity);
 
@@ -905,7 +912,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         switchToUse();
     }
 
-    private String getFilterCaption(FilterEntity filter) {
+    protected String getFilterCaption(FilterEntity filter) {
         if (filter.getCode() == null)
             return filter.getName();
         else {
@@ -954,7 +961,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private FilterEntity getDefaultFilter(Collection<FilterEntity> filters, Window window) {
+    protected FilterEntity getDefaultFilter(Collection<FilterEntity> filters, Window window) {
         // First check if there is parameter with name equal to this filter component id, containing a filter code to apply
         Map<String, Object> params = window.getContext().getParams();
         String code = (String) params.get(getId());
@@ -997,7 +1004,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return null;
     }
 
-    private void saveFilterEntity() {
+    protected void saveFilterEntity() {
         Boolean isDefault = filterEntity.getIsDefault();
         Boolean applyDefault = filterEntity.getApplyDefault();
         if (filterEntity.getFolder() == null) {
@@ -1027,14 +1034,14 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private void deleteFilterEntity() {
+    protected void deleteFilterEntity() {
         DataService ds = AppBeans.get(DataService.class);
         CommitContext ctx = new CommitContext();
         ctx.setRemoveInstances(Collections.singletonList(filterEntity));
         ds.commit(ctx);
     }
 
-    private void createEditLayout() {
+    protected void createEditLayout() {
         List<String> names = new ArrayList<>();
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
         for (Object id : select.getItemIds()) {
@@ -1149,11 +1156,11 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         actionsButton.setVisible(editable && isEditFiltersPermitted());
     }
 
-    private boolean checkGlobalAppFolderPermission() {
+    protected boolean checkGlobalAppFolderPermission() {
         return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
     }
 
-    private boolean checkGlobalFilterPermission() {
+    protected boolean checkGlobalFilterPermission() {
         if (filterEntity == null || filterEntity.getUser() != null)
             return true;
         else
@@ -1215,7 +1222,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return getOwnComponents();
     }
 
-    private void parseFilterXml() {
+    protected void parseFilterXml() {
         if (filterEntity == null) {
             conditions = new ConditionsTree();
         } else {
@@ -1304,7 +1311,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private void saveAsFolder(boolean isAppFolder) {
+    protected void saveAsFolder(boolean isAppFolder) {
         final AbstractSearchFolder folder;
         if (isAppFolder)
             folder = (metadata.create(AppFolder.class));
@@ -1410,7 +1417,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         App.getInstance().getAppUI().addWindow(window);
     }
 
-    private String submintParameters() {
+    protected String submintParameters() {
         FilterParser parser = new FilterParser(filterEntity.getXml(), MESSAGES_PACK, filterEntity.getComponentId(), datasource);
         parser.fromXml();
         List<AbstractCondition> defaultConditions = parser.getConditions().toConditionsList();
@@ -1427,19 +1434,19 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return parser.toXml().getXml();
     }
 
-    private SearchFolder saveFolder(SearchFolder folder) {
+    protected SearchFolder saveFolder(SearchFolder folder) {
         SearchFolder savedFolder = (SearchFolder) foldersPane.saveFolder(folder);
         foldersPane.refreshFolders();
         return savedFolder;
     }
 
-    private AppFolder saveAppFolder(AppFolder folder) {
+    protected AppFolder saveAppFolder(AppFolder folder) {
         AppFolder savedFolder = (AppFolder) foldersPane.saveFolder(folder);
         foldersPane.refreshFolders();
         return savedFolder;
     }
 
-    private void delete() {
+    protected void delete() {
         if (required) {
             int size = 0;
             for (Object itemId : select.getItemIds()) {
@@ -1481,7 +1488,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         );
     }
 
-    private void setDefaultFilter() {
+    protected void setDefaultFilter() {
         if (filterEntity != null) {
             filterEntity.setIsDefault(true);
             defaultFilterEmpty = false;
@@ -1515,7 +1522,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         actionsButton.setVisible(editable && isEditFiltersPermitted());
     }
 
-    private boolean isEditFiltersPermitted() {
+    protected boolean isEditFiltersPermitted() {
         return AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.edit");
     }
 
@@ -1534,7 +1541,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         this.required = required;
     }
 
-    private void updateComponentRequired() {
+    protected void updateComponentRequired() {
         if (select.getValue() == null) {
             // select first item
             Collection<?> itemIds = select.getItemIds();
@@ -1571,11 +1578,25 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return folderActionsEnabled;
     }
 
+    @Override
+    public void setStyleName(String name) {
+        if (userStyleName != null)
+            getComposition().removeStyleName(userStyleName);
+        this.userStyleName = name;
+        if (name != null)
+            getComposition().addStyleName(userStyleName);
+    }
+
+    @Override
+    public String getStyleName() {
+        return userStyleName;
+    }
+
     protected boolean getResultingManualApplyRequired() {
         return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
-    private class SelectListener implements Property.ValueChangeListener {
+    protected class SelectListener implements Property.ValueChangeListener {
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
             if (changingFilter)
@@ -1617,7 +1638,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class CreateAction extends AbstractAction {
+    protected class CreateAction extends AbstractAction {
 
         protected CreateAction() {
             super("createAction");
@@ -1636,7 +1657,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class CopyAction extends AbstractAction {
+    protected class CopyAction extends AbstractAction {
         protected CopyAction() {
             super("copyAction");
         }
@@ -1655,7 +1676,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     }
 
-    private class EditAction extends AbstractAction {
+    protected class EditAction extends AbstractAction {
 
         protected EditAction() {
             super("editAction");
@@ -1672,7 +1693,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class DeleteAction extends AbstractAction {
+    protected class DeleteAction extends AbstractAction {
 
         protected DeleteAction() {
             super("deleteAction");
@@ -1689,7 +1710,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class MakeDefaultAction extends AbstractAction {
+    protected class MakeDefaultAction extends AbstractAction {
         public MakeDefaultAction() {
             super("makeDefault");
         }
@@ -1706,12 +1727,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class SaveAsFolderAction extends AbstractAction {
+    protected class SaveAsFolderAction extends AbstractAction {
 
         public static final String SAVE_AS_APP_FOLDER = "saveAsAppFolderAction";
         public static final String SAVE_AS_FOLDER = "saveAsFolderAction";
 
-        private boolean isAppFolder;
+        protected boolean isAppFolder;
 
         protected SaveAsFolderAction(boolean isAppFolder) {
             super(isAppFolder ? SAVE_AS_APP_FOLDER : SAVE_AS_FOLDER);
@@ -1729,14 +1750,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
+    protected static class ParamWrapper implements HasValue {
 
-    private static class ParamWrapper implements HasValue {
+        protected final AbstractCondition condition;
+        protected final AbstractParam param;
 
-        private final AbstractCondition condition;
-        private final AbstractParam param;
-
-        private ParamWrapper(AbstractCondition condition, AbstractParam param) {
+        protected ParamWrapper(AbstractCondition condition, AbstractParam param) {
             this.condition = condition;
             this.param = param;
         }
@@ -1787,11 +1806,11 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             return (T) value;
         }
 
-        private String wrapValueForLike(Object value) {
+        protected String wrapValueForLike(Object value) {
             return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
         }
 
-        private String wrapValueForLike(Object value, boolean before, boolean after) {
+        protected String wrapValueForLike(Object value, boolean before, boolean after) {
             return ParametersHelper.CASE_INSENSITIVE_MARKER + (before ? "%" : "") + value + (after ? "%" : "");
         }
 
@@ -1922,10 +1941,10 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class AddToSetAction extends ItemTrackingAction {
-        private Table table;
+    protected class AddToSetAction extends ItemTrackingAction {
+        protected Table table;
 
-        private AddToSetAction(Table table) {
+        protected AddToSetAction(Table table) {
             super("addToSet");
             this.table = table;
         }
@@ -1956,8 +1975,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class RemoveFromSetAction extends ItemTrackingAction {
-        private Table table;
+    protected class RemoveFromSetAction extends ItemTrackingAction {
+        protected Table table;
 
         protected RemoveFromSetAction(Table table) {
             super("removeFromCurSet");
@@ -1996,7 +2015,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private class AddToCurrSetAction extends AbstractAction {
+    protected class AddToCurrSetAction extends AbstractAction {
 
         protected AddToCurrSetAction() {
             super("addToCurSet");
@@ -2137,12 +2156,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         }
     }
 
-    private static class AppliedFilterHolder {
+    protected static class AppliedFilterHolder {
         public final AppliedFilter filter;
         public final HorizontalLayout layout;
         public final Button button;
 
-        private AppliedFilterHolder(AppliedFilter filter, HorizontalLayout layout, Button button) {
+        protected AppliedFilterHolder(AppliedFilter filter, HorizontalLayout layout, Button button) {
             this.filter = filter;
             this.layout = layout;
             this.button = button;
