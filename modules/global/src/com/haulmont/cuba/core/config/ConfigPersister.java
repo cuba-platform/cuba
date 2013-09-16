@@ -4,6 +4,10 @@
  */
 package com.haulmont.cuba.core.config;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface ConfigPersister
 {
     String getProperty(SourceType sourceType, String name);

@@ -14,9 +14,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Author: Alexander Chevelev
- * Date: 20.04.2011
- * Time: 18:13:08
+ * @author chevelev
+ * @version $Id$
  */
 public class ConvertorHelper {
     public static final Comparator<MetaProperty> PROPERTY_COMPARATOR = new Comparator<MetaProperty>() {

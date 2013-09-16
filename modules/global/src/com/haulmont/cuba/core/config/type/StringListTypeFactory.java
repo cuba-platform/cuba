@@ -12,9 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class StringListTypeFactory extends TypeFactory{
     @Override

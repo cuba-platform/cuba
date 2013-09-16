@@ -4,8 +4,10 @@
  */
 package com.haulmont.cuba.core.config.type;
 
-import java.lang.reflect.Method;
-
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class PrimitiveTypeStringify extends TypeStringify
 {
     public String stringify(Object value) {
