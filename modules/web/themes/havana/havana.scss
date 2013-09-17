@@ -44,6 +44,7 @@
 @import "components/pickerfield/pickerfield";
 @import "components/maskedfield/maskedfield";
 @import "components/multiupload/multiupload";
+@import "components/optiongroup/optiongroup";
 @import "components/contextmenu/contextmenu";
 @import "components/popupbutton/popupbutton";
 @import "components/searchselect/searchselect";
@@ -94,6 +95,7 @@
   @include havana-popupbutton;
   @include havana-contextmenu;
   @include havana-pickerfield;
+  @include havana-optiongroup;
   @include havana-maskedfield;
   @include havana-notification;
   @include havana-filterselect;

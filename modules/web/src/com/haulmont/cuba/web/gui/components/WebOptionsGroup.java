@@ -8,6 +8,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.toolkit.ui.CubaOptionGroup;
+import com.haulmont.cuba.web.toolkit.ui.client.optiongroup.OptionGroupOrientation;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractSelect;
@@ -16,22 +18,22 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * @author abramov
  * @version $Id$
  */
 public class WebOptionsGroup
         extends
-            WebAbstractOptionsField<com.vaadin.ui.OptionGroup>
+            WebAbstractOptionsField<CubaOptionGroup>
         implements
             OptionsGroup, Component.Wrapper {
 
-    private static final String HORIZONTAL_STYLENAME = "horizontal";
-
-    private Orientation orientation = Orientation.VERTICAL;
+    protected Orientation orientation = Orientation.VERTICAL;
 
     public WebOptionsGroup() {
-        component = new com.vaadin.ui.OptionGroup() {
+        component = new CubaOptionGroup() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
@@ -53,7 +55,7 @@ public class WebOptionsGroup
         attachListener(component);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
-        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
+        component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -90,9 +92,13 @@ public class WebOptionsGroup
         } else if (o instanceof Entity) {
             t = o;
         } else if (optionsDatasource != null) {
+            if (Datasource.State.INVALID == optionsDatasource.getState()) {
+                optionsDatasource.refresh();
+            }
             t = optionsDatasource.getItem(o);
-        } else
+        } else {
             t = null;
+        }
         return t;
     }
 
@@ -151,21 +157,15 @@ public class WebOptionsGroup
 
     @Override
     public void setOrientation(Orientation orientation) {
-        if (orientation == null) {
-            throw new IllegalArgumentException("Orientation must not be null");
-        }
-        if (orientation != this.orientation) {
-            updateComponentStyle(orientation);
-        }
-        this.orientation = orientation;
-    }
+        checkNotNull(orientation, "Orientation must not be null");
 
-    private void updateComponentStyle(Orientation orientation) {
-        if (orientation == Orientation.HORIZONTAL) {
-            component.addStyleName(HORIZONTAL_STYLENAME);
-        }
-        else {
-            component.removeStyleName(HORIZONTAL_STYLENAME);
+        if (orientation != this.orientation) {
+            if (orientation == Orientation.HORIZONTAL) {
+                component.setOrientation(OptionGroupOrientation.HORIZONTAL);
+            } else {
+                component.setOrientation(OptionGroupOrientation.VERTICAL);
+            }
+            this.orientation = orientation;
         }
     }
 }
