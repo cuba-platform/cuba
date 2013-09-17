@@ -19,7 +19,7 @@
     <assign name="width" value="560"/>
     <assign name="height" value="300"/>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <hbox height="30" spacing="true">
             <multiUpload id="multiUpload" width="90px"/>
             <button action="uploadsTable.remove" icon="icons/remove.png"/>

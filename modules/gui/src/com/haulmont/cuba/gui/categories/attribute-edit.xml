@@ -16,7 +16,7 @@
                 >
         </datasource>
     </dsContext>
-    <layout>
+    <layout spacing="true">
         <vbox id="attributeProperties" spacing="true" width="100%">
         </vbox>
         <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>

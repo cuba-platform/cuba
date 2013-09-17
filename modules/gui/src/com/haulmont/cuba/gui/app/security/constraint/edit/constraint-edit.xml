@@ -14,29 +14,27 @@
         <datasource id="constraint" class="com.haulmont.cuba.security.entity.Constraint" view="edit"/>
     </dsContext>
 
-    <layout expand="windowActions">
-        <vbox margin="true">
-            <grid id="grid" margin="true" spacing="true">
-                <columns count="2"/>
-                <rows>
-                    <row>
-                        <label value="msg://entityName"/>
-                        <lookupField id="entityName" datasource="constraint" property="entityName"
-                                   width="500px"/>
-                    </row>
-                    <row>
-                        <label value="msg://joinClause"/>
-                        <autoCompleteTextField id="joinClause" datasource="constraint" property="joinClause"
-                                   width="500px" rows="3"/>
-                    </row>
-                    <row>
-                        <label value="msg://whereClause"/>
-                        <autoCompleteTextField id="whereClause" datasource="constraint" property="whereClause"
-                                   width="500px" rows="3"/>
-                    </row>
-                </rows>
-            </grid>
-        </vbox>
+    <layout expand="windowActions" spacing="true">
+        <grid id="grid" spacing="true">
+            <columns count="2"/>
+            <rows>
+                <row>
+                    <label value="msg://entityName"/>
+                    <lookupField id="entityName" datasource="constraint" property="entityName"
+                                 width="500px"/>
+                </row>
+                <row>
+                    <label value="msg://joinClause"/>
+                    <autoCompleteTextField id="joinClause" datasource="constraint" property="joinClause"
+                                           width="500px" rows="3"/>
+                </row>
+                <row>
+                    <label value="msg://whereClause"/>
+                    <autoCompleteTextField id="whereClause" datasource="constraint" property="whereClause"
+                                           width="500px" rows="3"/>
+                </row>
+            </rows>
+        </grid>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

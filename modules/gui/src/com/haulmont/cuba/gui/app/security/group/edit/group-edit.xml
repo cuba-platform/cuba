@@ -14,7 +14,7 @@
         <datasource id="group" class="com.haulmont.cuba.security.entity.Group" view="group.browse"/>
     </dsContext>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <fieldGroup id="fieldGroup" datasource="group">
             <field id="name" required="true" requiredMessage="msg://nameMsg" width="300px"/>
         </fieldGroup>

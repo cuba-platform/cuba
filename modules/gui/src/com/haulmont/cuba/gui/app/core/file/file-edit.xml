@@ -18,7 +18,7 @@
         <datasource id="fileDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse"/>
     </dsContext>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <upload id="uploadField"/>
         <grid spacing="true">
             <columns>

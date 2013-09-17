@@ -15,7 +15,7 @@
         <datasource id="attribute" class="com.haulmont.cuba.security.entity.SessionAttribute" view="edit"/>
     </dsContext>
 
-    <layout expand="windowActions">
+    <layout expand="windowActions" spacing="true">
         <fieldGroup id="fields" width="100%" datasource="attribute">
             <column width="250px">
                 <field id="name" required="true" requiredMessage="msg://nameMsg"/>
@@ -25,5 +25,4 @@
         </fieldGroup>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
-
 </window>

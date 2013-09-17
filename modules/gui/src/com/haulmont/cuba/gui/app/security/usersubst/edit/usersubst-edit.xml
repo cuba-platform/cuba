@@ -28,33 +28,33 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="windowActions">
-            <grid spacing="true">
-                <columns>
-                    <column flex="1"/>
-                    <column flex="1"/>
-                </columns>
-                <rows>
-                    <row>
-                        <label value="msg://user"/>
-                        <textField id="user" datasource="subst" property="user"
-                                   required="true" editable="false" requiredMessage="msg://userMsg" width="250"/>
-                    </row>
-                    <row>
-                        <label value="msg://substUser"/>
-                        <lookupField id="substUser" datasource="subst" property="substitutedUser"
-                                     required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="250"/>
-                    </row>
-                    <row id="startDateRow">
-                        <label value="msg://startDate"/>
-                        <dateField id="startDate" datasource="subst" property="startDate" resolution="DAY"/>
-                    </row>
-                    <row id="endDateRow">
-                        <label value="msg://endDate"/>
-                        <dateField id="endDate" datasource="subst" property="endDate" resolution="DAY"/>
-                    </row>
-                </rows>
-            </grid>
+    <layout expand="windowActions" spacing="true">
+        <grid spacing="true">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://user"/>
+                    <textField id="user" datasource="subst" property="user"
+                               required="true" editable="false" requiredMessage="msg://userMsg" width="250"/>
+                </row>
+                <row>
+                    <label value="msg://substUser"/>
+                    <lookupField id="substUser" datasource="subst" property="substitutedUser"
+                                 required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="250"/>
+                </row>
+                <row id="startDateRow">
+                    <label value="msg://startDate"/>
+                    <dateField id="startDate" datasource="subst" property="startDate" resolution="DAY"/>
+                </row>
+                <row id="endDateRow">
+                    <label value="msg://endDate"/>
+                    <dateField id="endDate" datasource="subst" property="endDate" resolution="DAY"/>
+                </row>
+            </rows>
+        </grid>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>
