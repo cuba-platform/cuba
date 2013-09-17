@@ -104,7 +104,7 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
         }
     }
 
-    private boolean isCaptionInlineApplicable(VGridLayout.Cell cell) {
-        return cell.slot.getCaption() != null;
+    protected boolean isCaptionInlineApplicable(VGridLayout.Cell cell) {
+        return cell.slot != null && cell.slot.getCaption() != null;
     }
 }
