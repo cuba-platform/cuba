@@ -27,6 +27,7 @@
 @import "components/tooltip/tooltip";
 @import "components/caption/caption";
 @import "components/menubar/menubar";
+@import "components/checkbox/checkbox";
 @import "components/tabsheet/tabsheet";
 @import "components/textarea/textarea";
 @import "components/groupbox/groupbox";
@@ -82,6 +83,7 @@
   @include havana-menubar;
   @include havana-caption;
   @include havana-tooltip;
+  @include havana-checkbox;
   @include havana-tabsheet;
   @include havana-textarea;
   @include havana-treetable;

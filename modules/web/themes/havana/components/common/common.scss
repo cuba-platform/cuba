@@ -27,12 +27,16 @@
       font-family: $theme_fonts;
     }
 
+    label,
+    button {
+      font-size: 12px;
+      color: #464f52;
+    }
+
     input,
     select,
-    button,
-    label,
     textarea {
-      font-size: 12px;
+      font-size: 11px;
       color: #464f52;
     }
   }

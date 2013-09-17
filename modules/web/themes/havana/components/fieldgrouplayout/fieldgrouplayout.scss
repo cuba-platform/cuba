@@ -8,9 +8,19 @@
 @mixin havana-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
   @include base-gridlayout($primaryStyleName);
 
+  .#{$primaryStyleName}-spacing-on {
+    padding-left: 4px;
+    padding-top: 4px;
+  }
+
   .#{$primaryStyleName}-slot > .v-caption {
     margin-right: 5px;
     vertical-align: top;
+  }
+
+  .#{$primaryStyleName}-slot > .v-checkbox {
+    line-height: 22px;
+    height: 25px;
   }
 
   .#{$primaryStyleName}-slot > .v-caption.caption-indicators {

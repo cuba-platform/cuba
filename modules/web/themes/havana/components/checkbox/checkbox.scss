@@ -8,12 +8,15 @@
 @mixin havana-checkbox($primaryStyleName : v-checkbox) {
 
   .#{$primaryStyleName} {
-    padding-bottom: 3px;
+    @include box-defaults;
+
+    outline: 0;
     border: transparent 1px solid;
 
     label,
     input,
     .v-icon {
+      outline: 0;
       vertical-align: middle;
       white-space: nowrap;
     }
@@ -24,7 +27,6 @@
 
     .v-errorindicator {
       float: none;
-      display: inline;
       display: inline-block;
       zoom: 1;
     }
