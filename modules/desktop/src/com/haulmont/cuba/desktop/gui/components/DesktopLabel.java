@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXLabel;
 
 import java.util.ArrayList;
@@ -37,15 +38,14 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
 
     protected List<ValueListener> listeners = new ArrayList<>();
 
-    private DefaultValueFormatter valueFormatter;
+    protected DefaultValueFormatter valueFormatter;
 
-    private Object prevValue;
+    protected Object prevValue;
 
-    private boolean updatingInstance = false;
+    protected boolean updatingInstance = false;
 
     public DesktopLabel() {
         impl = new JXLabel();
-        impl.setLineWrap(true);
         impl.setFocusable(false);
         setAlignment(Alignment.MIDDLE_LEFT);
 
@@ -143,7 +143,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
        }
     }
 
-    private void updateInstance(Object value) {
+    protected void updateInstance(Object value) {
         if (updatingInstance)
             return;
 
@@ -162,11 +162,13 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
         }
     }
 
-    private void updateComponent(Object value) {
-        impl.setText(valueFormatter.formatValue(value));
+    protected void updateComponent(Object value) {
+        String stringRepresentation = valueFormatter.formatValue(value);
+        impl.setLineWrap(StringUtils.contains(stringRepresentation, "\n"));
+        impl.setText(stringRepresentation);
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue)) {
             fireValueChanged(prevValue, newValue);
             prevValue = newValue;
