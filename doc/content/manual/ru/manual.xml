@@ -1117,11 +1117,10 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
-      <varlistentry id="cuba.springContextConfig_1">
+      <varlistentry id="cuba.restApiUrl">
         <term>cuba.restApiUrl</term>
         <listitem>
           <para>URL, по которому доступен <link linkend="rest_api">REST API</link> приложения.  </para>
-          <para>Используется, в частности, для отображения модели данных в веб-клиенте через обращение к команде REST API <code>printDomain</code>.</para>
           <para>Интерфейс:  <code>GlobalConfig</code></para>
           <para>Может использоваться во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
           <para>Значение по умолчанию: <literal>http://localhost:8080/app-portal/api</literal></para>
@@ -1147,6 +1146,17 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
             </code>.</para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
           <para>Пример:<programlisting>cuba.springContextConfig=cuba-spring.xml spring.xml</programlisting></para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.supportEmail">
+        <term>cuba.supportEmail</term>
+        <listitem>
+          <para>Задает email, на который отправляются отчеты об исключениях из окна стандартного обработчика, и сообщения пользователей из экрана <guimenu>Help</guimenu> -&gt; <guimenu>Feedback</guimenu>. </para>
+          <para>Если данное свойство установлено в пустую строку, кнопка <guibutton>Report</guibutton> в окне обработчика исключений не показывается. </para>
+          <para>Для успешной отсылки email необходимо настроить параметры, описанные в разделе  <xref linkend="email_sending_properties"/></para>
+          <para>Значение по умолчанию: <literal>support@localhost</literal></para>
+          <para>Интерфейс:  <code>WebConfig</code></para>
+          <para>Используется в блоке Web Client.</para>
         </listitem>
       </varlistentry>
       <varlistentry id="cuba.tempDir">

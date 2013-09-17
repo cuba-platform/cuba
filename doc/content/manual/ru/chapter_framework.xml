@@ -10913,13 +10913,13 @@ locale: en</programlisting>
 при создании <code>EmailAttachment</code> задаётся уникальный <code>contentId</code>, например, <code>myPic</code>. В теле письма для вставки вложения необходимо в качестве пути использовать запись вида: <code>cid:myPic</code>. Т.е. для вставки изображения нужно указать следующий элемент HTML:<programlisting>&lt;img src=&quot;cid:myPic&quot;/&gt;</programlisting></para>
       </section>
       <section id="email_sending_properties">
-        <title>Настройка параметров отправки</title>
+        <title>Настройка параметров отправки email</title>
         <para>Параметры отправки  email могут быть настроены с помощью перечисленных ниже <link linkend="app_properties">свойств приложения</link>. Все они являются параметрами времени выполнения и хранятся в базе данных, однако могут быть переопределены для конкретного блока Middleware в его файле <filename>app.properties</filename>.</para>
         <para>Все параметры отправки email доступны через конфигурационный интерфейс <code>EmailerConfig</code>.</para>
         <itemizedlist>
           <listitem>
             <para><property>cuba.email.fromAddress</property> - адрес отправителя по умолчанию. Принимается во внимание, если не указан атрибут <code>EmailInfo.from</code>.</para>
-            <para>Значение по умолчанию: <literal>DoNotReply@haulmont.com</literal></para>
+            <para>Значение по умолчанию: <literal>DoNotReply@localhost</literal></para>
           </listitem>
           <listitem>
             <para><property>cuba.email.smtpHost</property> - адрес SMTP сервера.</para>
@@ -10965,7 +10965,7 @@ locale: en</programlisting>
           </listitem>
           <listitem>
             <para><property>cuba.email.adminAddress</property> - адрес, на который отправляются все сообщения при включенном свойстве <property>cuba.email.sendAllToAdmin</property>.</para>
-            <para>Значение по умолчанию: <literal>address@company.com</literal></para>
+            <para>Значение по умолчанию: <literal>admin@localhost</literal></para>
           </listitem>
         </itemizedlist>
         <para>Просмотреть текущие значения параметров, а также отправить тестовое сообщение, можно с помощью JMX-бина <code>app-core.cuba:type=Emailer</code>.</para>

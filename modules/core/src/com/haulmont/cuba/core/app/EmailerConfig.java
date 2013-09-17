@@ -25,7 +25,7 @@ public interface EmailerConfig extends Config {
      * Default "from" address
      */
     @Property("cuba.email.fromAddress")
-    @Default("DoNotReply@haulmont.com")
+    @Default("DoNotReply@localhost")
     String getFromAddress();
     void setFromAddress(String fromAddress);
 
@@ -104,7 +104,7 @@ public interface EmailerConfig extends Config {
      * All emails go to this address if <code>cuba.email.sendAllToAdmin=true</code>, regardless of actual recipient.
      */
     @Property("cuba.email.adminAddress")
-    @Default("address@company.com")
+    @Default("admin@localhost")
     String getAdminAddress();
 
     /**

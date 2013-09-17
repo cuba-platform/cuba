@@ -216,10 +216,10 @@ public interface WebConfig extends Config {
     String getRestoreEntityId();
 
     /**
-     * Support e-mail. All feedback mails will be sent on this address.
+     * Support e-mail. Exception reports and feedback emails are sent to this address.
      */
     @Property("cuba.supportEmail")
-    @DefaultString("cubasupport@haulmont.com")
+    @DefaultString("support@localhost")
     String getSupportEmail();
 
     /**
