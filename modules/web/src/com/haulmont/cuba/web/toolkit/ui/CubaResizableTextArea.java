@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaState;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,15 +47,18 @@ public class CubaResizableTextArea extends CubaTextArea {
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
-        if (getState(false).rows > 0 && getState(false).columns > 0) {
-            // TextArea with fixed rows or cols can not be resizable
+        if (getState(false).resizable &&
+                getState(false).rows > 0 &&
+                getState(false).columns > 0) {
+            LogFactory.getLog(getClass()).warn("TextArea with fixed rows or cols can not be resizable");
             getState().resizable = false;
         }
     }
 
     public void addResizeListener(ResizeListener resizeListener) {
-        if (!listeners.contains(resizeListener))
+        if (!listeners.contains(resizeListener)) {
             listeners.add(resizeListener);
+        }
     }
 
     public void removeResizeListener(ResizeListener resizeListener) {
