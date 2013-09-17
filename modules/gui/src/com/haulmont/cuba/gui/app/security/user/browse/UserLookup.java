@@ -24,7 +24,7 @@ public class UserLookup extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         setHeight("400px");
-        Boolean multiSelect = BooleanUtils.toBooleanObject(params.get("multiSelect").toString());
+        Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiSelect"));
         if (multiSelect != null)
             usersTable.setMultiSelect(multiSelect);
     }
