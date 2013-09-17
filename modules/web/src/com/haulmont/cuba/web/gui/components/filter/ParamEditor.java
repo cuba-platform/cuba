@@ -5,8 +5,10 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
-import com.vaadin.server.Sizeable;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 
 /**
  * @author krivopustov
@@ -46,7 +48,9 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
 
     public void setFieldWidth(String fieldWidth) {
         this.fieldWidth = fieldWidth;
-        field.setWidth(fieldWidth);
+        if (field != null) {
+            field.setWidth(fieldWidth);
+        }
     }
 
     @Override
