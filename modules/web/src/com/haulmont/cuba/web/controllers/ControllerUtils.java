@@ -11,6 +11,8 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,10 +32,14 @@ public abstract class ControllerUtils {
 
     public static String getLocationWithoutParams() {
         URI location = AppUI.getCurrent().getPage().getLocation();
+        return getLocationWithoutParams(location);
+    }
+
+    public static String getLocationWithoutParams(URI location) {
         try {
             StringBuilder baseUrl = new StringBuilder(location.toURL().toExternalForm());
             if (location.getQuery() != null) {
-                baseUrl.delete(baseUrl.indexOf(location.getQuery()) - 1, baseUrl.length());
+                baseUrl.delete(baseUrl.indexOf("?" + location.getQuery()), baseUrl.length());
             }
             return baseUrl.toString();
         } catch (MalformedURLException e) {
