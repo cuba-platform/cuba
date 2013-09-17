@@ -197,16 +197,6 @@ public class WebFieldGroup
                 assignTypicalAttributes(fieldComponent);
 
                 MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(id);
-                if (propertyPath != null && (fieldComponent instanceof DatasourceComponent)) {
-                    DatasourceComponent datasourceComponent = (DatasourceComponent) fieldComponent;
-                    if (datasourceComponent.getDatasource() == null) {
-                        if (fieldConf.getDatasource() != null) {
-                            datasourceComponent.setDatasource(fieldConf.getDatasource(), id);
-                        } else {
-                            datasourceComponent.setDatasource(getDatasource(), id);
-                        }
-                    }
-                }
 
                 if (fieldComponent instanceof Field) {
                     Field cubaField = (Field) fieldComponent;
