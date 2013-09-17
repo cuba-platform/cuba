@@ -66,6 +66,8 @@
         height: 23px;
         float: right;
         background-color: $theme_fieldBorderColor;
+        background-clip: padding-box;
+        border-left: 3px solid transparent;
         cursor: col-resize;
       }
 
