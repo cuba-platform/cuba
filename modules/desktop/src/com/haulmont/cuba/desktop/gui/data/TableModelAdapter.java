@@ -172,6 +172,8 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if (columnIndex == -1)
+            return false;
         Table.Column column = columns.get(columnIndex);
         if (column.isEditable() || generatedColumns.contains(column))
             return true;
