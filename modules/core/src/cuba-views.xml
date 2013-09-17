@@ -65,6 +65,25 @@
         <property name="endDate"/>
     </view>
 
+    <view entity="sec$Role" name="role.lookup">
+         <property name="name"/>
+     </view>
+
+    <view entity="sec$Role" name="role.browse">
+        <property name="name"/>
+    </view>
+
+    <view entity="sec$Role" name="role.edit">
+        <property name="name"/>
+        <property name="type"/>
+    </view>
+
+    <view entity="sec$Permission" name="role.edit">
+        <property name="type"/>
+        <property name="target"/>
+        <property name="value"/>
+    </view>
+
     <view class="com.haulmont.cuba.security.entity.Group" name="group.lookup">
         <property name="name"/>
     </view>

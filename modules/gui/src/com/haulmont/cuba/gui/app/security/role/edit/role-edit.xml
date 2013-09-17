@@ -12,10 +12,6 @@
         lookupComponent="name"
         focusComponent="name">
 
-    <metadataContext>
-        <deployViews name="/com/haulmont/cuba/gui/app/security/role/role.views.xml"/>
-    </metadataContext>
-
     <dsContext>
         <datasource id="roleDs" class="com.haulmont.cuba.security.entity.Role" view="_local"/>
     </dsContext>
