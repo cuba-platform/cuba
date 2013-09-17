@@ -184,7 +184,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         }
 
         String captionProperty = xmlDescriptor.attributeValue("captionProperty");
-        if (StringUtils.isEmpty(captionProperty)) {
+        if (StringUtils.isNotEmpty(captionProperty)) {
             pickerField.setCaptionMode(CaptionMode.PROPERTY);
             pickerField.setCaptionProperty(captionProperty);
         }
