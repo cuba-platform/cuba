@@ -59,10 +59,6 @@ public class SendingMessage extends StandardEntity {
     @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
     protected List<SendingAttachment> attachments;
 
-    public SendingMessage(Integer attemptsCount) {
-        this.attemptsCount = attemptsCount;
-    }
-
     public String getAddress() {
         return address;
     }
