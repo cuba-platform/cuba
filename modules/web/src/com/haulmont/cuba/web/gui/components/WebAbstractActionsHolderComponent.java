@@ -18,9 +18,9 @@ import java.util.*;
  * @version $Id$
  */
 public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component>
-        extends WebAbstractComponent<T>
-{
-    protected List<Action> actionList = new LinkedList<Action>();
+        extends WebAbstractComponent<T> {
+
+    protected List<Action> actionList = new LinkedList<>();
     protected BiMap<Action, com.vaadin.event.Action> actions = HashBiMap.create();
 
     public void addAction(final Action action) {
@@ -57,7 +57,7 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
     protected class ActionsAdapter implements com.vaadin.event.Action.Handler {
 
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-            final List<com.vaadin.event.Action> res = new ArrayList<com.vaadin.event.Action>();
+            final List<com.vaadin.event.Action> res = new ArrayList<>();
             for (Action action : actionList) {
 //                if (action.isEnabled()) {
                     res.add(actions.get(action));

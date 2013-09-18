@@ -190,5 +190,9 @@ public class WebTree
         }
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
+
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
     }
 }

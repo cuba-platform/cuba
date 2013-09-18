@@ -64,6 +64,11 @@ public interface Action {
     void setVisible(boolean visible);
 
     /**
+     * Refresh enabled, visible, caption, icon, etc properties
+     */
+    void refreshState();
+
+    /**
      * @return  a single component owning the action. If there are several owners, first will be returned.
      */
     Component.ActionOwner getOwner();

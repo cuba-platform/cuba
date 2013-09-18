@@ -42,6 +42,8 @@ public class EditAction extends ItemTrackingAction {
     protected String windowId;
     protected Map<String, Object> windowParams;
 
+    protected boolean permissionFlag = false;
+
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
      * @param owner    component containing this action
@@ -72,26 +74,36 @@ public class EditAction extends ItemTrackingAction {
         this.icon = "icons/edit.png";
         ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         setShortcut(config.getTableEditShortcut());
+
+        refreshState();
     }
 
     @Override
-    public String getCaption() {
-        if (caption != null)
-            return caption;
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(permissionFlag && enabled);
+    }
 
-        final String messagesPackage = AppConfig.getMessagesPack();
-        if (userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE)) {
-            return messages.getMessage(messagesPackage, "actions.Edit");
+    @Override
+    public boolean isEnabled() {
+        return permissionFlag && super.isEnabled();
+    }
+
+    @Override
+    public void refreshState() {
+        if (owner.getDatasource() == null) {
+            permissionFlag = false;
         } else {
-            return messages.getMessage(messagesPackage, "actions.View");
+            permissionFlag = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
+
+            final String messagesPackage = AppConfig.getMessagesPack();
+            if (userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE)) {
+                setCaption(messages.getMessage(messagesPackage, "actions.Edit"));
+            } else {
+                setCaption(messages.getMessage(messagesPackage, "actions.View"));
+            }
         }
-    }
 
-    @Override
-    public void addOwner(Component.ActionOwner actionOwner) {
-        super.addOwner(actionOwner);
-
-        super.setEnabled(userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ));
+        super.setEnabled(permissionFlag);
     }
 
     @Override

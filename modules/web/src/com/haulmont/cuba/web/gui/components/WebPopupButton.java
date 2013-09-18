@@ -273,5 +273,10 @@ public class WebPopupButton
         public void setVisible(boolean visible) {
             action.setVisible(visible);
         }
+
+        @Override
+        public void refreshState() {
+            action.refreshState();
+        }
     }
 }

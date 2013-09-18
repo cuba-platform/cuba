@@ -192,4 +192,8 @@ public abstract class AbstractAction implements Action {
             firePropertyChange(PROP_ICON, oldValue, icon);
         }
     }
+
+    @Override
+    public void refreshState() {
+    }
 }

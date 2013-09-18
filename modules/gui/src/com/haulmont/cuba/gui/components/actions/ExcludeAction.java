@@ -27,6 +27,7 @@ public class ExcludeAction extends RemoveAction {
     public static final String ACTION_ID = ListActionType.EXCLUDE.getId();
 
     protected boolean confirm;
+    protected boolean permissionFlag = false;
 
     /**
      * The simplest constructor. Autocommit and Confirm properties are set to false, the action has default name.
@@ -57,22 +58,31 @@ public class ExcludeAction extends RemoveAction {
         super(owner, autocommit, id);
         this.confirm = confirm;
         this.caption = messages.getMainMessage("actions.Exclude");
+
+        refreshState();
     }
 
-    /**
-     * Whether the action is currently enabled. Override to provide specific behaviour.
-     * @return  true if enabled
-     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(permissionFlag && enabled);
+    }
+
+    @Override
     public boolean isEnabled() {
-        if (!enabled)
-            return false;
+        return permissionFlag && super.isEnabled();
+    }
+
+    @Override
+    public void refreshState() {
+        permissionFlag = true;
 
         if (owner.getDatasource() instanceof PropertyDatasource) {
             MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-            return userSession.isEntityAttrPermitted(
+            permissionFlag = userSession.isEntityAttrPermitted(
                     metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
-        return true;
+
+        super.setEnabled(permissionFlag);
     }
 
     @Override

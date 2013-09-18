@@ -695,6 +695,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
         });
+
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
     }
 
     private String getColumnCaption(Object columnId) {

@@ -526,6 +526,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             rowsCount.setDatasource(datasource);
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
+
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
     }
 
     private String getColumnCaption(Object columnId) {

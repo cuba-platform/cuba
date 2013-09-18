@@ -6,17 +6,18 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 
-import javax.swing.*;
 import javax.swing.AbstractAction;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -31,13 +32,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopTree
         extends DesktopAbstractActionsHolderComponent<JTree>
         implements Tree {
+
     protected String hierarchyProperty;
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;
     private JScrollPane treeView;
@@ -210,7 +211,8 @@ public class DesktopTree
 
         impl.addTreeSelectionListener(new SelectionListener());
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        if (uss.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();
@@ -220,6 +222,10 @@ public class DesktopTree
         }
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
+
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
     }
 
     @Override

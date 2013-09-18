@@ -38,6 +38,8 @@ public class RemoveAction extends ItemTrackingAction {
     protected String confirmationMessage;
     protected String confirmationTitle;
 
+    protected boolean permissionFlag = false;
+
     /**
      * The simplest constructor. The action has default name and autocommit=true.
      * @param owner    component containing this action
@@ -69,23 +71,35 @@ public class RemoveAction extends ItemTrackingAction {
         this.icon = "icons/remove.png";
         ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         setShortcut(config.getTableRemoveShortcut());
+
+        refreshState();
     }
 
     @Override
-    public void addOwner(Component.ActionOwner actionOwner) {
-        super.addOwner(actionOwner);
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(permissionFlag && enabled);
+    }
 
-        if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.DELETE)) {
-            super.setEnabled(false);
-        }
+    @Override
+    public boolean isEnabled() {
+        return permissionFlag && super.isEnabled();
+    }
 
-        if (owner.getDatasource() instanceof PropertyDatasource) {
-            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-            if (!userSession.isEntityAttrPermitted(
-                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY)) {
-                super.setEnabled(false);
+    @Override
+    public void refreshState() {
+        if (owner.getDatasource() == null) {
+            permissionFlag = false;
+        } else {
+            permissionFlag = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.DELETE);
+
+            if (permissionFlag && owner.getDatasource() instanceof PropertyDatasource) {
+                MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
+                permissionFlag = userSession.isEntityAttrPermitted(
+                        metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
             }
         }
+
+        super.setEnabled(permissionFlag);
     }
 
     /**

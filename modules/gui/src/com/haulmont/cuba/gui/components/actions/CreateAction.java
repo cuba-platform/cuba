@@ -40,6 +40,8 @@ public class CreateAction extends AbstractAction {
     protected Map<String, Object> windowParams;
     protected Map<String, Object> initialValues;
 
+    protected boolean permissionFlag = false;
+
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
      * @param owner    component containing this action
@@ -71,25 +73,35 @@ public class CreateAction extends AbstractAction {
         this.icon = "icons/create.png";
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableInsertShortcut());
+
+        refreshState();
     }
 
-    /**
-     * Whether the action is currently enabled. Override to provide specific behaviour.
-     * @return  true if enabled
-     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(permissionFlag && enabled);
+    }
+
+    @Override
     public boolean isEnabled() {
-        if (!super.isEnabled())
-            return false;
+        return permissionFlag && super.isEnabled();
+    }
 
-        if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE))
-            return false;
+    @Override
+    public void refreshState() {
+        if (owner.getDatasource() == null) {
+            permissionFlag = false;
+        } else {
+            permissionFlag = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE);
 
-        if (owner.getDatasource() instanceof PropertyDatasource) {
-            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-            return userSession.isEntityAttrPermitted(
-                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+            if (permissionFlag && owner.getDatasource() instanceof PropertyDatasource) {
+                MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
+                permissionFlag = userSession.isEntityAttrPermitted(
+                        metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+            }
         }
-        return true;
+
+        super.setEnabled(permissionFlag);
     }
 
     /**
@@ -157,7 +169,7 @@ public class CreateAction extends AbstractAction {
 
         Map<String, Object> params = getWindowParams();
         if (params == null)
-            params = new HashMap<String, Object>();
+            params = new HashMap<>();
 
         final Window window = owner.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
 

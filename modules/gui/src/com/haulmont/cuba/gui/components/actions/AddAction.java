@@ -45,6 +45,8 @@ public class AddAction extends AbstractAction {
     protected String windowId;
     protected Map<String, Object> windowParams;
 
+    protected boolean permissionFlag = false;
+
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
      * Lookup handler can be set by subsequent call to {@link #setHandler(com.haulmont.cuba.gui.components.Window.Lookup.Handler)}.
@@ -89,22 +91,31 @@ public class AddAction extends AbstractAction {
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Add");
         this.icon = "icons/add.png";
+
+        refreshState();
     }
 
-    /**
-     * Whether the action is currently enabled. Override to provide specific behaviour.
-     * @return  true if enabled
-     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(permissionFlag && enabled);
+    }
+
+    @Override
     public boolean isEnabled() {
-        if (!super.isEnabled())
-            return false;
+        return permissionFlag && super.isEnabled();
+    }
+
+    @Override
+    public void refreshState() {
+        permissionFlag = true;
 
         if (owner.getDatasource() instanceof PropertyDatasource) {
             MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-            return userSession.isEntityAttrPermitted(
+            permissionFlag = userSession.isEntityAttrPermitted(
                     metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
-        return true;
+
+        super.setEnabled(permissionFlag);
     }
 
     /**
@@ -115,7 +126,7 @@ public class AddAction extends AbstractAction {
     public void actionPerform(Component component) {
         Map<String, Object> params = getWindowParams();
         if (params == null)
-            params = new HashMap<String, Object>();
+            params = new HashMap<>();
 
         Window.Lookup.Handler h = handler != null ? handler : new DefaultHandler();
 
