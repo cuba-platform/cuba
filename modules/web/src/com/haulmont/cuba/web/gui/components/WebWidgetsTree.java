@@ -123,4 +123,14 @@ public class WebWidgetsTree
     public void setCaptionProperty(String captionProperty) {
         //do nothing
     }
+
+    @Override
+    public boolean isEditable() {
+        return !component.isReadOnly();
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        component.setReadOnly(!editable);
+    }
 }
