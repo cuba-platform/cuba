@@ -5,150 +5,162 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.toolkit.ui.client.caption.CaptionHolder;
-import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
-import com.vaadin.client.Util;
-import com.vaadin.client.VCaption;
-import com.vaadin.client.ui.VCheckBox;
+import com.vaadin.client.StyleConstants;
+import com.vaadin.client.ui.orderedlayout.CaptionPosition;
 import com.vaadin.client.ui.orderedlayout.Slot;
+import com.google.gwt.user.client.Element;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
-import com.vaadin.shared.ui.AlignmentInfo;
+
+import java.util.List;
 
 /**
  * @author devyatkin
  * @version $Id$
  */
-public class CubaOrderedLayoutSlot extends Slot implements CaptionHolder {
+public class CubaOrderedLayoutSlot extends Slot {
 
-    protected static final String INDICATORS_CLASSNAME = "caption-indicators";
+    public static final String TOOLTIP_CLASSNAME = "cuba-tooltip-button";
 
-    protected Element requiredElement = null;
-    protected Element tooltipElement = null;
-    protected Element errorIndicatorElement = null;
-
-    protected Element rightCaption = null;
-
-    protected VCaption caption;
+    protected Element tooltipIcon;
+    protected String descriptionText;
 
     public CubaOrderedLayoutSlot(VAbstractOrderedLayout layout, Widget widget) {
         super(layout, widget);
     }
 
-    public void setCaption(VCaption caption){
-        if (this.caption != null) {
-            this.caption.removeFromParent();
+    public void setCaption(String captionText, String descriptionText, String iconUrl, List<String> styles, String error,
+                           boolean showError, boolean required, boolean enabled) {
+        // CAUTION copied from super
+        // Caption wrappers
+        Widget widget = getWidget();
+        if (captionText != null || descriptionText != null || iconUrl != null || error != null || required) {
+            if (caption == null) {
+                caption = DOM.createDiv();
+                captionWrap = DOM.createDiv();
+                captionWrap.addClassName(StyleConstants.UI_WIDGET);
+                captionWrap.addClassName("v-has-caption");
+                getElement().appendChild(captionWrap);
+                orphan(widget);
+                captionWrap.appendChild(widget.getElement());
+                adopt(widget);
+            }
+        } else if (caption != null) {
+            orphan(widget);
+            getElement().appendChild(widget.getElement());
+            adopt(widget);
+            captionWrap.removeFromParent();
+            caption = null;
+            captionWrap = null;
         }
-        this.caption = caption;
+
+        // Caption text
+        if (captionText != null) {
+            if (this.captionText == null) {
+                this.captionText = DOM.createSpan();
+                this.captionText.addClassName("v-captiontext");
+                caption.appendChild(this.captionText);
+            }
+            if (captionText.trim().equals("")) {
+                this.captionText.setInnerHTML("&nbsp;");
+            } else {
+                this.captionText.setInnerText(captionText);
+            }
+        } else if (this.captionText != null) {
+            this.captionText.removeFromParent();
+            this.captionText = null;
+        }
+
+        // Icon
+        if (iconUrl != null) {
+            if (icon == null) {
+                icon = new Icon();
+                caption.insertFirst(icon.getElement());
+            }
+            icon.setUri(iconUrl);
+        } else if (icon != null) {
+            icon.getElement().removeFromParent();
+            icon = null;
+        }
+
+        // Required
+        if (required) {
+            if (requiredIcon == null) {
+                requiredIcon = DOM.createSpan();
+                // TODO decide something better (e.g. use CSS to insert the
+                // character)
+                requiredIcon.setInnerHTML("*");
+                requiredIcon.setClassName("v-required-field-indicator");
+
+                // The star should not be read by the screen reader, as it is
+                // purely visual. Required state is set at the element level for
+                // the screen reader.
+                Roles.getTextboxRole().setAriaHiddenState(requiredIcon, true);
+            }
+            caption.appendChild(requiredIcon);
+        } else if (requiredIcon != null) {
+            requiredIcon.removeFromParent();
+            requiredIcon = null;
+        }
+
+        // Desciption
+        // Haulmont API
+        this.descriptionText = descriptionText;
+        if (descriptionText != null) {
+            if (tooltipIcon == null) {
+                tooltipIcon = DOM.createSpan();
+                // TODO decide something better (e.g. use CSS to insert the
+                // character)
+                tooltipIcon.setInnerHTML("?");
+                tooltipIcon.setClassName(TOOLTIP_CLASSNAME);
+
+                // The star should not be read by the screen reader, as it is
+                // purely visual. Required state is set at the element level for
+                // the screen reader.
+                Roles.getTextboxRole().setAriaHiddenState(tooltipIcon, true);
+            }
+            caption.appendChild(tooltipIcon);
+        } else if (this.tooltipIcon != null) {
+            this.tooltipIcon.removeFromParent();
+            this.tooltipIcon = null;
+        }
+
+        // Error
+        if (error != null && showError) {
+            if (errorIcon == null) {
+                errorIcon = DOM.createSpan();
+                errorIcon.setClassName("v-errorindicator");
+            }
+            caption.appendChild(errorIcon);
+        } else if (errorIcon != null) {
+            errorIcon.removeFromParent();
+            errorIcon = null;
+        }
+
         if (caption != null) {
-            // Physical attach.
-            DOM.insertBefore(DOM.getParent(getWidget().getElement()), caption.getElement(), getWidget().getElement());
-            Style style = caption.getElement().getStyle();
-            style.setPosition(Style.Position.RELATIVE);
-            style.clearTop();
-            style.clearLeft();
-            ((CubaCaptionWidget) caption).setCaptionHolder(this);
-        }
-    }
+            // Styles
+            caption.setClassName("v-caption");
 
-    public VCaption getCaption(){
-       return caption;
-    }
-
-    @Override
-    public void captionUpdated(CubaCaptionWidget captionWidget) {
-        moveIndicatorsRight(captionWidget);
-    }
-
-    protected void moveIndicatorsRight(final CubaCaptionWidget captionWidget) {
-        // Indicators element always present in DOM tree of slot
-        if (rightCaption == null) {
-            rightCaption = createRightCaption();
-            getWidget().getElement().getParentElement().insertAfter(rightCaption, getWidget().getElement());
-        }
-
-        // detach all indicators
-        for (int i = 0; i < rightCaption.getChildCount(); i++) {
-            rightCaption.getChild(i).removeFromParent();
-        }
-
-        /* now attach only necessary indicators */
-
-        if (captionWidget.getRequiredIndicatorElement() != null) {
-            captionWidget.getRequiredIndicatorElement().removeFromParent();
-
-            if (!(getWidget() instanceof VCheckBox)) {
-                requiredElement = captionWidget.getRequiredIndicatorElement();
-                rightCaption.appendChild(requiredElement);
-            }
-        } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
-            requiredElement.removeFromParent();
-            requiredElement = null;
-        }
-
-        if (captionWidget.getTooltipElement() != null) {
-            captionWidget.getTooltipElement().removeFromParent();
-
-            if (!(getWidget() instanceof VCheckBox)) {
-                tooltipElement =  captionWidget.getTooltipElement();
-                rightCaption.appendChild(tooltipElement);
-            }
-        } else if (captionWidget.getTooltipElement() == null && tooltipElement != null) {
-            tooltipElement.removeFromParent();
-            tooltipElement = null;
-        }
-
-        if (captionWidget.getErrorIndicatorElement() != null) {
-            captionWidget.getErrorIndicatorElement().removeFromParent();
-
-            if (!(getWidget() instanceof VCheckBox)) {
-                errorIndicatorElement = captionWidget.getErrorIndicatorElement();
-                rightCaption.appendChild(errorIndicatorElement);
-            }
-        } else if (captionWidget.getErrorIndicatorElement() == null && errorIndicatorElement != null) {
-            errorIndicatorElement.removeFromParent();
-            errorIndicatorElement = null;
-        }
-
-        if (!(getWidget() instanceof VCheckBox)) {
-            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                @Override
-                public void execute() {
-                    allocateSpaceForIndicators();
+            if (styles != null) {
+                for (String style : styles) {
+                    caption.addClassName("v-caption-" + style);
                 }
-            });
-        }
-    }
-
-    protected void allocateSpaceForIndicators() {
-        int widgetWidth = getWidget().getOffsetWidth();
-        int indicatorsWidth = Util.getRequiredWidth(rightCaption);
-        int captionWidth = getCaption().getElement().getOffsetWidth();
-        if ((getAlignment().getBitMask() & AlignmentInfo.RIGHT.getBitMask()) == AlignmentInfo.RIGHT.getBitMask()) {
-            getStyleElement().getStyle().setPaddingRight(indicatorsWidth, Style.Unit.PX);
-        } else if (captionWidth >= widgetWidth + indicatorsWidth) {
-            getStyleElement().getStyle().clearPaddingRight();
-        } else {
-            int requiredHorizontalSpace = indicatorsWidth;
-            if (captionWidth > widgetWidth) {
-                requiredHorizontalSpace -= (captionWidth - widgetWidth);
             }
-            getStyleElement().getStyle().setPaddingRight(requiredHorizontalSpace, Style.Unit.PX);
+
+            if (enabled) {
+                caption.removeClassName("v-disabled");
+            } else {
+                caption.addClassName("v-disabled");
+            }
+
+            // Caption position
+            if (captionText != null || iconUrl != null) {
+                setCaptionPosition(CaptionPosition.TOP);
+            } else {
+                setCaptionPosition(CaptionPosition.RIGHT);
+            }
         }
-    }
-
-    protected Element createRightCaption() {
-        Element rightCaption = DOM.createDiv();
-
-        rightCaption.setClassName(VCaption.CLASSNAME);
-        rightCaption.addClassName(INDICATORS_CLASSNAME);
-        rightCaption.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-        rightCaption.getStyle().setPosition(Style.Position.ABSOLUTE);
-
-        return rightCaption;
     }
 }

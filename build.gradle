@@ -60,7 +60,7 @@ def desktopModule = project(':cuba-desktop')
 def portalModule = project(':cuba-portal')
 def webAuthModule = project(':cuba-web-auth')
 
-def vaadinVersion = '7.1.5.cuba.1'
+def vaadinVersion = '7.1.5.cuba.2'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6']

@@ -6,11 +6,19 @@
 package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.vaadin.client.*;
+import com.vaadin.client.ui.AbstractFieldConnector;
 import com.vaadin.client.ui.ShortcutActionHandler;
+import com.vaadin.client.ui.aria.AriaHelper;
 import com.vaadin.client.ui.orderedlayout.AbstractOrderedLayoutConnector;
+import com.vaadin.client.ui.orderedlayout.CaptionPosition;
+import com.vaadin.shared.AbstractFieldState;
+import com.vaadin.shared.ComponentConstants;
+import com.vaadin.shared.communication.URLReference;
+import com.vaadin.shared.ui.ComponentStateUtil;
 import com.vaadin.shared.ui.Connect;
+
+import java.util.List;
 
 /**
  * @author devyatkin
@@ -40,17 +48,50 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
 
     @Override
     protected void updateCaptionInternal(ComponentConnector child) {
+        // CAUTION copied from superclass
         CubaOrderedLayoutSlot slot = (CubaOrderedLayoutSlot) getWidget().getSlot(child.getWidget());
-        if (VCaption.isNeeded(child.getState())) {
-            VCaption caption = slot.getCaption();
-            if (caption == null) {
-                // use our own caption widget
-                caption = new CubaCaptionWidget(child, getConnection());
-                slot.setCaption(caption);
+
+        String caption = child.getState().caption;
+        URLReference iconUrl = child.getState().resources
+                .get(ComponentConstants.ICON_RESOURCE);
+        String iconUrlString = iconUrl != null ? iconUrl.getURL() : null;
+        List<String> styles = child.getState().styles;
+        String error = child.getState().errorMessage;
+        boolean showError = error != null;
+        if (child.getState() instanceof AbstractFieldState) {
+            AbstractFieldState abstractFieldState = (AbstractFieldState) child
+                    .getState();
+            showError = showError && !abstractFieldState.hideErrors;
+        }
+        boolean required = false;
+        if (child instanceof AbstractFieldConnector) {
+            required = ((AbstractFieldConnector) child).isRequired();
+        }
+        boolean enabled = child.isEnabled();
+
+        String description = null;
+        if (ComponentStateUtil.hasDescription(child.getState())) {
+            description = child.getState().description;
+        }
+
+        slot.setCaption(caption, description,  iconUrlString, styles, error, showError,
+                required, enabled);
+
+        AriaHelper.handleInputRequired(child.getWidget(), required);
+        AriaHelper.handleInputInvalid(child.getWidget(), showError);
+        AriaHelper.bindCaption(child.getWidget(), slot.getCaptionElement());
+
+        if (slot.hasCaption()) {
+            CaptionPosition pos = slot.getCaptionPosition();
+            getLayoutManager().addElementResizeListener(
+                    slot.getCaptionElement(), slotCaptionResizeListener);
+            if (child.isRelativeHeight()
+                    && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM)) {
+                getWidget().updateCaptionOffset(slot.getCaptionElement());
+            } else if (child.isRelativeWidth()
+                    && (pos == CaptionPosition.LEFT || pos == CaptionPosition.RIGHT)) {
+                getWidget().updateCaptionOffset(slot.getCaptionElement());
             }
-            caption.updateCaption();
-        } else {
-            slot.setCaption(null);
         }
     }
 }

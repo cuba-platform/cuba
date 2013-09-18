@@ -135,14 +135,6 @@ public class CubaCaptionWidget extends VCaption {
             captionText = null;
         }
 
-        if (ComponentStateUtil.hasDescription(owner.getState())) {
-            addStyleDependentName("hasdescription");
-            enableFieldDescription();
-        } else {
-            removeStyleDependentName("hasdescription");
-            disableFieldDescription();
-        }
-
         AriaHelper.handleInputRequired(owner.getWidget(), showRequired);
 
         if (showRequired) {
@@ -163,6 +155,24 @@ public class CubaCaptionWidget extends VCaption {
             // Remove existing
             requiredFieldIndicator.removeFromParent();
             requiredFieldIndicator = null;
+        }
+
+        // Description
+        // Haulmont API
+        if (ComponentStateUtil.hasDescription(owner.getState())) {
+            addStyleDependentName("hasdescription");
+            if (toolTipIndicator == null) {
+                toolTipIndicator = DOM.createDiv();
+                toolTipIndicator.setClassName(TOOLTIP_CLASSNAME);
+
+                DOM.insertChild(getElement(), toolTipIndicator, getDescriptionInsertPosition());
+            }
+        } else {
+            removeStyleDependentName("hasdescription");
+            if (toolTipIndicator != null) {
+                toolTipIndicator.removeFromParent();
+                toolTipIndicator = null;
+            }
         }
 
         AriaHelper.handleInputInvalid(owner.getWidget(), showError);
@@ -193,22 +203,6 @@ public class CubaCaptionWidget extends VCaption {
             captionHolder.captionUpdated(this);
         }
         return (wasPlacedAfterComponent != placedAfterComponent);
-    }
-
-    protected void enableFieldDescription() {
-        if (toolTipIndicator == null) {
-            toolTipIndicator = DOM.createDiv();
-            toolTipIndicator.setClassName(TOOLTIP_CLASSNAME);
-
-            DOM.insertChild(getElement(), toolTipIndicator, getDescriptionInsertPosition());
-        }
-    }
-
-    protected void disableFieldDescription() {
-        if (toolTipIndicator != null) {
-            toolTipIndicator.removeFromParent();
-            toolTipIndicator = null;
-        }
     }
 
     @Override
