@@ -315,7 +315,6 @@ configure(webModule) {
         compile(guiModule)
         compile(webAuthModule)
 
-        compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
         compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2')
         compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
         compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.3.RELEASE')
@@ -323,8 +322,6 @@ configure(webModule) {
         compile(group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion)
 
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.2.1')
-
-        runtime(group: 'com.haulmont.thirdparty', name: 'jcifs', version: '1.3.10')
 
         provided(servletApi)
     }
@@ -383,9 +380,6 @@ configure(webModule) {
 configure(webAuthModule) {
     dependencies {
         compile(globalModule)
-
-        compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
-        runtime(group: 'com.haulmont.thirdparty', name: 'jcifs', version: '1.3.10')
 
         provided(servletApi)
     }

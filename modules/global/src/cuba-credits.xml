@@ -155,8 +155,6 @@ included both in freemarker.jar and in the source code:
 
         <item name="Apache HttpComponents" web="http://hc.apache.org/" license="apache-2.0"/>
 
-        <item name="jCIFS" web="http://jcifs.samba.org/" license="lgpl-2.1"/>
-
         <item name="JGroups" web="http://www.jgroups.org/" license="lgpl-2.1"/>
 
         <item name="JSON" web="http://json.org/java/">
