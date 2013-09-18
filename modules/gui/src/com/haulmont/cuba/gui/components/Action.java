@@ -64,7 +64,8 @@ public interface Action {
     void setVisible(boolean visible);
 
     /**
-     * Refresh enabled, visible, caption, icon, etc properties
+     * Refresh enabled, visible, caption, icon, etc properties <br/>
+     * Used in components and system actions for activation permissions
      */
     void refreshState();
 
